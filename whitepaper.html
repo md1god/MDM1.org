@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDM1 — الورقة البيضاء | White Paper</title>
+<meta name="description" content="الورقة البيضاء لمنصة MDM1 — منصة الاستثمار الجماعي العالمي. من واحد إلى ما لا نهاية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-bright: #f0c060;
+    --gold-light: #e8c97a;
+    --gold-dim: #6b4f1a;
+    --blood: #8b1a1a;
+    --dark: #050403;
+    --dark2: #0d0b08;
+    --dark3: #141210;
+    --dark4: #1a1710;
+    --void: #000000;
+    --text: #e8d5a3;
+    --text-dim: #9a8060;
+    --accent: #c9a84c;
+    --border: rgba(201,168,76,0.15);
+    --border-bright: rgba(201,168,76,0.40);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    background: var(--void);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.8;
+  }
+
+  @keyframes fadeReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══════════════════════════════
+     MUSIC SYSTEM
+  ══════════════════════════════ */
+  #music-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 9998;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.5);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    color: var(--gold);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 0 15px rgba(201,168,76,0.1);
+  }
+  #music-btn:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 25px rgba(201,168,76,0.35);
+    transform: scale(1.1);
+  }
+  #music-btn.playing {
+    animation: musicPulse 2s ease-in-out infinite;
+    border-color: rgba(201,168,76,0.8);
+    box-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(201,168,76,0.2); }
+    50%       { box-shadow: 0 0 35px rgba(201,168,76,0.5); }
+  }
+
+  /* ─── PARTICLES ─── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
+  @keyframes drift {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: .6; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+
+  /* ─── TOPBAR ─── */
+  #topbar {
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid var(--border);
+    padding: 7px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .76rem;
+    color: #666;
+    position: relative;
+    z-index: 300;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #topbar .clock { color: var(--gold); font-weight: 700; }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: sticky;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    background: rgba(3,2,10,0.97);
+    backdrop-filter: blur(22px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: .3s;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-decoration: none;
+    text-shadow: 0 0 20px rgba(201,168,76,0.4);
+  }
+  .nav-logo img {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--gold-dim);
+  }
+
+  /* MDM1 MENU BUTTON */
+  #mdm1m-btn{position:fixed;bottom:1.5rem;right:1.5rem;z-index:998;width:48px;height:48px;border-radius:50%;border:1px solid rgba(201,168,76,0.5);background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);color:#c9a84c;font-size:1.3rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .3s,box-shadow .3s,transform .2s;box-shadow:0 0 15px rgba(201,168,76,0.1);}
+  #mdm1m-btn:hover{border-color:#c9a84c;box-shadow:0 0 25px rgba(201,168,76,.35);transform:scale(1.08);}
+  #mdm1m-panel{position:fixed;bottom:5.5rem;right:1.5rem;z-index:998;width:min(78vw,260px);max-height:70vh;overflow-y:auto;background:rgba(5,4,3,0.96);border:1px solid rgba(201,168,76,0.35);border-radius:12px;padding:.75rem;backdrop-filter:blur(10px);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s ease,transform .25s ease;}
+  #mdm1m-panel.is-open{opacity:1;transform:translateY(0);pointer-events:auto;}
+  #mdm1m-panel a{display:block;padding:.55rem .6rem;border-radius:6px;color:#e8d5a3;text-decoration:none;font-family:'Tajawal',sans-serif;font-size:.9rem;text-align:right;transition:background .2s,color .2s;}
+  #mdm1m-panel a:hover{background:rgba(201,168,76,.1);color:#f0c060;}
+  #mdm1m-panel .mdm1m-sep{border-top:1px solid rgba(201,168,76,.15);margin:.4rem 0;}
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 9rem 2rem 4rem;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(201,168,76,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.03) 0%, transparent 60%),
+      linear-gradient(180deg, #000 0%, #050403 100%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 900px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border-bright);
+    padding: 0.4rem 1.2rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 2rem;
+    background: rgba(201,168,76,0.05);
+    animation: fadeReveal 1s 0.2s ease both;
+    font-family: 'Cinzel', serif;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    animation: fadeReveal 1s 0.4s ease both;
+    text-shadow: 0 0 60px rgba(201,168,76,0.2);
+  }
+
+  .hero-title .highlight {
+    color: var(--gold);
+    display: block;
+    text-shadow: 0 0 40px var(--gold);
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    line-height: 2;
+    animation: fadeReveal 1s 0.6s ease both;
+    font-weight: 300;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeReveal 1s 0.8s ease both;
+  }
+
+  .hero-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-meta-item .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .hero-scroll {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    animation: fadeReveal 1s 1.2s ease both;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(180deg, var(--gold), transparent);
+    animation: scrollDown 1.5s ease-in-out infinite;
+  }
+
+  @keyframes scrollDown {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* ─── DIVIDER (like index) ─── */
+  .divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 2rem auto;
+    width: 60%;
+    position: relative;
+  }
+  .divider::before {
+    content: '⟡';
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    color: var(--gold); font-size: 1.2rem; background: var(--void); padding: 0 .5rem;
+  }
+
+  /* ─── EYE SEPARATOR (like index) ─── */
+  .eye-sep {
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 3rem;
+    color: var(--gold);
+    position: relative;
+    z-index: 1;
+  }
+  .eye-sep::before, .eye-sep::after {
+    content: '';
+    display: inline-block;
+    width: 25%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim));
+    vertical-align: middle;
+    margin: 0 1rem;
+  }
+  .eye-sep::after { background: linear-gradient(to left, transparent, var(--gold-dim)); }
+
+  /* ─── TOC ─── */
+  .toc-section {
+    padding: 4rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .toc-item {
+    border: 1px solid var(--border);
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    background: var(--dark2);
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--text);
+  }
+
+  .toc-item:hover {
+    border-color: var(--gold-dim);
+    background: rgba(201,168,76,0.07);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .toc-num {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--gold-dim);
+    min-width: 2rem;
+  }
+
+  .toc-label {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  .main-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 6rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── SECTION TITLE ─── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin: 5rem 0 2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 80px;
+  }
+
+  .section-num {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    opacity: 0.35;
+    line-height: 1;
+    min-width: 3rem;
+  }
+
+  .section-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .section-title .sub {
+    display: block;
+    font-size: 1rem;
+    color: var(--gold);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    margin-top: 0.2rem;
+    font-family: 'Cinzel', serif;
+    opacity: 0.8;
+  }
+
+  /* ─── SUBSECTION ─── */
+  .sub-section {
+    margin: 2.5rem 0;
+    padding: 1.8rem;
+    background: var(--dark2);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sub-section::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--gold), transparent);
+  }
+
+  .sub-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-shadow: 0 0 20px rgba(240,192,96,0.3);
+  }
+
+  .sub-title::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .sub-text {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 2;
+    opacity: 0.88;
+    font-weight: 300;
+  }
+
+  /* ─── CALL OUT BOX ─── */
+  .callout {
+    background: linear-gradient(135deg, rgba(201,168,76,0.07), rgba(201,168,76,0.02));
+    border: 1px solid var(--border-bright);
+    border-radius: 14px;
+    padding: 1.8rem 2rem;
+    margin: 2rem 0;
+    position: relative;
+  }
+
+  .callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.7rem; right: 1.5rem;
+    background: var(--void);
+    padding: 0 0.5rem;
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  .callout p {
+    font-size: 1.05rem;
+    line-height: 2;
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  .callout strong {
+    color: var(--gold-bright);
+    text-shadow: 0 0 15px rgba(240,192,96,0.3);
+    font-weight: 700;
+  }
+
+  /* ─── TABLE ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 2rem 0;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  thead tr {
+    background: rgba(201,168,76,0.08);
+    border-bottom: 1px solid var(--border-bright);
+  }
+
+  thead th {
+    padding: 1rem 1.2rem;
+    color: var(--gold-bright);
+    font-weight: 700;
+    text-align: right;
+    font-family: 'Tajawal', sans-serif;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    text-shadow: 0 0 15px rgba(240,192,96,0.2);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody tr:hover {
+    background: rgba(201,168,76,0.04);
+  }
+
+  tbody td {
+    padding: 0.9rem 1.2rem;
+    color: var(--text);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ─── STEPS LIST ─── */
+  .steps-list {
+    list-style: none;
+    counter-reset: step;
+    margin: 1.5rem 0;
+  }
+
+  .steps-list li {
+    counter-increment: step;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 1rem 1.2rem;
+    background: var(--dark3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    font-weight: 300;
+  }
+
+  .steps-list li:hover {
+    border-color: var(--gold-dim);
+    background: rgba(201,168,76,0.04);
+  }
+
+  .steps-list li::before {
+    content: counter(step);
+    min-width: 28px;
+    height: 28px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid var(--gold-dim);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* ─── BULLET LIST ─── */
+  .bullet-list {
+    list-style: none;
+    margin: 1.2rem 0;
+  }
+
+  .bullet-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.5rem 0;
+    color: var(--text);
+    font-size: 0.98rem;
+    line-height: 1.8;
+    border-bottom: 1px solid rgba(201,168,76,0.04);
+    font-weight: 300;
+  }
+
+  .bullet-list li::before {
+    content: '◆';
+    color: var(--gold);
+    font-size: 0.5rem;
+    margin-top: 0.6rem;
+    flex-shrink: 0;
+  }
+
+  /* ─── PILLARS GRID ─── */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+
+  .pillar-card {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pillar-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .pillar-card:hover {
+    border-color: var(--gold-dim);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    background: rgba(201,168,76,0.04);
+  }
+
+  .pillar-card:hover::after { opacity: 1; }
+
+  .pillar-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .pillar-name {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin-bottom: 0.7rem;
+    text-shadow: 0 0 15px rgba(240,192,96,0.2);
+  }
+
+  .pillar-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  /* ─── PHASES TIMELINE ─── */
+  .phases-list {
+    margin: 2rem 0;
+    position: relative;
+  }
+
+  .phases-list::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 1.2rem;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--gold), transparent);
+    opacity: 0.25;
+  }
+
+  .phase-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .phase-dot {
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--void);
+    border: 2px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    position: relative;
+    z-index: 1;
+    margin-top: 0.15rem;
+  }
+
+  .phase-content {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    flex: 1;
+    transition: all 0.2s;
+  }
+
+  .phase-content:hover {
+    border-color: var(--gold-dim);
+    background: rgba(201,168,76,0.04);
+  }
+
+  .phase-title {
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .phase-text {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  /* ─── CTA SECTION ─── */
+  .cta-section {
+    margin: 5rem 0;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(201,168,76,0.02));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12), transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    opacity: 0.8;
+    font-family: 'Cinzel', serif;
+  }
+
+  .cta-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    text-shadow: 0 0 40px rgba(201,168,76,0.15);
+  }
+
+  .cta-title .gold {
+    color: var(--gold-bright);
+    text-shadow: 0 0 30px var(--gold);
+  }
+
+  .cta-text {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 550px;
+    margin: 0 auto 2.5rem;
+    line-height: 2;
+    font-weight: 300;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, var(--gold), #8b6914);
+    color: #000;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    letter-spacing: 0.08em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 0 30px rgba(201,168,76,0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 50px rgba(201,168,76,0.6);
+  }
+
+  .btn-outline {
+    padding: 1rem 2.5rem;
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid var(--border-bright);
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-outline:hover {
+    background: rgba(201,168,76,0.08);
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(201,168,76,0.2);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--dark2);
+    border-top: 1px solid var(--border);
+    padding: 4rem 2rem 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 700px) {
+    .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-title { font-size: 2.2rem; }
+    .section-title { font-size: 1.4rem; }
+  }
+
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+
+  .footer-tagline {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  .footer-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.18em;
+    margin-bottom: 1.2rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .footer-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 300;
+  }
+
+  .footer-links a:hover { color: var(--gold); }
+
+  /* ─── SOCIAL ─── */
+  .social-links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .social-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.82rem;
+    transition: all 0.25s;
+    background: var(--dark3);
+  }
+
+  .social-btn:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+    background: rgba(201,168,76,0.07);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .social-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  .footer-bottom .gold { color: var(--gold); }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-bar {
+    position: fixed;
+    top: 64px; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+    z-index: 999;
+    transition: width 0.1s;
+    box-shadow: 0 0 8px rgba(201,168,76,0.6);
+  }
+
+  /* ─── QUOTE ─── */
+  .quote-block {
+    border-right: 3px solid var(--gold);
+    padding: 1.2rem 1.8rem;
+    background: rgba(201,168,76,0.04);
+    border-radius: 0 10px 10px 0;
+    margin: 2rem 0;
+    font-size: 1.1rem;
+    color: var(--text);
+    font-style: italic;
+    line-height: 2;
+    font-weight: 300;
+  }
+
+  .quote-block strong {
+    color: var(--gold-bright);
+    font-style: normal;
+    text-shadow: 0 0 15px rgba(240,192,96,0.3);
+  }
+
+  /* ══════════════════════════════════════
+     VIDEO STYLES — تحل محل صور section-img
+  ══════════════════════════════════════ */
+  .section-vid {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 2rem 0;
+    position: relative;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(201,168,76,0.08);
+  }
+
+  .section-vid video {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.6s ease;
+    background: #000;
+  }
+
+  .section-vid:hover video {
+    transform: scale(1.03);
+  }
+
+  .section-vid-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+    padding: 1.5rem 1.5rem 1rem;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    direction: rtl;
+    text-align: right;
+    font-weight: 300;
+  }
+
+  /* Hero video wrap — الفيديو مربع الأبعاد (720×720) لذا نجعل الحاوية مربعة
+     لإظهاره كاملاً بدون أي قص من الأعلى أو الأسفل (اسم محمد ﷺ في الأعلى واسم آدم في الأسفل) */
+  .hero-video-wrap {
+    width: 100%;
+    max-width: 560px;
+    margin: 3rem auto 0;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-bright);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(201,168,76,0.1);
+    position: relative;
+    z-index: 2;
+    animation: fadeReveal 1s 1s ease both;
+  }
+
+  .hero-video-wrap video {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: #000;
+  }
+
+  /* ─── REVEAL ANIM ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── STAT CARDS ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .stat-card {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1rem;
+    text-align: center;
+    transition: all 0.25s;
+  }
+
+  .stat-card:hover {
+    border-color: var(--gold-dim);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .stat-num {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold-bright);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    text-shadow: 0 0 20px rgba(240,192,96,0.3);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ─── REVENUE TIMELINE ─── */
+  .revenue-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .revenue-row { grid-template-columns: 1fr; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .section-vid video { height: 200px; }
+  }
+
+  .revenue-card {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .revenue-card:nth-child(2) {
+    border-color: var(--gold-dim);
+    background: rgba(201,168,76,0.05);
+  }
+
+  .revenue-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .rev-year {
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.6rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  .rev-amount {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    text-shadow: 0 0 20px rgba(201,168,76,0.2);
+  }
+
+  .rev-users {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .anim-float { animation: float 4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- ── particles ── -->
+<div id="particles"></div>
+
+<!-- ══ AUDIO ══ -->
+<audio id="bg-music" loop preload="auto">
+  <source src="audio/whitepaper.mp3" type="audio/mpeg">
+  <source src="audio/whitepaper.ogg" type="audio/ogg">
+</audio>
+
+<!-- ══ زر كتم الصوت العائم ══ -->
+<button id="music-btn" title="كتم / تشغيل الموسيقى">🔊</button>
+
+<!-- ─── PROGRESS BAR ─── -->
+<div id="progress-bar" style="width:0%"></div>
+
+<!-- ─── TOPBAR ─── -->
+<div id="topbar">
+  <div class="clock" id="clk">🕒 ...</div>
+</div>
+
+<!-- ─── NAVBAR ─── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="images/hub-eye-of-horus.jpg" alt="MDM1"/>
+    MDM1
+  </a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">الورقة البيضاء — النسخة 1.0</div>
+    <h1 class="hero-title">
+      منصة الاستثمار الجماعي العالمي
+      <span class="highlight">من واحد إلى ما لا نهاية</span>
+    </h1>
+    <p class="hero-subtitle">
+      وثيقة رسمية تحدد رؤية MDm1 وآليات عملها وخارطة مستقبلها — 
+      للمستثمرين والشركاء والمؤمنين بعالم أكثر عدلاً.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="dot"></span>
+        <span>إصدار 2026</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="dot"></span>
+        <span>mdm1.org</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="dot"></span>
+        <span>مبني على Polygon</span>
+      </div>
+    </div>
+
+    <!-- Hero video بدلاً من img_tree_unity.png -->
+    <div class="hero-video-wrap">
+      <video autoplay loop muted playsinline poster="images/img_tree_unity.png">
+        <source src="images/img_tree_unity.webm" type="video/webm">
+      </video>
+    </div>
+
+    <div class="hero-scroll" style="margin-top:2rem;">
+      <div class="scroll-line"></div>
+      <span>اقرأ الوثيقة</span>
+    </div>
+  </div>
+</section>
+
+<div class="eye-sep">🦅</div>
+
+<!-- ─── TABLE OF CONTENTS ─── -->
+<section class="toc-section reveal">
+  <div style="text-align:center; margin-bottom:1.5rem;">
+    <p style="font-size:0.75rem; letter-spacing:0.2em; color:var(--gold); margin-bottom:0.5rem; font-family:'Cinzel',serif;">محتوى الوثيقة</p>
+    <h2 style="font-family:'Tajawal',sans-serif; font-size:1.8rem; font-weight:800;">فهرس الأقسام</h2>
+  </div>
+  <div class="toc-grid">
+    <a href="#section1" class="toc-item">
+      <span class="toc-num">١</span>
+      <span class="toc-label">الرؤية والمشكلة</span>
+    </a>
+    <a href="#section2" class="toc-item">
+      <span class="toc-num">٢</span>
+      <span class="toc-label">المبادئ الأساسية</span>
+    </a>
+    <a href="#section3" class="toc-item">
+      <span class="toc-num">٣</span>
+      <span class="toc-label">نموذج المشاريع</span>
+    </a>
+    <a href="#section4" class="toc-item">
+      <span class="toc-num">٤</span>
+      <span class="toc-label">هيكل الملكية والأسهم</span>
+    </a>
+    <a href="#section5" class="toc-item">
+      <span class="toc-num">٥</span>
+      <span class="toc-label">نموذج الإيرادات</span>
+    </a>
+    <a href="#section6" class="toc-item">
+      <span class="toc-num">٦</span>
+      <span class="toc-label">الأمان والثقة</span>
+    </a>
+    <a href="#section7" class="toc-item">
+      <span class="toc-num">٧</span>
+      <span class="toc-label">الهيكل القانوني</span>
+    </a>
+    <a href="#section8" class="toc-item">
+      <span class="toc-num">٨</span>
+      <span class="toc-label">خطة التنفيذ</span>
+    </a>
+    <a href="#section9" class="toc-item">
+      <span class="toc-num">٩</span>
+      <span class="toc-label">التسويق والانتشار</span>
+    </a>
+    <a href="#section10" class="toc-item">
+      <span class="toc-num">١٠</span>
+      <span class="toc-label">الخلاصة والدعوة</span>
+    </a>
+  </div>
+</section>
+
+<!-- ─── MAIN CONTENT ─── -->
+<div class="main-content">
+
+  <!-- SECTION 1 -->
+  <div id="section1" class="section-header reveal">
+    <span class="section-num">١</span>
+    <h2 class="section-title">
+      الرؤية والمشكلة
+      <span class="sub">Vision & Problem</span>
+    </h2>
+  </div>
+
+  <div class="callout reveal">
+    <p>
+      أنت الآن تقرأ هذه الكلمات لأنك تشعر — في مكان ما — أن الأمور لم تكن عادلة تماماً.<br>
+      أن من وُلد بدون رأس مال حُرم من الفرصة. أن الأغنياء يزدادون ثروة والفقراء يزدادون بعداً.<br>
+      <strong>MDm1 وُلدت لكسر هذه المعادلة.</strong>
+    </p>
+  </div>
+
+  <!-- video بدلاً من img_lone_walker.png -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_lone_walker.png">
+      <source src="images/img_lone_walker.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">ملايين البشر يسيرون وحيدين في نظام لم يُصمَّم لهم — MDm1 تغير هذا</div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">١.١ المشكلة</h3>
+    <p class="sub-text">
+      يعاني النظام المالي العالمي من فجوة ضخمة بين الأغنياء والفقراء. المشاريع الكبيرة والمربحة حكر على أصحاب رأس المال الكبير، بينما يُحرم صاحب الدولار الواحد من أي فرصة استثمار حقيقية وآمنة. فضلاً عن ذلك، تغيب الشفافية الكاملة عن معظم صناديق الاستثمار، وتنعدم الثقة بين المستثمر الصغير والمؤسسات المالية الكبرى.
+    </p>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">١.٢ الرؤية</h3>
+    <p class="sub-text">
+      MDm1 منصة استثمار جماعي عالمية مفتوحة للجميع بلا تمييز، تتيح لأي شخص في أي مكان في العالم المشاركة في مشاريع حقيقية على أرض الواقع، بأي مبلغ مهما كان صغيراً، مع ضمان الشفافية الكاملة والأمان التام وعائد حقيقي مستدام يمتد للأجيال القادمة.
+    </p>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 2 -->
+  <div id="section2" class="section-header reveal">
+    <span class="section-num">٢</span>
+    <h2 class="section-title">
+      مبادئ MDm1 الأساسية
+      <span class="sub">Core Principles</span>
+    </h2>
+  </div>
+
+  <div class="pillars-grid">
+    <div class="pillar-card reveal">
+      <div class="pillar-icon">🌍</div>
+      <div class="pillar-name">الشمولية</div>
+      <p class="pillar-desc">المنصة مفتوحة لكل إنسان بغض النظر عن دينه أو جنسيته أو ثروته. من يملك دولاراً واحداً له نفس الحقوق النسبية كمن يملك مليون دولار.</p>
+    </div>
+    <div class="pillar-card reveal">
+      <div class="pillar-icon">🔮</div>
+      <div class="pillar-name">صندوق الزجاج</div>
+      <p class="pillar-desc">كل مشروع موثق بالكامل. كل دولار يمكن تتبعه. التقارير المالية منشورة علناً. لا توجد حسابات مخفية أو عمليات خلف الكواليس.</p>
+    </div>
+    <div class="pillar-card reveal">
+      <div class="pillar-icon">🏛️</div>
+      <div class="pillar-name">الملكية الحقيقية</div>
+      <p class="pillar-desc">المستثمر يمتلك حصة حقيقية في أصل حقيقي على أرض الواقع. يمكنه في أي وقت معرفة مكان أمواله بالضبط.</p>
+    </div>
+    <div class="pillar-card reveal">
+      <div class="pillar-icon">⚖️</div>
+      <div class="pillar-name">التوافق الأخلاقي</div>
+      <p class="pillar-desc">المنصة لا تتعامل مع الربا أو المضاربة. كل المشاريع تقدم خدمة حقيقية للمجتمع. الأرباح تأتي من نشاط تجاري فعلي.</p>
+    </div>
+    <div class="pillar-card reveal">
+      <div class="pillar-icon">🌿</div>
+      <div class="pillar-name">الاستدامة والتوارث</div>
+      <p class="pillar-desc">الحصص قابلة للتوارث قانونياً. المستثمر يبني أصلاً حقيقياً يمكن أن يستفيد منه أبناؤه وأحفاده.</p>
+    </div>
+  </div>
+
+  <div class="quote-block reveal">
+    "الاستثمار في MDm1 ليس مجرد قرار مالي — إنه قرار أخلاقي يصنع فيه المستثمر أثراً في الدنيا ورصيداً للآخرة."
+  </div>
+
+  <!-- video بدلاً من img_golden_gate.webp -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_golden_gate.webp">
+      <source src="images/img_golden_gate.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">الملكية الحقيقية تعني باباً مفتوحاً — شفافية كاملة ووصول دائم لأصولك</div>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 3 -->
+  <div id="section3" class="section-header reveal">
+    <span class="section-num">٣</span>
+    <h2 class="section-title">
+      نموذج المشاريع
+      <span class="sub">Project Model</span>
+    </h2>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٣.١ معايير قبول المشروع</h3>
+    <ul class="bullet-list">
+      <li>يقدم خدمة أو منتجاً حقيقياً يحتاجه الناس</li>
+      <li>هامش الربح واقعي بين 1% و 20% حسب القطاع</li>
+      <li>السعر أقل من سعر السوق بما لا يقل عن 10%</li>
+      <li>شفافية كاملة في الحسابات والإدارة</li>
+      <li>يوفر فرص عمل للمجتمع المحلي</li>
+      <li>يمر بموافقة لجنة الخبراء والتصويت الجماعي</li>
+    </ul>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٣.٢ أمثلة على المشاريع المؤهلة</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>القطاع</th>
+            <th>نوع المشروع</th>
+            <th>السعر مقارنة بالسوق</th>
+            <th>هامش الربح</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>الغذاء</td><td>سلاسل غذائية</td><td>أقل بـ 30%</td><td>3-5%</td></tr>
+          <tr><td>الصحة</td><td>صيدليات جماعية</td><td>أقل بـ 25%</td><td>2-4%</td></tr>
+          <tr><td>الزراعة</td><td>مزارع تعاونية</td><td>أقل بـ 20%</td><td>5-10%</td></tr>
+          <tr><td>الصناعة</td><td>مصانع صغيرة</td><td>أقل بـ 15%</td><td>8-15%</td></tr>
+          <tr><td>التعليم</td><td>تعليم ومهارات</td><td>أقل بـ 20%</td><td>3-6%</td></tr>
+          <tr><td>الطاقة</td><td>طاقة شمسية</td><td>أقل بـ 10%</td><td>10-20%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٣.٣ آلية التصويت على المشاريع</h3>
+    <ol class="steps-list">
+      <li>مرحلة الاقتراح: أي مستخدم يمكنه اقتراح مشروع</li>
+      <li>مرحلة الدراسة: لجنة خبراء متخصصة تدرس الجدوى</li>
+      <li>مرحلة التصويت: جميع المساهمون يصوتون بنسبة حصصهم</li>
+      <li>مرحلة الموافقة الشعبية: تصويت مفتوح للعموم</li>
+      <li>مرحلة الإدراج: إتاحة الاستثمار بعد اكتمال الموافقات</li>
+    </ol>
+  </div>
+
+  <!-- video بدلاً من img_green_cube.webp -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_green_cube.webp">
+      <source src="images/img_green_cube.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">مشاريع MDm1 تجمع بين الابتكار التقني والاستدامة البيئية والعائد الاقتصادي الحقيقي</div>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 4 -->
+  <div id="section4" class="section-header reveal">
+    <span class="section-num">٤</span>
+    <h2 class="section-title">
+      هيكل الملكية والأسهم
+      <span class="sub">Ownership Structure</span>
+    </h2>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٤.١ نظام الحصص</h3>
+    <p class="sub-text" style="margin-bottom:1.2rem;">كل مشروع يُقسَّم إلى وحدات ملكية حسب حجمه. المستثمر يحصل على عدد الوحدات مقابل مبلغه تلقائياً.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>نوع المستثمر</th>
+            <th>عدد الوحدات</th>
+            <th>الحقوق</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>مستثمر صغير</td><td>1 – 100</td><td>الأرباح بالنسبة + التصويت</td></tr>
+          <tr><td>مستثمر متوسط</td><td>100 – 10,000</td><td>الأرباح + التصويت + الاستشارة</td></tr>
+          <tr><td>مستثمر كبير</td><td>10,000+</td><td>الأرباح + التصويت + مجلس الإدارة</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٤.٢ توزيع الأرباح</h3>
+    <ul class="bullet-list">
+      <li>الأرباح تُوزَّع كل ثلاثة أشهر على المساهمين</li>
+      <li>يمكن سحب الأرباح في أي وقت فور توزيعها</li>
+      <li>رأس المال مرتبط بالمشروع ويمكن تصفيته عند الحاجة</li>
+      <li>الحصص قابلة للبيع والتنازل والتوارث</li>
+    </ul>
+  </div>
+
+  <!-- video بدلاً من img_quran_egypt.png -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_quran_egypt.png">
+      <source src="images/img_quran_egypt.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">MDm1 تبني على مبادئ راسخة — العدل والشفافية والملكية الحقيقية كما أرادها الخالق</div>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 5 -->
+  <div id="section5" class="section-header reveal">
+    <span class="section-num">٥</span>
+    <h2 class="section-title">
+      نموذج الإيرادات
+      <span class="sub">Revenue Model</span>
+    </h2>
+  </div>
+
+  <div class="sub-section reveal">
+    <p class="sub-text" style="margin-bottom:1.5rem;">المنصة تجني إيراداتها من خدمات الإدارة وليس من أموال المستثمرين مباشرة:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>مصدر الإيراد</th>
+            <th>النسبة</th>
+            <th>مثال عملي</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>رسوم إدارة سنوية</td><td>1%</td><td>$500 على $50,000 استثمار</td></tr>
+          <tr><td>2</td><td>رسوم الدخول للمشروع</td><td>0.5%</td><td>$5 على كل $1,000 دخول</td></tr>
+          <tr><td>3</td><td>رسوم الخروج</td><td>0.5%</td><td>$5 على كل $1,000 خروج</td></tr>
+          <tr><td>4</td><td>عمولة إدراج المشاريع</td><td>1-2%</td><td>متغيرة حسب المشروع</td></tr>
+          <tr><td>5</td><td>اشتراك الميزات المتقدمة</td><td>ثابتة</td><td>$9.99/شهر</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">توقعات الإيراد السنوي</h3>
+    <div class="revenue-row">
+      <div class="revenue-card">
+        <div class="rev-year">السنة الأولى</div>
+        <div class="rev-amount">$100,000</div>
+        <div class="rev-users">10,000 مستخدم</div>
+      </div>
+      <div class="revenue-card">
+        <div class="rev-year">السنة الثانية</div>
+        <div class="rev-amount">$1,000,000</div>
+        <div class="rev-users">100,000 مستخدم</div>
+      </div>
+      <div class="revenue-card">
+        <div class="rev-year">السنة الثالثة</div>
+        <div class="rev-amount">$10,000,000</div>
+        <div class="rev-users">1,000,000 مستخدم</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- video بدلاً من img_bitcoin_city.webp -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_bitcoin_city.webp">
+      <source src="images/img_bitcoin_city.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">الاقتصاد الرقمي العالمي في يدك — MDm1 تضع قوة الإيراد الحقيقي في متناول الجميع</div>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 6 -->
+  <div id="section6" class="section-header reveal">
+    <span class="section-num">٦</span>
+    <h2 class="section-title">
+      الأمان والتأمين والثقة
+      <span class="sub">Security & Trust</span>
+    </h2>
+  </div>
+
+  <div class="stats-row reveal">
+    <div class="stat-card">
+      <div class="stat-num">10%</div>
+      <div class="stat-label">من رسوم الإدارة لصندوق التأمين</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4</div>
+      <div class="stat-label">مستويات رقابة مستقلة</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">دعم بالصوت والصورة</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">0</div>
+      <div class="stat-label">حسابات مخفية</div>
+    </div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٦.١ صندوق التأمين</h3>
+    <p class="sub-text">10% من رسوم الإدارة تذهب لصندوق تأمين مستقل يُدار بإشراف مستقل. هذا الصندوق يعوّض المتضررين في حالات الطوارئ غير المتوقعة.</p>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٦.٢ الرقابة المشتركة</h3>
+    <ul class="bullet-list">
+      <li>رقابة حكومية: شراكات مع هيئات تنظيمية في كل دولة</li>
+      <li>رقابة مجتمعية: لجنة منتخبة من كبار المساهمين</li>
+      <li>رقابة تقنية: تدقيق أمني دوري من شركات متخصصة</li>
+      <li>رقابة إعلامية: تقارير مالية منشورة للعموم</li>
+    </ul>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٦.٣ خدمة العملاء بالصوت والصورة</h3>
+    <p class="sub-text">ميزة غير موجودة في أي منصة مالية عالمية حالياً. فريق دعم عالمي يعمل عن بُعد في جميع المناطق الزمنية، يتواصل مع المستخدمين بمكالمات فيديو حية بلغتهم. هذا يبني ثقة حقيقية ويميز MDM1 تميزاً جوهرياً.</p>
+  </div>
+
+  <!-- video بدلاً من img_global_team.png -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_global_team.png">
+      <source src="images/img_global_team.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">فريق دعم حقيقي من كل أنحاء العالم — يتكلم لغتك ويفهم ثقافتك على مدار الساعة</div>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 7 -->
+  <div id="section7" class="section-header reveal">
+    <span class="section-num">٧</span>
+    <h2 class="section-title">
+      الهيكل التنظيمي والقانوني
+      <span class="sub">Legal & Organizational Structure</span>
+    </h2>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٧.١ نموذج الانتشار العالمي</h3>
+    <p class="sub-text">MDm1 تعمل عبر نموذج فروع محلية مرخصة في كل دولة، تلتزم بقوانين تلك الدولة وتشراك جهاتها التنظيمية. المنصة الرقمية موحدة عالمياً بينما الإطار القانوني محلي.</p>
+  </div>
+
+  <!-- video بدلاً من img_egypt_mystic.webp -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_egypt_mystic.webp">
+      <source src="images/img_egypt_mystic.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">هيكل MDm1 القانوني مستوحى من أعمق مبادئ الحضارة — الأمانة والعدل والشفافية</div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٧.٢ خطة التراخيص</h3>
+    <div class="phases-list">
+      <div class="phase-item">
+        <div class="phase-dot">١</div>
+        <div class="phase-content">
+          <div class="phase-title">المرحلة الأولى</div>
+          <div class="phase-text">التسجيل في دولة ذات تشريعات مرنة (الإمارات العربية المتحدة أو سنغافورة)</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot">٢</div>
+        <div class="phase-content">
+          <div class="phase-title">المرحلة الثانية</div>
+          <div class="phase-text">شراكات مع مكاتب قانونية محلية في كل سوق مستهدف</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot">٣</div>
+        <div class="phase-content">
+          <div class="phase-title">المرحلة الثالثة</div>
+          <div class="phase-text">الحصول على تراخيص تنظيمية في الأسواق الكبرى</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-dot">٤</div>
+        <div class="phase-content">
+          <div class="phase-title">المرحلة الرابعة</div>
+          <div class="phase-text">مشاركة الجهات الحكومية في الرقابة رسمياً</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٧.٣ دور رمز MDm1 على Polygon</h3>
+    <p class="sub-text">الرمز الموجود على شبكة Polygon يستخدم كأداة شفافية وتوثيق وليس كأداة مضاربة. يوثق الملكية والحصص والتصويت على البلوكشين بشكل لا يمكن التلاعب به. كما يسهل توزيع الأرباح عبر الحدود بدون رسوم تحويل مصرفية باهظة.</p>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 8 -->
+  <div id="section8" class="section-header reveal">
+    <span class="section-num">٨</span>
+    <h2 class="section-title">
+      خطة التنفيذ
+      <span class="sub">Execution Roadmap</span>
+    </h2>
+  </div>
+
+  <div class="table-wrap reveal">
+    <table>
+      <thead>
+        <tr>
+          <th>المرحلة</th>
+          <th>الأهداف</th>
+          <th>المخرجات</th>
+          <th>الميزانية</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>١ – التأسيس<br><small style="color:var(--gold-dim)">3 أشهر</small></td>
+          <td>توثيق الفكرة وبناء المجتمع</td>
+          <td>الورقة البيضاء + الموقع + المجتمع</td>
+          <td>$5,000</td>
+        </tr>
+        <tr>
+          <td>٢ – الإطلاق<br><small style="color:var(--gold-dim)">6 أشهر</small></td>
+          <td>إطلاق أول مشروع استثماري</td>
+          <td>النموذج الأولي + مشروع تجريبي</td>
+          <td>$15,000</td>
+        </tr>
+        <tr>
+          <td>٣ – النمو<br><small style="color:var(--gold-dim)">السنة الثانية</small></td>
+          <td>1000 مستثمر + 5 مشاريع</td>
+          <td>تطبيق كامل + فريق دعم + تراخيص</td>
+          <td>من الإيرادات</td>
+        </tr>
+        <tr>
+          <td>٤ – التوسع<br><small style="color:var(--gold-dim)">السنة الثالثة</small></td>
+          <td>100,000 مستثمر عالمياً</td>
+          <td>فروع + شراكات حكومية + توسع</td>
+          <td>من الإيرادات</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٨.١ الخطوة الأولى الفورية</h3>
+    <ul class="bullet-list">
+      <li>إنشاء موقع mdm1.org/hub.html الرسمي بالكامل</li>
+      <li>بناء مجتمع Telegram وX (تويتر) للمشروع</li>
+      <li>إيجاد أول مشروع تجريبي صغير قابل للتطبيق</li>
+      <li>التواصل مع مستشار قانوني لتحديد دولة التسجيل المثلى</li>
+      <li>تشكيل لجنة استشارية أولية من خبراء متطوعين</li>
+    </ul>
+  </div>
+
+  <!-- video بدلاً من img_mdm1_gate.png -->
+  <div class="section-vid reveal">
+    <video autoplay loop muted playsinline poster="images/img_mdm1_gate.png">
+      <source src="images/img_mdm1_gate.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">كل خطوة تنفيذية هي خطوة نحو عالم أفضل — مستقبل تبنيه اليوم لأجيال الغد</div>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 9 -->
+  <div id="section9" class="section-header reveal">
+    <span class="section-num">٩</span>
+    <h2 class="section-title">
+      التسويق والانتشار
+      <span class="sub">Marketing & Growth</span>
+    </h2>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٩.١ استراتيجية الانتشار الأولي</h3>
+    <p class="sub-text">MDM1 تعتمد على التسويق المجتمعي أساساً. كل مستثمر راضٍ هو سفير للمنصة. نظام الإحالة يمنح كل من يجلب مستثمراً جديداً نسبة من رسوم ذلك المستثمر مدى الحياة.</p>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٩.٢ برنامج المكافآت</h3>
+    <ul class="bullet-list">
+      <li>مكافأة الانضمام المبكر: أسهم مجانية في المشروع التجريبي الأول</li>
+      <li>مكافأة الإحالة: 20% من رسوم كل مستثمر تجلبه مدى الحياة</li>
+      <li>مكافأة التطوع: نقاط قابلة للتحويل لحصص استثمارية</li>
+      <li>مكافأة الخبراء: عمولة على كل مشروع يُقترح ويُقبل</li>
+    </ul>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">٩.٣ فريق الدعم العالمي</h3>
+    <p class="sub-text">يعمل الفريق عن بُعد من منازلهم في جميع أنحاء العالم. يحصلون على نسبة من رسوم المستخدمين الذين يخدمونهم بدلاً من راتب ثابت. هذا يحفزهم على تقديم خدمة استثنائية ويقلل التكلفة الثابتة على المنصة.</p>
+  </div>
+
+  <div class="eye-sep" style="padding:2rem 0; font-size:2rem;">⟡</div>
+
+  <!-- SECTION 10 -->
+  <div id="section10" class="section-header reveal">
+    <span class="section-num">١٠</span>
+    <h2 class="section-title">
+      الخلاصة والدعوة للمشاركة
+      <span class="sub">Conclusion & Call to Action</span>
+    </h2>
+  </div>
+
+  <div class="callout reveal">
+    <p>
+      <strong>MDm1 ليست مجرد منصة استثمار.</strong><br><br>
+      هي حركة تغيير حقيقية نحو عالم أكثر عدلاً وشفافية وتكافؤاً في الفرص.<br>
+      من واحد إلى ما لا نهاية، من دولار واحد إلى تغيير اقتصادي حقيقي،<br>
+      من فرد واحد إلى مجتمع عالمي متماسك.<br><br>
+      <strong>أنت لست مجرد مستثمر — أنت صاحب رسالة.</strong><br>
+      وكل دولار تضعه اليوم هو بذرة راحة في الدنيا وميزان حسنات في الآخرة.
+    </p>
+  </div>
+
+  <div class="sub-section reveal">
+    <h3 class="sub-title">نحن ندعو</h3>
+    <ul class="bullet-list">
+      <li>المستثمرين من كل مستوى للمشاركة بأي مبلغ</li>
+      <li>الخبراء والمتخصصين للانضمام كمستشارين</li>
+      <li>رجال الأعمال لتقديم مشاريعهم للمجتمع</li>
+      <li>الحكومات للمشاركة في الرقابة والحماية</li>
+      <li>المتطوعين للمساهمة في بناء هذا المستقبل</li>
+    </ul>
+  </div>
+
+  <!-- video بدلاً من img_heaven_hell.png -->
+  <div class="section-vid reveal" style="margin-top:3rem;">
+    <video autoplay loop muted playsinline poster="images/img_heaven_hell.png">
+      <source src="images/img_heaven_hell.webm" type="video/webm">
+    </video>
+    <div class="section-vid-caption">أمامك عالمان — عالم يستمر فيه الظلم الاقتصادي، وعالم آخر تصنعه أنت الآن</div>
+  </div>
+
+  <div class="cta-section reveal">
+    <p class="cta-label">انضم إلى الحركة</p>
+    <h2 class="cta-title">
+      هذا المشروع <span class="gold">ملكك</span><br>
+      ومشاركتك واجب نحو عالم أفضل
+    </h2>
+    <p class="cta-text">
+      من واحد إلى ما لا نهاية — كل رحلة كبرى بدأت بخطوة صغيرة. 
+      خطوتك اليوم قد تكون النقطة التي يتحول عندها العالم.
+    </p>
+    <div class="cta-buttons">
+      <a href="hub.html" class="btn-primary">← المنصة (Hub)</a>
+      <a href="index.html" class="btn-outline">🏠 الرئيسية</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">MDm1</div>
+        <p class="footer-tagline">
+          منصة الاستثمار الجماعي العالمي<br>
+          من واحد إلى ما لا نهاية<br>
+          <br>
+          mdm1.org
+        </p>
+      </div>
+      <div>
+        <p class="footer-heading">روابط المنصة</p>
+        <ul class="footer-links">
+          <li><a href="index.html">🏠 الصفحة الرئيسية</a></li>
+          <li><a href="hub.html">⚡ مركز الاستثمار</a></li>
+          <li><a href="whitepaper.html">📄 الورقة البيضاء</a></li>
+          <li><a href="pages/tokenomics.html">💰 التوكنوميكس</a></li>
+          <li><a href="pages/sharia.html">☪️ التوافق الشرعي</a></li>
+          <li><a href="pages/gallery.html">🖼️ المعرض</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-heading">المجتمع والتواصل</p>
+        <div class="social-links">
+          <a href="https://t.me/Mdm111000000" target="_blank" class="social-btn">
+            <span class="social-icon">✈️</span>
+            <span>Telegram</span>
+          </a>
+          <a href="https://x.com/MDm111000000" target="_blank" class="social-btn">
+            <span class="social-icon">𝕏</span>
+            <span>Twitter / X</span>
+          </a>
+          <a href="https://discord.gg/ZmGBApH48" target="_blank" class="social-btn">
+            <span class="social-icon">💬</span>
+            <span>Discord</span>
+          </a>
+          <a href="https://youtube.com/@md-m1?si=XUn5i68grbdmuSJm" target="_blank" class="social-btn">
+            <span class="social-icon">▶️</span>
+            <span>YouTube</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 <span class="gold">MDM1</span> — جميع الحقوق محفوظة</span>
+      <span>من واحد إلى ما لا نهاية <span class="gold">∞</span></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── PARTICLES (like index.html) ───
+  const container = document.getElementById('particles');
+  const colors = ['rgba(201,168,76,0.4)', 'rgba(240,192,96,0.3)', 'rgba(139,111,43,0.5)'];
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'p';
+    const size = Math.random() * 4 + 1;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*20+15}s;
+      animation-delay:-${Math.random()*20}s;
+    `;
+    container.appendChild(p);
+  }
+
+  // ─── PROGRESS BAR ───
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('progress-bar').style.width = progress + '%';
+  });
+
+  // ─── REVEAL ON SCROLL ───
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── SMOOTH ANCHOR SCROLL ───
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ══════════════════════════════
+  // MUSIC SYSTEM
+  // ══════════════════════════════
+  const audio = document.getElementById('bg-music');
+  const btn   = document.getElementById('music-btn');
+  let userMuted = false; // يصبح true فقط إذا أوقف المستخدم الموسيقى يدوياً بالضغط على الزر
+
+  function fadeVolume(el, from, to, duration, onDone) {
+    const steps = 30;
+    const interval = duration / steps;
+    const delta = (to - from) / steps;
+    let current = from;
+    el.volume = Math.max(0, Math.min(1, from));
+    const timer = setInterval(() => {
+      current += delta;
+      el.volume = Math.max(0, Math.min(1, current));
+      if ((delta > 0 && current >= to) || (delta < 0 && current <= to)) {
+        clearInterval(timer);
+        if (onDone) onDone();
+      }
+    }, interval);
+  }
+
+  function startAutoplay() {
+    if (userMuted || !audio.paused) return;
+    // الحيلة: المتصفحات تسمح دائماً بتشغيل صوت "مكتوم" (muted) تلقائياً بدون أي تفاعل من المستخدم،
+    // تماماً كما تسمح بتشغيل الفيديوهات muted في الصفحة. نشغّله مكتوماً ثم نلغي الكتم ونرفع الصوت تدريجياً.
+    audio.muted = true;
+    audio.play().then(() => {
+      audio.muted = false;
+      audio.volume = 0;
+      fadeVolume(audio, 0, 0.4, 2500);
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+    }).catch(() => {
+      // احتياطي نادر الحدوث في حال منع المتصفح حتى التشغيل المكتوم
+      const tryPlay = () => {
+        if (userMuted) return;
+        audio.muted = false;
+        audio.volume = 0;
+        audio.play().then(() => {
+          fadeVolume(audio, 0, 0.4, 1500);
+          btn.textContent = '🔊';
+          btn.classList.add('playing');
+        }).catch(() => {});
+      };
+      document.addEventListener('click', tryPlay, { once: true });
+      document.addEventListener('scroll', tryPlay, { once: true });
+      document.addEventListener('touchstart', tryPlay, { once: true });
+      document.addEventListener('keydown', tryPlay, { once: true });
+    });
+  }
+
+  // pageshow يعمل عند التحميل الأول للصفحة، وأيضاً عند العودة إليها من صفحة أخرى عبر زر الرجوع
+  // (حتى عندما تُستعاد الصفحة من ذاكرة bfcache بدون إعادة تحميل فعلية) — هذا يحل مشكلة توقف
+  // الموسيقى عند العودة من صفحة المنصة، وكذلك عند الريفريش العادي.
+  window.addEventListener('pageshow', startAutoplay);
+
+  // احتياط إضافي: إن عاد المستخدم إلى تبويب الصفحة بعد تصفح تبويب آخر وتوقفت الموسيقى
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') startAutoplay();
+  });
+
+  btn.addEventListener('click', () => {
+    if (audio.paused) {
+      userMuted = false;
+      audio.muted = false;
+      audio.play();
+      fadeVolume(audio, 0, 0.4, 1500);
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+    } else {
+      userMuted = true;
+      fadeVolume(audio, audio.volume, 0, 1000, () => audio.pause());
+      btn.textContent = '🔇';
+      btn.classList.remove('playing');
+    }
+  });
+</script>
+
+<!-- ════ CLOCK ════ -->
+<script>
+function updateClock(){var el=document.getElementById('clk');if(el)el.textContent='🕒 '+new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh',hour12:false});}
+setInterval(updateClock,1000);updateClock();
+</script>
+
+
+  
+    <script src="js/whitepaper.js"></script>
+</body>
+</html>
