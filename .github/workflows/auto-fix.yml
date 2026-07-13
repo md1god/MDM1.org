@@ -1,0 +1,9 @@
+name: Auto Fix
+on:
+  issues: { types: [opened, labeled] }
+jobs:
+  fix:
+    if: contains(github.event.issue.labels.*.name, 'build-failed')
+    permissions: { contents: write, issues: write }
+    uses: md1god/MD-automation/.github/workflows/reusable-autofix.yml@main
+    with: { build-command: npm run build }
