@@ -1,0 +1,507 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Tajawal:wght@300;400;700;900&display=swap');
+
+:root {
+  --gold: #c9a84c;
+  --gold-bright: #f0c060;
+  --gold-dim: #6b4f1a;
+  --blood: #8b1a1a;
+  --blood-bright: #cc2222;
+  --light: #e8d5a3;
+  --dark: #050403;
+  --void: #000000;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--void);
+  color: var(--light);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── PARTICLES ── */
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
+@keyframes drift {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: .6; }
+  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* ── MUSIC BTN ── */
+#music-btn {
+  position: fixed;
+  bottom: 1.5rem; left: 1.5rem;
+  z-index: 999;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.5);
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  color: var(--gold);
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+  box-shadow: 0 0 15px rgba(201,168,76,0.1);
+}
+#music-btn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 25px rgba(201,168,76,0.35);
+  transform: scale(1.1);
+}
+#music-btn.playing {
+  animation: musicPulse 2s ease-in-out infinite;
+  border-color: rgba(201,168,76,0.8);
+}
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(201,168,76,0.2); }
+  50%       { box-shadow: 0 0 35px rgba(201,168,76,0.5); }
+}
+
+/* ── NAVBAR ── */
+/* ⚠️ كان position:fixed وده سبب التراكب — sticky بياخد مكانه الطبيعي ويدفع المحتوى تحته أوتوماتيك */
+.navbar {
+  position: sticky; top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.85));
+  backdrop-filter: blur(4px);
+}
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px var(--gold);
+}
+.nav-back {
+  font-size: 0.8rem;
+  color: rgba(201,168,76,0.6);
+  text-decoration: none;
+  letter-spacing: 2px;
+  border: 1px solid rgba(201,168,76,0.2);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+.nav-back:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(201,168,76,0.2);
+}
+
+/* ── PAGE HERO ── */
+.page-hero {
+  position: relative;
+  min-height: 40vh;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 4rem 2rem;
+  overflow: hidden;
+}
+.page-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08), transparent 70%);
+}
+.page-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 6px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.page-title {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 5.5vw, 3.5rem);
+  color: var(--gold-bright);
+  text-shadow: 0 0 60px rgba(201,168,76,0.5);
+  line-height: 1.1;
+}
+.page-sub {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: rgba(232,213,163,0.6);
+  letter-spacing: 2px;
+  margin-top: 1rem;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 3rem auto;
+  width: 60%;
+  position: relative;
+}
+.divider::before {
+  content: '⟡';
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  color: var(--gold); font-size: 1rem; background: var(--void); padding: 0 0.5rem;
+}
+
+/* ── CONTENT CONTAINER ── */
+.page-content {
+  position: relative; z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem 6rem;
+}
+
+/* ── CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+  list-style: none;
+}
+.card {
+  background: rgba(201,168,76,0.04);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  transition: all 0.4s;
+  position: relative;
+  overflow: hidden;
+  list-style: none;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.card:hover {
+  border-color: rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(201,168,76,0.1);
+}
+.card:hover::before { opacity: 1; }
+.card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+.card-title {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--gold-bright);
+  margin-bottom: 0.75rem;
+}
+.card-text {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  opacity: 0.75;
+}
+
+/* ── ACCORDION (FAQ) ── */
+.accordion-item {
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.accordion-item.open { border-color: rgba(201,168,76,0.4); }
+.accordion-header {
+  padding: 1.25rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+  background: rgba(201,168,76,0.03);
+  transition: background 0.3s;
+  gap: 1rem;
+}
+.accordion-header:hover { background: rgba(201,168,76,0.07); }
+.accordion-q {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--gold-bright);
+  flex: 1;
+}
+.accordion-arrow {
+  color: var(--gold);
+  font-size: 1rem;
+  transition: transform 0.4s;
+  flex-shrink: 0;
+}
+.accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, padding 0.3s;
+  padding: 0 1.5rem;
+}
+.accordion-item.open .accordion-body {
+  max-height: 400px;
+  padding: 1rem 1.5rem 1.5rem;
+}
+.accordion-body p {
+  font-size: 0.95rem;
+  line-height: 2;
+  opacity: 0.8;
+}
+
+/* ── VERSE BOX ── */
+.verse {
+  border: 1px solid var(--gold-dim);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin: 2rem auto;
+  background: rgba(201,168,76,0.05);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--gold-bright);
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+}
+.verse::before { content: '❝'; position: absolute; top: 0.5rem; right: 0.75rem; font-size: 2rem; color: var(--gold-dim); line-height: 1; }
+.verse::after  { content: '❞'; position: absolute; bottom: 0.5rem; left: 0.75rem; font-size: 2rem; color: var(--gold-dim); line-height: 1; }
+
+/* ── REVEAL ANIMATION ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── TABLE ── */
+.gold-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.95rem;
+}
+.gold-table th {
+  background: rgba(201,168,76,0.1);
+  color: var(--gold-bright);
+  padding: 1rem 1.2rem;
+  text-align: right;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+}
+.gold-table td {
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+  opacity: 0.85;
+  vertical-align: middle;
+}
+.gold-table tr:hover td { background: rgba(201,168,76,0.04); }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.badge-gold  { background: rgba(201,168,76,0.15); color: var(--gold-bright); border: 1px solid rgba(201,168,76,0.3); }
+.badge-green { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+.badge-blue  { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+.badge-red   { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-right: 2rem; list-style: none; }
+.timeline::before {
+  content: '';
+  position: absolute; top: 0; bottom: 0; right: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding-right: 2rem;
+  list-style: none;
+}
+.tl-item::before {
+  content: '';
+  position: absolute; top: 6px; right: -7px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 15px var(--gold);
+}
+.tl-date {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--gold-dim);
+  letter-spacing: 3px;
+  margin-bottom: 0.4rem;
+}
+.tl-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--gold-bright);
+  margin-bottom: 0.4rem;
+}
+.tl-text { font-size: 0.9rem; opacity: 0.7; line-height: 1.8; }
+
+/* ── CTA BUTTON ── */
+.cta-btn {
+  display: inline-block;
+  padding: 0.9rem 2.5rem;
+  background: linear-gradient(135deg, var(--gold), #8b6914);
+  color: #000;
+  font-weight: 900;
+  font-size: 0.95rem;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+  border: none; cursor: pointer;
+}
+.cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 40px rgba(201,168,76,0.5);
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  font-size: 0.8rem;
+  color: rgba(201,168,76,0.3);
+  letter-spacing: 2px;
+}
+
+/* ── GLOW UTILS ── */
+.glow-gold  { color: var(--gold-bright); text-shadow: 0 0 30px var(--gold); }
+.glow-red   { color: #ff4444; text-shadow: 0 0 30px #ff0000; }
+.glow-blue  { color: #60a5fa; text-shadow: 0 0 30px #3b82f6; }
+.glow-green { color: #34d399; text-shadow: 0 0 30px #10b981; }
+
+/* ════════════════════════════════════════════════════════
+   إضافات أمان دفاعية — تضمن إن أي عنوان أو قائمة من غير
+   كلاس مخصص يطلع بحجم متناسق مع باقي الموقع، مش حجم
+   المتصفح الافتراضي العشوائي (ده كان سبب "الأرقام العارية")
+   ════════════════════════════════════════════════════════ */
+.page-content h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--gold-bright); margin: 2rem 0 1rem; }
+.page-content h2 { font-size: clamp(1.3rem, 3.5vw, 1.7rem); color: var(--gold-bright); margin: 1.75rem 0 .9rem; }
+.page-content h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--gold); margin: 1.5rem 0 .75rem; }
+.page-content p  { font-size: 1rem; line-height: 1.9; opacity: .85; margin-bottom: 1rem; }
+.page-content ol,
+.page-content ul {
+  list-style: none;
+  counter-reset: mdm1-counter;
+  margin: 1.5rem 0;
+  padding: 0;
+}
+.page-content ol li,
+.page-content ul li {
+  counter-increment: mdm1-counter;
+  position: relative;
+  padding-right: 2.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+.page-content ol li::before,
+.page-content ul li::before {
+  content: counter(mdm1-counter);
+  position: absolute;
+  right: 0; top: 0;
+  width: 1.8rem; height: 1.8rem;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.4);
+  color: var(--gold-bright);
+  font-family: 'Cinzel', serif;
+  font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ════════════════════════════════════════════════════════
+   MEDIA BLOCK — صور أو فيديوهات full-width بإطار ذهبي متوهج
+   (نفس فكرة section-vid في الورقة البيضاء، لكنها هنا تخدم
+   الصور والفيديوهات في كل الصفحات الجديدة)
+   استخدام مع فيديو:
+     <div class="media-block reveal">
+       <video autoplay loop muted playsinline poster="../images/md1usd/cycle.jpg">
+         <source src="../images/md1usd/cycle.webm" type="video/webm">
+       </video>
+       <div class="media-caption">نص توضيحي تحت الفيديو</div>
+     </div>
+   استخدام مع صورة فقط (بدون فيديو):
+     <div class="media-block reveal">
+       <img src="../images/md1usd/shield.jpg" alt="...">
+       <div class="media-caption">نص توضيحي تحت الصورة</div>
+     </div>
+   ════════════════════════════════════════════════════════ */
+.media-block {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 2rem 0;
+  position: relative;
+  border: 1px solid rgba(201,168,76,0.2);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(201,168,76,0.08);
+}
+.media-block img,
+.media-block video {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  background: #000;
+  transition: transform 0.6s ease;
+}
+.media-block:hover img,
+.media-block:hover video { transform: scale(1.03); }
+.media-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+  padding: 1.5rem 1.5rem 1rem;
+  color: rgba(232,213,163,0.7);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-align: right;
+}
+
+/* MEDIA CIRCLE — صورة/فيديو مركزي مربع (مثل الهيرو في index.html)
+   استخدام:
+     <div class="media-circle-wrap reveal">
+       <video autoplay loop muted playsinline poster="../images/md1usd/hero.jpg">
+         <source src="../images/md1usd/hero.webm" type="video/webm">
+       </video>
+     </div>
+*/
+.media-circle-wrap {
+  width: 100%;
+  max-width: 420px;
+  margin: 2rem auto;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(201,168,76,0.3);
+  box-shadow: 0 25px 70px rgba(0,0,0,0.7), 0 0 50px rgba(201,168,76,0.1);
+}
+.media-circle-wrap img,
+.media-circle-wrap video {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+@media (max-width: 600px){
+  .media-block img, .media-block video { height: 220px; }
+}

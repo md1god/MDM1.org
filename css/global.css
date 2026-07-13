@@ -1,0 +1,169 @@
+/* ============================================================
+   MDM1 — GLOBAL CSS v2.3
+   التعديلات عن v2.2:
+   1) تم حذف ستايل زر "العودة للأعلى" (#float-light / .floating-btn) نهائياً.
+   2) أُضيف ستايل اختياري لـ #music-prompt (شاشة "هل تريد الموسيقى؟")
+      لأي صفحة جديدة تحب تستخدمها — لو الصفحة ما فيهاش هذا العنصر
+      فهذا الستايل بيُتجاهل تلقائياً ولا يؤثر على أي شيء.
+   ============================================================ */
+
+:root {
+  --gold: #c9a84c;
+  --gold-bright: #f0c060;
+  --gold-dim: #6b4f1a;
+  --blood: #8b1a1a;
+  --blood-bright: #cc2222;
+  --light: #e8d5a3;
+  --dark: #050403;
+  --void: #000000;
+}
+
+body {
+  scroll-behavior: smooth;
+}
+
+/* ==================== MEGA NAVBAR ==================== */
+.mdm1-nav, .main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  background: rgba(5, 4, 3, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item { position: relative; }
+
+/* القائمة المنسدلة — بتفتح بالـ hover (ديسكتوب) أو كلاس .open (اللي الـ JS بيضيفه باللمس) */
+.has-mega .dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 15, 25, 0.98);
+  min-width: 260px;
+  border-radius: 12px;
+  padding: 15px 0;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+  z-index: 10001;
+}
+
+.has-mega:hover .dropdown,
+.has-mega.open .dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(8px);
+}
+
+/* ==================== LIVE & PROGRESS ==================== */
+.live-price {
+  font-family: monospace;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+#light-progress {
+  height: 5px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-bright), #ffeb3b);
+  box-shadow: 0 0 15px var(--gold-bright);
+  transition: width 1s ease;
+  width: 0%;
+}
+
+/* ==================== MUSIC PROMPT (اختياري) ==================== */
+#music-prompt {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.92);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1.5rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+#music-prompt.show { opacity: 1; pointer-events: all; }
+#music-prompt .mp-icon { font-size: 3.5rem; }
+#music-prompt .mp-text {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-align: center;
+  padding: 0 2rem;
+}
+#music-prompt .mp-sub {
+  font-size: 0.8rem;
+  color: rgba(201,168,76,0.5);
+  letter-spacing: 2px;
+  text-align: center;
+}
+.mp-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+.mp-yes, .mp-no {
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+.mp-yes { background: linear-gradient(135deg, var(--gold), #8b6914); color: #000; font-weight: 700; }
+.mp-yes:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(201,168,76,0.5); }
+.mp-no { background: transparent; border: 1px solid rgba(201,168,76,0.25); color: rgba(201,168,76,0.6); }
+.mp-no:hover { border-color: rgba(201,168,76,0.5); color: var(--gold); }
+
+/* ==================== REVEAL ON SCROLL ==================== */
+.reveal, .mdm1-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.reveal.visible, .reveal.active, .reveal.is-visible,
+.mdm1-reveal.is-visible, .mdm1-reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==================== GENERAL SPIRITUAL ENHANCEMENTS ==================== */
+.glow-gold { text-shadow: 0 0 20px rgba(201, 168, 76, 0.8); }
+
+.confetti { position: fixed; pointer-events: none; z-index: 99999; }
+
+/* ==================== CURSOR (يضيفهم global.js على الـ body) ==================== */
+@media (pointer:fine){
+  .mdm1-cursor-dot, .mdm1-cursor-ring{
+    position: fixed; top:0; left:0; border-radius:50%;
+    pointer-events:none; z-index: 9999; transform: translate(-50%,-50%);
+  }
+  .mdm1-cursor-dot{ width:6px; height:6px; background: var(--gold-bright); }
+  .mdm1-cursor-ring{
+    width:32px; height:32px; border:1px solid var(--gold-dim);
+    transition: transform .15s ease, border-color .2s ease;
+  }
+  .mdm1-cursor-ring.is-active{
+    transform: translate(-50%,-50%) scale(1.5);
+    border-color: var(--gold-bright);
+  }
+}
+
+/* ==================== PARTICLES CONTAINER ==================== */
+.mdm1-particles{ position: fixed; inset:0; z-index: 0; pointer-events: none; }
