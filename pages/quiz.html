@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDM1 — اختبر معرفتك</title>
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+
+<div id="particles"></div>
+
+<audio id="bg-music" src="../audio/quiz.mp3" loop preload="none"></audio>
+<button id="music-btn" style="display:none">🔇</button>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="../index.html" class="nav-back">← العودة</a>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <span class="page-label">Quiz • الاختبار</span>
+  <h1 class="page-title">🧠 اختبر معرفتك</h1>
+  <p class="page-sub">عشرة أسئلة · ثلاث مراحل · هل أنت مستعد؟</p>
+</section>
+
+<div class="page-content">
+  <div class="divider"></div>
+
+  <!-- شاشة البداية -->
+  <div id="screen-start" class="reveal">
+    <div style="text-align:center; max-width:600px; margin:0 auto;">
+      <div style="font-size:4rem; margin-bottom:1.5rem;">📜</div>
+      <h2 style="font-family:'Cinzel',serif; color:var(--gold-bright); font-size:1.8rem; margin-bottom:1rem; letter-spacing:3px;">
+        اختبار MDM1
+      </h2>
+      <p style="font-size:1rem; line-height:2; opacity:0.8; margin-bottom:2rem;">
+        اختبر فهمك لمشروع MDM1 — من التقنية إلى الشريعة إلى الرؤية المستقبلية.
+        عشرة أسئلة تتصاعد في الصعوبة — كل إجابة صحيحة تُقرّبك من لقب
+        <span class="glow-gold">حارس الحقيقة</span>.
+      </p>
+      <div class="card-grid" style="grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem;">
+        <div class="card" style="text-align:center; padding:1.2rem;">
+          <div style="font-size:1.5rem;">⏱️</div>
+          <div style="font-size:0.75rem; color:var(--gold-dim); margin-top:0.3rem;">30 ثانية / سؤال</div>
+        </div>
+        <div class="card" style="text-align:center; padding:1.2rem;">
+          <div style="font-size:1.5rem;">❓</div>
+          <div style="font-size:0.75rem; color:var(--gold-dim); margin-top:0.3rem;">10 أسئلة</div>
+        </div>
+        <div class="card" style="text-align:center; padding:1.2rem;">
+          <div style="font-size:1.5rem;">🏆</div>
+          <div style="font-size:0.75rem; color:var(--gold-dim); margin-top:0.3rem;">3 مستويات</div>
+        </div>
+      </div>
+      <button class="cta-btn" onclick="startQuiz()">🚀 ابدأ الاختبار</button>
+    </div>
+  </div>
+
+  <!-- شاشة الأسئلة -->
+  <div id="screen-quiz" style="display:none; max-width:680px; margin:0 auto;">
+
+    <!-- شريط التقدم -->
+    <div style="margin-bottom:2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <span id="q-counter" style="font-size:0.8rem; color:var(--gold-dim); letter-spacing:2px;">سؤال 1 من 10</span>
+        <span id="q-score-live" style="font-size:0.8rem; color:var(--gold); letter-spacing:2px;">النقاط: 0</span>
+      </div>
+      <div style="height:4px; background:rgba(201,168,76,0.1); border-radius:2px; overflow:hidden;">
+        <div id="progress-bar" style="height:100%; width:10%; background:linear-gradient(90deg,var(--gold),var(--gold-bright)); transition:width 0.5s ease; border-radius:2px;"></div>
+      </div>
+    </div>
+
+    <!-- مؤقت -->
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <div id="timer-ring" style="
+        width:64px; height:64px; border-radius:50%;
+        border:3px solid rgba(201,168,76,0.2);
+        display:flex; align-items:center; justify-content:center;
+        margin:0 auto;
+        position:relative;
+        background:rgba(0,0,0,0.5);
+        transition: border-color 0.3s;
+      ">
+        <span id="timer-text" style="font-family:'Cinzel',serif; font-size:1.3rem; color:var(--gold); font-weight:700;">30</span>
+      </div>
+    </div>
+
+    <!-- السؤال -->
+    <div class="card" style="margin-bottom:1.5rem; padding:2rem; text-align:center; border-color:rgba(201,168,76,0.25);">
+      <span id="q-category" style="font-size:0.7rem; letter-spacing:3px; color:var(--gold-dim); display:block; margin-bottom:1rem;"></span>
+      <p id="q-text" style="font-size:clamp(1rem,3vw,1.25rem); font-weight:700; line-height:1.8; color:var(--light);"></p>
+    </div>
+
+    <!-- الإجابات -->
+    <div id="answers-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+    </div>
+
+    <!-- تغذية راجعة -->
+    <div id="feedback" style="
+      display:none;
+      margin-top:1.5rem;
+      padding:1.2rem 1.5rem;
+      border-radius:12px;
+      text-align:center;
+      font-size:0.95rem;
+      line-height:1.8;
+    "></div>
+
+    <div style="text-align:center; margin-top:1.5rem;">
+      <button id="next-btn" onclick="nextQuestion()" style="display:none;" class="cta-btn">
+        التالي ←
+      </button>
+    </div>
+  </div>
+
+  <!-- شاشة النتيجة -->
+  <div id="screen-result" style="display:none; text-align:center; max-width:600px; margin:0 auto;">
+    <div id="result-icon" style="font-size:5rem; margin-bottom:1rem;"></div>
+    <h2 id="result-title" style="font-family:'Cinzel',serif; font-size:clamp(1.5rem,5vw,2.5rem); color:var(--gold-bright); margin-bottom:0.5rem; letter-spacing:3px;"></h2>
+    <p id="result-sub" style="font-size:1rem; opacity:0.7; margin-bottom:1.5rem; letter-spacing:2px;"></p>
+    <div style="
+      font-family:'Cinzel',serif;
+      font-size:clamp(3rem,10vw,6rem);
+      color:var(--gold-bright);
+      text-shadow:0 0 60px var(--gold);
+      margin:1rem 0;
+    ">
+      <span id="result-score">0</span><span style="font-size:2rem; opacity:0.5;">/10</span>
+    </div>
+    <div class="verse" id="result-verse" style="margin:2rem auto;"></div>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:2rem;">
+      <button class="cta-btn" onclick="restartQuiz()">🔄 حاول مجدداً</button>
+      <a href="game.html" class="nav-back" style="display:inline-flex; align-items:center; padding:0.9rem 2rem;">
+        🎮 جرّب اللعبة
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  ✦ &nbsp; MDM1 · اختبر نفسك · ارتقِ بمعرفتك &nbsp; ✦
+</footer>
+
+<style>
+.ans-btn {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(201,168,76,0.2);
+  background: rgba(201,168,76,0.03);
+  color: var(--light);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  line-height: 1.5;
+  width: 100%;
+}
+.ans-btn:hover:not(:disabled) {
+  background: rgba(201,168,76,0.1);
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.ans-btn.correct {
+  background: rgba(52,211,153,0.15);
+  border-color: #34d399;
+  color: #34d399;
+  font-weight: 700;
+}
+.ans-btn.wrong {
+  background: rgba(248,113,113,0.15);
+  border-color: #f87171;
+  color: #f87171;
+}
+.ans-btn:disabled { cursor: not-allowed; }
+
+@media(max-width:480px) {
+  #answers-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script src="../js/global.js"></script>
+<script src="../js/pages.js"></script>
+<script>
+const questions = [
+  {
+    cat: '🔗 البلوك تشين',
+    text: 'على أي شبكة بلوك تشين يعمل توكن MDM1؟',
+    answers: ['Ethereum', 'Polygon', 'Solana', 'BNB Chain'],
+    correct: 1
+  },
+  {
+    cat: '⚖️ الشريعة',
+    text: 'ما المبدأ الإسلامي الذي يحرّم الفائدة الثابتة على القروض؟',
+    answers: ['الغرر', 'الميسر', 'الربا', 'الجهالة'],
+    correct: 2
+  },
+  {
+    cat: '🪙 التوكينوميكس',
+    text: 'كم إجمالي المعروض من توكن MDM1؟',
+    answers: ['100 مليون', '500 مليون', 'مليار توكن', '10 مليار'],
+    correct: 2
+  },
+  {
+    cat: '👁️ الرؤية',
+    text: 'ما معنى الاستثمار الكسري في سياق MDM1؟',
+    answers: [
+      'استثمار في العملات فقط',
+      'امتلاك حصص صغيرة في مشاريع حقيقية',
+      'نظام ادخار تقليدي',
+      'تداول العملات الآجل'
+    ],
+    correct: 1
+  },
+  {
+    cat: '⚙️ التقنية',
+    text: 'ما معيار العقد الذكي المستخدم في MDM1؟',
+    answers: ['ERC-721', 'ERC-1155', 'ERC-20', 'BEP-20'],
+    correct: 2
+  },
+  {
+    cat: '🌍 المجتمع',
+    text: 'ما نسبة توكنات MDM1 المخصصة للمجتمع والمستخدمين؟',
+    answers: ['25%', '10%', '5%', '40%'],
+    correct: 3
+  },
+  {
+    cat: '⚖️ الشريعة',
+    text: 'أي من هذه النماذج مستخدم في MDM1 ومتوافق مع الشريعة؟',
+    answers: ['القرض بفائدة', 'المضاربة', 'المشتقات المالية', 'الرهان'],
+    correct: 1
+  },
+  {
+    cat: '🔗 البلوك تشين',
+    text: 'ما الميزة الرئيسية لشبكة Polygon مقارنة بـ Ethereum؟',
+    answers: [
+      'أقدم شبكة موجودة',
+      'رسوم أعلى وأمان أكبر',
+      'رسوم منخفضة وسرعة أعلى',
+      'لا تدعم العقود الذكية'
+    ],
+    correct: 2
+  },
+  {
+    cat: '🏛️ الحوكمة',
+    text: 'كيف يشارك حاملو MDM1 في قرارات المشروع؟',
+    answers: [
+      'لا يشاركون',
+      'عبر البريد الإلكتروني',
+      'التصويت على البلوك تشين',
+      'عبر لجنة مختارة فقط'
+    ],
+    correct: 2
+  },
+  {
+    cat: '👁️ الرؤية',
+    text: 'ما الهدف الأسمى لمشروع MDM1؟',
+    answers: [
+      'تحقيق أرباح سريعة',
+      'منافسة Bitcoin',
+      'اقتصاد مجتمعي عادل يخدم الجميع',
+      'إنشاء عملة مشفرة للترفيه'
+    ],
+    correct: 2
+  }
+];
+
+const results = [
+  { min:0,  max:3,  icon:'🌑', title:'مبتدئ الطريق',    sub:'لا بأس — كل حكيم كان يوماً مبتدئاً',         verse:'وَقُل رَّبِّ زِدْنِي عِلْمًا' },
+  { min:4,  max:6,  icon:'🌓', title:'طالب المعرفة',    sub:'أنت على الطريق الصحيح — واصل التعلم',       verse:'إِنَّمَا يَخْشَى اللَّهَ مِنْ عِبَادِهِ الْعُلَمَاءُ' },
+  { min:7,  max:8,  icon:'🌕', title:'حارس الحقيقة',   sub:'معرفة راسخة وفهم عميق — أنت من نحتاج',     verse:'وَتِلْكَ الْأَمْثَالُ نَضْرِبُهَا لِلنَّاسِ وَمَا يَعْقِلُهَا إِلَّا الْعَالِمُونَ' },
+  { min:9,  max:10, icon:'👁️', title:'عين الحكمة',     sub:'إجابات مثالية — أنت من بنى هذا المشروع!',   verse:'يُؤْتِي الْحِكْمَةَ مَن يَشَاءُ' }
+];
+
+let current = 0;
+let score = 0;
+let timer = null;
+let timeLeft = 30;
+let answered = false;
+
+function startQuiz() {
+  current = 0; score = 0; answered = false;
+  document.getElementById('screen-start').style.display = 'none';
+  document.getElementById('screen-result').style.display = 'none';
+  document.getElementById('screen-quiz').style.display = 'block';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  answered = false;
+  timeLeft = 30;
+  const q = questions[current];
+
+  document.getElementById('q-counter').textContent = `سؤال ${current + 1} من ${questions.length}`;
+  document.getElementById('q-score-live').textContent = `النقاط: ${score}`;
+  document.getElementById('progress-bar').style.width = `${((current) / questions.length) * 100}%`;
+  document.getElementById('q-category').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+  q.answers.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = ans;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timer);
+  updateTimerDisplay();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      if (!answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-text');
+  const ring = document.getElementById('timer-ring');
+  el.textContent = timeLeft;
+  if (timeLeft <= 10) {
+    ring.style.borderColor = 'rgba(248,113,113,0.6)';
+    el.style.color = '#f87171';
+  } else if (timeLeft <= 20) {
+    ring.style.borderColor = 'rgba(251,146,60,0.6)';
+    el.style.color = '#fb923c';
+  } else {
+    ring.style.borderColor = 'rgba(201,168,76,0.3)';
+    el.style.color = 'var(--gold)';
+  }
+}
+
+function timeUp() {
+  answered = true;
+  disableAnswers();
+  highlightCorrect();
+  showFeedback(false, '⏰ انتهى الوقت! الإجابة الصحيحة مُظلَّلة باللون الأخضر.');
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function selectAnswer(index) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timer);
+  const q = questions[current];
+  const btns = document.querySelectorAll('.ans-btn');
+  btns[index].classList.add(index === q.correct ? 'correct' : 'wrong');
+  disableAnswers();
+  highlightCorrect();
+
+  if (index === q.correct) {
+    score++;
+    showFeedback(true, '✅ إجابة صحيحة! ' + getFact(current));
+  } else {
+    showFeedback(false, '❌ إجابة خاطئة. ' + getFact(current));
+  }
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function disableAnswers() {
+  document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
+}
+
+function highlightCorrect() {
+  const btns = document.querySelectorAll('.ans-btn');
+  btns[questions[current].correct].classList.add('correct');
+}
+
+function showFeedback(correct, msg) {
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'block';
+  fb.style.background = correct ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.08)';
+  fb.style.border = `1px solid ${correct ? 'rgba(52,211,153,0.3)' : 'rgba(248,113,113,0.3)'}`;
+  fb.style.color = correct ? '#34d399' : '#f87171';
+  fb.textContent = msg;
+}
+
+function getFact(i) {
+  const facts = [
+    'Polygon تُعالج آلاف المعاملات بالثانية برسوم منخفضة جداً.',
+    'الربا محرّم في الإسلام — وMDM1 يبني نموذجاً خالياً منه تماماً.',
+    'مليار توكن هو الحد الأقصى — لا طباعة جديدة بعد الإطلاق.',
+    'الاستثمار الكسري يفتح أبواب الثروة لمن لا يملك رأس مال كبير.',
+    'ERC-20 هو المعيار الأكثر استخداماً في عالم التوكنات.',
+    '40% للمجتمع — أكبر حصة في توزيع MDM1.',
+    'المضاربة الإسلامية تُحقق العدل بين رأس المال والعمل.',
+    'رسوم Polygon أقل من سنت مقارنة بدولارات على Ethereum.',
+    'التصويت على البلوك تشين شفاف ولا يمكن التلاعب به.',
+    'MDM1 يهدف لاقتصاد يخدم الجميع — لا النخبة فقط.'
+  ];
+  return facts[i] || '';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('screen-quiz').style.display = 'none';
+  document.getElementById('screen-result').style.display = 'block';
+
+  const r = results.find(r => score >= r.min && score <= r.max);
+  document.getElementById('result-icon').textContent = r.icon;
+  document.getElementById('result-title').textContent = r.title;
+  document.getElementById('result-sub').textContent = r.sub;
+  document.getElementById('result-score').textContent = score;
+  document.getElementById('result-verse').textContent = r.verse;
+  document.getElementById('progress-bar').style.width = '100%';
+}
+
+function restartQuiz() {
+  document.getElementById('screen-result').style.display = 'none';
+  startQuiz();
+}
+</script>
+</body>
+</html>

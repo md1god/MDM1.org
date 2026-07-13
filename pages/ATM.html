@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>MD1$ — ماكينة الصراف</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://unpkg.com/@walletconnect/ethereum-provider@2.13.3/dist/index.umd.js" defer></script>
+<script>
+  // fallback if unpkg fails to load
+  window.addEventListener('load',()=>{
+    if(!window.EthereumProvider){
+      const s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.13.3/dist/index.umd.js';
+      document.head.appendChild(s);
+    }
+  });
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --gold:#c9a84c;
+  --gold-bright:#f5d070;
+  --gold-dim:#7a5c1e;
+  --gold-light:#e8c060;
+  --metal-dark:#1a1508;
+  --metal-mid:#2a1f0a;
+  --metal-light:#3a2c10;
+  --metal-shine:#4a3a18;
+  --screen-bg:#0a0f0a;
+  --screen-text:#c9a84c;
+  --black:#000;
+  --near-black:#080808;
+}
+
+html,body{
+  min-height:100vh;
+  background:radial-gradient(ellipse at center,#1a1000 0%,#000 70%);
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  font-family:'Tajawal',sans-serif;
+  overflow-x:hidden;
+}
+
+/* ══════════════════════════════
+   ATM OUTER SHELL
+══════════════════════════════ */
+.atm{
+  width:100%;
+  max-width:420px;
+  min-height:100vh;
+  position:relative;
+  background:linear-gradient(180deg,#1c1505 0%,#120e04 40%,#0d0a02 100%);
+  border-left:6px solid;
+  border-right:6px solid;
+  border-image:linear-gradient(180deg,#6a4e18,#c9a84c,#f5d070,#c9a84c,#4a3010) 1;
+  box-shadow:
+    -8px 0 30px rgba(0,0,0,0.9),
+    8px 0 30px rgba(0,0,0,0.9),
+    inset -2px 0 8px rgba(201,168,76,0.08),
+    inset 2px 0 8px rgba(201,168,76,0.08);
+}
+
+/* top light bar */
+.atm-light-bar{
+  height:6px;
+  background:linear-gradient(90deg,transparent 0%,#7a5c1e 10%,#f5d070 30%,#fff8e0 50%,#f5d070 70%,#7a5c1e 90%,transparent 100%);
+  box-shadow:0 0 20px rgba(245,208,112,0.6),0 2px 40px rgba(245,208,112,0.3);
+  margin-bottom:0;
+}
+
+/* ══════════════════════════════
+   HEADER PANEL
+══════════════════════════════ */
+.atm-header{
+  padding:1.2rem 1.4rem 1rem;
+  background:linear-gradient(180deg,#1c1505 0%,#160f03 100%);
+  border-bottom:2px solid #3a2c10;
+  position:relative;
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+
+.atm-brand{
+  background:linear-gradient(135deg,#1a1208,#0d0a04);
+  border:2px solid #c9a84c;
+  border-radius:6px;
+  padding:.6rem 1.4rem;
+  box-shadow:
+    0 0 20px rgba(201,168,76,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  flex:1;
+}
+
+.brand-text{
+  font-family:'Cinzel',serif;
+  font-size:2rem;
+  font-weight:700;
+  background:linear-gradient(180deg,#f5d070 0%,#c9a84c 50%,#8a6020 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-shadow:none;
+  line-height:1;
+  letter-spacing:2px;
+}
+
+.brand-sub{
+  font-size:.7rem;
+  color:#7a5c1e;
+  letter-spacing:1px;
+  margin-top:.2rem;
+}
+
+.nav-btn{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,#1a1208,#0d0a04);
+  border:2px solid #c9a84c;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 0 15px rgba(201,168,76,0.2);
+  flex-shrink:0;
+  text-decoration:none;
+  color:var(--gold);
+  font-size:1.3rem;
+  transition:box-shadow .2s;
+}
+.nav-btn:hover{box-shadow:0 0 25px rgba(201,168,76,0.4);}
+
+/* ══════════════════════════════
+   WALLET PANEL
+══════════════════════════════ */
+.wallet-panel{
+  margin:1rem 1.2rem;
+  background:linear-gradient(135deg,#110d03,#0d0a02);
+  border:1px solid #3a2c10;
+  border-radius:8px;
+  padding:.8rem 1rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.8rem;
+  box-shadow:inset 0 1px 0 rgba(201,168,76,0.05);
+}
+
+.wallet-info{
+  display:flex;
+  flex-direction:column;
+  gap:.2rem;
+  align-items:flex-end;
+}
+
+.wallet-label{
+  font-size:.65rem;
+  color:#4a3a18;
+  letter-spacing:1px;
+}
+
+.wallet-status{
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  font-size:.75rem;
+  color:#6a5020;
+}
+
+.status-dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  background:#2a2a2a;
+  box-shadow:none;
+  transition:all .3s;
+}
+.status-dot.online{
+  background:#4caf50;
+  box-shadow:0 0 8px #4caf50;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.connect-btn{
+  background:linear-gradient(135deg,#c9a84c,#8a6020);
+  border:none;
+  border-radius:8px;
+  color:#000;
+  font-family:'Tajawal',sans-serif;
+  font-size:.9rem;
+  font-weight:900;
+  padding:.65rem 1.2rem;
+  cursor:pointer;
+  display:flex;align-items:center;gap:.5rem;
+  box-shadow:0 4px 15px rgba(201,168,76,0.3);
+  transition:all .2s;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.connect-btn:hover{box-shadow:0 4px 25px rgba(201,168,76,0.5);}
+.connect-btn:disabled{opacity:.6;cursor:default;}
+.connect-btn .icon{font-size:1rem;}
+
+/* ══════════════════════════════
+   TAB BAR
+══════════════════════════════ */
+.tab-bar{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  margin:0 1.2rem;
+  background:linear-gradient(180deg,#110d03,#0a0802);
+  border:1px solid #2a1f0a;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.tab-btn{
+  background:none;
+  border:none;
+  border-left:1px solid #2a1f0a;
+  color:#4a3a18;
+  font-family:'Tajawal',sans-serif;
+  font-size:.66rem;
+  font-weight:700;
+  padding:.6rem .2rem;
+  cursor:pointer;
+  transition:all .2s;
+  letter-spacing:.2px;
+}
+.tab-btn:last-child{border-left:none;}
+.tab-btn.active{
+  background:linear-gradient(180deg,#1c1508,#130e04);
+  color:var(--gold-bright);
+  box-shadow:inset 0 -2px 0 var(--gold);
+}
+.tab-btn:hover:not(.active){color:var(--gold);}
+
+/* ══════════════════════════════
+   SCREEN
+══════════════════════════════ */
+.screen-bezel{
+  margin:1rem 1.2rem;
+  background:#050503;
+  border:3px solid #2a1f0a;
+  border-radius:6px;
+  padding:3px;
+  box-shadow:
+    0 0 0 1px #4a3010,
+    inset 0 2px 10px rgba(0,0,0,0.9);
+}
+
+.screen{
+  background:var(--screen-bg);
+  border-radius:4px;
+  min-height:300px;
+  padding:.9rem;
+  position:relative;
+  overflow:hidden;
+}
+
+/* CRT lines */
+.screen::after{
+  content:'';
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.12) 3px,rgba(0,0,0,0.12) 4px);
+  pointer-events:none;z-index:5;
+}
+
+.screen-title{
+  font-family:'Tajawal',sans-serif;
+  font-size:.75rem;
+  font-weight:700;
+  color:var(--gold);
+  letter-spacing:1.5px;
+  margin-bottom:.8rem;
+  padding-bottom:.5rem;
+  border-bottom:1px solid #1a1505;
+  display:flex;align-items:center;gap:.4rem;
+}
+.screen-title::before{content:'◈';font-size:.6rem;color:var(--gold-dim);}
+
+/* ── Form fields ── */
+.f-label{
+  display:block;
+  font-size:.65rem;
+  color:#6a5020;
+  letter-spacing:.5px;
+  margin:.7rem 0 .25rem;
+}
+.f-label:first-of-type{margin-top:0;}
+
+.f-input,.f-select,.f-textarea{
+  width:100%;
+  background:#050805;
+  border:1px solid #1a1505;
+  border-radius:4px;
+  color:var(--gold);
+  font-family:'Tajawal',sans-serif;
+  font-size:.82rem;
+  padding:.5rem .7rem;
+  outline:none;
+  transition:border-color .2s;
+}
+.f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--gold-dim);}
+.f-input::placeholder{color:#2a1f0a;}
+.f-textarea{resize:vertical;min-height:55px;font-size:.75rem;}
+.f-select option{background:#050805;color:var(--gold);}
+
+/* ── Listings ── */
+.list-wrap{display:flex;flex-direction:column;gap:.5rem;}
+
+.l-item{
+  background:#060905;
+  border:1px solid #1a1505;
+  border-radius:5px;
+  padding:.65rem .8rem;
+}
+.l-token{font-size:.6rem;color:var(--gold-dim);letter-spacing:1px;margin-bottom:.15rem;}
+.l-amount{font-size:.95rem;color:var(--gold-bright);font-weight:700;}
+.l-info{font-size:.7rem;color:#4a3a18;margin-top:.25rem;line-height:1.4;}
+.l-seller{font-size:.58rem;color:#2a1f0a;margin-top:.2rem;font-family:monospace;}
+.l-mine{font-size:.6rem;color:var(--gold-dim);margin-top:.2rem;}
+
+.buy-row{display:flex;gap:.4rem;margin-top:.45rem;align-items:center;}
+.buy-row .f-input{margin:0;font-size:.75rem;}
+
+.fee-line{font-size:.62rem;color:#4a3a18;margin-top:.25rem;display:none;}
+.fee-line.show{display:block;}
+.fee-line em{color:var(--gold);font-style:normal;}
+
+/* order row */
+.o-item{
+  background:#060905;
+  border:1px solid #1a1505;
+  border-radius:5px;
+  padding:.65rem .8rem;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;
+}
+.o-id{font-size:.58rem;color:#2a1f0a;margin-bottom:.15rem;}
+.o-amount{font-size:.88rem;color:var(--gold-bright);font-weight:700;}
+.o-fee{font-size:.62rem;color:#4a3a18;margin-top:.1rem;}
+
+.pill{
+  font-size:.58rem;padding:.2rem .5rem;border-radius:20px;white-space:nowrap;
+  font-family:monospace;
+}
+.pill.Pending{color:#f0c060;border:1px solid #4a3010;background:rgba(240,192,96,.08);}
+.pill.Confirmed{color:#4caf50;border:1px solid #1a4a1a;background:rgba(76,175,80,.08);}
+.pill.Released{color:#4caf50;border:1px solid #1a4a1a;}
+.pill.Disputed{color:#ff5252;border:1px solid #4a1010;background:rgba(255,82,82,.08);}
+.pill.Cancelled,.pill.Resolved{color:#3a3020;border:1px solid #2a1f0a;}
+.pill.CancelRequested{color:#ff9800;border:1px solid #4a2800;background:rgba(255,152,0,.08);}
+
+.act-btns{display:flex;flex-direction:column;gap:.3rem;align-items:flex-end;flex-shrink:0;}
+
+.s-btn{
+  background:none;
+  border:1px solid #2a1f0a;
+  border-radius:3px;
+  color:#6a5020;
+  font-family:'Tajawal',sans-serif;
+  font-size:.65rem;
+  padding:.28rem .6rem;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .15s;
+}
+.s-btn:hover{color:var(--gold);border-color:var(--gold-dim);background:rgba(201,168,76,.05);}
+.s-btn.danger{color:#4a1a1a;border-color:#2a0f0f;}
+.s-btn.danger:hover{color:#ff5252;border-color:#4a1a1a;background:rgba(255,82,82,.05);}
+.s-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.submit-btn{
+  width:100%;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));
+  border:1px solid #3a2c10;
+  border-radius:4px;
+  color:var(--gold);
+  font-family:'Tajawal',sans-serif;
+  font-size:.82rem;
+  font-weight:700;
+  padding:.65rem;
+  cursor:pointer;
+  margin-top:.7rem;
+  letter-spacing:.5px;
+  transition:all .2s;
+}
+.submit-btn:hover{background:rgba(201,168,76,.2);box-shadow:0 0 15px rgba(201,168,76,.15);}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.empty{
+  text-align:center;padding:2rem 1rem;
+  font-size:.72rem;color:#2a1f0a;line-height:2;
+}
+
+.filter-row{display:flex;gap:.4rem;margin-bottom:.7rem;align-items:center;}
+.filter-row .f-select{flex:1;}
+.refresh-btn{
+  background:none;border:1px solid #1a1505;border-radius:3px;
+  color:#4a3a18;font-family:'Tajawal',sans-serif;font-size:.7rem;
+  padding:.4rem .6rem;cursor:pointer;white-space:nowrap;transition:all .2s;
+}
+.refresh-btn:hover{color:var(--gold);border-color:var(--gold-dim);}
+
+/* ── Spinner ── */
+.spin{
+  display:inline-block;width:9px;height:9px;
+  border:1px solid var(--gold-dim);border-top-color:transparent;
+  border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ══════════════════════════════
+   KEYPAD
+══════════════════════════════ */
+.keypad-shell{
+  margin:0 1.2rem;
+  background:linear-gradient(180deg,#0d0a02,#080601);
+  border:1px solid #2a1f0a;
+  border-radius:8px;
+  padding:.8rem;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,0.8);
+}
+
+.keypad-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr) 1.3fr;
+  gap:.45rem;
+}
+
+.key{
+  background:linear-gradient(180deg,#1c1508,#110d03);
+  border:1px solid #3a2c10;
+  border-bottom:3px solid #080601;
+  border-radius:5px;
+  color:var(--gold);
+  font-family:'Tajawal',sans-serif;
+  font-size:.8rem;
+  font-weight:700;
+  padding:.6rem .3rem;
+  cursor:pointer;
+  text-align:center;
+  transition:all .1s;
+  position:relative;
+  user-select:none;
+}
+.key::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);
+}
+.key sub{display:block;font-size:.42rem;color:#4a3a18;font-weight:400;letter-spacing:.5px;margin-top:.05rem;}
+.key:active{transform:translateY(2px);border-bottom-width:1px;}
+
+.key.action{
+  background:linear-gradient(180deg,#1a1208,#0d0a04);
+  border-color:#4a3a18;
+  color:var(--gold-bright);
+  font-size:.75rem;
+}
+.key.action.confirm{
+  background:linear-gradient(180deg,#c9a84c,#7a5c1e);
+  border-color:#f5d070;
+  border-bottom-color:#4a3010;
+  color:#000;
+  font-size:.95rem;
+  font-weight:900;
+}
+.key.action.confirm:active{border-bottom-width:1px;}
+
+/* ══════════════════════════════
+   CARD SLOT
+══════════════════════════════ */
+.card-slot-area{
+  padding:.5rem 2rem;
+  margin:0 1.2rem;
+}
+.card-slot{
+  height:10px;
+  background:#050503;
+  border:1px solid #2a1f0a;
+  border-radius:2px;
+  position:relative;overflow:hidden;
+}
+.card-slot::after{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:35%;height:2px;background:#1a1505;border-radius:1px;
+}
+.slot-label{
+  text-align:center;font-size:.5rem;color:#2a1f0a;
+  letter-spacing:2px;margin-top:.3rem;
+}
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+.atm-footer{
+  padding:.8rem 1.2rem 1.5rem;
+  text-align:center;
+}
+.atm-footer p{font-size:.55rem;color:#2a1f0a;letter-spacing:.5px;line-height:2;}
+.atm-footer a{color:#4a3a18;text-decoration:none;}
+
+/* bolts */
+.bolts{display:flex;justify-content:space-between;padding:.5rem 1rem;}
+.bolt{
+  width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#4a3a18,#0d0a02);
+  border:1px solid #2a1f0a;
+}
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+#toast{
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  background:#0d0a02;border:1px solid var(--gold-dim);border-radius:5px;
+  color:var(--gold);font-family:'Tajawal',sans-serif;font-size:.75rem;
+  padding:.55rem 1.1rem;z-index:9999;opacity:0;transition:opacity .3s;
+  pointer-events:none;text-align:center;max-width:90vw;
+  box-shadow:0 0 20px rgba(201,168,76,.15);
+}
+#toast.show{opacity:1;}
+#toast.err{border-color:#7a1a1a;color:#ff5252;box-shadow:0 0 20px rgba(255,82,82,.15);}
+</style>
+</head>
+<body>
+
+<div class="atm">
+  <div class="atm-light-bar"></div>
+  <div class="bolts"><div class="bolt"></div><div class="bolt"></div></div>
+
+  <!-- HEADER -->
+  <div class="atm-header">
+    <div class="header-row">
+      <div class="atm-brand">
+        <div class="brand-text">MD1$</div>
+        <div class="brand-sub">وسيط · بدون عمولة عميل</div>
+      </div>
+      <a href="../index.html" class="nav-btn">→</a>
+    </div>
+  </div>
+
+  <!-- WALLET -->
+  <div class="wallet-panel" style="flex-direction:column;align-items:stretch;gap:.6rem;">
+    <div style="display:flex;gap:.5rem;">
+      <button class="connect-btn" id="btn-connect" style="flex:1;justify-content:center;">
+        <span class="icon">🦊</span> MetaMask
+      </button>
+      <button class="connect-btn" id="btn-wc" style="flex:1;justify-content:center;background:linear-gradient(135deg,#3a8bc9,#1a5c8a);">
+        <span class="icon">⬡</span> WalletConnect
+      </button>
+    </div>
+    <div class="wallet-info" style="align-items:flex-start;">
+      <div class="wallet-label">المحفظة</div>
+      <div class="wallet-status">
+        <div class="status-dot" id="dot"></div>
+        <span id="wallet-txt">غير متصل</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="market">السوق</button>
+    <button class="tab-btn" data-tab="swap">سواب</button>
+    <button class="tab-btn" data-tab="sell">أنشر إعلان</button>
+    <button class="tab-btn" data-tab="myorders">طلباتي</button>
+    <button class="tab-btn" data-tab="mylistings">إعلاناتي</button>
+  </div>
+
+  <!-- SCREEN -->
+  <div class="screen-bezel">
+    <div class="screen">
+
+      <!-- Market -->
+      <div id="tab-market">
+        <div class="screen-title">الإعلانات المتاحة</div>
+        <div class="filter-row">
+          <select class="f-select" id="filter-token"><option value="">كل العملات</option></select>
+          <button class="refresh-btn" id="btn-refresh">↻ تحديث</button>
+        </div>
+        <div class="list-wrap" id="market-list">
+          <div class="empty">جارٍ التحميل…</div>
+        </div>
+      </div>
+
+      <!-- Swap -->
+      <div id="tab-swap" style="display:none">
+        <div class="screen-title">MD1usd · سك واسترداد مباشر</div>
+        <div class="l-item" style="margin-bottom:.8rem;">
+          <div class="l-info" style="margin-top:0;color:#6a5020;">
+            تحويل مباشر 1:1 بين USDC و MD1usd — بدون رسوم منصة، بدون انزلاق سعر.
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.4rem;margin-bottom:.8rem;">
+          <button class="s-btn swap-dir active" data-dir="mint" style="flex:1;text-align:center;">USDC → MD1usd</button>
+          <button class="s-btn swap-dir" data-dir="redeem" style="flex:1;text-align:center;">MD1usd → USDC</button>
+        </div>
+
+        <label class="f-label" id="swap-label">الكمية (USDC)</label>
+        <input class="f-input" id="swap-amount" type="number" min="0" placeholder="0.00"/>
+        <div class="fee-line show" id="swap-preview" style="margin-top:.5rem;">ستستلم: <em id="swap-out">—</em></div>
+        <button class="submit-btn" id="btn-swap">◈ تنفيذ</button>
+
+        <div class="screen-title" style="margin-top:1.3rem;">سواب عام · أي عملة لأي عملة</div>
+        <div class="l-item">
+          <div class="l-info" style="margin-top:0;">
+            لاستبدال أي عملة على Polygon بأخرى — يفتح QuickSwap في نافذة جديدة بنفس محفظتك المتصلة.
+          </div>
+          <a id="quickswap-link" href="https://quickswap.exchange/#/swap" target="_blank" rel="noopener" class="submit-btn" style="display:block;text-align:center;text-decoration:none;margin-top:.6rem;">
+            ↗ فتح QuickSwap
+          </a>
+        </div>
+      </div>
+
+      <!-- Sell -->
+      <div id="tab-sell" style="display:none">
+        <div class="screen-title">إعلان جديد</div>
+        <label class="f-label">عنوان العملة</label>
+        <input class="f-input" id="s-token" placeholder="0x…"/>
+        <label class="f-label">الكمية الكلية</label>
+        <input class="f-input" id="s-amount" type="number" min="0" placeholder="0.00"/>
+        <label class="f-label">الحد الأدنى للطلب</label>
+        <input class="f-input" id="s-min" type="number" min="0" placeholder="0.00"/>
+        <label class="f-label">الحد الأقصى للطلب</label>
+        <input class="f-input" id="s-max" type="number" min="0" placeholder="0.00"/>
+        <label class="f-label">طريقة الدفع والسعر</label>
+        <textarea class="f-textarea" id="s-info" placeholder="مثال: فودافون كاش — 55 جنيه للـ USDC — 010xxxxxxxx"></textarea>
+        <button class="submit-btn" id="btn-create">◈ نشر الإعلان</button>
+      </div>
+
+      <!-- My Orders -->
+      <div id="tab-myorders" style="display:none">
+        <div class="screen-title">طلباتي كمشترٍ</div>
+        <div class="list-wrap" id="myorders-list">
+          <div class="empty">لا توجد طلبات</div>
+        </div>
+      </div>
+
+      <!-- My Listings -->
+      <div id="tab-mylistings" style="display:none">
+        <div class="screen-title">إعلاناتي كبائع</div>
+        <div class="list-wrap" id="mylistings-list">
+          <div class="empty">لا توجد إعلانات</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CARD SLOT -->
+  <div class="card-slot-area">
+    <div class="card-slot"></div>
+    <div class="slot-label">INSERT CARD</div>
+  </div>
+
+  <!-- KEYPAD -->
+  <div class="keypad-shell">
+    <div class="keypad-grid">
+      <button class="key" data-k="1">1<sub>   </sub></button>
+      <button class="key" data-k="2">2<sub>ABC</sub></button>
+      <button class="key" data-k="3">3<sub>DEF</sub></button>
+      <button class="key action" data-tab-key="myorders">مسح</button>
+
+      <button class="key" data-k="4">4<sub>GHI</sub></button>
+      <button class="key" data-k="5">5<sub>JKL</sub></button>
+      <button class="key" data-k="6">6<sub>MNO</sub></button>
+      <button class="key action" data-tab-key="mylistings">إلغاء</button>
+
+      <button class="key" data-k="7">7<sub>PQRS</sub></button>
+      <button class="key" data-k="8">8<sub>TUV</sub></button>
+      <button class="key" data-k="9">9<sub>WXYZ</sub></button>
+      <button class="key action confirm" data-tab-key="sell">تأكيد</button>
+
+      <button class="key" data-k="*">*</button>
+      <button class="key" data-k="0">0</button>
+      <button class="key" data-k="#">#</button>
+    </div>
+  </div>
+
+  <div class="bolts"><div class="bolt"></div><div class="bolt"></div></div>
+
+  <!-- RECEIPT SLOT -->
+  <div class="card-slot-area" style="padding:.3rem 3rem;">
+    <div class="card-slot"></div>
+  </div>
+
+  <div class="atm-footer">
+    <p>MDM1 P2P ESCROW · POLYGON MAINNET</p>
+    <p>0x5ECEe4F53B12708c8Fae1CF8469990077C22a8f3</p>
+    <p><a href="../index.html">← العودة للرئيسية</a></p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(()=>{
+'use strict';
+
+const ESCROW_ADDRESS='0x5ECEe4F53B12708c8Fae1CF8469990077C22a8f3';
+const MD1USD_ADDRESS='0x6bd6A380903Ae072A764A929C34779824c068BB1';
+const USDC_ADDRESS='0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359';
+const CHAIN_ID=137;
+
+const MD1USD_ABI=[
+  'function mint(uint256 amount) external',
+  'function redeem(uint256 amount) external',
+  'function decimals() external view returns (uint8)',
+  'function balanceOf(address) external view returns (uint256)',
+  'function totalReserve() external view returns (uint256)',
+];
+
+const ESCROW_ABI=[
+  'function createListing(address token,uint256 amount,uint256 minAmount,uint256 maxAmount,string calldata paymentInfo) external returns (uint256)',
+  'function cancelListing(uint256 listingId) external',
+  'function createOrder(uint256 listingId,uint256 grossAmount) external returns (uint256)',
+  'function confirmPayment(uint256 orderId) external',
+  'function confirmReceived(uint256 orderId) external',
+  'function openDispute(uint256 orderId,string calldata reason) external',
+  'function requestCancelOrder(uint256 orderId,uint8 reasonCode,string calldata reasonText) external',
+  'function getListing(uint256 listingId) external view returns (tuple(address seller,address token,uint256 amount,uint256 available,uint256 minAmount,uint256 maxAmount,string paymentInfo,uint8 status))',
+  'function getOrder(uint256 orderId) external view returns (tuple(uint256 listingId,address buyer,uint256 grossAmount,uint256 feeAmount,uint256 netAmount,uint256 createdAt,uint256 confirmedAt,bool buyerCancelApproved,bool sellerCancelApproved,address cancelRequestedBy,uint8 status))',
+  'function feeBps() external view returns (uint256)',
+  'event ListingCreated(uint256 indexed id,address indexed seller,address indexed token,uint256 amount,uint256 minAmount,uint256 maxAmount,string paymentInfo)',
+  'event OrderCreated(uint256 indexed orderId,uint256 indexed listingId,address indexed buyer,uint256 grossAmount,uint256 netAmount,uint256 feeAmount,uint256 deadline)',
+];
+
+const ERC20_ABI=[
+  'function approve(address spender,uint256 amount) external returns (bool)',
+  'function allowance(address owner,address spender) external view returns (uint256)',
+  'function decimals() external view returns (uint8)',
+  'function symbol() external view returns (string)',
+];
+
+const ST_EN=['Pending','Confirmed','Released','Disputed','Resolved','Cancelled','CancelRequested'];
+const ST_AR=['بانتظار الدفع','دفعت — انتظار التاجر','تم الإفراج','نزاع','محلول','ملغي','طلب إلغاء'];
+
+let provider,signer,escrow,md1usd,userAddress,feeBps=50n;
+let allListings=[];
+const tokenMeta={};
+
+// Toast
+const toastEl=document.getElementById('toast');
+let toastT;
+function toast(msg,err=false,dur=4000){
+  toastEl.textContent=msg;
+  toastEl.className='show'+(err?' err':'');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>toastEl.className='',dur);
+}
+
+// Tabs
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  ['market','swap','sell','myorders','mylistings'].forEach(t=>
+    document.getElementById('tab-'+t).style.display=t===name?'':'none'
+  );
+  if(name==='myorders') renderMyOrders();
+  if(name==='mylistings') renderMyListings();
+  if(name==='market'&&escrow) loadMarket();
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+document.querySelectorAll('[data-tab-key]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tabKey)));
+
+// Connect — shared finalize step
+async function finalizeConnection(ethProvider){
+  provider=new ethers.BrowserProvider(ethProvider);
+  const net=await provider.getNetwork();
+  if(Number(net.chainId)!==CHAIN_ID){toast('بدّل لـ Polygon Mainnet',true);return;}
+  signer=await provider.getSigner();
+  userAddress=await signer.getAddress();
+  escrow=new ethers.Contract(ESCROW_ADDRESS,ESCROW_ABI,signer);
+  md1usd=new ethers.Contract(MD1USD_ADDRESS,MD1USD_ABI,signer);
+  feeBps=await escrow.feeBps();
+
+  const short=userAddress.slice(0,6)+'…'+userAddress.slice(-4);
+  document.getElementById('wallet-txt').textContent=short;
+  document.getElementById('dot').classList.add('online');
+  document.getElementById('btn-connect').textContent='✓ متصل';
+  document.getElementById('btn-connect').disabled=true;
+  document.getElementById('btn-wc').textContent='✓ متصل';
+  document.getElementById('btn-wc').disabled=true;
+  toast('✓ تم الاتصال');
+  await loadMarket();
+}
+
+document.getElementById('btn-connect').addEventListener('click',connectMetaMask);
+async function connectMetaMask(){
+  if(!window.ethereum){toast('ثبّت MetaMask أو استخدم WalletConnect',true);return;}
+  try{
+    await window.ethereum.request({method:'eth_requestAccounts'});
+    await finalizeConnection(window.ethereum);
+  }catch(e){toast('خطأ: '+(e.message||e),true);}
+}
+
+document.getElementById('btn-wc').addEventListener('click',connectWalletConnect);
+async function connectWalletConnect(){
+  const btn=document.getElementById('btn-wc');
+  const EP=window.EthereumProvider || (window.WalletConnectEthereumProvider && window.WalletConnectEthereumProvider.EthereumProvider);
+  if(!EP){
+    toast('تعذّر تحميل WalletConnect — حدّث الصفحة وحاول مرة أخرى',true);
+    return;
+  }
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> جارٍ…';
+  try{
+    const wcProvider=await EP.init({
+      projectId:'20470429a61e7f49666eeb48c7ad9176',
+      chains:[CHAIN_ID],
+      showQrModal:true,
+      metadata:{
+        name:'MD1$ ATM',
+        description:'MDM1 P2P Escrow',
+        url:'https://mdm1.org',
+        icons:['https://mdm1.org/assets/logo.svg']
+      }
+    });
+    await wcProvider.connect();
+    await finalizeConnection(wcProvider);
+  }catch(e){
+    toast('خطأ: '+(e.message||e),true);
+    btn.disabled=false;btn.innerHTML='<span class="icon">⬡</span> WalletConnect';
+  }
+}
+
+// Token meta
+async function getMeta(addr){
+  if(tokenMeta[addr])return tokenMeta[addr];
+  try{
+    const c=new ethers.Contract(addr,ERC20_ABI,provider);
+    const[sym,dec]=await Promise.all([c.symbol(),c.decimals()]);
+    tokenMeta[addr]={symbol:sym,decimals:Number(dec)};
+  }catch{tokenMeta[addr]={symbol:addr.slice(0,6)+'…',decimals:18};}
+  return tokenMeta[addr];
+}
+
+function fmt(amt,dec){
+  return(Number(amt)/10**dec).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:6});
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Chunked event query — public RPC nodes cap eth_getLogs block ranges (often 2k-10k)
+async function queryFilterChunked(contract,filter,chunkSize=2000){
+  const latest=await provider.getBlockNumber();
+  const deployBlock=Math.max(0,latest-200000); // search up to ~200k blocks back, in safe chunks
+  let all=[];
+  for(let from=deployBlock; from<=latest; from+=chunkSize){
+    const to=Math.min(from+chunkSize-1,latest);
+    try{
+      const evs=await contract.queryFilter(filter,from,to);
+      all=all.concat(evs);
+    }catch(e){ /* skip failed chunk, continue */ }
+  }
+  return all;
+}
+
+// Load market
+async function loadMarket(){
+  if(!escrow)return;
+  const el=document.getElementById('market-list');
+  el.innerHTML='<div class="empty"><span class="spin"></span> جارٍ التحميل…</div>';
+  try{
+    const evs=await queryFilterChunked(escrow,escrow.filters.ListingCreated());
+    const ids=[...new Set(evs.map(e=>Number(e.args.id)))];
+    const res=await Promise.all(ids.map(async id=>({id,data:await escrow.getListing(id)})));
+    allListings=res.filter(l=>l.data.status===0n&&l.data.available>0n);
+
+    const toks=new Set(allListings.map(l=>l.data.token));
+    const sel=document.getElementById('filter-token');
+    sel.innerHTML='<option value="">كل العملات</option>';
+    for(const a of toks){const m=await getMeta(a);sel.innerHTML+=`<option value="${a}">${m.symbol}</option>`;}
+    renderMarket();
+  }catch(e){el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;}
+}
+
+async function renderMarket(){
+  const el=document.getElementById('market-list');
+  const filt=document.getElementById('filter-token').value.toLowerCase();
+  const list=filt?allListings.filter(l=>l.data.token.toLowerCase()===filt):allListings;
+  if(!list.length){el.innerHTML='<div class="empty">لا توجد إعلانات</div>';return;}
+  el.innerHTML='';
+  for(const{id,data}of list){
+    const m=await getMeta(data.token);
+    const isMine=userAddress&&data.seller.toLowerCase()===userAddress.toLowerCase();
+    const item=document.createElement('div');
+    item.className='l-item';
+    item.innerHTML=`
+      <div class="l-token">${m.symbol} · #${id}</div>
+      <div class="l-amount">${fmt(data.available,m.decimals)} ${m.symbol}</div>
+      <div class="l-info">${esc(data.paymentInfo)}</div>
+      <div class="l-seller">${data.seller.slice(0,10)}…${data.seller.slice(-6)}</div>
+      ${isMine?'<div class="l-mine">[ إعلانك ]</div>':`
+        <div class="buy-row">
+          <input class="f-input oinp" type="number" min="0" placeholder="الكمية"
+            data-dec="${m.decimals}" data-id="${id}"
+            data-min="${data.minAmount}" data-max="${data.maxAmount}"/>
+          <button class="s-btn bbuy" data-id="${id}" data-dec="${m.decimals}">شراء</button>
+        </div>
+        <div class="fee-line" id="fee-${id}">ستستلم: <em id="net-${id}">—</em> ${m.symbol}</div>
+      `}
+    `;
+    el.appendChild(item);
+  }
+  el.querySelectorAll('.oinp').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const id=inp.dataset.id,dec=Number(inp.dataset.dec),val=parseFloat(inp.value)||0;
+      if(val>0){
+        const g=BigInt(Math.floor(val*10**dec));
+        document.getElementById('net-'+id).textContent=fmt(g-(g*feeBps)/10000n,dec);
+        document.getElementById('fee-'+id).classList.add('show');
+      }else document.getElementById('fee-'+id).classList.remove('show');
+    });
+  });
+  el.querySelectorAll('.bbuy').forEach(b=>b.addEventListener('click',()=>buyListing(b)));
+}
+
+document.getElementById('filter-token').addEventListener('change',renderMarket);
+document.getElementById('btn-refresh').addEventListener('click',loadMarket);
+
+async function buyListing(btn){
+  if(!signer){toast('ربط المحفظة أولاً',true);return;}
+  const id=Number(btn.dataset.id),dec=Number(btn.dataset.dec);
+  const inp=btn.closest('.buy-row').querySelector('.oinp');
+  const val=parseFloat(inp.value);
+  if(!val||val<=0){toast('أدخل الكمية',true);return;}
+  await tx(()=>escrow.createOrder(id,ethers.parseUnits(val.toFixed(dec),dec)),
+    'جارٍ الطلب…','✓ تم — أكمل الدفع ثم اضغط "أكدت الدفع"',
+    ()=>{loadMarket();renderMyOrders();},btn);
+}
+
+// Create listing
+document.getElementById('btn-create').addEventListener('click',async()=>{
+  if(!signer){toast('ربط المحفظة أولاً',true);return;}
+  const ta=document.getElementById('s-token').value.trim();
+  const av=document.getElementById('s-amount').value.trim();
+  const mn=document.getElementById('s-min').value.trim();
+  const mx=document.getElementById('s-max').value.trim();
+  const inf=document.getElementById('s-info').value.trim();
+  if(!ethers.isAddress(ta)){toast('عنوان غير صحيح',true);return;}
+  if(!av||parseFloat(av)<=0){toast('أدخل الكمية',true);return;}
+  if(!mn||parseFloat(mn)<=0){toast('أدخل الحد الأدنى',true);return;}
+  if(!mx||parseFloat(mx)<parseFloat(mn)){toast('الحد الأقصى أقل من الأدنى',true);return;}
+  if(!inf||inf.length<10){toast('طريقة الدفع قصيرة جداً',true);return;}
+  const btn=document.getElementById('btn-create');
+  btn.disabled=true;btn.textContent='جارٍ…';
+  try{
+    const m=await getMeta(ta);
+    const amt=ethers.parseUnits(av,m.decimals);
+    const mnA=ethers.parseUnits(mn,m.decimals);
+    const mxA=ethers.parseUnits(mx,m.decimals);
+    const tok=new ethers.Contract(ta,ERC20_ABI,signer);
+    const all=await tok.allowance(userAddress,ESCROW_ADDRESS);
+    if(all<amt){toast('جارٍ الموافقة…');await(await tok.approve(ESCROW_ADDRESS,amt)).wait();}
+    toast('جارٍ النشر…');
+    await(await escrow.createListing(ta,amt,mnA,mxA,inf)).wait();
+    toast('✓ تم النشر');
+    ['s-token','s-amount','s-min','s-max','s-info'].forEach(id=>document.getElementById(id).value='');
+    await loadMarket();
+  }catch(e){toast('خطأ: '+(e.reason||e.message||e),true);}
+  btn.disabled=false;btn.textContent='◈ نشر الإعلان';
+});
+
+// My orders
+async function renderMyOrders(){
+  if(!escrow||!userAddress)return;
+  const el=document.getElementById('myorders-list');
+  el.innerHTML='<div class="empty"><span class="spin"></span> تحميل…</div>';
+  try{
+    const evs=await queryFilterChunked(escrow,escrow.filters.OrderCreated(null,null,userAddress));
+    const ids=[...new Set(evs.map(e=>Number(e.args.orderId)))];
+    const ords=await Promise.all(ids.map(async id=>({id,data:await escrow.getOrder(id)})));
+    if(!ords.length){el.innerHTML='<div class="empty">لا توجد طلبات</div>';return;}
+    el.innerHTML='';
+    for(const{id,data}of ords.slice().reverse()){
+      const lst=await escrow.getListing(data.listingId);
+      const m=await getMeta(lst.token);
+      const si=Number(data.status);
+      const item=document.createElement('div');item.className='o-item';
+      item.innerHTML=`
+        <div>
+          <div class="o-id">طلب #${id} · إعلان #${Number(data.listingId)}</div>
+          <div class="o-amount">${fmt(data.netAmount,m.decimals)} ${m.symbol}</div>
+          <div class="o-fee">رسوم: ${fmt(data.feeAmount,m.decimals)}</div>
+        </div>
+        <div class="act-btns">
+          <span class="pill ${ST_EN[si]||''}">${ST_AR[si]||'—'}</span>
+          ${si===0?`<button class="s-btn bcp" data-id="${id}">أكدت الدفع</button>`:''}
+          ${si===0?`<button class="s-btn danger brc" data-id="${id}">طلب إلغاء</button>`:''}
+          ${si===1?`<button class="s-btn danger bds" data-id="${id}">نزاع</button>`:''}
+        </div>`;
+      el.appendChild(item);
+    }
+    el.querySelectorAll('.bcp').forEach(b=>b.addEventListener('click',()=>
+      tx(()=>escrow.confirmPayment(Number(b.dataset.id)),'جارٍ…','✓ تم التأكيد',renderMyOrders,b)));
+    el.querySelectorAll('.bds').forEach(b=>b.addEventListener('click',()=>
+      tx(()=>escrow.openDispute(Number(b.dataset.id),'المشتري فتح نزاعاً'),'جارٍ…','✓ نزاع مفتوح',renderMyOrders,b)));
+    el.querySelectorAll('.brc').forEach(b=>b.addEventListener('click',()=>
+      tx(()=>escrow.requestCancelOrder(Number(b.dataset.id),0,''),'جارٍ…','✓ تم طلب الإلغاء',renderMyOrders,b)));
+  }catch(e){el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;}
+}
+
+// My listings
+async function renderMyListings(){
+  if(!escrow||!userAddress)return;
+  const el=document.getElementById('mylistings-list');
+  el.innerHTML='<div class="empty"><span class="spin"></span> تحميل…</div>';
+  try{
+    const evs=await queryFilterChunked(escrow,escrow.filters.ListingCreated(null,userAddress));
+    const ids=[...new Set(evs.map(e=>Number(e.args.id)))];
+    const lsts=await Promise.all(ids.map(async id=>({id,data:await escrow.getListing(id)})));
+    if(!lsts.length){el.innerHTML='<div class="empty">لا توجد إعلانات</div>';return;}
+    const stAr=['نشط','ملغي','مكتمل'];
+    el.innerHTML='';
+    for(const{id,data}of lsts.slice().reverse()){
+      const m=await getMeta(data.token);
+      const si=Number(data.status);
+      const canCancel=si===0&&data.available===data.amount;
+      const oEvs=await queryFilterChunked(escrow,escrow.filters.OrderCreated(null,BigInt(id)));
+      const oIds=[...new Set(oEvs.map(e=>Number(e.args.orderId)))];
+      const oData=await Promise.all(oIds.map(async oid=>({oid,o:await escrow.getOrder(oid)})));
+      const confirmed=oData.filter(({o})=>Number(o.status)===1);
+      const item=document.createElement('div');item.className='l-item';
+      item.innerHTML=`
+        <div class="l-token">${m.symbol} · #${id} · ${stAr[si]}</div>
+        <div class="l-amount">${fmt(data.amount,m.decimals)} ${m.symbol}</div>
+        <div class="l-info">${esc(data.paymentInfo)}</div>
+        <div class="l-seller">متاح: ${fmt(data.available,m.decimals)} · min ${fmt(data.minAmount,m.decimals)} · max ${fmt(data.maxAmount,m.decimals)}</div>
+        <div class="act-btns" style="margin-top:.4rem;align-items:flex-start;">
+          ${canCancel?`<button class="s-btn danger bcl" data-id="${id}">إلغاء الإعلان</button>`:''}
+          ${confirmed.map(({oid,o})=>`
+            <div style="border:1px solid #1a1505;border-radius:3px;padding:.35rem .5rem;margin-top:.3rem;">
+              <div style="font-size:.6rem;color:#4a3a18;margin-bottom:.25rem;">طلب #${oid} · ${fmt(o.netAmount,m.decimals)} ${m.symbol}</div>
+              <div style="display:flex;gap:.3rem;">
+                <button class="s-btn bcr" data-id="${oid}">استلمت ✓</button>
+                <button class="s-btn danger bds2" data-id="${oid}">نزاع</button>
+              </div>
+            </div>`).join('')}
+        </div>`;
+      el.appendChild(item);
+    }
+    el.querySelectorAll('.bcl').forEach(b=>b.addEventListener('click',()=>
+      tx(()=>escrow.cancelListing(Number(b.dataset.id)),'جارٍ…','✓ تم الإلغاء',renderMyListings,b)));
+    el.querySelectorAll('.bcr').forEach(b=>b.addEventListener('click',()=>
+      tx(()=>escrow.confirmReceived(Number(b.dataset.id)),'جارٍ…','✓ تم الإفراج',renderMyListings,b)));
+    el.querySelectorAll('.bds2').forEach(b=>b.addEventListener('click',()=>
+      tx(()=>escrow.openDispute(Number(b.dataset.id),'التاجر فتح نزاعاً'),'جارٍ…','✓ نزاع مفتوح',renderMyListings,b)));
+  }catch(e){el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;}
+}
+
+// TX helper
+async function tx(fn,loadMsg,okMsg,cb,btn){
+  const orig=btn.textContent;
+  btn.disabled=true;btn.innerHTML=`<span class="spin"></span>${loadMsg}`;
+  try{toast(loadMsg);const t=await fn();await t.wait();toast(okMsg);if(cb)await cb();}
+  catch(e){toast('خطأ: '+(e.reason||e.message||e),true);}
+  btn.disabled=false;btn.textContent=orig;
+}
+
+// ══════════════════════════════════════════
+//  Swap tab — Mint/Redeem MD1usd + QuickSwap link
+// ══════════════════════════════════════════
+let swapDir='mint'; // 'mint' = USDC→MD1usd, 'redeem' = MD1usd→USDC
+
+document.querySelectorAll('.swap-dir').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    swapDir=btn.dataset.dir;
+    document.querySelectorAll('.swap-dir').forEach(b=>b.classList.toggle('active',b===btn));
+    document.getElementById('swap-label').textContent =
+      swapDir==='mint' ? 'الكمية (USDC)' : 'الكمية (MD1usd)';
+    document.getElementById('swap-amount').value='';
+    document.getElementById('swap-out').textContent='—';
+  });
+});
+
+document.getElementById('swap-amount').addEventListener('input',()=>{
+  const val=parseFloat(document.getElementById('swap-amount').value)||0;
+  document.getElementById('swap-out').textContent = val>0
+    ? val.toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:6}) +
+      (swapDir==='mint' ? ' MD1usd' : ' USDC')
+    : '—';
+});
+
+document.getElementById('btn-swap').addEventListener('click',async()=>{
+  if(!signer){toast('ربط المحفظة أولاً',true);return;}
+  const val=parseFloat(document.getElementById('swap-amount').value);
+  if(!val||val<=0){toast('أدخل الكمية',true);return;}
+  const btn=document.getElementById('btn-swap');
+  btn.disabled=true;btn.textContent='جارٍ…';
+  try{
+    if(swapDir==='mint'){
+      // USDC → MD1usd : approve USDC then mint
+      const usdc=new ethers.Contract(USDC_ADDRESS,ERC20_ABI,signer);
+      const dec=await usdc.decimals();
+      const amt=ethers.parseUnits(val.toFixed(Number(dec)),Number(dec));
+      const allowance=await usdc.allowance(userAddress,MD1USD_ADDRESS);
+      if(allowance<amt){
+        toast('جارٍ الموافقة على USDC…');
+        await(await usdc.approve(MD1USD_ADDRESS,amt)).wait();
+      }
+      toast('جارٍ السك…');
+      await(await md1usd.mint(amt)).wait();
+      toast('✓ تم سك '+val+' MD1usd');
+    }else{
+      // MD1usd → USDC : redeem (no approve needed, burns own balance)
+      const dec=await md1usd.decimals();
+      const amt=ethers.parseUnits(val.toFixed(Number(dec)),Number(dec));
+      toast('جارٍ الاسترداد…');
+      await(await md1usd.redeem(amt)).wait();
+      toast('✓ تم استرداد '+val+' USDC');
+    }
+    document.getElementById('swap-amount').value='';
+    document.getElementById('swap-out').textContent='—';
+  }catch(e){toast('خطأ: '+(e.reason||e.message||e),true);}
+  btn.disabled=false;btn.textContent='◈ تنفيذ';
+});
+
+})();
+</script>
+</body>
+</html>

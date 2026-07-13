@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD1usd — لوحة التحكم</title>
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+
+<div id="particles"></div>
+<audio id="bg-music" src="../audio/dashboard.mp3" loop preload="none"></audio>
+<button id="music-btn" style="display:none">🔇</button>
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="../index.html" class="nav-back">← العودة</a>
+</nav>
+
+<section class="page-hero">
+  <span class="page-label">Dashboard • لوحة التحكم</span>
+  <h1 class="page-title">📊 المتتبع الحي</h1>
+  <p class="page-sub">بيانات MD1usd · السعر · السيولة · التداول في الوقت الفعلي</p>
+</section>
+
+<div class="page-content">
+  <div class="divider"></div>
+
+  <div class="reveal" style="
+    background:rgba(96,165,250,0.06);
+    border:1px solid rgba(96,165,250,0.2);
+    border-radius:12px;
+    padding:1rem 1.5rem;
+    text-align:center;
+    font-size:0.85rem;
+    color:#60a5fa;
+    letter-spacing:1px;
+    margin-bottom:2.5rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.75rem;
+    flex-wrap:wrap;
+  ">
+    <span id="live-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#34d399; box-shadow:0 0 8px #34d399; animation:pulse-dot 2s infinite;"></span>
+    <span>بيانات مباشرة من DexScreener · Polygon + Ethereum</span>
+    <span id="last-update" style="opacity:0.6; font-size:0.75rem;"></span>
+  </div>
+
+  <div class="card-grid reveal" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem;">
+
+    <div class="card" style="text-align:center; border-color:rgba(201,168,76,0.3);">
+      <div style="font-size:1.6rem; margin-bottom:0.5rem;">💲</div>
+      <div style="font-size:0.72rem; letter-spacing:3px; color:var(--gold-dim); margin-bottom:0.5rem;">السعر الحالي</div>
+      <div id="stat-price" style="font-family:'Cinzel',serif; font-size:1.3rem; color:var(--gold-bright); font-weight:900;">—</div>
+      <div style="font-size:0.72rem; margin-top:0.3rem; opacity:0.55;">USD</div>
+    </div>
+
+    <div class="card" style="text-align:center; border-color:rgba(52,211,153,0.3);">
+      <div style="font-size:1.6rem; margin-bottom:0.5rem;">🏊</div>
+      <div style="font-size:0.72rem; letter-spacing:3px; color:var(--gold-dim); margin-bottom:0.5rem;">السيولة الكلية</div>
+      <div id="stat-liquidity" style="font-family:'Cinzel',serif; font-size:1.3rem; color:#34d399; font-weight:900;">—</div>
+      <div style="font-size:0.72rem; margin-top:0.3rem; opacity:0.55;">Polygon + Ethereum</div>
+    </div>
+
+    <div class="card" style="text-align:center; border-color:rgba(167,139,250,0.3);">
+      <div style="font-size:1.6rem; margin-bottom:0.5rem;">📊</div>
+      <div style="font-size:0.72rem; letter-spacing:3px; color:var(--gold-dim); margin-bottom:0.5rem;">حجم التداول 24h</div>
+      <div id="stat-volume" style="font-family:'Cinzel',serif; font-size:1.3rem; color:#a78bfa; font-weight:900;">—</div>
+      <div style="font-size:0.72rem; margin-top:0.3rem; opacity:0.55;">USD</div>
+    </div>
+
+    <div class="card" style="text-align:center; border-color:rgba(96,165,250,0.3);">
+      <div style="font-size:1.6rem; margin-bottom:0.5rem;">🔄</div>
+      <div style="font-size:0.72rem; letter-spacing:3px; color:var(--gold-dim); margin-bottom:0.5rem;">المعاملات 24h</div>
+      <div id="stat-txns" style="font-family:'Cinzel',serif; font-size:1.3rem; color:#60a5fa; font-weight:900;">—</div>
+      <div style="font-size:0.72rem; margin-top:0.3rem; opacity:0.55;">شراء + بيع</div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+  <h2 class="reveal" style="font-size:1.4rem; color:var(--gold-bright); margin-bottom:1.5rem; text-align:center; letter-spacing:2px;">
+    📋 معلومات العقد الذكي
+  </h2>
+
+  <div class="reveal" style="
+    background:rgba(201,168,76,0.04);
+    border:1px solid rgba(201,168,76,0.15);
+    border-radius:16px;
+    padding:1.5rem;
+  ">
+    <div style="display:flex; flex-direction:column; gap:1.1rem;">
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">الشبكات</span>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <span class="badge badge-blue">Polygon Mainnet</span>
+          <span class="badge" style="background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.3); color:#60a5fa;">Ethereum Mainnet</span>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">المعيار</span>
+        <span class="badge badge-gold">ERC-20</span>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">الرمز</span>
+        <span style="color:var(--gold-bright); font-family:'Cinzel',serif; font-weight:700; letter-spacing:3px;">MD1usd</span>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">الاحتياطي</span>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <span class="badge badge-green">USDC · Polygon</span>
+          <span class="badge" style="background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.2); color:#34d399;">LUSD · Ethereum</span>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">الرسوم</span>
+        <span class="badge badge-green">✅ بدون رسوم</span>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px; padding-top:0.3rem;">عنوان العقد</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+          <code id="contract-addr" style="
+            font-size:0.65rem;
+            color:var(--gold-bright);
+            background:rgba(201,168,76,0.08);
+            padding:0.3rem 0.6rem;
+            border-radius:6px;
+            word-break:break-all;
+            text-align:left;
+            direction:ltr;
+            max-width:260px;
+            display:block;
+          ">0x6bd6A380903Ae072A764A929C34779824c068BB1</code>
+          <button onclick="copyAddr()" style="
+            font-size:0.65rem;
+            background:rgba(201,168,76,0.08);
+            border:1px solid rgba(201,168,76,0.2);
+            color:var(--gold-dim);
+            padding:0.25rem 0.6rem;
+            border-radius:6px;
+            cursor:pointer;
+          " id="copy-btn">📋 نسخ</button>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">التحقق</span>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <span class="badge badge-green">✅ Polygonscan</span>
+          <span class="badge badge-blue">✅ Etherscan</span>
+          <span class="badge badge-green">✅ Sourcify</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <h2 class="reveal" style="font-size:1.4rem; color:var(--gold-bright); margin-bottom:1.5rem; text-align:center; letter-spacing:2px;">
+    🔗 استكشف على البلوك تشين
+  </h2>
+
+  <div class="card-grid reveal" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+
+    <a href="https://polygonscan.com/token/0x6bd6A380903Ae072A764A929C34779824c068BB1"
+       target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
+      <span class="card-icon">🔍</span>
+      <div class="card-title">Polygonscan</div>
+      <div class="card-text">تتبع المعاملات على شبكة Polygon</div>
+    </a>
+
+    <a href="https://etherscan.io/token/0x6bd6A380903Ae072A764A929C34779824c068BB1"
+       target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
+      <span class="card-icon">🔷</span>
+      <div class="card-title">Etherscan</div>
+      <div class="card-text">تتبع المعاملات على شبكة Ethereum</div>
+    </a>
+
+    <a href="https://dexscreener.com/polygon/0x6bd6A380903Ae072A764A929C34779824c068BB1"
+       target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
+      <span class="card-icon">📈</span>
+      <div class="card-title">DexScreener</div>
+      <div class="card-text">متابعة السعر والسيولة</div>
+    </a>
+
+    <a href="https://app.uniswap.org/explore/tokens/polygon/0x6bd6A380903Ae072A764A929C34779824c068BB1"
+       target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
+      <span class="card-icon">🦄</span>
+      <div class="card-title">Uniswap</div>
+      <div class="card-text">تداول MD1usd على Uniswap</div>
+    </a>
+
+  </div>
+
+  <div class="divider"></div>
+  <div class="reveal" style="
+    background:rgba(201,168,76,0.05);
+    border:1px solid rgba(201,168,76,0.2);
+    border-radius:16px;
+    padding:2rem;
+    text-align:center;
+  ">
+    <div style="font-size:2.5rem; margin-bottom:1rem;">🦊</div>
+    <h3 style="color:var(--gold-bright); margin-bottom:0.75rem; font-size:1.2rem;">أضف MD1usd إلى MetaMask</h3>
+    <p style="font-size:0.88rem; opacity:0.65; margin-bottom:1.5rem; line-height:1.9;">
+      تأكد أنك على شبكة <strong style="color:var(--gold-dim);">Polygon Mainnet</strong> قبل الإضافة
+    </p>
+    <button id="add-token-btn" class="cta-btn" style="font-size:0.85rem;">
+      ➕ أضف إلى MetaMask
+    </button>
+    <div id="metamask-msg" style="margin-top:1rem; font-size:0.8rem; opacity:0.6; min-height:1.2rem;"></div>
+  </div>
+
+  <div class="reveal" style="text-align:center; margin-top:3rem;">
+    <a href="tokenomics.html" class="nav-back" style="display:inline-block; margin-left:1rem;">
+      ← التوكينوميكس
+    </a>
+    <a href="../hub.html" class="cta-btn" style="font-size:0.85rem;">
+      🚀 المنصة
+    </a>
+  </div>
+
+</div>
+
+<footer class="page-footer">
+  ✦ &nbsp; MD1usd · Polygon + Ethereum · بيانات مباشرة من البلوك تشين &nbsp; ✦
+</footer>
+
+<style>
+@keyframes pulse-dot {
+  0%, 100% { opacity:1; transform:scale(1); }
+  50%       { opacity:0.5; transform:scale(0.8); }
+}
+</style>
+
+<script src="../js/global.js"></script>
+<script src="../js/pages.js"></script>
+<script>
+const CONTRACT = '0x6bd6A380903Ae072A764A929C34779824c068BB1';
+
+async function fetchDexScreener() {
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONTRACT}`);
+    const data = await res.json();
+    const pairs = data.pairs || [];
+    const polyPairs = pairs.filter(p => p.chainId === 'polygon');
+    const ethPairs  = pairs.filter(p => p.chainId === 'ethereum');
+
+    const price = polyPairs[0]?.priceUsd || ethPairs[0]?.priceUsd;
+    document.getElementById('stat-price').textContent =
+      price ? '$' + parseFloat(price).toFixed(4) : '—';
+
+    let totalLiq = 0;
+    [...polyPairs, ...ethPairs].forEach(p => {
+      totalLiq += parseFloat(p.liquidity?.usd || 0);
+    });
+    document.getElementById('stat-liquidity').textContent =
+      '$' + Math.round(totalLiq).toLocaleString('ar-EG');
+
+    let totalVol = 0;
+    [...polyPairs, ...ethPairs].forEach(p => {
+      totalVol += parseFloat(p.volume?.h24 || 0);
+    });
+    document.getElementById('stat-volume').textContent =
+      '$' + Math.round(totalVol).toLocaleString('ar-EG');
+
+    let totalTxns = 0;
+    [...polyPairs, ...ethPairs].forEach(p => {
+      totalTxns += (p.txns?.h24?.buys || 0) + (p.txns?.h24?.sells || 0);
+    });
+    document.getElementById('stat-txns').textContent =
+      totalTxns.toLocaleString('ar-EG');
+
+    document.getElementById('last-update').textContent =
+      'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG');
+
+  } catch(e) {
+    ['stat-price','stat-liquidity','stat-volume','stat-txns'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('last-update').textContent = 'تعذّر الاتصال';
+  }
+}
+
+function copyAddr() {
+  navigator.clipboard.writeText(CONTRACT).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✅ تم النسخ';
+    setTimeout(() => { btn.textContent = '📋 نسخ'; }, 2000);
+  });
+}
+
+document.getElementById('add-token-btn').addEventListener('click', async () => {
+  const msg = document.getElementById('metamask-msg');
+  if (!window.ethereum) {
+    msg.textContent = '⚠️ MetaMask غير مثبت';
+    msg.style.color = '#fb923c';
+    return;
+  }
+  try {
+    await window.ethereum.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          address:  CONTRACT,
+          symbol:   'MD1usd',
+          decimals: 6,
+          image:    'https://mdm1.org/images/shared/logo.png',
+        },
+      },
+    });
+    msg.textContent = '✅ تمت الإضافة!';
+    msg.style.color = '#34d399';
+  } catch(e) {
+    msg.textContent = '⚠️ حدث خطأ';
+    msg.style.color = '#f87171';
+  }
+});
+
+window.addEventListener('load', () => {
+  setTimeout(fetchDexScreener, 600);
+  setInterval(fetchDexScreener, 60_000);
+});
+</script>
+</body>
+</html>
