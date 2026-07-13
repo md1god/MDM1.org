@@ -1,0 +1,16 @@
+name: Content Check
+on:
+  schedule: [{ cron: '0 8 * * *' }]
+  workflow_dispatch:
+jobs:
+  check:
+    permissions: { contents: read, issues: write }
+    uses: md1god/MD-automation/.github/workflows/reusable-content-check.yml@main
+    with:
+      required-files: |
+        pages/team.html
+        pages/tokenomics.html
+        pages/security.html
+        pages/whitepaper.html
+        pages/faq.html
+      min-bytes: '800'
