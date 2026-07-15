@@ -1,50 +1,31 @@
-name: 🔄 Generate Pages Automatically
+name: 🔄 MD1usd Content Generator
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *' # يعمل تلقائياً كل ساعة
+  workflow_dispatch:     # زر تشغيل يدوي للاختبار
 
 jobs:
-  generate-pages:
+  generate:
     runs-on: ubuntu-latest
-    
     permissions:
       contents: write
-      
     steps:
-      - name: ✅ Checkout Repository
+      - name: ✅ Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: 🔧 Setup Node.js
+
+      - name: 🔧 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      
-      - name: 📝 Generate New Page
+
+      - name: 📝 Run Generator
         run: node build-pages.js
-      
-      - name: 📊 Check if Pages Changed
-        id: check_changes
-        run: |
-          if git diff --quiet pages/; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: 🚀 Commit and Push
+
+      - name: 🚀 Commit & Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "MD1 Bot"
-          git add -A
-          git commit -m "🆕 إضافة صفحة جديدة - $(date +%Y-%m-%d\ %H:%M:%S)" || echo "No changes to commit"
-          git push || echo "Nothing to push"
-      
-      - name: 📢 Log Status
-        run: |
-          echo "✅ Workflow completed at $(date +%Y-%m-%d\ %H:%M:%S)"
-          echo "📁 Pages directory: $(ls pages/ | wc -l) files"
-          echo "📄 Last page: $(ls -t pages/ | head -1)"
+          git add pages/
+          git commit -m "🆕 تحديث محتوى جديد - $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes"
+          git push
