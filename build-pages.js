@@ -2,6 +2,15 @@
 const fs = require('fs');
 const path = require('path');
 
+// --- التعديل هنا ---
+// بدلاً من استخدام الاسم فقط، نستخدم المسار الكامل للمجلد الذي يتواجد فيه السكربت
+const dataPath = path.join(__dirname, 'pages-data.json');
+const dataFile = fs.readFileSync(dataPath, 'utf8');
+const data = JSON.parse(dataFile);
+// ------------------
+
+// ... باقي الكود كما هو
+
 const PAGES_DIR = path.join(__dirname, 'pages');
 const INDEX_FILE = path.join(PAGES_DIR, 'index.json');
 const DATA_FILE = 'pages-data.json';
