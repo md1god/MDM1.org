@@ -2,7 +2,7 @@ name: Deploy
 on:
   push: { branches: [main] }
   workflow_dispatch:
-permissions: { contents: read, pages: write, id-token: write }
+permissions: { contents: read, pages: write }
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -21,14 +21,12 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      - name: Copy 404.html for SPA fallback
-        run: cp dist/index.html dist/404.html
+      
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
+       
   deploy:
     needs: build
     runs-on: ubuntu-latest
