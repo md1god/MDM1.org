@@ -1,0 +1,51 @@
+name: Reusable Content Check
+on:
+  workflow_call:
+    inputs:
+      required-files: { type: string }
+      min-bytes: { type: string, default: '500' }
+  workflow_dispatch:
+    inputs:
+      required-files: { type: string, required: true, description: "قائمة الملفات (مفصولة بأسطر)" }
+      min-bytes: { type: string, default: '500', description: "الحد الأدنى للحجم بالبايت" }
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, issues: write }
+    steps:
+      - uses: actions/checkout@v4
+      - id: scan
+        run: |
+          missing=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            if [ ! -f "$f" ]; then
+              missing="$missing\n- $f (غير موجود)"
+            else
+              size=$(stat -c%s "$f")
+              if [ "$size" -lt "${{ inputs.min-bytes }}" ]; then
+                missing="$missing\n- $f (صغير جدًا، غالبًا placeholder — $size bytes)"
+              fi
+            fi
+          done <<< "${{ inputs.required-files }}"
+          echo "missing<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$missing" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+      - if: steps.scan.outputs.missing != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const missing = `${{ steps.scan.outputs.missing }}`;
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              labels: ['content-missing'], state: 'open'
+            });
+            if (existing.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: 'صفحات/محتوى ناقص',
+                body: `الملفات دي محتاجة اهتمام:\n${missing}`,
+                labels: ['content-missing']
+              });
+            }
