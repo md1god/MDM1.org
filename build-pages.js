@@ -64,9 +64,9 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
 
   <main class="page-content">
     <div class="media-block reveal" id="daily-media">
-      <img src="${imagePath}" alt="رسالة اليوم"
-           onerror="this.style.display='none'; document.getElementById('daily-media').classList.add('media-empty');">
-      <div class="media-empty-icon">🖼️</div>
+      <img src="${imagePath}.jpg" alt="رسالة اليوم"
+           onerror="if(!this.dataset.triedPng){this.dataset.triedPng='1'; this.src='${imagePath}.png';} else {this.style.display='none'; document.getElementById('daily-media').classList.add('media-empty');}">
+      <div class="media-empty-icon">✦</div>
       <div class="media-caption">${quote}</div>
     </div>
   </main>
@@ -145,7 +145,7 @@ const pageNumber = state.pageCount + 1;
 const title = randomFrom(data.contentWords.titles);
 const description = randomFrom(data.contentWords.descriptions);
 const quote = pickDailyQuote(pageNumber, data.wisdomQuotes);
-const imagePath = `../${data.config.imageBasePath}/${pageNumber}.jpg`;
+const imagePath = `../${data.config.imageBasePath}/${pageNumber}`;
 
 const pageSlug = `${pageNumber}`;
 const pagePath = path.join('pages', `${pageSlug}.html`);
@@ -174,4 +174,4 @@ fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), 'utf8');
 
 console.log(`✅ تم إنشاء صفحة جديدة: pages/${pageSlug}.html`);
 console.log(`📋 تم تحديث الفهرس: pages/index.html (${registry.length} صفحة)`);
-console.log(`🖼️  الصورة المتوقعة: ${data.config.imageBasePath}/${pageNumber}.jpg (لازم ترفعها إنت يدويًا بنفس الاسم)`);
+console.log(`🖼️  الصورة المتوقعة: ${data.config.imageBasePath}/${pageNumber}.jpg أو ${pageNumber}.png (لازم ترفعها إنت يدويًا بنفس الرقم، jpg أو png)`);
