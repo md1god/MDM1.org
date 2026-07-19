@@ -30,6 +30,8 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
   });
 
   // ملاحظة: المسارات هنا نسبية لأن الملف هيتحط جوا مجلد pages/
+  // الكلاسات دي هي الكلاسات الحقيقية المعرّفة في css/pages.css (navbar, page-hero,
+  // page-content, media-block, page-footer...) — مطابقة تمامًا لباقي صفحات الموقع
   const template = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -37,35 +39,32 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title} - MDM1</title>
   <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/pages.css">
 </head>
 <body>
-  <nav class="mdm1-nav">
-    <div class="nav-container">
-      <a href="https://mdm1.org/index.html" class="logo">👁️ MDM1</a>
-      <ul class="nav-menu nav-item">
-        <li><a href="https://mdm1.org/index.html">الرئيسية</a></li>
-        <li><a href="https://mdm1.org/pages/about.html">من نحن</a></li>
-        <li><a href="https://mdm1.org/pages/tokenomics.html">التوكنوميكس</a></li>
-        <li><a href="https://mdm1.org/pages/index.html">كل الصفحات</a></li>
-      </ul>
-    </div>
+  <div id="particles"></div>
+
+  <nav class="navbar">
+    <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+    <a href="https://mdm1.org/pages/index.html" class="nav-back">كل الصفحات</a>
   </nav>
 
-  <main class="mdm1-particles">
-    <section class="hero reveal">
-      <h1 class="glow-gold">${title}</h1>
-      <p>${description}</p>
-    </section>
+  <header class="page-hero reveal">
+    <div class="page-label">MDM1 · صفحة يومية</div>
+    <h1 class="page-title">${title}</h1>
+    <p class="page-sub">${description}</p>
+  </header>
 
-    <section class="daily-image reveal">
-      <img src="${imagePath}" alt="رسالة اليوم" loading="lazy"
-           onerror="this.closest('.daily-image').style.display='none'">
-      <p class="daily-quote glow-gold">${quote}</p>
-    </section>
+  <main class="page-content">
+    <div class="media-block reveal">
+      <img src="${imagePath}" alt="رسالة اليوم"
+           onerror="this.closest('.media-block').style.display='none'">
+      <div class="media-caption">${quote}</div>
+    </div>
   </main>
 
-  <footer class="meta">
-    <p>✦ MDM1 · صفحة #${pageNumber} · ${today} ✦</p>
+  <footer class="page-footer">
+    ✦ MDM1 · صفحة #${pageNumber} · ${today} ✦
   </footer>
 
   <script src="../js/global.js"></script>
@@ -82,7 +81,14 @@ function generateIndexHTML(pages) {
   const items = pages
     .slice()
     .reverse()
-    .map(p => `        <li class="reveal"><a href="${p.slug}.html">صفحة #${p.number} — ${p.title}</a></li>`)
+    .map(p => {
+      const d = new Date(p.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+      return `      <li class="tl-item">
+        <div class="tl-date">صفحة #${p.number}</div>
+        <div class="tl-title"><a href="${p.slug}.html" class="glow-gold">${p.title}</a></div>
+        <div class="tl-text">${d}</div>
+      </li>`;
+    })
     .join('\n');
 
   return `<!DOCTYPE html>
@@ -92,33 +98,30 @@ function generateIndexHTML(pages) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>كل الصفحات - MDM1</title>
   <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/pages.css">
 </head>
 <body>
-  <nav class="mdm1-nav">
-    <div class="nav-container">
-      <a href="https://mdm1.org/index.html" class="logo">👁️ MDM1</a>
-      <ul class="nav-menu nav-item">
-        <li><a href="https://mdm1.org/index.html">الرئيسية</a></li>
-        <li><a href="https://mdm1.org/pages/about.html">من نحن</a></li>
-        <li><a href="https://mdm1.org/pages/tokenomics.html">التوكنوميكس</a></li>
-      </ul>
-    </div>
+  <div id="particles"></div>
+
+  <nav class="navbar">
+    <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+    <a href="https://mdm1.org/index.html" class="nav-back">الرئيسية</a>
   </nav>
 
-  <main class="mdm1-particles">
-    <section class="hero reveal">
-      <h1 class="glow-gold">كل الصفحات</h1>
-      <p>أرشيف الصفحات اليومية — آخر تحديث: ${today}</p>
-    </section>
-    <section class="reveal">
-      <ul class="pages-list">
+  <header class="page-hero reveal">
+    <div class="page-label">MDM1 · الأرشيف</div>
+    <h1 class="page-title">كل الصفحات</h1>
+    <p class="page-sub">آخر تحديث: ${today} · إجمالي الصفحات: ${pages.length}</p>
+  </header>
+
+  <main class="page-content">
+    <ul class="timeline reveal">
 ${items}
-      </ul>
-    </section>
+    </ul>
   </main>
 
-  <footer class="meta">
-    <p>✦ MDM1 · إجمالي الصفحات: ${pages.length} ✦</p>
+  <footer class="page-footer">
+    ✦ MDM1 · إجمالي الصفحات: ${pages.length} ✦
   </footer>
 
   <script src="../js/global.js"></script>
