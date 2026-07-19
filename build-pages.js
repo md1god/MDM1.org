@@ -42,12 +42,10 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
   <link rel="stylesheet" href="../css/pages.css">
   <style>
     /* حالة الصورة الفاضية (لسه ما اتضافتش) — نفس روح مربعات الجاليري الفاضية */
-    .media-block { min-height: 220px; display: flex; align-items: center; justify-content: center; background: rgba(201,168,76,0.03); }
+    .media-block { min-height: 220px; }
     .media-block .media-empty-icon { display: none; font-size: 2.5rem; opacity: 0.35; }
-    .media-block.media-empty { flex-direction: column; gap: 1rem; }
+    .media-block.media-empty { flex-direction: column; gap: 1rem; background: rgba(201,168,76,0.03); }
     .media-block.media-empty .media-empty-icon { display: block; }
-    /* الصورة اليومية تظهر كاملة دايمًا من غير قص، بعكس باقي صور الموقع (object-fit: cover) */
-    .media-block img { height: auto; max-height: 70vh; object-fit: contain; background: var(--void); }
   </style>
 </head>
 <body>
