@@ -65,11 +65,28 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
   <main class="page-content">
     <div class="media-block reveal" id="daily-media">
       <img src="${imagePath}.jpg" alt="رسالة اليوم"
-           onerror="if(!this.dataset.triedPng){this.dataset.triedPng='1'; this.src='${imagePath}.png';} else {this.style.display='none'; document.getElementById('daily-media').classList.add('media-empty');}">
+           data-base="${imagePath}"
+           data-exts="png,jpeg,webp"
+           onerror="mdm1TryNextExt(this)">
       <div class="media-empty-icon">✦</div>
       <div class="media-caption">${quote}</div>
     </div>
   </main>
+  <script>
+    // يجرب امتدادات الصورة اليومية بالترتيب (jpg ثم png ثم jpeg ثم webp) قبل ما يستسلم
+    function mdm1TryNextExt(img){
+      const exts = img.dataset.exts.split(',');
+      const next = exts.shift();
+      img.dataset.exts = exts.join(',');
+      if(next){
+        img.onerror = function(){ mdm1TryNextExt(img); };
+        img.src = img.dataset.base + '.' + next;
+      } else {
+        img.style.display = 'none';
+        document.getElementById('daily-media').classList.add('media-empty');
+      }
+    }
+  </script>
 
   <footer class="page-footer">
     ✦ MDM1 · صفحة #${pageNumber} · ${today} ✦
@@ -174,4 +191,4 @@ fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), 'utf8');
 
 console.log(`✅ تم إنشاء صفحة جديدة: pages/${pageSlug}.html`);
 console.log(`📋 تم تحديث الفهرس: pages/index.html (${registry.length} صفحة)`);
-console.log(`🖼️  الصورة المتوقعة: ${data.config.imageBasePath}/${pageNumber}.jpg أو ${pageNumber}.png (لازم ترفعها إنت يدويًا بنفس الرقم، jpg أو png)`);
+console.log(`🖼️  الصورة المتوقعة: ${data.config.imageBasePath}/${pageNumber} بأي امتداد من: jpg, png, jpeg, webp (ارفعها بنفس الرقم فقط)`);
