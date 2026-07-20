@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المحفظة الآمنة - MDM1</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <style>
+    /* حالة الصورة الفاضية (لسه ما اتضافتش) — نفس روح مربعات الجاليري الفاضية */
+    .media-block { min-height: 220px; }
+    .media-block .media-empty-icon { display: none; font-size: 2.5rem; opacity: 0.35; }
+    .media-block.media-empty { flex-direction: column; gap: 1rem; background: rgba(201,168,76,0.03); }
+    .media-block.media-empty .media-empty-icon { display: block; }
+  </style>
+</head>
+<body>
+  <div id="particles"></div>
+
+  <nav class="navbar">
+    <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+    <a href="https://mdm1.org/pages/index.html" class="nav-back">كل الصفحات</a>
+  </nav>
+
+  <header class="page-hero reveal">
+    <div class="page-label">MDM1 · صفحة يومية</div>
+    <h1 class="page-title">المحفظة الآمنة</h1>
+    <p class="page-sub">سيولة دائمة على منصات التبادل</p>
+  </header>
+
+  <main class="page-content">
+    <div class="media-block reveal" id="daily-media">
+      <img src="../images/daily/2.jpg" alt="رسالة اليوم"
+           data-base="../images/daily/2"
+           data-exts="png,jpeg,webp"
+           onerror="mdm1TryNextExt(this)">
+      <div class="media-empty-icon">✦</div>
+      <div class="media-caption">من نشر الحق بين الناس، أنار طريقه ولو خفي عنه الأجر.</div>
+    </div>
+  </main>
+  <script>
+    // يجرب امتدادات الصورة اليومية بالترتيب (jpg ثم png ثم jpeg ثم webp) قبل ما يستسلم
+    function mdm1TryNextExt(img){
+      const exts = img.dataset.exts.split(',');
+      const next = exts.shift();
+      img.dataset.exts = exts.join(',');
+      if(next){
+        img.onerror = function(){ mdm1TryNextExt(img); };
+        img.src = img.dataset.base + '.' + next;
+      } else {
+        img.style.display = 'none';
+        document.getElementById('daily-media').classList.add('media-empty');
+      }
+    }
+  </script>
+
+  <footer class="page-footer">
+    ✦ MDM1 · صفحة #2 · الاثنين، ٢٠ يوليو ٢٠٢٦ ✦
+  </footer>
+
+  <script src="../js/global.js"></script>
+</body>
+</html>
