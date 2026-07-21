@@ -44,7 +44,7 @@
     flex-wrap:wrap;
   ">
     <span id="live-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#34d399; box-shadow:0 0 8px #34d399; animation:pulse-dot 2s infinite;"></span>
-    <span>بيانات مباشرة من DexScreener · Polygon + Ethereum</span>
+    <span>بيانات مباشرة من DexScreener · Polygon + Ethereum + BNB + Solana</span>
     <span id="last-update" style="opacity:0.6; font-size:0.75rem;"></span>
   </div>
 
@@ -61,7 +61,7 @@
       <div style="font-size:1.6rem; margin-bottom:0.5rem;">🏊</div>
       <div style="font-size:0.72rem; letter-spacing:3px; color:var(--gold-dim); margin-bottom:0.5rem;">السيولة الكلية</div>
       <div id="stat-liquidity" style="font-family:'Cinzel',serif; font-size:1.3rem; color:#34d399; font-weight:900;">—</div>
-      <div style="font-size:0.72rem; margin-top:0.3rem; opacity:0.55;">Polygon + Ethereum</div>
+      <div style="font-size:0.72rem; margin-top:0.3rem; opacity:0.55;">كل الشبكات</div>
     </div>
 
     <div class="card" style="text-align:center; border-color:rgba(167,139,250,0.3);">
@@ -98,19 +98,24 @@
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
           <span class="badge badge-blue">Polygon Mainnet</span>
           <span class="badge" style="background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.3); color:#60a5fa;">Ethereum Mainnet</span>
+          <span class="badge" style="background:rgba(240,185,11,0.1); border:1px solid rgba(240,185,11,0.3); color:#f0b90b;">BNB Chain</span>
+          <span class="badge" style="background:rgba(153,69,255,0.1); border:1px solid rgba(153,69,255,0.3); color:#9945ff;">Solana</span>
         </div>
       </div>
       <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
         <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">المعيار</span>
-        <span class="badge badge-gold">ERC-20</span>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <span class="badge badge-gold">ERC-20 / BEP-20</span>
+          <span class="badge" style="background:rgba(153,69,255,0.08); border:1px solid rgba(153,69,255,0.2); color:#9945ff;">SPL</span>
+        </div>
       </div>
       <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
         <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px;">الرمز</span>
-        <span style="color:var(--gold-bright); font-family:'Cinzel',serif; font-weight:700; letter-spacing:3px;">MD1usd</span>
+        <span style="color:var(--gold-bright); font-family:'Cinzel',serif; font-weight:700; letter-spacing:3px;">MD1$</span>
       </div>
       <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
 
@@ -119,6 +124,8 @@
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
           <span class="badge badge-green">USDC · Polygon</span>
           <span class="badge" style="background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.2); color:#34d399;">LUSD · Ethereum</span>
+          <span class="badge" style="background:rgba(240,185,11,0.08); border:1px solid rgba(240,185,11,0.3); color:#f0b90b;">DAI · BNB</span>
+          <span class="badge" style="background:rgba(153,69,255,0.08); border:1px solid rgba(153,69,255,0.2); color:#9945ff;">USDT · Solana</span>
         </div>
       </div>
       <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
@@ -130,9 +137,9 @@
       <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
 
       <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
-        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px; padding-top:0.3rem;">عنوان العقد</span>
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px; padding-top:0.3rem;">عنوان العقد · Polygon</span>
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
-          <code id="contract-addr" style="
+          <code class="contract-addr-code" data-contract="polygon" style="
             font-size:0.65rem;
             color:var(--gold-bright);
             background:rgba(201,168,76,0.08);
@@ -144,7 +151,7 @@
             max-width:260px;
             display:block;
           ">0x6bd6A380903Ae072A764A929C34779824c068BB1</code>
-          <button onclick="copyAddr()" style="
+          <button onclick="copyAddr('polygon', this)" class="copy-btn-el" style="
             font-size:0.65rem;
             background:rgba(201,168,76,0.08);
             border:1px solid rgba(201,168,76,0.2);
@@ -152,7 +159,91 @@
             padding:0.25rem 0.6rem;
             border-radius:6px;
             cursor:pointer;
-          " id="copy-btn">📋 نسخ</button>
+          ">📋 نسخ</button>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px; padding-top:0.3rem;">عنوان العقد · Ethereum</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+          <code class="contract-addr-code" data-contract="ethereum" style="
+            font-size:0.65rem;
+            color:var(--gold-bright);
+            background:rgba(201,168,76,0.08);
+            padding:0.3rem 0.6rem;
+            border-radius:6px;
+            word-break:break-all;
+            text-align:left;
+            direction:ltr;
+            max-width:260px;
+            display:block;
+          ">0x6bd6A380903Ae072A764A929C34779824c068BB1</code>
+          <button onclick="copyAddr('ethereum', this)" class="copy-btn-el" style="
+            font-size:0.65rem;
+            background:rgba(201,168,76,0.08);
+            border:1px solid rgba(201,168,76,0.2);
+            color:var(--gold-dim);
+            padding:0.25rem 0.6rem;
+            border-radius:6px;
+            cursor:pointer;
+          ">📋 نسخ</button>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px; padding-top:0.3rem;">عنوان العقد · BNB Chain</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+          <code class="contract-addr-code" data-contract="bnb" style="
+            font-size:0.65rem;
+            color:var(--gold-bright);
+            background:rgba(201,168,76,0.08);
+            padding:0.3rem 0.6rem;
+            border-radius:6px;
+            word-break:break-all;
+            text-align:left;
+            direction:ltr;
+            max-width:260px;
+            display:block;
+          ">0xDe6b3FEe06A5570e51f171c3afFCfD7f7c6d4787</code>
+          <button onclick="copyAddr('bnb', this)" class="copy-btn-el" style="
+            font-size:0.65rem;
+            background:rgba(201,168,76,0.08);
+            border:1px solid rgba(201,168,76,0.2);
+            color:var(--gold-dim);
+            padding:0.25rem 0.6rem;
+            border-radius:6px;
+            cursor:pointer;
+          ">📋 نسخ</button>
+        </div>
+      </div>
+      <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+        <span style="font-size:0.78rem; color:var(--gold-dim); letter-spacing:2px; padding-top:0.3rem;">عنوان البرنامج · Solana</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem;">
+          <code class="contract-addr-code" data-contract="solana" style="
+            font-size:0.65rem;
+            color:var(--gold-bright);
+            background:rgba(201,168,76,0.08);
+            padding:0.3rem 0.6rem;
+            border-radius:6px;
+            word-break:break-all;
+            text-align:left;
+            direction:ltr;
+            max-width:260px;
+            display:block;
+          ">3fN2LAt47q3oSgNq4dJZt4DuAh5yJw6mb6B3dRYJGHa8</code>
+          <button onclick="copyAddr('solana', this)" class="copy-btn-el" style="
+            font-size:0.65rem;
+            background:rgba(201,168,76,0.08);
+            border:1px solid rgba(201,168,76,0.2);
+            color:var(--gold-dim);
+            padding:0.25rem 0.6rem;
+            border-radius:6px;
+            cursor:pointer;
+          ">📋 نسخ</button>
         </div>
       </div>
       <div style="height:1px; background:rgba(201,168,76,0.08);"></div>
@@ -162,6 +253,7 @@
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
           <span class="badge badge-green">✅ Polygonscan</span>
           <span class="badge badge-blue">✅ Etherscan</span>
+          <span class="badge" style="background:rgba(240,185,11,0.1); border:1px solid rgba(240,185,11,0.3); color:#f0b90b;">✅ BscScan</span>
           <span class="badge badge-green">✅ Sourcify</span>
         </div>
       </div>
@@ -190,6 +282,20 @@
       <div class="card-text">تتبع المعاملات على شبكة Ethereum</div>
     </a>
 
+    <a href="https://bscscan.com/token/0xDe6b3FEe06A5570e51f171c3afFCfD7f7c6d4787"
+       target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
+      <span class="card-icon">🟡</span>
+      <div class="card-title">BscScan</div>
+      <div class="card-text">تتبع المعاملات على شبكة BNB Chain</div>
+    </a>
+
+    <a href="https://solscan.io/account/3fN2LAt47q3oSgNq4dJZt4DuAh5yJw6mb6B3dRYJGHa8"
+       target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
+      <span class="card-icon">🟣</span>
+      <div class="card-title">Solscan</div>
+      <div class="card-text">تتبع المعاملات على شبكة Solana</div>
+    </a>
+
     <a href="https://dexscreener.com/polygon/0x6bd6A380903Ae072A764A929C34779824c068BB1"
        target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
       <span class="card-icon">📈</span>
@@ -201,7 +307,7 @@
        target="_blank" class="card" style="text-decoration:none; text-align:center; cursor:pointer;">
       <span class="card-icon">🦄</span>
       <div class="card-title">Uniswap</div>
-      <div class="card-text">تداول MD1usd على Uniswap</div>
+      <div class="card-text">تداول MD1$ على Uniswap</div>
     </a>
 
   </div>
@@ -215,9 +321,9 @@
     text-align:center;
   ">
     <div style="font-size:2.5rem; margin-bottom:1rem;">🦊</div>
-    <h3 style="color:var(--gold-bright); margin-bottom:0.75rem; font-size:1.2rem;">أضف MD1usd إلى MetaMask</h3>
+    <h3 style="color:var(--gold-bright); margin-bottom:0.75rem; font-size:1.2rem;">أضف MD1$ إلى محفظتك</h3>
     <p style="font-size:0.88rem; opacity:0.65; margin-bottom:1.5rem; line-height:1.9;">
-      تأكد أنك على شبكة <strong style="color:var(--gold-dim);">Polygon Mainnet</strong> قبل الإضافة
+      اختر الشبكة أولاً من محفظتك (Polygon / Ethereum / BNB Chain) قبل الإضافة عبر MetaMask
     </p>
     <button id="add-token-btn" class="cta-btn" style="font-size:0.85rem;">
       ➕ أضف إلى MetaMask
@@ -237,7 +343,7 @@
 </div>
 
 <footer class="page-footer">
-  ✦ &nbsp; MD1usd · Polygon + Ethereum · بيانات مباشرة من البلوك تشين &nbsp; ✦
+  ✦ &nbsp; MD1usd · Polygon + Ethereum + BNB + Solana · بيانات مباشرة من البلوك تشين &nbsp; ✦
 </footer>
 
 <style>
@@ -250,36 +356,51 @@
 <script src="../js/global.js"></script>
 <script src="../js/pages.js"></script>
 <script>
-const CONTRACT = '0x6bd6A380903Ae072A764A929C34779824c068BB1';
+const CONTRACTS = {
+  polygon:  '0x6bd6A380903Ae072A764A929C34779824c068BB1',
+  ethereum: '0x6bd6A380903Ae072A764A929C34779824c068BB1',
+  bnb:      '0xDe6b3FEe06A5570e51f171c3afFCfD7f7c6d4787',
+  solana:   '3fN2LAt47q3oSgNq4dJZt4DuAh5yJw6mb6B3dRYJGHa8',
+};
 
 async function fetchDexScreener() {
   try {
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONTRACT}`);
-    const data = await res.json();
-    const pairs = data.pairs || [];
-    const polyPairs = pairs.filter(p => p.chainId === 'polygon');
-    const ethPairs  = pairs.filter(p => p.chainId === 'ethereum');
+    // Polygon + Ethereum share one contract address, so one call covers both.
+    const evmRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONTRACTS.polygon}`);
+    const evmData = await evmRes.json();
+    const evmPairs = evmData.pairs || [];
 
-    const price = polyPairs[0]?.priceUsd || ethPairs[0]?.priceUsd;
+    // BNB and Solana use their own addresses — fetch separately.
+    const [bnbRes, solRes] = await Promise.all([
+      fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONTRACTS.bnb}`),
+      fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONTRACTS.solana}`),
+    ]);
+    const bnbData = await bnbRes.json();
+    const solData = await solRes.json();
+
+    const polyPairs = evmPairs.filter(p => p.chainId === 'polygon');
+    const ethPairs  = evmPairs.filter(p => p.chainId === 'ethereum');
+    const bnbPairs  = (bnbData.pairs || []).filter(p => p.chainId === 'bsc');
+    const solPairs  = (solData.pairs || []).filter(p => p.chainId === 'solana');
+
+    const allPairs = [...polyPairs, ...ethPairs, ...bnbPairs, ...solPairs];
+
+    const price = polyPairs[0]?.priceUsd || ethPairs[0]?.priceUsd || bnbPairs[0]?.priceUsd || solPairs[0]?.priceUsd;
     document.getElementById('stat-price').textContent =
       price ? '$' + parseFloat(price).toFixed(4) : '—';
 
     let totalLiq = 0;
-    [...polyPairs, ...ethPairs].forEach(p => {
-      totalLiq += parseFloat(p.liquidity?.usd || 0);
-    });
+    allPairs.forEach(p => { totalLiq += parseFloat(p.liquidity?.usd || 0); });
     document.getElementById('stat-liquidity').textContent =
       '$' + Math.round(totalLiq).toLocaleString('ar-EG');
 
     let totalVol = 0;
-    [...polyPairs, ...ethPairs].forEach(p => {
-      totalVol += parseFloat(p.volume?.h24 || 0);
-    });
+    allPairs.forEach(p => { totalVol += parseFloat(p.volume?.h24 || 0); });
     document.getElementById('stat-volume').textContent =
       '$' + Math.round(totalVol).toLocaleString('ar-EG');
 
     let totalTxns = 0;
-    [...polyPairs, ...ethPairs].forEach(p => {
+    allPairs.forEach(p => {
       totalTxns += (p.txns?.h24?.buys || 0) + (p.txns?.h24?.sells || 0);
     });
     document.getElementById('stat-txns').textContent =
@@ -296,11 +417,11 @@ async function fetchDexScreener() {
   }
 }
 
-function copyAddr() {
-  navigator.clipboard.writeText(CONTRACT).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = '✅ تم النسخ';
-    setTimeout(() => { btn.textContent = '📋 نسخ'; }, 2000);
+function copyAddr(chain, btnEl) {
+  navigator.clipboard.writeText(CONTRACTS[chain]).then(() => {
+    const original = btnEl.textContent;
+    btnEl.textContent = '✅ تم النسخ';
+    setTimeout(() => { btnEl.textContent = original; }, 2000);
   });
 }
 
@@ -317,7 +438,7 @@ document.getElementById('add-token-btn').addEventListener('click', async () => {
       params: {
         type: 'ERC20',
         options: {
-          address:  CONTRACT,
+          address:  CONTRACTS.polygon,
           symbol:   'MD1usd',
           decimals: 6,
           image:    'https://mdm1.org/images/shared/logo.png',
