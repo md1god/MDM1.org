@@ -1,0 +1,38 @@
+name: Automated SEO and Page Builder
+
+on:
+  schedule:
+    - cron: '0 * * * *' # يتم تشغيل الـ Workflow تلقائياً كل ساعة
+  workflow_dispatch: # يتيح لك تشغيله يدوياً من لوحة تحكم GitHub متى شئت
+
+jobs:
+  build-site:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # ملاح للصلاحيات لتتمكن أداة الرفع من حفظ التغييرات في المستودع
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Build, SEO & Content Script
+        run: node scripts/build.js
+        env:
+          DEFAULT_INTRO_TEXT: "اكتشف أحدث البيانات، التحديثات المباشرة، والأصول الداعمة المحدثة آلياً."
+          SITE_URL: "https://yourdomain.com"
+
+      - name: Commit and Push Generated Pages & Sitemap
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automated hourly build: updating pages, sitemap, and SEO tags"
+          branch: main
+          file_pattern: "*.html sitemap.xml data/*.json"
