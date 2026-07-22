@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MDm1 — صراع الأزل</title>
+<title>صراع الأزل لم يزل</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Tajawal:wght@300;400;700;900&display=swap');
-
   :root {
     --gold: #c9a84c;
     --gold-bright: #f0c060;
@@ -19,9 +25,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
-
   body {
     background: var(--void);
     color: var(--light);
@@ -29,10 +33,101 @@
     overflow-x: hidden;
   }
 
-  /* ── particles ── */
-  #particles {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  /* ══════════════════════════════
+     MUSIC BUTTON — ثابت في الزاوية
+  ══════════════════════════════ */
+  #music-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 999;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.5);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    color: var(--gold);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 0 15px rgba(201,168,76,0.1);
   }
+  #music-btn:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 25px rgba(201,168,76,0.35);
+    transform: scale(1.1);
+  }
+  #music-btn.playing {
+    animation: musicPulse 2s ease-in-out infinite;
+    border-color: rgba(201,168,76,0.8);
+    box-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(201,168,76,0.2); }
+    50%       { box-shadow: 0 0 35px rgba(201,168,76,0.5); }
+  }
+
+  /* شاشة الترحيب بالموسيقى */
+  #music-prompt {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  #music-prompt.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #music-prompt .mp-icon { font-size: 3.5rem; animation: float 3s ease-in-out infinite; }
+  #music-prompt .mp-text {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-align: center;
+    padding: 0 2rem;
+  }
+  #music-prompt .mp-sub {
+    font-size: 0.8rem;
+    color: rgba(201,168,76,0.5);
+    letter-spacing: 2px;
+    text-align: center;
+  }
+  .mp-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .mp-yes, .mp-no {
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+  }
+  .mp-yes {
+    background: linear-gradient(135deg, var(--gold), #8b6914);
+    color: #000;
+    font-weight: 700;
+  }
+  .mp-yes:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(201,168,76,0.5); }
+  .mp-no {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.25);
+    color: rgba(201,168,76,0.6);
+  }
+  .mp-no:hover { border-color: rgba(201,168,76,0.5); color: var(--gold); }
+
+  /* ── particles ── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
   .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
   @keyframes drift {
     0%   { transform: translateY(100vh) scale(0); opacity: 0; }
@@ -50,10 +145,7 @@
     animation: introFade 1s ease 4.5s forwards;
   }
   @keyframes introFade { to { opacity: 0; pointer-events: none; } }
-  .intro-eye {
-    font-size: 5rem;
-    animation: pulse 1s ease-in-out infinite, introShow .8s ease .3s both;
-  }
+  .intro-eye { font-size: 5rem; animation: pulse 1s ease-in-out infinite, introShow .8s ease .3s both; }
   @keyframes introShow { from { opacity:0; transform:scale(.5); } to { opacity:1; transform:scale(1); } }
   .intro-title {
     font-family: 'Cinzel', serif;
@@ -65,13 +157,7 @@
     text-align: center;
     padding: 0 1rem;
   }
-  .intro-sub {
-    font-size: 1rem;
-    color: #888;
-    letter-spacing: 3px;
-    margin-top: .5rem;
-    animation: introShow .8s ease 1.8s both;
-  }
+  .intro-sub { font-size: 1rem; color: #888; letter-spacing: 3px; margin-top: .5rem; animation: introShow .8s ease 1.8s both; }
 
   /* ── CHAPTERS ── */
   .chapter {
@@ -83,7 +169,6 @@
     padding: 80px 20px;
     overflow: hidden;
   }
-
   .chapter-bg {
     position: absolute; inset: 0;
     background-size: cover;
@@ -92,16 +177,8 @@
     transition: filter 1s;
   }
   .chapter:hover .chapter-bg { filter: brightness(.45) saturate(.8); }
-
-  .chapter-overlay {
-    position: absolute; inset: 0;
-  }
-
-  .chapter-content {
-    position: relative; z-index: 2;
-    max-width: 750px;
-    text-align: center;
-  }
+  .chapter-overlay { position: absolute; inset: 0; }
+  .chapter-content { position: relative; z-index: 2; max-width: 750px; text-align: center; }
 
   /* ── DIVIDER ── */
   .divider {
@@ -113,264 +190,124 @@
   }
   .divider::before {
     content: '⟡';
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--gold);
-    font-size: 1.2rem;
-    background: var(--void);
-    padding: 0 .5rem;
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    color: var(--gold); font-size: 1.2rem; background: var(--void); padding: 0 .5rem;
   }
 
-  /* ── CHAPTER LABEL ── */
-  .ch-label {
-    font-family: 'Cinzel', serif;
-    font-size: .75rem;
-    letter-spacing: 5px;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: block;
-  }
-
-  /* ── HEADLINE ── */
-  .ch-title {
-    font-family: 'Tajawal', sans-serif;
-    font-weight: 900;
-    font-size: clamp(2rem, 6vw, 4rem);
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-    text-shadow: 0 0 60px currentColor;
-  }
-
-  .ch-body {
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    line-height: 2;
-    opacity: .85;
-    font-weight: 300;
-  }
+  .ch-label { font-family: 'Cinzel', serif; font-size: .75rem; letter-spacing: 5px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 1rem; display: block; }
+  .ch-title { font-family: 'Tajawal', sans-serif; font-weight: 900; font-size: clamp(2rem, 6vw, 4rem); line-height: 1.1; margin-bottom: 1.5rem; text-shadow: 0 0 60px currentColor; }
+  .ch-body { font-size: clamp(1rem, 2.5vw, 1.25rem); line-height: 2; opacity: .85; font-weight: 300; }
 
   /* ── VERSE BOX ── */
   .verse {
-    border: 1px solid var(--gold-dim);
-    border-radius: 12px;
-    padding: 1.5rem 2rem;
-    margin: 2rem auto;
+    border: 1px solid var(--gold-dim); border-radius: 12px;
+    padding: 1.5rem 2rem; margin: 2rem auto;
     background: rgba(201,168,76,.05);
-    font-size: 1.1rem;
-    font-style: italic;
-    color: var(--gold-bright);
-    max-width: 550px;
-    position: relative;
+    font-size: 1.1rem; font-style: italic; color: var(--gold-bright);
+    max-width: 550px; position: relative;
   }
-  .verse::before, .verse::after {
-    content: '❝';
-    position: absolute;
-    font-size: 2rem;
-    color: var(--gold-dim);
-    line-height: 1;
-  }
+  .verse::before, .verse::after { content: '❝'; position: absolute; font-size: 2rem; color: var(--gold-dim); line-height: 1; }
   .verse::before { top: .5rem; right: .75rem; }
-  .verse::after { content: '❞'; bottom: .5rem; left: .75rem; }
+  .verse::after  { content: '❞'; bottom: .5rem; left: .75rem; }
 
   /* ── COIN BADGE ── */
   .coin-badge {
-    width: 120px; height: 120px;
-    border-radius: 50%;
+    width: 120px; height: 120px; border-radius: 50%;
     border: 3px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
     margin: 1.5rem auto;
-    font-family: 'Cinzel', serif;
-    font-weight: 900;
-    font-size: 1.1rem;
-    color: var(--gold);
+    font-family: 'Cinzel', serif; font-weight: 900; font-size: 1.1rem; color: var(--gold);
     box-shadow: 0 0 30px var(--gold-dim), inset 0 0 20px rgba(201,168,76,.1);
     background: radial-gradient(circle, #1a0e00, #000);
     text-shadow: 0 0 15px var(--gold);
   }
   .coin-badge .sub { font-size: .6rem; letter-spacing: 3px; opacity: .7; margin-top: .2rem; }
 
-  /* ── GLOW COLORS ── */
-  .glow-gold { color: var(--gold-bright); text-shadow: 0 0 30px var(--gold); }
-  .glow-red  { color: #ff4444; text-shadow: 0 0 30px #ff0000; }
-  .glow-blue { color: #60a5fa; text-shadow: 0 0 30px #3b82f6; }
-  .glow-white{ color: #ffffff; text-shadow: 0 0 40px #ffffff; }
+  .glow-gold  { color: var(--gold-bright); text-shadow: 0 0 30px var(--gold); }
+  .glow-red   { color: #ff4444; text-shadow: 0 0 30px #ff0000; }
+  .glow-blue  { color: #60a5fa; text-shadow: 0 0 30px #3b82f6; }
+  .glow-white { color: #ffffff; text-shadow: 0 0 40px #ffffff; }
 
-  /* ── SPLIT LAYOUT ── */
-  .split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin: 2rem 0;
-  }
+  /* ── SPLIT ── */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
   @media (max-width: 600px) { .split { grid-template-columns: 1fr; } }
-
-  .split-card {
-    padding: 1.5rem;
-    border-radius: 14px;
-    position: relative;
-    overflow: hidden;
-  }
-  .split-card.light-side {
-    border: 1px solid var(--gold-dim);
-    background: linear-gradient(135deg, rgba(201,168,76,.08), transparent);
-  }
-  .split-card.dark-side {
-    border: 1px solid #440000;
-    background: linear-gradient(135deg, rgba(139,26,26,.12), transparent);
-  }
+  .split-card { padding: 1.5rem; border-radius: 14px; position: relative; overflow: hidden; }
+  .split-card.light-side { border: 1px solid var(--gold-dim); background: linear-gradient(135deg, rgba(201,168,76,.08), transparent); }
+  .split-card.dark-side  { border: 1px solid #440000;        background: linear-gradient(135deg, rgba(139,26,26,.12), transparent); }
   .split-card h3 { font-size: 1.3rem; margin-bottom: .75rem; font-weight: 900; }
   .split-card p  { font-size: .9rem; line-height: 1.8; opacity: .8; }
 
   /* ── TIMELINE ── */
   .timeline { margin: 2rem 0; position: relative; padding-right: 2rem; }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--gold), var(--blood), var(--gold));
-  }
-  .tl-item {
-    margin-bottom: 2rem;
-    position: relative;
-    padding-right: 1.5rem;
-  }
-  .tl-item::before {
-    content: '';
-    position: absolute;
-    right: -5px;
-    top: 6px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--gold);
-    box-shadow: 0 0 10px var(--gold);
-  }
+  .timeline::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--gold), var(--blood), var(--gold)); }
+  .tl-item { margin-bottom: 2rem; position: relative; padding-right: 1.5rem; }
+  .tl-item::before { content: ''; position: absolute; right: -5px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
   .tl-item h4 { color: var(--gold-bright); font-weight: 700; margin-bottom: .3rem; }
   .tl-item p  { font-size: .9rem; opacity: .75; line-height: 1.7; }
 
-  /* ── SYMBOL ROW ── */
-  .symbols {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin: 2rem 0;
-  }
+  /* ── SYMBOLS ── */
+  .symbols { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin: 2rem 0; }
   .sym { text-align: center; }
   .sym .icon { font-size: 2.5rem; display: block; margin-bottom: .4rem; }
   .sym .name { font-size: .75rem; letter-spacing: 2px; opacity: .7; }
 
-  /* ── FINAL CTA ── */
+  /* ── CTA ── */
   .cta-btn {
-    display: inline-block;
-    margin-top: 2rem;
-    padding: 1rem 2.5rem;
-    border-radius: 50px;
+    display: inline-block; margin-top: 2rem;
+    padding: 1rem 2.5rem; border-radius: 50px;
     background: linear-gradient(135deg, var(--gold), #8b6914);
-    color: #000;
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 3px;
-    text-decoration: none;
+    color: #000; font-family: 'Cinzel', serif; font-weight: 700;
+    font-size: 1rem; letter-spacing: 3px; text-decoration: none;
     box-shadow: 0 0 30px rgba(201,168,76,.4);
-    transition: all .3s;
-    cursor: pointer;
-    border: none;
+    transition: all .3s; cursor: pointer; border: none;
   }
-  .cta-btn:hover {
-    transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 0 50px rgba(201,168,76,.6);
-  }
+  .cta-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 0 50px rgba(201,168,76,.6); }
 
   /* ── SCROLL REVEAL ── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity .8s ease, transform .8s ease;
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: none;
-  }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
 
-  /* ── ANIMATION UTILITIES ── */
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50%       { transform: scale(1.08); }
-  }
-  @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: .7; }
-    75%       { opacity: .9; }
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-12px); }
-  }
-
+  /* ── ANIMATIONS ── */
+  @keyframes pulse   { 0%, 100% { transform: scale(1); }    50% { transform: scale(1.08); } }
+  @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: .7; } 75% { opacity: .9; } }
+  @keyframes float   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
   .anim-pulse   { animation: pulse 3s ease-in-out infinite; }
   .anim-flicker { animation: flicker 2s ease-in-out infinite; }
   .anim-float   { animation: float 4s ease-in-out infinite; }
 
-  /* ── SEPARATORS ── */
-  .eye-sep {
-    text-align: center;
-    padding: 3rem 0;
-    font-size: 3rem;
-    color: var(--gold);
-    position: relative;
-    z-index: 1;
-  }
-  .eye-sep::before, .eye-sep::after {
-    content: '';
-    display: inline-block;
-    width: 25%;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold-dim));
-    vertical-align: middle;
-    margin: 0 1rem;
-  }
+  /* ── EYE SEPARATORS ── */
+  .eye-sep { text-align: center; padding: 3rem 0; font-size: 3rem; color: var(--gold); position: relative; z-index: 1; }
+  .eye-sep::before, .eye-sep::after { content: ''; display: inline-block; width: 25%; height: 1px; background: linear-gradient(to right, transparent, var(--gold-dim)); vertical-align: middle; margin: 0 1rem; }
   .eye-sep::after { background: linear-gradient(to left, transparent, var(--gold-dim)); }
 
-  /* ── CHAPTER SPECIFIC ── */
-  #ch0 .chapter-overlay {
-    background: radial-gradient(ellipse at center bottom, #0a0500 0%, rgba(0,0,0,.95) 100%);
-  }
-  #ch1 .chapter-overlay {
-    background: linear-gradient(to bottom, rgba(0,0,0,.3), rgba(5,3,0,.95));
-  }
-  #ch2 .chapter-overlay {
-    background: linear-gradient(to bottom, rgba(0,0,0,.2), rgba(30,0,0,.9));
-  }
-  #ch3 .chapter-overlay {
-    background: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,5,20,.92));
-  }
-  #ch4 .chapter-overlay {
-    background: radial-gradient(ellipse at center, rgba(20,10,0,.5), rgba(0,0,0,.95));
-  }
-  #ch5 .chapter-overlay {
-    background: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(5,5,5,.97));
-  }
-  #ch6 .chapter-overlay {
-    background: radial-gradient(ellipse at 50% 30%, rgba(30,15,0,.6), rgba(0,0,0,.97));
-  }
+  /* ── CHAPTER OVERLAYS ── */
+  #ch0 .chapter-overlay { background: radial-gradient(ellipse at center bottom, #0a0500 0%, rgba(0,0,0,.95) 100%); }
+  #ch1 .chapter-overlay { background: linear-gradient(to bottom, rgba(0,0,0,.3), rgba(5,3,0,.95)); }
+  #ch2 .chapter-overlay { background: linear-gradient(to bottom, rgba(0,0,0,.2), rgba(30,0,0,.9)); }
+  #ch3 .chapter-overlay { background: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,5,20,.92)); }
+  #ch4 .chapter-overlay { background: radial-gradient(ellipse at center, rgba(20,10,0,.5), rgba(0,0,0,.95)); }
+  #ch5 .chapter-overlay { background: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(5,5,5,.97)); }
+  #ch6 .chapter-overlay { background: radial-gradient(ellipse at 50% 30%, rgba(30,15,0,.6), rgba(0,0,0,.97)); }
 
-  /* ── IMAGES — إضافة جديدة فقط ── */
-  .ch-img-portrait {
+  /* ══════════════════════════════════════
+     VIDEO STYLES — تحل محل صور الـ img
+  ══════════════════════════════════════ */
+
+  /* portrait — يقابل ch-img-portrait */
+  .ch-vid-portrait {
     width: 220px;
     height: 320px;
     object-fit: cover;
     border-radius: 12px;
     border: 1px solid var(--gold-dim);
-    box-shadow: 0 0 30px rgba(201,168,76,0.2);
+    box-shadow: 0 0 30px rgba(201,168,76,0.25);
     display: block;
     margin: 1.5rem auto;
+    background: #000;
   }
-  .ch-img-circle {
+
+  /* circle — يقابل ch-img-circle */
+  .ch-vid-circle {
     width: 200px;
     height: 200px;
     object-fit: cover;
@@ -379,8 +316,11 @@
     box-shadow: 0 0 40px rgba(201,168,76,0.35);
     display: block;
     margin: 1.5rem auto;
+    background: #000;
   }
-  .ch-img-wide {
+
+  /* wide — يقابل ch-img-wide */
+  .ch-vid-wide {
     width: 100%;
     max-height: 320px;
     object-fit: cover;
@@ -389,333 +329,567 @@
     box-shadow: 0 0 30px rgba(201,168,76,0.2);
     display: block;
     margin: 1.5rem auto;
+    background: #000;
   }
-  .ch-img-pair {
+
+  /* pair — يقابل ch-img-pair */
+  .ch-vid-pair {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin: 1.5rem 0;
   }
-  .ch-img-pair img {
+  .ch-vid-pair video {
     width: 100%;
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
     border: 1px solid var(--gold-dim);
+    background: #000;
   }
+
   @media (max-width: 600px) {
-    .ch-img-pair { grid-template-columns: 1fr; }
-    .ch-img-portrait { width: 160px; height: 240px; }
-    .ch-img-circle   { width: 150px; height: 150px; }
+    .ch-vid-pair      { grid-template-columns: 1fr; }
+    .ch-vid-portrait  { width: 160px; height: 240px; }
+    .ch-vid-circle    { width: 150px; height: 150px; }
   }
+
+  /* ══════════════════════════════
+     زرار القائمة الثابت — يظهر بعد الإنترو زي زرار الموسيقى
+     مفيش علاقة له بزرار "الورقة البيضاء" — مستقل تمامًا
+  ══════════════════════════════ */
+  #mdm1-trigger{
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    gap: .5rem;
+    padding: .65rem 1.1rem;
+    border-radius: 50px;
+    border: 1px solid rgba(201,168,76,0.5);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    color: var(--gold);
+    font-family: 'Tajawal', sans-serif;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 0 15px rgba(201,168,76,0.1);
+  }
+  #mdm1-trigger:hover{
+    border-color: var(--gold);
+    box-shadow: 0 0 25px rgba(201,168,76,0.35);
+    transform: scale(1.05);
+  }
+  #mdm1-panel{
+    position: fixed;
+    bottom: 4.5rem;
+    right: 1.5rem;
+    z-index: 998;
+    width: min(78vw, 260px);
+    max-height: 70vh;
+    overflow-y: auto;
+    background: rgba(5,4,3,0.96);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 12px;
+    padding: .75rem;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  #mdm1-panel.is-open{ opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #mdm1-panel a{
+    display: block;
+    padding: .55rem .6rem;
+    border-radius: 6px;
+    color: var(--light);
+    text-decoration: none;
+    font-size: .9rem;
+    text-align: right;
+    transition: background .2s, color .2s;
+  }
+  #mdm1-panel a:hover{ background: rgba(201,168,76,.1); color: var(--gold-bright); }
+  #mdm1-panel .mdm1-sep{ border-top: 1px solid rgba(201,168,76,.15); margin: .4rem 0; }
 </style>
 </head>
 <body>
 
+<!-- ══ MUSIC PROMPT — يظهر بعد الإنترو ══ -->
+<div id="music-prompt">
+  <div class="mp-icon">🎵</div>
+  <div class="mp-text">هل تريد مصاحبة الموسيقى في رحلتك؟</div>
+  <div class="mp-sub"> تجربة روحية كاملة تسمعها بقلبك وتراها قبل عينك </div>
+  <div class="mp-actions">
+    <button class="mp-yes" id="mp-yes">▶ &nbsp; نعم، شغّل الموسيقى</button>
+    <button class="mp-no"  id="mp-no">تخطّ</button>
+  </div>
+</div>
+
+<!-- ══ AUDIO — ضع ملف الموسيقى في مجلد audio/ ══ -->
+<audio id="bg-music" loop preload="auto">
+  <source src="audio/index.mp3" type="audio/mpeg">
+  <source src="audio/index.ogg" type="audio/ogg">
+</audio>
+
+<!-- ══ زر التحكم الثابت ══ -->
+<button id="music-btn" title="تشغيل / إيقاف الموسيقى" style="display:none;">🔇</button>
+
 <div id="particles"></div>
 
 <div id="intro">
-  <div class="intro-eye anim-float">👁️</div>
-  <div class="intro-title">MDm1</div>
-  <div class="intro-sub">صراع الأزل</div>
+  <div class="intro-eye anim-float"> 👁️ </div>
+  <div class="intro-title"> MD </div>
+  <div class="intro-sub"> صراع الأزل لم يزل </div>
 </div>
 
 <!-- ════════════════════════════════
      CHAPTER 0 — PROLOGUE
-     صورة: hero-mountain.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch0" style="background:#000; min-height:100vh;">
   <div class="chapter-overlay" style="background:radial-gradient(ellipse at 50% 60%, #1a0900, #000);"></div>
   <div class="chapter-content reveal">
     <div class="coin-badge anim-float">
-      👁️
-      <span>MDm1</span>
-      <span class="sub">SOFADM</span>
+      👁️ <span> MD </span><span class="sub"> Son OF ADAM </span>
     </div>
-    <span class="ch-label">البداية • Genesis</span>
+    <span class="ch-label"> البداية • Genesis </span>
     <h1 class="ch-title glow-gold" style="font-size:clamp(2.5rem,8vw,5rem);">
-      قبل أن يكون الزمن
+    أول ظهور 
     </h1>
     <div class="divider"></div>
     <p class="ch-body">
-      في الأزل، قبل أن تُخلق الأرض وتُرسى الجبال،<br>
-      كان هناك <span class="glow-gold">نور</span> ينبض في قلب الكون...<br>
-      وكان هناك <span class="glow-red">ظلام</span> يتربّص بكل ما يُضيء.
+            في الأزل ... بعدما رفعت السموات بغير عمد و فرشت الأرض و رست فوقها الجبال مثل الوتد و امتلأت البحار و سبحت فوقها الشمس و القمر و إختلف الليل و النهار بلا سبق ،  <br>
+      عندما ظهر أول من تشرف <span class="glow-gold"> بتحمل سر النور الإلهي </span> بعدما اخذت الأرض زخرفها ، تزينت السماء الدنيا بمصابيح الكواكب ، و سخرت الدنيا بما فيها حتى لا يضل و لا يشقى . <br>
+       عندها ظهر أول من تربص <span class="glow-red"> متكبر بغرور حاقد غيور </span> من فضل التكريم ، توعد بالفقر ، زين سوء الأعمال ، سعى يفسد في الأرض ، يخرج من يرى قلبه به نور إلى الظلمات .
     </p>
-    <!-- ✦ صورة مضافة ✦ -->
-    <img src="images/hero-mountain.png" alt="الوارث على القمة" class="ch-img-portrait">
+
+    <!-- ✦ الفيديو بدلاً من hero-mountain.png ✦ -->
+    <video
+      class="ch-vid-portrait"
+      autoplay loop muted playsinline
+      poster="images/hero-mountain.png">
+      <source src="images/hero-mountain.webm" type="video/webm">
+    </video>
+
     <div class="verse">
-      وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ
+      
+      وَمَا خَلَقْتُ الْجِنَّ وَالْإِنْسَ إِلَّا لِيَعْبُدُونِ  
+      
     </div>
     <div class="symbols">
-      <div class="sym"><span class="icon">🌙</span><span class="name">الهلال</span></div>
-      <div class="sym"><span class="icon">👁️</span><span class="name">العين</span></div>
-      <div class="sym"><span class="icon">🔱</span><span class="name">القوة</span></div>
-      <div class="sym"><span class="icon">🪲</span><span class="name">الجعران</span></div>
+      <div class="sym"><span class="icon">🌙</span><span class="name">القمر</span></div>
+      <div class="sym"><span class="icon">⏰</span><span class="name">الزمن</span></div>
+      <div class="sym"><span class="icon">🌎</span><span class="name">الأرض</span></div>
+      <div class="sym"><span class="icon">🌞</span><span class="name">الشمس</span></div>
+      <div class="sym"><span class="icon">📖</span><span class="name">الكتاب</span></div>
     </div>
   </div>
 </section>
 
-<div class="eye-sep">👁️</div>
+<div class="eye-sep"> 💥 </div>
 
 <!-- ════════════════════════════════
      CHAPTER 1 — THE LIGHT SIDE
-     صورة: hoodie-eye-horus.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch1">
   <div class="chapter-bg" style="background: radial-gradient(ellipse at top, #2a1500, #000);"></div>
   <div class="chapter-overlay"></div>
   <div class="chapter-content reveal">
-    <span class="ch-label">الفصل الأول • Chapter I</span>
-    <h2 class="ch-title glow-gold">الوريث الرقمي</h2>
+    <span class="ch-label"> الفصل الأول • Chapter I </span>
+    <h2 class="ch-title glow-green"> 🦅 الوريث </h2>
     <div class="divider"></div>
     <p class="ch-body">
-      جاء الوريث من رحم الظلام الرقمي،<br>
-      يرتدي عباءته السوداء وعلى صدره <span class="glow-gold">عين حورس</span> تضيء،<br>
-      حاملاً رسالة عبر الزمن من حضارة بنت الأهرام<br>
-      إلى عصر البلوكتشين والكود.
+       إبن آدم يشعل النور وسط رحم الظلام الرقمي ، <br>
+       يفتح بوابة <span class="glow-gold"> اليقظة وقت الغفلة </span> ،  بروحه تنبت بذرة ميراث جده من ضياء قوة النفخة الأولى <br>
+      حاملاً رسالة منيرة من أزمان سبقت حضارات بناء الأهرامات <br>
+      إلى عصر بلوكتشين والأكواد المشفرة .
     </p>
-    <!-- ✦ صورة مضافة ✦ -->
-    <img src="images/hoodie-eye-horus.png" alt="هودي عين حورس" class="ch-img-portrait">
+
+    <!-- ✦ الفيديو بدلاً من hoodie-eye-horus.png ✦ -->
+    <video
+      class="ch-vid-portrait"
+      autoplay loop muted playsinline
+      poster="images/hoodie-eye-horus.png">
+      <source src="images/hoodie-eye-horus.webm" type="video/webm">
+    </video>
+
     <div class="split">
       <div class="split-card light-side reveal">
-        <h3 class="glow-gold">⚜️ أسلحة النور</h3>
-        <p>عين حورس — البصيرة والحماية<br>
-           الجعران — البعث والتجديد<br>
-           الهرم — الخلود والحكمة<br>
-           الصقر — الحرية والسمو</p>
+        <h3 class="glow-gold"> ⚔️ أسلحة النور </h3>
+        <p> الحق ... البصيرة و الحماية <br>
+            اليقين ... العمل و التجديد <br>
+             العقل ... التفكر و الحكمة <br>
+             الحرية ... الاختبار و السمو </p>
       </div>
       <div class="split-card dark-side reveal">
-        <h3 class="glow-red">☠️ تحديات الظلام</h3>
-        <p>الوهم — ما يُرى وليس حقيقياً<br>
-           الفتنة — بذرة الشك والتفرق<br>
-           النسيان — أعدى أعداء الحقيقة</p>
+        <h3 class="glow-red"> أسلحة الظلام 🔮 </h3>
+        <p> الوهم ... ما يُرى ليس حقيقياً <br>
+             الفتنة ... الشك و التفرقة <br>
+            النسيان ... أعدى أعداء العمر </p>
       </div>
     </div>
     <div class="coin-badge" style="width:90px;height:90px;font-size:.9rem;">
-      🦅<br><span>MDm1</span>
+     الله أحد <br><span></span> لَمْ يَلِدْ وَلَمْ يُولَد </span>
     </div>
   </div>
 </section>
 
-<div class="eye-sep" style="color:#cc2222;">🔥</div>
+<div class="eye-sep" style="color:#cc2222;"> 🥀 </div>
 
 <!-- ════════════════════════════════
      CHAPTER 2 — THE DARK SIDE
-     صورة: dark-creature.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch2">
   <div class="chapter-bg" style="background: radial-gradient(ellipse at center, #200000, #000);"></div>
   <div class="chapter-overlay"></div>
   <div class="chapter-content reveal">
-    <span class="ch-label">الفصل الثاني • Chapter II</span>
-    <h2 class="ch-title glow-red">المُضلِّل الأعور</h2>
+    <span class="ch-label"> الفصل الثاني • Chapter II </span>
+    <h2 class="ch-title glow-red"> المُضلِّ 👿 </h2>
     <div class="divider" style="background:linear-gradient(90deg,transparent,#cc2222,transparent);"></div>
-    <div style="font-size:5rem; margin: 1rem 0;" class="anim-flicker">👿</div>
-    <!-- ✦ صورة مضافة ✦ -->
-    <img src="images/dark-creature.png" alt="المضلل الأعور" class="ch-img-portrait">
+    <div style="font-size:5rem; margin: 1rem 0;" class="anim-flicker">☠️</div>
+
+    <!-- ✦ الفيديو بدلاً من dark-creature.png ✦ -->
+    <video
+      class="ch-vid-portrait"
+      autoplay loop muted playsinline
+      poster="images/dark-creature.png">
+      <source src="images/dark-creature.webm" type="video/webm">
+    </video>
+
     <p class="ch-body">
-      من أعماق الظلام خرج الوجه الآخر...<br>
-      بنصف وجه يُضيء كالملاك <span class="glow-white">ونصف يكشف عن القرون</span>.<br>
-      يدّعي النور وهو أصل الظلام،<br>
-      يُلبس الباطل ثوب الحق <span class="glow-red">ويسرق العقول</span>.
+      في أعماق الظلام يكمن الوجه الأخر ...<br>
+      نصف وجه يمثل الخير <span class="glow-white"> و النصف الآخر لا يكشف عن شره الباطن </span>.<br>
+      يدّعي النور و هو أصل الظلام ، <br>
+      يُلبس الباطل في ثوب الحق <span class="glow-red">  ، يسرق عقول </span>.
     </p>
     <div class="verse" style="border-color:#440000; color:#ff6666; background:rgba(139,26,26,.08);">
-      أَفَمَن زُيِّنَ لَهُ سُوءُ عَمَلِهِ فَرَآهُ حَسَنًا
+     أُولَئِكَ الَّذِينَ كَفَرُوا بِآيَاتِ رَبِّهِمْ وَ لِقَائِهِ فَحَبِطَتْ أَعْمَالُهُمْ فَلَا نُقِيمُ لَهُمْ يَوْمَ الْقِيَامَةِ وَزْنًا
     </div>
     <div class="timeline">
-      <div class="tl-item reveal">
-        <h4>الظهور الأول</h4>
-        <p>يظهر بين البشر في أوقات الضعف، يُقدّم نفسه منقذاً ومُصلحاً، وهو في حقيقته المُفسد الأكبر.</p>
-      </div>
-      <div class="tl-item reveal">
-        <h4>الفتنة الكبرى</h4>
-        <p>يملك قوى خارقة تُبهر العيون — معجزات زائفة، وأموال مُغرية، ووعود بجنة على الأرض.</p>
-      </div>
-      <div class="tl-item reveal">
-        <h4>العين الواحدة</h4>
-        <p>علامته عين واحدة — يرى بها الدنيا كلها لكنه أعمى عن الحقيقة الروحانية الكاملة.</p>
-      </div>
+      <div class="tl-item reveal"><h4> الظهور الأول </h4><p> يظهر بين البشر في وقت الضعف — يُقدّم نفسه منقذاً و مُصلحا ، 
+       ، حقيقته المُفسد الأكبر . </p></div>
+      <div class="tl-item reveal"><h4> الفتنة الكبرى </h4><p> يملك قوى خارقة تسحر العيون — معجزات زائفة ، أموال مُغرية ، وعود كاذبة مثل جنة على الأرض . </p></div>
+      <div class="tl-item reveal"><h4> علامته معلومة </h4><p> لا يراها إلا قلة — له عين يرى بها الدنيا كلها لكنه أعمى عن حقيقة كامنة في سر ضياء نور الروح . </p></div>
     </div>
   </div>
 </section>
 
-<div class="eye-sep" style="color:#60a5fa;">🌙</div>
+<div class="eye-sep" style="color:#60a5fa;"> 🌙 </div>
 
 <!-- ════════════════════════════════
      CHAPTER 3 — THE COSMIC DUALITY
-     صورة: portal-cloaked.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch3">
   <div class="chapter-bg" style="background: radial-gradient(ellipse at 30% 50%, #001030, #000);"></div>
   <div class="chapter-overlay"></div>
   <div class="chapter-content reveal">
-    <span class="ch-label">الفصل الثالث • Chapter III</span>
-    <h2 class="ch-title glow-blue">الإنسان على المفترق</h2>
+    <span class="ch-label"> الفصل الثالث • Chapter III </span>
+    <h2 class="ch-title glow-blue"> المخلوق على المفترق </h2>
     <div class="divider" style="background:linear-gradient(90deg,transparent,#60a5fa,transparent);"></div>
     <p class="ch-body">
-      وقف الإنسان على قمة الجبل تحت الهلال الذهبي،<br>
-      بين عالمين: <span class="glow-gold">نور النهار</span> خلفه و<span class="glow-red">ظلام الليل</span> أمامه،<br>
-      وفي قلبه يحترق رمز <span class="glow-gold">عين حورس</span> داخل قلب...<br>
-      يُذكّره: <em>الحقيقة تسكن في الداخل، لا في الخارج.</em>
+      وقف إبن آدم على قمة جبل تحت الهلال الذهبي ،<br>
+      بين عالمين : <span class="glow-gold"> نور نهار الحق </span> أمامه و ضلال الباطل <span class="glow-red"> مثل ظلام الليل </span> خلفه <br>
+      يضيئ قلبه نور سره روحه فوق ظهره رمز  <span class="glow-gold"> بصيرته </span> داخل قلب ...<br>
+      يعلم : <em> أن حقيقة البداية و النهاية تسكن في الداخل ، ليست في الخارج لكل شاهد بنفسه و مسؤول . </em>
     </p>
-    <div style="font-size:4rem; margin: 1.5rem 0; text-align:center;" class="anim-float">
-      💛
-    </div>
-    <!-- ✦ صورة مضافة ✦ -->
-    <img src="images/portal-cloaked.png" alt="البوابة والمسافر" class="ch-img-portrait">
-    <div class="verse">
-      مَن عَرَفَ نَفسَهُ فَقَد عَرَفَ رَبَّه
-    </div>
+    <div style="font-size:4rem; margin: 1.5rem 0; text-align:center;" class="anim-float">💛</div>
+
+    <!-- ✦ الفيديو بدلاً من portal-cloaked.png ✦ -->
+    <video
+      class="ch-vid-portrait"
+      autoplay loop muted playsinline
+      poster="images/portal-cloaked.png">
+      <source src="images/portal-cloaked.webm" type="video/webm">
+    </video>
+
+    <div class="verse"> من عَرَفَ نَفسَهُ فَقَد عَرَفَ رَبَّه </div>
     <div class="split">
-      <div class="split-card light-side">
-        <h3 class="glow-gold">طريق النور</h3>
-        <p>العلم والبصيرة<br>التوحيد والإخلاص<br>الرسالة والمسؤولية<br>خدمة الإنسانية</p>
-      </div>
-      <div class="split-card dark-side">
-        <h3 class="glow-red">طريق الغواية</h3>
-        <p>الجهل والغفلة<br>الشرك والغرور<br>الاستسلام للفتنة<br>الأنانية والطمع</p>
-      </div>
+      <div class="split-card light-side"><h3 class="glow-gold">طريق النور</h3><p>العلم و البصيرة<br>التوحيد و الإخلاص<br>الرسالة و المسؤولية<br>خدمة الإنسانية</p></div>
+      <div class="split-card dark-side"><h3 class="glow-red">طريق الغواية</h3><p>الجهل و الغفلة<br>الشرك و الغرور<br>الاستسلام للفتنة<br>الأنانية و الطمع</p></div>
     </div>
   </div>
 </section>
 
-<div class="eye-sep">🪲</div>
+        <div class="eye-sep"> 🛟 </div>
 
 <!-- ════════════════════════════════
      CHAPTER 4 — THE BATTLE
-     صورتان: magic-book-cave.png + white-owl.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch4">
   <div class="chapter-bg" style="background:radial-gradient(ellipse at center, #150800, #000);"></div>
   <div class="chapter-overlay"></div>
   <div class="chapter-content reveal">
-    <span class="ch-label">الفصل الرابع • Chapter IV</span>
-    <h2 class="ch-title" style="color:#f59e0b; text-shadow:0 0 40px #f59e0b,0 0 80px #cc2222;">
-      الصراع الأعظم
-    </h2>
+    <span class="ch-label"> الفصل الرابع • Chapter IV </span>
+    <h2 class="ch-title" style="color:#f59e0b; text-shadow:0 0 40px #f59e0b,0 0 80px #cc2222;"> الصراع الأعظم </h2>
     <div class="divider"></div>
     <p class="ch-body">
-      هذا ليس صراعاً بين دولتين أو جيشين...<br>
-      إنه الصراع <span class="glow-gold">الأقدم في التاريخ</span>:<br>
-      بين الروح والنفس, بين الحق والباطل،<br>
-      بين من يعرف الحقيقة <span class="glow-red">ومن يدّعيها.</span>
+      هذا ليس صراعاً منقولا عبر حضارات أو دولتين و جيشين...<br>
+      إنه <span class="glow-gold"> أقدم صراع في تاريخ البشرية </span>:<br>
+      بين روح و نفس , بين قلب و هوى ، بين نور و ظلمات ، <br>
+      بين من يعرف الحقيقة <p></p> <span></span></span> <class> <span class="glow-red"> و من يدّعي المعرفة </span>
     </p>
-    <!-- ✦ صورتان جانبيتان مضافتان ✦ -->
-    <div class="ch-img-pair">
-      <img src="images/magic-book-cave.png" alt="كهف الكتاب السحري">
-      <img src="images/white-owl.png"        alt="البومة البيضاء">
+
+    <!-- ✦ فيديوهان جانبيان بدلاً من الصورتين ✦ -->
+    <div class="ch-vid-pair">
+      <video autoplay loop muted playsinline poster="images/magic-book-cave.png">
+        <source src="images/magic-book-cave.webm" type="video/webm">
+      </video>
+      <video autoplay loop muted playsinline poster="images/white-owl.png">
+        <source src="images/white-owl.webm" type="video/webm">
+      </video>
     </div>
-    <div class="verse" style="border-color:rgba(245,158,11,.3);">
-      اللَّهُ أَحَدٌ — لَمْ يَلِدْ وَلَمْ يُولَدْ
-    </div>
+
+    <div class="verse" style="border-color:rgba(245,158,11,.3);"> من كَانَ يُرِيدُ الْحَيَاةَ الدُّنْيَا وَزِينَتَهَا نُوَفِّ إِلَيْهِمْ أَعْمَالَهُمْ فِيهَا وَهُمْ فِيهَا لَا يُبْخسُونَ </div>
     <div class="symbols">
       <div class="sym"><span class="icon">🏛️</span><span class="name">الحضارة</span></div>
       <div class="sym"><span class="icon">🔗</span><span class="name">البلوكتشين</span></div>
       <div class="sym"><span class="icon">👁️</span><span class="name">الحقيقة</span></div>
       <div class="sym"><span class="icon">🦅</span><span class="name">الحرية</span></div>
-      <div class="sym"><span class="icon">🪲</span><span class="name">البعث</span></div>
+      <div class="sym"><span class="icon">📢</span><span class="name">البعث</span></div>
     </div>
   </div>
 </section>
 
-<div class="eye-sep" style="color:#a78bfa;">✨</div>
+<div class="eye-sep" style="color:#a78bfa;"> ✨ </div>
 
 <!-- ════════════════════════════════
      CHAPTER 5 — MDm1 AS THE BRIDGE
-     صورة: inner-light-poster.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch5">
   <div class="chapter-bg" style="background:radial-gradient(ellipse at 50% 0%, #1a0a30, #000);"></div>
   <div class="chapter-overlay"></div>
   <div class="chapter-content reveal">
-    <span class="ch-label">الفصل الخامس • Chapter V</span>
-    <h2 class="ch-title" style="color:#a78bfa;text-shadow:0 0 40px #7c3aed;">
-      الجسر بين الحضارتين
-    </h2>
+    <span class="ch-label"> الفصل الخامس • Chapter V </span>
+    <h2 class="ch-title" style="color:#a78bfa;text-shadow:0 0 40px #7c3aed;">الجسر بين الحضارتين</h2>
     <div class="divider" style="background:linear-gradient(90deg,transparent,#a78bfa,transparent);"></div>
     <p class="ch-body">
-      جاء <span class="glow-gold">MDm1</span> ليكون الجسر...<br>
-      بين حكمة الفراعنة وعصر البيانات،<br>
-      بين رموز عين حورس والعقود الذكية،<br>
-      بين التراث الإنساني <span style="color:#a78bfa;text-shadow:0 0 20px #a78bfa;">وعالم الويب 3.</span>
+      جاء <span class="glow-gold"> MD m1 </span>  يكون الجسر ...<br>
+      بين حكمة فرعونية رمزية قديمة و عصر البيانات متسلسلة ماتريكس ،<br>
+      بين رموز المعاني و عقود ذكية داخل بلوكتشين ، <br>
+      بين موروث تراث الإنسانية <span style="color:#a78bfa;text-shadow:0 0 20px #a78bfa;"> و عالم الويب 3 يفك شفرة عقود غابرة</span>
     </p>
-    <!-- ✦ صورة مضافة ✦ -->
-    <img src="images/inner-light-poster.png" alt="بوستر النور الداخلي" class="ch-img-portrait">
+
+    <!-- ✦ الفيديو بدلاً من inner-light-poster.png ✦ -->
+    <video
+      class="ch-vid-portrait"
+      autoplay loop muted playsinline
+      poster="images/inner-light-poster.png">
+      <source src="images/inner-light-poster.webm" type="video/webm">
+    </video>
+
     <div class="timeline" style="border-right:2px solid #a78bfa;">
-      <div class="tl-item reveal">
-        <h4 style="color:#a78bfa;">🏺 الجذور القديمة</h4>
-        <p>الحضارة المصرية — أول من فهم أن المعرفة قوة، وأن الرموز تحمل حقائق خفية عبر الأجيال.</p>
-      </div>
-      <div class="tl-item reveal">
-        <h4 style="color:#60a5fa;">⛓️ الثورة الرقمية</h4>
-        <p>البلوكتشين — أول تقنية تُحاكي نظام الكون في اللامركزية والشفافية والأمانة المطلقة.</p>
-      </div>
-      <div class="tl-item reveal">
-        <h4 style="color:var(--gold-bright);">🌟 MDm1 — التقاء العالَمَين</h4>
-        <p>رمز يحمل روح الحضارتين: عمق الماضي وذكاء المستقبل، على شبكة Polygon الموثوقة.</p>
-      </div>
+      <div class="tl-item reveal"><h4 style="color:#a78bfa;"> 🏺 الجذور القديمة </h4><p> الحضارة المصرية — أول من فهم أن المعرفة قوة ، و أن الرموز تحمل حقائق خفية للأجيال القادمة . </p></div>
+      <div class="tl-item reveal"><h4 style="color:#60a5fa;"> ⛓️ الثورة الرقمية </h4><p> البلوكتشين — أول تقنية تُحاكي نظام الكون في اللامركزية والشفافية والأمانة المطلقة . </p></div>
+      <div class="tl-item reveal"><h4 style="color:var(--gold-bright);"> 🌟  MD1$ - يصنع إلتقاء العالَمَين في وقت محدد له ان يكون  </h4><p> رمز يحمل روح الحضارتين : عمق الماضي وذكاء المستقبل ، على شبكات  Polygon , Ethereum الموثوقة </p></div>
     </div>
     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0;">
-      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(245,158,11,.3);font-size:.85rem;color:var(--gold);">
-        ✅ Polygonscan
-      </div>
-      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(96,165,250,.3);font-size:.85rem;color:#60a5fa;">
-        ✅ Sourcify
-      </div>
-      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(167,139,250,.3);font-size:.85rem;color:#a78bfa;">
-        ✅ MDM1.org
-      </div>
+      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(245,158,11,.3);font-size:.85rem;color:var(--gold);"> ✅ etherscan </div>
+<div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(245,158,11,.3);font-size:.85rem;color:var(--gold);"> ✅ bscscan </div>
+      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(245,158,11,.3);font-size:.85rem;color:var(--gold);"> ✅ solscan </div>
+      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(96,165,250,.3);font-size:.85rem;color:#60a5fa;"> ✅ sourcefy </div>
+      <div style="padding:.5rem 1.2rem;border-radius:20px;border:1px solid rgba(167,139,250,.3);font-size:.85rem;color:#a78bfa;"> ✅ polygonscan </div>
     </div>
   </div>
 </section>
 
-<div class="eye-sep">👁️</div>
+<div class="eye-sep"> ⚰️ </div>
 
 <!-- ════════════════════════════════
      CHAPTER 6 — EPILOGUE
-     صورتان: gold-coin-mdm.png + md111-token.png
 ════════════════════════════════ -->
 <section class="chapter" id="ch6">
   <div class="chapter-bg" style="background:radial-gradient(ellipse at 50% 50%, #1a0d00, #000);"></div>
   <div class="chapter-overlay"></div>
   <div class="chapter-content reveal">
-    <span class="ch-label">الخاتمة • Epilogue</span>
+    <span class="ch-label">الخاتمة تقترب • Epilogue</span>
     <div class="coin-badge anim-float" style="width:140px;height:140px;font-size:1.3rem;">
-      👁️<br>MDm1<br><span class="sub">SOFADM • 1M</span>
+      🚨 <br> remember that <br><span class="sub"> we are all children of ADAM </span>
     </div>
-    <h2 class="ch-title glow-gold" style="margin-top:1.5rem;">
-      اختر جانبك
-    </h2>
+    <h2 class="ch-title glow-gold" style="margin-top:1.5rem;"> إختر جانبك فوراً </h2>
     <div class="divider"></div>
     <p class="ch-body">
-      الصراع لم ينتهِ...<br>
-      كل يوم تُحسم معركة في داخلك:<br>
-      هل تتبع <span class="glow-gold">عين النور</span> أم تنجرف نحو <span class="glow-red">ظلام الزيف</span>؟<br><br>
-      رمز <span class="glow-gold">MDm1</span> ليس مجرد عملة —<br>
-      إنه <strong>ميثاق مع الحقيقة</strong>، وخطوة على طريق الوريث الرقمي.
+     الصراع لن و لم ينتهِ قبل أن يكون الناس كالفراش المبثوث و يرون عين اليقين .... <br>
+      كل يوم تُحسم معركة داخلك : <br>
+      هل تتبع <span class="glow-gold"> النور </span> أم تنجرف نحو <span class="glow-red"> ظلام الزيف </span>؟<br><br>
+      رمز <span class="glow-gold">MD m1</span> ليس إلا البوابة —<br>
+      و <strong> ميثاق مع الحقيقة </strong> ، قدر له ان يسير أول خطوة معك نحو طريق شفاف و صادق  .
     </p>
-    <div class="verse">
-      إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ
-    </div>
-    <!-- ✦ صورتان مضافتان ✦ -->
-    <img src="images/gold-coin-mdm.png" alt="عملة MDM الذهبية" class="ch-img-circle">
-    <img src="images/md111-token.png"   alt="MD111 Token" class="ch-img-wide">
+    <div class="verse"> إنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ </div>
+
+    <!-- ✦ الفيديو الدائري بدلاً من gold-coin-mdm.png ✦ -->
+    <video
+      class="ch-vid-circle"
+      autoplay loop muted playsinline
+      poster="images/gold-coin-mdm.png">
+      <source src="images/gold-coin-mdm.webm" type="video/webm">
+    </video>
+
+    <!-- ✦ الفيديو العريض بدلاً من md111-token.png ✦ -->
+    <video
+      class="ch-vid-wide"
+      autoplay loop muted playsinline
+      poster="images/md111-token.png">
+      <source src="images/md111-token.webm" type="video/webm">
+    </video>
+
     <div class="symbols" style="margin-top:2.5rem; opacity:.5;">
-      <div class="sym"><span class="icon" style="font-size:1.5rem;">👁️</span><span class="name">حورس</span></div>
-      <div class="sym"><span class="icon" style="font-size:1.5rem;">🪲</span><span class="name">خبري</span></div>
-      <div class="sym"><span class="icon" style="font-size:1.5rem;">🔺</span><span class="name">الهرم</span></div>
-      <div class="sym"><span class="icon" style="font-size:1.5rem;">🦅</span><span class="name">رع</span></div>
+      <div class="sym"><span class="icon" style="font-size:1.5rem;">⏳</span><span class="name">ساعة أوشكت</span></div>
+      <div class="sym"><span class="icon" style="font-size:1.5rem;">🌌</span><span class="name">بزوغ الفجر</span></div>
+      <div class="sym"><span class="icon" style="font-size:1.5rem;">🌄</span><span class="name">بوابة العبور</span></div>
+      <div class="sym"><span class="icon" style="font-size:1.5rem;">🎁</span><span class="name">صاحب النصيب</span></div>
     </div>
-    <p style="margin-top:3rem; font-size:.75rem; opacity:.3; letter-spacing:2px;">
-      👇👇 إسحب بقوة نحو الأسفل 👇👇
-      👇👇 إنها فقط البداية و النهاية مكتوبة قبلها 👇👇 
-      🚀🛬 we r coming 4 u special order 👻👹
-    </p>
+    <div style="margin-top:3rem; text-align:center;">
+      <p style="font-size:.85rem; opacity:.5; letter-spacing:3px; margin-bottom:1.5rem; color:var(--gold);">
+        ✦ &nbsp; تذكر أن نهاية الرحلة قبل بداية الدنيا مكتوبة &nbsp; ✦
+      </p>
+      <a href="whitepaper.html" class="cta-btn" id="wp-btn">
+         🎉 &nbsp; الورقة البيضاء 
+      </a>
+    </div>
   </div>
 </section>
 
+<!-- ── TRANSITION OVERLAY ── -->
+<div id="transition-overlay" style="
+  position:fixed; inset:0; z-index:9999;
+  background:#000; opacity:0; pointer-events:none;
+  transition: opacity 0.6s ease;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:1rem;
+">
+  <div style="font-size:3rem; animation:pulse 1s ease-in-out infinite;">🛫</div>
+  <div style="font-family:'Cinzel',serif; color:var(--gold); letter-spacing:4px; font-size:1rem;">الورقة البيضاء</div>
+</div>
+
 <script>
+// ── إعادة ضبط الـ overlay فور تحميل الصفحة (يمنع ظهوره عند الرجوع من whitepaper)
+window.addEventListener('pageshow', () => {
+  const overlay = document.getElementById('transition-overlay');
+  overlay.style.opacity = '0';
+  overlay.style.pointerEvents = 'none';
+});
+
+// ══════════════════════════════
+// MUSIC SYSTEM
+// ══════════════════════════════
+const audio     = document.getElementById('bg-music');
+const btn       = document.getElementById('music-btn');
+const prompt    = document.getElementById('music-prompt');
+const mpYes     = document.getElementById('mp-yes');
+const mpNo      = document.getElementById('mp-no');
+
+const MUSIC_KEY = 'mdm1_music_choice'; // 'yes' أو 'no' — يُحفظ طوال الجلسة (التبويب)
+
+// دالة fade للصوت
+function fadeVolume(el, from, to, duration, onDone) {
+  const steps = 30;
+  const interval = duration / steps;
+  const delta = (to - from) / steps;
+  let current = from;
+  el.volume = Math.max(0, Math.min(1, from));
+  const timer = setInterval(() => {
+    current += delta;
+    el.volume = Math.max(0, Math.min(1, current));
+    if ((delta > 0 && current >= to) || (delta < 0 && current <= to)) {
+      clearInterval(timer);
+      if (onDone) onDone();
+    }
+  }, interval);
+}
+
+// تشغيل الموسيقى فعلياً — يُستخدم عند الموافقة الأولى، وعند الريفريش/الرجوع لاحقاً
+function playMusic(fadeMs) {
+  btn.style.display = 'flex';
+  if (!audio.paused) return;
+  const start = () => {
+    // الحيلة: تشغيل الصوت مكتوماً أولاً (مسموح دائماً بدون تفاعل من المستخدم تماماً كالفيديوهات)
+    // ثم إلغاء الكتم ورفع الصوت تدريجياً — هذا يتجاوز قيود التشغيل التلقائي بالمتصفحات
+    audio.muted = true;
+    audio.play().then(() => {
+      audio.muted = false;
+      audio.volume = 0;
+      fadeVolume(audio, 0, 0.45, fadeMs);
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+    }).catch(() => {});
+  };
+  if (audio.readyState >= 3) {
+    start();
+  } else {
+    audio.addEventListener('canplaythrough', start, { once: true });
+    audio.load();
+  }
+}
+
+// هل سبق أن اختار المستخدم في هذه الجلسة؟ (ريفريش أو رجوع من صفحة أخرى)
+const savedChoice = sessionStorage.getItem(MUSIC_KEY);
+
+if (savedChoice === 'yes') {
+  // لا داعي لإعادة السؤال — شغّل الموسيقى مباشرة بعد الإنترو كما كانت
+  btn.style.display = 'flex';
+  btn.textContent = '🔇';
+  setTimeout(() => playMusic(2500), 5400);
+} else if (savedChoice === 'no') {
+  // المستخدم اختار سابقاً عدم التشغيل — لا تُظهر السؤال مجدداً
+  btn.style.display = 'flex';
+  btn.textContent = '🔇';
+} else {
+  // أول زيارة في هذه الجلسة: اعرض الـ prompt كالمعتاد بعد انتهاء الإنترو (4.5s + 0.8s للـ fade)
+  setTimeout(() => {
+    prompt.classList.add('show');
+  }, 5400);
+}
+
+// الضغط على "نعم"
+mpYes.addEventListener('click', () => {
+  prompt.classList.remove('show');
+  sessionStorage.setItem(MUSIC_KEY, 'yes');
+  playMusic(3000);
+});
+
+// الضغط على "تخطّ"
+mpNo.addEventListener('click', () => {
+  prompt.classList.remove('show');
+  sessionStorage.setItem(MUSIC_KEY, 'no');
+  btn.textContent = '🔇';
+  btn.style.display = 'flex';
+});
+
+// زر التحكم العائم
+btn.addEventListener('click', () => {
+  if (audio.paused) {
+    sessionStorage.setItem(MUSIC_KEY, 'yes');
+    audio.muted = false;
+    audio.play();
+    fadeVolume(audio, 0, 0.45, 1500);
+    btn.textContent = '🔊';
+    btn.classList.add('playing');
+  } else {
+    sessionStorage.setItem(MUSIC_KEY, 'no');
+    fadeVolume(audio, audio.volume, 0, 1000, () => audio.pause());
+    btn.textContent = '🔇';
+    btn.classList.remove('playing');
+  }
+});
+
+// pageshow يعمل عند التحميل الأول، وأيضاً عند العودة من صفحة أخرى (حتى عند استعادة الصفحة
+// من ذاكرة bfcache بدون تحميل فعلي) — يحل مشكلة توقف الموسيقى عند الرجوع من صفحة الورقة البيضاء
+window.addEventListener('pageshow', () => {
+  if (sessionStorage.getItem(MUSIC_KEY) === 'yes' && audio.paused) {
+    playMusic(1500);
+  }
+});
+
+// احتياط إضافي: العودة لتبويب الصفحة بعد تصفح تبويب آخر
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && sessionStorage.getItem(MUSIC_KEY) === 'yes' && audio.paused) {
+    playMusic(1500);
+  }
+});
+
 // ── PARTICLES ──
 const pc = document.getElementById('particles');
 for (let i = 0; i < 30; i++) {
@@ -736,44 +910,126 @@ for (let i = 0; i < 30; i++) {
 
 // ── SCROLL REVEAL ──
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) e.target.classList.add('visible');
-  });
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: .15 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 // ── AUTO-SCROLL AFTER INTRO ──
-setTimeout(() => {
-  window.scrollTo({ top: 1, behavior: 'smooth' });
-}, 5200);
+setTimeout(() => { window.scrollTo({ top: 1, behavior: 'smooth' }); }, 5200);
 
-// ── 🌟 كود التمرير الذكي الجديد للانتقال إلى HUB.HTML 🌟 ──
-const lastSection = document.getElementById('ch6');
+// ── NAVIGATE TO WHITEPAPER ──
+function goToWhitepaper() {
+  const overlay = document.getElementById('transition-overlay');
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'all';
+  setTimeout(() => { window.location.href = 'whitepaper.html'; }, 700);
+}
+document.getElementById('wp-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+  goToWhitepaper();
+});
 
-// 1. للهواتف (عبر اللمس)
-let touchStartPos = 0;
-window.addEventListener('touchstart', (e) => {
-  touchStartPos = e.touches[0].clientY;
-}, { passive: true });
-
-window.addEventListener('touchmove', (e) => {
-  const touchEndPos = e.touches[0].clientY;
-  const rect = lastSection.getBoundingClientRect();
-  
-  // إذا كانت الخاتمة ظاهرة على الشاشة وقام المستخدم بالسحب لأعلى ليفتح ما بعدها
-  if (rect.bottom <= window.innerHeight + 50 && touchStartPos > touchEndPos + 35) {
-    window.location.href = "hub.html";
-  }
-}, { passive: true });
-
-// 2. للكمبيوتر (عبر عجلة الماوس)
-window.addEventListener('wheel', (e) => {
-  const rect = lastSection.getBoundingClientRect();
-  // إذا وصلنا لنهاية الخاتمة وحرك الماوس لأسفل
-  if (rect.bottom <= window.innerHeight + 50 && e.deltaY > 0) {
-    window.location.href = "hub.html";
-  }
-}, { passive: true });
+// ── زرار القائمة الثابت (مستقل عن زرار الورقة البيضاء تمامًا) ──
+(function(){
+  const trigger = document.getElementById('mdm1-trigger');
+  const panel = document.getElementById('mdm1-panel');
+  if (!trigger || !panel) return;
+  setTimeout(() => { trigger.style.display = 'flex'; }, 5400);
+  trigger.addEventListener('click', () => panel.classList.toggle('is-open'));
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+      panel.classList.remove('is-open');
+    }
+  });
+})();
 </script>
+
+<!-- ════════════════════════════════════════════════════════
+     MDM1 — قائمة التنقل العائمة (Drop-in، لا تلمس أي كود موجود)
+    <script src="js/index.js"></script>
+     الصق هذا الكتلة بالكامل مباشرة قبل </body> في:
+     index.html / hub.html / whitepaper.html (الثلاثة في جذر المستودع)
+     نفس المسارات النسبية تعمل في الثلاثة لأنهم بنفس المستوى.
+     ════════════════════════════════════════════════════════ -->
+<style>
+  #mdm1m-btn{
+    position:fixed; bottom:1.5rem; right:1.5rem; z-index:998;
+    width:48px; height:48px; border-radius:50%;
+    border:1px solid rgba(201,168,76,0.5);
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(8px);
+    color:#c9a84c; font-size:1.3rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:border-color .3s, box-shadow .3s, transform .2s;
+    box-shadow:0 0 15px rgba(201,168,76,0.1);
+  }
+  #mdm1m-btn:hover{ border-color:#c9a84c; box-shadow:0 0 25px rgba(201,168,76,.35); transform:scale(1.08); }
+
+  #mdm1m-panel{
+    position:fixed; bottom:5.5rem; right:1.5rem; z-index:998;
+    width:min(78vw, 260px);
+    max-height:70vh; overflow-y:auto;
+    background:rgba(5,4,3,0.96);
+    border:1px solid rgba(201,168,76,0.35);
+    border-radius:12px;
+    padding:.75rem;
+    backdrop-filter:blur(10px);
+    opacity:0; transform:translateY(12px);
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  #mdm1m-panel.is-open{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  #mdm1m-panel a{
+    display:block; padding:.55rem .6rem; border-radius:6px;
+    color:#e8d5a3; text-decoration:none; font-family:'Tajawal',sans-serif;
+    font-size:.9rem; text-align:right; transition:background .2s, color .2s;
+  }
+  #mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
+  #mdm1m-panel .mdm1m-sep{
+    border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0;
+  }
+</style>
+
+<button id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الصفحات">🏛️</button>
+<nav id="mdm1m-panel">
+  <a href="index.html">🏠 الرئيسية</a>
+   <a href="whitepaper.html">📃 الورقة البيضاء</a>
+  <div class="mdm1m-sep"></div>
+<a href="pages/ideas.html">💡 الأفكار</a>
+ <a href="pages/quiz.html">🧩 اختبار الجانب</a> 
+ <a href="pages/join.html">🔑 الانضمام</a>
+  <a href="pages/community.html">🤝 المجتمع</a>
+  <a href="pages/faq.html">❓ الأسئلة الشائعة</a>
+  <a href="pages/sharia.html">☪️ التوافق الشرعي</a>
+  <a href="pages/roadmap.html">🗺️ خارطة الطريق</a>
+  <a href="pages/blog.html">📰 المدونة</a>
+  <a href="pages/tokenomics.html">💰 التوكنوميكس</a>
+   <a href="pages/game.html">🎮 بوابة الفراعنة</a>
+  <div class="mdm1m-sep"></div>
+  <a href="pages/ATM.html">ATM 🏧</a>
+  <a href="pages/md1usd.html">💲 الدولار الرقمي MD1$ </a>
+  <a href="hub.html">⛩️ المنصة (Hub)</a>
+  <a href="pages/dashboard.html">📊 لوحة التحكم</a>
+ <a href="pages/about.html">ℹ️ من نحن</a>
+<a href="pages/18.html">👈يوميا🙈صفحة🙊تولد🙉تلقائيا👉</a> 
+</nav>
+
+<script>
+(function(){
+  var mBtn = document.getElementById('mdm1m-btn');
+  var mPanel = document.getElementById('mdm1m-panel');
+  if(!mBtn || !mPanel) return;
+  mBtn.addEventListener('click', function(){
+    mPanel.classList.toggle('is-open');
+  });
+  document.addEventListener('click', function(e){
+    if(!mPanel.contains(e.target) && e.target !== mBtn){
+      mPanel.classList.remove('is-open');
+    }
+  });
+})();
+</script>
+
+    <script src="js/index.js"></script>
 </body>
 </html>
