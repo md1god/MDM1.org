@@ -1,9 +1,9 @@
-name: Automated SEO and Page Builder
+name: Automated SEO and Site Builder
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *' # يتم التشغيل تلقائياً كل ساعة
+  workflow_dispatch: # يتيح التشغيل اليدوي من تبويب Actions في جيت هب
 
 jobs:
   build-site:
@@ -20,18 +20,25 @@ jobs:
         with:
           node-version: '20'
 
-      # استبدل './اسم-المجلد' بالمجلد الذي يحتوي على package.json
-      - name: Install Dependencies
-        run: npm install
-        working-directory: ./اسم-المجلد 
+      - name: Install Dependencies (if package.json exists)
+        run: |
+          if [ -f "package.json" ]; then
+            npm install
+          fi
 
-      - name: Run Build Script
-        run: node scripts/build.js
-        working-directory: ./اسم-المجلد
+      - name: Run Build and SEO Script
+        run: |
+          if [ -f "scripts/build.js" ]; then
+            node scripts/build.js
+          elif [ -f "build.js" ]; then
+            node build.js
+          else
+            echo "No build script found, skipping execution."
+          fi
 
-      - name: Commit and Push Changes
+      - name: Commit and Push Generated Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Automated build and SEO update"
+          commit_message: "Automated hourly SEO and pages build"
           branch: main
-          file_pattern: "*.html sitemap.xml data/*.json"
+          file_pattern: "*.html pages/*.html sitemap.xml css/*.css js/*.js"
