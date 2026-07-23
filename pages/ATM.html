@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>MD1$ — ماكينة الصراف</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js" integrity="sha512-HZX+z8+w4v8N521q7p5N6C6hZk0Xw6lJ0K6lZ0K6lZ0K6lZ0K6lZ0K6lZ0K6lZ0K6lZ0K6lZ0K6lZ0K6lZ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.13.3/dist/index.umd.js" defer></script>
 <script>
   window.addEventListener('load',()=>{
@@ -102,6 +102,8 @@ html,body{min-height:100vh;background:radial-gradient(ellipse at center,#1a1000 
 .s-btn.danger{color:#4a1a1a;border-color:#2a0f0f;}
 .s-btn.danger:hover{color:#ff5252;border-color:#4a1a1a;background:rgba(255,82,82,.05);}
 .s-btn:disabled{opacity:.4;cursor:not-allowed;}
+.s-btn.net-btn{padding:.5rem .3rem;line-height:1.6;}
+.s-btn.net-btn.active{background:rgba(201,168,76,.15);border-color:var(--gold-dim);color:var(--gold-bright);}
 .submit-btn{width:100%;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border:1px solid #3a2c10;border-radius:4px;color:var(--gold);font-family:'Tajawal',sans-serif;font-size:.82rem;font-weight:700;padding:.65rem;cursor:pointer;margin-top:.7rem;letter-spacing:.5px;transition:all .2s;}
 .submit-btn:hover{background:rgba(201,168,76,.2);box-shadow:0 0 15px rgba(201,168,76,.15);}
 .submit-btn:disabled{opacity:.4;cursor:not-allowed;}
@@ -141,7 +143,7 @@ html,body{min-height:100vh;background:radial-gradient(ellipse at center,#1a1000 
 
   <aside class="side-panel">
     <h3>طريقة العمل</h3>
-    <div class="step"><div class="step-num">1</div><div class="step-text">اربط محفظتك عبر <b>MetaMask</b> أو <b>WalletConnect</b> — تأكد إنك على شبكة Polygon.</div></div>
+    <div class="step"><div class="step-num">1</div><div class="step-text">اربط محفظتك عبر <b>MetaMask</b> أو <b>WalletConnect</b> — واختر الشبكة اللي تناسبك.</div></div>
     <div class="step"><div class="step-num">2</div><div class="step-text">من تبويب <b>السوق</b> اختر إعلان بيع، أدخل الكمية واضغط شراء.</div></div>
     <div class="step"><div class="step-num">3</div><div class="step-text">حوّل المبلغ بطريقة الدفع المذكورة، ثم اضغط <b>"أكدت الدفع"</b> من تبويب طلباتي.</div></div>
     <div class="step"><div class="step-num">4</div><div class="step-text">البائع يؤكد الاستلام فيُفرج عن العملة تلقائيًا لمحفظتك.</div></div>
@@ -203,20 +205,23 @@ html,body{min-height:100vh;background:radial-gradient(ellipse at center,#1a1000 
           </div>
 
           <div class="l-item" style="margin-bottom:.8rem;">
-            <div class="l-info" style="margin-top:0;color:#6a5020;" id="swap-desc">
-              تحويل مباشر 1:1 بين USDC و MD1usd على Polygon — بدون رسوم منصة.
-            </div>
+            <div class="l-info" style="margin-top:0;color:#6a5020;" id="swap-desc">تحويل مباشر 1:1 بين USDC و MD1usd على Polygon — بدون رسوم منصة.</div>
           </div>
 
           <div style="display:flex;gap:.4rem;margin-bottom:.8rem;">
             <button class="s-btn swap-dir active" data-dir="mint" style="flex:1;text-align:center;">إيداع → MD1usd</button>
             <button class="s-btn swap-dir" data-dir="redeem" style="flex:1;text-align:center;">MD1usd → استرداد</button>
           </div>
-
-          <label class="f-label" id="swap-label">الكمية</label>
+          <label class="f-label" id="swap-label">الكمية (USDC)</label>
           <input class="f-input" id="swap-amount" type="number" min="0" placeholder="0.00"/>
           <div class="fee-line show" id="swap-preview" style="margin-top:.5rem;">ستستلم: <em id="swap-out">—</em></div>
           <button class="submit-btn" id="btn-swap">◈ تنفيذ</button>
+
+          <div class="screen-title" style="margin-top:1.3rem;">سواب عام · أي عملة لأي عملة</div>
+          <div class="l-item">
+            <div class="l-info" style="margin-top:0;">لاستبدال أي عملة على Polygon بأخرى — يفتح QuickSwap في نافذة جديدة بنفس محفظتك المتصلة.</div>
+            <a id="quickswap-link" href="https://quickswap.exchange/#/swap" target="_blank" rel="noopener" class="submit-btn" style="display:block;text-align:center;text-decoration:none;margin-top:.6rem;">↗ فتح QuickSwap</a>
+          </div>
         </div>
 
         <div id="tab-sell" style="display:none">
@@ -288,7 +293,7 @@ html,body{min-height:100vh;background:radial-gradient(ellipse at center,#1a1000 
   <aside class="side-panel">
     <h3>ماذا تقدم الماكينة</h3>
     <div class="feature">تبادل P2P آمن عبر عقد Escrow بدون وسيط</div>
-    <div class="feature">سك واسترداد MD1usd 1:1 بدون رسوم منصة</div>
+    <div class="feature">سك واسترداد MD1usd 1:1 بدون رسوم منصة عبر 4 شبكات</div>
     <div class="feature">سواب عام لأي عملة على Polygon عبر QuickSwap</div>
     <div class="feature">نشر إعلانات بيع بطريقة الدفع اللي تناسبك</div>
     <div class="feature">حماية بنزاع قابل للفتح عند أي مشكلة</div>
@@ -303,8 +308,9 @@ html,body{min-height:100vh;background:radial-gradient(ellipse at center,#1a1000 
 <script>
 (()=>{
 'use strict';
+
 const ESCROW_ADDRESS='0x5ECEe4F53B12708c8Fae1CF8469990077C22a8f3';
-const CHAIN_ID=137;
+const ESCROW_CHAIN_ID=137;
 
 const NETWORKS = {
   polygon: {
@@ -315,13 +321,13 @@ const NETWORKS = {
   },
   ethereum: {
     label:'Ethereum', chainId:1, isEvm:true,
-    md1usd:'0xDe6b3FEe06A5570e51f171c3afFCfD7f7c6d4787',
+    md1usd:'0x6bd6A380903Ae072A764A929C34779824c068BB1',
     collateral:'0x5f98805A4E8be255a32880FDeC7F6728C6568bA0', collSymbol:'LUSD',
     addParams:null
   },
   bnb: {
     label:'BNB Chain', chainId:56, isEvm:true,
-    md1usd:null,
+    md1usd:'0xDe6b3FEe06A5570e51f171c3afFCfD7f7c6d4787',
     collateral:'0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3', collSymbol:'DAI',
     addParams:{
       chainId:'0x38',
@@ -338,25 +344,20 @@ const NETWORKS = {
   }
 };
 
-let activeNet='polygon';
-let swapDir='mint';
-
 const MD1USD_ABI=['function mint(uint256 amount) external','function redeem(uint256 amount) external','function decimals() external view returns (uint8)','function balanceOf(address) external view returns (uint256)','function totalReserve() external view returns (uint256)'];
 const ESCROW_ABI=['function createListing(address token,uint256 amount,uint256 minAmount,uint256 maxAmount,string calldata paymentInfo) external returns (uint256)','function cancelListing(uint256 listingId) external','function createOrder(uint256 listingId,uint256 grossAmount) external returns (uint256)','function confirmPayment(uint256 orderId) external','function confirmReceived(uint256 orderId) external','function openDispute(uint256 orderId,string calldata reason) external','function requestCancelOrder(uint256 orderId,uint8 reasonCode,string calldata reasonText) external','function getListing(uint256 listingId) external view returns (tuple(address seller,address token,uint256 amount,uint256 available,uint256 minAmount,uint256 maxAmount,string paymentInfo,uint8 status))','function getOrder(uint256 orderId) external view returns (tuple(uint256 listingId,address buyer,uint256 grossAmount,uint256 feeAmount,uint256 netAmount,uint256 createdAt,uint256 confirmedAt,bool buyerCancelApproved,bool sellerCancelApproved,address cancelRequestedBy,uint8 status))','function feeBps() external view returns (uint256)','event ListingCreated(uint256 indexed id,address indexed seller,address indexed token,uint256 amount,uint256 minAmount,uint256 maxAmount,string paymentInfo)','event OrderCreated(uint256 indexed orderId,uint256 indexed listingId,address indexed buyer,uint256 grossAmount,uint256 netAmount,uint256 feeAmount,uint256 deadline)'];
 const ERC20_ABI=['function approve(address spender,uint256 amount) external returns (bool)','function allowance(address owner,address spender) external view returns (uint256)','function decimals() external view returns (uint8)','function symbol() external view returns (string)'];
+const ST_EN=['Pending','Confirmed','Released','Disputed','Resolved','Cancelled','CancelRequested'];
+const ST_AR=['بانتظار الدفع','دفعت — انتظار التاجر','تم الإفراج','نزاع','محلول','ملغي','طلب إلغاء'];
 
 let provider,signer,escrow,md1usd,userAddress,feeBps=50n;
 let allListings=[];
+let activeNet='polygon';
+let swapDir='mint';
 const tokenMeta={};
 const toastEl=document.getElementById('toast');
 let toastT;
-
-function toast(msg,err=false,dur=4000){
-  toastEl.textContent=msg;
-  toastEl.className='show'+(err?' err':'');
-  clearTimeout(toastT);
-  toastT=setTimeout(()=>toastEl.className='',dur);
-}
+function toast(msg,err=false,dur=4000){toastEl.textContent=msg;toastEl.className='show'+(err?' err':'');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.className='',dur);}
 
 function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
@@ -365,33 +366,35 @@ function switchTab(name){
   if(name==='mylistings') renderMyListings();
   if(name==='market'&&escrow) loadMarket();
 }
-
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 document.querySelectorAll('[data-tab-key]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tabKey)));
 
 async function finalizeConnection(ethProvider){
   provider=new ethers.BrowserProvider(ethProvider);
-  const netInfo=await provider.getNetwork();
-  const netConfig=NETWORKS[activeNet];
-  if(netConfig.isEvm && Number(netInfo.chainId)!==netConfig.chainId){
-    toast('يرجى تبديل الشبكة في محفظتك إلى '+netConfig.label,true);
-    return;
+  const net=await provider.getNetwork();
+  const chainId=Number(net.chainId);
+
+  const matchedNetKey=Object.keys(NETWORKS).find(k=>NETWORKS[k].isEvm && NETWORKS[k].chainId===chainId);
+  if(matchedNetKey){
+    activeNet=matchedNetKey;
+    updateNetButtons();
+    updateSwapLabels();
   }
+
   signer=await provider.getSigner();
   userAddress=await signer.getAddress();
-  escrow=new ethers.Contract(ESCROW_ADDRESS,ESCROW_ABI,signer);
-  
-  const net = NETWORKS[activeNet];
-  if(net.md1usd){
-    md1usd = new ethers.Contract(net.md1usd, MD1USD_ABI, signer);
+
+  const curNet=NETWORKS[activeNet];
+  if(curNet.isEvm && curNet.md1usd){
+    md1usd=new ethers.Contract(curNet.md1usd,MD1USD_ABI,signer);
   }
-  
-  try{
+
+  if(chainId===ESCROW_CHAIN_ID){
+    escrow=new ethers.Contract(ESCROW_ADDRESS,ESCROW_ABI,signer);
     feeBps=await escrow.feeBps();
-  }catch(e){
-    feeBps=50n;
+    await loadMarket();
   }
-  
+
   const short=userAddress.slice(0,6)+'…'+userAddress.slice(-4);
   document.getElementById('wallet-txt').textContent=short;
   document.getElementById('dot').classList.add('online');
@@ -399,19 +402,15 @@ async function finalizeConnection(ethProvider){
   document.getElementById('btn-connect').disabled=true;
   document.getElementById('btn-wc').textContent='✓ متصل';
   document.getElementById('btn-wc').disabled=true;
-  toast('✓ تم الاتصال بنجاح');
-  await loadMarket();
+  toast('✓ تم الاتصال');
 }
 
 document.getElementById('btn-connect').addEventListener('click',connectMetaMask);
 async function connectMetaMask(){
   if(!window.ethereum){toast('ثبّت MetaMask أو استخدم WalletConnect',true);return;}
-  try{
-    await window.ethereum.request({method:'eth_requestAccounts'});
-    await finalizeConnection(window.ethereum);
-  }catch(e){toast('خطأ: '+(e.message||e),true);}
+  try{await window.ethereum.request({method:'eth_requestAccounts'});await finalizeConnection(window.ethereum);}
+  catch(e){toast('خطأ: '+(e.message||e),true);}
 }
-
 document.getElementById('btn-wc').addEventListener('click',connectWalletConnect);
 async function connectWalletConnect(){
   const btn=document.getElementById('btn-wc');
@@ -419,7 +418,7 @@ async function connectWalletConnect(){
   if(!EP){toast('تعذّر تحميل WalletConnect — حدّث الصفحة وحاول مرة أخرى',true);return;}
   btn.disabled=true;btn.innerHTML='<span class="spin"></span> جارٍ…';
   try{
-    const wcProvider=await EP.init({projectId:'20470429a61e7f49666eeb48c7ad9176',chains:[CHAIN_ID],showQrModal:true,metadata:{name:'MD1$ ATM',description:'MDM1 P2P Escrow',url:'https://mdm1.org',icons:['https://mdm1.org/assets/logo.svg']}});
+    const wcProvider=await EP.init({projectId:'20470429a61e7f49666eeb48c7ad9176',chains:[ESCROW_CHAIN_ID],showQrModal:true,metadata:{name:'MD1$ ATM',description:'MDM1 P2P Escrow',url:'https://mdm1.org',icons:['https://mdm1.org/assets/logo.svg']}});
     await wcProvider.connect();
     await finalizeConnection(wcProvider);
   }catch(e){toast('خطأ: '+(e.message||e),true);btn.disabled=false;btn.innerHTML='<span class="icon">⬡</span> WalletConnect';}
@@ -427,19 +426,12 @@ async function connectWalletConnect(){
 
 async function getMeta(addr){
   if(tokenMeta[addr])return tokenMeta[addr];
-  try{
-    const c=new ethers.Contract(addr,ERC20_ABI,provider);
-    const [sym,dec]=await Promise.all([c.symbol(),c.decimals()]);
-    tokenMeta[addr]={symbol:sym,decimals:Number(dec)};
-  }catch{
-    tokenMeta[addr]={symbol:addr.slice(0,6)+'…',decimals:18};
-  }
+  try{const c=new ethers.Contract(addr,ERC20_ABI,provider);const[sym,dec]=await Promise.all([c.symbol(),c.decimals()]);tokenMeta[addr]={symbol:sym,decimals:Number(dec)};}
+  catch{tokenMeta[addr]={symbol:addr.slice(0,6)+'…',decimals:18};}
   return tokenMeta[addr];
 }
-
 function fmt(amt,dec){return(Number(amt)/10**dec).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:6});}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
 async function queryFilterChunked(contract,filter,chunkSize=2000){
   const latest=await provider.getBlockNumber();
   const deployBlock=Math.max(0,latest-200000);
@@ -467,7 +459,6 @@ async function loadMarket(){
     renderMarket();
   }catch(e){el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;}
 }
-
 async function renderMarket(){
   const el=document.getElementById('market-list');
   const filt=document.getElementById('filter-token').value.toLowerCase();
@@ -505,99 +496,165 @@ async function renderMarket(){
   });
   el.querySelectorAll('.bbuy').forEach(b=>b.addEventListener('click',()=>buyListing(b)));
 }
-
 document.getElementById('filter-token').addEventListener('change',renderMarket);
 document.getElementById('btn-refresh').addEventListener('click',loadMarket);
 
 async function buyListing(btn){
   if(!signer){toast('ربط المحفظة أولاً',true);return;}
-  const id=Number(btn.dataset.id);
+  const id=Number(btn.dataset.id),dec=Number(btn.dataset.dec);
   const inp=btn.closest('.buy-row').querySelector('.oinp');
   const val=parseFloat(inp.value);
-  if(!val||val<=0){toast('أدخل كمية صحيحة',true);return;}
-  try{
-    const listing = await escrow.getListing(id);
-    const grossAmount = ethers.parseUnits(val.toString(), await (new ethers.Contract(listing.token, ERC20_ABI, provider)).decimals());
-    const tokenContract = new ethers.Contract(listing.token, ERC20_ABI, signer);
-    
-    toast('جاري الموافقة...');
-    const allowance = await tokenContract.allowance(userAddress, ESCROW_ADDRESS);
-    if(allowance < grossAmount){
-      const txApp = await tokenContract.approve(ESCROW_ADDRESS, grossAmount);
-      await txApp.wait();
-    }
-    
-    toast('جاري إنشاء الطلب...');
-    const tx = await escrow.createOrder(id, grossAmount);
-    await tx.wait();
-    toast('✓ تم إنشاء الطلب بنجاح');
-    await loadMarket();
-  }catch(e){
-    toast('خطأ: '+(e.message||e),true);
-  }
+  if(!val||val<=0){toast('أدخل الكمية',true);return;}
+  await tx(()=>escrow.createOrder(id,ethers.parseUnits(val.toFixed(dec),dec)),'جارٍ الطلب…','✓ تم — أكمل الدفع ثم اضغط "أكدت الدفع"',()=>{loadMarket();renderMyOrders();},btn);
 }
 
-// نشر إعلان جديد
-document.getElementById('btn-create').addEventListener('click', async()=>{
+document.getElementById('btn-create').addEventListener('click',async()=>{
   if(!signer){toast('ربط المحفظة أولاً',true);return;}
-  const tokenAddr=document.getElementById('s-token').value.trim();
-  const amtVal=parseFloat(document.getElementById('s-amount').value);
-  const minVal=parseFloat(document.getElementById('s-min').value);
-  const maxVal=parseFloat(document.getElementById('s-max').value);
-  const info=document.getElementById('s-info').value.trim();
-  
-  if(!tokenAddr||!amtVal||!minVal||!maxVal||!info){
-    toast('املأ جميع الحقول بشكل صحيح',true);
-    return;
-  }
-  
+  if(!escrow){toast('بدّل لشبكة Polygon أولاً لنشر إعلان',true);return;}
+  const ta=document.getElementById('s-token').value.trim();
+  const av=document.getElementById('s-amount').value.trim();
+  const mn=document.getElementById('s-min').value.trim();
+  const mx=document.getElementById('s-max').value.trim();
+  const inf=document.getElementById('s-info').value.trim();
+  if(!ethers.isAddress(ta)){toast('عنوان غير صحيح',true);return;}
+  if(!av||parseFloat(av)<=0){toast('أدخل الكمية',true);return;}
+  if(!mn||parseFloat(mn)<=0){toast('أدخل الحد الأدنى',true);return;}
+  if(!mx||parseFloat(mx)<parseFloat(mn)){toast('الحد الأقصى أقل من الأدنى',true);return;}
+  if(!inf||inf.length<10){toast('طريقة الدفع قصيرة جداً',true);return;}
+  const btn=document.getElementById('btn-create');
+  btn.disabled=true;btn.textContent='جارٍ…';
   try{
-    const tokenC=new ethers.Contract(tokenAddr,ERC20_ABI,signer);
-    const dec=Number(await tokenC.decimals());
-    const amountWei=ethers.parseUnits(amtVal.toString(), dec);
-    const minWei=ethers.parseUnits(minVal.toString(), dec);
-    const maxWei=ethers.parseUnits(maxVal.toString(), dec);
-    
-    toast('جاري الموافقة على نقل العملات...');
-    const allowance=await tokenC.allowance(userAddress, ESCROW_ADDRESS);
-    if(allowance < amountWei){
-      const txApp=await tokenC.approve(ESCROW_ADDRESS, amountWei);
-      await txApp.wait();
-    }
-    
-    toast('جاري نشر الإعلان...');
-    const tx=await escrow.createListing(tokenAddr, amountWei, minWei, maxWei, info);
-    await tx.wait();
-    toast('✓ تم نشر الإعلان بنجاح');
-    switchTab('mylistings');
-  }catch(e){
-    toast('خطأ: '+(e.message||e),true);
-  }
+    const m=await getMeta(ta);
+    const amt=ethers.parseUnits(av,m.decimals);
+    const mnA=ethers.parseUnits(mn,m.decimals);
+    const mxA=ethers.parseUnits(mx,m.decimals);
+    const tok=new ethers.Contract(ta,ERC20_ABI,signer);
+    const all=await tok.allowance(userAddress,ESCROW_ADDRESS);
+    if(all<amt){toast('جارٍ الموافقة…');await(await tok.approve(ESCROW_ADDRESS,amt)).wait();}
+    toast('جارٍ النشر…');
+    await(await escrow.createListing(ta,amt,mnA,mxA,inf)).wait();
+    toast('✓ تم النشر');
+    ['s-token','s-amount','s-min','s-max','s-info'].forEach(id=>document.getElementById(id).value='');
+    await loadMarket();
+  }catch(e){toast('خطأ: '+(e.reason||e.message||e),true);}
+  btn.disabled=false;btn.textContent='◈ نشر الإعلان';
 });
 
-// إعدادات الشبكات الأربعة
+async function renderMyOrders(){
+  if(!escrow||!userAddress)return;
+  const el=document.getElementById('myorders-list');
+  el.innerHTML='<div class="empty"><span class="spin"></span> تحميل…</div>';
+  try{
+    const evs=await queryFilterChunked(escrow,escrow.filters.OrderCreated(null,null,userAddress));
+    const ids=[...new Set(evs.map(e=>Number(e.args.orderId)))];
+    const ords=await Promise.all(ids.map(async id=>({id,data:await escrow.getOrder(id)})));
+    if(!ords.length){el.innerHTML='<div class="empty">لا توجد طلبات</div>';return;}
+    el.innerHTML='';
+    for(const{id,data}of ords.slice().reverse()){
+      const lst=await escrow.getListing(data.listingId);
+      const m=await getMeta(lst.token);
+      const si=Number(data.status);
+      const item=document.createElement('div');item.className='o-item';
+      item.innerHTML=`
+        <div>
+          <div class="o-id">طلب #${id} · إعلان #${Number(data.listingId)}</div>
+          <div class="o-amount">${fmt(data.netAmount,m.decimals)} ${m.symbol}</div>
+          <div class="o-fee">رسوم: ${fmt(data.feeAmount,m.decimals)}</div>
+        </div>
+        <div class="act-btns">
+          <span class="pill ${ST_EN[si]||''}">${ST_AR[si]||'—'}</span>
+          ${si===0?`<button class="s-btn bcp" data-id="${id}">أكدت الدفع</button>`:''}
+          ${si===0?`<button class="s-btn danger brc" data-id="${id}">طلب إلغاء</button>`:''}
+          ${si===1?`<button class="s-btn danger bds" data-id="${id}">نزاع</button>`:''}
+        </div>`;
+      el.appendChild(item);
+    }
+    el.querySelectorAll('.bcp').forEach(b=>b.addEventListener('click',()=>tx(()=>escrow.confirmPayment(Number(b.dataset.id)),'جارٍ…','✓ تم التأكيد',renderMyOrders,b)));
+    el.querySelectorAll('.bds').forEach(b=>b.addEventListener('click',()=>tx(()=>escrow.openDispute(Number(b.dataset.id),'المشتري فتح نزاعاً'),'جارٍ…','✓ نزاع مفتوح',renderMyOrders,b)));
+    el.querySelectorAll('.brc').forEach(b=>b.addEventListener('click',()=>tx(()=>escrow.requestCancelOrder(Number(b.dataset.id),0,''),'جارٍ…','✓ تم طلب الإلغاء',renderMyOrders,b)));
+  }catch(e){el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;}
+}
+
+async function renderMyListings(){
+  if(!escrow||!userAddress)return;
+  const el=document.getElementById('mylistings-list');
+  el.innerHTML='<div class="empty"><span class="spin"></span> تحميل…</div>';
+  try{
+    const evs=await queryFilterChunked(escrow,escrow.filters.ListingCreated(null,userAddress));
+    const ids=[...new Set(evs.map(e=>Number(e.args.id)))];
+    const lsts=await Promise.all(ids.map(async id=>({id,data:await escrow.getListing(id)})));
+    if(!lsts.length){el.innerHTML='<div class="empty">لا توجد إعلانات</div>';return;}
+    const stAr=['نشط','ملغي','مكتمل'];
+    el.innerHTML='';
+    for(const{id,data}of lsts.slice().reverse()){
+      const m=await getMeta(data.token);
+      const si=Number(data.status);
+      const canCancel=si===0&&data.available===data.amount;
+      const oEvs=await queryFilterChunked(escrow,escrow.filters.OrderCreated(null,BigInt(id)));
+      const oIds=[...new Set(oEvs.map(e=>Number(e.args.orderId)))];
+      const oData=await Promise.all(oIds.map(async oid=>({oid,o:await escrow.getOrder(oid)})));
+      const confirmed=oData.filter(({o})=>Number(o.status)===1);
+      const item=document.createElement('div');item.className='l-item';
+      item.innerHTML=`
+        <div class="l-token">${m.symbol} · #${id} · ${stAr[si]}</div>
+        <div class="l-amount">${fmt(data.amount,m.decimals)} ${m.symbol}</div>
+        <div class="l-info">${esc(data.paymentInfo)}</div>
+        <div class="l-seller">متاح: ${fmt(data.available,m.decimals)} · min ${fmt(data.minAmount,m.decimals)} · max ${fmt(data.maxAmount,m.decimals)}</div>
+        <div class="act-btns" style="margin-top:.4rem;align-items:flex-start;">
+          ${canCancel?`<button class="s-btn danger bcl" data-id="${id}">إلغاء الإعلان</button>`:''}
+          ${confirmed.map(({oid,o})=>`
+            <div style="border:1px solid #1a1505;border-radius:3px;padding:.35rem .5rem;margin-top:.3rem;">
+              <div style="font-size:.6rem;color:#4a3a18;margin-bottom:.25rem;">طلب #${oid} · ${fmt(o.netAmount,m.decimals)} ${m.symbol}</div>
+              <div style="display:flex;gap:.3rem;">
+                <button class="s-btn bcr" data-id="${oid}">استلمت ✓</button>
+                <button class="s-btn danger bds2" data-id="${oid}">نزاع</button>
+              </div>
+            </div>`).join('')}
+        </div>`;
+      el.appendChild(item);
+    }
+    el.querySelectorAll('.bcl').forEach(b=>b.addEventListener('click',()=>tx(()=>escrow.cancelListing(Number(b.dataset.id)),'جارٍ…','✓ تم الإلغاء',renderMyListings,b)));
+    el.querySelectorAll('.bcr').forEach(b=>b.addEventListener('click',()=>tx(()=>escrow.confirmReceived(Number(b.dataset.id)),'جارٍ…','✓ تم الإفراج',renderMyListings,b)));
+    el.querySelectorAll('.bds2').forEach(b=>b.addEventListener('click',()=>tx(()=>escrow.openDispute(Number(b.dataset.id),'التاجر فتح نزاعاً'),'جارٍ…','✓ نزاع مفتوح',renderMyListings,b)));
+  }catch(e){el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;}
+}
+
+async function tx(fn,loadMsg,okMsg,cb,btn){
+  const orig=btn.textContent;
+  btn.disabled=true;btn.innerHTML=`<span class="spin"></span>${loadMsg}`;
+  try{toast(loadMsg);const t=await fn();await t.wait();toast(okMsg);if(cb)await cb();}
+  catch(e){toast('خطأ: '+(e.reason||e.message||e),true);}
+  btn.disabled=false;btn.textContent=orig;
+}
+
+function updateNetButtons(){
+  document.querySelectorAll('.net-btn').forEach(b=>b.classList.toggle('active',b.dataset.net===activeNet));
+}
+function updateSwapLabels(){
+  const net=NETWORKS[activeNet];
+  document.getElementById('swap-desc').textContent = `تحويل مباشر 1:1 بين ${net.collSymbol} و MD1usd على ${net.label}.`;
+  document.getElementById('swap-label').textContent = swapDir==='mint' ? `الكمية (${net.collSymbol})` : 'الكمية (MD1usd)';
+}
+
 document.querySelectorAll('.net-btn').forEach(btn=>{
   btn.addEventListener('click',async()=>{
     const key=btn.dataset.net;
     const net=NETWORKS[key];
-    if(net.isEvm && !net.md1usd){
-      toast('هذه الشبكة معطّلة مؤقتًا لحين التحقق من عنوان العقد',true);
+
+    if(!net.isEvm){
+      toast('اتصال Solana يحتاج محفظة Phantom منفصلة — سيتم تفعيله في تحديث قادم');
       return;
     }
-    document.querySelectorAll('.net-btn').forEach(b=>b.classList.toggle('active',b===btn));
-    activeNet=key;
-    document.getElementById('swap-desc').textContent =
-      `تحويل مباشر 1:1 بين ${net.collSymbol} و MD1usd على ${net.label} — بدون رسوم منصة.`;
-    document.getElementById('swap-label').textContent =
-      swapDir==='mint' ? `الكمية (${net.collSymbol})` : 'الكمية (MD1usd)';
 
-    if(net.isEvm && signer){
-      try{
-        await switchEvmNetwork(net);
-      }catch(e){ toast('فشل تبديل الشبكة: '+(e.message||e),true); }
-    }
-    if(!net.isEvm){
-      toast('اتصال Solana يحتاج محفظة Phantom منفصلة — سيتم تفعيله في التحديث القادم');
+    activeNet=key;
+    updateNetButtons();
+    updateSwapLabels();
+    document.getElementById('swap-amount').value='';
+    document.getElementById('swap-out').textContent='—';
+
+    if(signer){
+      try{ await switchEvmNetwork(net); }
+      catch(e){ toast('فشل تبديل الشبكة: '+(e.message||e),true); }
     }
   });
 });
@@ -614,166 +671,54 @@ async function switchEvmNetwork(net){
   await finalizeConnection(window.ethereum);
 }
 
-document.querySelectorAll('.swap-dir').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.swap-dir').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    swapDir=b.dataset.dir;
-    const net=NETWORKS[activeNet];
-    document.getElementById('swap-label').textContent=
-      swapDir==='mint' ? `الكمية (${net.collSymbol})` : 'الكمية (MD1usd)';
+document.querySelectorAll('.swap-dir').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    swapDir=btn.dataset.dir;
+    document.querySelectorAll('.swap-dir').forEach(b=>b.classList.toggle('active',b===btn));
+    updateSwapLabels();
+    document.getElementById('swap-amount').value='';
+    document.getElementById('swap-out').textContent='—';
   });
 });
 
-const swapAmountInp=document.getElementById('swap-amount');
-const swapOutEl=document.getElementById('swap-out');
-swapAmountInp.addEventListener('input',()=>{
-  const val=swapAmountInp.value;
+document.getElementById('swap-amount').addEventListener('input',()=>{
   const net=NETWORKS[activeNet];
-  swapOutEl.textContent=val ? val+' '+(swapDir==='mint'?'MD1usd':net.collSymbol) : '—';
+  const val=parseFloat(document.getElementById('swap-amount').value)||0;
+  document.getElementById('swap-out').textContent = val>0 ? val.toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:6}) + (swapDir==='mint' ? ' MD1usd' : ' '+net.collSymbol) : '—';
 });
 
 document.getElementById('btn-swap').addEventListener('click',async()=>{
   if(!signer){toast('ربط المحفظة أولاً',true);return;}
   const net=NETWORKS[activeNet];
-  if(!net.isEvm){toast('هذه الشبكة غير مدعومة لعقود EVM حالياً',true);return;}
-  if(!net.md1usd){toast('هذه الشبكة معطّلة مؤقتًا لحين التحقق من عنوان العقد',true);return;}
-  
-  const val=parseFloat(swapAmountInp.value);
-  if(!val||val<=0){toast('أدخل كمية صحيحة',true);return;}
-  
+  if(!net.isEvm){toast('شبكة Solana غير مفعّلة بعد لهذه العملية',true);return;}
+  if(!md1usd){toast('بدّل لهذه الشبكة في محفظتك أولاً',true);return;}
+  const val=parseFloat(document.getElementById('swap-amount').value);
+  if(!val||val<=0){toast('أدخل الكمية',true);return;}
+  const btn=document.getElementById('btn-swap');
+  btn.disabled=true;btn.textContent='جارٍ…';
   try{
-    const collContract=new ethers.Contract(net.collateral,ERC20_ABI,signer);
-    const dec=Number(await collContract.decimals());
-    const amountWei=ethers.parseUnits(val.toString(), dec);
-    
     if(swapDir==='mint'){
-      toast('جاري الموافقة على استخدام العملة...');
-      const allowance=await collContract.allowance(userAddress, net.md1usd);
-      if(allowance < amountWei){
-        const txApp=await collContract.approve(net.md1usd, amountWei);
-        await txApp.wait();
-      }
-      toast('جاري تنفيذ السك (Mint)...');
-      const tx=await md1usd.mint(amountWei);
-      await tx.wait();
-      toast('✓ تم سك MD1usd بنجاح');
+      const coll=new ethers.Contract(net.collateral,ERC20_ABI,signer);
+      const dec=await coll.decimals();
+      const amt=ethers.parseUnits(val.toFixed(Number(dec)),Number(dec));
+      const allowance=await coll.allowance(userAddress,net.md1usd);
+      if(allowance<amt){toast(`جارٍ الموافقة على ${net.collSymbol}…`);await(await coll.approve(net.md1usd,amt)).wait();}
+      toast('جارٍ السك…');
+      await(await md1usd.mint(amt)).wait();
+      toast('✓ تم سك '+val+' MD1usd');
     }else{
-      toast('جاري تنفيذ الاسترداد (Redeem)...');
-      const tx=await md1usd.redeem(amountWei);
-      await tx.wait();
-      toast('✓ تم استرداد العملة بنجاح');
+      const dec=await md1usd.decimals();
+      const amt=ethers.parseUnits(val.toFixed(Number(dec)),Number(dec));
+      toast('جارٍ الاسترداد…');
+      await(await md1usd.redeem(amt)).wait();
+      toast('✓ تم استرداد '+val+' '+net.collSymbol);
     }
-  }catch(e){
-    toast('خطأ: '+(e.message||e),true);
-  }
+    document.getElementById('swap-amount').value='';
+    document.getElementById('swap-out').textContent='—';
+  }catch(e){toast('خطأ: '+(e.reason||e.message||e),true);}
+  btn.disabled=false;btn.textContent='◈ تنفيذ';
 });
 
-async function renderMyOrders(){
-  const el=document.getElementById('myorders-list');
-  if(!escrow || !userAddress){el.innerHTML='<div class="empty">يرجى ربط المحفظة</div>';return;}
-  el.innerHTML='<div class="empty"><span class="spin"></span> جارٍ التحميل…</div>';
-  try{
-    const evs=await queryFilterChunked(escrow,escrow.filters.OrderCreated(null,null,userAddress));
-    const orderIds=[...new Set(evs.map(e=>Number(e.args.orderId)))];
-    if(!orderIds.length){el.innerHTML='<div class="empty">لا توجد طلبات</div>';return;}
-    
-    el.innerHTML='';
-    for(const id of orderIds){
-      const order=await escrow.getOrder(id);
-      const listing=await escrow.getListing(order.listingId);
-      const m=await getMeta(listing.token);
-      
-      const statuses=['Pending','Confirmed','Released','Disputed','Cancelled','Resolved','CancelRequested'];
-      const statusStr=statuses[Number(order.status)]||'Pending';
-      
-      const item=document.createElement('div');
-      item.className='o-item';
-      item.innerHTML=`
-        <div>
-          <div class="o-id">طلب #${id} (إعلان #${order.listingId})</div>
-          <div class="o-amount">${fmt(order.netAmount,m.decimals)} ${m.symbol}</div>
-          <div class="o-fee">الإجمالي: ${fmt(order.grossAmount,m.decimals)} | الرسوم: ${fmt(order.feeAmount,m.decimals)}</div>
-        </div>
-        <div class="act-btns">
-          <span class="pill ${statusStr}">${statusStr}</span>
-          ${Number(order.status)===0?`<button class="s-btn b-conf" data-id="${id}">أكدت الدفع</button>`:''}
-          ${Number(order.status)===0?`<button class="s-btn danger b-canc" data-id="${id}">طلب إلغاء</button>`:''}
-        </div>
-      `;
-      el.appendChild(item);
-    }
-    
-    el.querySelectorAll('.b-conf').forEach(b=>b.addEventListener('click',async()=>{
-      try{
-        toast('جاري تأكيد الدفع...');
-        const tx=await escrow.confirmPayment(Number(b.dataset.id));
-        await tx.wait();
-        toast('✓ تم التأكيد بنجاح');
-        renderMyOrders();
-      }catch(e){toast('خطأ: '+(e.message||e),true);}
-    }));
-    
-    el.querySelectorAll('.b-canc').forEach(b=>b.addEventListener('click',async()=>{
-      try{
-        toast('جاري إرسال طلب الإلغاء...');
-        const tx=await escrow.requestCancelOrder(Number(b.dataset.id),1,"Buyer request");
-        await tx.wait();
-        toast('✓ تم إرسال طلب الإلغاء');
-        renderMyOrders();
-      }catch(e){toast('خطأ: '+(e.message||e),true);}
-    }));
-    
-  }catch(e){
-    el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;
-  }
-}
-
-async function renderMyListings(){
-  const el=document.getElementById('mylistings-list');
-  if(!escrow || !userAddress){el.innerHTML='<div class="empty">يرجى ربط المحفظة</div>';return;}
-  el.innerHTML='<div class="empty"><span class="spin"></span> جارٍ التحميل…</div>';
-  try{
-    const evs=await queryFilterChunked(escrow,escrow.filters.ListingCreated(null,userAddress));
-    const ids=[...new Set(evs.map(e=>Number(e.args.id)))];
-    const res=await Promise.all(ids.map(async id=>({id,data:await escrow.getListing(id)})));
-    const myList=res.filter(l=>l.data.seller.toLowerCase()===userAddress.toLowerCase()&&l.data.status===0n);
-    
-    if(!myList.length){el.innerHTML='<div class="empty">لا توجد إعلانات نشطة</div>';return;}
-    
-    el.innerHTML='';
-    for(const{id,data}of myList){
-      const m=await getMeta(data.token);
-      const item=document.createElement('div');
-      item.className='o-item';
-      item.innerHTML=`
-        <div>
-          <div class="o-id">إعلان #${id}</div>
-          <div class="o-amount">${fmt(data.available,m.decimals)} / ${fmt(data.amount,m.decimals)} ${m.symbol}</div>
-          <div class="l-info">${esc(data.paymentInfo)}</div>
-        </div>
-        <div class="act-btns">
-          <span class="pill Pending">نشط</span>
-          <button class="s-btn danger b-clist" data-id="${id}">إلغاء الإعلان</button>
-        </div>
-      `;
-      el.appendChild(item);
-    }
-    
-    el.querySelectorAll('.b-clist').forEach(b=>b.addEventListener('click',async()=>{
-      try{
-        toast('جاري إلغاء الإعلان...');
-        const tx=await escrow.cancelListing(Number(b.dataset.id));
-        await tx.wait();
-        toast('✓ تم إلغاء الإعلان بنجاح');
-        renderMyListings();
-      }catch(e){toast('خطأ: '+(e.message||e),true);}
-    }));
-    
-  }catch(e){
-    el.innerHTML=`<div class="empty">خطأ: ${e.message||e}</div>`;
-  }
-}
 })();
 </script>
 </body>
