@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>MD1RoBoT - لوحة التحكم</title>
+    <style>
+        body { font-family: Tahoma; background: #0a0a0a; color: #0f0; margin: 20px; }
+        .card { background: #111; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #0f0; }
+        button { background: #0f0; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0c0; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🧬 MD1RoBoT - وحش التطور</h1>
+    <div class="card">
+        <p>الجيل: <span id="generation">-</span></p>
+        <p>أفضل لياقة: <span id="fitness">-</span></p>
+        <p>المعرفة المتراكمة: <span id="knowledge">-</span> عنصر</p>
+    </div>
+    <div class="card" id="theories-container">
+        <h3>بنك النظريات</h3>
+        <ul id="theories-list"></ul>
+    </div>
+    <button onclick="runCycle()">تشغيل دورة تطور</button>
+    <p id="message"></p>
+
+    <script>
+        const API_BASE = 'http://localhost:8080'; // غيّره إلى عنوان الخادم الحقيقي إذا كان بعيداً
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/api/status`);
+                const data = await res.json();
+                document.getElementById('generation').textContent = data.generation;
+                document.getElementById('fitness').textContent = data.best_fitness.toFixed(3);
+                document.getElementById('knowledge').textContent = data.knowledge_count;
+                const list = document.getElementById('theories-list');
+                list.innerHTML = '';
+                data.theories.forEach(t => {
+                    const li = document.createElement('li');
+                    li.textContent = `${t.statement} (ثقة: ${t.confidence.toFixed(2)}, دليل: ${t.evidence})`;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function runCycle() {
+            const msg = document.getElementById('message');
+            msg.textContent = 'جاري تنفيذ دورة...';
+            try {
+                const res = await fetch(`${API_BASE}/api/run_cycle`, { method: 'POST' });
+                const result = await res.json();
+                if (result.status) {
+                    msg.textContent = 'تمت الدورة بنجاح!';
+                } else {
+                    msg.textContent = 'فشل: ' + result.error;
+                }
+                await fetchStatus(); // تحديث العرض
+            } catch (err) {
+                msg.textContent = 'خطأ في الاتصال بالخادم.';
+            }
+        }
+
+        // تحديث كل 5 ثواني
+        setInterval(fetchStatus, 5000);
+        fetchStatus();
+    </script>
+</body>
+</html>
