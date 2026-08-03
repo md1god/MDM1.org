@@ -3,69 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <title>MD1RoBoT - لوحة التحكم</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Tahoma; background: #0a0a0a; color: #0f0; margin: 20px; }
-        .card { background: #111; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #0f0; }
-        button { background: #0f0; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0c0; }
-        .error { color: red; }
+        :root {
+            --bg: #0b0c10;
+            --card: #1f2833;
+            --text: #c5c6c7;
+            --accent: #45a29e;
+            --accent2: #66fcf1;
+            --danger: #ff4444;
+            --success: #00ff88;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        h1 {
+            color: var(--accent2);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            margin: 10px;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--accent2);
+        }
+        .stat-label {
+            color: var(--text);
+            opacity: 0.8;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        button {
+            background: var(--accent);
+            color: #0b0c10;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: var(--accent2);
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .message.success {
+            background: #1d3a1d;
+            color: var(--success);
+        }
+        .message.error {
+            background: #3a1d1d;
+            color: var(--danger);
+        }
+        .message.info {
+            background: #1d2d3a;
+            color: var(--accent);
+        }
+        .error-text {
+            color: var(--danger);
+        }
     </style>
 </head>
 <body>
-    <h1>🧬 MD1RoBoT - وحش التطور</h1>
-    <div class="card">
-        <p>الجيل: <span id="generation">-</span></p>
-        <p>أفضل لياقة: <span id="fitness">-</span></p>
-        <p>المعرفة المتراكمة: <span id="knowledge">-</span> عنصر</p>
+    <div class="container">
+        <h1>🧬 MD1RoBoT – وحش التطور</h1>
+
+        <div class="card">
+            <h2>حالة النظام</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="generation">-</div>
+                    <div class="stat-label">الجيل</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="fitness">-</div>
+                    <div class="stat-label">أفضل لياقة</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="knowledge">-</div>
+                    <div class="stat-label">عناصر المعرفة</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧠 بنك النظريات</h2>
+            <ul id="theories-list">
+                <li>لا توجد نظريات بعد</li>
+            </ul>
+        </div>
+
+        <button onclick="runCycle()">⚡ تشغيل دورة تطور</button>
+        <div id="message" class="message info" style="display: none;"></div>
+
+        <div style="margin-top: 20px; text-align: center; font-size: 0.8em; opacity: 0.6;">
+            متصل بالخادم عبر <span id="api-url"></span>
+        </div>
     </div>
-    <div class="card" id="theories-container">
-        <h3>بنك النظريات</h3>
-        <ul id="theories-list"></ul>
-    </div>
-    <button onclick="runCycle()">تشغيل دورة تطور</button>
-    <p id="message"></p>
 
     <script>
-        const API_BASE = 'http://localhost:8080'; // غيّره إلى عنوان الخادم الحقيقي إذا كان بعيداً
+        // ====================== إعدادات ======================
+        // غيّر هذا إذا كان الخادم على جهاز آخر أو منفذ مختلف
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8080' 
+            : 'http://' + window.location.hostname + ':8080';
+
+        document.getElementById('api-url').textContent = API_BASE;
+
+        const msgDiv = document.getElementById('message');
+
+        function showMessage(text, type) {
+            msgDiv.textContent = text;
+            msgDiv.className = 'message ' + (type || 'info');
+            msgDiv.style.display = 'block';
+            setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
+        }
 
         async function fetchStatus() {
             try {
-                const res = await fetch(`${API_BASE}/api/status`);
+                const res = await fetch(API_BASE + '/api/status');
+                if (!res.ok) throw new Error('Status ' + res.status);
                 const data = await res.json();
                 document.getElementById('generation').textContent = data.generation;
                 document.getElementById('fitness').textContent = data.best_fitness.toFixed(3);
                 document.getElementById('knowledge').textContent = data.knowledge_count;
+
                 const list = document.getElementById('theories-list');
-                list.innerHTML = '';
-                data.theories.forEach(t => {
-                    const li = document.createElement('li');
-                    li.textContent = `${t.statement} (ثقة: ${t.confidence.toFixed(2)}, دليل: ${t.evidence})`;
-                    list.appendChild(li);
-                });
+                if (data.theories.length === 0) {
+                    list.innerHTML = '<li>لا توجد نظريات بعد</li>';
+                } else {
+                    list.innerHTML = data.theories.map(t => 
+                        `<li>🔹 ${t.statement} <small>(ثقة: ${t.confidence.toFixed(2)} | تجارب: ${t.evidence})</small></li>`
+                    ).join('');
+                }
             } catch (err) {
                 console.error(err);
+                showMessage('تعذر الاتصال بالخادم. تأكد من أنه يعمل.', 'error');
             }
         }
 
         async function runCycle() {
-            const msg = document.getElementById('message');
-            msg.textContent = 'جاري تنفيذ دورة...';
+            showMessage('جاري تنفيذ دورة...', 'info');
             try {
-                const res = await fetch(`${API_BASE}/api/run_cycle`, { method: 'POST' });
+                const res = await fetch(API_BASE + '/api/run_cycle', { method: 'POST' });
                 const result = await res.json();
-                if (result.status) {
-                    msg.textContent = 'تمت الدورة بنجاح!';
+                if (result.status === 'cycle_completed') {
+                    showMessage('تمت الدورة بنجاح!', 'success');
                 } else {
-                    msg.textContent = 'فشل: ' + result.error;
+                    showMessage('فشل: ' + (result.error || 'خطأ غير معروف'), 'error');
                 }
-                await fetchStatus(); // تحديث العرض
+                await fetchStatus();
             } catch (err) {
-                msg.textContent = 'خطأ في الاتصال بالخادم.';
+                showMessage('فشل الاتصال بالخادم.', 'error');
             }
         }
 
-        // تحديث كل 5 ثواني
-        setInterval(fetchStatus, 5000);
+        // تحديث تلقائي كل 10 ثواني
+        setInterval(fetchStatus, 10000);
         fetchStatus();
     </script>
 </body>
