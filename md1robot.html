@@ -145,17 +145,14 @@
         <div id="message" class="message info" style="display: none;"></div>
 
         <div style="margin-top: 20px; text-align: center; font-size: 0.8em; opacity: 0.6;">
-            متصل بالخادم عبر <span id="api-url"></span>
+            الخادم: <span id="api-url"></span>
         </div>
     </div>
 
     <script>
-        // ====================== إعدادات ======================
-        // غيّر هذا إذا كان الخادم على جهاز آخر أو منفذ مختلف
-        const API_BASE = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8080' 
-            : 'http://' + window.location.hostname + ':8080';
-
+        // ============= إعدادات الخادم =============
+        // الخادم يعمل على نفس جهازك، استخدم localhost
+        const API_BASE = 'http://localhost:8080';
         document.getElementById('api-url').textContent = API_BASE;
 
         const msgDiv = document.getElementById('message');
@@ -186,7 +183,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                showMessage('تعذر الاتصال بالخادم. تأكد من أنه يعمل.', 'error');
+                showMessage('تعذر الاتصال بالخادم. تأكد من أنه يعمل على ' + API_BASE, 'error');
             }
         }
 
