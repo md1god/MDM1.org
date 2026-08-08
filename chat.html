@@ -68,6 +68,11 @@
     border-bottom: 1px solid var(--border); gap: 12px; flex-direction: column;
   }
   #settingsPanel.open { display: flex; }
+  #settingsPanel .section-label {
+    font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 10px;
+  }
+  #settingsPanel .section-label:first-child { border-top: none; padding-top: 0; margin-top: 0; }
   #settingsPanel label {
     font-size: 12px; color: var(--muted);
     display: flex; justify-content: space-between; align-items: center;
@@ -86,6 +91,7 @@
     padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
   }
   #saveSettings:hover { opacity: 0.9; }
+  .hint { font-size: 11px; color: var(--muted); }
 
   #chatWindow {
     flex: 1; overflow-y: auto; padding: 20px;
@@ -146,6 +152,7 @@
 </div>
 
 <div id="settingsPanel">
+  <div class="section-label">الذكاء الاصطناعي (Groq)</div>
   <div class="row">
     <div class="field">
       <label>
@@ -174,6 +181,28 @@
       </select>
     </div>
   </div>
+
+  <div class="section-label">الصوت (ElevenLabs)</div>
+  <div class="row">
+    <div class="field">
+      <label>
+        ElevenLabs API Key
+        <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">من هنا ↗</a>
+      </label>
+      <input type="password" id="elevenKeyInput" placeholder="xi_...">
+    </div>
+    <div class="field">
+      <label>
+        الصوت
+        <a href="https://elevenlabs.io/app/voice-library" target="_blank">مكتبة الأصوات ↗</a>
+      </label>
+      <select id="voiceSelect">
+        <option value="">حط المفتاح واحفظ عشان الأصوات تظهر</option>
+      </select>
+    </div>
+  </div>
+  <div class="hint">دور في مكتبة الأصوات على صوت عربي/مصري وحطه في "My Voices"، وهيظهر هنا تلقائي بعد الحفظ.</div>
+
   <button id="saveSettings">حفظ الإعدادات</button>
 </div>
 
@@ -192,6 +221,8 @@
   const settingsPanel = document.getElementById('settingsPanel');
   const apiKeyInput = document.getElementById('apiKeyInput');
   const modelSelect = document.getElementById('modelSelect');
+  const elevenKeyInput = document.getElementById('elevenKeyInput');
+  const voiceSelect = document.getElementById('voiceSelect');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const voiceBtn = document.getElementById('voiceBtn');
@@ -206,9 +237,11 @@
 
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
+  let elevenKey = localStorage.getItem('md1_eleven_key') || '';
+  let voiceId = localStorage.getItem('md1_voice_id') || '';
   let voiceEnabled = localStorage.getItem('md1_voice_enabled') === 'true';
   let history = [];
-  let egyptianVoice = null;
+  let currentAudio = null;
 
   function updateStatus() {
     statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — افتح الإعدادات وحط الـ API key';
@@ -219,36 +252,83 @@
     voiceBtn.textContent = voiceEnabled ? '🔊 الصوت شغال' : '🔇 الصوت مقفول';
   }
 
-  // بيدور على صوت عربي مصري لو متاح في المتصفح/الجهاز، ولو مش لاقي بياخد أقرب صوت عربي عام
-  function pickEgyptianVoice() {
-    const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-    if (!voices.length) return null;
-    return voices.find(v => v.lang === 'ar-EG')
-        || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ar'))
-        || null;
+  // بيجيب كل الأصوات المتاحة في حساب ElevenLabs بتاعك ويعبي القايمة
+  async function loadVoices() {
+    if (!elevenKey) {
+      voiceSelect.innerHTML = '<option value="">حط المفتاح واحفظ عشان الأصوات تظهر</option>';
+      return;
+    }
+    voiceSelect.innerHTML = '<option value="">بيحمل الأصوات...</option>';
+    try {
+      const res = await fetch('https://api.elevenlabs.io/v1/voices', {
+        headers: { 'xi-api-key': elevenKey }
+      });
+      if (!res.ok) throw new Error('تعذر جلب الأصوات (' + res.status + ')');
+      const data = await res.json();
+      const voices = data.voices || [];
+      if (!voices.length) {
+        voiceSelect.innerHTML = '<option value="">مفيش أصوات مضافة — روح مكتبة الأصوات وضيف واحد</option>';
+        return;
+      }
+      voiceSelect.innerHTML = '';
+      voices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.voice_id;
+        opt.textContent = v.name + (v.labels?.accent ? ' — ' + v.labels.accent : '');
+        voiceSelect.appendChild(opt);
+      });
+      if (voiceId && voices.some(v => v.voice_id === voiceId)) {
+        voiceSelect.value = voiceId;
+      } else {
+        voiceId = voiceSelect.value;
+        localStorage.setItem('md1_voice_id', voiceId);
+      }
+    } catch (err) {
+      voiceSelect.innerHTML = '<option value="">خطأ: ' + err.message + '</option>';
+    }
   }
 
-  function speak(text) {
-    if (!voiceEnabled || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    if (!egyptianVoice) egyptianVoice = pickEgyptianVoice();
-    if (egyptianVoice) utter.voice = egyptianVoice;
-    utter.lang = 'ar-EG';
-    utter.rate = 1;
-    utter.pitch = 1;
-    window.speechSynthesis.speak(utter);
-  }
-
-  if (window.speechSynthesis) {
-    // الأصوات بتتحمل بشكل غير متزامن في معظم المتصفحات
-    window.speechSynthesis.onvoiceschanged = () => { egyptianVoice = pickEgyptianVoice(); };
+  async function speak(text) {
+    if (!voiceEnabled) return;
+    if (!elevenKey || !voiceId) {
+      addMessage('لتشغيل الصوت لازم تحط مفتاح ElevenLabs وتختار صوت من الإعدادات', 'error');
+      return;
+    }
+    try {
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+      const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': elevenKey,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg'
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        })
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        addMessage('خطأ في الصوت (' + res.status + '): ' + errText, 'error');
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      currentAudio = new Audio(url);
+      currentAudio.play();
+    } catch (err) {
+      addMessage('فشل تشغيل الصوت: ' + err.message, 'error');
+    }
   }
 
   apiKeyInput.value = apiKey;
   modelSelect.value = model;
+  elevenKeyInput.value = elevenKey;
   updateStatus();
   updateVoiceBtn();
+  if (elevenKey) loadVoices();
 
   settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
 
@@ -256,17 +336,32 @@
     voiceEnabled = !voiceEnabled;
     localStorage.setItem('md1_voice_enabled', voiceEnabled);
     updateVoiceBtn();
-    if (!voiceEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+    if (!voiceEnabled && currentAudio) { currentAudio.pause(); currentAudio = null; }
   };
 
-  saveSettings.onclick = () => {
+  saveSettings.onclick = async () => {
     apiKey = apiKeyInput.value.trim();
     model = modelSelect.value;
+    const newElevenKey = elevenKeyInput.value.trim();
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
+    localStorage.setItem('md1_eleven_key', newElevenKey);
     updateStatus();
+
+    if (newElevenKey !== elevenKey) {
+      elevenKey = newElevenKey;
+      await loadVoices();
+    }
+    voiceId = voiceSelect.value;
+    localStorage.setItem('md1_voice_id', voiceId);
+
     settingsPanel.classList.remove('open');
   };
+
+  voiceSelect.addEventListener('change', () => {
+    voiceId = voiceSelect.value;
+    localStorage.setItem('md1_voice_id', voiceId);
+  });
 
   function addMessage(text, cls) {
     const wrap = document.createElement('div');
