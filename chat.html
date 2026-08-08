@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MD1 Chat</title>
+<title>MD1 Chat — المجتمع والعملات الرقمية</title>
 <style>
   :root {
-    --bg: #0f1115;
-    --panel: #161920;
-    --border: #262a33;
-    --text: #e6e8eb;
-    --muted: #8a8f98;
-    --accent: #4f8cff;
-    --user-bubble: #1f2937;
-    --bot-bubble: #171b24;
-    --error: #ff5c5c;
+    --bg: #0b0e14;
+    --panel: #131722;
+    --border: #1e222d;
+    --text: #d1d4dc;
+    --muted: #787b86;
+    --accent: #2962ff;
+    --user-bubble: #1e222d;
+    --bot-bubble: #131722;
+    --error: #f23645;
   }
   * { box-sizing: border-box; }
   body {
@@ -40,37 +40,39 @@
     gap: 12px;
   }
   .logo {
-    width: 32px;
-    height: 32px;
-    background: var(--accent);
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, #2962ff, #00bcd4);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     color: white;
-    font-size: 14px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
   }
   header h1 {
     font-size: 16px;
     margin: 0;
     font-weight: 600;
+    color: #fff;
   }
   header .status {
     font-size: 12px;
     color: var(--muted);
   }
   #settingsBtn {
-    background: none;
+    background: rgba(41, 98, 255, 0.1);
     border: 1px solid var(--border);
-    color: var(--muted);
+    color: var(--text);
     border-radius: 6px;
-    padding: 6px 12px;
+    padding: 6px 14px;
     cursor: pointer;
     font-size: 12px;
     transition: all 0.2s;
   }
-  #settingsBtn:hover { color: var(--text); border-color: var(--accent); }
+  #settingsBtn:hover { background: var(--accent); color: white; border-color: var(--accent); }
 
   #settingsPanel {
     display: none;
@@ -87,9 +89,9 @@
     border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
-    padding: 6px 0;
-    font-size: 12px;
-    color: var(--accent);
+    padding: 8px 0;
+    font-size: 13px;
+    color: #00bcd4;
   }
   .marquee-box marquee {
     font-weight: 500;
@@ -103,7 +105,7 @@
     align-items: center;
   }
   #settingsPanel label a {
-    color: var(--accent);
+    color: #00bcd4;
     text-decoration: none;
     font-size: 11px;
   }
@@ -113,18 +115,21 @@
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 8px 10px;
+    padding: 9px 12px;
     border-radius: 6px;
     font-size: 13px;
+    outline: none;
   }
-  #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; }
-  #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
+  #settingsPanel input:focus, #settingsPanel select:focus { border-color: var(--accent); }
+  #settingsPanel .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 5px; }
+  
   #saveSettings {
     align-self: flex-start;
     background: var(--accent);
     border: none;
     color: white;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
@@ -138,12 +143,12 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
   .msg {
     max-width: 75%;
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
     line-height: 1.6;
     font-size: 14px;
     white-space: pre-wrap;
@@ -152,6 +157,7 @@
   .msg.user {
     align-self: flex-end;
     background: var(--user-bubble);
+    border: 1px solid var(--border);
   }
   .msg.bot {
     align-self: flex-start;
@@ -160,7 +166,7 @@
   }
   .msg.error {
     align-self: flex-start;
-    background: rgba(255, 92, 92, 0.1);
+    background: rgba(242, 54, 69, 0.1);
     border: 1px solid var(--error);
     color: var(--error);
   }
@@ -182,7 +188,7 @@
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 8px;
     font-size: 14px;
     resize: none;
@@ -193,13 +199,15 @@
     background: var(--accent);
     border: none;
     color: white;
-    padding: 0 20px;
+    padding: 0 22px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
+    transition: opacity 0.2s;
   }
-  #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+  #sendBtn:hover { opacity: 0.9; }
+  #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -208,43 +216,40 @@
   <div class="brand">
     <div class="logo">MD1</div>
     <div>
-      <h1>MD1 Chat</h1>
-      <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
+      <h1>MD1 Chat — Crypto & Community</h1>
+      <div class="status" id="statusLine">غير متصل — يرجى إدخال مفتاح الـ API من الإعدادات</div>
     </div>
   </div>
   <button id="settingsBtn">⚙ الإعدادات</button>
 </header>
 
-<div id="settingsPanel">
+<div id="settingsPanel" class="open">
   <div class="marquee-box">
-    <marquee scrollamount="5">مرحباً بك في نافذة محادثات MD1 الذكية — خطوات التشغيل: 1. احصل على مفتاح Groq مجاناً واحفظه — 2. اختر النموذج المناسب لاحتياجاتك — 3. ابدأ الدردشة فوراً وبكل سرعة!</marquee>
+    <marquee scrollamount="5">مرحباً بك في منصة MD1usd.com للعملات الرقمية والمجتمع — أدخل مفتاح Groq الخاص بك، اختر النموذج المناسب، وابدأ بالاستفسار عن محتوى ومشاريع المنصة فوراً!</marquee>
   </div>
   <div class="row">
     <div class="field">
       <label>
         Groq API Key
-        <a href="https://console.qroq.com" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
+        <a href="https://console.groq.com" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
       </label>
       <input type="password" id="apiKeyInput" placeholder="gsk_...">
     </div>
     <div class="field">
       <label>اختر النموذج الذكي</label>
       <select id="modelSelect">
-        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق)</option>
-        <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة)</option>
-        <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 Distill 70B (للتفكير العميق والمنطق)</option>
-        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
-        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (أخف وأسرع)</option>
+        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق للفهم والتحليل)</option>
+        <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة وخفيف)</option>
       </select>
     </div>
   </div>
-  <button id="saveSettings">حفظ الإعدادات</button>
+  <button id="saveSettings">حفظ الإعدادات وبدء الدردشة</button>
 </div>
 
 <div id="chatWindow"></div>
 
 <div id="inputBar">
-  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك..."></textarea>
+  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك أو استفسارك هنا..."></textarea>
   <button id="sendBtn">إرسال</button>
 </div>
 
@@ -265,9 +270,11 @@
 
   function updateStatus() {
     if (apiKey) {
-      statusLine.textContent = `متصل — ${model}`;
+      statusLine.textContent = `متصل — نموذج (${model})`;
+      settingsPanel.classList.remove('open');
     } else {
-      statusLine.textContent = 'مش متصل — افتح الإعدادات وحط الـ API key';
+      statusLine.textContent = 'غير متصل — يرجى إدخال مفتاح الـ API من الإعدادات';
+      settingsPanel.classList.add('open');
     }
   }
 
@@ -283,7 +290,6 @@
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
     updateStatus();
-    settingsPanel.classList.remove('open');
   };
 
   function addMessage(text, cls) {
@@ -299,7 +305,8 @@
     const text = userInput.value.trim();
     if (!text) return;
     if (!apiKey) {
-      addMessage('محتاج تحط الـ API key الأول من الإعدادات', 'error');
+      addMessage('يجب إدخال مفتاح الـ API أولاً من لوحة الإعدادات بالأعلى.', 'error');
+      settingsPanel.classList.add('open');
       return;
     }
 
@@ -308,7 +315,13 @@
     userInput.value = '';
     sendBtn.disabled = true;
 
-    const typingMsg = addMessage('بيكتب...', 'typing');
+    const typingMsg = addMessage('جاري تحليل الطلب والرد...', 'typing');
+
+    // "حقن السياق" لشرح وتوجيه النموذج ليكون مساعداً رسمياً لموقع MD1usd.com والعملات الرقمية
+    const systemPrompt = {
+      role: "system",
+      content: "أنت مساعد ذكي رسمي ومحترف لموقع MD1usd.com ومنصة mdm1.org. الموقع متخصص في مجال العملات الرقمية وتوفير أدوات ومولدات صفحات متطورة للمجتمع. مهمتك هي مساعدة الزوار، شرح أقسام الموقع وأدواته، والإجابة على أي استفسارات تقنية أو متعلقة بالعملات الرقمية بدقة عالية وبأسلوب احترافي باللغة العربية."
+    };
 
     try {
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -319,7 +332,7 @@
         },
         body: JSON.stringify({
           model: model,
-          messages: history,
+          messages: [systemPrompt, ...history],
           temperature: 0.7,
           max_tokens: 1500
         })
@@ -329,19 +342,19 @@
 
       if (!response.ok) {
         const errText = await response.text();
-        addMessage('خطأ (' + response.status + '): ' + errText, 'error');
+        addMessage('حدث خطأ في الاتصال (' + response.status + '): ' + errText, 'error');
         sendBtn.disabled = false;
         return;
       }
 
       const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content || 'مفيش رد';
+      const reply = data.choices?.[0]?.message?.content || 'عذراً، لمارَد من الخادم استجابة.';
       addMessage(reply, 'bot');
       history.push({ role: 'assistant', content: reply });
 
     } catch (err) {
       typingMsg.remove();
-      addMessage('فشل الاتصال: ' + err.message, 'error');
+      addMessage('فشل الاتصال بالشبكة: ' + err.message, 'error');
     }
 
     sendBtn.disabled = false;
