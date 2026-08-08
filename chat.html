@@ -3,129 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تجربة النطق الصوتي بالمتصفح</title>
+    <title>مدقق الصوت المصري</title>
     <style>
         body {
-            font-family: Tahoma, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #0f1115;
             color: #e6e8eb;
-            padding: 20px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
-            direction: rtl; /* ضمان اتجاه الصفحة بالكامل يمين لليسار */
+            direction: rtl;
             text-align: right;
         }
-        .box {
+        .container {
             background: #161920;
             border: 1px solid #262a33;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            max-width: 450px;
         }
         textarea {
             width: 100%;
-            height: 100px;
+            height: 90px;
             background: #0f1115;
             border: 1px solid #262a33;
             color: #fff;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
             resize: none;
-            font-family: inherit;
             box-sizing: border-box;
-            direction: rtl; /* ضبط اتجاه الكتابة داخل المربع يمين لليسار */
-            text-align: right; /* محاذاة النص لليمين لمنع العكس */
+            direction: rtl !important;
+            unicode-bidi: plaintext;
+            text-align: right !important;
         }
         button {
             background: #4f8cff;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
             width: 100%;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        .status {
-            font-size: 12px;
-            color: #8a8f98;
             margin-top: 10px;
-            text-align: center;
+            font-size: 14px;
         }
+        button:hover { opacity: 0.9; }
+        .info { font-size: 11px; color: #8a8f98; margin-top: 8px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="box">
-        <h3>تجربة النطق الصوتي بالمتصفح</h3>
-        <!-- إضافة خاصية dir="rtl" صراحة هنا لمنع انعكاس الحروف على الموبايل -->
-        <textarea id="textInput" dir="rtl">أهلاً بك يا فندم، أنا مساعدك الذكي ومستعد أساعدك في أي وقت.</textarea>
-        <button onclick="speakText()">🔊 استمع للصوت</button>
-        <div class="status" id="statusMsg">جاري فحص الأصوات المتاحة في جهازك...</div>
-    </div>
+<div class="container">
+    <h3 style="margin-top: 0; font-size: 16px;">اختبار الصوت المباشر</h3>
+    
+    <!-- تم ضبط الاتجاه والمحاذاة لمنع انعكاس الحروف نهائياً -->
+    <textarea id="myText" dir="rtl">ازيك عامل ايه، أنا معاك وهساعدك في كل اللي تحتاجه.</textarea>
+    
+    <button onclick="speakEgyptian()">🔊 انطق باللهجة المصرية</button>
+    <div class="info" id="status">جاري فحص أصوات المتصفح...</div>
+</div>
 
-    <script>
-        let arabicVoices = [];
+<script>
+    let voices = [];
 
-        function loadVoices() {
-            if (!('speechSynthesis' in window)) {
-                document.getElementById('statusMsg').textContent = 'المتصفح لا يدعم ميزة النطق الصوتي.';
-                return;
-            }
+    function updateVoices() {
+        if (!('speechSynthesis' in window)) return;
+        voices = window.speechSynthesis.getVoices();
+        
+        // البحث الدقيق عن أي صوت مصري متاح (ar-EG) أو صوت عربي عام
+        const egVoice = voices.find(v => v.lang === 'ar-EG' || v.name.includes('Egypt') || v.name.includes('Maged') || v.name.includes('Tarik'));
+        
+        const statusEl = document.getElementById('status');
+        if (egVoice) {
+            statusEl.textContent = `تم العثور على صوت مصري/عربي مدعوم (${egVoice.name})`;
+        } else {
+            statusEl.textContent = "سيتم استخدام نطق المتصفح الافتراضي المتاح.";
+        }
+    }
 
-            const allVoices = window.speechSynthesis.getVoices();
-            arabicVoices = allVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
+    if ('speechSynthesis' in window) {
+        updateVoices();
+        window.speechSynthesis.onvoiceschanged = updateVoices;
+    }
 
-            const statusEl = document.getElementById('statusMsg');
-            if (arabicVoices.length > 0) {
-                arabicVoices.sort((a, b) => (b.lang.includes('EG') ? 1 : -1));
-                statusEl.textContent = `تم العثور على ${arabicVoices.length} صوت عربي في جهازك.`;
-            } else {
-                statusEl.textContent = 'لا توجد أصوات عربية مدمجة في هذا الجهاز، سيتم استخدام الصوت الافتراضي للمتصفح.';
-            }
+    function speakEgyptian() {
+        if (!('speechSynthesis' in window)) {
+            alert('متصفحك لا يدعم النطق.');
+            return;
         }
 
-        if ('speechSynthesis' in window) {
-            loadVoices();
-            window.speechSynthesis.onvoiceschanged = loadVoices;
+        window.speechSynthesis.cancel();
+
+        const text = document.getElementById('myText').value;
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // اجبار المحرك على اللهجة المصرية صراحة
+        utterance.lang = 'ar-EG';
+
+        // محاولة اختيار الصوت المصري لو متوفر في القائمة
+        const preferredVoice = voices.find(v => v.lang === 'ar-EG' || v.lang.toLowerCase().includes('eg'));
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
         }
 
-        function speakText() {
-            if (!('speechSynthesis' in window)) {
-                alert('متصفحك لا يدعم قراءة النصوص.');
-                return;
-            }
+        utterance.rate = 1.0; 
+        utterance.pitch = 1.1; // رفع النبرة قليلاً لتكون طبيعية أكثر
 
-            window.speechSynthesis.cancel();
-
-            const text = document.getElementById('textInput').value.trim();
-            if (!text) return;
-
-            const utterance = new SpeechSynthesisUtterance(text);
-
-            if (arabicVoices.length > 0) {
-                utterance.voice = arabicVoices[0];
-                utterance.lang = arabicVoices[0].lang;
-            } else {
-                utterance.lang = 'ar-EG';
-            }
-
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-
-            window.speechSynthesis.speak(utterance);
-        }
-    </script>
+        window.speechSynthesis.speak(utterance);
+    }
+</script>
 
 </body>
 </html>
