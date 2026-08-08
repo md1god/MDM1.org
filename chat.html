@@ -34,6 +34,23 @@
     justify-content: space-between;
     background: var(--panel);
   }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+  }
   header h1 {
     font-size: 16px;
     margin: 0;
@@ -51,6 +68,7 @@
     padding: 6px 12px;
     cursor: pointer;
     font-size: 12px;
+    transition: all 0.2s;
   }
   #settingsBtn:hover { color: var(--text); border-color: var(--accent); }
 
@@ -59,14 +77,38 @@
     padding: 16px 20px;
     background: var(--panel);
     border-bottom: 1px solid var(--border);
-    gap: 10px;
+    gap: 12px;
     flex-direction: column;
   }
   #settingsPanel.open { display: flex; }
+  
+  .marquee-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 6px 0;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .marquee-box marquee {
+    font-weight: 500;
+  }
+
   #settingsPanel label {
     font-size: 12px;
     color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+  #settingsPanel label a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+  }
+  #settingsPanel label a:hover { text-decoration: underline; }
+
   #settingsPanel input, #settingsPanel select {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -76,7 +118,7 @@
     font-size: 13px;
   }
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; }
-  #settingsPanel .field { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px; }
+  #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
   #saveSettings {
     align-self: flex-start;
     background: var(--accent);
@@ -86,7 +128,9 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 600;
   }
+  #saveSettings:hover { opacity: 0.9; }
 
   #chatWindow {
     flex: 1;
@@ -161,28 +205,40 @@
 <body>
 
 <header>
-  <div>
-    <h1>MD1 Chat</h1>
-    <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
+  <div class="brand">
+    <div class="logo">MD1</div>
+    <div>
+      <h1>MD1 Chat</h1>
+      <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
+    </div>
   </div>
   <button id="settingsBtn">⚙ الإعدادات</button>
 </header>
 
 <div id="settingsPanel">
+  <div class="marquee-box">
+    <marquee scrollamount="5">مرحباً بك في نافذة محادثات MD1 الذكية — خطوات التشغيل: 1. احصل على مفتاح Groq مجاناً واحفظه — 2. اختر النموذج المناسب لاحتياجاتك — 3. ابدأ الدردشة فوراً وبكل سرعة!</marquee>
+  </div>
   <div class="row">
     <div class="field">
-      <label>Groq API Key</label>
+      <label>
+        Groq API Key
+        <a href="https://console.qroq.com" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
+      </label>
       <input type="password" id="apiKeyInput" placeholder="gsk_...">
     </div>
     <div class="field">
-      <label>الموديل</label>
+      <label>اختر النموذج الذكي</label>
       <select id="modelSelect">
-        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (الأقوى)</option>
+        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق)</option>
+        <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة)</option>
+        <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 Distill 70B (للتفكير العميق والمنطق)</option>
+        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
         <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (أخف وأسرع)</option>
       </select>
     </div>
   </div>
-  <button id="saveSettings">حفظ</button>
+  <button id="saveSettings">حفظ الإعدادات</button>
 </div>
 
 <div id="chatWindow"></div>
@@ -203,9 +259,8 @@
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
 
-  // الإعدادات محفوظة محلياً في المتصفح بس (مفيش سيرفر خالص)
   let apiKey = localStorage.getItem('md1_groq_key') || '';
-  let model = localStorage.getItem('md1_groq_model') || 'openai/gpt-oss-120b';
+  let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
   let history = [];
 
   function updateStatus() {
