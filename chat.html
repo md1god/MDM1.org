@@ -79,6 +79,7 @@
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; }
   #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
   #settingsPanel .checkbox-field { flex-direction: row; align-items: center; gap: 8px; }
+  #voiceHint { font-size: 11px; color: var(--muted); }
   #saveSettings {
     align-self: flex-start; background: var(--accent); border: none; color: white;
     padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
@@ -167,6 +168,15 @@
     </div>
   </div>
   <div class="row">
+    <div class="field">
+      <label>صوت القراءة (عربي فقط)</label>
+      <select id="voiceSelect">
+        <option value="">جارِ البحث عن أصوات عربية...</option>
+      </select>
+      <span id="voiceHint"></span>
+    </div>
+  </div>
+  <div class="row">
     <label class="checkbox-field">
       <input type="checkbox" id="voiceToggle">
       قراءة ردود المساعد بصوت تلقائيًا
@@ -193,6 +203,8 @@
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const voiceToggle = document.getElementById('voiceToggle');
+  const voiceSelect = document.getElementById('voiceSelect');
+  const voiceHint = document.getElementById('voiceHint');
 
   const SYSTEM_PROMPT = {
     role: 'system',
@@ -207,8 +219,10 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
   let autoVoice = localStorage.getItem('md1_auto_voice') === '1';
+  let savedVoiceURI = localStorage.getItem('md1_voice_uri') || '';
   let history = [];
   let currentUtterance = null;
+  let arabicVoices = [];
 
   function updateStatus() {
     statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — افتح الإعدادات وحط الـ API key';
@@ -225,17 +239,68 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
     apiKey = apiKeyInput.value.trim();
     model = modelSelect.value;
     autoVoice = voiceToggle.checked;
+    savedVoiceURI = voiceSelect.value;
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
     localStorage.setItem('md1_auto_voice', autoVoice ? '1' : '0');
+    localStorage.setItem('md1_voice_uri', savedVoiceURI);
     updateStatus();
     settingsPanel.classList.remove('open');
   };
 
-  // --- صوت المتصفح (مجاني، بدون سيرفر أو مفتاح) ---
-  function pickArabicVoice() {
-    const voices = window.speechSynthesis.getVoices();
-    return voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ar')) || null;
+  // --- تحميل الأصوات العربية فقط من متصفح الزائر ---
+  function loadArabicVoices() {
+    if (!('speechSynthesis' in window)) return;
+    const all = window.speechSynthesis.getVoices();
+    arabicVoices = all.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
+
+    voiceSelect.innerHTML = '';
+
+    if (arabicVoices.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'مفيش صوت عربي متاح على جهازك — القراءة معطّلة';
+      voiceSelect.appendChild(opt);
+      voiceHint.textContent = 'ثبّت لغة عربية للنطق من إعدادات جهازك عشان تظهر هنا.';
+      return;
+    }
+
+    arabicVoices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.voiceURI;
+      opt.textContent = `${v.name} (${v.lang})`;
+      voiceSelect.appendChild(opt);
+    });
+
+    // استرجاع الصوت المحفوظ لو لسه موجود، وإلا أول صوت عربي متاح
+    if (savedVoiceURI && arabicVoices.some(v => v.voiceURI === savedVoiceURI)) {
+      voiceSelect.value = savedVoiceURI;
+    } else {
+      voiceSelect.value = arabicVoices[0].voiceURI;
+      savedVoiceURI = arabicVoices[0].voiceURI;
+    }
+    voiceHint.textContent = `${arabicVoices.length} صوت عربي متاح على جهازك.`;
+  }
+
+  if ('speechSynthesis' in window) {
+    loadArabicVoices();
+    window.speechSynthesis.onvoiceschanged = loadArabicVoices;
+  } else {
+    voiceHint.textContent = 'المتصفح ده مش بيدعم قراءة النصوص بصوت.';
+  }
+
+  // --- تنظيف النص من رموز الماركداون وعلامات الترقيم الزايدة قبل القراءة ---
+  function cleanTextForSpeech(text) {
+    return text
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/[*_`~#>]/g, '')
+      .replace(/[-–—]{2,}/g, ' ')
+      .replace(/^\s*[-•]\s+/gm, '')
+      .replace(/\n{2,}/g, '. ')
+      .replace(/\n/g, ' ')
+      .replace(/[.]{2,}/g, '.')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
   }
 
   function speakText(text, btn) {
@@ -243,26 +308,32 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
       alert('المتصفح ده مش بيدعم قراءة النصوص بصوت');
       return;
     }
+
     if (currentUtterance && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
       document.querySelectorAll('.speak-btn.speaking').forEach(b => b.classList.remove('speaking'));
       if (currentUtterance._btn === btn) { currentUtterance = null; return; }
     }
-    const utter = new SpeechSynthesisUtterance(text);
-    const voice = pickArabicVoice();
-    if (voice) utter.voice = voice;
-    utter.lang = voice ? voice.lang : 'ar-EG';
+
+    if (arabicVoices.length === 0) {
+      alert('مفيش صوت عربي متاح على جهازك، عشان كده القراءة معطّلة (عشان منقراش بلغة غلط زي هندي أو صيني).');
+      return;
+    }
+
+    const chosen = arabicVoices.find(v => v.voiceURI === savedVoiceURI) || arabicVoices[0];
+    const cleanText = cleanTextForSpeech(text);
+
+    const utter = new SpeechSynthesisUtterance(cleanText);
+    utter.voice = chosen;
+    utter.lang = chosen.lang;
     utter.rate = 1;
     utter._btn = btn;
     utter.onstart = () => btn && btn.classList.add('speaking');
     utter.onend = () => { btn && btn.classList.remove('speaking'); currentUtterance = null; };
     utter.onerror = () => { btn && btn.classList.remove('speaking'); currentUtterance = null; };
+
     currentUtterance = utter;
     window.speechSynthesis.speak(utter);
-  }
-
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => pickArabicVoice();
   }
 
   function addMessage(text, cls) {
