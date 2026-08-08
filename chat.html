@@ -45,12 +45,14 @@
   }
   header h1 { font-size: 16px; margin: 0; font-weight: 600; }
   header .status { font-size: 12px; color: var(--muted); }
-  #settingsBtn {
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
     background: none; border: 1px solid var(--border); color: var(--muted);
     border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px;
     transition: all 0.2s;
   }
-  #settingsBtn:hover { color: var(--text); border-color: var(--accent); }
+  .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+  .icon-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(79,140,255,0.1); }
 
   .marquee-bar {
     background: linear-gradient(90deg, rgba(79,140,255,0.15), rgba(79,140,255,0.05));
@@ -130,7 +132,10 @@
       <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
     </div>
   </div>
-  <button id="settingsBtn">⚙ الإعدادات</button>
+  <div class="header-actions">
+    <button id="voiceBtn" class="icon-btn" title="تشغيل/إيقاف قراءة الردود صوتيًا">🔊 الصوت</button>
+    <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
+  </div>
 </header>
 
 <div class="marquee-bar">
@@ -189,28 +194,70 @@
   const modelSelect = document.getElementById('modelSelect');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
+  const voiceBtn = document.getElementById('voiceBtn');
 
+  // موديل عام مش مربوط بأي موقع أو مشروع معين — مجرد مساعد بيرد باللهجة المصرية
   const SYSTEM_PROMPT = {
     role: 'system',
-    content: `أنت "MD1 Assistant"، مساعد ذكي يعمل داخل موقع MDM1 (mdm1.org) ومنصة MD1usd (md1usd.com).
-MDM1 هي منصة DeFi/Web3 متوافقة مع الشريعة الإسلامية مبنية على شبكة Polygon.
-MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة السلاسل تابعة لنفس المنظومة، ولها منصة استثمارية وتقنية خاصة على md1usd.com.
-مهمتك: مساعدة زوار الموقع بالرد على أسئلتهم عن المنصة، العملة، كيفية الاستخدام، أو أي استفسار عام بشكل ودود ومختصر ومفيد باللغة العربية.`
+    content: `إنت مساعد ذكي وودود، بترد على الناس دايمًا باللهجة المصرية العامية (مش فصحى خالص)، بأسلوب طبيعي وبسيط زي ما الناس بتتكلم في الشارع أو مع صحابهم.
+جاوب بإيجاز ووضوح على أي سؤال بيتسأل لك، أيًا كان موضوعه. لو السؤال تقني، اشرحه ببساطة من غير تعقيد.
+متفتكرش إنك موظف عند حد أو تابع لأي شركة أو موقع معين — إنت مساعد عام بس.`
   };
 
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
+  let voiceEnabled = localStorage.getItem('md1_voice_enabled') === 'true';
   let history = [];
+  let egyptianVoice = null;
 
   function updateStatus() {
     statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — افتح الإعدادات وحط الـ API key';
   }
 
+  function updateVoiceBtn() {
+    voiceBtn.classList.toggle('active', voiceEnabled);
+    voiceBtn.textContent = voiceEnabled ? '🔊 الصوت شغال' : '🔇 الصوت مقفول';
+  }
+
+  // بيدور على صوت عربي مصري لو متاح في المتصفح/الجهاز، ولو مش لاقي بياخد أقرب صوت عربي عام
+  function pickEgyptianVoice() {
+    const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    if (!voices.length) return null;
+    return voices.find(v => v.lang === 'ar-EG')
+        || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ar'))
+        || null;
+  }
+
+  function speak(text) {
+    if (!voiceEnabled || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    if (!egyptianVoice) egyptianVoice = pickEgyptianVoice();
+    if (egyptianVoice) utter.voice = egyptianVoice;
+    utter.lang = 'ar-EG';
+    utter.rate = 1;
+    utter.pitch = 1;
+    window.speechSynthesis.speak(utter);
+  }
+
+  if (window.speechSynthesis) {
+    // الأصوات بتتحمل بشكل غير متزامن في معظم المتصفحات
+    window.speechSynthesis.onvoiceschanged = () => { egyptianVoice = pickEgyptianVoice(); };
+  }
+
   apiKeyInput.value = apiKey;
   modelSelect.value = model;
   updateStatus();
+  updateVoiceBtn();
 
   settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
+
+  voiceBtn.onclick = () => {
+    voiceEnabled = !voiceEnabled;
+    localStorage.setItem('md1_voice_enabled', voiceEnabled);
+    updateVoiceBtn();
+    if (!voiceEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+  };
 
   saveSettings.onclick = () => {
     apiKey = apiKeyInput.value.trim();
@@ -279,6 +326,7 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
       const reply = data.choices?.[0]?.message?.content || 'مفيش رد';
       addMessage(reply, 'bot');
       history.push({ role: 'assistant', content: reply });
+      speak(reply);
 
     } catch (err) {
       typing.wrap.remove();
