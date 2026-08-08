@@ -15,6 +15,7 @@
     --user-bubble: #1f2937;
     --bot-bubble: #171b24;
     --error: #ff5c5c;
+    --mic-live: #ff5c5c;
   }
   * { box-sizing: border-box; }
   body {
@@ -80,6 +81,7 @@
   #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
   #settingsPanel .checkbox-field { flex-direction: row; align-items: center; gap: 8px; }
   #voiceHint { font-size: 11px; color: var(--muted); }
+  optgroup { color: var(--muted); font-style: normal; }
   #saveSettings {
     align-self: flex-start; background: var(--accent); border: none; color: white;
     padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
@@ -114,15 +116,32 @@
   #inputBar {
     display: flex; gap: 10px; padding: 16px 20px;
     border-top: 1px solid var(--border); background: var(--panel);
+    align-items: flex-end;
   }
   #userInput {
     flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 12px 14px; border-radius: 8px; font-size: 14px; resize: none; font-family: inherit;
   }
   #userInput:focus { outline: none; border-color: var(--accent); }
+  #micBtn {
+    background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+    width: 44px; height: 44px; border-radius: 8px; cursor: pointer; font-size: 18px;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  #micBtn:hover { border-color: var(--accent); color: var(--text); }
+  #micBtn.listening {
+    background: rgba(255, 92, 92, 0.15); border-color: var(--mic-live); color: var(--mic-live);
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 92, 92, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(255, 92, 92, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 92, 92, 0); }
+  }
+  #micBtn:disabled { opacity: 0.4; cursor: not-allowed; }
   #sendBtn {
-    background: var(--accent); border: none; color: white; padding: 0 20px;
-    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+    background: var(--accent); border: none; color: white; padding: 0 20px; height: 44px;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
   }
   #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
@@ -159,11 +178,20 @@
     <div class="field">
       <label>اختر النموذج الذكي</label>
       <select id="modelSelect">
-        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق)</option>
-        <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة)</option>
-        <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 Distill 70B (للتفكير العميق والمنطق)</option>
-        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
-        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (أخف وأسرع)</option>
+        <optgroup label="نماذج مستقرة (Production)">
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق)</option>
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة)</option>
+          <option value="openai/gpt-oss-120b">GPT-OSS 120B (قوي جدًا وشامل)</option>
+          <option value="openai/gpt-oss-20b">GPT-OSS 20B (أخف وأسرع)</option>
+        </optgroup>
+        <optgroup label="أنظمة بحث تلقائي (Compound)">
+          <option value="groq/compound">Compound (بيدور في الإنترنت ويكتب كود تلقائي)</option>
+          <option value="groq/compound-mini">Compound Mini (نسخة أخف وأسرع)</option>
+        </optgroup>
+        <optgroup label="تجريبي — ممكن يتوقف فجأة (Preview)">
+          <option value="qwen/qwen3.6-27b">Qwen3.6 27B (تفكير عميق)</option>
+          <option value="openai/gpt-oss-safeguard-20b">GPT-OSS Safeguard 20B (مراقبة محتوى)</option>
+        </optgroup>
       </select>
     </div>
   </div>
@@ -188,7 +216,8 @@
 <div id="chatWindow"></div>
 
 <div id="inputBar">
-  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك..."></textarea>
+  <button id="micBtn" type="button" title="تكلم بدل الكتابة">🎤</button>
+  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك أو دوس المايك وتكلم..."></textarea>
   <button id="sendBtn">إرسال</button>
 </div>
 
@@ -196,6 +225,7 @@
   const chatWindow = document.getElementById('chatWindow');
   const userInput = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
+  const micBtn = document.getElementById('micBtn');
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsPanel = document.getElementById('settingsPanel');
   const apiKeyInput = document.getElementById('apiKeyInput');
@@ -272,7 +302,6 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
       voiceSelect.appendChild(opt);
     });
 
-    // استرجاع الصوت المحفوظ لو لسه موجود، وإلا أول صوت عربي متاح
     if (savedVoiceURI && arabicVoices.some(v => v.voiceURI === savedVoiceURI)) {
       voiceSelect.value = savedVoiceURI;
     } else {
@@ -289,7 +318,6 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
     voiceHint.textContent = 'المتصفح ده مش بيدعم قراءة النصوص بصوت.';
   }
 
-  // --- تنظيف النص من رموز الماركداون وعلامات الترقيم الزايدة قبل القراءة ---
   function cleanTextForSpeech(text) {
     return text
       .replace(/https?:\/\/\S+/g, '')
@@ -336,6 +364,66 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
     window.speechSynthesis.speak(utter);
   }
 
+  // --- المايك: تحويل كلام لنص (بدون سيرفر، من المتصفح مباشرة) ---
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognizer = null;
+  let isListening = false;
+
+  if (SpeechRecognitionAPI) {
+    recognizer = new SpeechRecognitionAPI();
+    recognizer.lang = 'ar-EG';
+    recognizer.continuous = false;
+    recognizer.interimResults = false;
+    recognizer.maxAlternatives = 1;
+
+    recognizer.onstart = () => {
+      isListening = true;
+      micBtn.classList.add('listening');
+    };
+
+    recognizer.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      userInput.value = transcript;
+      userInput.dispatchEvent(new Event('input'));
+      // إرسال تلقائي بعد ما يخلص الكلام، زي أي شات صوتي عادي
+      sendMessage();
+    };
+
+    recognizer.onerror = (event) => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+      if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+        addMessage('محتاج تسمح للموقع باستخدام المايك من إعدادات المتصفح.', 'error');
+      } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+        addMessage('حصلت مشكلة في المايك: ' + event.error, 'error');
+      }
+    };
+
+    recognizer.onend = () => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+    };
+
+    micBtn.onclick = () => {
+      if (!apiKey) {
+        addMessage('محتاج تحط الـ API key الأول من الإعدادات', 'error');
+        return;
+      }
+      if (isListening) {
+        recognizer.stop();
+        return;
+      }
+      try {
+        recognizer.start();
+      } catch (e) {
+        // بيحصل لو دوس مرتين بسرعة، نتجاهله
+      }
+    };
+  } else {
+    micBtn.disabled = true;
+    micBtn.title = 'المتصفح ده مش بيدعم التحدث بدل الكتابة';
+  }
+
   function addMessage(text, cls) {
     const wrap = document.createElement('div');
     wrap.className = 'msg-wrap ' + cls;
@@ -370,6 +458,7 @@ MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة ا
     addMessage(text, 'user');
     history.push({ role: 'user', content: text });
     userInput.value = '';
+    userInput.style.height = 'auto';
     sendBtn.disabled = true;
 
     const typing = addMessage('بيكتب...', 'typing');
