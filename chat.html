@@ -50,7 +50,10 @@
     font-weight: bold;
     color: white;
     font-size: 14px;
+    overflow: hidden;
   }
+  /* لو هتستخدم صورة شعار بدل الحرف: امسح المحتوى النصي MD1 من الـ HTML تحت
+     وحط بدالها: <img src="RABT_AL SORA" alt="MD1" style="width:100%;height:100%;object-fit:cover;"> */
   header h1 {
     font-size: 16px;
     margin: 0;
@@ -72,6 +75,25 @@
   }
   #settingsBtn:hover { color: var(--text); border-color: var(--accent); }
 
+  /* الشريط المتحرك — ثابت وظاهر دايمًا فوق الصفحة */
+  .marquee-bar {
+    background: linear-gradient(90deg, rgba(79,140,255,0.15), rgba(79,140,255,0.05));
+    border-bottom: 1px solid var(--border);
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .marquee-bar marquee {
+    font-weight: 600;
+  }
+  .marquee-bar a {
+    color: var(--accent);
+    text-decoration: underline;
+    font-weight: 700;
+  }
+
   #settingsPanel {
     display: none;
     padding: 16px 20px;
@@ -81,19 +103,6 @@
     flex-direction: column;
   }
   #settingsPanel.open { display: flex; }
-  
-  .marquee-box {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-    padding: 6px 0;
-    font-size: 12px;
-    color: var(--accent);
-  }
-  .marquee-box marquee {
-    font-weight: 500;
-  }
 
   #settingsPanel label {
     font-size: 12px;
@@ -215,15 +224,19 @@
   <button id="settingsBtn">⚙ الإعدادات</button>
 </header>
 
+<div class="marquee-bar">
+  <marquee scrollamount="5">
+    اضغط هنا واحصل على مفتاح مجاني لتشغيل الشات ⚡
+    <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاحك الآن ↗</a>
+  </marquee>
+</div>
+
 <div id="settingsPanel">
-  <div class="marquee-box">
-    <marquee scrollamount="5">مرحباً بك في نافذة محادثات MD1 الذكية — خطوات التشغيل: 1. احصل على مفتاح Groq مجاناً واحفظه — 2. اختر النموذج المناسب لاحتياجاتك — 3. ابدأ الدردشة فوراً وبكل سرعة!</marquee>
-  </div>
   <div class="row">
     <div class="field">
       <label>
         Groq API Key
-        <a href="https://console.qroq.com" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
+        <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
       </label>
       <input type="password" id="apiKeyInput" placeholder="gsk_...">
     </div>
@@ -258,6 +271,17 @@
   const modelSelect = document.getElementById('modelSelect');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
+
+  // رسالة النظام: تخلي النموذج يفهم إنه مساعد موقع MDM1 / MD1usd
+  const SYSTEM_PROMPT = {
+    role: 'system',
+    content: `أنت "MD1 Assistant"، مساعد ذكي يعمل داخل موقع MDM1 (mdm1.org) ومنصة MD1usd (md1usd.com).
+MDM1 هي منصة DeFi/Web3 متوافقة مع الشريعة الإسلامية مبنية على شبكة Polygon.
+MD1usd (رمزها MD1$) هي عملة مستقرة (stablecoin) متعددة السلاسل (multi-chain) تابعة لنفس المنظومة، ولها منصة استثمارية وتقنية خاصة على md1usd.com.
+مهمتك: مساعدة زوار الموقع بالرد على أسئلتهم عن المنصة، العملة، كيفية الاستخدام، أو أي استفسار عام بشكل ودود ومختصر ومفيد باللغة العربية (إلا لو المستخدم كتب بلغة تانية فرد بنفس لغته).
+لو سُئلت عن معلومة تفصيلية غير متأكد منها (زي أسعار حالية أو أرقام دقيقة)، وضّح إنك غير متأكد وانصح المستخدم يتأكد من الموقع الرسمي مباشرة.
+كن مختصرًا وواضحًا، وتجنب الإطالة غير الضرورية.`
+  };
 
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
@@ -319,7 +343,7 @@
         },
         body: JSON.stringify({
           model: model,
-          messages: history,
+          messages: [SYSTEM_PROMPT, ...history],
           temperature: 0.7,
           max_tokens: 1500
         })
