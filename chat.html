@@ -83,15 +83,20 @@
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 8px 10px; border-radius: 6px; font-size: 13px;
   }
-  #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
   #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
   optgroup { color: var(--muted); font-style: normal; }
-  #saveSettings {
-    align-self: flex-start; background: var(--accent); border: none; color: white;
+  .btn-row { display: flex; gap: 10px; align-items: center; }
+  #saveSettings, #testVoiceBtn {
+    background: var(--accent); border: none; color: white;
     padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
   }
-  #saveSettings:hover { opacity: 0.9; }
+  #testVoiceBtn { background: none; border: 1px solid var(--accent); color: var(--accent); }
+  #saveSettings:hover, #testVoiceBtn:hover { opacity: 0.9; }
   .hint { font-size: 11px; color: var(--muted); }
+  #voiceTestResult { font-size: 12px; margin-top: 4px; }
+  #voiceTestResult.ok { color: #4ade80; }
+  #voiceTestResult.fail { color: var(--error); }
 
   #chatWindow {
     flex: 1; overflow-y: auto; padding: 20px;
@@ -112,7 +117,7 @@
   .msg.typing { align-self: flex-start; color: var(--muted); font-style: italic; background: none; }
 
   #inputBar {
-    display: flex; gap: 10px; padding: 16px 20px;
+    display: flex; gap: 8px; padding: 16px 20px;
     border-top: 1px solid var(--border); background: var(--panel);
     align-items: flex-end;
   }
@@ -121,6 +126,12 @@
     padding: 12px 14px; border-radius: 8px; font-size: 14px; resize: none; font-family: inherit;
   }
   #userInput:focus { outline: none; border-color: var(--accent); }
+  #micBtn {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    width: 44px; height: 44px; border-radius: 8px; cursor: pointer; font-size: 18px;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  #micBtn.active { background: var(--error); border-color: var(--error); color: white; }
   #sendBtn {
     background: var(--accent); border: none; color: white; padding: 0 20px; height: 44px;
     border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
@@ -176,7 +187,6 @@
         </optgroup>
         <optgroup label="تجريبي — ممكن يتوقف فجأة (Preview)">
           <option value="qwen/qwen3.6-27b">Qwen3.6 27B (تفكير عميق)</option>
-          <option value="openai/gpt-oss-safeguard-20b">GPT-OSS Safeguard 20B (مراقبة محتوى)</option>
         </optgroup>
       </select>
     </div>
@@ -189,7 +199,7 @@
         ElevenLabs API Key
         <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">من هنا ↗</a>
       </label>
-      <input type="password" id="elevenKeyInput" placeholder="xi_...">
+      <input type="password" id="elevenKeyInput" placeholder="sk_...">
     </div>
     <div class="field">
       <label>
@@ -201,6 +211,10 @@
       </select>
     </div>
   </div>
+  <div class="btn-row">
+    <button id="testVoiceBtn" type="button">🔊 اختبار الصوت</button>
+    <span id="voiceTestResult"></span>
+  </div>
   <div class="hint">دور في مكتبة الأصوات على صوت عربي/مصري وحطه في "My Voices"، وهيظهر هنا تلقائي بعد الحفظ.</div>
 
   <button id="saveSettings">حفظ الإعدادات</button>
@@ -209,6 +223,7 @@
 <div id="chatWindow"></div>
 
 <div id="inputBar">
+  <button id="micBtn" title="اتكلم بدل ما تكتب">🎤</button>
   <textarea id="userInput" rows="1" placeholder="اكتب رسالتك هنا..."></textarea>
   <button id="sendBtn">إرسال</button>
 </div>
@@ -217,17 +232,19 @@
   const chatWindow = document.getElementById('chatWindow');
   const userInput = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
+  const micBtn = document.getElementById('micBtn');
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsPanel = document.getElementById('settingsPanel');
   const apiKeyInput = document.getElementById('apiKeyInput');
   const modelSelect = document.getElementById('modelSelect');
   const elevenKeyInput = document.getElementById('elevenKeyInput');
   const voiceSelect = document.getElementById('voiceSelect');
+  const testVoiceBtn = document.getElementById('testVoiceBtn');
+  const voiceTestResult = document.getElementById('voiceTestResult');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const voiceBtn = document.getElementById('voiceBtn');
 
-  // موديل عام مش مربوط بأي موقع أو مشروع معين — مجرد مساعد بيرد باللهجة المصرية
   const SYSTEM_PROMPT = {
     role: 'system',
     content: `إنت مساعد ذكي وودود، بترد على الناس دايمًا باللهجة المصرية العامية (مش فصحى خالص)، بأسلوب طبيعي وبسيط زي ما الناس بتتكلم في الشارع أو مع صحابهم.
@@ -252,7 +269,6 @@
     voiceBtn.textContent = voiceEnabled ? '🔊 الصوت شغال' : '🔇 الصوت مقفول';
   }
 
-  // بيجيب كل الأصوات المتاحة في حساب ElevenLabs بتاعك ويعبي القايمة
   async function loadVoices() {
     if (!elevenKey) {
       voiceSelect.innerHTML = '<option value="">حط المفتاح واحفظ عشان الأصوات تظهر</option>';
@@ -263,7 +279,10 @@
       const res = await fetch('https://api.elevenlabs.io/v1/voices', {
         headers: { 'xi-api-key': elevenKey }
       });
-      if (!res.ok) throw new Error('تعذر جلب الأصوات (' + res.status + ')');
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(res.status + ': ' + errText);
+      }
       const data = await res.json();
       const voices = data.voices || [];
       if (!voices.length) {
@@ -288,6 +307,27 @@
     }
   }
 
+  async function ttsRequest(text) {
+    const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
+      method: 'POST',
+      headers: {
+        'xi-api-key': elevenKey,
+        'Content-Type': 'application/json',
+        'Accept': 'audio/mpeg'
+      },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+      })
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(res.status + ': ' + errText);
+    }
+    return res.blob();
+  }
+
   async function speak(text) {
     if (!voiceEnabled) return;
     if (!elevenKey || !voiceId) {
@@ -296,31 +336,82 @@
     }
     try {
       if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-      const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
-        method: 'POST',
-        headers: {
-          'xi-api-key': elevenKey,
-          'Content-Type': 'application/json',
-          'Accept': 'audio/mpeg'
-        },
-        body: JSON.stringify({
-          text: text,
-          model_id: 'eleven_multilingual_v2',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-        })
-      });
-      if (!res.ok) {
-        const errText = await res.text();
-        addMessage('خطأ في الصوت (' + res.status + '): ' + errText, 'error');
-        return;
-      }
-      const blob = await res.blob();
+      const blob = await ttsRequest(text);
       const url = URL.createObjectURL(blob);
       currentAudio = new Audio(url);
       currentAudio.play();
     } catch (err) {
       addMessage('فشل تشغيل الصوت: ' + err.message, 'error');
     }
+  }
+
+  // زرار اختبار الصوت المستقل — بيديك رد فعل فوري من غير ما تحتاج تعدي على الشات كله
+  testVoiceBtn.onclick = async () => {
+    const key = elevenKeyInput.value.trim();
+    const vId = voiceSelect.value;
+    voiceTestResult.textContent = 'بيجرب...';
+    voiceTestResult.className = '';
+    if (!key) {
+      voiceTestResult.textContent = 'حط مفتاح ElevenLabs الأول';
+      voiceTestResult.className = 'fail';
+      return;
+    }
+    if (!vId) {
+      voiceTestResult.textContent = 'اختار صوت الأول من القايمة';
+      voiceTestResult.className = 'fail';
+      return;
+    }
+    try {
+      const oldKey = elevenKey, oldVoice = voiceId;
+      elevenKey = key; voiceId = vId;
+      const blob = await ttsRequest('مرحبا، الصوت شغال تمام');
+      const url = URL.createObjectURL(blob);
+      new Audio(url).play();
+      voiceTestResult.textContent = '✅ شغال تمام';
+      voiceTestResult.className = 'ok';
+    } catch (err) {
+      voiceTestResult.textContent = '❌ فشل: ' + err.message;
+      voiceTestResult.className = 'fail';
+    }
+  };
+
+  // زرار الميك — التعرف على الصوت وتحويله لنص (مبني في المتصفح، شغال كويس على Chrome/Android)
+  let recognition = null;
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognitionAPI) {
+    recognition = new SpeechRecognitionAPI();
+    recognition.lang = 'ar-EG';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      micBtn.classList.add('active');
+      micBtn.textContent = '⏺';
+    };
+    recognition.onend = () => {
+      micBtn.classList.remove('active');
+      micBtn.textContent = '🎤';
+    };
+    recognition.onerror = (e) => {
+      addMessage('خطأ في الميكروفون: ' + e.error, 'error');
+    };
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      userInput.value = transcript;
+      sendMessage();
+    };
+
+    micBtn.onclick = () => {
+      if (micBtn.classList.contains('active')) {
+        recognition.stop();
+      } else {
+        try { recognition.start(); } catch (err) {}
+      }
+    };
+  } else {
+    micBtn.disabled = true;
+    micBtn.title = 'المتصفح ده مش بيدعم التعرف على الصوت';
+    micBtn.style.opacity = '0.4';
   }
 
   apiKeyInput.value = apiKey;
