@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD1 Chat</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161920;
+    --border: #262a33;
+    --text: #e6e8eb;
+    --muted: #8a8f98;
+    --accent: #4f8cff;
+    --user-bubble: #1f2937;
+    --bot-bubble: #171b24;
+    --error: #ff5c5c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel);
+  }
+  header h1 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 600;
+  }
+  header .status {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  #settingsBtn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  #settingsBtn:hover { color: var(--text); border-color: var(--accent); }
+
+  #settingsPanel {
+    display: none;
+    padding: 16px 20px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    flex-direction: column;
+  }
+  #settingsPanel.open { display: flex; }
+  #settingsPanel label {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  #settingsPanel input, #settingsPanel select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  #settingsPanel .field { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px; }
+  #saveSettings {
+    align-self: flex-start;
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  #chatWindow {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .msg {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    line-height: 1.6;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: var(--user-bubble);
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+  }
+  .msg.error {
+    align-self: flex-start;
+    background: rgba(255, 92, 92, 0.1);
+    border: 1px solid var(--error);
+    color: var(--error);
+  }
+  .msg.typing {
+    align-self: flex-start;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  #inputBar {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+  }
+  #userInput {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: none;
+    font-family: inherit;
+  }
+  #userInput:focus { outline: none; border-color: var(--accent); }
+  #sendBtn {
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 0 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>MD1 Chat</h1>
+    <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
+  </div>
+  <button id="settingsBtn">⚙ الإعدادات</button>
+</header>
+
+<div id="settingsPanel">
+  <div class="row">
+    <div class="field">
+      <label>Groq API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="gsk_...">
+    </div>
+    <div class="field">
+      <label>الموديل</label>
+      <select id="modelSelect">
+        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (الأقوى)</option>
+        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (أخف وأسرع)</option>
+      </select>
+    </div>
+  </div>
+  <button id="saveSettings">حفظ</button>
+</div>
+
+<div id="chatWindow"></div>
+
+<div id="inputBar">
+  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك..."></textarea>
+  <button id="sendBtn">إرسال</button>
+</div>
+
+<script>
+  const chatWindow = document.getElementById('chatWindow');
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsPanel = document.getElementById('settingsPanel');
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const modelSelect = document.getElementById('modelSelect');
+  const saveSettings = document.getElementById('saveSettings');
+  const statusLine = document.getElementById('statusLine');
+
+  // الإعدادات محفوظة محلياً في المتصفح بس (مفيش سيرفر خالص)
+  let apiKey = localStorage.getItem('md1_groq_key') || '';
+  let model = localStorage.getItem('md1_groq_model') || 'openai/gpt-oss-120b';
+  let history = [];
+
+  function updateStatus() {
+    if (apiKey) {
+      statusLine.textContent = `متصل — ${model}`;
+    } else {
+      statusLine.textContent = 'مش متصل — افتح الإعدادات وحط الـ API key';
+    }
+  }
+
+  apiKeyInput.value = apiKey;
+  modelSelect.value = model;
+  updateStatus();
+
+  settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
+
+  saveSettings.onclick = () => {
+    apiKey = apiKeyInput.value.trim();
+    model = modelSelect.value;
+    localStorage.setItem('md1_groq_key', apiKey);
+    localStorage.setItem('md1_groq_model', model);
+    updateStatus();
+    settingsPanel.classList.remove('open');
+  };
+
+  function addMessage(text, cls) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + cls;
+    div.textContent = text;
+    chatWindow.appendChild(div);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return div;
+  }
+
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text) return;
+    if (!apiKey) {
+      addMessage('محتاج تحط الـ API key الأول من الإعدادات', 'error');
+      return;
+    }
+
+    addMessage(text, 'user');
+    history.push({ role: 'user', content: text });
+    userInput.value = '';
+    sendBtn.disabled = true;
+
+    const typingMsg = addMessage('بيكتب...', 'typing');
+
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiKey
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: history,
+          temperature: 0.7,
+          max_tokens: 1500
+        })
+      });
+
+      typingMsg.remove();
+
+      if (!response.ok) {
+        const errText = await response.text();
+        addMessage('خطأ (' + response.status + '): ' + errText, 'error');
+        sendBtn.disabled = false;
+        return;
+      }
+
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content || 'مفيش رد';
+      addMessage(reply, 'bot');
+      history.push({ role: 'assistant', content: reply });
+
+    } catch (err) {
+      typingMsg.remove();
+      addMessage('فشل الاتصال: ' + err.message, 'error');
+    }
+
+    sendBtn.disabled = false;
+    userInput.focus();
+  }
+
+  sendBtn.onclick = sendMessage;
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  userInput.addEventListener('input', () => {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 150) + 'px';
+  });
+</script>
+
+</body>
+</html>
