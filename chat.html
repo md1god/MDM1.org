@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تشجيع القراءة الصوتية محلياً بالمتصفح</title>
+    <title>تجربة النطق الصوتي بالمتصفح</title>
     <style>
         body {
             font-family: Tahoma, Arial, sans-serif;
@@ -16,6 +16,8 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            direction: rtl; /* ضمان اتجاه الصفحة بالكامل يمين لليسار */
+            text-align: right;
         }
         .box {
             background: #161920;
@@ -37,6 +39,8 @@
             resize: none;
             font-family: inherit;
             box-sizing: border-box;
+            direction: rtl; /* ضبط اتجاه الكتابة داخل المربع يمين لليسار */
+            text-align: right; /* محاذاة النص لليمين لمنع العكس */
         }
         button {
             background: #4f8cff;
@@ -64,7 +68,8 @@
 
     <div class="box">
         <h3>تجربة النطق الصوتي بالمتصفح</h3>
-        <textarea id="textInput">أهلاً بك يا فندم، أنا مساعدك الذكي ومستعد أساعدك في أي وقت.</textarea>
+        <!-- إضافة خاصية dir="rtl" صراحة هنا لمنع انعكاس الحروف على الموبايل -->
+        <textarea id="textInput" dir="rtl">أهلاً بك يا فندم، أنا مساعدك الذكي ومستعد أساعدك في أي وقت.</textarea>
         <button onclick="speakText()">🔊 استمع للصوت</button>
         <div class="status" id="statusMsg">جاري فحص الأصوات المتاحة في جهازك...</div>
     </div>
@@ -72,7 +77,6 @@
     <script>
         let arabicVoices = [];
 
-        // تحميل الأصوات المتاحة في المتصفح تلقائياً
         function loadVoices() {
             if (!('speechSynthesis' in window)) {
                 document.getElementById('statusMsg').textContent = 'المتصفح لا يدعم ميزة النطق الصوتي.';
@@ -80,12 +84,10 @@
             }
 
             const allVoices = window.speechSynthesis.getVoices();
-            // البحث عن الأصوات العربية (وتفضيل اللهجة المصرية ar-EG لو وجدت في نظام الجهاز)
             arabicVoices = allVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
 
             const statusEl = document.getElementById('statusMsg');
             if (arabicVoices.length > 0) {
-                // ترتيب الأصوات لجعل اللهجة المصرية في المقدمة إن توفرت
                 arabicVoices.sort((a, b) => (b.lang.includes('EG') ? 1 : -1));
                 statusEl.textContent = `تم العثور على ${arabicVoices.length} صوت عربي في جهازك.`;
             } else {
@@ -98,14 +100,12 @@
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-        // دالة تشغيل الصوت
         function speakText() {
             if (!('speechSynthesis' in window)) {
                 alert('متصفحك لا يدعم قراءة النصوص.');
                 return;
             }
 
-            // إيقاف أي صوت قيد التشغيل حالياً
             window.speechSynthesis.cancel();
 
             const text = document.getElementById('textInput').value.trim();
@@ -113,16 +113,15 @@
 
             const utterance = new SpeechSynthesisUtterance(text);
 
-            // اختيار أفضل صوت عربي/مصري متاح
             if (arabicVoices.length > 0) {
                 utterance.voice = arabicVoices[0];
                 utterance.lang = arabicVoices[0].lang;
             } else {
-                utterance.lang = 'ar-EG'; // محاولة فرض اللهجة المصرية افتراضياً
+                utterance.lang = 'ar-EG';
             }
 
-            utterance.rate = 1.0;  // سرعة النطق (يمكن تعديلها من 0.8 إلى 1.2)
-            utterance.pitch = 1.0; // نبرة الصوت
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
 
             window.speechSynthesis.speak(utterance);
         }
