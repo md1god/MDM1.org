@@ -81,10 +81,18 @@
   #settingsPanel label a:hover { text-decoration: underline; }
   #settingsPanel input, #settingsPanel select {
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    padding: 8px 10px; border-radius: 6px; font-size: 13px; width: 100%;
   }
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
   #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
+  .key-input-wrap { position: relative; display: flex; align-items: center; }
+  .key-input-wrap input { padding-left: 36px; font-family: monospace; direction: ltr; text-align: left; }
+  .key-toggle-eye {
+    position: absolute; left: 6px; background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 14px; padding: 4px;
+  }
+  .key-len { font-size: 10px; color: var(--muted); margin-top: 2px; direction: ltr; text-align: left; }
+  .key-len.ok { color: #4ade80; }
   optgroup { color: var(--muted); font-style: normal; }
   .btn-row { display: flex; gap: 10px; align-items: center; }
   #saveSettings, #testVoiceBtn {
@@ -170,7 +178,11 @@
         Groq API Key
         <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
       </label>
-      <input type="password" id="apiKeyInput" placeholder="gsk_...">
+      <div class="key-input-wrap">
+        <button type="button" class="key-toggle-eye" data-target="apiKeyInput">👁</button>
+        <input type="text" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" name="not-a-password-field-groq">
+      </div>
+      <div class="key-len" id="groqKeyLen"></div>
     </div>
     <div class="field">
       <label>اختر النموذج الذكي</label>
@@ -199,7 +211,11 @@
         ElevenLabs API Key
         <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">من هنا ↗</a>
       </label>
-      <input type="password" id="elevenKeyInput" placeholder="sk_...">
+      <div class="key-input-wrap">
+        <button type="button" class="key-toggle-eye" data-target="elevenKeyInput">👁</button>
+        <input type="text" id="elevenKeyInput" placeholder="sk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" name="not-a-password-field-eleven">
+      </div>
+      <div class="key-len" id="elevenKeyLen"></div>
     </div>
     <div class="field">
       <label>
@@ -215,7 +231,7 @@
     <button id="testVoiceBtn" type="button">🔊 اختبار الصوت</button>
     <span id="voiceTestResult"></span>
   </div>
-  <div class="hint">دور في مكتبة الأصوات على صوت عربي/مصري وحطه في "My Voices"، وهيظهر هنا تلقائي بعد الحفظ.</div>
+  <div class="hint">دور في مكتبة الأصوات على صوت عربي/مصري وحطه في "My Voices"، وهيظهر هنا تلقائي بعد الحفظ. النسخة دي بتوري المفتاح واضح فوق ("👁") عشان تتأكد بعينك إنه اتلصق صح قبل الحفظ — المفتاح المفروض يبدأ sk_ وطوله حوالي 51 حرف.</div>
 
   <button id="saveSettings">حفظ الإعدادات</button>
 </div>
@@ -244,6 +260,8 @@
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const voiceBtn = document.getElementById('voiceBtn');
+  const groqKeyLen = document.getElementById('groqKeyLen');
+  const elevenKeyLen = document.getElementById('elevenKeyLen');
 
   const SYSTEM_PROMPT = {
     role: 'system',
@@ -251,6 +269,11 @@
 جاوب بإيجاز ووضوح على أي سؤال بيتسأل لك، أيًا كان موضوعه. لو السؤال تقني، اشرحه ببساطة من غير تعقيد.
 متفتكرش إنك موظف عند حد أو تابع لأي شركة أو موقع معين — إنت مساعد عام بس.`
   };
+
+  // بيشيل أي حروف خفية (زي مسافات غير مرئية) ممكن تدخل مع اللصق من بعض التطبيقات
+  function cleanKey(v) {
+    return v.replace(/[\u200B-\u200D\uFEFF\s]/g, '');
+  }
 
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
@@ -268,6 +291,33 @@
     voiceBtn.classList.toggle('active', voiceEnabled);
     voiceBtn.textContent = voiceEnabled ? '🔊 الصوت شغال' : '🔇 الصوت مقفول';
   }
+
+  function updateKeyLen(input, display, expectedPrefix) {
+    const v = cleanKey(input.value);
+    const looksRight = v.startsWith(expectedPrefix) && v.length > 20;
+    display.textContent = `الطول: ${v.length} حرف${v ? (' — يبدأ بـ "' + v.slice(0, 5) + '..."') : ''}`;
+    display.className = 'key-len' + (looksRight ? ' ok' : '');
+  }
+
+  apiKeyInput.addEventListener('input', () => updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_'));
+  elevenKeyInput.addEventListener('input', () => updateKeyLen(elevenKeyInput, elevenKeyLen, 'sk_'));
+
+  // زرار العين لإظهار/إخفاء المفتاح (بديل عن type=password اللي بيسبب مشاكل Autofill)
+  document.querySelectorAll('.key-toggle-eye').forEach(btn => {
+    btn.onclick = () => {
+      const target = document.getElementById(btn.dataset.target);
+      const isMasked = target.dataset.masked === 'true';
+      if (isMasked) {
+        target.type = 'text';
+        target.dataset.masked = 'false';
+        btn.textContent = '👁';
+      } else {
+        target.type = 'password';
+        target.dataset.masked = 'true';
+        btn.textContent = '🙈';
+      }
+    };
+  });
 
   async function loadVoices() {
     if (!elevenKey) {
@@ -345,9 +395,8 @@
     }
   }
 
-  // زرار اختبار الصوت المستقل — بيديك رد فعل فوري من غير ما تحتاج تعدي على الشات كله
   testVoiceBtn.onclick = async () => {
-    const key = elevenKeyInput.value.trim();
+    const key = cleanKey(elevenKeyInput.value);
     const vId = voiceSelect.value;
     voiceTestResult.textContent = 'بيجرب...';
     voiceTestResult.className = '';
@@ -375,7 +424,6 @@
     }
   };
 
-  // زرار الميك — التعرف على الصوت وتحويله لنص (مبني في المتصفح، شغال كويس على Chrome/Android)
   let recognition = null;
   const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognitionAPI) {
@@ -419,6 +467,8 @@
   elevenKeyInput.value = elevenKey;
   updateStatus();
   updateVoiceBtn();
+  updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_');
+  updateKeyLen(elevenKeyInput, elevenKeyLen, 'sk_');
   if (elevenKey) loadVoices();
 
   settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
@@ -431,9 +481,9 @@
   };
 
   saveSettings.onclick = async () => {
-    apiKey = apiKeyInput.value.trim();
+    apiKey = cleanKey(apiKeyInput.value);
     model = modelSelect.value;
-    const newElevenKey = elevenKeyInput.value.trim();
+    const newElevenKey = cleanKey(elevenKeyInput.value);
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
     localStorage.setItem('md1_eleven_key', newElevenKey);
