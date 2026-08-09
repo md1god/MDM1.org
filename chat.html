@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MD1 Chat</title>
+<title>MD1 Chat with ElevenLabs</title>
 <style>
   :root {
     --bg: #0f1115;
@@ -18,97 +18,48 @@
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
+    margin: 0; background: var(--bg); color: var(--text);
     font-family: -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    height: 100vh; display: flex; flex-direction: column;
   }
   header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--panel);
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; background: var(--panel);
   }
   .brand { display: flex; align-items: center; gap: 12px; }
   .logo {
-    width: 32px; height: 32px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: bold; color: white; font-size: 14px;
-    overflow: hidden;
+    width: 32px; height: 32px; background: var(--accent); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px;
   }
   header h1 { font-size: 16px; margin: 0; font-weight: 600; }
   header .status { font-size: 12px; color: var(--muted); }
   .header-actions { display: flex; gap: 8px; }
   .icon-btn {
     background: none; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px;
-    transition: all 0.2s;
+    border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; transition: all 0.2s;
   }
   .icon-btn:hover { color: var(--text); border-color: var(--accent); }
   .icon-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(79,140,255,0.1); }
-
-  .marquee-bar {
-    background: linear-gradient(90deg, rgba(79,140,255,0.15), rgba(79,140,255,0.05));
-    border-bottom: 1px solid var(--border);
-    padding: 6px 0; font-size: 13px; color: var(--accent);
-    white-space: nowrap; overflow: hidden;
-  }
-  .marquee-bar marquee { font-weight: 600; }
-  .marquee-bar a { color: var(--accent); text-decoration: underline; font-weight: 700; }
 
   #settingsPanel {
     display: none; padding: 16px 20px; background: var(--panel);
     border-bottom: 1px solid var(--border); gap: 12px; flex-direction: column;
   }
   #settingsPanel.open { display: flex; }
-  #settingsPanel .section-label {
-    font-size: 11px; color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.5px; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 10px;
-  }
-  #settingsPanel .section-label:first-child { border-top: none; padding-top: 0; margin-top: 0; }
-  #settingsPanel label {
-    font-size: 12px; color: var(--muted);
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  #settingsPanel label a { color: var(--accent); text-decoration: none; font-size: 11px; }
-  #settingsPanel label a:hover { text-decoration: underline; }
+  #settingsPanel label { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
   #settingsPanel input, #settingsPanel select {
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 8px 10px; border-radius: 6px; font-size: 13px; width: 100%;
   }
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-  #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
-  .key-input-wrap { position: relative; display: flex; align-items: center; }
-  .key-input-wrap input { padding-left: 36px; font-family: monospace; direction: ltr; text-align: left; }
-  .key-toggle-eye {
-    position: absolute; left: 6px; background: none; border: none; color: var(--muted);
-    cursor: pointer; font-size: 14px; padding: 4px;
-  }
-  .key-len { font-size: 10px; color: var(--muted); margin-top: 2px; direction: ltr; text-align: left; }
-  .key-len.ok { color: #4ade80; }
-  optgroup { color: var(--muted); font-style: normal; }
-  .btn-row { display: flex; gap: 10px; align-items: center; }
-  #saveSettings, #testVoiceBtn {
+  #settingsPanel .field { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 4px; }
+  #saveSettings {
     background: var(--accent); border: none; color: white;
-    padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
+    padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; width: fit-content;
   }
-  #testVoiceBtn { background: none; border: 1px solid var(--accent); color: var(--accent); }
-  #saveSettings:hover, #testVoiceBtn:hover { opacity: 0.9; }
-  .hint { font-size: 11px; color: var(--muted); }
-  #voiceTestResult { font-size: 12px; margin-top: 4px; }
-  #voiceTestResult.ok { color: #4ade80; }
-  #voiceTestResult.fail { color: var(--error); }
 
   #chatWindow {
-    flex: 1; overflow-y: auto; padding: 20px;
-    display: flex; flex-direction: column; gap: 12px;
+    flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;
   }
   .msg-wrap { display: flex; flex-direction: column; max-width: 75%; }
   .msg-wrap.user { align-items: flex-end; align-self: flex-end; }
@@ -119,27 +70,18 @@
   }
   .msg.user { background: var(--user-bubble); }
   .msg.bot { background: var(--bot-bubble); border: 1px solid var(--border); }
-  .msg.error {
-    background: rgba(255, 92, 92, 0.1); border: 1px solid var(--error); color: var(--error);
-  }
+  .msg.error { background: rgba(255, 92, 92, 0.1); border: 1px solid var(--error); color: var(--error); }
   .msg.typing { align-self: flex-start; color: var(--muted); font-style: italic; background: none; }
 
   #inputBar {
     display: flex; gap: 8px; padding: 16px 20px;
-    border-top: 1px solid var(--border); background: var(--panel);
-    align-items: flex-end;
+    border-top: 1px solid var(--border); background: var(--panel); align-items: flex-end;
   }
   #userInput {
     flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 12px 14px; border-radius: 8px; font-size: 14px; resize: none; font-family: inherit;
   }
   #userInput:focus { outline: none; border-color: var(--accent); }
-  #micBtn {
-    background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    width: 44px; height: 44px; border-radius: 8px; cursor: pointer; font-size: 18px;
-    flex-shrink: 0; transition: all 0.2s;
-  }
-  #micBtn.active { background: var(--error); border-color: var(--error); color: white; }
   #sendBtn {
     background: var(--accent); border: none; color: white; padding: 0 20px; height: 44px;
     border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
@@ -154,324 +96,143 @@
     <div class="logo">MD1</div>
     <div>
       <h1>MD1 Chat</h1>
-      <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
+      <div class="status" id="statusLine">جاهز للربط</div>
     </div>
   </div>
   <div class="header-actions">
-    <button id="voiceBtn" class="icon-btn" title="تشغيل/إيقاف قراءة الردود صوتيًا">🔊 الصوت</button>
-    <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
+    <button id="voiceBtn" class="icon-btn active" title="تشغيل/إيقاف الصوت">🔊 صوت ElevenLabs</button>
+    <button id="settingsBtn" class="icon-btn">⚙ إعدادات المفاتيح</button>
   </div>
 </header>
 
-<div class="marquee-bar">
-  <marquee scrollamount="5">
-    اضغط هنا واحصل على مفتاح مجاني لتشغيل الشات ⚡
-    <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاحك الآن ↗</a>
-  </marquee>
-</div>
-
 <div id="settingsPanel">
-  <div class="section-label">الذكاء الاصطناعي (Groq)</div>
   <div class="row">
     <div class="field">
-      <label>
-        Groq API Key
-        <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاح مجاني من هنا ↗</a>
-      </label>
-      <div class="key-input-wrap">
-        <button type="button" class="key-toggle-eye" data-target="apiKeyInput">👁</button>
-        <input type="text" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" name="not-a-password-field-groq">
-      </div>
-      <div class="key-len" id="groqKeyLen"></div>
+      <label>Groq API Key</label>
+      <input type="text" id="groqKeyInput" placeholder="gsk_..." autocomplete="off">
     </div>
     <div class="field">
-      <label>اختر النموذج الذكي</label>
-      <select id="modelSelect">
-        <optgroup label="نماذج مستقرة (Production)">
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق)</option>
-          <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة)</option>
-          <option value="openai/gpt-oss-120b">GPT-OSS 120B (قوي جدًا وشامل)</option>
-          <option value="openai/gpt-oss-20b">GPT-OSS 20B (أخف وأسرع)</option>
-        </optgroup>
-        <optgroup label="أنظمة بحث تلقائي (Compound)">
-          <option value="groq/compound">Compound (بيدور في الإنترنت ويكتب كود تلقائي)</option>
-          <option value="groq/compound-mini">Compound Mini (نسخة أخف وأسرع)</option>
-        </optgroup>
-        <optgroup label="تجريبي — ممكن يتوقف فجأة (Preview)">
-          <option value="qwen/qwen3.6-27b">Qwen3.6 27B (تفكير عميق)</option>
-        </optgroup>
-      </select>
-    </div>
-  </div>
-
-  <div class="section-label">الصوت (ElevenLabs)</div>
-  <div class="row">
-    <div class="field">
-      <label>
-        ElevenLabs API Key
-        <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">من هنا ↗</a>
-      </label>
-      <div class="key-input-wrap">
-        <button type="button" class="key-toggle-eye" data-target="elevenKeyInput">👁</button>
-        <input type="text" id="elevenKeyInput" placeholder="sk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" name="not-a-password-field-eleven">
-      </div>
-      <div class="key-len" id="elevenKeyLen"></div>
+      <label>ElevenLabs API Key (xi-api-key)</label>
+      <input type="text" id="elevenKeyInput" placeholder="sk_..." autocomplete="off">
     </div>
     <div class="field">
-      <label>
-        Voice ID (كود الصوت)
-        <a href="https://elevenlabs.io/app/voice-library" target="_blank">مكتبة الأصوات ↗</a>
-      </label>
-      <input type="text" id="voiceIdInput" placeholder="مثال: 21m00Tcm4TlvDq8ikWAM" style="font-family: monospace; direction: ltr; text-align: left;">
+      <label>Voice ID (كود الصوت من القائمة)</label>
+      <input type="text" id="voiceIdInput" placeholder="مثال: 21m00Tcm4TlvDq8ikWAM" autocomplete="off">
     </div>
   </div>
-  <div class="btn-row">
-    <button id="testVoiceBtn" type="button">🔊 اختبار الصوت</button>
-    <span id="voiceTestResult"></span>
-  </div>
-  <div class="hint">حط مفتاح الـ API وتأكد إن صلاحية "Text-to-Speech" مفعلة عنده، واكتب الـ Voice ID بتاع الصوت مباشرة في الخانة المخصصة ليه فوق واضغط حفظ.</div>
-
   <button id="saveSettings">حفظ الإعدادات</button>
 </div>
 
 <div id="chatWindow"></div>
 
 <div id="inputBar">
-  <button id="micBtn" title="اتكلم بدل ما تكتب">🎤</button>
   <textarea id="userInput" rows="1" placeholder="اكتب رسالتك هنا..."></textarea>
   <button id="sendBtn">إرسال</button>
 </div>
+
+<audio id="audioPlayer" style="display:none;"></audio>
 
 <script>
   const chatWindow = document.getElementById('chatWindow');
   const userInput = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
-  const micBtn = document.getElementById('micBtn');
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsPanel = document.getElementById('settingsPanel');
-  const apiKeyInput = document.getElementById('apiKeyInput');
-  const modelSelect = document.getElementById('modelSelect');
+  const groqKeyInput = document.getElementById('groqKeyInput');
   const elevenKeyInput = document.getElementById('elevenKeyInput');
   const voiceIdInput = document.getElementById('voiceIdInput');
-  const testVoiceBtn = document.getElementById('testVoiceBtn');
-  const voiceTestResult = document.getElementById('voiceTestResult');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const voiceBtn = document.getElementById('voiceBtn');
-  const groqKeyLen = document.getElementById('groqKeyLen');
-  const elevenKeyLen = document.getElementById('elevenKeyLen');
+  const audioPlayer = document.getElementById('audioPlayer');
 
   const SYSTEM_PROMPT = {
     role: 'system',
-    content: `إنت مساعد ذكي وودود، بترد على الناس دايمًا باللهجة المصرية العامية (مش فصحى خالص)، بأسلوب طبيعي وبسيط زي ما الناس بتتكلم في الشارع أو مع صحابهم.
-جاوب بإيجاز ووضوح على أي سؤال بيتسأل لك، أيًا كان موضوعه. لو السؤال تقني، اشرحه ببساطة من غير تعقيد.
-متفتكرش إنك موظف عند حد أو تابع لأي شركة أو موقع معين — إنت مساعد عام بس.`
+    content: `إنت مساعد ذكي وودود، بترد على الناس دايمًا باللهجة المصرية العامية وبأسلوب بسيط ومباشر من غير لف ودوران.`
   };
 
-  function cleanKey(v) {
-    return v.replace(/[\u200B-\u200D\uFEFF\s]/g, '');
-  }
-
-  let apiKey = localStorage.getItem('md1_groq_key') || '';
-  let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
+  let groqKey = localStorage.getItem('md1_groq_key') || '';
   let elevenKey = localStorage.getItem('md1_eleven_key') || '';
   let voiceId = localStorage.getItem('md1_voice_id') || '';
-  let voiceEnabled = localStorage.getItem('md1_voice_enabled') === 'true';
+  let voiceEnabled = localStorage.getItem('md1_voice_active') !== 'false';
   let history = [];
-  let currentAudio = null;
 
   function updateStatus() {
-    statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — افتح الإعدادات وحط الـ API key';
+    statusLine.textContent = (groqKey && elevenKey) ? 'متصل وجاهز للشات والصوت' : 'حط مفاتيح الـ API من الإعدادات فوق';
   }
 
-  function updateVoiceBtn() {
-    voiceBtn.classList.toggle('active', voiceEnabled);
-    voiceBtn.textContent = voiceEnabled ? '🔊 الصوت شغال' : '🔇 الصوت مقفول';
-  }
-
-  function updateKeyLen(input, display, expectedPrefix) {
-    const v = cleanKey(input.value);
-    const looksRight = v.startsWith(expectedPrefix) && v.length > 20;
-    display.textContent = `الطول: ${v.length} حرف${v ? (' — يبدأ بـ "' + v.slice(0, 5) + '..."') : ''}`;
-    display.className = 'key-len' + (looksRight ? ' ok' : '');
-  }
-
-  apiKeyInput.addEventListener('input', () => updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_'));
-  elevenKeyInput.addEventListener('input', () => updateKeyLen(elevenKeyInput, elevenKeyLen, 'sk_'));
-
-  document.querySelectorAll('.key-toggle-eye').forEach(btn => {
-    btn.onclick = () => {
-      const target = document.getElementById(btn.dataset.target);
-      const isMasked = target.dataset.masked === 'true';
-      if (isMasked) {
-        target.type = 'text';
-        target.dataset.masked = 'false';
-        btn.textContent = '👁';
-      } else {
-        target.type = 'password';
-        target.dataset.masked = 'true';
-        btn.textContent = '🙈';
-      }
-    };
-  });
-
-  async function ttsRequest(text, keyOverride, voiceOverride) {
-    const k = keyOverride || elevenKey;
-    const v = voiceOverride || voiceId;
-    const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + v, {
-      method: 'POST',
-      headers: {
-        'xi-api-key': k,
-        'Content-Type': 'application/json',
-        'Accept': 'audio/mpeg'
-      },
-      body: JSON.stringify({
-        text: text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-      })
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(res.status + ': ' + errText);
-    }
-    return res.blob();
-  }
-
-  async function speak(text) {
-    if (!voiceEnabled) return;
-    if (!elevenKey || !voiceId) {
-      addMessage('لتشغيل الصوت لازم تحط مفتاح ElevenLabs و الـ Voice ID في الإعدادات', 'error');
-      return;
-    }
-    try {
-      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-      const blob = await ttsRequest(text);
-      const url = URL.createObjectURL(blob);
-      currentAudio = new Audio(url);
-      currentAudio.play();
-    } catch (err) {
-      addMessage('فشل تشغيل الصوت: ' + err.message, 'error');
-    }
-  }
-
-  testVoiceBtn.onclick = async () => {
-    const key = cleanKey(elevenKeyInput.value);
-    const vId = cleanKey(voiceIdInput.value);
-    voiceTestResult.textContent = 'بيجرب...';
-    voiceTestResult.className = '';
-    if (!key) {
-      voiceTestResult.textContent = 'حط مفتاح ElevenLabs الأول';
-      voiceTestResult.className = 'fail';
-      return;
-    }
-    if (!vId) {
-      voiceTestResult.textContent = 'اكتب الـ Voice ID الأول';
-      voiceTestResult.className = 'fail';
-      return;
-    }
-    try {
-      const blob = await ttsRequest('مرحبا، الصوت شغال تمام', key, vId);
-      const url = URL.createObjectURL(blob);
-      new Audio(url).play();
-      voiceTestResult.textContent = '✅ شغال تمام';
-      voiceTestResult.className = 'ok';
-    } catch (err) {
-      voiceTestResult.textContent = '❌ فشل: ' + err.message;
-      voiceTestResult.className = 'fail';
-    }
-  };
-
-  let recognition = null;
-  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognitionAPI) {
-    recognition = new SpeechRecognitionAPI();
-    recognition.lang = 'ar-EG';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      micBtn.classList.add('active');
-      micBtn.textContent = '⏺';
-    };
-    recognition.onend = () => {
-      micBtn.classList.remove('active');
-      micBtn.textContent = '🎤';
-    };
-    recognition.onerror = (e) => {
-      addMessage('خطأ في الميكروفون: ' + e.error, 'error');
-    };
-    recognition.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
-      userInput.value = transcript;
-      sendMessage();
-    };
-
-    micBtn.onclick = () => {
-      if (micBtn.classList.contains('active')) {
-        recognition.stop();
-      } else {
-        try { recognition.start(); } catch (err) {}
-      }
-    };
-  } else {
-    micBtn.disabled = true;
-    micBtn.title = 'المتصفح ده مش بيدعم التعرف على الصوت';
-    micBtn.style.opacity = '0.4';
-  }
-
-  apiKeyInput.value = apiKey;
-  modelSelect.value = model;
+  groqKeyInput.value = groqKey;
   elevenKeyInput.value = elevenKey;
   voiceIdInput.value = voiceId;
   updateStatus();
-  updateVoiceBtn();
-  updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_');
-  updateKeyLen(elevenKeyInput, elevenKeyLen, 'sk_');
-
-  settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
 
   voiceBtn.onclick = () => {
     voiceEnabled = !voiceEnabled;
-    localStorage.setItem('md1_voice_enabled', voiceEnabled);
-    updateVoiceBtn();
-    if (!voiceEnabled && currentAudio) { currentAudio.pause(); currentAudio = null; }
+    localStorage.setItem('md1_voice_active', voiceEnabled);
+    voiceBtn.classList.toggle('active', voiceEnabled);
+    voiceBtn.textContent = voiceEnabled ? '🔊 صوت ElevenLabs' : '🔇 الصوت مقفول';
   };
 
-  saveSettings.onclick = () => {
-    apiKey = cleanKey(apiKeyInput.value);
-    model = modelSelect.value;
-    elevenKey = cleanKey(elevenKeyInput.value);
-    voiceId = cleanKey(voiceIdInput.value);
+  settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
 
-    localStorage.setItem('md1_groq_key', apiKey);
-    localStorage.setItem('md1_groq_model', model);
+  saveSettings.onclick = () => {
+    groqKey = groqKeyInput.value.trim();
+    elevenKey = elevenKeyInput.value.trim();
+    voiceId = voiceIdInput.value.trim();
+    localStorage.setItem('md1_groq_key', groqKey);
     localStorage.setItem('md1_eleven_key', elevenKey);
     localStorage.setItem('md1_voice_id', voiceId);
     updateStatus();
-
     settingsPanel.classList.remove('open');
   };
 
   function addMessage(text, cls) {
     const wrap = document.createElement('div');
     wrap.className = 'msg-wrap ' + cls;
-
     const div = document.createElement('div');
     div.className = 'msg ' + cls;
     div.textContent = text;
     wrap.appendChild(div);
-
     chatWindow.appendChild(wrap);
     chatWindow.scrollTop = chatWindow.scrollHeight;
-    return { wrap, div };
+    return { wrap };
+  }
+
+  async function playElevenLabsAudio(text) {
+    if (!voiceEnabled || !elevenKey || !voiceId) return;
+    try {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xi-api-key': elevenKey
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        })
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json();
+        console.error("ElevenLabs Error:", errJson);
+        return;
+      }
+
+      const blob = await res.blob();
+      audioPlayer.src = URL.createObjectURL(blob);
+      audioPlayer.play();
+    } catch (e) {
+      console.error("Audio playback failed:", e);
+    }
   }
 
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
-    if (!apiKey) {
-      addMessage('محتاج تحط الـ API key الأول من الإعدادات', 'error');
+    if (!groqKey) {
+      addMessage('حط مفتاح الـ Groq الأول من الإعدادات فوق', 'error');
       return;
     }
 
@@ -488,10 +249,10 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + apiKey
+          'Authorization': 'Bearer ' + groqKey
         },
         body: JSON.stringify({
-          model: model,
+          model: 'llama-3.3-70b-versatile',
           messages: [SYSTEM_PROMPT, ...history],
           temperature: 0.7,
           max_tokens: 1500
@@ -502,7 +263,7 @@
 
       if (!response.ok) {
         const errText = await response.text();
-        addMessage('خطأ (' + response.status + '): ' + errText, 'error');
+        addMessage('خطأ في الـ Groq: ' + errText, 'error');
         sendBtn.disabled = false;
         return;
       }
@@ -511,7 +272,9 @@
       const reply = data.choices?.[0]?.message?.content || 'مفيش رد';
       addMessage(reply, 'bot');
       history.push({ role: 'assistant', content: reply });
-      speak(reply);
+
+      // تشغيل صوت ElevenLabs بالـ ID اللي جبته
+      playElevenLabsAudio(reply);
 
     } catch (err) {
       typing.wrap.remove();
