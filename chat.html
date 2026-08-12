@@ -84,9 +84,9 @@
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 8px 10px; border-radius: 6px; font-size: 13px; width: 100%;
   }
-  #settingsPanel select:disabled { opacity: 0.4; cursor: not-allowed; }
+  #settingsPanel select:disabled, #settingsPanel input:disabled { opacity: 0.4; cursor: not-allowed; }
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-  #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
+  #settingsPanel .field { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 4px; }
   .key-input-wrap { position: relative; display: flex; align-items: center; }
   .key-input-wrap input { padding-left: 36px; font-family: monospace; direction: ltr; text-align: left; }
   .key-toggle-eye {
@@ -204,6 +204,8 @@
         </optgroup>
       </select>
     </div>
+  </div>
+  <div class="row">
     <div class="field">
       <label>
         تنسيق التفكير (Reasoning Format)
@@ -215,8 +217,16 @@
         <option value="hidden">hidden — إخفاء التفكير تمامًا</option>
       </select>
     </div>
+    <div class="field">
+      <label>قوة التفكير (Reasoning Effort)</label>
+      <select id="reasoningEffortSelect"></select>
+    </div>
+    <div class="field">
+      <label>أقصى عدد توكنز للرد (max_tokens)</label>
+      <input type="number" id="maxTokensInput" min="256" max="32768" step="256">
+    </div>
   </div>
-  <div class="hint" id="reasoningHint">الخيار ده بيشتغل بس مع النماذج اللي بتفكر (GPT-OSS 120B / 20B / Safeguard 20B، Qwen3.6 27B).</div>
+  <div class="hint" id="reasoningHint">الخيارين دول بيشتغلوا بس مع النماذج اللي بتفكر (GPT-OSS 120B / 20B / Safeguard 20B، Qwen3.6 27B). لو النموذج بيفكر وسايب max_tokens قليل، ممكن التفكير ياكل الحد كله والرد يتقطع.</div>
 
   <button id="saveSettings">حفظ الإعدادات</button>
 </div>
@@ -239,17 +249,42 @@
   const apiKeyInput = document.getElementById('apiKeyInput');
   const modelSelect = document.getElementById('modelSelect');
   const reasoningFormatSelect = document.getElementById('reasoningFormatSelect');
+  const reasoningEffortSelect = document.getElementById('reasoningEffortSelect');
+  const maxTokensInput = document.getElementById('maxTokensInput');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const groqKeyLen = document.getElementById('groqKeyLen');
 
-  // النماذج اللي بتدعم reasoning_format فعليًا عند Groq
-  const REASONING_MODELS = [
+  // النماذج اللي بتدعم reasoning_format عند Groq
+  const REASONING_FORMAT_MODELS = [
     'openai/gpt-oss-120b',
     'openai/gpt-oss-20b',
     'openai/gpt-oss-safeguard-20b',
     'qwen/qwen3.6-27b'
   ];
+
+  // قيم reasoning_effort المسموحة تختلف حسب النموذج (موثقة عند Groq)
+  const EFFORT_OPTIONS = {
+    'qwen/qwen3.6-27b': [
+      { value: 'default', label: 'افتراضي (تفكير مفعّل — للمسائل المعقدة)' },
+      { value: 'none', label: 'بدون تفكير (أسرع، أنسب لحوار عادي)' }
+    ],
+    'openai/gpt-oss-120b': [
+      { value: 'low', label: 'منخفض' },
+      { value: 'medium', label: 'متوسط' },
+      { value: 'high', label: 'عالي' }
+    ],
+    'openai/gpt-oss-20b': [
+      { value: 'low', label: 'منخفض' },
+      { value: 'medium', label: 'متوسط' },
+      { value: 'high', label: 'عالي' }
+    ],
+    'openai/gpt-oss-safeguard-20b': [
+      { value: 'low', label: 'منخفض' },
+      { value: 'medium', label: 'متوسط' },
+      { value: 'high', label: 'عالي' }
+    ]
+  };
 
   const SYSTEM_PROMPT = {
     role: 'system',
@@ -258,7 +293,6 @@
 متفتكرش إنك موظف عند حد أو تابع لأي شركة أو موقع معين — إنت مساعد عام بس.`
   };
 
-  // بيشيل أي حروف خفية (زي مسافات غير مرئية) ممكن تدخل مع اللصق من بعض التطبيقات
   function cleanKey(v) {
     return v.replace(/[\u200B-\u200D\uFEFF\s]/g, '');
   }
@@ -266,6 +300,8 @@
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
   let reasoningFormat = localStorage.getItem('md1_reasoning_format') || '';
+  let reasoningEffort = localStorage.getItem('md1_reasoning_effort') || '';
+  let maxTokens = parseInt(localStorage.getItem('md1_max_tokens') || '4096', 10);
   let history = [];
 
   function updateStatus() {
@@ -281,7 +317,6 @@
 
   apiKeyInput.addEventListener('input', () => updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_'));
 
-  // زرار العين لإظهار/إخفاء المفتاح (بديل عن type=password اللي بيسبب مشاكل Autofill)
   document.querySelectorAll('.key-toggle-eye').forEach(btn => {
     btn.onclick = () => {
       const target = document.getElementById(btn.dataset.target);
@@ -299,9 +334,31 @@
   });
 
   function updateReasoningAvailability() {
-    const supported = REASONING_MODELS.includes(modelSelect.value);
-    reasoningFormatSelect.disabled = !supported;
-    document.getElementById('reasoningHint').style.opacity = supported ? '1' : '0.6';
+    const supportsFormat = REASONING_FORMAT_MODELS.includes(modelSelect.value);
+    reasoningFormatSelect.disabled = !supportsFormat;
+
+    const effortOpts = EFFORT_OPTIONS[modelSelect.value];
+    reasoningEffortSelect.innerHTML = '';
+    if (effortOpts) {
+      effortOpts.forEach(o => {
+        const opt = document.createElement('option');
+        opt.value = o.value;
+        opt.textContent = o.label;
+        reasoningEffortSelect.appendChild(opt);
+      });
+      reasoningEffortSelect.disabled = false;
+      reasoningEffortSelect.value = effortOpts.some(o => o.value === reasoningEffort)
+        ? reasoningEffort
+        : effortOpts[0].value;
+    } else {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'غير مدعوم لهذا النموذج';
+      reasoningEffortSelect.appendChild(opt);
+      reasoningEffortSelect.disabled = true;
+    }
+
+    document.getElementById('reasoningHint').style.opacity = (supportsFormat || effortOpts) ? '1' : '0.6';
   }
 
   modelSelect.addEventListener('change', updateReasoningAvailability);
@@ -347,6 +404,7 @@
   apiKeyInput.value = apiKey;
   modelSelect.value = model;
   reasoningFormatSelect.value = reasoningFormat;
+  maxTokensInput.value = maxTokens;
   updateStatus();
   updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_');
   updateReasoningAvailability();
@@ -357,9 +415,13 @@
     apiKey = cleanKey(apiKeyInput.value);
     model = modelSelect.value;
     reasoningFormat = reasoningFormatSelect.value;
+    reasoningEffort = reasoningEffortSelect.value;
+    maxTokens = parseInt(maxTokensInput.value, 10) || 4096;
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
     localStorage.setItem('md1_reasoning_format', reasoningFormat);
+    localStorage.setItem('md1_reasoning_effort', reasoningEffort);
+    localStorage.setItem('md1_max_tokens', String(maxTokens));
     updateStatus();
     updateReasoningAvailability();
     settingsPanel.classList.remove('open');
@@ -399,11 +461,13 @@
       model: model,
       messages: [SYSTEM_PROMPT, ...history],
       temperature: 0.7,
-      max_tokens: 1500
+      max_tokens: maxTokens
     };
-    // reasoning_format بيتبعت بس لو النموذج بيدعمه واختار المستخدم قيمة غير الافتراضي
-    if (REASONING_MODELS.includes(model) && reasoningFormat) {
+    if (REASONING_FORMAT_MODELS.includes(model) && reasoningFormat) {
       body.reasoning_format = reasoningFormat;
+    }
+    if (EFFORT_OPTIONS[model] && reasoningEffort) {
+      body.reasoning_effort = reasoningEffort;
     }
 
     try {
@@ -429,11 +493,15 @@
       const msg = data.choices?.[0]?.message || {};
       const reply = msg.content || 'مفيش رد';
       const reasoningText = msg.reasoning_content || msg.reasoning || '';
+      const finishReason = data.choices?.[0]?.finish_reason;
 
       if (reasoningFormat === 'parsed' && reasoningText) {
         addMessage(reasoningText, 'reasoning');
       }
       addMessage(reply, 'bot');
+      if (finishReason === 'length') {
+        addMessage('⚠ الرد اتقطع لإنه وصل لحد max_tokens — زوّده من الإعدادات لو محتاج ردود أطول.', 'error');
+      }
       history.push({ role: 'assistant', content: reply });
 
     } catch (err) {
