@@ -14,6 +14,7 @@
     --accent: #4f8cff;
     --user-bubble: #1f2937;
     --bot-bubble: #171b24;
+    --reasoning-bubble: #12151c;
     --error: #ff5c5c;
   }
   * { box-sizing: border-box; }
@@ -83,6 +84,7 @@
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 8px 10px; border-radius: 6px; font-size: 13px; width: 100%;
   }
+  #settingsPanel select:disabled { opacity: 0.4; cursor: not-allowed; }
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
   #settingsPanel .field { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 4px; }
   .key-input-wrap { position: relative; display: flex; align-items: center; }
@@ -94,17 +96,13 @@
   .key-len { font-size: 10px; color: var(--muted); margin-top: 2px; direction: ltr; text-align: left; }
   .key-len.ok { color: #4ade80; }
   optgroup { color: var(--muted); font-style: normal; }
-  .btn-row { display: flex; gap: 10px; align-items: center; }
-  #saveSettings, #testVoiceBtn {
+  #saveSettings {
     background: var(--accent); border: none; color: white;
     padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
+    align-self: flex-start;
   }
-  #testVoiceBtn { background: none; border: 1px solid var(--accent); color: var(--accent); }
-  #saveSettings:hover, #testVoiceBtn:hover { opacity: 0.9; }
+  #saveSettings:hover { opacity: 0.9; }
   .hint { font-size: 11px; color: var(--muted); }
-  #voiceTestResult { font-size: 12px; margin-top: 4px; }
-  #voiceTestResult.ok { color: #4ade80; }
-  #voiceTestResult.fail { color: var(--error); }
 
   #chatWindow {
     flex: 1; overflow-y: auto; padding: 20px;
@@ -112,13 +110,17 @@
   }
   .msg-wrap { display: flex; flex-direction: column; max-width: 75%; }
   .msg-wrap.user { align-items: flex-end; align-self: flex-end; }
-  .msg-wrap.bot, .msg-wrap.error { align-items: flex-start; align-self: flex-start; }
+  .msg-wrap.bot, .msg-wrap.error, .msg-wrap.reasoning { align-items: flex-start; align-self: flex-start; }
   .msg {
     padding: 10px 14px; border-radius: 10px; line-height: 1.6; font-size: 14px;
     white-space: pre-wrap; word-wrap: break-word;
   }
   .msg.user { background: var(--user-bubble); }
   .msg.bot { background: var(--bot-bubble); border: 1px solid var(--border); }
+  .msg.reasoning {
+    background: var(--reasoning-bubble); border: 1px dashed var(--border);
+    color: var(--muted); font-size: 12.5px;
+  }
   .msg.error {
     background: rgba(255, 92, 92, 0.1); border: 1px solid var(--error); color: var(--error);
   }
@@ -158,7 +160,6 @@
     </div>
   </div>
   <div class="header-actions">
-    <button id="voiceBtn" class="icon-btn" title="تشغيل/إيقاف قراءة الردود صوتيًا">🔊 الصوت</button>
     <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
   </div>
 </header>
@@ -188,10 +189,10 @@
       <label>اختر النموذج الذكي</label>
       <select id="modelSelect">
         <optgroup label="نماذج مستقرة (Production)">
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (الأقوى والأدق)</option>
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B (قوي ودقيق)</option>
           <option value="llama-3.1-8b-instant">Llama 3.1 8B (فائق السرعة)</option>
-          <option value="openai/gpt-oss-120b">GPT-OSS 120B (قوي جدًا وشامل)</option>
-          <option value="openai/gpt-oss-20b">GPT-OSS 20B (أخف وأسرع)</option>
+          <option value="openai/gpt-oss-120b">GPT-OSS 120B (قوي جدًا وشامل + تفكير)</option>
+          <option value="openai/gpt-oss-20b">GPT-OSS 20B (أخف وأسرع + تفكير)</option>
         </optgroup>
         <optgroup label="أنظمة بحث تلقائي (Compound)">
           <option value="groq/compound">Compound (بيدور في الإنترنت ويكتب كود تلقائي)</option>
@@ -199,39 +200,23 @@
         </optgroup>
         <optgroup label="تجريبي — ممكن يتوقف فجأة (Preview)">
           <option value="qwen/qwen3.6-27b">Qwen3.6 27B (تفكير عميق)</option>
+          <option value="openai/gpt-oss-safeguard-20b">GPT-OSS Safeguard 20B (تفكير + مراجعة أمان المحتوى)</option>
         </optgroup>
       </select>
     </div>
-  </div>
-
-  <div class="section-label">الصوت (ElevenLabs)</div>
-  <div class="row">
     <div class="field">
       <label>
-        ElevenLabs API Key
-        <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">من هنا ↗</a>
+        تنسيق التفكير (Reasoning Format)
+        <a href="https://console.groq.com/docs/reasoning" target="_blank">تفاصيل ↗</a>
       </label>
-      <div class="key-input-wrap">
-        <button type="button" class="key-toggle-eye" data-target="elevenKeyInput">👁</button>
-        <input type="text" id="elevenKeyInput" placeholder="sk_..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" name="not-a-password-field-eleven">
-      </div>
-      <div class="key-len" id="elevenKeyLen"></div>
-    </div>
-    <div class="field">
-      <label>
-        الصوت
-        <a href="https://elevenlabs.io/app/voice-library" target="_blank">مكتبة الأصوات ↗</a>
-      </label>
-      <select id="voiceSelect">
-        <option value="">حط المفتاح واحفظ عشان الأصوات تظهر</option>
+      <select id="reasoningFormatSelect">
+        <option value="">افتراضي (raw — التفكير جوه الرد نفسه)</option>
+        <option value="parsed">parsed — التفكير في فقاعة منفصلة</option>
+        <option value="hidden">hidden — إخفاء التفكير تمامًا</option>
       </select>
     </div>
   </div>
-  <div class="btn-row">
-    <button id="testVoiceBtn" type="button">🔊 اختبار الصوت</button>
-    <span id="voiceTestResult"></span>
-  </div>
-  <div class="hint">دور في مكتبة الأصوات على صوت عربي/مصري وحطه في "My Voices"، وهيظهر هنا تلقائي بعد الحفظ. النسخة دي بتوري المفتاح واضح فوق ("👁") عشان تتأكد بعينك إنه اتلصق صح قبل الحفظ — المفتاح المفروض يبدأ sk_ وطوله حوالي 51 حرف.</div>
+  <div class="hint" id="reasoningHint">الخيار ده بيشتغل بس مع النماذج اللي بتفكر (GPT-OSS 120B / 20B / Safeguard 20B، Qwen3.6 27B).</div>
 
   <button id="saveSettings">حفظ الإعدادات</button>
 </div>
@@ -253,15 +238,18 @@
   const settingsPanel = document.getElementById('settingsPanel');
   const apiKeyInput = document.getElementById('apiKeyInput');
   const modelSelect = document.getElementById('modelSelect');
-  const elevenKeyInput = document.getElementById('elevenKeyInput');
-  const voiceSelect = document.getElementById('voiceSelect');
-  const testVoiceBtn = document.getElementById('testVoiceBtn');
-  const voiceTestResult = document.getElementById('voiceTestResult');
+  const reasoningFormatSelect = document.getElementById('reasoningFormatSelect');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
-  const voiceBtn = document.getElementById('voiceBtn');
   const groqKeyLen = document.getElementById('groqKeyLen');
-  const elevenKeyLen = document.getElementById('elevenKeyLen');
+
+  // النماذج اللي بتدعم reasoning_format فعليًا عند Groq
+  const REASONING_MODELS = [
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'openai/gpt-oss-safeguard-20b',
+    'qwen/qwen3.6-27b'
+  ];
 
   const SYSTEM_PROMPT = {
     role: 'system',
@@ -277,19 +265,11 @@
 
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
-  let elevenKey = localStorage.getItem('md1_eleven_key') || '';
-  let voiceId = localStorage.getItem('md1_voice_id') || '';
-  let voiceEnabled = localStorage.getItem('md1_voice_enabled') === 'true';
+  let reasoningFormat = localStorage.getItem('md1_reasoning_format') || '';
   let history = [];
-  let currentAudio = null;
 
   function updateStatus() {
     statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — افتح الإعدادات وحط الـ API key';
-  }
-
-  function updateVoiceBtn() {
-    voiceBtn.classList.toggle('active', voiceEnabled);
-    voiceBtn.textContent = voiceEnabled ? '🔊 الصوت شغال' : '🔇 الصوت مقفول';
   }
 
   function updateKeyLen(input, display, expectedPrefix) {
@@ -300,7 +280,6 @@
   }
 
   apiKeyInput.addEventListener('input', () => updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_'));
-  elevenKeyInput.addEventListener('input', () => updateKeyLen(elevenKeyInput, elevenKeyLen, 'sk_'));
 
   // زرار العين لإظهار/إخفاء المفتاح (بديل عن type=password اللي بيسبب مشاكل Autofill)
   document.querySelectorAll('.key-toggle-eye').forEach(btn => {
@@ -319,110 +298,13 @@
     };
   });
 
-  async function loadVoices() {
-    if (!elevenKey) {
-      voiceSelect.innerHTML = '<option value="">حط المفتاح واحفظ عشان الأصوات تظهر</option>';
-      return;
-    }
-    voiceSelect.innerHTML = '<option value="">بيحمل الأصوات...</option>';
-    try {
-      const res = await fetch('https://api.elevenlabs.io/v1/voices', {
-        headers: { 'xi-api-key': elevenKey }
-      });
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(res.status + ': ' + errText);
-      }
-      const data = await res.json();
-      const voices = data.voices || [];
-      if (!voices.length) {
-        voiceSelect.innerHTML = '<option value="">مفيش أصوات مضافة — روح مكتبة الأصوات وضيف واحد</option>';
-        return;
-      }
-      voiceSelect.innerHTML = '';
-      voices.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v.voice_id;
-        opt.textContent = v.name + (v.labels?.accent ? ' — ' + v.labels.accent : '');
-        voiceSelect.appendChild(opt);
-      });
-      if (voiceId && voices.some(v => v.voice_id === voiceId)) {
-        voiceSelect.value = voiceId;
-      } else {
-        voiceId = voiceSelect.value;
-        localStorage.setItem('md1_voice_id', voiceId);
-      }
-    } catch (err) {
-      voiceSelect.innerHTML = '<option value="">خطأ: ' + err.message + '</option>';
-    }
+  function updateReasoningAvailability() {
+    const supported = REASONING_MODELS.includes(modelSelect.value);
+    reasoningFormatSelect.disabled = !supported;
+    document.getElementById('reasoningHint').style.opacity = supported ? '1' : '0.6';
   }
 
-  async function ttsRequest(text) {
-    const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
-      method: 'POST',
-      headers: {
-        'xi-api-key': elevenKey,
-        'Content-Type': 'application/json',
-        'Accept': 'audio/mpeg'
-      },
-      body: JSON.stringify({
-        text: text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-      })
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(res.status + ': ' + errText);
-    }
-    return res.blob();
-  }
-
-  async function speak(text) {
-    if (!voiceEnabled) return;
-    if (!elevenKey || !voiceId) {
-      addMessage('لتشغيل الصوت لازم تحط مفتاح ElevenLabs وتختار صوت من الإعدادات', 'error');
-      return;
-    }
-    try {
-      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-      const blob = await ttsRequest(text);
-      const url = URL.createObjectURL(blob);
-      currentAudio = new Audio(url);
-      currentAudio.play();
-    } catch (err) {
-      addMessage('فشل تشغيل الصوت: ' + err.message, 'error');
-    }
-  }
-
-  testVoiceBtn.onclick = async () => {
-    const key = cleanKey(elevenKeyInput.value);
-    const vId = voiceSelect.value;
-    voiceTestResult.textContent = 'بيجرب...';
-    voiceTestResult.className = '';
-    if (!key) {
-      voiceTestResult.textContent = 'حط مفتاح ElevenLabs الأول';
-      voiceTestResult.className = 'fail';
-      return;
-    }
-    if (!vId) {
-      voiceTestResult.textContent = 'اختار صوت الأول من القايمة';
-      voiceTestResult.className = 'fail';
-      return;
-    }
-    try {
-      const oldKey = elevenKey, oldVoice = voiceId;
-      elevenKey = key; voiceId = vId;
-      const blob = await ttsRequest('مرحبا، الصوت شغال تمام');
-      const url = URL.createObjectURL(blob);
-      new Audio(url).play();
-      voiceTestResult.textContent = '✅ شغال تمام';
-      voiceTestResult.className = 'ok';
-    } catch (err) {
-      voiceTestResult.textContent = '❌ فشل: ' + err.message;
-      voiceTestResult.className = 'fail';
-    }
-  };
+  modelSelect.addEventListener('change', updateReasoningAvailability);
 
   let recognition = null;
   const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -464,45 +346,24 @@
 
   apiKeyInput.value = apiKey;
   modelSelect.value = model;
-  elevenKeyInput.value = elevenKey;
+  reasoningFormatSelect.value = reasoningFormat;
   updateStatus();
-  updateVoiceBtn();
   updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_');
-  updateKeyLen(elevenKeyInput, elevenKeyLen, 'sk_');
-  if (elevenKey) loadVoices();
+  updateReasoningAvailability();
 
   settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
 
-  voiceBtn.onclick = () => {
-    voiceEnabled = !voiceEnabled;
-    localStorage.setItem('md1_voice_enabled', voiceEnabled);
-    updateVoiceBtn();
-    if (!voiceEnabled && currentAudio) { currentAudio.pause(); currentAudio = null; }
-  };
-
-  saveSettings.onclick = async () => {
+  saveSettings.onclick = () => {
     apiKey = cleanKey(apiKeyInput.value);
     model = modelSelect.value;
-    const newElevenKey = cleanKey(elevenKeyInput.value);
+    reasoningFormat = reasoningFormatSelect.value;
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
-    localStorage.setItem('md1_eleven_key', newElevenKey);
+    localStorage.setItem('md1_reasoning_format', reasoningFormat);
     updateStatus();
-
-    if (newElevenKey !== elevenKey) {
-      elevenKey = newElevenKey;
-      await loadVoices();
-    }
-    voiceId = voiceSelect.value;
-    localStorage.setItem('md1_voice_id', voiceId);
-
+    updateReasoningAvailability();
     settingsPanel.classList.remove('open');
   };
-
-  voiceSelect.addEventListener('change', () => {
-    voiceId = voiceSelect.value;
-    localStorage.setItem('md1_voice_id', voiceId);
-  });
 
   function addMessage(text, cls) {
     const wrap = document.createElement('div');
@@ -534,6 +395,17 @@
 
     const typing = addMessage('بيكتب...', 'typing');
 
+    const body = {
+      model: model,
+      messages: [SYSTEM_PROMPT, ...history],
+      temperature: 0.7,
+      max_tokens: 1500
+    };
+    // reasoning_format بيتبعت بس لو النموذج بيدعمه واختار المستخدم قيمة غير الافتراضي
+    if (REASONING_MODELS.includes(model) && reasoningFormat) {
+      body.reasoning_format = reasoningFormat;
+    }
+
     try {
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -541,12 +413,7 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + apiKey
         },
-        body: JSON.stringify({
-          model: model,
-          messages: [SYSTEM_PROMPT, ...history],
-          temperature: 0.7,
-          max_tokens: 1500
-        })
+        body: JSON.stringify(body)
       });
 
       typing.wrap.remove();
@@ -559,10 +426,15 @@
       }
 
       const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content || 'مفيش رد';
+      const msg = data.choices?.[0]?.message || {};
+      const reply = msg.content || 'مفيش رد';
+      const reasoningText = msg.reasoning_content || msg.reasoning || '';
+
+      if (reasoningFormat === 'parsed' && reasoningText) {
+        addMessage(reasoningText, 'reasoning');
+      }
       addMessage(reply, 'bot');
       history.push({ role: 'assistant', content: reply });
-      speak(reply);
 
     } catch (err) {
       typing.wrap.remove();
