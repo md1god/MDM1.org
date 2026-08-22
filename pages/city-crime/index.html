@@ -32,11 +32,11 @@
     <section class="playarea" id="playarea"><div class="topbar"><button class="close" id="close" type="button">← العودة إلى البوابة</button><strong>CITY CRIME</strong><button class="fullscreen" id="fullscreen" type="button">⛶ ملء الشاشة</button></div><iframe id="game" title="City Crime" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe></section>
     <section class="loader" id="loader" aria-live="polite"><div class="loader-box"><div class="loader-title">CITY CRIME</div><div class="loader-status" id="loader-status">يتم فتح بوابة المدينة…</div><div class="load-track"><div class="load-progress" id="load-progress"></div></div><div class="loader-meta"><span id="load-percent">12%</span><span>WEBGL / ONLINE</span></div></div></section>
     <script>
-      const playarea = document.getElementById('playarea'); const game = document.getElementById('game'); const loader = document.getElementById('loader'); const progress = document.getElementById('load-progress'); const percent = document.getElementById('load-percent'); const status = document.getElementById('loader-status'); let progressTimer;
+      const playarea = document.getElementById('playarea'); const game = document.getElementById('game'); const loader = document.getElementById('loader'); const progress = document.getElementById('load-progress'); const percent = document.getElementById('load-percent'); const status = document.getElementById('loader-status');
       function setProgress(value, text) { progress.style.width = value + '%'; percent.textContent = value + '%'; if (text) status.textContent = text; }
-      function startLoader() { loader.classList.add('visible'); setProgress(12, 'يتم فتح بوابة المدينة…'); let value = 12; progressTimer = setInterval(() => { value = Math.min(value + Math.ceil(Math.random() * 7), 88); setProgress(value, value < 50 ? 'يتم تحميل شوارع المدينة…' : 'يتم تجهيز محرك اللعبة…'); }, 420); }
-      function stopLoader() { clearInterval(progressTimer); setProgress(100, 'اكتمل التحميل'); setTimeout(() => loader.classList.remove('visible'), 280); }
-      document.getElementById('launch').onclick = () => { startLoader(); game.src = 'babylon/index.html'; playarea.classList.add('visible'); setTimeout(stopLoader, 6500); };
+      function startLoader() { loader.classList.add('visible'); setProgress(12, 'يتم فتح بوابة المدينة… سيظهر تقدم الأصول الفعلي داخل اللعبة.'); }
+      function stopLoader() { setProgress(100, 'تم فتح واجهة اللعبة'); setTimeout(() => loader.classList.remove('visible'), 280); }
+      document.getElementById('launch').onclick = () => { startLoader(); game.src = 'babylon/index.html'; playarea.classList.add('visible'); };
       game.addEventListener('load', () => { setTimeout(stopLoader, 600); });
       document.getElementById('close').onclick = () => { playarea.classList.remove('visible'); game.src = ''; };
       document.getElementById('fullscreen').onclick = async () => { try { if (!document.fullscreenElement) await playarea.requestFullscreen(); else await document.exitFullscreen(); } catch { alert('تعذر تشغيل ملء الشاشة في هذا المتصفح.'); } };
