@@ -39,8 +39,9 @@ export class InputManager {
 
   private readonly onPointerMove = (event: MouseEvent) => {
     if (!this.pointerLocked) return;
-    this.yaw -= event.movementX * 0.0022;
-    // تم تغيير الإشارة من - إلى + لتصحيح انعكاس الماوس
+    // تم تغيير الإشارة من - إلى + لتصحيح الاتجاه الأفقي
+    this.yaw += event.movementX * 0.0022;
+    // الإشارة الموجبة هنا صحيحة للاتجاه الرأسي بعد الإصلاح السابق
     this.pitch = Math.max(-0.55, Math.min(0.24, this.pitch + event.movementY * 0.0015));
   };
 
