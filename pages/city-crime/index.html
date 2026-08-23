@@ -4,116 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0a0e14" />
-  <meta name="description" content="City Crime — Concrete Meridian | وريث الهرم - رحلة عبر الزمن والظل" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>City Crime — Concrete Meridian</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <!-- أحدث نسخة مُبنية من الملفات -->
-  <script type="module" crossorigin src="./assets/index-XDPpbvcw.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CsxrC6CC.css" />
-
+  <script type="module" crossorigin src="./assets/index-Dfz4jhlM.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CToFHYLG.css" />
   <style>
-    /* شاشة التحميل الأولية - تظهر قبل تحميل React */
     #boot-loader {
-      position: fixed;
-      inset: 0;
-      background: #0a0e14;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
+      position: fixed; inset: 0; background: #0a0e14; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 9999; font-family: "IBM Plex Sans Arabic", sans-serif;
       transition: opacity 0.8s ease, visibility 0.8s ease;
-      font-family: "IBM Plex Sans Arabic", sans-serif;
     }
-    #boot-loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    #boot-loader img {
-      width: min(280px, 60vw);
-      margin-bottom: 2rem;
-      filter: drop-shadow(0 0 20px rgba(244,166,42,0.3));
-      animation: pulse 2s ease-in-out infinite;
-    }
-    #boot-loader .progress-bar {
-      width: min(300px, 70vw);
-      height: 4px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 1rem;
-    }
-    #boot-loader .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #f4a62a, #d4af37);
-      border-radius: 2px;
-      animation: loadProgress 3s ease forwards;
-    }
-    #boot-loader .loading-text {
-      color: #829ba9;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      letter-spacing: 0.05em;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.03); opacity: 0.85; }
-    }
-    @keyframes loadProgress {
-      0% { width: 0%; }
-      30% { width: 40%; }
-      70% { width: 75%; }
-      100% { width: 95%; }
-    }
-    /* إخفاء root حتى يُحمّل التطبيق */
-    #root:not(:has(*)) + #boot-loader,
-    #root:empty + #boot-loader {
-      display: flex !important;
-    }
+    #boot-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #boot-loader img { width: min(280px, 60vw); margin-bottom: 2rem; filter: drop-shadow(0 0 20px rgba(244,166,42,0.3)); animation: pulse 2s ease-in-out infinite; }
+    #boot-loader .progress-bar { width: min(300px, 70vw); height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-top: 1rem; }
+    #boot-loader .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f4a62a, #d4af37); border-radius: 2px; animation: loadProgress 3s ease forwards; }
+    #boot-loader .loading-text { color: #829ba9; font-size: 0.9rem; margin-top: 1rem; letter-spacing: 0.05em; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.03); opacity: 0.85; } }
+    @keyframes loadProgress { 0% { width: 0%; } 30% { width: 40%; } 70% { width: 75%; } 100% { width: 95%; } }
   </style>
 </head>
 <body style="margin:0; padding:0; background:#0a0e14; overflow:hidden;">
   <div id="root"></div>
-
-  <!-- شاشة التحميل الأولية -->
   <div id="boot-loader">
     <img src="./assets/city-crime-threshold-logo-web.png" alt="City Crime" />
-    <div class="progress-bar">
-      <div class="progress-fill"></div>
-    </div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
     <div class="loading-text">جاري تحميل اللعبة...</div>
   </div>
-
   <script>
-    // إخفاء شاشة التحميل بعد 4 ثوانٍ أو عند تحميل التطبيق
     (function() {
       const loader = document.getElementById('boot-loader');
-
-      // إخفاء تلقائي بعد 4 ثوانٍ كحد أقصى
-      setTimeout(function() {
-        if (loader) loader.classList.add('hidden');
-      }, 4000);
-
-      // إخفاء عندما يبدأ React في العرض
-      const observer = new MutationObserver(function(mutations) {
+      setTimeout(() => loader?.classList.add('hidden'), 4000);
+      const observer = new MutationObserver(() => {
         const root = document.getElementById('root');
         if (root && root.children.length > 0) {
-          setTimeout(function() {
-            if (loader) loader.classList.add('hidden');
-          }, 500);
+          setTimeout(() => loader?.classList.add('hidden'), 500);
           observer.disconnect();
         }
       });
-
       const root = document.getElementById('root');
       if (root) observer.observe(root, { childList: true, subtree: true });
     })();
