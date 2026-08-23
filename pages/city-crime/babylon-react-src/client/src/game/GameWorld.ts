@@ -64,7 +64,6 @@ export class GameWorld {
     }
   }
 
-  // ✅ getter لإتاحة الوصول إلى InputManager من GameCanvas
   get inputManager(): InputManager {
     return this.input;
   }
