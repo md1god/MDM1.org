@@ -60,7 +60,7 @@ export function Hud({ state }: { state: HudState }) {
       </aside>
 
       <div className="control-hint panel-surface">
-        <span><b>WASD</b> حركة</span><span><b>SHIFT</b> ركض</span><span><b>E</b> {state.player.inVehicle ? "خروج من السيارة" : "تفاعل / قيادة"}</span>
+        <span><b>WASD</b> حركة</span><span><b>SHIFT</b> ركض</span><span><b>E</b> تفاعل (قول: افتح)</span>
       </div>
 
       {state.loading.active && (
