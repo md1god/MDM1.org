@@ -56,7 +56,7 @@ export default function GameCanvas() {
           handle.dispose();
           return;
         }
-        inputManagerRef.current = handle.inputManager; // حفظ المرجع
+        inputManagerRef.current = handle.inputManager; // ✅ حفظ المرجع
         engine.runRenderLoop(() => handle?.scene.render());
       } catch (error) {
         console.error("Game bootstrap failed.", error);
@@ -77,15 +77,10 @@ export default function GameCanvas() {
     };
   }, []);
 
-  const handleRunTouchStart = () => {
-    inputManagerRef.current?.setTouchRunning(true);
-  };
-  const handleRunTouchEnd = () => {
-    inputManagerRef.current?.setTouchRunning(false);
-  };
-  const handleInteractClick = () => {
-    inputManagerRef.current?.queueTouchInteract();
-  };
+  // ✅ دوال الأزرار
+  const handleRunTouchStart = () => inputManagerRef.current?.setTouchRunning(true);
+  const handleRunTouchEnd = () => inputManagerRef.current?.setTouchRunning(false);
+  const handleInteractClick = () => inputManagerRef.current?.queueTouchInteract();
 
   return (
     <main className="game-shell" aria-label="لعبة City Crime">
