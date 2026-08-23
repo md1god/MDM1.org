@@ -1,3 +1,900 @@
+# CityCrime Browser
+
+**Open-source browser-based open-world game built with React + Babylon.js.**
+
+CityCrime Browser is an evolving 3D open-world project designed for **desktop and mobile browsers**, combining free roaming, story missions, multiplayer, vehicles, racing, aircraft, parachuting, police pursuits, combat, challenges, rewards, and customization.
+
+The project is designed to be a reusable foundation that other developers can study, fork, modify, and build upon.
+
+---
+
+## 🎮 Vision
+
+The goal is to create an original open-world experience combining:
+
+* 🌍 Open World
+* 🎬 Story Mode
+* 👥 Multiplayer — up to 10 players
+* 🚗 Cars
+* 🏍️ Motorcycles
+* 🚤 Boats & Yachts
+* ✈️ Aircraft
+* 🪂 Parachuting
+* 🚔 Police & Wanted System
+* 🔫 Combat
+* 🎯 Missions
+* 🏁 Car Racing
+* 🏍️ Motorcycle Racing
+* ⏱️ Time Trials
+* 🏆 Challenges
+* 🎁 Loot & Rewards
+* 👕 Character Customization
+* 🚘 Vehicle Customization
+* 📱 Mobile Controls
+
+The game takes inspiration from successful mechanics across open-world, racing, action, and multiplayer games while maintaining its own implementation, world, characters, assets, missions, and identity.
+
+---
+
+# 🧱 Technology
+
+The current project is built with:
+
+* **React**
+* **TypeScript**
+* **Babylon.js**
+* **Vitest**
+* **WebGL / WebGPU-compatible browser technologies**
+
+Babylon.js is responsible for the 3D world, rendering, cameras, materials, lighting, vehicles, interactions, and other gameplay systems.
+
+The project is designed specifically for browser deployment rather than requiring a traditional desktop game installation.
+
+---
+
+# 📌 Current Reference
+
+The current development reference is:
+
+```text
+5bdc23ef
+```
+
+The original reference foundation is:
+
+```text
+CityGame_fixed_realistic.zip
+```
+
+`CityGame_tested.zip` is **not** the foundation of the current implementation.
+
+The project should be extended from the existing working code rather than replaced with a separate prototype.
+
+---
+
+# 🌆 Open World
+
+The current world contains a procedural environment including:
+
+* Roads
+* Sidewalks
+* Buildings
+* Towers
+* Vendor stalls
+* Airport
+* Runway
+* Water
+* Marina
+* Yacht
+* Civilian aircraft
+* Military aircraft
+* Police vehicles
+* Traffic
+* Player
+* Interactive vehicles
+
+The world is designed to expand with:
+
+* Residential areas
+* Commercial areas
+* Industrial areas
+* Race tracks
+* Mission locations
+* Police pursuit areas
+* Airports
+* Marinas
+* Parachute landing zones
+* Challenge locations
+
+The visual environment should use real 3D objects rather than replacing the world with images or screen-covering billboards.
+
+---
+
+# 🧍 Player
+
+The player system is designed to support:
+
+* Walking
+* Running
+* Jumping
+* Camera control
+* Health
+* Damage
+* Death
+* Respawn
+* Interaction
+* Vehicle entry
+* Vehicle exit
+* Weapons
+* Parachuting
+
+Desktop controls should support keyboard and mouse.
+
+Mobile controls should use touch controls designed for the game.
+
+---
+
+# 🤝 Interaction System
+
+Interactions should be handled through a reusable system instead of individual hard-coded implementations.
+
+Possible interactions include:
+
+* Enter vehicle
+* Exit vehicle
+* Talk to NPC
+* Pick up item
+* Open door
+* Start mission
+* Complete mission
+* Start race
+* Interact with objects
+* Enter aircraft
+* Jump from aircraft
+* Start challenges
+
+Gameplay interactions must depend on actual game state.
+
+---
+
+# 🚗 Vehicles
+
+## Cars
+
+Cars should support:
+
+* Acceleration
+* Braking
+* Steering
+* Collision
+* Vehicle health
+* Damage
+* Disable state
+* Entering
+* Exiting
+* Theft
+* Racing
+
+## 🏍️ Motorcycles
+
+Motorcycles are intended to be fully playable vehicles rather than static decorations.
+
+They should support:
+
+* Riding
+* Acceleration
+* Steering
+* Braking
+* Collision
+* Damage
+* Crash/fall behavior
+* Racing
+
+## 🚤 Boats & Yachts
+
+Water vehicles should become playable where appropriate and support movement over water, interaction, and future missions or races.
+
+## ✈️ Aircraft
+
+Aircraft should eventually be fully playable.
+
+The target is an **arcade flight system**, not a professional flight simulator.
+
+Aircraft should support:
+
+* Entering
+* Starting
+* Acceleration
+* Takeoff
+* Climbing
+* Descending
+* Steering
+* Altitude control
+* Flying
+* Landing
+* Exiting
+
+Aircraft must be usable for missions and parachuting.
+
+---
+
+# 🪂 Parachute
+
+The parachute system should provide an actual gameplay loop:
+
+```text
+Enter Aircraft
+      ↓
+Fly
+      ↓
+Jump
+      ↓
+Free Fall
+      ↓
+Deploy Parachute
+      ↓
+Glide
+      ↓
+Control Direction
+      ↓
+Land
+```
+
+The player should be able to:
+
+* Jump from aircraft
+* Free fall
+* Control direction
+* Open the parachute
+* Glide
+* Choose a landing location
+* Land safely
+
+Dangerous impact without proper parachute deployment should cause appropriate damage or death.
+
+---
+
+# 🚔 Police & Wanted System
+
+The current police system is preserved and can be expanded.
+
+Existing behavior includes:
+
+* Distant gunfire does not automatically begin a chase.
+* Close directed shots can damage police.
+* Disabled police vehicles can be approached and stolen.
+* Wanted level can decrease when the player stops or gets away.
+
+The police system can support:
+
+* Free Roam
+* Story Missions
+* Vehicle Chases
+* Escapes
+* Challenges
+* Wanted levels
+* Police pursuit
+* Police vehicle theft
+
+The project should maintain **one central police system**, not multiple competing implementations.
+
+---
+
+# 🔫 Combat
+
+Combat should be based on real gameplay state.
+
+The architecture should support:
+
+* Weapons
+* Projectiles
+* Hit detection
+* Damage
+* Health
+* Enemy health
+* Police health
+* Vehicle damage
+* Future weapon types
+* Weapon customization
+
+The game should not fake combat through UI-only events.
+
+---
+
+# 🎬 Mission System
+
+The mission system should be **data-driven and extensible**.
+
+A mission consists of sequential objectives.
+
+Supported objective concepts can include:
+
+```text
+GoToLocation
+Interact
+EnterVehicle
+DriveTo
+Follow
+EscapePolice
+StealVehicle
+DisableVehicle
+Collect
+Talk
+Protect
+Eliminate
+Checkpoint
+WinRace
+Survive
+ParachuteToLocation
+Land
+```
+
+Each objective must depend on actual gameplay state.
+
+For example:
+
+> A `DriveTo` objective is completed only when the player is actually driving the required vehicle and the vehicle reaches the required location.
+
+A button that simply declares an objective completed is not a real mission system.
+
+---
+
+# 🎬 Story Mode
+
+Story Mode is designed primarily for solo players.
+
+Missions may eventually:
+
+* Unlock other missions
+* Give rewards
+* Change wanted level
+* Unlock vehicles
+* Unlock races
+* Unlock locations
+* Change world state
+* Introduce characters
+* Start new activities
+
+The mission architecture should allow a large story campaign to be added without rewriting the core engine.
+
+---
+
+# 👥 Multiplayer
+
+The current multiplayer foundation supports rooms of up to:
+
+**10 players**
+
+The system already supports:
+
+* Authentication
+* Joining rooms
+* Leaving rooms
+* Individual player states
+* Movement synchronization
+* Player reuse
+* 10-player limit
+
+The architecture should eventually support:
+
+* Multiplayer races
+* Multiplayer challenges
+* Cooperative missions
+* Competitive activities
+
+Story Mode should remain playable without other players.
+
+The current synchronization is polling-based. A future WebSocket implementation can provide better real-time synchronization without requiring the existing multiplayer system to be discarded.
+
+---
+
+# 🏁 Racing
+
+## Car Racing
+
+The racing system should support:
+
+* Starting grid
+* Countdown
+* Checkpoints
+* Finish line
+* Timer
+* Laps
+* Player ranking
+* Winner
+* Loser
+* Rewards
+* Restart
+
+Race completion must depend on actual vehicle position and checkpoint progress.
+
+## 🏍️ Motorcycle Racing
+
+Motorcycle races should reuse the same race architecture while supporting:
+
+* Motorcycle-only races
+* Checkpoints
+* Laps
+* Timers
+* Rankings
+* Rewards
+
+## 👥 Multiplayer Racing
+
+The architecture should support:
+
+* Multiple players
+* Player positions
+* Race progress
+* Checkpoints
+* Rankings
+* Finish state
+* Winner
+
+---
+
+# 🏆 Challenges
+
+The game can contain short activities for solo players or friends.
+
+Examples:
+
+* Car Racing
+* Motorcycle Racing
+* Police Escape
+* Longest Jump
+* Parachute Landing
+* Time Trial
+* Vehicle Destruction
+* Checkpoint Challenge
+* Survival
+* Target Shooting
+
+Each challenge should have:
+
+* Start
+* Objective
+* Timer when needed
+* Score
+* Ranking
+* Reward
+* End state
+
+---
+
+# 🎁 Economy, Loot & Rewards
+
+The game may use an original in-game currency inspired by common multiplayer game economy systems.
+
+For example:
+
+**Credits**
+
+Possible rewards:
+
+* Credits
+* Cosmetic items
+* Character customization
+* Vehicle customization
+* Weapon skins
+* Unlocks
+* Seasonal rewards
+
+## 📦 Loot Boxes
+
+The game may include original reward containers such as:
+
+* Weapon Crate
+* Vehicle Crate
+* Clothing Crate
+* Resource Crate
+* Seasonal Crate
+
+Loot systems should not create unfair pay-to-win advantages in competitive multiplayer.
+
+Random reward systems must be designed responsibly, including appropriate disclosure of probabilities and compliance with applicable laws and platform policies where required.
+
+---
+
+# 🎨 Graphics Direction
+
+The target visual style is:
+
+> **Realistic-stylized open world + PBR materials + cinematic lighting + coherent characters + coherent vehicles + coherent weapons.**
+
+The goal is to approach a console-inspired visual presentation while remaining practical for browsers, ordinary computers, and mobile devices.
+
+Assets should have consistent:
+
+* Scale
+* Materials
+* Lighting response
+* Polygon density
+* Texture resolution
+* Art direction
+
+Avoid mixing unrelated styles.
+
+---
+
+# 🧰 Free Asset & Creation Resources
+
+The following resources can be useful for development. Always verify the license of every asset before redistribution.
+
+## Poly Haven
+
+Useful for:
+
+* HDRIs
+* Materials
+* Textures
+* 3D assets
+
+https://polyhaven.com/
+
+Poly Haven provides many CC0 assets.
+
+## Quaternius
+
+Useful for:
+
+* Characters
+* Vehicles
+* Props
+* Weapons
+* Environment assets
+
+https://quaternius.com/
+
+Many Quaternius packs are CC0.
+
+## Kenney
+
+Useful for:
+
+* UI
+* Props
+* Game assets
+* Prototype assets
+* Weapons
+
+https://kenney.nl/
+
+Many Kenney assets are CC0.
+
+## Mixamo
+
+Useful for character animation:
+
+* Walking
+* Running
+* Jumping
+* Combat
+* Other humanoid animations
+
+https://www.mixamo.com/
+
+Always verify the applicable Mixamo/Adobe license before redistribution.
+
+## Blender
+
+Useful for:
+
+* Modeling
+* Editing
+* Retopology
+* Optimization
+* LOD creation
+* Material editing
+* Asset conversion
+* GLB/glTF preparation
+* Creating original assets
+
+https://www.blender.org/
+
+---
+
+# ⚙️ Performance
+
+Performance is a core requirement.
+
+Possible optimization techniques include:
+
+* Object pooling
+* Efficient update loops
+* Distance-based updates
+* LOD
+* Texture compression
+* Asset optimization
+* Reduced distant AI updates
+* Avoiding unnecessary per-frame allocations
+* Adaptive graphics quality
+
+Suggested quality levels:
+
+```text
+Low
+Medium
+High
+Ultra
+```
+
+The game should select an appropriate quality level according to device capabilities when practical.
+
+Priority:
+
+> **Playable > Stable > Visual Quality > Extra Features**
+
+---
+
+# 📱 Mobile Support
+
+The game should support mobile browsers with touch controls for:
+
+* Movement
+* Camera
+* Jump
+* Interaction
+* Vehicle controls
+* Acceleration
+* Braking
+* Steering
+* Shooting
+* Aircraft controls
+* Parachute controls
+
+Controls should remain accessible without covering the main gameplay area.
+
+---
+
+# 🧪 Testing
+
+The project uses Vitest for automated tests.
+
+Existing tests cover areas including:
+
+* Authentication
+* Multiplayer rooms
+* 10-player limit
+* Empty missions
+* Wanted system
+* Police damage
+* Police vehicle theft
+* Motorcycle behavior
+* World boundaries
+
+New gameplay systems should include tests for:
+
+* Mission start
+* Objective progression
+* Vehicle objectives
+* Police escape
+* Mission completion
+* Rewards
+* Race countdown
+* Checkpoints
+* Finish state
+* Ranking
+* Aircraft states
+* Parachute states
+* Landing
+* Multiplayer race state
+
+TypeScript checks should pass.
+
+Automated tests are not a replacement for browser testing.
+
+---
+
+# 🧪 Browser Verification
+
+The current prototype has been verified in a browser for:
+
+* Babylon canvas
+* Player
+* World
+* Traffic
+* Vehicles
+* Vendor stalls
+* HUD
+* Multiplayer room
+* Map with `M`
+* Car entry with `E`
+
+The project remains a prototype and is not presented as a finished AAA game.
+
+---
+
+# 🔐 Development Rules
+
+Contributors should:
+
+* Extend the existing architecture.
+* Prefer reusable systems.
+* Keep gameplay data-driven.
+* Add tests for new gameplay logic.
+* Keep dependencies reasonable.
+* Optimize assets.
+* Verify third-party licenses.
+* Fix regressions before merging.
+
+Do not:
+
+* Replace the project with a new prototype.
+* Delete working systems without a documented reason.
+* Create duplicate implementations.
+* Replace gameplay logic with fake UI.
+* Ignore TypeScript errors.
+* Ignore runtime errors.
+* Break multiplayer to add a feature.
+* Add copyrighted commercial game assets.
+
+---
+
+# 🗺️ Roadmap
+
+## Foundation
+
+* Open world
+* Player
+* Vehicles
+* Police
+* Map
+* HUD
+* Multiplayer
+
+## Gameplay
+
+* Interaction system
+* Vehicle framework
+* Motorcycle driving
+* Boat gameplay
+* Aircraft
+* Parachute
+
+## Activities
+
+* Car racing
+* Motorcycle racing
+* Time trials
+* Challenges
+* Police escapes
+
+## Story
+
+* Mission framework
+* NPC framework
+* Story missions
+* Rewards
+* Unlocks
+
+## Multiplayer
+
+* Multiplayer racing
+* Multiplayer challenges
+* Cooperative missions
+* Competitive activities
+* Future realtime synchronization
+
+## Polish
+
+* Mobile controls
+* Adaptive graphics
+* Lighting
+* LOD
+* Asset optimization
+* Audio
+* UI
+* Performance
+
+---
+
+# 🧠 Inspiration
+
+CityCrime Browser may take gameplay inspiration from different genres and games, including open-world crime games, battle royale games, racing games, action games, survival games, and multiplayer challenge games.
+
+Examples of games whose mechanics may be studied include:
+
+* Grand Theft Auto
+* PUBG
+* Racing games
+* Open-world games
+* Survival games
+* Multiplayer action games
+
+This means studying **gameplay concepts**, not copying protected content.
+
+The project does not aim to reproduce another game's:
+
+* Characters
+* Map
+* Missions
+* Story
+* UI
+* Music
+* Sounds
+* Models
+* Textures
+* Logos
+* Source code
+* Brand identity
+
+The objective is to create an original game.
+
+---
+
+# 📜 License
+
+The source code of this repository should be distributed under the open-source license specified in the root `LICENSE` file.
+
+If no license has been selected yet, contributors should add an appropriate open-source license before treating the repository as formally licensed for unrestricted reuse.
+
+**Important:** the repository's software license does not automatically change the licenses of third-party assets.
+
+Every external model, texture, sound, font, animation, library, or other resource remains subject to its own license.
+
+---
+
+# ⚠️ Third-Party Content
+
+Before adding external content:
+
+1. Check its license.
+2. Confirm redistribution is permitted.
+3. Keep required attribution.
+4. Keep license information.
+5. Do not upload copyrighted commercial-game assets.
+6. Do not assume that something is free merely because it is downloadable.
+
+---
+
+# ⚖️ Disclaimer
+
+CityCrime Browser is an independent open-source project.
+
+It is not affiliated with, endorsed by, or sponsored by:
+
+* Rockstar Games
+* Grand Theft Auto
+* PUBG
+* Epic Games
+* Krafton
+* or any other referenced commercial game or company.
+
+All trademarks belong to their respective owners.
+
+References to other games describe gameplay inspiration only and do not imply ownership, partnership, or affiliation.
+
+---
+
+# 🤝 Contributions
+
+Contributions, forks, improvements, assets, optimizations, gameplay systems, bug fixes, documentation, and ideas are welcome.
+
+When contributing:
+
+* Keep changes focused.
+* Preserve existing functionality.
+* Prefer reusable architecture.
+* Test new gameplay systems.
+* Document important technical decisions.
+* Verify asset licenses.
+* Avoid unnecessary rewrites.
+
+The long-term goal is to build a high-quality open-source browser game that other developers can learn from, fork, extend, and turn into their own projects.
+
+---
+
+## ⭐ Project Principle
+
+**Build original.
+Reuse legally.
+Learn from the industry.
+Keep the game playable.
+Optimize for the browser.
+And make every system actually work.**
+
+
 # وريث الهرم — Heir of the Pyramid
 
 > يُبنى هذا المستند فوق الحجر الأساسي الموجود فعلاً في `pages/city-crime/babylon-react-src`
