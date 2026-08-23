@@ -1,4 +1,3 @@
-// Concrete Meridian: React HUD يتجنب التمركز الزائد ويؤطر مشهد مدينة واقعية بلون كهرماني مخصص.
 import { useEffect, useRef, useState } from "react";
 import type { GameHandle } from "@/game/scene";
 import type { GameEngine } from "@/game/engine";
@@ -36,8 +35,13 @@ export default function GameCanvas() {
         const { createPreferredEngine, runSceneBenchmark } = await import("@/game/engine");
         const selection = await createPreferredEngine(canvas);
         engine = selection.engine;
-        updateHud({ engine: selection.kind, loading: { label: demo ? "تجهيز العرض التلقائي" : "قياس الأداء الفعلي", progress: 13, active: true } });
-        const benchmark = demo ? { averageFps: 60, tier: "High" as const } : await runSceneBenchmark(engine);
+        updateHud({
+          engine: selection.kind,
+          loading: { label: demo ? "تجهيز العرض التلقائي" : "قياس الأداء الفعلي", progress: 13, active: true },
+        });
+        const benchmark = demo
+          ? { averageFps: 60, tier: "High" as const }
+          : await runSceneBenchmark(engine);
         if (disposed) return;
         updateHud({
           tier: benchmark.tier,
