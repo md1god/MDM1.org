@@ -7,10 +7,12 @@ import { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 import type { GameEngine } from "./engine";
 import type { HudUpdate, QualityTier } from "./types";
 import { GameWorld } from "./GameWorld";
+import type { InputManager } from "./InputManager";
 import { assets } from "./assets";
 
 export type GameHandle = {
   scene: Scene;
+  inputManager: InputManager;  // ✅ إضافة
   dispose: () => void;
 };
 
@@ -51,6 +53,7 @@ export async function createGameScene(
 
   return {
     scene,
+    inputManager: world.inputManager,  // ✅ إرجاع
     dispose: () => {
       world.dispose();
       scene.dispose();
