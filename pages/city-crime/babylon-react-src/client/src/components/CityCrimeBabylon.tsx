@@ -21,11 +21,18 @@ const SALIM_QUESTS = [
   { name: "المفتاح الأخير", desc: "ارجعلي بالمفتاح ده قبل ما الشمس تغرب.", point: [0, -52], reward: 350, accept: "المفتاح ده مهم يا آدم، متسيبهوش مع حد غيرك.", ready: "معاك المفتاح؟ تعالى هنا حالاً." },
 ];
 
-// ===== فصل يوسف وأصحابه (قابل للزيادة) =====
+// ===== فصل يوسف وأصحابه (10 شخصيات) =====
 const FRIENDS = [
   { id: "youssef", name: "يوسف (الابن)", color: "#4caf50" },
   { id: "karim", name: "كريم", color: "#ff9800" },
   { id: "sayf", name: "سيف", color: "#9c27b0" },
+  { id: "omar", name: "عمر", color: "#2196f3" },
+  { id: "ali", name: "علي", color: "#f44336" },
+  { id: "mohamed", name: "محمد", color: "#00bcd4" },
+  { id: "ahmed", name: "أحمد", color: "#8bc34a" },
+  { id: "hassan", name: "حسن", color: "#ff5722" },
+  { id: "yassin", name: "ياسين", color: "#3f51b5" },
+  { id: "nader", name: "نادر", color: "#ffc107" },
 ];
 const MEETUP_POINT = [40, -10];
 
@@ -64,7 +71,6 @@ export default function CityCrimeBabylon() {
     scene.fogEnd = 210;
 
     const camera = new BABYLON.UniversalCamera("cam", new BABYLON.Vector3(0, 8, -8), scene);
-    // لا نستخدم attachControl لأننا نتحكم بالكاميرا يدوياً كل فريم (كاميرا خلف الشخصية)
 
     const amb = new BABYLON.HemisphericLight("amb", new BABYLON.Vector3(0, 1, 0), scene);
     amb.intensity = 0.9;
@@ -171,9 +177,15 @@ export default function CityCrimeBabylon() {
     const car = makeCar("#1146b8");
     car.position.set(0, 0, 18);
 
+    // ===== 10 أصدقاء في ساحة اللقاء (توزيع دائري) =====
     const friends = FRIENDS.map((f, i) => {
+      const angle = (i / FRIENDS.length) * Math.PI * 2;
       const mesh = makeCharacter(f.color);
-      mesh.position.set(MEETUP_POINT[0] + i * 1.8 - 1.8, 0, MEETUP_POINT[1] + 2);
+      mesh.position.set(
+        MEETUP_POINT[0] + Math.cos(angle) * 5,
+        0,
+        MEETUP_POINT[1] + Math.sin(angle) * 5
+      );
       return { ...f, mesh, recruited: false };
     });
 
@@ -407,12 +419,16 @@ export default function CityCrimeBabylon() {
         }
       });
 
+      // ===== تحريك 10 أصدقاء خلف اللاعب =====
       s.friends.forEach((f: any, i: number) => {
         if (!f.recruited || s.driving) return;
+        // توزيع الأصدقاء في صفوف خلف اللاعب
+        const row = Math.floor(i / 3); // 3 في كل صف
+        const col = i % 3;
         const targetPos = new BABYLON.Vector3(
-          s.pos.x - Math.sin(s.rot) * (2.5 + i * 1.2) + Math.cos(s.rot) * (i - 1) * 1.4,
+          s.pos.x - Math.sin(s.rot) * (3 + row * 1.8) + Math.cos(s.rot) * (col - 1) * 1.6,
           0,
-          s.pos.z - Math.cos(s.rot) * (2.5 + i * 1.2) - Math.sin(s.rot) * (i - 1) * 1.4
+          s.pos.z - Math.cos(s.rot) * (3 + row * 1.8) - Math.sin(s.rot) * (col - 1) * 1.6
         );
         f.mesh.position = BABYLON.Vector3.Lerp(f.mesh.position, targetPos, Math.min(1, dt * 3));
         f.mesh.lookAt(new BABYLON.Vector3(s.pos.x, 0, s.pos.z));
