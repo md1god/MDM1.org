@@ -15,7 +15,8 @@ type MotionState = "idle" | "walk" | "run";
 export class Player {
   readonly root: TransformNode;
   readonly collider: Mesh;
-  private readonly aggregate: PhysicsAggregate | null;
+  // تم تعطيل الفيزياء مؤقتًا للسماح بالحركة المباشرة
+  private readonly aggregate: PhysicsAggregate | null = null;
   private activeMotion: MotionState = "idle";
   private visualTime = 0;
   private velocity = Vector3.Zero();
@@ -36,14 +37,10 @@ export class Player {
     heroMat.specularColor = Color3.FromHexString("#0A0A0A");
     this.collider.material = heroMat;
 
-    this.aggregate = physicsEnabled
-      ? new PhysicsAggregate(this.collider, PhysicsShapeType.CAPSULE, { mass: 0, friction: 0.7 }, scene)
-      : null;
-
-    // عشان نتحكم في الـ static body يدوياً من غير ما الفيزياء تعمل override
-    if (this.aggregate) {
-      this.aggregate.body.disablePreStep = true;
-    }
+    // ملاحظة: إذا أردت تفعيل الفيزياء لاحقًا مع الحركة الصحيحة،
+    // استخدم جسمًا ديناميكيًا بكتلة > 0 وقم بتطبيق القوى بدلاً من تحريك الموضع مباشرة.
+    // حاليًا: الحركة المباشرة بدون فيزياء لضمان الاستجابة.
+    this.aggregate = null;
   }
 
   get position() {
@@ -60,10 +57,7 @@ export class Player {
     const targetVelocity = normalized.scale(desiredSpeed);
     this.velocity = Vector3.Lerp(this.velocity, targetVelocity, Math.min(1, deltaSeconds * 11));
     
-    // إصلاح: نمنع الفيزياء من override الـ position
-    if (this.aggregate) {
-      this.aggregate.body.disablePreStep = true;
-    }
+    // حركة مباشرة بدون أي تدخل فيزيائي
     this.root.position.addInPlace(this.velocity.scale(deltaSeconds));
 
     if (this.velocity.lengthSquared() > 0.05) {
@@ -89,10 +83,7 @@ export class Player {
   teleport(position: Vector3) {
     this.root.position.copyFrom(position);
     this.velocity = Vector3.Zero();
-    if (this.aggregate) {
-      this.aggregate.body.setLinearVelocity(Vector3.Zero());
-      this.aggregate.body.setAngularVelocity(Vector3.Zero());
-    }
+    // لا يوجد جسم فيزيائي لإعادة ضبطه
   }
 
   checkInteractions() {
@@ -133,7 +124,7 @@ export class Player {
   }
 
   dispose() {
-    this.aggregate?.dispose();
+    // لا يوجد aggregate للتصرف
     this.root.dispose(false, true);
   }
 
