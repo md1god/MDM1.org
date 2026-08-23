@@ -12,7 +12,7 @@ import { assets } from "./assets";
 
 export type GameHandle = {
   scene: Scene;
-  inputManager: InputManager;  // ✅ إضافة
+  inputManager: InputManager;
   dispose: () => void;
 };
 
@@ -53,7 +53,7 @@ export async function createGameScene(
 
   return {
     scene,
-    inputManager: world.inputManager,  // ✅ إرجاع
+    inputManager: world.inputManager,
     dispose: () => {
       world.dispose();
       scene.dispose();
