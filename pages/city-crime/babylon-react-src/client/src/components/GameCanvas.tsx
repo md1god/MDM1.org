@@ -56,7 +56,7 @@ export default function GameCanvas() {
           handle.dispose();
           return;
         }
-        inputManagerRef.current = handle.inputManager; // ✅ حفظ المرجع
+        inputManagerRef.current = handle.inputManager;
         engine.runRenderLoop(() => handle?.scene.render());
       } catch (error) {
         console.error("Game bootstrap failed.", error);
@@ -77,7 +77,6 @@ export default function GameCanvas() {
     };
   }, []);
 
-  // ✅ دوال الأزرار
   const handleRunTouchStart = () => inputManagerRef.current?.setTouchRunning(true);
   const handleRunTouchEnd = () => inputManagerRef.current?.setTouchRunning(false);
   const handleInteractClick = () => inputManagerRef.current?.queueTouchInteract();
@@ -87,7 +86,6 @@ export default function GameCanvas() {
       <canvas ref={canvasRef} className="game-canvas" aria-label="مشهد City Crime ثلاثي الأبعاد" />
       <Hud state={hud} />
 
-      {/* أزرار تحكم للموبايل */}
       <div
         style={{
           position: "fixed",
