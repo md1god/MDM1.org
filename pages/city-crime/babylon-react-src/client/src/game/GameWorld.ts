@@ -6,6 +6,7 @@ import { InputManager } from "./InputManager";
 import { Player } from "./Player";
 import { createWellSite, type WellSiteHandle } from "./WellSite";
 import type { HudUpdate, QualityTier } from "./types";
+import { StageManager, StageId } from "./StageManager"; // استيراد StageManager و StageId
 
 // منظور اللاعب: كاميرا شخص ثالث خفيفة تتبع الكبسولة، مناسبة للبلوك-آوت والتصحيح السريع.
 const CAMERA_TUNING = {
@@ -26,6 +27,7 @@ export class GameWorld {
   private demoTime = 0;
   private stage: QuestStage = "approach-well";
   private doorOpenProgress = 0;
+  private stageManager: StageManager; // مدير المراحل الجديد
 
   constructor(
     private readonly scene: Scene,
@@ -45,6 +47,30 @@ export class GameWorld {
 
     // يبدأ يوسف في الحديقة، قريب من الفيلا، وبعيد شوية عن فوهة البئر (6, 4 في WellSite).
     this.player = new Player(scene, new Vector3(2, 0.02, -4), physicsEnabled);
+
+    // إنشاء مدير المراحل وربطه باللاعب
+    this.stageManager = new StageManager(this.scene, this.player);
+    this.player.setStageManager(this.stageManager);
+
+    // ربط الـ HUD (إرسال أحداث لـ React أو أي واجهة خارجية)
+    this.stageManager.setCallbacks(
+      (stageId) => {
+        console.log("Stage completed:", stageId);
+        // يمكن إرسال event لـ React هنا
+      },
+      (objectives) => {
+        // تحديث HUD عبر حدث مخصص
+        window.dispatchEvent(new CustomEvent("objectives-update", { detail: objectives }));
+      }
+    );
+
+    // تحميل التقدم المحفوظ أو البدء من المرحلة الأولى
+    const savedStage = this.stageManager.loadProgress();
+    if (savedStage) {
+      this.stageManager.startStage(savedStage);
+    } else {
+      this.stageManager.startStage(StageId.VILLA_WELL);
+    }
   }
 
   async initialize() {
@@ -52,6 +78,11 @@ export class GameWorld {
     this.site = createWellSite(this.scene, this.physicsEnabled);
     this.site.shadowGenerator.addShadowCaster(this.player.collider);
     this.updateHud({ loading: { label: "المشهد جاهز", progress: 100, active: false } });
+
+    // تسجيل فحص التفاعلات في حلقة الرسم (قبل كل إطار)
+    this.scene.registerBeforeRender(() => {
+      this.player.checkInteractions();
+    });
   }
 
   update(deltaSeconds: number) {
