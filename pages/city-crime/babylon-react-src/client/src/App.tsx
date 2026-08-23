@@ -13,7 +13,7 @@ function Router() {
     <WouterRouter hook={useHashLocation}>
       <Switch>
         <Route path={"/"} component={Home} />
-        <Route path={"/gta"} component={CityCrimeBabylon} />
+        <Route path={"/friends"} component={CityCrimeBabylon} />   {/* ✅ تغيير المسار */}
         <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />
       </Switch>
