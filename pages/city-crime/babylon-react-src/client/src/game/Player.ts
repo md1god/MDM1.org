@@ -15,8 +15,7 @@ type MotionState = "idle" | "walk" | "run";
 export class Player {
   readonly root: TransformNode;
   readonly collider: Mesh;
-  // تم تعطيل الفيزياء مؤقتًا للسماح بالحركة المباشرة
-  private readonly aggregate: PhysicsAggregate | null = null;
+  private readonly aggregate: PhysicsAggregate | null = null; // ✅ تعطيل الفيزياء
   private activeMotion: MotionState = "idle";
   private visualTime = 0;
   private velocity = Vector3.Zero();
@@ -36,11 +35,6 @@ export class Player {
     heroMat.diffuseColor = Color3.FromHexString("#2C6BE0");
     heroMat.specularColor = Color3.FromHexString("#0A0A0A");
     this.collider.material = heroMat;
-
-    // ملاحظة: إذا أردت تفعيل الفيزياء لاحقًا مع الحركة الصحيحة،
-    // استخدم جسمًا ديناميكيًا بكتلة > 0 وقم بتطبيق القوى بدلاً من تحريك الموضع مباشرة.
-    // حاليًا: الحركة المباشرة بدون فيزياء لضمان الاستجابة.
-    this.aggregate = null;
   }
 
   get position() {
@@ -56,7 +50,7 @@ export class Player {
     const normalized = movement.lengthSquared() > 0 ? movement.normalize() : Vector3.Zero();
     const targetVelocity = normalized.scale(desiredSpeed);
     this.velocity = Vector3.Lerp(this.velocity, targetVelocity, Math.min(1, deltaSeconds * 11));
-    
+
     // حركة مباشرة بدون أي تدخل فيزيائي
     this.root.position.addInPlace(this.velocity.scale(deltaSeconds));
 
@@ -83,7 +77,6 @@ export class Player {
   teleport(position: Vector3) {
     this.root.position.copyFrom(position);
     this.velocity = Vector3.Zero();
-    // لا يوجد جسم فيزيائي لإعادة ضبطه
   }
 
   checkInteractions() {
@@ -124,7 +117,6 @@ export class Player {
   }
 
   dispose() {
-    // لا يوجد aggregate للتصرف
     this.root.dispose(false, true);
   }
 
