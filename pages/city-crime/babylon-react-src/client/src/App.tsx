@@ -6,12 +6,14 @@ import { useHashLocation } from "wouter/use-hash-location";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import CityCrimeBabylon from "./components/CityCrimeBabylon";
 
 function Router() {
   return (
     <WouterRouter hook={useHashLocation}>
       <Switch>
         <Route path={"/"} component={Home} />
+        <Route path={"/gta"} component={CityCrimeBabylon} />
         <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />
       </Switch>
