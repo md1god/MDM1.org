@@ -7,7 +7,7 @@ interface TitleScreenProps {
 export default function TitleScreen({ onStart }: TitleScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false); // تغيير الافتراضي إلى false
   const [showButtons, setShowButtons] = useState(false);
 
   useEffect(() => {
@@ -20,11 +20,14 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.6;
-    if (!muted) {
-      audio.play().catch(() => {});
-    } else {
-      audio.pause();
-    }
+    const playAudio = async () => {
+      try {
+        await audio.play();
+      } catch (e) {
+        console.log("Autoplay blocked, waiting for user interaction");
+      }
+    };
+    playAudio();
   }, [muted]);
 
   const handleStart = () => {
@@ -52,9 +55,9 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
       <video
         ref={videoRef}
         autoPlay
-        muted
         loop
         playsInline
+        muted={false} // السماح بتشغيل الصوت إذا كان الفيديو يحتوي على صوت
         style={{
           position: "absolute",
           inset: 0,
@@ -64,7 +67,7 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
           opacity: 0.45,
         }}
       >
-        <source src="/assets/intro.mp4" type="video/mp4" />
+        <source src="./assets/intro.mp4" type="video/mp4" />
       </video>
 
       {/* طبقة داكنة فوق الفيديو */}
@@ -77,13 +80,13 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
       />
 
       {/* موسيقى الخلفية */}
-      <audio ref={audioRef} src="/assets/city-crime-theme.wav" loop preload="auto" />
+      <audio ref={audioRef} src="./assets/city-crime-theme.wav" loop preload="auto" />
 
       {/* المحتوى */}
       <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "2rem" }}>
         {/* اللوجو */}
         <img
-          src="/assets/city-crime-threshold-logo-web.png"
+          src="./assets/city-crime-threshold-logo-web.png"
           alt="City Crime"
           style={{
             width: "min(320px, 70vw)",
