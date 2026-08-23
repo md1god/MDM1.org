@@ -227,8 +227,6 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes("@babylonjs/havok")) return "babylon-havok";
           if (id.includes("@babylonjs/loaders")) return "babylon-loaders";
-          if (id.includes("@babylonjs/core/PostProcesses")) return "babylon-postprocess";
-          if (id.includes("@babylonjs/core/Physics")) return "babylon-physics";
           if (id.includes("@babylonjs/core")) return "babylon-core";
         },
       },
