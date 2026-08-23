@@ -1,35 +1,30 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch, Router as WouterRouter } from "wouter";
-import { useHashLocation } from "wouter/use-hash-location";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
-
-function Router() {
-  return (
-    <WouterRouter hook={useHashLocation}>
-      <Switch>
-        <Route path={"/"} component={Home} />
-        <Route path={"/404"} component={NotFound} />
-        {/* Final fallback route */}
-        <Route component={NotFound} />
-      </Switch>
-    </WouterRouter>
-  );
-}
+import { useEffect, useRef } from "react";
+import { initEngine } from "./game/engine";
+import { Hud } from "./components/Hud";
 
 function App() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    initEngine(canvasRef.current);
+  }, []);
+
   return (
-    <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: "#000" }}>
+      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+      <Hud />
+      <div style={{
+        position: "fixed", bottom: 20, left: 20,
+        color: "#d4af37", background: "rgba(0,0,0,0.7)",
+        padding: "1rem", borderRadius: "8px", fontSize: "0.9rem"
+      }}>
+        <div><strong>WASD</strong> حركة</div>
+        <div><strong>Shift</strong> ركض</div>
+        <div><strong>Mouse</strong> بعد النقر يدير الكاميرا</div>
+        <div><strong>E</strong> تفاعل</div>
+      </div>
+    </div>
   );
 }
 
