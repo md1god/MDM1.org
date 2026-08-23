@@ -39,6 +39,11 @@ export class Player {
     this.aggregate = physicsEnabled
       ? new PhysicsAggregate(this.collider, PhysicsShapeType.CAPSULE, { mass: 0, friction: 0.7 }, scene)
       : null;
+
+    // عشان نتحكم في الـ static body يدوياً من غير ما الفيزياء تعمل override
+    if (this.aggregate) {
+      this.aggregate.body.disablePreStep = true;
+    }
   }
 
   get position() {
@@ -54,6 +59,11 @@ export class Player {
     const normalized = movement.lengthSquared() > 0 ? movement.normalize() : Vector3.Zero();
     const targetVelocity = normalized.scale(desiredSpeed);
     this.velocity = Vector3.Lerp(this.velocity, targetVelocity, Math.min(1, deltaSeconds * 11));
+    
+    // إصلاح: نمنع الفيزياء من override الـ position
+    if (this.aggregate) {
+      this.aggregate.body.disablePreStep = true;
+    }
     this.root.position.addInPlace(this.velocity.scale(deltaSeconds));
 
     if (this.velocity.lengthSquared() > 0.05) {
