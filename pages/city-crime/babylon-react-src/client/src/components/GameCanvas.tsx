@@ -3,6 +3,7 @@ import type { GameHandle } from "@/game/scene";
 import type { GameEngine } from "@/game/engine";
 import { initialHudState, type HudState } from "@/game/types";
 import { Hud } from "./Hud";
+import type { InputManager } from "@/game/InputManager";
 
 function mergeHudState(current: HudState, patch: Partial<HudState>): HudState {
   return {
@@ -14,8 +15,7 @@ function mergeHudState(current: HudState, patch: Partial<HudState>): HudState {
   };
 }
 
-// أزرار تحكم على الشاشة للموبايل
-function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<any> }) {
+function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<InputManager | null> }) {
   const [joystickActive, setJoystickActive] = useState(false);
   const joystickOrigin = useRef({ x: 0, y: 0 });
   const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
@@ -41,13 +41,10 @@ function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<any> })
         const dist = Math.sqrt(dx * dx + dy * dy);
         const scale = dist > maxR ? maxR / dist : 1;
         setJoystickPos({ x: dx * scale, y: dy * scale });
-
-        if (inputRef.current) {
-          inputRef.current.setButton("w", dy < -10);
-          inputRef.current.setButton("s", dy > 10);
-          inputRef.current.setButton("a", dx < -10);
-          inputRef.current.setButton("d", dx > 10);
-        }
+        inputRef.current?.setButton("w", dy < -10);
+        inputRef.current?.setButton("s", dy > 10);
+        inputRef.current?.setButton("a", dx < -10);
+        inputRef.current?.setButton("d", dx > 10);
       }
     }
   }, [inputRef]);
@@ -59,12 +56,10 @@ function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<any> })
         touchId.current = null;
         setJoystickActive(false);
         setJoystickPos({ x: 0, y: 0 });
-        if (inputRef.current) {
-          inputRef.current.setButton("w", false);
-          inputRef.current.setButton("s", false);
-          inputRef.current.setButton("a", false);
-          inputRef.current.setButton("d", false);
-        }
+        inputRef.current?.setButton("w", false);
+        inputRef.current?.setButton("s", false);
+        inputRef.current?.setButton("a", false);
+        inputRef.current?.setButton("d", false);
       }
     }
   }, [inputRef]);
@@ -90,7 +85,6 @@ function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<any> })
 
   return (
     <>
-      {/* Joystick على اليسار */}
       <div
         style={{
           position: "fixed",
@@ -115,27 +109,25 @@ function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<any> })
             position: "relative",
           }}
         >
-          {joystickActive && (
-            <div
-              style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                width: 44,
-                height: 44,
-                marginLeft: -22,
-                marginTop: -22,
-                borderRadius: "50%",
-                background: "rgba(244,166,42,0.5)",
-                transform: `translate(${joystickPos.x}px, ${joystickPos.y}px)`,
-                transition: "transform 0.05s",
-              }}
-            />
-          )}
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: 44,
+              height: 44,
+              marginLeft: -22,
+              marginTop: -22,
+              borderRadius: "50%",
+              background: "rgba(244,166,42,0.5)",
+              transform: `translate(${joystickPos.x}px, ${joystickPos.y}px)`,
+              transition: "transform 0.05s",
+              opacity: joystickActive ? 1 : 0.5,
+            }}
+          />
         </div>
       </div>
 
-      {/* أزرار على اليمين */}
       <div
         style={{
           position: "fixed",
@@ -153,48 +145,36 @@ function MobileControls({ inputRef }: { inputRef: React.MutableRefObject<any> })
             style={btnStyle(false)}
             onTouchStart={(e) => { e.preventDefault(); inputRef.current?.setButton("w", true); }}
             onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.setButton("w", false); }}
-          >
-            ▲
-          </button>
+          >▲</button>
         </div>
         <div style={{ display: "flex", gap: 12 }}>
           <button
             style={btnStyle(false)}
             onTouchStart={(e) => { e.preventDefault(); inputRef.current?.setButton("a", true); }}
             onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.setButton("a", false); }}
-          >
-            ◀
-          </button>
+          >◀</button>
           <button
             style={btnStyle(false)}
             onTouchStart={(e) => { e.preventDefault(); inputRef.current?.setButton("s", true); }}
             onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.setButton("s", false); }}
-          >
-            ▼
-          </button>
+          >▼</button>
           <button
             style={btnStyle(false)}
             onTouchStart={(e) => { e.preventDefault(); inputRef.current?.setButton("d", true); }}
             onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.setButton("d", false); }}
-          >
-            ▶
-          </button>
+          >▶</button>
         </div>
         <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
           <button
             style={{ ...btnStyle(false), width: 70, borderRadius: 12 }}
             onTouchStart={(e) => { e.preventDefault(); inputRef.current?.setButton("shift", true); }}
             onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.setButton("shift", false); }}
-          >
-            🏃
-          </button>
+          >🏃</button>
           <button
             style={{ ...btnStyle(false), width: 70, borderRadius: 12 }}
             onTouchStart={(e) => { e.preventDefault(); inputRef.current?.setButton("e", true); }}
             onTouchEnd={(e) => { e.preventDefault(); inputRef.current?.setButton("e", false); }}
-          >
-            E
-          </button>
+          >E</button>
         </div>
       </div>
     </>
@@ -206,7 +186,7 @@ export default function GameCanvas() {
   const startedRef = useRef(false);
   const [hud, setHud] = useState<HudState>(initialHudState);
   const [showMobile, setShowMobile] = useState(false);
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<InputManager | null>(null);
 
   useEffect(() => {
     setShowMobile("ontouchstart" in window || navigator.maxTouchPoints > 0);
@@ -247,10 +227,7 @@ export default function GameCanvas() {
           handle.dispose();
           return;
         }
-        // تمرير inputManager للأزرار على الشاشة
-        if ((handle as any)._inputManager) {
-          inputRef.current = (handle as any)._inputManager;
-        }
+        inputRef.current = handle.inputManager; // ✅ تصحيح الوصول
         engine.runRenderLoop(() => handle?.scene.render());
       } catch (error) {
         console.error("Game bootstrap failed.", error);
