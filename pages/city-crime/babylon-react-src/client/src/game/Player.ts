@@ -15,12 +15,11 @@ type MotionState = "idle" | "walk" | "run";
 export class Player {
   readonly root: TransformNode;
   readonly collider: Mesh;
-  private readonly aggregate: PhysicsAggregate | null = null; // ✅ تعطيل الفيزياء
+  private readonly aggregate: PhysicsAggregate | null = null; // ✅ لا فيزياء
   private activeMotion: MotionState = "idle";
   private visualTime = 0;
   private velocity = Vector3.Zero();
   private stamina = 100;
-
   private stageManager: StageManager | null = null;
 
   constructor(private readonly scene: Scene, initialPosition: Vector3, physicsEnabled: boolean) {
@@ -31,6 +30,7 @@ export class Player {
     this.collider.parent = this.root;
     this.collider.position.y = 0.86;
     this.collider.isVisible = true;
+
     const heroMat = new StandardMaterial("hero-material", scene);
     heroMat.diffuseColor = Color3.FromHexString("#2C6BE0");
     heroMat.specularColor = Color3.FromHexString("#0A0A0A");
@@ -51,7 +51,7 @@ export class Player {
     const targetVelocity = normalized.scale(desiredSpeed);
     this.velocity = Vector3.Lerp(this.velocity, targetVelocity, Math.min(1, deltaSeconds * 11));
 
-    // حركة مباشرة بدون أي تدخل فيزيائي
+    // ✅ حركة مباشرة بدون أي تدخل فيزيائي
     this.root.position.addInPlace(this.velocity.scale(deltaSeconds));
 
     if (this.velocity.lengthSquared() > 0.05) {
