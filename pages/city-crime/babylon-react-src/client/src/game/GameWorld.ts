@@ -57,11 +57,6 @@ export class GameWorld {
         window.dispatchEvent(new CustomEvent("objectives-update", { detail: objectives }));
       }
     );
-
-    const savedStage = this.stageManager.loadProgress();
-    if (savedStage && savedStage !== StageId.VILLA_WELL) {
-      this.stageManager.startStage(savedStage);
-    }
   }
 
   async initialize() {
@@ -70,9 +65,9 @@ export class GameWorld {
     this.site.shadowGenerator.addShadowCaster(this.player.collider);
     this.updateHud({ loading: { label: "المشهد جاهز", progress: 100, active: false } });
 
-    const savedStage = this.stageManager.loadProgress();
-    if (savedStage && savedStage !== StageId.VILLA_WELL) {
-      await this.stageManager.startStage(savedStage);
+    // بدء المرحلة الأولى دائمًا (تم تعطيل الحفظ المؤقت)
+    if (this.stageManager.getCurrentStage() !== StageId.VILLA_WELL) {
+      await this.stageManager.startStage(StageId.VILLA_WELL);
     }
 
     this.scene.registerBeforeRender(() => {
