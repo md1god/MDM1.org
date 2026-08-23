@@ -6,16 +6,14 @@ import { InputManager } from "./InputManager";
 import { Player } from "./Player";
 import { createWellSite, type WellSiteHandle } from "./WellSite";
 import type { HudUpdate, QualityTier } from "./types";
-import { StageManager, StageId } from "./StageManager"; // استيراد StageManager و StageId
+import { StageManager, StageId } from "./StageManager";
 
-// منظور اللاعب: كاميرا شخص ثالث خفيفة تتبع الكبسولة، مناسبة للبلوك-آوت والتصحيح السريع.
 const CAMERA_TUNING = {
   followDistance: 6.5,
   followHeight: 3.2,
   smoothing: 8,
 } as const;
 
-// مراحل المهمة: يوسف يمشي للبئر، ينزل، يدفع الحجر، يوصل للباب، يضغط E فيفتح الباب بصوته.
 type QuestStage = "approach-well" | "descend" | "push-stone" | "reach-door" | "door-open";
 
 export class GameWorld {
@@ -27,7 +25,7 @@ export class GameWorld {
   private demoTime = 0;
   private stage: QuestStage = "approach-well";
   private doorOpenProgress = 0;
-  private stageManager: StageManager; // مدير المراحل الجديد
+  private stageManager: StageManager;
 
   constructor(
     private readonly scene: Scene,
@@ -45,31 +43,24 @@ export class GameWorld {
     this.camera.inertia = 0;
     scene.activeCamera = this.camera;
 
-    // يبدأ يوسف في الحديقة، قريب من الفيلا، وبعيد شوية عن فوهة البئر (6, 4 في WellSite).
     this.player = new Player(scene, new Vector3(2, 0.02, -4), physicsEnabled);
+    this.input.setPlayer(this.player);
 
-    // إنشاء مدير المراحل وربطه باللاعب
     this.stageManager = new StageManager(this.scene, this.player);
     this.player.setStageManager(this.stageManager);
 
-    // ربط الـ HUD (إرسال أحداث لـ React أو أي واجهة خارجية)
     this.stageManager.setCallbacks(
       (stageId) => {
         console.log("Stage completed:", stageId);
-        // يمكن إرسال event لـ React هنا
       },
       (objectives) => {
-        // تحديث HUD عبر حدث مخصص
         window.dispatchEvent(new CustomEvent("objectives-update", { detail: objectives }));
       }
     );
 
-    // تحميل التقدم المحفوظ أو البدء من المرحلة الأولى
     const savedStage = this.stageManager.loadProgress();
-    if (savedStage) {
+    if (savedStage && savedStage !== StageId.VILLA_WELL) {
       this.stageManager.startStage(savedStage);
-    } else {
-      this.stageManager.startStage(StageId.VILLA_WELL);
     }
   }
 
@@ -79,9 +70,14 @@ export class GameWorld {
     this.site.shadowGenerator.addShadowCaster(this.player.collider);
     this.updateHud({ loading: { label: "المشهد جاهز", progress: 100, active: false } });
 
-    // تسجيل فحص التفاعلات في حلقة الرسم (قبل كل إطار)
+    const savedStage = this.stageManager.loadProgress();
+    if (savedStage && savedStage !== StageId.VILLA_WELL) {
+      await this.stageManager.startStage(savedStage);
+    }
+
     this.scene.registerBeforeRender(() => {
       this.player.checkInteractions();
+      this.stageManager.checkInteractions(this.player.position);
     });
   }
 
@@ -108,9 +104,15 @@ export class GameWorld {
   private updateCamera(input: ReturnType<InputManager["consume"]>, deltaSeconds: number) {
     const focus = this.player.position;
     const distance = CAMERA_TUNING.followDistance;
-    const cameraOffset = new Vector3(-Math.sin(input.yaw) * distance, CAMERA_TUNING.followHeight, -Math.cos(input.yaw) * distance);
+    const cameraOffset = new Vector3(
+      -Math.sin(input.yaw) * distance,
+      CAMERA_TUNING.followHeight,
+      -Math.cos(input.yaw) * distance
+    );
     const desiredPosition = focus.add(cameraOffset);
-    this.camera.position.copyFrom(Vector3.Lerp(this.camera.position, desiredPosition, Math.min(1, deltaSeconds * CAMERA_TUNING.smoothing)));
+    this.camera.position.copyFrom(
+      Vector3.Lerp(this.camera.position, desiredPosition, Math.min(1, deltaSeconds * CAMERA_TUNING.smoothing))
+    );
     this.camera.setTarget(focus.add(new Vector3(0, 1.1, 0)));
   }
 
@@ -120,23 +122,18 @@ export class GameWorld {
 
     switch (this.stage) {
       case "approach-well": {
-        // البئر عند (6, 0, 4). لو اللاعب قرّب من فوهة البئر، ينتقل تلقائياً تحت الأرض (محاكاة نزول).
         const distanceToWell = Vector3.Distance(new Vector3(p.x, 0, p.z), new Vector3(6, 0, 4));
         if (distanceToWell < 1.6) {
           this.stage = "descend";
-          // ننقل يوسف مباشرة لقاع البئر (بداية السرداب) — نزول بسيط بدون فيزياء سقوط معقدة.
           this.player.root.position.set(6, this.site.wellBottomY + 0.05, 6);
         }
         break;
       }
       case "descend": {
-        // بمجرد الوصول لأرضية السرداب، ننتقل لمرحلة اللغز.
         this.stage = "push-stone";
         break;
       }
       case "push-stone": {
-        // الحجر عند z=8 تقريباً. اللاعب يدفعه بالاحتكاك الفيزيائي الطبيعي بمجرد ملامسته.
-        // نعتبر اللغز محلولاً بمجرد تخطي اللاعب لموضع الحجر (z > 9).
         if (p.z > 9.2) this.stage = "reach-door";
         break;
       }
@@ -148,7 +145,6 @@ export class GameWorld {
         break;
       }
       case "door-open": {
-        // الباب يتوهج وينزلق لأسفل ببطء (يمثل الانفتاح) خلال ثانيتين تقريباً.
         this.doorOpenProgress = Math.min(1, this.doorOpenProgress + 0.02);
         this.site.tunnelDoor.position.y = this.site.wellBottomY + 1.9 - this.doorOpenProgress * 3.8;
         break;
