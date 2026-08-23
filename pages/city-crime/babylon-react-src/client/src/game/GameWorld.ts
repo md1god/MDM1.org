@@ -64,6 +64,11 @@ export class GameWorld {
     }
   }
 
+  // ✅ getter لإتاحة الوصول إلى InputManager من GameCanvas
+  get inputManager(): InputManager {
+    return this.input;
+  }
+
   async initialize() {
     this.updateHud({ loading: { label: "بناء الحديقة والبئر", progress: 40, active: true } });
     this.site = createWellSite(this.scene, this.physicsEnabled);
