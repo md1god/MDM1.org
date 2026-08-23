@@ -30,7 +30,9 @@ export async function createGameScene(
   let physicsEnabled = false;
   try {
     if (demo) throw new Error("Demo mode uses deterministic movement fallback.");
-    const havokUrl = new URL(assets.havokWasm, window.location.origin).toString();
+    // ✅ تم تغيير window.location.origin إلى window.location.href
+    // حتى يتم حل المسار النسبي ./assets/... بشكل صحيح على GitHub Pages
+    const havokUrl = new URL(assets.havokWasm, window.location.href).toString();
     console.info("Initializing Havok physics from", havokUrl);
     const havokInstance = await Promise.race([
       HavokPhysics({ locateFile: (fileName: string) => (fileName.endsWith(".wasm") ? havokUrl : fileName) }),
@@ -52,7 +54,7 @@ export async function createGameScene(
 
   return {
     scene,
-    inputManager: world.input, // ✅ وصول مباشر لأن input عام
+    inputManager: world.input,
     dispose: () => {
       world.dispose();
       scene.dispose();
