@@ -8,5 +8,5 @@ const publishAsset = (fileName: string, developmentPath: string) => (
 // Environment.ts وVehicle.ts. عند إضافة خامات حقيقية لاحقاً (فيلا، سرداب)
 // تُضاف هنا بنفس النمط.
 export const assets = {
-  havokWasm: publishAsset("HavokPhysics.wasm", "/manus-storage/HavokPhysics_51481a86.wasm"),
+  havokWasm: "./assets/HavokPhysics-BqNY-4N9.wasm",
 } as const;
