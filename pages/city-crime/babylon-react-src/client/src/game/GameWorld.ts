@@ -17,7 +17,7 @@ const CAMERA_TUNING = {
 type QuestStage = "approach-well" | "descend" | "push-stone" | "reach-door" | "door-open";
 
 export class GameWorld {
-  private readonly input: InputManager;
+  readonly input: InputManager;
   private readonly camera: UniversalCamera;
   private readonly player: Player;
   private site: WellSiteHandle | null = null;
@@ -62,10 +62,6 @@ export class GameWorld {
     if (savedStage && savedStage !== StageId.VILLA_WELL) {
       this.stageManager.startStage(savedStage);
     }
-  }
-
-  get inputManager(): InputManager {
-    return this.input;
   }
 
   async initialize() {

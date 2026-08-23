@@ -7,8 +7,9 @@ interface TitleScreenProps {
 export default function TitleScreen({ onStart }: TitleScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [showButtons, setShowButtons] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowButtons(true), 2000);
@@ -19,15 +20,27 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = 0.6;
-    const playAudio = async () => {
-      try {
-        await audio.play();
-      } catch (e) {
-        console.log("Autoplay blocked, waiting for user interaction");
+    if (!muted) {
+      audio.play().catch((e) => console.log("Audio play blocked:", e));
+    } else {
+      audio.pause();
+    }
+  }, [muted]);
+
+  // محاولة تشغيل الصوت بعد أول تفاعل
+  useEffect(() => {
+    const tryPlay = () => {
+      if (audioRef.current && muted) {
+        setMuted(false);
       }
     };
-    playAudio();
-  }, [muted]);
+    window.addEventListener("click", tryPlay, { once: true });
+    window.addEventListener("touchstart", tryPlay, { once: true });
+    return () => {
+      window.removeEventListener("click", tryPlay);
+      window.removeEventListener("touchstart", tryPlay);
+    };
+  }, []);
 
   const handleStart = () => {
     videoRef.current?.pause();
@@ -49,24 +62,29 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
         overflow: "hidden",
       }}
     >
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        playsInline
-        muted={false}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          opacity: 0.45,
-        }}
-      >
-        <source src="./assets/intro.mp4" type="video/mp4" />
-      </video>
+      {/* فيديو الخلفية */}
+      {!videoError && (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          onError={() => setVideoError(true)}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: 0.45,
+          }}
+        >
+          <source src="./assets/intro.mp4" type="video/mp4" />
+        </video>
+      )}
 
+      {/* طبقة داكنة فوق الفيديو */}
       <div
         style={{
           position: "absolute",
@@ -75,9 +93,12 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
         }}
       />
 
+      {/* موسيقى الخلفية */}
       <audio ref={audioRef} src="./assets/city-crime-theme.wav" loop preload="auto" />
 
+      {/* المحتوى */}
       <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "2rem" }}>
+        {/* اللوجو */}
         <img
           src="./assets/city-crime-threshold-logo-web.png"
           alt="City Crime"
@@ -111,6 +132,7 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
           رحلة عبر الزمن والظل لاكتشاف سر الإرث الحقيقي
         </p>
 
+        {/* الأزرار */}
         <div
           style={{
             display: "flex",
