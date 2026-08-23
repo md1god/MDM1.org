@@ -1,6 +1,8 @@
+import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { Scene } from "@babylonjs/core/scene";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { PhysicsAggregate } from "@babylonjs/core/Physics/v2/physicsAggregate";
@@ -18,14 +20,20 @@ export class Player {
   private stamina = 100;
 
   constructor(private readonly scene: Scene, initialPosition: Vector3, physicsEnabled: boolean) {
-    this.root = new TransformNode("heroine-root", scene);
+    this.root = new TransformNode("hero-root", scene);
     this.root.position.copyFrom(initialPosition);
 
-    this.collider = MeshBuilder.CreateBox("heroine-physics", { width: 0.64, depth: 0.5, height: 1.72 }, scene);
+    // بلوك-آوت: كبسولة مرئية زرقاء تمثل يوسف. تُستبدل بنموذج GLB لاحقاً بعد ضبط اللعب.
+    this.collider = MeshBuilder.CreateCapsule("hero-capsule", { height: 1.72, radius: 0.32 }, scene);
     this.collider.parent = this.root;
     this.collider.position.y = 0.86;
-    this.collider.isVisible = false;
-    this.aggregate = physicsEnabled ? new PhysicsAggregate(this.collider, PhysicsShapeType.BOX, { mass: 0, friction: 0.7 }, scene) : null;
+    this.collider.isVisible = true;
+    const heroMat = new StandardMaterial("hero-material", scene);
+    heroMat.diffuseColor = Color3.FromHexString("#2C6BE0");
+    heroMat.specularColor = Color3.FromHexString("#0A0A0A");
+    this.collider.material = heroMat;
+
+    this.aggregate = physicsEnabled ? new PhysicsAggregate(this.collider, PhysicsShapeType.CAPSULE, { mass: 0, friction: 0.7 }, scene) : null;
   }
 
   get position() {
@@ -51,7 +59,6 @@ export class Player {
     const nextMotion: MotionState = this.velocity.length() < 0.18 ? "idle" : running ? "run" : "walk";
     if (nextMotion !== this.activeMotion) this.transitionTo(nextMotion);
     this.visualTime += deltaSeconds * (nextMotion === "run" ? 10.5 : nextMotion === "walk" ? 7 : 2);
-    // اللاعب نقطة تحكم منطقية فقط؛ لا توجد شخصية أو أسلحة مرئية في منظور الكاميرا الحالي.
 
     this.stamina = running && nextMotion === "run" ? Math.max(8, this.stamina - deltaSeconds * 7) : Math.min(100, this.stamina + deltaSeconds * 13);
   }
