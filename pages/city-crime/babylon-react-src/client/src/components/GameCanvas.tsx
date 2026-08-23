@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { GameHandle } from "@/game/scene";
 import type { GameEngine } from "@/game/engine";
+import type { InputManager } from "@/game/InputManager";
 import { initialHudState, type HudState } from "@/game/types";
 import { Hud } from "./Hud";
 
@@ -18,6 +19,7 @@ export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startedRef = useRef(false);
   const [hud, setHud] = useState<HudState>(initialHudState);
+  const inputManagerRef = useRef<InputManager | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -54,6 +56,7 @@ export default function GameCanvas() {
           handle.dispose();
           return;
         }
+        inputManagerRef.current = handle.inputManager; // حفظ المرجع
         engine.runRenderLoop(() => handle?.scene.render());
       } catch (error) {
         console.error("Game bootstrap failed.", error);
@@ -74,10 +77,69 @@ export default function GameCanvas() {
     };
   }, []);
 
+  const handleRunTouchStart = () => {
+    inputManagerRef.current?.setTouchRunning(true);
+  };
+  const handleRunTouchEnd = () => {
+    inputManagerRef.current?.setTouchRunning(false);
+  };
+  const handleInteractClick = () => {
+    inputManagerRef.current?.queueTouchInteract();
+  };
+
   return (
     <main className="game-shell" aria-label="لعبة City Crime">
       <canvas ref={canvasRef} className="game-canvas" aria-label="مشهد City Crime ثلاثي الأبعاد" />
       <Hud state={hud} />
+
+      {/* أزرار تحكم للموبايل */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 20,
+          right: 20,
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+          zIndex: 200,
+        }}
+      >
+        <button
+          onTouchStart={handleRunTouchStart}
+          onTouchEnd={handleRunTouchEnd}
+          onMouseDown={handleRunTouchStart}
+          onMouseUp={handleRunTouchEnd}
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: "50%",
+            background: "rgba(244,166,42,0.7)",
+            color: "#0a0e14",
+            fontSize: 14,
+            fontWeight: 700,
+            border: "2px solid rgba(255,255,255,0.3)",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
+          }}
+        >
+          🏃
+        </button>
+        <button
+          onClick={handleInteractClick}
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: "50%",
+            background: "rgba(42,120,200,0.7)",
+            color: "#fff",
+            fontSize: 18,
+            fontWeight: 700,
+            border: "2px solid rgba(255,255,255,0.3)",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
+          }}
+        >
+          E
+        </button>
+      </div>
     </main>
   );
 }
