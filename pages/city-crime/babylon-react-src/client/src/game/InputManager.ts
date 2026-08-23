@@ -16,17 +16,8 @@ export class InputManager {
   private pitch = -0.08;
   private pointerLocked = false;
   private player: Player | null = null;
-
-  // === Touch / Mobile ===
-  private touchStartX = 0;
-  private touchStartY = 0;
-  private touchCurrentX = 0;
-  private touchCurrentY = 0;
-  private touchActive = false;
-  private touchId: number | null = null;
   private isMobile = false;
 
-  // === On-screen buttons ===
   private btnW = false;
   private btnA = false;
   private btnS = false;
@@ -34,20 +25,29 @@ export class InputManager {
   private btnShift = false;
   private btnE = false;
 
+  private touchActive = false;
+  private touchId: number | null = null;
+  private touchStartX = 0;
+  private touchStartY = 0;
+  private touchCurrentX = 0;
+  private touchCurrentY = 0;
+
   private readonly onKeyDown = (event: KeyboardEvent) => {
-    const key = event.key.toLowerCase();
-    if (["w", "a", "s", "d", "shift", "e", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+    const code = event.code;
+    if (
+      ["KeyW", "KeyA", "KeyS", "KeyD", "ShiftLeft", "ShiftRight", "KeyE", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(code)
+    ) {
       event.preventDefault();
     }
-    this.heldKeys.add(key);
-    if (key === "e" && !event.repeat) {
+    this.heldKeys.add(code);
+    if (code === "KeyE" && !event.repeat) {
       this.player?.interact();
       this.interactQueued = true;
     }
   };
 
   private readonly onKeyUp = (event: KeyboardEvent) => {
-    this.heldKeys.delete(event.key.toLowerCase());
+    this.heldKeys.delete(event.code);
   };
 
   private readonly onPointerLockChange = () => {
@@ -57,7 +57,7 @@ export class InputManager {
   private readonly onPointerMove = (event: MouseEvent) => {
     if (!this.pointerLocked) return;
     this.yaw += event.movementX * 0.0022;
-    this.pitch = Math.max(-0.55, Math.min(0.24, this.pitch - event.movementY * 0.0015));
+    this.pitch = Math.max(-0.55, Math.min(0.24, this.pitch + event.movementY * 0.0015));
   };
 
   private readonly onCanvasClick = () => {
@@ -66,11 +66,9 @@ export class InputManager {
     }
   };
 
-  // === Touch handlers for virtual joystick (left side) ===
   private readonly onTouchStart = (event: TouchEvent) => {
     event.preventDefault();
     const touch = event.changedTouches[0];
-    // Left half = movement joystick
     if (touch.clientX < window.innerWidth * 0.5) {
       this.touchActive = true;
       this.touchId = touch.identifier;
@@ -110,8 +108,6 @@ export class InputManager {
     document.addEventListener("pointerlockchange", this.onPointerLockChange);
     document.addEventListener("mousemove", this.onPointerMove);
     canvas.addEventListener("click", this.onCanvasClick);
-
-    // Touch
     canvas.addEventListener("touchstart", this.onTouchStart, { passive: false });
     canvas.addEventListener("touchmove", this.onTouchMove, { passive: false });
     canvas.addEventListener("touchend", this.onTouchEnd, { passive: false });
@@ -122,7 +118,7 @@ export class InputManager {
     this.player = player;
   }
 
-  // === On-screen button API ===
+  // ✅ دالة الأزرار الافتراضية
   setButton(key: "w" | "a" | "s" | "d" | "shift" | "e", pressed: boolean) {
     switch (key) {
       case "w": this.btnW = pressed; break;
@@ -141,32 +137,32 @@ export class InputManager {
   }
 
   consume(): InputSnapshot {
-    // Keyboard input
-    let moveX = Number(this.heldKeys.has("d") || this.heldKeys.has("arrowright")) - Number(this.heldKeys.has("a") || this.heldKeys.has("arrowleft"));
-    let moveZ = Number(this.heldKeys.has("w") || this.heldKeys.has("arrowup")) - Number(this.heldKeys.has("s") || this.heldKeys.has("arrowdown"));
-    let running = this.heldKeys.has("shift");
+    const right = this.heldKeys.has("KeyD") || this.heldKeys.has("ArrowRight") ? 1 : 0;
+    const left = this.heldKeys.has("KeyA") || this.heldKeys.has("ArrowLeft") ? 1 : 0;
+    const up = this.heldKeys.has("KeyW") || this.heldKeys.has("ArrowUp") ? 1 : 0;
+    const down = this.heldKeys.has("KeyS") || this.heldKeys.has("ArrowDown") ? 1 : 0;
 
-    // Merge on-screen buttons
+    let moveX = right - left;
+    let moveZ = up - down;
+    let running = this.heldKeys.has("ShiftLeft") || this.heldKeys.has("ShiftRight");
+
     moveX += Number(this.btnD) - Number(this.btnA);
     moveZ += Number(this.btnW) - Number(this.btnS);
     running = running || this.btnShift;
 
-    // Merge virtual joystick
     if (this.touchActive) {
       const dx = this.touchCurrentX - this.touchStartX;
       const dy = this.touchCurrentY - this.touchStartY;
       const maxDist = 60;
       const dist = Math.sqrt(dx * dx + dy * dy);
       const clampedDist = Math.min(dist, maxDist);
-      const angle = Math.atan2(dx, dy); // dy is forward/backward
-
       if (clampedDist > 10) {
+        const angle = Math.atan2(dx, dy);
         moveX += Math.sin(angle) * (clampedDist / maxDist);
         moveZ += Math.cos(angle) * (clampedDist / maxDist);
       }
     }
 
-    // Clamp to [-1, 1]
     moveX = Math.max(-1, Math.min(1, moveX));
     moveZ = Math.max(-1, Math.min(1, moveZ));
 
