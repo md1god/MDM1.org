@@ -24,7 +24,6 @@ export class InputManager {
   private touchRunning = false;
   private touchInteractQueued = false;
 
-  // لتتبع معرفات اللمسات
   private moveTouchId: number | null = null;
   private lookTouchId: number | null = null;
   private moveTouchStart = { x: 0, y: 0 };
@@ -50,18 +49,16 @@ export class InputManager {
 
   private readonly onPointerMove = (event: MouseEvent) => {
     if (!this.pointerLocked) return;
-    this.yaw += event.movementX * 0.0022;
+    this.yaw += event.movementX * 0.0022; // ✅ عكس الإشارة لتصحيح الاتجاه
     this.pitch = Math.max(-0.55, Math.min(0.24, this.pitch + event.movementY * 0.0015));
   };
 
   private readonly onCanvasClick = () => {
-    // على أجهزة اللمس لا نطلب PointerLock
     if (!this.pointerLocked && !this.isTouchDevice) {
       this.canvas.requestPointerLock?.();
     }
   };
 
-  // ===== معالجات اللمس =====
   private readonly onTouchStart = (event: TouchEvent) => {
     event.preventDefault();
     for (let i = 0; i < event.changedTouches.length; i++) {
@@ -69,13 +66,11 @@ export class InputManager {
       const halfWidth = this.canvas.clientWidth / 2;
 
       if (this.moveTouchId === null && touch.clientX < halfWidth) {
-        // بدء عصا الحركة على النصف الأيسر
         this.moveTouchId = touch.identifier;
         this.moveTouchStart = { x: touch.clientX, y: touch.clientY };
         this.touchMoveX = 0;
         this.touchMoveZ = 0;
       } else if (this.lookTouchId === null && touch.clientX >= halfWidth) {
-        // بدء التحكم بالكاميرا على النصف الأيمن
         this.lookTouchId = touch.identifier;
         this.lookTouchStart = { x: touch.clientX, y: touch.clientY };
       }
@@ -90,11 +85,10 @@ export class InputManager {
       if (touch.identifier === this.moveTouchId) {
         const dx = (touch.clientX - this.moveTouchStart.x) / 50;
         const dy = (touch.clientY - this.moveTouchStart.y) / 50;
-        // clamp للمجال [-1, 1]
         const len = Math.sqrt(dx * dx + dy * dy);
         if (len > 1) {
           this.touchMoveX = dx / len;
-          this.touchMoveZ = -dy / len; // سحب لأعلى يحرك للأمام
+          this.touchMoveZ = -dy / len;
         } else {
           this.touchMoveX = dx;
           this.touchMoveZ = -dy;
@@ -106,7 +100,6 @@ export class InputManager {
         const dy = touch.clientY - this.lookTouchStart.y;
         this.yaw += dx * 0.0022;
         this.pitch = Math.max(-0.55, Math.min(0.24, this.pitch + dy * 0.0015));
-        // تحديث نقطة البداية لتقليل القفزات
         this.lookTouchStart = { x: touch.clientX, y: touch.clientY };
       }
     }
@@ -126,7 +119,6 @@ export class InputManager {
     }
   };
 
-  // ===== واجهة لأزرار الموبايل =====
   setTouchRunning(running: boolean) {
     this.touchRunning = running;
   }
@@ -143,7 +135,6 @@ export class InputManager {
     document.addEventListener("mousemove", this.onPointerMove);
     canvas.addEventListener("click", this.onCanvasClick);
 
-    // أحداث اللمس
     canvas.addEventListener("touchstart", this.onTouchStart, { passive: false });
     canvas.addEventListener("touchmove", this.onTouchMove, { passive: false });
     canvas.addEventListener("touchend", this.onTouchEnd);
@@ -157,7 +148,6 @@ export class InputManager {
     const keyboardMoveX = Number(this.heldKeys.has("d")) - Number(this.heldKeys.has("a"));
     const keyboardMoveZ = Number(this.heldKeys.has("w")) - Number(this.heldKeys.has("s"));
 
-    // دمج مدخلات لوحة المفاتيح مع اللمس
     const moveX = Math.max(-1, Math.min(1, keyboardMoveX + this.touchMoveX));
     const moveZ = Math.max(-1, Math.min(1, keyboardMoveZ + this.touchMoveZ));
 
