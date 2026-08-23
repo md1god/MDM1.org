@@ -7,11 +7,10 @@ interface TitleScreenProps {
 export default function TitleScreen({ onStart }: TitleScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [muted, setMuted] = useState(false); // تغيير الافتراضي إلى false
+  const [muted, setMuted] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
 
   useEffect(() => {
-    // اعرض الأزرار بعد 2 ثانية
     const timer = setTimeout(() => setShowButtons(true), 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -31,7 +30,6 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
   }, [muted]);
 
   const handleStart = () => {
-    // وقف الفيديو والصوت
     videoRef.current?.pause();
     audioRef.current?.pause();
     onStart();
@@ -51,13 +49,12 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
         overflow: "hidden",
       }}
     >
-      {/* فيديو الخلفية */}
       <video
         ref={videoRef}
         autoPlay
         loop
         playsInline
-        muted={false} // السماح بتشغيل الصوت إذا كان الفيديو يحتوي على صوت
+        muted={false}
         style={{
           position: "absolute",
           inset: 0,
@@ -70,7 +67,6 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
         <source src="./assets/intro.mp4" type="video/mp4" />
       </video>
 
-      {/* طبقة داكنة فوق الفيديو */}
       <div
         style={{
           position: "absolute",
@@ -79,12 +75,9 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
         }}
       />
 
-      {/* موسيقى الخلفية */}
       <audio ref={audioRef} src="./assets/city-crime-theme.wav" loop preload="auto" />
 
-      {/* المحتوى */}
       <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "2rem" }}>
-        {/* اللوجو */}
         <img
           src="./assets/city-crime-threshold-logo-web.png"
           alt="City Crime"
@@ -118,7 +111,6 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
           رحلة عبر الزمن والظل لاكتشاف سر الإرث الحقيقي
         </p>
 
-        {/* الأزرار */}
         <div
           style={{
             display: "flex",
