@@ -1,3 +1,5 @@
+import type { Player } from "./Player";
+
 export type InputSnapshot = {
   moveX: number;
   moveZ: number;
@@ -13,12 +15,18 @@ export class InputManager {
   private yaw = 0;
   private pitch = -0.08;
   private pointerLocked = false;
+  private player: Player | null = null;
 
   private readonly onKeyDown = (event: KeyboardEvent) => {
     const key = event.key.toLowerCase();
     if (["w", "a", "s", "d", "shift", "e"].includes(key)) event.preventDefault();
     this.heldKeys.add(key);
-    if (key === "e" && !event.repeat) this.interactQueued = true;
+    if (key === "e" && !event.repeat) {
+      // استدعاء interact مباشرة عند ضغطة E (بدون تكرار)
+      this.player?.interact();
+      // الاحتفاظ بالعلم للتوافق مع الكود القديم (يمكن إزالته لاحقاً بعد الدمج الكامل)
+      this.interactQueued = true;
+    }
   };
 
   private readonly onKeyUp = (event: KeyboardEvent) => {
@@ -47,6 +55,11 @@ export class InputManager {
     canvas.addEventListener("click", this.onCanvasClick);
   }
 
+  // ربط اللاعب (يُستدعى بعد إنشاء Player في GameWorld)
+  setPlayer(player: Player) {
+    this.player = player;
+  }
+
   consume(): InputSnapshot {
     const moveX = Number(this.heldKeys.has("d")) - Number(this.heldKeys.has("a"));
     const moveZ = Number(this.heldKeys.has("w")) - Number(this.heldKeys.has("s"));
@@ -69,5 +82,6 @@ export class InputManager {
     document.removeEventListener("mousemove", this.onPointerMove);
     this.canvas.removeEventListener("click", this.onCanvasClick);
     if (document.pointerLockElement === this.canvas) document.exitPointerLock?.();
+    this.player = null;
   }
 }
