@@ -441,11 +441,11 @@ export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylon
     };
   }, [selectedCharacter]);
 
-  const press = (key: string) => (e: React.PointerEvent) => {
+  const press = (key: string) => (e: React.PointerEvent | React.MouseEvent) => {
     e.preventDefault();
     keys.current[key] = true;
   };
-  const release = (key: string) => (e: React.PointerEvent) => {
+  const release = (key: string) => (e: React.PointerEvent | React.MouseEvent) => {
     e.preventDefault();
     keys.current[key] = false;
   };
@@ -493,11 +493,47 @@ export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylon
 
       <div style={{ position: "absolute", bottom: 20, left: 20, display: "grid", gridTemplateColumns: "56px 56px 56px", gridTemplateRows: "56px 56px", gap: 6 }}>
         <div />
-        <button onPointerDown={press("w")} onPointerUp={release("w")} onPointerLeave={release("w")} style={btnStyle}>▲</button>
+        <button
+          onPointerDown={press("w")}
+          onPointerUp={release("w")}
+          onPointerLeave={release("w")}
+          onMouseDown={press("w")}
+          onMouseUp={release("w")}
+          style={btnStyle}
+        >
+          ▲
+        </button>
         <div />
-        <button onPointerDown={press("a")} onPointerUp={release("a")} onPointerLeave={release("a")} style={btnStyle}>◀</button>
-        <button onPointerDown={press("s")} onPointerUp={release("s")} onPointerLeave={release("s")} style={btnStyle}>▼</button>
-        <button onPointerDown={press("d")} onPointerUp={release("d")} onPointerLeave={release("d")} style={btnStyle}>▶</button>
+        <button
+          onPointerDown={press("a")}
+          onPointerUp={release("a")}
+          onPointerLeave={release("a")}
+          onMouseDown={press("a")}
+          onMouseUp={release("a")}
+          style={btnStyle}
+        >
+          ◀
+        </button>
+        <button
+          onPointerDown={press("s")}
+          onPointerUp={release("s")}
+          onPointerLeave={release("s")}
+          onMouseDown={press("s")}
+          onMouseUp={release("s")}
+          style={btnStyle}
+        >
+          ▼
+        </button>
+        <button
+          onPointerDown={press("d")}
+          onPointerUp={release("d")}
+          onPointerLeave={release("d")}
+          onMouseDown={press("d")}
+          onMouseUp={release("d")}
+          style={btnStyle}
+        >
+          ▶
+        </button>
       </div>
       <div style={{ position: "absolute", bottom: 20, right: 20, display: "flex", gap: 10 }}>
         <button onClick={() => gRef.current.startNextGtaMission?.()} style={{ ...btnStyle, width: 64, height: 64, background: "rgba(255,60,80,0.35)" }}>F</button>
