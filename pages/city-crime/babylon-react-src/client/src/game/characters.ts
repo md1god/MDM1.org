@@ -5,7 +5,9 @@ export type CharacterInfo = {
 };
 
 export const CHARACTERS: CharacterInfo[] = [
-  { id: "youssef", name:"ديدو", color: "#4caf50" },
+  { id: "adam", name: "آدم", color: "#2f5db3" },
+  { id: "rose", name: "روز", color: "#e91e63" },
+  { id: "youssef", name: "يوسف", color: "#4caf50" },
   { id: "karim", name: "كريم", color: "#ff9800" },
   { id: "sayf", name: "سيف", color: "#9c27b0" },
   { id: "omar", name: "عمر", color: "#2196f3" },
