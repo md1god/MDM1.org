@@ -5,7 +5,7 @@ interface Props {
 }
 
 export default function CharacterSelectScreen({ onSelect }: Props) {
-  const handleClick = (char: CharacterInfo) => {
+  const handleSelect = (char: CharacterInfo) => {
     localStorage.setItem("selectedCharacter", JSON.stringify(char));
     onSelect(char);
     window.location.hash = "#/friends";
@@ -30,11 +30,19 @@ export default function CharacterSelectScreen({ onSelect }: Props) {
       <h1 style={{ color: "#f4a62a", fontFamily: '"IBM Plex Sans Arabic", sans-serif', fontSize: "1.8rem", margin: 0 }}>
         اختر شخصيتك
       </h1>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 12, width: "100%", maxWidth: 600 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
+          gap: 12,
+          width: "100%",
+          maxWidth: 600,
+        }}
+      >
         {CHARACTERS.map((char) => (
           <button
             key={char.id}
-            onClick={() => handleClick(char)}
+            onClick={() => handleSelect(char)}
             style={{
               background: "#1a1f26",
               border: `2px solid ${char.color}`,
