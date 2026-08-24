@@ -16,17 +16,26 @@ const FRIEND_MISSIONS = [
 ];
 
 interface CityCrimeBabylonProps {
-  selectedCharacter: CharacterInfo;
+  selectedCharacter?: CharacterInfo;
 }
 
 export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylonProps) {
+  // قراءة الشخصية من localStorage إذا لم تُمرر
+  const resolvedCharacter = selectedCharacter || (() => {
+    try {
+      const stored = localStorage.getItem("selectedCharacter");
+      if (stored) return JSON.parse(stored) as CharacterInfo;
+    } catch {}
+    return CHARACTERS[0];
+  })();
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gRef = useRef<any>({});
   const keys = useRef<Record<string, boolean>>({});
   const [hud, setHud] = useState({
     money: 1000,
     wanted: 0,
-    storyText: `${selectedCharacter.name} يبدأ يومه في مدينة الجريمة.`,
+    storyText: `${resolvedCharacter.name} يبدأ يومه في مدينة الجريمة.`,
     missionText: "اضغط F لبدء أول مهمة من مهام الأصدقاء",
     prompt: "",
     dialogue: null as string | null,
@@ -140,13 +149,13 @@ export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylon
     box("power", 22, 10, 22, -86, 5, -86, "#2a3846");
     box("meetupPad", 20, 0.1, 20, MEETUP_POINT[0], 0.06, MEETUP_POINT[1], "#555b45");
 
-    const player = makeCharacter(selectedCharacter.color);
+    const player = makeCharacter(resolvedCharacter.color);
     player.position.set(14, 0, 22);
 
     const car = makeCar("#1146b8");
     car.position.set(0, 0, 18);
 
-    const friends = CHARACTERS.filter((c) => c.id !== selectedCharacter.id).map((f, i) => {
+    const friends = CHARACTERS.filter((c) => c.id !== resolvedCharacter.id).map((f, i) => {
       const angle = (i / (CHARACTERS.length - 1)) * Math.PI * 2;
       const mesh = makeCharacter(f.color);
       mesh.position.set(
@@ -422,7 +431,7 @@ export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylon
       setHud({
         money: Math.round(s.money),
         wanted: s.wanted,
-        storyText: `${selectedCharacter.name} يبدأ يومه في مدينة الجريمة.`,
+        storyText: `${resolvedCharacter.name} يبدأ يومه في مدينة الجريمة.`,
         missionText: s.missionText,
         prompt: s.prompt,
         dialogue: s.dialogue,
@@ -439,7 +448,7 @@ export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylon
       window.removeEventListener("resize", onResize);
       engine.dispose();
     };
-  }, [selectedCharacter]);
+  }, [resolvedCharacter]);
 
   const press = (key: string) => (e: React.PointerEvent | React.MouseEvent) => {
     e.preventDefault();
@@ -455,7 +464,7 @@ export default function CityCrimeBabylon({ selectedCharacter }: CityCrimeBabylon
       <canvas ref={canvasRef} style={{ width: "100%", height: "100%", touchAction: "none", display: "block" }} />
 
       <div dir="rtl" style={{ position: "absolute", top: 12, right: 12, left: 12, maxWidth: 420, background: "rgba(10,12,16,0.72)", color: "#fff", padding: "12px 16px", borderRadius: 10, fontFamily: "system-ui, sans-serif", pointerEvents: "none" }}>
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{selectedCharacter.name} — مدينة الجريمة</div>
+        <div style={{ fontWeight: 700, marginBottom: 6 }}>{resolvedCharacter.name} — مدينة الجريمة</div>
         <div style={{ fontSize: 13, opacity: 0.85, whiteSpace: "pre-line" }}>{hud.storyText}</div>
         <div style={{ fontSize: 13, marginTop: 6, whiteSpace: "pre-line" }}>{hud.missionText}</div>
       </div>
