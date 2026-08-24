@@ -12,7 +12,7 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
   const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowButtons(true), 1200);
+    const timer = setTimeout(() => setShowButtons(true), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -32,8 +32,7 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#0a0e14", zIndex: 50, overflow: "hidden" }}>
-      {/* فيديو الخلفية */}
-      {!videoError ? (
+      {!videoError && (
         <video
           ref={videoRef}
           autoPlay
@@ -47,36 +46,33 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: 1
+            opacity: 1,
           }}
         >
           <source src="./assets/intro.mp4" type="video/mp4" />
         </video>
-      ) : (
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #0a0e14, #1a1f26)" }} />
       )}
 
-      {/* طبقة داكنة خفيفة */}
       <div style={{ position: "absolute", inset: 0, background: "rgba(5,10,14,0.25)" }} />
 
-      {/* موسيقى الخلفية */}
       <audio ref={audioRef} src="./assets/city-crime-theme.wav" loop preload="auto" />
 
-      {/* شريط سفلي مع الأزرار */}
-      <div style={{
-        position: "absolute",
-        bottom: 24,
-        left: 0,
-        right: 0,
-        display: "flex",
-        justifyContent: "center",
-        gap: 12,
-        padding: "0 16px",
-        flexWrap: "wrap",
-        opacity: showButtons ? 1 : 0,
-        transform: showButtons ? "translateY(0)" : "translateY(20px)",
-        transition: "all 0.6s ease",
-      }}>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 24,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+          gap: 12,
+          padding: "0 16px",
+          flexWrap: "wrap",
+          opacity: showButtons ? 1 : 0,
+          transform: showButtons ? "translateY(0)" : "translateY(20px)",
+          transition: "all 0.6s ease",
+        }}
+      >
         <button
           onClick={handleStart}
           style={{
@@ -89,7 +85,7 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
             borderRadius: 6,
             cursor: "pointer",
             boxShadow: "0 4px 20px rgba(244,166,42,0.35)",
-            fontFamily: '"IBM Plex Sans Arabic", sans-serif'
+            fontFamily: '"IBM Plex Sans Arabic", sans-serif',
           }}
         >
           ▶ ابدأ اللعبة
@@ -105,7 +101,7 @@ export default function TitleScreen({ onStart }: TitleScreenProps) {
             border: "1px solid rgba(255,255,255,0.15)",
             borderRadius: 20,
             cursor: "pointer",
-            fontFamily: '"IBM Plex Sans Arabic", sans-serif'
+            fontFamily: '"IBM Plex Sans Arabic", sans-serif',
           }}
         >
           {muted ? "🔇 تشغيل الموسيقى" : "🔊 كتم الموسيقى"}
