@@ -7,14 +7,12 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import CityCrimeBabylon from "./components/CityCrimeBabylon";
-import GameCanvas from "./components/GameCanvas";
 
 function Router() {
   return (
     <WouterRouter hook={useHashLocation}>
       <Switch>
         <Route path={"/"} component={Home} />
-        <Route path={"/original"} component={GameCanvas} />
         <Route path={"/friends"} component={CityCrimeBabylon} />
         <Route path={"/404"} component={NotFound} />
         <Route component={NotFound} />
@@ -23,7 +21,7 @@ function Router() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
@@ -35,5 +33,3 @@ function App() {
     </ErrorBoundary>
   );
 }
-
-export default App;
