@@ -5,6 +5,12 @@ interface Props {
 }
 
 export default function CharacterSelectScreen({ onSelect }: Props) {
+  const handleClick = (char: CharacterInfo) => {
+    localStorage.setItem("selectedCharacter", JSON.stringify(char));
+    onSelect(char);
+    window.location.hash = "#/friends";
+  };
+
   return (
     <div
       style={{
@@ -21,29 +27,14 @@ export default function CharacterSelectScreen({ onSelect }: Props) {
         overflowY: "auto",
       }}
     >
-      <h1
-        style={{
-          color: "#f4a62a",
-          fontFamily: '"IBM Plex Sans Arabic", sans-serif',
-          fontSize: "1.8rem",
-          margin: 0,
-        }}
-      >
+      <h1 style={{ color: "#f4a62a", fontFamily: '"IBM Plex Sans Arabic", sans-serif', fontSize: "1.8rem", margin: 0 }}>
         اختر شخصيتك
       </h1>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
-          gap: 12,
-          width: "100%",
-          maxWidth: 600,
-        }}
-      >
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))", gap: 12, width: "100%", maxWidth: 600 }}>
         {CHARACTERS.map((char) => (
           <button
             key={char.id}
-            onClick={() => onSelect(char)}
+            onClick={() => handleClick(char)}
             style={{
               background: "#1a1f26",
               border: `2px solid ${char.color}`,
@@ -67,15 +58,7 @@ export default function CharacterSelectScreen({ onSelect }: Props) {
               e.currentTarget.style.boxShadow = "none";
             }}
           >
-            <span
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: char.color,
-                display: "block",
-              }}
-            />
+            <span style={{ width: 36, height: 36, borderRadius: "50%", background: char.color, display: "block" }} />
             <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>{char.name}</span>
           </button>
         ))}
