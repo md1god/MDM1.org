@@ -55,14 +55,27 @@
   .icon-btn:hover { color: var(--text); border-color: var(--accent); }
   .icon-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(79,140,255,0.1); }
 
+  /* ===== Marquee replaced with CSS keyframes (marquee tag is obsolete) ===== */
   .marquee-bar {
+    position: relative;
     background: linear-gradient(90deg, rgba(79,140,255,0.15), rgba(79,140,255,0.05));
     border-bottom: 1px solid var(--border);
     padding: 6px 0; font-size: 13px; color: var(--accent);
-    white-space: nowrap; overflow: hidden;
+    overflow: hidden; white-space: nowrap;
   }
-  .marquee-bar marquee { font-weight: 600; }
-  .marquee-bar a { color: var(--accent); text-decoration: underline; font-weight: 700; }
+  .marquee-track {
+    display: inline-block;
+    padding-left: 100%;
+    direction: ltr;
+    animation: marquee-scroll 18s linear infinite;
+  }
+  .marquee-bar:hover .marquee-track { animation-play-state: paused; }
+  .marquee-track span { font-weight: 600; }
+  .marquee-track a { color: var(--accent); text-decoration: underline; font-weight: 700; }
+  @keyframes marquee-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
 
   #settingsPanel {
     display: none; padding: 16px 20px; background: var(--panel);
@@ -103,6 +116,11 @@
   }
   #saveSettings:hover { opacity: 0.9; }
   .hint { font-size: 11px; color: var(--muted); }
+  .security-warning {
+    font-size: 11.5px; color: var(--error); background: rgba(255,92,92,0.08);
+    border: 1px solid rgba(255,92,92,0.35); border-radius: 6px; padding: 8px 10px;
+    line-height: 1.6;
+  }
 
   #chatWindow {
     flex: 1; overflow-y: auto; padding: 20px;
@@ -165,14 +183,21 @@
 </header>
 
 <div class="marquee-bar">
-  <marquee scrollamount="5">
-    اضغط هنا واحصل على مفتاح مجاني لتشغيل الشات ⚡
+  <div class="marquee-track">
+    <span>اضغط هنا واحصل على مفتاح مجاني لتشغيل الشات ⚡</span>
     <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاحك الآن ↗</a>
-  </marquee>
+  </div>
 </div>
 
 <div id="settingsPanel">
   <div class="section-label">الذكاء الاصطناعي (Groq)</div>
+
+  <div class="security-warning">
+    ⚠ المفتاح بيتخزن محليًا في متصفحك (localStorage) بس، ومش بيتبعت لأي سيرفر تاني.
+    لكن لو نشرت الصفحة دي على النت للعامة، أي زائر يقدر يشوف المفتاح من أدوات المطور (Inspect / DevTools).
+    استخدمه بأمان للاستخدام الشخصي، ولو هتعرض الشات لناس تانية استخدم Backend يخفي المفتاح عنهم.
+  </div>
+
   <div class="row">
     <div class="field">
       <label>
@@ -226,7 +251,14 @@
       <input type="number" id="maxTokensInput" min="256" max="32768" step="256">
     </div>
   </div>
+  <div class="row">
+    <div class="field">
+      <label>أقصى عدد رسائل يتفتكرها الشات (سياق المحادثة)</label>
+      <input type="number" id="maxHistoryInput" min="4" max="100" step="2">
+    </div>
+  </div>
   <div class="hint" id="reasoningHint">الخيارين دول بيشتغلوا بس مع النماذج اللي بتفكر (GPT-OSS 120B / 20B / Safeguard 20B، Qwen3.6 27B). لو النموذج بيفكر وسايب max_tokens قليل، ممكن التفكير ياكل الحد كله والرد يتقطع.</div>
+  <div class="hint">لو المحادثة طالت أوي، بنبعت للـ API آخر رسائل بس (حسب الرقم اللي فوق) عشان منتخطاش حد الـ tokens. الرسائل القديمة بتفضل ظاهرة في الشات لكن مش بتتبعت تاني.</div>
 
   <button id="saveSettings">حفظ الإعدادات</button>
 </div>
@@ -251,6 +283,7 @@
   const reasoningFormatSelect = document.getElementById('reasoningFormatSelect');
   const reasoningEffortSelect = document.getElementById('reasoningEffortSelect');
   const maxTokensInput = document.getElementById('maxTokensInput');
+  const maxHistoryInput = document.getElementById('maxHistoryInput');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const groqKeyLen = document.getElementById('groqKeyLen');
@@ -302,7 +335,15 @@
   let reasoningFormat = localStorage.getItem('md1_reasoning_format') || '';
   let reasoningEffort = localStorage.getItem('md1_reasoning_effort') || '';
   let maxTokens = parseInt(localStorage.getItem('md1_max_tokens') || '4096', 10);
+  // ===== حد أقصى لعدد الرسائل اللي بتتبعت كسياق للـ API (يمنع تخطي حد الـ tokens في المحادثات الطويلة) =====
+  let maxHistoryMessages = parseInt(localStorage.getItem('md1_max_history') || '20', 10);
   let history = [];
+
+  function trimHistory() {
+    if (history.length > maxHistoryMessages) {
+      history = history.slice(history.length - maxHistoryMessages);
+    }
+  }
 
   function updateStatus() {
     statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — افتح الإعدادات وحط الـ API key';
@@ -405,6 +446,7 @@
   modelSelect.value = model;
   reasoningFormatSelect.value = reasoningFormat;
   maxTokensInput.value = maxTokens;
+  maxHistoryInput.value = maxHistoryMessages;
   updateStatus();
   updateKeyLen(apiKeyInput, groqKeyLen, 'gsk_');
   updateReasoningAvailability();
@@ -417,11 +459,14 @@
     reasoningFormat = reasoningFormatSelect.value;
     reasoningEffort = reasoningEffortSelect.value;
     maxTokens = parseInt(maxTokensInput.value, 10) || 4096;
+    maxHistoryMessages = parseInt(maxHistoryInput.value, 10) || 20;
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_groq_model', model);
     localStorage.setItem('md1_reasoning_format', reasoningFormat);
     localStorage.setItem('md1_reasoning_effort', reasoningEffort);
     localStorage.setItem('md1_max_tokens', String(maxTokens));
+    localStorage.setItem('md1_max_history', String(maxHistoryMessages));
+    trimHistory();
     updateStatus();
     updateReasoningAvailability();
     settingsPanel.classList.remove('open');
@@ -441,6 +486,35 @@
     return { wrap, div };
   }
 
+  // ===== رسائل خطأ أوضح بدل طباعة JSON الخام =====
+  function parseApiError(status, rawText) {
+    let msg = 'خطأ (' + status + ')';
+    let rawMsg = '';
+    try {
+      const parsed = JSON.parse(rawText);
+      rawMsg = parsed.error?.message || parsed.message || '';
+    } catch (e) {
+      rawMsg = rawText;
+    }
+
+    if (status === 401 || /invalid api key|incorrect api key/i.test(rawMsg)) {
+      return '🔑 المفتاح غلط أو منتهي — تأكد إنك ناسخه صح كامل من console.groq.com';
+    }
+    if (status === 404 || /model.*(not found|does not exist)/i.test(rawMsg)) {
+      return '🚫 النموذج ده مش متاح دلوقتي — جرب تختار نموذج تاني من الإعدادات';
+    }
+    if (status === 429 || /rate limit/i.test(rawMsg)) {
+      return '⏳ تعديت الحد المسموح من الطلبات (Rate Limit) — استنى شوية وجرب تاني';
+    }
+    if (status === 413 || /context length|too many tokens|maximum context/i.test(rawMsg)) {
+      return '📏 المحادثة طويلة أوي على النموذج ده — قلّل "أقصى عدد رسائل يتفتكرها الشات" من الإعدادات';
+    }
+    if (rawMsg) {
+      return '⚠ ' + rawMsg;
+    }
+    return msg + (rawText ? ': ' + rawText : '');
+  }
+
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
@@ -451,6 +525,7 @@
 
     addMessage(text, 'user');
     history.push({ role: 'user', content: text });
+    trimHistory();
     userInput.value = '';
     userInput.style.height = 'auto';
     sendBtn.disabled = true;
@@ -484,7 +559,7 @@
 
       if (!response.ok) {
         const errText = await response.text();
-        addMessage('خطأ (' + response.status + '): ' + errText, 'error');
+        addMessage(parseApiError(response.status, errText), 'error');
         sendBtn.disabled = false;
         return;
       }
@@ -503,6 +578,7 @@
         addMessage('⚠ الرد اتقطع لإنه وصل لحد max_tokens — زوّده من الإعدادات لو محتاج ردود أطول.', 'error');
       }
       history.push({ role: 'assistant', content: reply });
+      trimHistory();
 
     } catch (err) {
       typing.wrap.remove();
