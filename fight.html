@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لعبة القتال 3D - Babylon.js & React</title>
-  
-  <!-- React & ReactDOM -->
+  <title>3D Fighting Game</title>
+
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <!-- Babel compiler for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Babylon.js Core & Loaders -->
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-  <!-- Tailwind CSS for UI -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -63,13 +59,12 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // === ثوابت اللعبة والتوازن (Game Constants) ===
     const MAX_HEALTH = 100;
     const MAX_ENERGY = 100;
     const PUNCH_DAMAGE = 8;
     const KICK_DAMAGE = 14;
     const SPECIAL_DAMAGE = 30;
-    
+
     const PUNCH_RANGE = 1.8;
     const KICK_RANGE = 2.2;
     const SPECIAL_RANGE = 2.8;
@@ -82,41 +77,69 @@
     const ARENA_BOUNDS = 12.0;
     const ROUND_TIME_LIMIT = 60;
 
-    // === إعدادات النماذج والأنيميشن (GLB Setup) ===
-    const FIGHTER_MODELS = {
-      p1: {
-        rootUrl: "./models/",
+    const CHARACTERS = [
+      {
+        id: "fighter1",
+        name: "Red Dragon",
         file: "fighter1.glb",
-        scale: 1.0,
-        facingOffset: 0,
-        animations: {
-          idle: "Idle",
-          walk: "Walk",
-          punch: "Punch",
-          kick: "Kick",
-          special: "Special",
-          hit: "Hit",
-          block: "Block",
-        },
+        colorRGB: new BABYLON.Color3(0.85, 0.15, 0.15),
+        colorHex: "#ef4444",
+        gradient: "from-red-600 to-red-400",
+        desc: "Balanced & Agile Striker"
       },
-      p2: {
-        rootUrl: "./models/",
+      {
+        id: "fighter2",
+        name: "Shadow Knight",
         file: "fighter2.glb",
-        scale: 1.0,
-        facingOffset: 0,
-        animations: {
-          idle: "Idle",
-          walk: "Walk",
-          punch: "Punch",
-          kick: "Kick",
-          special: "Special",
-          hit: "Hit",
-          block: "Block",
-        },
+        colorRGB: new BABYLON.Color3(0.15, 0.35, 0.85),
+        colorHex: "#3b82f6",
+        gradient: "from-blue-600 to-blue-400",
+        desc: "Heavy Defensive Brawler"
       },
-    };
+      {
+        id: "fighter3",
+        name: "Cyber Viper",
+        file: "fighter3.glb",
+        colorRGB: new BABYLON.Color3(0.1, 0.8, 0.4),
+        colorHex: "#10b981",
+        gradient: "from-emerald-600 to-teal-400",
+        desc: "Fast Energy Specialist"
+      }
+    ];
 
-    // === أصوات الضربات الصناعية (Web Audio API) ===
+    const ARENAS = [
+      {
+        id: "cyber",
+        name: "Cyber Grid",
+        clearColor: new BABYLON.Color4(0.02, 0.02, 0.05, 1),
+        groundColor: new BABYLON.Color3(0.08, 0.1, 0.18),
+        ringColor: new BABYLON.Color3(0, 0.8, 1),
+        lightColor: new BABYLON.Color3(0.6, 0.8, 1),
+        lightIntensity: 0.9,
+        bgGradient: "from-slate-900 to-cyan-950"
+      },
+      {
+        id: "volcano",
+        name: "Volcanic Pit",
+        clearColor: new BABYLON.Color4(0.08, 0.02, 0.01, 1),
+        groundColor: new BABYLON.Color3(0.18, 0.06, 0.03),
+        ringColor: new BABYLON.Color3(1, 0.3, 0),
+        lightColor: new BABYLON.Color3(1, 0.5, 0.2),
+        lightIntensity: 1.1,
+        bgGradient: "from-red-950 to-neutral-900"
+      },
+      {
+        id: "dojo",
+        name: "Golden Temple",
+        clearColor: new BABYLON.Color4(0.05, 0.04, 0.02, 1),
+        groundColor: new BABYLON.Color3(0.2, 0.16, 0.1),
+        ringColor: new BABYLON.Color3(0.9, 0.7, 0.2),
+        lightColor: new BABYLON.Color3(1, 0.9, 0.6),
+        lightIntensity: 1.0,
+        bgGradient: "from-amber-950 to-stone-900"
+      }
+    ];
+
     let audioCtx = null;
     function getAudioCtx() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -147,12 +170,55 @@
 
         osc.start(now);
         osc.stop(now + params.dur);
-      } catch (e) {
-        console.warn("Audio Context error:", e);
-      }
+      } catch (e) {}
     }
 
-    // === إنشاء مجسم بديل (Fallback Capsule Mesh) ===
+    function createHitParticles(scene, position, color3, isSpecial = false) {
+      if (!scene) return;
+      const count = isSpecial ? 60 : 25;
+      const particleSystem = new BABYLON.ParticleSystem("hitParticles", count, scene);
+
+      const textureCanvas = document.createElement("canvas");
+      textureCanvas.width = 32;
+      textureCanvas.height = 32;
+      const ctx = textureCanvas.getContext("2d");
+      const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      grad.addColorStop(0, "rgba(255,255,255,1)");
+      grad.addColorStop(0.5, "rgba(255,200,50,0.8)");
+      grad.addColorStop(1, "rgba(255,0,0,0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 32, 32);
+
+      const dynamicTex = new BABYLON.DynamicTexture("sparkTex", textureCanvas, scene, false);
+      particleSystem.particleTexture = dynamicTex;
+
+      particleSystem.emitter = position.clone();
+      particleSystem.minEmitBox = new BABYLON.Vector3(-0.3, 0.8, -0.3);
+      particleSystem.maxEmitBox = new BABYLON.Vector3(0.3, 1.8, 0.3);
+
+      particleSystem.color1 = new BABYLON.Color4(color3.r, color3.g, color3.b, 1.0);
+      particleSystem.color2 = new BABYLON.Color4(1.0, 0.8, 0.2, 1.0);
+      particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+
+      particleSystem.minSize = isSpecial ? 0.2 : 0.08;
+      particleSystem.maxSize = isSpecial ? 0.6 : 0.25;
+
+      particleSystem.minLifeTime = 0.1;
+      particleSystem.maxLifeTime = isSpecial ? 0.5 : 0.3;
+
+      particleSystem.emitRate = isSpecial ? 400 : 200;
+      particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+      particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+      const speed = isSpecial ? 8 : 4;
+      particleSystem.direction1 = new BABYLON.Vector3(-speed, 1, -speed);
+      particleSystem.direction2 = new BABYLON.Vector3(speed, speed, speed);
+
+      particleSystem.targetStopDuration = 0.12;
+      particleSystem.disposeOnStop = true;
+      particleSystem.start();
+    }
+
     function createFighterMeshFallback(scene, color, name) {
       const root = new BABYLON.TransformNode(name + "_root", scene);
       const bodyMat = new BABYLON.StandardMaterial(name + "_bodyMat", scene);
@@ -176,21 +242,27 @@
       return { root, isModel: false, torso, head, arm, bodyMat, animGroups: {}, currentAnim: null };
     }
 
-    // === تحميل النماذج الخارجيّة (GLB Model Loader) ===
-    async function loadFighterModel(scene, config, color, name, shadowGen) {
+    async function loadFighterModel(scene, charConfig, name, shadowGen) {
       const root = new BABYLON.TransformNode(name + "_root", scene);
+      const animMapping = {
+        idle: "Idle",
+        walk: "Walk",
+        punch: "Punch",
+        kick: "Kick",
+        special: "Special",
+        hit: "Hit",
+        block: "Block"
+      };
+
       try {
-        const result = await BABYLON.SceneLoader.ImportMeshAsync("", config.rootUrl, config.file, scene);
+        const result = await BABYLON.SceneLoader.ImportMeshAsync("", "./models/", charConfig.file, scene);
         const modelRoot = result.meshes[0];
         modelRoot.parent = root;
-        modelRoot.scaling.scaleInPlace(config.scale);
-        if (config.facingOffset) modelRoot.rotation.y += config.facingOffset;
+        modelRoot.scaling.scaleInPlace(1.0);
 
         result.meshes.forEach((m) => {
           if (shadowGen) shadowGen.addShadowCaster(m);
         });
-
-        console.log(name + " animation groups:", result.animationGroups.map(a => a.name));
 
         const animGroups = {};
         result.animationGroups.forEach((ag) => {
@@ -198,17 +270,15 @@
           animGroups[ag.name] = ag;
         });
 
-        return { root, isModel: true, animGroups, currentAnim: null, bodyMat: null };
+        return { root, isModel: true, animGroups, currentAnim: null, animMapping };
       } catch (err) {
-        console.warn("فشل تحميل نموذج " + name + " — استخدام مجسم بديل", err);
-        return createFighterMeshFallback(scene, color, name);
+        return createFighterMeshFallback(scene, charConfig.colorRGB, name);
       }
     }
 
-    // === تشغيل الأنيميشن للنموذج ===
-    function playAnim(meshData, animKey, config, loop) {
+    function playAnim(meshData, animKey, loop) {
       if (!meshData.isModel) return;
-      const groupName = config.animations[animKey];
+      const groupName = meshData.animMapping[animKey];
       const group = meshData.animGroups[groupName];
       if (!group) return;
       if (meshData.currentAnim === groupName && group.isPlaying) return;
@@ -218,7 +288,6 @@
       meshData.currentAnim = groupName;
     }
 
-    // === حالة اللاعب الابتدائية (Fighter Initial State) ===
     function makeFighterState(startX, startZ, facingDir) {
       return {
         x: startX,
@@ -236,7 +305,6 @@
       };
     }
 
-    // === المكون الرئيسي للعبة (Main Component) ===
     function FightingGame() {
       const canvasRef = useRef(null);
       const sceneRef = useRef(null);
@@ -244,9 +312,13 @@
       const meshesRef = useRef({});
       const fightersRef = useRef({ p1: makeFighterState(-3.5, 0, 1), p2: makeFighterState(3.5, 0, -1) });
       const keysRef = useRef({});
+      const shadowGenRef = useRef(null);
 
-      // حالات الواجهة البرمجية (UI States)
-      const [gameState, setGameState] = useState("START"); // START, PLAYING, ROUND_OVER, MATCH_OVER
+      const [gameState, setGameState] = useState("START");
+      const [selectedP1Char, setSelectedP1Char] = useState(CHARACTERS[0]);
+      const [selectedP2Char, setSelectedP2Char] = useState(CHARACTERS[1]);
+      const [selectedArena, setSelectedArena] = useState(ARENAS[0]);
+
       const [p1Hp, setP1Hp] = useState(MAX_HEALTH);
       const [p2Hp, setP2Hp] = useState(MAX_HEALTH);
       const [p1Energy, setP1Energy] = useState(0);
@@ -257,70 +329,54 @@
       const [roundBanner, setRoundBanner] = useState("");
       const [winnerText, setWinnerText] = useState("");
 
-      // === تهيئة المشهد والـ Babylon Engine ===
       useEffect(() => {
         if (!canvasRef.current) return;
 
         const engine = new BABYLON.Engine(canvasRef.current, true);
         const scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.05, 1);
+        scene.clearColor = selectedArena.clearColor;
         sceneRef.current = scene;
 
-        // الكاميرا
         const camera = new BABYLON.FreeCamera("mainCamera", new BABYLON.Vector3(0, 4, -10), scene);
         camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
 
-        // الإضاءة
         const hemiLight = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
         hemiLight.intensity = 0.4;
 
         const dirLight = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(-1, -3, 2), scene);
         dirLight.position = new BABYLON.Vector3(5, 12, -5);
-        dirLight.intensity = 0.9;
+        dirLight.intensity = selectedArena.lightIntensity;
+        dirLight.diffuse = selectedArena.lightColor;
 
         const shadowGen = new BABYLON.ShadowGenerator(1024, dirLight);
         shadowGen.useBlurExponentialShadowMap = true;
+        shadowGenRef.current = shadowGen;
 
-        // الحلبة (Arena Ground)
         const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 30, height: 30 }, scene);
         const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-        groundMat.diffuseColor = new BABYLON.Color3(0.1, 0.12, 0.15);
+        groundMat.diffuseColor = selectedArena.groundColor;
         groundMat.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
         ground.material = groundMat;
         ground.receiveShadows = true;
 
-        // حلقة قتالية دائرية بلمسة توهج
         const ring = BABYLON.MeshBuilder.CreateDisc("ring", { radius: ARENA_BOUNDS, tessellation: 64 }, scene);
         ring.rotation.x = Math.PI / 2;
         ring.position.y = 0.01;
         const ringMat = new BABYLON.StandardMaterial("ringMat", scene);
-        ringMat.diffuseColor = new BABYLON.Color3(0.18, 0.22, 0.3);
+        ringMat.diffuseColor = selectedArena.ringColor;
         ring.material = ringMat;
 
-        // تحميل الموسيقى الخلفية
         try {
           const bgMusic = new BABYLON.Sound("bgMusic", "./sounds/theme.mp3", scene, null, { loop: true, volume: 0.3 });
           bgMusicRef.current = bgMusic;
-        } catch(e) {
-          console.warn("الموسيقى غير متوفرة في المسار المحدد.");
-        }
+        } catch(e) {}
 
-        // تحميل النماذج
-        (async () => {
-          const p1Data = await loadFighterModel(scene, FIGHTER_MODELS.p1, new BABYLON.Color3(0.85, 0.15, 0.15), "p1", shadowGen);
-          const p2Data = await loadFighterModel(scene, FIGHTER_MODELS.p2, new BABYLON.Color3(0.15, 0.35, 0.85), "p2", shadowGen);
-          meshesRef.current = { p1: p1Data, p2: p2Data };
-        })();
-
-        // التقاط لوحة المفاتيح
         const onKeyDown = (e) => { keysRef.current[e.code] = true; };
         const onKeyUp = (e) => { keysRef.current[e.code] = false; };
         window.addEventListener("keydown", onKeyDown);
         window.addEventListener("keyup", onKeyUp);
 
-        // الحلقة التكرارية للعبة (Game Loop)
         engine.runRenderLoop(() => {
-          const dt = engine.getDeltaTime() / 1000;
           if (sceneRef.current) {
             scene.render();
           }
@@ -337,7 +393,43 @@
         };
       }, []);
 
-      // === الحلقة التكرارية للتحديثات والحركات (Update Loop Effect) ===
+      const updateArenaInScene = (arena) => {
+        const scene = sceneRef.current;
+        if (!scene) return;
+
+        scene.clearColor = arena.clearColor;
+        const ground = scene.getMeshByName("ground");
+        if (ground && ground.material) {
+          ground.material.diffuseColor = arena.groundColor;
+        }
+        const ring = scene.getMeshByName("ring");
+        if (ring && ring.material) {
+          ring.material.diffuseColor = arena.ringColor;
+        }
+        const dirLight = scene.getLightByName("dir");
+        if (dirLight) {
+          dirLight.intensity = arena.lightIntensity;
+          dirLight.diffuse = arena.lightColor;
+        }
+      };
+
+      const loadMatchFighters = async () => {
+        const scene = sceneRef.current;
+        if (!scene) return;
+
+        if (meshesRef.current.p1 && meshesRef.current.p1.root) {
+          meshesRef.current.p1.root.dispose();
+        }
+        if (meshesRef.current.p2 && meshesRef.current.p2.root) {
+          meshesRef.current.p2.root.dispose();
+        }
+
+        const p1Data = await loadFighterModel(scene, selectedP1Char, "p1", shadowGenRef.current);
+        const p2Data = await loadFighterModel(scene, selectedP2Char, "p2", shadowGenRef.current);
+
+        meshesRef.current = { p1: p1Data, p2: p2Data };
+      };
+
       useEffect(() => {
         let timerInterval = null;
 
@@ -363,30 +455,25 @@
           const f = fightersRef.current;
           const k = keysRef.current;
 
-          // معالجة المدخلات والحركة
           handleMovement(f.p1, f.p2, k, "KeyA", "KeyD", "KeyW", "KeyS", dt);
           handleMovement(f.p2, f.p1, k, "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", dt);
 
-          // الحماية / الدفاع (Block)
           f.p1.isBlocking = !!k["ShiftLeft"];
           f.p2.isBlocking = !!k["ShiftRight"] || !!k["Numpad0"];
 
-          // الهجمات
           tryAttack(f.p1, f.p2, k, "KeyF", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN);
           tryAttack(f.p1, f.p2, k, "KeyG", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN);
           tryAttack(f.p1, f.p2, k, "KeyH", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN);
 
-          tryAttack(f.p2, f.p1, k, "Numpad1" || "KeyJ", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN);
-          tryAttack(f.p2, f.p1, k, "Numpad2" || "KeyK", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN);
-          tryAttack(f.p2, f.p1, k, "Numpad3" || "KeyL", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN);
+          tryAttack(f.p2, f.p1, k, "Numpad1", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN);
+          tryAttack(f.p2, f.p1, k, "Numpad2", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN);
+          tryAttack(f.p2, f.p1, k, "Numpad3", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN);
 
-          // تحديث أوقات التهدئة (Cooldowns)
           [f.p1, f.p2].forEach((fighter) => {
             if (fighter.attackCooldown > 0) fighter.attackCooldown -= dt;
             if (fighter.flashTimer > 0) fighter.flashTimer -= dt;
           });
 
-          // التحديث البصري وموقع الكاميرا
           updateVisuals(dt);
           updateCamera();
         });
@@ -397,7 +484,6 @@
         };
       }, [gameState]);
 
-      // === منطق الحركة ===
       function handleMovement(p, enemy, keys, leftKey, rightKey, upKey, downKey, dt) {
         if (p.isAttacking) return;
 
@@ -421,18 +507,15 @@
           p.isMoving = false;
         }
 
-        // قيود الساحة
         const distFromCenter = Math.hypot(p.x, p.z);
         if (distFromCenter > ARENA_BOUNDS) {
           p.x = (p.x / distFromCenter) * ARENA_BOUNDS;
           p.z = (p.z / distFromCenter) * ARENA_BOUNDS;
         }
 
-        // توجيه الوجه نحو الخصم
         p.facingDir = p.x < enemy.x ? 1 : -1;
       }
 
-      // === منطق محاولة الهجوم ===
       function tryAttack(attacker, defender, keys, keyName, type, damage, range, cooldown) {
         if (!keys[keyName] || attacker.attackCooldown > 0 || attacker.isAttacking) return;
 
@@ -447,7 +530,6 @@
         attacker.attackType = type;
         attacker.attackCooldown = cooldown;
 
-        // حساب المسافة والإصابة
         const dist = Math.hypot(attacker.x - defender.x, attacker.z - defender.z);
         if (dist <= range) {
           applyDamage(defender, attacker, damage, type);
@@ -461,35 +543,34 @@
         }, cooldown * 1000);
       }
 
-      // === تطبيق الضرر والحسابات ===
       function applyDamage(defender, attacker, rawDamage, type) {
         let finalDamage = rawDamage;
 
         if (defender.isBlocking) {
-          finalDamage *= 0.2; // تقليل 80% من الضرر عند الدفاع
+          finalDamage *= 0.2;
         }
 
         defender.hp = Math.max(0, defender.hp - finalDamage);
         defender.flashTimer = 0.15;
 
-        // شحن طاقة الخاص (Energy Gain)
         attacker.energy = Math.min(MAX_ENERGY, attacker.energy + 15);
         if (attacker === fightersRef.current.p1) setP1Energy(attacker.energy);
         else setP2Energy(attacker.energy);
 
-        // تحديث شريط الصحة
         if (defender === fightersRef.current.p1) setP1Hp(defender.hp);
         else setP2Hp(defender.hp);
 
+        const attackerChar = attacker === fightersRef.current.p1 ? selectedP1Char : selectedP2Char;
+        const hitPos = new BABYLON.Vector3((attacker.x + defender.x) / 2, 1.2, (attacker.z + defender.z) / 2);
+        createHitParticles(sceneRef.current, hitPos, attackerChar.colorRGB, type === "special");
+
         playImpactSound(type);
 
-        // التحقق من انتهاء الجولة
         if (defender.hp <= 0) {
           endRound(attacker === fightersRef.current.p1 ? "p1" : "p2");
         }
       }
 
-      // === انتهاء وقت الجولة ===
       function handleTimeOut() {
         const p1 = fightersRef.current.p1;
         const p2 = fightersRef.current.p2;
@@ -499,7 +580,6 @@
         else endRound("draw");
       }
 
-      // === نهاية الجولة ===
       function endRound(winner) {
         setGameState("ROUND_OVER");
 
@@ -526,7 +606,6 @@
         }, 2000);
       }
 
-      // === التحقق من الفائز بالمباراة ===
       function checkMatch(w1, w2) {
         if (w1 >= 2) {
           setWinnerText("اللاعب الأول هو بطل المعركة!");
@@ -540,7 +619,6 @@
         }
       }
 
-      // === إعادة ضبط الجولة ===
       function resetRound() {
         fightersRef.current.p1 = makeFighterState(-3.5, 0, 1);
         fightersRef.current.p2 = makeFighterState(3.5, 0, -1);
@@ -550,11 +628,12 @@
         setRoundBanner("");
       }
 
-      // === بدء لعبة جديدة بالكامل ===
-      function startMatch() {
+      async function startMatch() {
         if (bgMusicRef.current) {
           bgMusicRef.current.play();
         }
+        updateArenaInScene(selectedArena);
+        await loadMatchFighters();
         setP1Wins(0);
         setP2Wins(0);
         setP1Energy(0);
@@ -563,7 +642,6 @@
         setGameState("PLAYING");
       }
 
-      // === التحديثات البصرية للحركة والأنيميشن ===
       function updateVisuals(dt) {
         const meshes = meshesRef.current;
         const fighters = fightersRef.current;
@@ -575,20 +653,16 @@
           mesh.root.position.x = s.x;
           mesh.root.position.z = s.z;
 
-          // تدوير الموديل بحسب الاتجاه
           const targetRotY = s.facingDir === 1 ? Math.PI / 2 : -Math.PI / 2;
           mesh.root.rotation.y = BABYLON.Scalar.Lerp(mesh.root.rotation.y, targetRotY, 0.2);
 
-          // تطبيق الأنيميشن للنموذج GLB
           if (mesh.isModel) {
-            const config = FIGHTER_MODELS[id];
-            if (s.flashTimer > 0.05) playAnim(mesh, "hit", config, false);
-            else if (s.isAttacking && s.attackType) playAnim(mesh, s.attackType, config, false);
-            else if (s.isBlocking) playAnim(mesh, "block", config, true);
-            else if (s.isMoving) playAnim(mesh, "walk", config, true);
-            else playAnim(mesh, "idle", config, true);
+            if (s.flashTimer > 0.05) playAnim(mesh, "hit", false);
+            else if (s.isAttacking && s.attackType) playAnim(mesh, s.attackType, false);
+            else if (s.isBlocking) playAnim(mesh, "block", true);
+            else if (s.isMoving) playAnim(mesh, "walk", true);
+            else playAnim(mesh, "idle", true);
           } else {
-            // محاكاة حركة أذرع وأرجل للمجسمات البديلة
             if (s.arm) {
               if (s.isAttacking) {
                 s.arm.position.z = 0.9;
@@ -600,7 +674,6 @@
         });
       }
 
-      // === ضبط الكاميرا الديناميكي ===
       function updateCamera() {
         const scene = sceneRef.current;
         if (!scene) return;
@@ -625,73 +698,61 @@
 
       return (
         <div className="relative w-full h-full">
-          {/* الكانفاس الخاص بـ Babylon */}
           <div id="canvas-container">
             <canvas ref={canvasRef} />
           </div>
 
-          {/* واجهة المستخدم والتراكبات (HUD UI Layer) */}
           <div id="ui-layer" className="flex flex-col justify-between p-6">
             
-            {/* شريط معلومات الصحة والجولات الأعلى */}
-            <div className="flex justify-between items-start w-full max-w-5xl mx-auto">
-              
-              {/* اللاعب الأول */}
-              <div className="w-5/12 bg-gray-900/80 p-4 rounded-xl border border-red-500/40 backdrop-blur-md shadow-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-red-400 font-bold text-lg">اللاعب 1</span>
-                  <div className="flex gap-1">
-                    {[...Array(2)].map((_, i) => (
-                      <div key={i} className={`w-4 h-4 rounded-full border border-red-400 ${i < p1Wins ? 'bg-red-500' : 'bg-gray-700'}`} />
-                    ))}
+            {(gameState === "PLAYING" || gameState === "ROUND_OVER") && (
+              <div className="flex justify-between items-start w-full max-w-5xl mx-auto">
+                <div className="w-5/12 bg-gray-900/80 p-4 rounded-xl border border-red-500/40 backdrop-blur-md shadow-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-red-400 font-bold text-lg">{selectedP1Char.name}</span>
+                    <div className="flex gap-1">
+                      {[...Array(2)].map((_, i) => (
+                        <div key={i} className={`w-4 h-4 rounded-full border border-red-400 ${i < p1Wins ? 'bg-red-500' : 'bg-gray-700'}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-800 h-5 rounded-full overflow-hidden border border-gray-700">
+                    <div className="health-bar-fill bg-gradient-to-r from-red-600 to-red-400 h-full" style={{ width: `${(p1Hp / MAX_HEALTH) * 100}%` }} />
+                  </div>
+                  <div className="w-full bg-gray-800 h-2 rounded-full mt-2 overflow-hidden">
+                    <div className="bg-yellow-400 h-full transition-all duration-200" style={{ width: `${(p1Energy / MAX_ENERGY) * 100}%` }} />
                   </div>
                 </div>
-                {/* شريط الصحة */}
-                <div className="w-full bg-gray-800 h-5 rounded-full overflow-hidden border border-gray-700">
-                  <div className="health-bar-fill bg-gradient-to-r from-red-600 to-red-400 h-full" style={{ width: `${(p1Hp / MAX_HEALTH) * 100}%` }} />
-                </div>
-                {/* شريط الطاقة الخاصة */}
-                <div className="w-full bg-gray-800 h-2 rounded-full mt-2 overflow-hidden">
-                  <div className="bg-yellow-400 h-full transition-all duration-200" style={{ width: `${(p1Energy / MAX_ENERGY) * 100}%` }} />
-                </div>
-              </div>
 
-              {/* العداد الزمني */}
-              <div className="flex flex-col items-center bg-gray-900/90 px-6 py-2 rounded-2xl border border-yellow-500/50 shadow-xl">
-                <span className="text-yellow-400 text-3xl font-extrabold tracking-wider">{timeLeft}</span>
-                <span className="text-xs text-gray-400 uppercase tracking-widest mt-1">TIME</span>
-              </div>
+                <div className="flex flex-col items-center bg-gray-900/90 px-6 py-2 rounded-2xl border border-yellow-500/50 shadow-xl">
+                  <span className="text-yellow-400 text-3xl font-extrabold tracking-wider">{timeLeft}</span>
+                  <span className="text-xs text-gray-400 uppercase tracking-widest mt-1">TIME</span>
+                </div>
 
-              {/* اللاعب الثاني */}
-              <div className="w-5/12 bg-gray-900/80 p-4 rounded-xl border border-blue-500/40 backdrop-blur-md shadow-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex gap-1">
-                    {[...Array(2)].map((_, i) => (
-                      <div key={i} className={`w-4 h-4 rounded-full border border-blue-400 ${i < p2Wins ? 'bg-blue-500' : 'bg-gray-700'}`} />
-                    ))}
+                <div className="w-5/12 bg-gray-900/80 p-4 rounded-xl border border-blue-500/40 backdrop-blur-md shadow-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex gap-1">
+                      {[...Array(2)].map((_, i) => (
+                        <div key={i} className={`w-4 h-4 rounded-full border border-blue-400 ${i < p2Wins ? 'bg-blue-500' : 'bg-gray-700'}`} />
+                      ))}
+                    </div>
+                    <span className="text-blue-400 font-bold text-lg">{selectedP2Char.name}</span>
                   </div>
-                  <span className="text-blue-400 font-bold text-lg">اللاعب 2</span>
-                </div>
-                {/* شريط الصحة */}
-                <div className="w-full bg-gray-800 h-5 rounded-full overflow-hidden border border-gray-700 dir-ltr">
-                  <div className="health-bar-fill bg-gradient-to-r from-blue-400 to-blue-600 h-full float-right" style={{ width: `${(p2Hp / MAX_HEALTH) * 100}%` }} />
-                </div>
-                {/* شريط الطاقة الخاصة */}
-                <div className="w-full bg-gray-800 h-2 rounded-full mt-2 overflow-hidden dir-ltr">
-                  <div className="bg-yellow-400 h-full transition-all duration-200 float-right" style={{ width: `${(p2Energy / MAX_ENERGY) * 100}%` }} />
+                  <div className="w-full bg-gray-800 h-5 rounded-full overflow-hidden border border-gray-700 dir-ltr">
+                    <div className="health-bar-fill bg-gradient-to-r from-blue-400 to-blue-600 h-full float-right" style={{ width: `${(p2Hp / MAX_HEALTH) * 100}%` }} />
+                  </div>
+                  <div className="w-full bg-gray-800 h-2 rounded-full mt-2 overflow-hidden dir-ltr">
+                    <div className="bg-yellow-400 h-full transition-all duration-200 float-right" style={{ width: `${(p2Energy / MAX_ENERGY) * 100}%` }} />
+                  </div>
                 </div>
               </div>
+            )}
 
-            </div>
-
-            {/* إشعار انتهاء الجولة وسط الشاشة */}
             {gameState === "ROUND_OVER" && (
               <div className="self-center bg-black/80 px-10 py-5 rounded-2xl border-2 border-yellow-400 backdrop-blur-md animate-bounce">
                 <h2 className="text-yellow-400 text-3xl font-extrabold text-center">{roundBanner}</h2>
               </div>
             )}
 
-            {/* شاشة البداية (Start Screen) */}
             {gameState === "START" && (
               <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col justify-center items-center interactive z-50">
                 <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-blue-500 mb-6 tracking-wide">
@@ -700,37 +761,146 @@
                 
                 <div className="grid grid-cols-2 gap-8 mb-8 text-white text-sm max-w-2xl bg-gray-900/60 p-6 rounded-2xl border border-gray-800">
                   <div className="space-y-2">
-                    <h3 className="text-red-400 font-bold text-base border-b border-red-500/30 pb-1">اللاعب 1 (الأحمر)</h3>
+                    <h3 className="text-red-400 font-bold text-base border-b border-red-500/30 pb-1">اللاعب 1</h3>
                     <p>الحركة: <span className="text-yellow-300">W, A, S, D</span></p>
                     <p>لكمة: <span className="text-yellow-300">F</span> | ركلة: <span className="text-yellow-300">G</span></p>
                     <p>ضربة خاصة: <span className="text-yellow-300">H</span></p>
                     <p>دفاع / حماية: <span className="text-yellow-300">Shift أيسر</span></p>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-blue-400 font-bold text-base border-b border-blue-500/30 pb-1">اللاعب 2 (الأسود/الأساسي)</h3>
+                    <h3 className="text-blue-400 font-bold text-base border-b border-blue-500/30 pb-1">اللاعب 2</h3>
                     <p>الحركة: <span className="text-yellow-300">الأسهم</span></p>
-                    <p>لكمة: <span className="text-yellow-300">Numpad 1 / J</span> | ركلة: <span className="text-yellow-300">Numpad 2 / K</span></p>
-                    <p>ضربة خاصة: <span className="text-yellow-300">Numpad 3 / L</span></p>
+                    <p>لكمة: <span className="text-yellow-300">Numpad 1</span> | ركلة: <span className="text-yellow-300">Numpad 2</span></p>
+                    <p>ضربة خاصة: <span className="text-yellow-300">Numpad 3</span></p>
                     <p>دفاع / حماية: <span className="text-yellow-300">Shift أيمن / Numpad 0</span></p>
                   </div>
                 </div>
 
                 <button
-                  onClick={startMatch}
+                  onClick={() => setGameState("CHAR_SELECT")}
                   className="px-10 py-4 bg-gradient-to-r from-red-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-white font-extrabold text-xl rounded-full shadow-2xl transform hover:scale-105 transition-all cursor-pointer"
                 >
-                  ابدأ المعركة الآن
+                  اختر الشخصيات
                 </button>
               </div>
             )}
 
-            {/* شاشة إعلان الفائز النهائي (Match Over Screen) */}
+            {gameState === "CHAR_SELECT" && (
+              <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col justify-center items-center interactive z-50 p-6">
+                <h2 className="text-3xl font-extrabold text-yellow-400 mb-6">اختيار الشخصيات</h2>
+                
+                <div className="grid grid-cols-2 gap-12 w-full max-w-4xl mb-8">
+                  <div className="bg-gray-900/80 p-6 rounded-2xl border border-red-500/50 flex flex-col items-center">
+                    <h3 className="text-red-400 text-xl font-bold mb-4">اللاعب الأول (P1)</h3>
+                    <div className="flex flex-col gap-3 w-full">
+                      {CHARACTERS.map((char) => (
+                        <button
+                          key={char.id}
+                          onClick={() => setSelectedP1Char(char)}
+                          className={`p-3 rounded-xl border text-right transition-all flex justify-between items-center ${
+                            selectedP1Char.id === char.id
+                              ? "bg-red-950/80 border-red-500 text-white shadow-lg shadow-red-500/20"
+                              : "bg-gray-800/50 border-gray-700 text-gray-400 hover:border-gray-500"
+                          }`}
+                        >
+                          <div>
+                            <div className="font-bold">{char.name}</div>
+                            <div className="text-xs text-gray-400">{char.desc}</div>
+                          </div>
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: char.colorHex }} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-900/80 p-6 rounded-2xl border border-blue-500/50 flex flex-col items-center">
+                    <h3 className="text-blue-400 text-xl font-bold mb-4">اللاعب الثاني (P2)</h3>
+                    <div className="flex flex-col gap-3 w-full">
+                      {CHARACTERS.map((char) => (
+                        <button
+                          key={char.id}
+                          onClick={() => setSelectedP2Char(char)}
+                          className={`p-3 rounded-xl border text-right transition-all flex justify-between items-center ${
+                            selectedP2Char.id === char.id
+                              ? "bg-blue-950/80 border-blue-500 text-white shadow-lg shadow-blue-500/20"
+                              : "bg-gray-800/50 border-gray-700 text-gray-400 hover:border-gray-500"
+                          }`}
+                        >
+                          <div>
+                            <div className="font-bold">{char.name}</div>
+                            <div className="text-xs text-gray-400">{char.desc}</div>
+                          </div>
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: char.colorHex }} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setGameState("START")}
+                    className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition-all cursor-pointer"
+                  >
+                    رجوع
+                  </button>
+                  <button
+                    onClick={() => setGameState("ARENA_SELECT")}
+                    className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-extrabold rounded-xl shadow-lg transition-all cursor-pointer"
+                  >
+                    اختر الحلبة
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {gameState === "ARENA_SELECT" && (
+              <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col justify-center items-center interactive z-50 p-6">
+                <h2 className="text-3xl font-extrabold text-yellow-400 mb-6">اختيار حلبة القتال</h2>
+
+                <div className="grid grid-cols-3 gap-6 w-full max-w-4xl mb-8">
+                  {ARENAS.map((arena) => (
+                    <button
+                      key={arena.id}
+                      onClick={() => setSelectedArena(arena)}
+                      className={`p-6 rounded-2xl border text-center transition-all flex flex-col justify-between items-center h-48 bg-gradient-to-b ${arena.bgGradient} ${
+                        selectedArena.id === arena.id
+                          ? "border-yellow-400 scale-105 shadow-xl shadow-yellow-500/20 ring-2 ring-yellow-400"
+                          : "border-gray-800 opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <h3 className="text-white font-extrabold text-xl mb-2">{arena.name}</h3>
+                      <div className="w-12 h-12 rounded-full border-2 border-white/20 flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full" style={{ backgroundColor: `#${arena.ringColor.toHexString()}` }} />
+                      </div>
+                      <span className="text-xs text-gray-300">اضغط للاختيار</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setGameState("CHAR_SELECT")}
+                    className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition-all cursor-pointer"
+                  >
+                    رجوع
+                  </button>
+                  <button
+                    onClick={startMatch}
+                    className="px-10 py-3 bg-gradient-to-r from-red-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-white font-extrabold text-xl rounded-xl shadow-xl transition-all cursor-pointer"
+                  >
+                    ابدأ المعركة
+                  </button>
+                </div>
+              </div>
+            )}
+
             {gameState === "MATCH_OVER" && (
               <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col justify-center items-center interactive z-50">
                 <h1 className="text-4xl font-extrabold text-yellow-400 mb-4 animate-pulse">{winnerText}</h1>
                 <p className="text-gray-300 mb-8 text-lg">أفضل من 3 جولات</p>
                 <button
-                  onClick={startMatch}
+                  onClick={() => setGameState("CHAR_SELECT")}
                   className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all cursor-pointer"
                 >
                   إعادة اللعب
@@ -743,7 +913,6 @@
       );
     }
 
-    // العرض في DOM
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<FightingGame />);
   </script>
