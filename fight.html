@@ -1,920 +1,603 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D Fighting Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة القتال - Fighting Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.babylonjs.com/babylon.js"></script>
-  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+        body {
+            background-color: #0a0c14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #050505;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none;
-    }
-    #canvas-container {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-    }
-    canvas {
-      width: 100%;
-      height: 100%;
-      outline: none;
-    }
-    #ui-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-      pointer-events: none;
-    }
-    .interactive {
-      pointer-events: auto;
-    }
-    .health-bar-fill {
-      transition: width 0.15s ease-out;
-    }
-  </style>
+        .game-container {
+            position: relative;
+            width: 1024px;
+            height: 576px;
+            background: #0d0f18;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            border: 2px solid #1e2538;
+        }
+
+        /* --- شريط النتيجة والعداد (HUD) --- */
+        .hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .player-bar {
+            width: 40%;
+            background: rgba(18, 22, 36, 0.85);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .player-bar.p1 {
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .player-bar.p2 {
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .lives {
+            display: flex;
+            gap: 6px;
+        }
+
+        .life-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #374151;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .p1 .life-dot.active { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        .p2 .life-dot.active { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+
+        .health-bg {
+            width: 100%;
+            height: 16px;
+            background: #1f2937;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .health-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.2s ease-out;
+            border-radius: 8px;
+        }
+
+        .p1 .health-fill { background: linear-gradient(90deg, #dc2626, #ef4444); }
+        .p2 .health-fill { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+
+        /* --- العداد المركزي --- */
+        .timer-box {
+            width: 70px;
+            height: 65px;
+            background: rgba(15, 20, 32, 0.9);
+            border: 2px solid #fbbf24;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .timer-val {
+            color: #fbbf24;
+            font-size: 26px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .timer-label {
+            color: #9ca3af;
+            font-size: 10px;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* --- الـ Canvas والحلَبة --- */
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- شاشة النهاية والتحكم --- */
+        .controls-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #6b7280;
+            font-size: 13px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 16px;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .game-over-modal {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 12, 20, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            backdrop-filter: blur(4px);
+        }
+
+        .game-over-modal h1 {
+            color: #fff;
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .restart-btn {
+            padding: 10px 24px;
+            background: #fbbf24;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .restart-btn:hover { transform: scale(1.05); }
+    </style>
 </head>
 <body>
-  <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
-
-    const MAX_HEALTH = 100;
-    const MAX_ENERGY = 100;
-    const PUNCH_DAMAGE = 8;
-    const KICK_DAMAGE = 14;
-    const SPECIAL_DAMAGE = 30;
-
-    const PUNCH_RANGE = 1.8;
-    const KICK_RANGE = 2.2;
-    const SPECIAL_RANGE = 2.8;
-
-    const PUNCH_COOLDOWN = 0.35;
-    const KICK_COOLDOWN = 0.6;
-    const SPECIAL_COOLDOWN = 1.5;
-
-    const MOVE_SPEED = 6.5;
-    const ARENA_BOUNDS = 12.0;
-    const ROUND_TIME_LIMIT = 60;
-
-    const CHARACTERS = [
-      {
-        id: "fighter1",
-        name: "Red Dragon",
-        file: "fighter1.glb",
-        colorRGB: new BABYLON.Color3(0.85, 0.15, 0.15),
-        colorHex: "#ef4444",
-        gradient: "from-red-600 to-red-400",
-        desc: "Balanced & Agile Striker"
-      },
-      {
-        id: "fighter2",
-        name: "Shadow Knight",
-        file: "fighter2.glb",
-        colorRGB: new BABYLON.Color3(0.15, 0.35, 0.85),
-        colorHex: "#3b82f6",
-        gradient: "from-blue-600 to-blue-400",
-        desc: "Heavy Defensive Brawler"
-      },
-      {
-        id: "fighter3",
-        name: "Cyber Viper",
-        file: "fighter3.glb",
-        colorRGB: new BABYLON.Color3(0.1, 0.8, 0.4),
-        colorHex: "#10b981",
-        gradient: "from-emerald-600 to-teal-400",
-        desc: "Fast Energy Specialist"
-      }
-    ];
-
-    const ARENAS = [
-      {
-        id: "cyber",
-        name: "Cyber Grid",
-        clearColor: new BABYLON.Color4(0.02, 0.02, 0.05, 1),
-        groundColor: new BABYLON.Color3(0.08, 0.1, 0.18),
-        ringColor: new BABYLON.Color3(0, 0.8, 1),
-        lightColor: new BABYLON.Color3(0.6, 0.8, 1),
-        lightIntensity: 0.9,
-        bgGradient: "from-slate-900 to-cyan-950"
-      },
-      {
-        id: "volcano",
-        name: "Volcanic Pit",
-        clearColor: new BABYLON.Color4(0.08, 0.02, 0.01, 1),
-        groundColor: new BABYLON.Color3(0.18, 0.06, 0.03),
-        ringColor: new BABYLON.Color3(1, 0.3, 0),
-        lightColor: new BABYLON.Color3(1, 0.5, 0.2),
-        lightIntensity: 1.1,
-        bgGradient: "from-red-950 to-neutral-900"
-      },
-      {
-        id: "dojo",
-        name: "Golden Temple",
-        clearColor: new BABYLON.Color4(0.05, 0.04, 0.02, 1),
-        groundColor: new BABYLON.Color3(0.2, 0.16, 0.1),
-        ringColor: new BABYLON.Color3(0.9, 0.7, 0.2),
-        lightColor: new BABYLON.Color3(1, 0.9, 0.6),
-        lightIntensity: 1.0,
-        bgGradient: "from-amber-950 to-stone-900"
-      }
-    ];
-
-    let audioCtx = null;
-    function getAudioCtx() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      return audioCtx;
-    }
-
-    function playImpactSound(type) {
-      try {
-        const ctx = getAudioCtx();
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        const params = {
-          punch:   { wave: "square",   f1: 180, f2: 60,  dur: 0.15, vol: 0.4 },
-          kick:    { wave: "sawtooth", f1: 120, f2: 40,  dur: 0.25, vol: 0.5 },
-          special: { wave: "sawtooth", f1: 300, f2: 50,  dur: 0.4,  vol: 0.6 },
-        }[type] || { wave: "square", f1: 150, f2: 60, dur: 0.15, vol: 0.4 };
-
-        osc.type = params.wave;
-        osc.frequency.setValueAtTime(params.f1, now);
-        osc.frequency.exponentialRampToValueAtTime(params.f2, now + params.dur);
-        gain.gain.setValueAtTime(params.vol, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + params.dur);
-
-        osc.start(now);
-        osc.stop(now + params.dur);
-      } catch (e) {}
-    }
-
-    function createHitParticles(scene, position, color3, isSpecial = false) {
-      if (!scene) return;
-      const count = isSpecial ? 60 : 25;
-      const particleSystem = new BABYLON.ParticleSystem("hitParticles", count, scene);
-
-      const textureCanvas = document.createElement("canvas");
-      textureCanvas.width = 32;
-      textureCanvas.height = 32;
-      const ctx = textureCanvas.getContext("2d");
-      const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-      grad.addColorStop(0, "rgba(255,255,255,1)");
-      grad.addColorStop(0.5, "rgba(255,200,50,0.8)");
-      grad.addColorStop(1, "rgba(255,0,0,0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 32, 32);
-
-      const dynamicTex = new BABYLON.DynamicTexture("sparkTex", textureCanvas, scene, false);
-      particleSystem.particleTexture = dynamicTex;
-
-      particleSystem.emitter = position.clone();
-      particleSystem.minEmitBox = new BABYLON.Vector3(-0.3, 0.8, -0.3);
-      particleSystem.maxEmitBox = new BABYLON.Vector3(0.3, 1.8, 0.3);
-
-      particleSystem.color1 = new BABYLON.Color4(color3.r, color3.g, color3.b, 1.0);
-      particleSystem.color2 = new BABYLON.Color4(1.0, 0.8, 0.2, 1.0);
-      particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
-
-      particleSystem.minSize = isSpecial ? 0.2 : 0.08;
-      particleSystem.maxSize = isSpecial ? 0.6 : 0.25;
-
-      particleSystem.minLifeTime = 0.1;
-      particleSystem.maxLifeTime = isSpecial ? 0.5 : 0.3;
-
-      particleSystem.emitRate = isSpecial ? 400 : 200;
-      particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-      particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
-
-      const speed = isSpecial ? 8 : 4;
-      particleSystem.direction1 = new BABYLON.Vector3(-speed, 1, -speed);
-      particleSystem.direction2 = new BABYLON.Vector3(speed, speed, speed);
-
-      particleSystem.targetStopDuration = 0.12;
-      particleSystem.disposeOnStop = true;
-      particleSystem.start();
-    }
-
-    function createFighterMeshFallback(scene, color, name) {
-      const root = new BABYLON.TransformNode(name + "_root", scene);
-      const bodyMat = new BABYLON.StandardMaterial(name + "_bodyMat", scene);
-      bodyMat.diffuseColor = color;
-      
-      const torso = BABYLON.MeshBuilder.CreateCapsule(name + "_torso", { height: 1.6, radius: 0.42 }, scene);
-      torso.position.y = 1.15;
-      torso.material = bodyMat;
-      torso.parent = root;
-
-      const head = BABYLON.MeshBuilder.CreateSphere(name + "_head", { diameter: 0.45 }, scene);
-      head.position.y = 2.1;
-      head.material = bodyMat;
-      head.parent = root;
-
-      const arm = BABYLON.MeshBuilder.CreateBox(name + "_arm", { width: 0.2, height: 0.2, depth: 0.8 }, scene);
-      arm.position.set(0.4, 1.3, 0.4);
-      arm.material = bodyMat;
-      arm.parent = root;
-
-      return { root, isModel: false, torso, head, arm, bodyMat, animGroups: {}, currentAnim: null };
-    }
-
-    async function loadFighterModel(scene, charConfig, name, shadowGen) {
-      const root = new BABYLON.TransformNode(name + "_root", scene);
-      const animMapping = {
-        idle: "Idle",
-        walk: "Walk",
-        punch: "Punch",
-        kick: "Kick",
-        special: "Special",
-        hit: "Hit",
-        block: "Block"
-      };
-
-      try {
-        const result = await BABYLON.SceneLoader.ImportMeshAsync("", "./models/", charConfig.file, scene);
-        const modelRoot = result.meshes[0];
-        modelRoot.parent = root;
-        modelRoot.scaling.scaleInPlace(1.0);
-
-        result.meshes.forEach((m) => {
-          if (shadowGen) shadowGen.addShadowCaster(m);
-        });
-
-        const animGroups = {};
-        result.animationGroups.forEach((ag) => {
-          ag.stop();
-          animGroups[ag.name] = ag;
-        });
-
-        return { root, isModel: true, animGroups, currentAnim: null, animMapping };
-      } catch (err) {
-        return createFighterMeshFallback(scene, charConfig.colorRGB, name);
-      }
-    }
-
-    function playAnim(meshData, animKey, loop) {
-      if (!meshData.isModel) return;
-      const groupName = meshData.animMapping[animKey];
-      const group = meshData.animGroups[groupName];
-      if (!group) return;
-      if (meshData.currentAnim === groupName && group.isPlaying) return;
-      
-      Object.values(meshData.animGroups).forEach((g) => g.stop());
-      group.start(loop, 1.0, group.from, group.to, false);
-      meshData.currentAnim = groupName;
-    }
-
-    function makeFighterState(startX, startZ, facingDir) {
-      return {
-        x: startX,
-        z: startZ,
-        facingDir: facingDir,
-        hp: MAX_HEALTH,
-        energy: 0,
-        isAttacking: false,
-        attackType: null,
-        attackCooldown: 0,
-        isBlocking: false,
-        isMoving: false,
-        flashTimer: 0,
-        animPhase: 0,
-      };
-    }
-
-    function FightingGame() {
-      const canvasRef = useRef(null);
-      const sceneRef = useRef(null);
-      const bgMusicRef = useRef(null);
-      const meshesRef = useRef({});
-      const fightersRef = useRef({ p1: makeFighterState(-3.5, 0, 1), p2: makeFighterState(3.5, 0, -1) });
-      const keysRef = useRef({});
-      const shadowGenRef = useRef(null);
-
-      const [gameState, setGameState] = useState("START");
-      const [selectedP1Char, setSelectedP1Char] = useState(CHARACTERS[0]);
-      const [selectedP2Char, setSelectedP2Char] = useState(CHARACTERS[1]);
-      const [selectedArena, setSelectedArena] = useState(ARENAS[0]);
-
-      const [p1Hp, setP1Hp] = useState(MAX_HEALTH);
-      const [p2Hp, setP2Hp] = useState(MAX_HEALTH);
-      const [p1Energy, setP1Energy] = useState(0);
-      const [p2Energy, setP2Energy] = useState(0);
-      const [p1Wins, setP1Wins] = useState(0);
-      const [p2Wins, setP2Wins] = useState(0);
-      const [timeLeft, setTimeLeft] = useState(ROUND_TIME_LIMIT);
-      const [roundBanner, setRoundBanner] = useState("");
-      const [winnerText, setWinnerText] = useState("");
-
-      useEffect(() => {
-        if (!canvasRef.current) return;
-
-        const engine = new BABYLON.Engine(canvasRef.current, true);
-        const scene = new BABYLON.Scene(engine);
-        scene.clearColor = selectedArena.clearColor;
-        sceneRef.current = scene;
-
-        const camera = new BABYLON.FreeCamera("mainCamera", new BABYLON.Vector3(0, 4, -10), scene);
-        camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
-
-        const hemiLight = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
-        hemiLight.intensity = 0.4;
-
-        const dirLight = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(-1, -3, 2), scene);
-        dirLight.position = new BABYLON.Vector3(5, 12, -5);
-        dirLight.intensity = selectedArena.lightIntensity;
-        dirLight.diffuse = selectedArena.lightColor;
-
-        const shadowGen = new BABYLON.ShadowGenerator(1024, dirLight);
-        shadowGen.useBlurExponentialShadowMap = true;
-        shadowGenRef.current = shadowGen;
-
-        const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 30, height: 30 }, scene);
-        const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-        groundMat.diffuseColor = selectedArena.groundColor;
-        groundMat.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
-        ground.material = groundMat;
-        ground.receiveShadows = true;
-
-        const ring = BABYLON.MeshBuilder.CreateDisc("ring", { radius: ARENA_BOUNDS, tessellation: 64 }, scene);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.y = 0.01;
-        const ringMat = new BABYLON.StandardMaterial("ringMat", scene);
-        ringMat.diffuseColor = selectedArena.ringColor;
-        ring.material = ringMat;
-
-        try {
-          const bgMusic = new BABYLON.Sound("bgMusic", "./sounds/theme.mp3", scene, null, { loop: true, volume: 0.3 });
-          bgMusicRef.current = bgMusic;
-        } catch(e) {}
-
-        const onKeyDown = (e) => { keysRef.current[e.code] = true; };
-        const onKeyUp = (e) => { keysRef.current[e.code] = false; };
-        window.addEventListener("keydown", onKeyDown);
-        window.addEventListener("keyup", onKeyUp);
-
-        engine.runRenderLoop(() => {
-          if (sceneRef.current) {
-            scene.render();
-          }
-        });
-
-        const handleResize = () => engine.resize();
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-          window.removeEventListener("keydown", onKeyDown);
-          window.removeEventListener("keyup", onKeyUp);
-          window.removeEventListener("resize", handleResize);
-          engine.dispose();
-        };
-      }, []);
-
-      const updateArenaInScene = (arena) => {
-        const scene = sceneRef.current;
-        if (!scene) return;
-
-        scene.clearColor = arena.clearColor;
-        const ground = scene.getMeshByName("ground");
-        if (ground && ground.material) {
-          ground.material.diffuseColor = arena.groundColor;
-        }
-        const ring = scene.getMeshByName("ring");
-        if (ring && ring.material) {
-          ring.material.diffuseColor = arena.ringColor;
-        }
-        const dirLight = scene.getLightByName("dir");
-        if (dirLight) {
-          dirLight.intensity = arena.lightIntensity;
-          dirLight.diffuse = arena.lightColor;
-        }
-      };
-
-      const loadMatchFighters = async () => {
-        const scene = sceneRef.current;
-        if (!scene) return;
-
-        if (meshesRef.current.p1 && meshesRef.current.p1.root) {
-          meshesRef.current.p1.root.dispose();
-        }
-        if (meshesRef.current.p2 && meshesRef.current.p2.root) {
-          meshesRef.current.p2.root.dispose();
-        }
-
-        const p1Data = await loadFighterModel(scene, selectedP1Char, "p1", shadowGenRef.current);
-        const p2Data = await loadFighterModel(scene, selectedP2Char, "p2", shadowGenRef.current);
-
-        meshesRef.current = { p1: p1Data, p2: p2Data };
-      };
-
-      useEffect(() => {
-        let timerInterval = null;
-
-        if (gameState === "PLAYING") {
-          timerInterval = setInterval(() => {
-            setTimeLeft((prev) => {
-              if (prev <= 1) {
-                handleTimeOut();
-                return 0;
-              }
-              return prev - 1;
-            });
-          }, 1000);
-        }
-
-        const scene = sceneRef.current;
-        if (!scene) return;
-
-        const observer = scene.onBeforeRenderObservable.add(() => {
-          if (gameState !== "PLAYING") return;
-
-          const dt = scene.getEngine().getDeltaTime() / 1000;
-          const f = fightersRef.current;
-          const k = keysRef.current;
-
-          handleMovement(f.p1, f.p2, k, "KeyA", "KeyD", "KeyW", "KeyS", dt);
-          handleMovement(f.p2, f.p1, k, "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", dt);
-
-          f.p1.isBlocking = !!k["ShiftLeft"];
-          f.p2.isBlocking = !!k["ShiftRight"] || !!k["Numpad0"];
-
-          tryAttack(f.p1, f.p2, k, "KeyF", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN);
-          tryAttack(f.p1, f.p2, k, "KeyG", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN);
-          tryAttack(f.p1, f.p2, k, "KeyH", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN);
-
-          tryAttack(f.p2, f.p1, k, "Numpad1", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN);
-          tryAttack(f.p2, f.p1, k, "Numpad2", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN);
-          tryAttack(f.p2, f.p1, k, "Numpad3", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN);
-
-          [f.p1, f.p2].forEach((fighter) => {
-            if (fighter.attackCooldown > 0) fighter.attackCooldown -= dt;
-            if (fighter.flashTimer > 0) fighter.flashTimer -= dt;
-          });
-
-          updateVisuals(dt);
-          updateCamera();
-        });
-
-        return () => {
-          if (timerInterval) clearInterval(timerInterval);
-          if (scene) scene.onBeforeRenderObservable.remove(observer);
-        };
-      }, [gameState]);
-
-      function handleMovement(p, enemy, keys, leftKey, rightKey, upKey, downKey, dt) {
-        if (p.isAttacking) return;
-
-        let moveX = 0;
-        let moveZ = 0;
-
-        if (keys[leftKey]) moveX -= 1;
-        if (keys[rightKey]) moveX += 1;
-        if (keys[upKey]) moveZ += 1;
-        if (keys[downKey]) moveZ -= 1;
-
-        const len = Math.hypot(moveX, moveZ);
-        if (len > 0) {
-          moveX /= len; moveZ /= len;
-          p.x += moveX * MOVE_SPEED * dt;
-          p.z += moveZ * MOVE_SPEED * dt;
-          p.animPhase += dt * 8;
-          p.isMoving = true;
-        } else {
-          p.animPhase *= 0.9;
-          p.isMoving = false;
-        }
-
-        const distFromCenter = Math.hypot(p.x, p.z);
-        if (distFromCenter > ARENA_BOUNDS) {
-          p.x = (p.x / distFromCenter) * ARENA_BOUNDS;
-          p.z = (p.z / distFromCenter) * ARENA_BOUNDS;
-        }
-
-        p.facingDir = p.x < enemy.x ? 1 : -1;
-      }
-
-      function tryAttack(attacker, defender, keys, keyName, type, damage, range, cooldown) {
-        if (!keys[keyName] || attacker.attackCooldown > 0 || attacker.isAttacking) return;
-
-        if (type === "special") {
-          if (attacker.energy < MAX_ENERGY) return;
-          attacker.energy = 0;
-          if (attacker === fightersRef.current.p1) setP1Energy(0);
-          else setP2Energy(0);
-        }
-
-        attacker.isAttacking = true;
-        attacker.attackType = type;
-        attacker.attackCooldown = cooldown;
-
-        const dist = Math.hypot(attacker.x - defender.x, attacker.z - defender.z);
-        if (dist <= range) {
-          applyDamage(defender, attacker, damage, type);
-        } else {
-          playImpactSound(type);
-        }
-
-        setTimeout(() => {
-          attacker.isAttacking = false;
-          attacker.attackType = null;
-        }, cooldown * 1000);
-      }
-
-      function applyDamage(defender, attacker, rawDamage, type) {
-        let finalDamage = rawDamage;
-
-        if (defender.isBlocking) {
-          finalDamage *= 0.2;
-        }
-
-        defender.hp = Math.max(0, defender.hp - finalDamage);
-        defender.flashTimer = 0.15;
-
-        attacker.energy = Math.min(MAX_ENERGY, attacker.energy + 15);
-        if (attacker === fightersRef.current.p1) setP1Energy(attacker.energy);
-        else setP2Energy(attacker.energy);
-
-        if (defender === fightersRef.current.p1) setP1Hp(defender.hp);
-        else setP2Hp(defender.hp);
-
-        const attackerChar = attacker === fightersRef.current.p1 ? selectedP1Char : selectedP2Char;
-        const hitPos = new BABYLON.Vector3((attacker.x + defender.x) / 2, 1.2, (attacker.z + defender.z) / 2);
-        createHitParticles(sceneRef.current, hitPos, attackerChar.colorRGB, type === "special");
-
-        playImpactSound(type);
-
-        if (defender.hp <= 0) {
-          endRound(attacker === fightersRef.current.p1 ? "p1" : "p2");
-        }
-      }
-
-      function handleTimeOut() {
-        const p1 = fightersRef.current.p1;
-        const p2 = fightersRef.current.p2;
-
-        if (p1.hp > p2.hp) endRound("p1");
-        else if (p2.hp > p1.hp) endRound("p2");
-        else endRound("draw");
-      }
-
-      function endRound(winner) {
-        setGameState("ROUND_OVER");
-
-        let banner = "";
-        let newP1Wins = p1Wins;
-        let newP2Wins = p2Wins;
-
-        if (winner === "p1") {
-          banner = "اللاعب الأول فاز بالراوند!";
-          newP1Wins += 1;
-          setP1Wins(newP1Wins);
-        } else if (winner === "p2") {
-          banner = "اللاعب الثاني فاز بالراوند!";
-          newP2Wins += 1;
-          setP2Wins(newP2Wins);
-        } else {
-          banner = "تعادل في هذه الجولة!";
-        }
-
-        setRoundBanner(banner);
-
-        setTimeout(() => {
-          checkMatch(newP1Wins, newP2Wins);
-        }, 2000);
-      }
-
-      function checkMatch(w1, w2) {
-        if (w1 >= 2) {
-          setWinnerText("اللاعب الأول هو بطل المعركة!");
-          setGameState("MATCH_OVER");
-        } else if (w2 >= 2) {
-          setWinnerText("اللاعب الثاني هو بطل المعركة!");
-          setGameState("MATCH_OVER");
-        } else {
-          resetRound();
-          setGameState("PLAYING");
-        }
-      }
-
-      function resetRound() {
-        fightersRef.current.p1 = makeFighterState(-3.5, 0, 1);
-        fightersRef.current.p2 = makeFighterState(3.5, 0, -1);
-        setP1Hp(MAX_HEALTH);
-        setP2Hp(MAX_HEALTH);
-        setTimeLeft(ROUND_TIME_LIMIT);
-        setRoundBanner("");
-      }
-
-      async function startMatch() {
-        if (bgMusicRef.current) {
-          bgMusicRef.current.play();
-        }
-        updateArenaInScene(selectedArena);
-        await loadMatchFighters();
-        setP1Wins(0);
-        setP2Wins(0);
-        setP1Energy(0);
-        setP2Energy(0);
-        resetRound();
-        setGameState("PLAYING");
-      }
-
-      function updateVisuals(dt) {
-        const meshes = meshesRef.current;
-        const fighters = fightersRef.current;
-
-        [["p1", fighters.p1], ["p2", fighters.p2]].forEach(([id, s]) => {
-          const mesh = meshes[id];
-          if (!mesh || !mesh.root) return;
-
-          mesh.root.position.x = s.x;
-          mesh.root.position.z = s.z;
-
-          const targetRotY = s.facingDir === 1 ? Math.PI / 2 : -Math.PI / 2;
-          mesh.root.rotation.y = BABYLON.Scalar.Lerp(mesh.root.rotation.y, targetRotY, 0.2);
-
-          if (mesh.isModel) {
-            if (s.flashTimer > 0.05) playAnim(mesh, "hit", false);
-            else if (s.isAttacking && s.attackType) playAnim(mesh, s.attackType, false);
-            else if (s.isBlocking) playAnim(mesh, "block", true);
-            else if (s.isMoving) playAnim(mesh, "walk", true);
-            else playAnim(mesh, "idle", true);
-          } else {
-            if (s.arm) {
-              if (s.isAttacking) {
-                s.arm.position.z = 0.9;
-              } else {
-                s.arm.position.z = 0.4 + Math.sin(s.animPhase) * 0.1;
-              }
-            }
-          }
-        });
-      }
-
-      function updateCamera() {
-        const scene = sceneRef.current;
-        if (!scene) return;
-        const camera = scene.activeCamera;
-        const p1 = fightersRef.current.p1;
-        const p2 = fightersRef.current.p2;
-
-        const midX = (p1.x + p2.x) / 2;
-        const midZ = (p1.z + p2.z) / 2;
-        const dist = Math.hypot(p1.x - p2.x, p1.z - p2.z);
-
-        const targetCamX = midX;
-        const targetCamZ = midZ - Math.max(8, dist * 1.2);
-        const targetCamY = Math.max(3.5, dist * 0.35);
-
-        camera.position.x = BABYLON.Scalar.Lerp(camera.position.x, targetCamX, 0.05);
-        camera.position.y = BABYLON.Scalar.Lerp(camera.position.y, targetCamY, 0.05);
-        camera.position.z = BABYLON.Scalar.Lerp(camera.position.z, targetCamZ, 0.05);
-
-        camera.setTarget(new BABYLON.Vector3(midX, 1.2, midZ));
-      }
-
-      return (
-        <div className="relative w-full h-full">
-          <div id="canvas-container">
-            <canvas ref={canvasRef} />
-          </div>
-
-          <div id="ui-layer" className="flex flex-col justify-between p-6">
-            
-            {(gameState === "PLAYING" || gameState === "ROUND_OVER") && (
-              <div className="flex justify-between items-start w-full max-w-5xl mx-auto">
-                <div className="w-5/12 bg-gray-900/80 p-4 rounded-xl border border-red-500/40 backdrop-blur-md shadow-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-red-400 font-bold text-lg">{selectedP1Char.name}</span>
-                    <div className="flex gap-1">
-                      {[...Array(2)].map((_, i) => (
-                        <div key={i} className={`w-4 h-4 rounded-full border border-red-400 ${i < p1Wins ? 'bg-red-500' : 'bg-gray-700'}`} />
-                      ))}
+    <div class="game-container">
+        <!-- شريط النتيجة العلوي -->
+        <div class="hud">
+            <!-- اللاعب 2 (يمين القائمة / يسار الشاشة) -->
+            <div class="player-bar p2">
+                <div class="player-info">
+                    <span>اللاعب 2</span>
+                    <div class="lives">
+                        <div class="life-dot active"></div>
+                        <div class="life-dot active"></div>
                     </div>
-                  </div>
-                  <div className="w-full bg-gray-800 h-5 rounded-full overflow-hidden border border-gray-700">
-                    <div className="health-bar-fill bg-gradient-to-r from-red-600 to-red-400 h-full" style={{ width: `${(p1Hp / MAX_HEALTH) * 100}%` }} />
-                  </div>
-                  <div className="w-full bg-gray-800 h-2 rounded-full mt-2 overflow-hidden">
-                    <div className="bg-yellow-400 h-full transition-all duration-200" style={{ width: `${(p1Energy / MAX_ENERGY) * 100}%` }} />
-                  </div>
                 </div>
-
-                <div className="flex flex-col items-center bg-gray-900/90 px-6 py-2 rounded-2xl border border-yellow-500/50 shadow-xl">
-                  <span className="text-yellow-400 text-3xl font-extrabold tracking-wider">{timeLeft}</span>
-                  <span className="text-xs text-gray-400 uppercase tracking-widest mt-1">TIME</span>
+                <div class="health-bg">
+                    <div class="health-fill" id="p2Health"></div>
                 </div>
+            </div>
 
-                <div className="w-5/12 bg-gray-900/80 p-4 rounded-xl border border-blue-500/40 backdrop-blur-md shadow-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex gap-1">
-                      {[...Array(2)].map((_, i) => (
-                        <div key={i} className={`w-4 h-4 rounded-full border border-blue-400 ${i < p2Wins ? 'bg-blue-500' : 'bg-gray-700'}`} />
-                      ))}
+            <!-- العداد -->
+            <div class="timer-box">
+                <div class="timer-val" id="timer">60</div>
+                <div class="timer-label">TIME</div>
+            </div>
+
+            <!-- اللاعب 1 (يسار القائمة / يمين الشاشة) -->
+            <div class="player-bar p1">
+                <div class="player-info">
+                    <div class="lives">
+                        <div class="life-dot active"></div>
+                        <div class="life-dot active"></div>
                     </div>
-                    <span className="text-blue-400 font-bold text-lg">{selectedP2Char.name}</span>
-                  </div>
-                  <div className="w-full bg-gray-800 h-5 rounded-full overflow-hidden border border-gray-700 dir-ltr">
-                    <div className="health-bar-fill bg-gradient-to-r from-blue-400 to-blue-600 h-full float-right" style={{ width: `${(p2Hp / MAX_HEALTH) * 100}%` }} />
-                  </div>
-                  <div className="w-full bg-gray-800 h-2 rounded-full mt-2 overflow-hidden dir-ltr">
-                    <div className="bg-yellow-400 h-full transition-all duration-200 float-right" style={{ width: `${(p2Energy / MAX_ENERGY) * 100}%` }} />
-                  </div>
+                    <span>اللاعب 1</span>
                 </div>
-              </div>
-            )}
-
-            {gameState === "ROUND_OVER" && (
-              <div className="self-center bg-black/80 px-10 py-5 rounded-2xl border-2 border-yellow-400 backdrop-blur-md animate-bounce">
-                <h2 className="text-yellow-400 text-3xl font-extrabold text-center">{roundBanner}</h2>
-              </div>
-            )}
-
-            {gameState === "START" && (
-              <div className="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col justify-center items-center interactive z-50">
-                <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-blue-500 mb-6 tracking-wide">
-                  قتال الساحة 3D
-                </h1>
-                
-                <div className="grid grid-cols-2 gap-8 mb-8 text-white text-sm max-w-2xl bg-gray-900/60 p-6 rounded-2xl border border-gray-800">
-                  <div className="space-y-2">
-                    <h3 className="text-red-400 font-bold text-base border-b border-red-500/30 pb-1">اللاعب 1</h3>
-                    <p>الحركة: <span className="text-yellow-300">W, A, S, D</span></p>
-                    <p>لكمة: <span className="text-yellow-300">F</span> | ركلة: <span className="text-yellow-300">G</span></p>
-                    <p>ضربة خاصة: <span className="text-yellow-300">H</span></p>
-                    <p>دفاع / حماية: <span className="text-yellow-300">Shift أيسر</span></p>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-blue-400 font-bold text-base border-b border-blue-500/30 pb-1">اللاعب 2</h3>
-                    <p>الحركة: <span className="text-yellow-300">الأسهم</span></p>
-                    <p>لكمة: <span className="text-yellow-300">Numpad 1</span> | ركلة: <span className="text-yellow-300">Numpad 2</span></p>
-                    <p>ضربة خاصة: <span className="text-yellow-300">Numpad 3</span></p>
-                    <p>دفاع / حماية: <span className="text-yellow-300">Shift أيمن / Numpad 0</span></p>
-                  </div>
+                <div class="health-bg">
+                    <div class="health-fill" id="p1Health"></div>
                 </div>
-
-                <button
-                  onClick={() => setGameState("CHAR_SELECT")}
-                  className="px-10 py-4 bg-gradient-to-r from-red-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-white font-extrabold text-xl rounded-full shadow-2xl transform hover:scale-105 transition-all cursor-pointer"
-                >
-                  اختر الشخصيات
-                </button>
-              </div>
-            )}
-
-            {gameState === "CHAR_SELECT" && (
-              <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col justify-center items-center interactive z-50 p-6">
-                <h2 className="text-3xl font-extrabold text-yellow-400 mb-6">اختيار الشخصيات</h2>
-                
-                <div className="grid grid-cols-2 gap-12 w-full max-w-4xl mb-8">
-                  <div className="bg-gray-900/80 p-6 rounded-2xl border border-red-500/50 flex flex-col items-center">
-                    <h3 className="text-red-400 text-xl font-bold mb-4">اللاعب الأول (P1)</h3>
-                    <div className="flex flex-col gap-3 w-full">
-                      {CHARACTERS.map((char) => (
-                        <button
-                          key={char.id}
-                          onClick={() => setSelectedP1Char(char)}
-                          className={`p-3 rounded-xl border text-right transition-all flex justify-between items-center ${
-                            selectedP1Char.id === char.id
-                              ? "bg-red-950/80 border-red-500 text-white shadow-lg shadow-red-500/20"
-                              : "bg-gray-800/50 border-gray-700 text-gray-400 hover:border-gray-500"
-                          }`}
-                        >
-                          <div>
-                            <div className="font-bold">{char.name}</div>
-                            <div className="text-xs text-gray-400">{char.desc}</div>
-                          </div>
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: char.colorHex }} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-900/80 p-6 rounded-2xl border border-blue-500/50 flex flex-col items-center">
-                    <h3 className="text-blue-400 text-xl font-bold mb-4">اللاعب الثاني (P2)</h3>
-                    <div className="flex flex-col gap-3 w-full">
-                      {CHARACTERS.map((char) => (
-                        <button
-                          key={char.id}
-                          onClick={() => setSelectedP2Char(char)}
-                          className={`p-3 rounded-xl border text-right transition-all flex justify-between items-center ${
-                            selectedP2Char.id === char.id
-                              ? "bg-blue-950/80 border-blue-500 text-white shadow-lg shadow-blue-500/20"
-                              : "bg-gray-800/50 border-gray-700 text-gray-400 hover:border-gray-500"
-                          }`}
-                        >
-                          <div>
-                            <div className="font-bold">{char.name}</div>
-                            <div className="text-xs text-gray-400">{char.desc}</div>
-                          </div>
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: char.colorHex }} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => setGameState("START")}
-                    className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition-all cursor-pointer"
-                  >
-                    رجوع
-                  </button>
-                  <button
-                    onClick={() => setGameState("ARENA_SELECT")}
-                    className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-extrabold rounded-xl shadow-lg transition-all cursor-pointer"
-                  >
-                    اختر الحلبة
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {gameState === "ARENA_SELECT" && (
-              <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col justify-center items-center interactive z-50 p-6">
-                <h2 className="text-3xl font-extrabold text-yellow-400 mb-6">اختيار حلبة القتال</h2>
-
-                <div className="grid grid-cols-3 gap-6 w-full max-w-4xl mb-8">
-                  {ARENAS.map((arena) => (
-                    <button
-                      key={arena.id}
-                      onClick={() => setSelectedArena(arena)}
-                      className={`p-6 rounded-2xl border text-center transition-all flex flex-col justify-between items-center h-48 bg-gradient-to-b ${arena.bgGradient} ${
-                        selectedArena.id === arena.id
-                          ? "border-yellow-400 scale-105 shadow-xl shadow-yellow-500/20 ring-2 ring-yellow-400"
-                          : "border-gray-800 opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      <h3 className="text-white font-extrabold text-xl mb-2">{arena.name}</h3>
-                      <div className="w-12 h-12 rounded-full border-2 border-white/20 flex items-center justify-center">
-                        <div className="w-6 h-6 rounded-full" style={{ backgroundColor: `#${arena.ringColor.toHexString()}` }} />
-                      </div>
-                      <span className="text-xs text-gray-300">اضغط للاختيار</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => setGameState("CHAR_SELECT")}
-                    className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl transition-all cursor-pointer"
-                  >
-                    رجوع
-                  </button>
-                  <button
-                    onClick={startMatch}
-                    className="px-10 py-3 bg-gradient-to-r from-red-600 to-yellow-500 hover:from-red-500 hover:to-yellow-400 text-white font-extrabold text-xl rounded-xl shadow-xl transition-all cursor-pointer"
-                  >
-                    ابدأ المعركة
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {gameState === "MATCH_OVER" && (
-              <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col justify-center items-center interactive z-50">
-                <h1 className="text-4xl font-extrabold text-yellow-400 mb-4 animate-pulse">{winnerText}</h1>
-                <p className="text-gray-300 mb-8 text-lg">أفضل من 3 جولات</p>
-                <button
-                  onClick={() => setGameState("CHAR_SELECT")}
-                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all cursor-pointer"
-                >
-                  إعادة اللعب
-                </button>
-              </div>
-            )}
-
-          </div>
+            </div>
         </div>
-      );
-    }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<FightingGame />);
-  </script>
+        <!-- أزرار التوجيه المساعدة -->
+        <div class="controls-hint">
+            اللاعب 1: [A/D] حركة | [W] قفز | [Space] هجوم &nbsp;|&nbsp; اللاعب 2: [الأسهم] حركة | [Up] قفز | [Enter] هجوم
+        </div>
+
+        <!-- شاشة نهاية اللعبة -->
+        <div class="game-over-modal" id="gameOverModal">
+            <h1 id="winnerText">فاز اللاعب 1!</h1>
+            <button class="restart-btn" onclick="resetGame()">إعادة اللعب</button>
+        </div>
+
+        <!-- منطقة الرسم -->
+        <canvas id="gameCanvas" width="1024" height="576"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- صور الشخصيات المضمنة بصيغة SVG ---
+        const svg1 = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="200" viewBox="0 0 120 200"><g id="body"><path d="M40 20 h40 v30 h-40 z" fill="#ff4d4d"/><circle cx="50" cy="32" r="4" fill="#fff"/><circle cx="70" cy="32" r="4" fill="#fff"/><rect x="30" y="50" width="60" height="80" rx="8" fill="#e60000"/><rect x="45" y="50" width="30" height="80" fill="#1a1a1a"/><rect x="10" y="60" width="20" height="60" rx="6" fill="#ff4d4d"/><rect x="90" y="60" width="20" height="60" rx="6" fill="#ff4d4d"/><rect x="32" y="130" width="24" height="60" rx="5" fill="#2a2a2a"/><rect x="64" y="130" width="24" height="60" rx="5" fill="#2a2a2a"/><rect x="25" y="180" width="30" height="15" rx="3" fill="#ff4d4d"/><rect x="65" y="180" width="30" height="15" rx="3" fill="#ff4d4d"/><rect x="35" y="120" width="50" height="12" fill="#ffd700"/></g></svg>`;
+        const svg2 = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="200" viewBox="0 0 120 200"><g id="body"><path d="M40 20 h40 v30 h-40 z" fill="#3b82f6"/><circle cx="50" cy="32" r="4" fill="#fff"/><circle cx="70" cy="32" r="4" fill="#fff"/><rect x="30" y="50" width="60" height="80" rx="8" fill="#1d4ed8"/><rect x="45" y="50" width="30" height="80" fill="#1a1a1a"/><rect x="10" y="60" width="20" height="60" rx="6" fill="#3b82f6"/><rect x="90" y="60" width="20" height="60" rx="6" fill="#3b82f6"/><rect x="32" y="130" width="24" height="60" rx="5" fill="#2a2a2a"/><rect x="64" y="130" width="24" height="60" rx="5" fill="#2a2a2a"/><rect x="25" y="180" width="30" height="15" rx="3" fill="#3b82f6"/><rect x="65" y="180" width="30" height="15" rx="3" fill="#3b82f6"/><rect x="35" y="120" width="50" height="12" fill="#ffd700"/></g></svg>`;
+
+        const p1Img = new Image();
+        p1Img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg1);
+
+        const p2Img = new Image();
+        p2Img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg2);
+
+        // --- الفيزيائيّات والإعدادات العامة ---
+        const gravity = 0.7;
+        const groundY = 430;
+
+        class Fighter {
+            constructor({ position, velocity, image, color, primaryColor, attackDirection, isPlayer1 }) {
+                this.position = position;
+                this.velocity = velocity;
+                this.width = 75;
+                this.height = 135;
+                this.image = image;
+                this.color = color;
+                this.primaryColor = primaryColor || color;
+                this.isPlayer1 = isPlayer1;
+                this.health = 100;
+                this.isGrounded = false;
+                this.isAttacking = false;
+                this.hitTimer = 0;
+                this.attackDirection = attackDirection;
+                this.attackBox = {
+                    position: { x: this.position.x, y: this.position.y },
+                    width: 90,
+                    height: 50
+                };
+            }
+
+            draw() {
+                // رسم الشخصية بآمان وحماية من أخطاء التحميل
+                let drawn = false;
+                if (this.image && this.image.complete && this.image.naturalWidth !== 0) {
+                    try {
+                        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+                        drawn = true;
+                    } catch (e) {
+                        drawn = false;
+                    }
+                }
+
+                // رسم احتياطي متجهي متكيف عند عدم جاهزية الصورة
+                if (!drawn) {
+                    this.drawProcedural();
+                }
+
+                // تأثير الضربة عند التلقي
+                if (this.hitTimer > 0) {
+                    this.hitTimer--;
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.fillRect(this.position.x - 4, this.position.y - 4, this.width + 8, this.height + 8);
+                    ctx.restore();
+                }
+
+                // رسم التأثير الهجومي عند الضغط على زر الضربة
+                if (this.isAttacking) {
+                    ctx.save();
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 12;
+                    const attackX = this.attackDirection === 'right' 
+                        ? this.position.x + this.width 
+                        : this.position.x - this.attackBox.width;
+
+                    ctx.fillRect(attackX, this.position.y + 30, this.attackBox.width, this.attackBox.height);
+                    ctx.restore();
+                }
+            }
+
+            drawProcedural() {
+                const x = this.position.x;
+                const y = this.position.y;
+                const w = this.width;
+                const h = this.height;
+                const facingRight = this.attackDirection === 'right';
+
+                ctx.save();
+
+                // الظل
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.ellipse(x + w / 2, y + h - 2, w / 2, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // الجسد
+                ctx.fillStyle = this.primaryColor;
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(x + 15, y + 35, w - 30, 55, 8);
+                } else {
+                    ctx.rect(x + 15, y + 35, w - 30, 55);
+                }
+                ctx.fill();
+
+                // السترة
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(x + 24, y + 35, w - 48, 55);
+
+                // الرأس
+                ctx.fillStyle = this.isPlayer1 ? '#f87171' : '#60a5fa';
+                ctx.beginPath();
+                ctx.arc(x + w / 2, y + 20, 18, 0, Math.PI * 2);
+                ctx.fill();
+
+                // عِصابة الرأس
+                ctx.fillStyle = this.primaryColor;
+                ctx.fillRect(x + 10, y + 12, w - 20, 8);
+
+                // العينان
+                ctx.fillStyle = '#ffffff';
+                const eyeX = facingRight ? x + w / 2 + 3 : x + w / 2 - 11;
+                ctx.fillRect(eyeX, y + 18, 8, 5);
+
+                // الحزام
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillRect(x + 15, y + 85, w - 30, 8);
+
+                // الساقان
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(x + 18, y + 93, 14, 32);
+                ctx.fillRect(x + w - 32, y + 93, 14, 32);
+
+                // الأحذية
+                ctx.fillStyle = this.primaryColor;
+                ctx.fillRect(x + 14, y + 120, 20, 15);
+                ctx.fillRect(x + w - 34, y + 120, 20, 15);
+
+                // الذراعان والقفازات
+                ctx.fillStyle = this.primaryColor;
+                if (this.isAttacking) {
+                    const armX = facingRight ? x + w - 10 : x - 25;
+                    ctx.fillRect(armX, y + 42, 35, 16);
+                } else {
+                    ctx.fillRect(x + 5, y + 45, 12, 28);
+                    ctx.fillRect(x + w - 17, y + 45, 12, 28);
+                }
+
+                ctx.restore();
+            }
+
+            update() {
+                this.draw();
+
+                // تحديث موقع صندوق الضربة
+                this.attackBox.position.x = this.attackDirection === 'right' 
+                    ? this.position.x + this.width 
+                    : this.position.x - this.attackBox.width;
+                this.attackBox.position.y = this.position.y + 30;
+
+                // تطبيق الحركة والجاذبية
+                this.position.x += this.velocity.x;
+                this.position.y += this.velocity.y;
+
+                // حدود الأرضية
+                if (this.position.y + this.height >= groundY) {
+                    this.position.y = groundY - this.height;
+                    this.velocity.y = 0;
+                    this.isGrounded = true;
+                } else {
+                    this.velocity.y += gravity;
+                    this.isGrounded = false;
+                }
+
+                // حدود الجدران
+                if (this.position.x < 0) this.position.x = 0;
+                if (this.position.x + this.width > canvas.width) this.position.x = canvas.width - this.width;
+            }
+
+            attack() {
+                if (this.isAttacking) return;
+                this.isAttacking = true;
+                setTimeout(() => {
+                    this.isAttacking = false;
+                }, 150);
+            }
+        }
+
+        // إنشاء كائنات اللاعبين
+        const player1 = new Fighter({
+            position: { x: 180, y: 100 },
+            velocity: { x: 0, y: 0 },
+            image: p1Img,
+            color: '#ef4444',
+            primaryColor: '#ef4444',
+            attackDirection: 'right',
+            isPlayer1: true
+        });
+
+        const player2 = new Fighter({
+            position: { x: 770, y: 100 },
+            velocity: { x: 0, y: 0 },
+            image: p2Img,
+            color: '#3b82f6',
+            primaryColor: '#3b82f6',
+            attackDirection: 'left',
+            isPlayer1: false
+        });
+
+        // متابعة مفاتيح لوحة التحكم
+        const keys = {
+            a: { pressed: false },
+            d: { pressed: false },
+            ArrowLeft: { pressed: false },
+            ArrowRight: { pressed: false }
+        };
+
+        // --- إدارة العداد وزمن المباراة ---
+        let timer = 60;
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timer > 0) {
+                    timer--;
+                    document.getElementById('timer').innerText = timer;
+                } else {
+                    endGameByTimer();
+                }
+            }, 1000);
+        }
+
+        // فحص الاصطدام والضربات
+        function checkCollision(attacker, defender) {
+            return (
+                attacker.isAttacking &&
+                attacker.attackBox.position.x < defender.position.x + defender.width &&
+                attacker.attackBox.position.x + attacker.attackBox.width > defender.position.x &&
+                attacker.attackBox.position.y < defender.position.y + defender.height &&
+                attacker.attackBox.position.y + attacker.attackBox.height > defender.position.y
+            );
+        }
+
+        let isGameOver = false;
+
+        // الحلقة الرئيسية للعبة (Animation Loop)
+        function animate() {
+            if (isGameOver) return;
+            requestAnimationFrame(animate);
+
+            // رسم خلفية الحلَبة والأرضية
+            ctx.fillStyle = '#0f1422';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // رسم خط الأرضية
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(0, groundY, canvas.width, 6);
+
+            // تحديث موقع ورسم اللاعبين
+            player1.update();
+            player2.update();
+
+            // إيقاف الحركة عند عدم الضغط
+            player1.velocity.x = 0;
+            player2.velocity.x = 0;
+
+            // حراك اللاعب 1
+            if (keys.a.pressed) player1.velocity.x = -5;
+            if (keys.d.pressed) player1.velocity.x = 5;
+
+            // حراك اللاعب 2
+            if (keys.ArrowLeft.pressed) player2.velocity.x = -5;
+            if (keys.ArrowRight.pressed) player2.velocity.x = 5;
+
+            // اكتشاف الاصطدامات والضربات
+            if (checkCollision(player1, player2)) {
+                player1.isAttacking = false;
+                player2.health = Math.max(0, player2.health - 12);
+                player2.hitTimer = 8;
+                document.getElementById('p2Health').style.width = player2.health + '%';
+                if (player2.health <= 0) endGame('فاز اللاعب 1!');
+            }
+
+            if (checkCollision(player2, player1)) {
+                player2.isAttacking = false;
+                player1.health = Math.max(0, player1.health - 12);
+                player1.hitTimer = 8;
+                document.getElementById('p1Health').style.width = player1.health + '%';
+                if (player1.health <= 0) endGame('فاز اللاعب 1!');
+            }
+        }
+
+        // --- التحكم بضغطات اللوحة ---
+        window.addEventListener('keydown', (e) => {
+            if (isGameOver) return;
+            switch (e.code) {
+                // التحكم باللاعب 1
+                case 'KeyA': keys.a.pressed = true; break;
+                case 'KeyD': keys.d.pressed = true; break;
+                case 'KeyW': if (player1.isGrounded) player1.velocity.y = -15; break;
+                case 'Space': player1.attack(); break;
+
+                // التحكم باللاعب 2
+                case 'ArrowLeft': keys.ArrowLeft.pressed = true; break;
+                case 'ArrowRight': keys.ArrowRight.pressed = true; break;
+                case 'ArrowUp': if (player2.isGrounded) player2.velocity.y = -15; break;
+                case 'Enter': player2.attack(); break;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            switch (e.code) {
+                case 'KeyA': keys.a.pressed = false; break;
+                case 'KeyD': keys.d.pressed = false; break;
+                case 'ArrowLeft': keys.ArrowLeft.pressed = false; break;
+                case 'ArrowRight': keys.ArrowRight.pressed = false; break;
+            }
+        });
+
+        function endGame(message) {
+            isGameOver = true;
+            clearInterval(timerInterval);
+            document.getElementById('winnerText').innerText = message;
+            document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        function endGameByTimer() {
+            if (player1.health > player2.health) endGame('فاز اللاعب 1 بالوقت!');
+            else if (player2.health > player1.health) endGame('فاز اللاعب 2 بالوقت!');
+            else endGame('تعادل!');
+        }
+
+        function resetGame() {
+            player1.health = 100;
+            player2.health = 100;
+            player1.position = { x: 180, y: 100 };
+            player2.position = { x: 770, y: 100 };
+            document.getElementById('p1Health').style.width = '100%';
+            document.getElementById('p2Health').style.width = '100%';
+            timer = 60;
+            document.getElementById('timer').innerText = timer;
+            document.getElementById('gameOverModal').style.display = 'none';
+            isGameOver = false;
+            clearInterval(timerInterval);
+            startTimer();
+            animate();
+        }
+
+        // تشغيل اللعبة عند التحميل
+        startTimer();
+        animate();
+    </script>
 </body>
 </html>
