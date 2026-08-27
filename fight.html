@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>لعبة القتال ثلاثية الأبعاد</title>
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Tahoma', 'Arial', sans-serif; }
+  #root { width: 100vw; height: 100vh; position: relative; }
+  #renderCanvas { width: 100%; height: 100%; touch-action: none; display: block; }
+
+  .hud {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+    z-index: 10;
+    box-sizing: border-box;
+  }
+  .healthBox { width: 40%; }
+  .healthBox.p2 { display: flex; flex-direction: column; align-items: flex-end; }
+  .name {
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 2px 2px 4px #000;
+    margin-bottom: 4px;
+  }
+  .healthBarOuter {
+    width: 100%;
+    height: 26px;
+    background: #1a1a1a;
+    border: 3px solid #666;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.7);
+  }
+  .healthBarInner {
+    height: 100%;
+    background: linear-gradient(90deg, #ff3838, #ffae00, #4dff4d);
+    transition: width 0.25s ease-out;
+  }
+  .healthBarInner.p2 { margin-left: auto; }
+
+  .timer {
+    color: #fff;
+    font-size: 42px;
+    font-weight: bold;
+    text-shadow: 2px 2px 6px #000;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #888;
+  }
+
+  .roundBanner {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffcc00;
+    font-size: 64px;
+    font-weight: 900;
+    text-shadow: 3px 3px 10px #000, 0 0 20px rgba(255,204,0,0.6);
+    z-index: 20;
+    pointer-events: none;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  .instructions {
+    position: absolute;
+    bottom: 10px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: #ddd;
+    font-size: 13px;
+    text-shadow: 1px 1px 3px #000;
+    pointer-events: none;
+    z-index: 10;
+    box-sizing: border-box;
+  }
+  .instructions .box {
+    background: rgba(0,0,0,0.45);
+    padding: 8px 14px;
+    border-radius: 6px;
+    line-height: 1.6;
+  }
+
+  .winnerScreen {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+    color: #fff;
+  }
+  .winnerScreen h1 {
+    font-size: 56px;
+    color: #ffcc00;
+    text-shadow: 3px 3px 10px #000;
+    margin-bottom: 20px;
+  }
+  .winnerScreen button {
+    font-size: 20px;
+    padding: 12px 30px;
+    background: #d92b2b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .winnerScreen button:hover { background: #ff3c3c; }
+
+  .scoreDots {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .scoreDots .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #333;
+    border: 2px solid #999;
+  }
+  .scoreDots .dot.won { background: #ffcc00; border-color: #fff; }
+
+  .hitFlash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 15;
+    background: rgba(255,0,0,0);
+    transition: background 0.1s;
+  }
+
+  .startScreen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, #2a0a0a, #000);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+    color: #fff;
+    text-align: center;
+  }
+  .startScreen h1 {
+    font-size: 48px;
+    color: #ff3838;
+    text-shadow: 3px 3px 12px #000;
+    margin-bottom: 10px;
+  }
+  .startScreen p { color: #ccc; font-size: 16px; margin: 4px 0; }
+  .startScreen button {
+    margin-top: 24px;
+    font-size: 22px;
+    padding: 14px 40px;
+    background: #d92b2b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .startScreen button:hover { background: #ff3c3c; }
+  .controlsGrid {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+    text-align: right;
+  }
+  .controlsGrid .col {
+    background: rgba(255,255,255,0.06);
+    padding: 14px 20px;
+    border-radius: 8px;
+  }
+  .controlsGrid h3 { color: #ffcc00; margin: 0 0 8px 0; }
+  .controlsGrid div.row { margin: 3px 0; font-size: 14px; color: #eee; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babylonjs/6.49.0/babylon.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useEffect, useRef, useState, useCallback } = React;
+
+/* ============================================================
+   إعدادات اللعبة العامة
+   ============================================================ */
+const ARENA_HALF = 9;          // نصف عرض الأرضية
+const MAX_HEALTH = 100;
+const ROUND_TIME = 60;         // ثانية لكل راوند
+const ROUNDS_TO_WIN = 2;       // أفضل من 3
+
+const MOVE_SPEED = 6.0;
+const TURN_SPEED = 8.0;
+const JUMP_FORCE = 9.5;
+const GRAVITY = -28;
+
+const PUNCH_DAMAGE = 6;
+const KICK_DAMAGE = 10;
+const SPECIAL_DAMAGE = 16;
+const BLOCK_REDUCTION = 0.85; // نسبة تقليل الضرر أثناء الدفاع
+
+const PUNCH_RANGE = 2.2;
+const KICK_RANGE = 2.6;
+const SPECIAL_RANGE = 3.2;
+
+const PUNCH_COOLDOWN = 0.35;
+const KICK_COOLDOWN = 0.55;
+const SPECIAL_COOLDOWN = 1.3;
+const HIT_STUN = 0.35;
+
+/* ============================================================
+   كنترولز كل لاعب
+   ============================================================ */
+const P1_KEYS = { left: "a", right: "d", forward: "w", back: "s", jump: "f", punch: "g", kick: "h", special: "j", block: "shift" };
+const P2_KEYS = { left: "arrowleft", right: "arrowright", forward: "arrowup", back: "arrowdown", jump: "k", punch: "l", kick: ";", special: "'", block: "control" };
+
+/* ============================================================
+   إنشاء شخصية مقاتل (كبسولة + رأس + أذرع بسيطة) بمحور Babylon
+   ============================================================ */
+function createFighterMesh(scene, color, name) {
+  const root = new BABYLON.TransformNode(name + "_root", scene);
+
+  const bodyMat = new BABYLON.StandardMaterial(name + "_bodyMat", scene);
+  bodyMat.diffuseColor = color;
+  bodyMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+
+  const headMat = new BABYLON.StandardMaterial(name + "_headMat", scene);
+  headMat.diffuseColor = new BABYLON.Color3(0.85, 0.7, 0.55);
+
+  const limbMat = new BABYLON.StandardMaterial(name + "_limbMat", scene);
+  limbMat.diffuseColor = color.scale(0.7);
+
+  // الجسم
+  const torso = BABYLON.MeshBuilder.CreateCapsule(name + "_torso", { height: 1.6, radius: 0.42 }, scene);
+  torso.position.y = 1.15;
+  torso.material = bodyMat;
+  torso.parent = root;
+
+  // الرأس
+  const head = BABYLON.MeshBuilder.CreateSphere(name + "_head", { diameter: 0.5 }, scene);
+  head.position.y = 2.15;
+  head.material = headMat;
+  head.parent = root;
+
+  // الذراع اليمنى (تستخدم للكمات)
+  const armR = BABYLON.MeshBuilder.CreateCapsule(name + "_armR", { height: 0.9, radius: 0.14 }, scene);
+  armR.position.set(0.55, 1.35, 0);
+  armR.rotation.z = -0.3;
+  armR.material = limbMat;
+  armR.parent = root;
+
+  // الذراع اليسرى
+  const armL = BABYLON.MeshBuilder.CreateCapsule(name + "_armL", { height: 0.9, radius: 0.14 }, scene);
+  armL.position.set(-0.55, 1.35, 0);
+  armL.rotation.z = 0.3;
+  armL.material = limbMat;
+  armL.parent = root;
+
+  // الساق اليمنى (تستخدم للركلات)
+  const legR = BABYLON.MeshBuilder.CreateCapsule(name + "_legR", { height: 1.0, radius: 0.17 }, scene);
+  legR.position.set(0.22, 0.3, 0);
+  legR.material = limbMat;
+  legR.parent = root;
+
+  // الساق اليسرى
+  const legL = BABYLON.MeshBuilder.CreateCapsule(name + "_legL", { height: 1.0, radius: 0.17 }, scene);
+  legL.position.set(-0.22, 0.3, 0);
+  legL.material = limbMat;
+  legL.parent = root;
+
+  // درع دفاع (يظهر عند البلوك)
+  const shield = BABYLON.MeshBuilder.CreateSphere(name + "_shield", { diameter: 1.9, segments: 8 }, scene);
+  shield.position.y = 1.2;
+  const shieldMat = new BABYLON.StandardMaterial(name + "_shieldMat", scene);
+  shieldMat.diffuseColor = new BABYLON.Color3(0.3, 0.7, 1);
+  shieldMat.alpha = 0.0;
+  shieldMat.emissiveColor = new BABYLON.Color3(0.2, 0.5, 1);
+  shield.material = shieldMat;
+  shield.parent = root;
+  shield.isPickable = false;
+
+  return { root, torso, head, armR, armL, legR, legL, shield, shieldMat, bodyMat };
+}
+
+/* ============================================================
+   حالة المقاتل (منطق، غير مرتبط بالعرض)
+   ============================================================ */
+function makeFighterState(x, z, facing) {
+  return {
+    x, y: 0, z,
+    vy: 0,
+    facing,           // 1 = يواجه +x، -1 = يواجه -x
+    health: MAX_HEALTH,
+    isJumping: false,
+    isBlocking: false,
+    isAttacking: false,
+    attackType: null,
+    attackTimer: 0,
+    hitStunTimer: 0,
+    cooldowns: { punch: 0, kick: 0, special: 0 },
+    wins: 0,
+    animPhase: 0,
+    flashTimer: 0,
+  };
+}
+
+/* ============================================================
+   المكوّن الرئيسي
+   ============================================================ */
+function FightingGame() {
+  const canvasRef = useRef(null);
+  const engineRef = useRef(null);
+  const sceneRef = useRef(null);
+  const keysRef = useRef({});
+  const fightersRef = useRef({});
+  const meshesRef = useRef({});
+  const cameraRef = useRef(null);
+
+  const [phase, setPhase] = useState("start"); // start | fighting | roundEnd | matchEnd
+  const [hpP1, setHpP1] = useState(MAX_HEALTH);
+  const [hpP2, setHpP2] = useState(MAX_HEALTH);
+  const [timeLeft, setTimeLeft] = useState(ROUND_TIME);
+  const [winsP1, setWinsP1] = useState(0);
+  const [winsP2, setWinsP2] = useState(0);
+  const [roundBanner, setRoundBanner] = useState("");
+  const [matchWinner, setMatchWinner] = useState(null);
+  const [flashColor, setFlashColor] = useState("rgba(255,0,0,0)");
+
+  const timeLeftRef = useRef(ROUND_TIME);
+  const phaseRef = useRef("start");
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
+
+  /* ---------- تهيئة Babylon مرة واحدة ---------- */
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const engine = new BABYLON.Engine(canvas, true, { stencil: true, preserveDrawingBuffer: true });
+    engineRef.current = engine;
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.05, 1);
+    sceneRef.current = scene;
+
+    // إضاءة
+    const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+    hemi.intensity = 0.75;
+    const dir = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(-0.5, -1, 0.3), scene);
+    dir.intensity = 0.9;
+    dir.position = new BABYLON.Vector3(10, 20, -10);
+    const shadowGen = new BABYLON.ShadowGenerator(1024, dir);
+    shadowGen.usePoissonSampling = true;
+
+    // كاميرا: تتبع المنتصف بين اللاعبين
+    const camera = new BABYLON.ArcRotateCamera(
+      "cam",
+      Math.PI / 2,
+      1.15,
+      16,
+      new BABYLON.Vector3(0, 1.3, 0),
+      scene
+    );
+    camera.lowerRadiusLimit = 10;
+    camera.upperRadiusLimit = 22;
+    camera.lowerBetaLimit = 0.9;
+    camera.upperBetaLimit = 1.4;
+    camera.panningSensibility = 0;
+    camera.inputs.clear(); // كاميرا محسوبة تلقائيًا، لا تتحكم فيها الفأرة
+    cameraRef.current = camera;
+
+    // الأرضية (ساحة القتال)
+    const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+    groundMat.diffuseColor = new BABYLON.Color3(0.15, 0.13, 0.18);
+    groundMat.specularColor = new BABYLON.Color3(0, 0, 0);
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: ARENA_HALF * 2 + 4, height: 14 }, scene);
+    ground.material = groundMat;
+    ground.receiveShadows = true;
+
+    // شبكة أرضية بسيطة (خطوط) لإحساس بالحركة
+    const gridMat = new BABYLON.GridMaterial ? null : null;
+    // خطوط حدود الساحة
+    const lineOpts1 = { points: [
+      new BABYLON.Vector3(-ARENA_HALF, 0.01, -7),
+      new BABYLON.Vector3(ARENA_HALF, 0.01, -7)
+    ]};
+    const lineOpts2 = { points: [
+      new BABYLON.Vector3(-ARENA_HALF, 0.01, 7),
+      new BABYLON.Vector3(ARENA_HALF, 0.01, 7)
+    ]};
+    BABYLON.MeshBuilder.CreateLines("borderLine1", lineOpts1, scene).color = new BABYLON.Color3(1, 0.2, 0.2);
+    BABYLON.MeshBuilder.CreateLines("borderLine2", lineOpts2, scene).color = new BABYLON.Color3(1, 0.2, 0.2);
+
+    // خلفية / سماء بسيطة
+    const skyMat = new BABYLON.StandardMaterial("skyMat", scene);
+    skyMat.backFaceCulling = false;
+    skyMat.diffuseColor = new BABYLON.Color3(0.05, 0.03, 0.08);
+    skyMat.emissiveColor = new BABYLON.Color3(0.08, 0.04, 0.12);
+    const sky = BABYLON.MeshBuilder.CreateBox("sky", { size: 200 }, scene);
+    sky.material = skyMat;
+    sky.infiniteDistance = true;
+
+    // إنشاء المقاتلين
+    const p1Mesh = createFighterMesh(scene, new BABYLON.Color3(0.85, 0.15, 0.15), "p1");
+    const p2Mesh = createFighterMesh(scene, new BABYLON.Color3(0.15, 0.35, 0.85), "p2");
+    shadowGen.addShadowCaster(p1Mesh.torso);
+    shadowGen.addShadowCaster(p2Mesh.torso);
+    meshesRef.current = { p1: p1Mesh, p2: p2Mesh };
+
+    fightersRef.current = {
+      p1: makeFighterState(-3.5, 0, 1),
+      p2: makeFighterState(3.5, 0, -1),
+    };
+
+    // كابتشر مفاتيح لوحة المفاتيح
+    const onKeyDown = (e) => { keysRef.current[e.key.toLowerCase()] = true; };
+    const onKeyUp = (e) => { keysRef.current[e.key.toLowerCase()] = false; };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+
+    engine.runRenderLoop(() => {
+      const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
+      if (phaseRef.current === "fighting") {
+        updateGame(dt);
+      }
+      updateVisuals();
+      updateCamera();
+      scene.render();
+    });
+
+    const onResize = () => engine.resize();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("resize", onResize);
+      engine.dispose();
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  /* ---------- منطق اللعبة كل فريم ---------- */
+  function isDown(keyName) {
+    return !!keysRef.current[keyName];
+  }
+
+  function handleMovement(state, keys, dt, otherX) {
+    if (state.hitStunTimer > 0) return;
+
+    let moveX = 0, moveZ = 0;
+    if (isDown(keys.left)) moveX -= 1;
+    if (isDown(keys.right)) moveX += 1;
+    if (isDown(keys.forward)) moveZ -= 1;
+    if (isDown(keys.back)) moveZ += 1;
+
+    const len = Math.hypot(moveX, moveZ);
+    if (len > 0) {
+      moveX /= len; moveZ /= len;
+      state.x += moveX * MOVE_SPEED * dt;
+      state.z += moveZ * MOVE_SPEED * dt;
+      state.animPhase += dt * 8;
+    } else {
+      state.animPhase *= 0.9;
+    }
+
+    // حدود الساحة
+    state.x = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, state.x));
+    state.z = Math.max(-6.2, Math.min(6.2, state.z));
+
+    // القفز
+    if (isDown(keys.jump) && !state.isJumping) {
+      state.isJumping = true;
+      state.vy = JUMP_FORCE;
+    }
+    if (state.isJumping) {
+      state.vy += GRAVITY * dt;
+      state.y += state.vy * dt;
+      if (state.y <= 0) {
+        state.y = 0;
+        state.isJumping = false;
+        state.vy = 0;
+      }
+    }
+
+    // الاتجاه: يواجه الخصم دائمًا
+    state.facing = otherX >= state.x ? 1 : -1;
+
+    // الدفاع
+    state.isBlocking = isDown(keys.block) && !state.isAttacking;
+  }
+
+  function tryAttack(state, keys, key, type, damage, range, cooldown, opponent, onLand) {
+    if (state.cooldowns[type] > 0) return;
+    if (!isDown(keys[key])) return;
+    if (state.hitStunTimer > 0) return;
+
+    state.isAttacking = true;
+    state.attackType = type;
+    state.attackTimer = 0.2;
+    state.cooldowns[type] = cooldown;
+
+    const dx = opponent.x - state.x;
+    const dz = opponent.z - state.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist <= range) {
+      onLand(damage);
+    }
+  }
+
+  function applyDamage(defender, attacker, rawDamage, setFlash) {
+    let dmg = rawDamage;
+    if (defender.isBlocking) {
+      dmg = rawDamage * (1 - BLOCK_REDUCTION);
+    } else {
+      defender.hitStunTimer = HIT_STUN;
+      // ارتداد بسيط
+      const pushDir = defender.x >= attacker.x ? 1 : -1;
+      defender.x += pushDir * 0.35;
+    }
+    defender.health = Math.max(0, defender.health - dmg);
+    defender.flashTimer = 0.15;
+    if (setFlash) setFlash(true);
+  }
+
+  function updateGame(dt) {
+    const f = fightersRef.current;
+    if (!f.p1 || !f.p2) return;
+    const p1 = f.p1, p2 = f.p2;
+
+    // تبريد الهجمات وعدّاد التوقف
+    [p1, p2].forEach((s) => {
+      s.cooldowns.punch = Math.max(0, s.cooldowns.punch - dt);
+      s.cooldowns.kick = Math.max(0, s.cooldowns.kick - dt);
+      s.cooldowns.special = Math.max(0, s.cooldowns.special - dt);
+      s.hitStunTimer = Math.max(0, s.hitStunTimer - dt);
+      s.flashTimer = Math.max(0, s.flashTimer - dt);
+      if (s.attackTimer > 0) {
+        s.attackTimer -= dt;
+        if (s.attackTimer <= 0) { s.isAttacking = false; s.attackType = null; }
+      }
+    });
+
+    // منع التداخل الجسدي: أقل مسافة بينهما
+    handleMovement(p1, P1_KEYS, dt, p2.x);
+    handleMovement(p2, P2_KEYS, dt, p1.x);
+
+    const minDist = 1.3;
+    const dx = p2.x - p1.x;
+    if (Math.abs(dx) < minDist) {
+      const overlap = minDist - Math.abs(dx);
+      const dir = dx >= 0 ? 1 : -1;
+      p1.x -= dir * overlap * 0.5;
+      p2.x += dir * overlap * 0.5;
+    }
+
+    let flashed = false;
+    const flashSetter = () => { flashed = true; };
+
+    // هجمات P1
+    tryAttack(p1, P1_KEYS, "punch", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN, p2, (dmg) => applyDamage(p2, p1, dmg, flashSetter));
+    tryAttack(p1, P1_KEYS, "kick", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN, p2, (dmg) => applyDamage(p2, p1, dmg, flashSetter));
+    tryAttack(p1, P1_KEYS, "special", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN, p2, (dmg) => applyDamage(p2, p1, dmg, flashSetter));
+
+    // هجمات P2
+    tryAttack(p2, P2_KEYS, "punch", "punch", PUNCH_DAMAGE, PUNCH_RANGE, PUNCH_COOLDOWN, p1, (dmg) => applyDamage(p1, p2, dmg, flashSetter));
+    tryAttack(p2, P2_KEYS, "kick", "kick", KICK_DAMAGE, KICK_RANGE, KICK_COOLDOWN, p1, (dmg) => applyDamage(p1, p2, dmg, flashSetter));
+    tryAttack(p2, P2_KEYS, "special", "special", SPECIAL_DAMAGE, SPECIAL_RANGE, SPECIAL_COOLDOWN, p1, (dmg) => applyDamage(p1, p2, dmg, flashSetter));
+
+    if (flashed) {
+      setFlashColor("rgba(255,0,0,0.25)");
+      setTimeout(() => setFlashColor("rgba(255,0,0,0)"), 90);
+    }
+
+    setHpP1(p1.health);
+    setHpP2(p2.health);
+
+    // نهاية الراوند بالضرب
+    if (p1.health <= 0 || p2.health <= 0) {
+      endRound(p1.health <= 0 && p2.health <= 0 ? "draw" : (p1.health <= 0 ? "p2" : "p1"));
+      return;
+    }
+
+    // العداد الزمني
+    timeLeftRef.current -= dt;
+    if (timeLeftRef.current <= 0) {
+      timeLeftRef.current = 0;
+      const winner = p1.health === p2.health ? "draw" : (p1.health > p2.health ? "p1" : "p2");
+      endRound(winner);
+      return;
+    }
+    setTimeLeft(Math.ceil(timeLeftRef.current));
+  }
+
+  function endRound(winner) {
+    phaseRef.current = "roundEnd";
+    setPhase("roundEnd");
+    if (winner === "p1") {
+      setWinsP1((w) => {
+        const nw = w + 1;
+        checkMatch(nw, winsP2Ref.current);
+        return nw;
+      });
+      setRoundBanner("اللاعب الأول فاز بالراوند!");
+    } else if (winner === "p2") {
+      setWinsP2((w) => {
+        const nw = w + 1;
+        checkMatch(winsP1Ref.current, nw);
+        return nw;
+      });
+      setRoundBanner("اللاعب الثاني فاز بالراوند!")
