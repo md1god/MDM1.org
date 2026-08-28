@@ -171,13 +171,13 @@
       <label>Groq API Key <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاح مجاني ↗</a></label>
       <div class="key-input-wrap">
         <button type="button" class="key-toggle-eye" data-target="apiKeyInput">👁</button>
-        <input type="text" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+        <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false">
       </div>
       <div class="key-len" id="groqKeyLen"></div>
     </div>
     <div class="field">
       <label>رابط API توليد الفيديو (Backend)</label>
-      <input type="text" id="videoApiInput" placeholder="https://xxxx.gradio.live" autocomplete="off">
+      <input type="text" id="videoApiInput" placeholder="https://xxxx.gradio.live أو http://localhost:8000" autocomplete="off">
     </div>
     <div class="field">
       <label>اختر النموذج الذكي</label>
@@ -218,6 +218,7 @@
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
   const groqKeyLen = document.getElementById('groqKeyLen');
+  const keyToggleEye = document.querySelector('.key-toggle-eye');
 
   let attachedImagesBase64 = [];
   let apiKey = localStorage.getItem('md1_groq_key') || '';
@@ -226,14 +227,42 @@
   let history = [];
 
   function cleanKey(v) { return v.replace(/[\u200B-\u200D\uFEFF\s]/g, ''); }
-  function updateStatus() { statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — حط الـ API key من الإعدادات'; }
+  
+  function updateKeyLenInfo(val) {
+    const len = val.length;
+    if (len === 0) {
+      groqKeyLen.textContent = '';
+      groqKeyLen.className = 'key-len';
+    } else {
+      groqKeyLen.textContent = `الطول: ${len} حرف — يبدأ بـ ${val.substring(0, 6)}...`;
+      groqKeyLen.className = len > 50 ? 'key-len ok' : 'key-len';
+    }
+  }
+
+  function updateStatus() { 
+    statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — حط الـ API key من الإعدادات'; 
+  }
 
   apiKeyInput.value = apiKey;
   videoApiInput.value = videoApiUrl;
   modelSelect.value = model;
+  updateKeyLenInfo(apiKey);
   updateStatus();
 
+  apiKeyInput.oninput = (e) => updateKeyLenInfo(e.target.value);
+
+  keyToggleEye.onclick = () => {
+    if (apiKeyInput.type === 'password') {
+      apiKeyInput.type = 'text';
+      keyToggleEye.textContent = '🙈';
+    } else {
+      apiKeyInput.type = 'password';
+      keyToggleEye.textContent = '👁';
+    }
+  };
+
   settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
+  
   saveSettings.onclick = () => {
     apiKey = cleanKey(apiKeyInput.value);
     videoApiUrl = videoApiInput.value.trim();
@@ -241,11 +270,13 @@
     localStorage.setItem('md1_groq_key', apiKey);
     localStorage.setItem('md1_video_api', videoApiUrl);
     localStorage.setItem('md1_groq_model', model);
+    updateKeyLenInfo(apiKey);
     updateStatus();
     settingsPanel.classList.remove('open');
   };
 
   uploadImgBtn.onclick = () => imageUploadInput.click();
+  
   imageUploadInput.onchange = (e) => {
     Array.from(e.target.files).forEach(file => {
       const reader = new FileReader();
@@ -290,27 +321,46 @@
 
   async function sendMessage() {
     const text = userInput.value.trim();
+    
+    // حالة إرسال صور لتوليد فيديو
     if (attachedImagesBase64.length > 0) {
       let imgs = [...attachedImagesBase64];
       let htmlTag = imgs.map(i => `<img src="${i}">`).join('');
       addMessage(text ? `${text}<br>${htmlTag}` : htmlTag, 'user', true);
+      
       attachedImagesBase64 = [];
       imagePreviewContainer.style.display = 'none';
       userInput.value = '';
       
       if (!videoApiUrl) {
-        addMessage('⚠ يرجى ضبط رابط API الفيديو من الإعدادات.', 'error');
+        addMessage('⚠ يرجى ضبط رابط API الفيديو (Backend) من الإعدادات.', 'error');
         return;
       }
-      const typing = addMessage('⏳ جاري المعالجة وتوليد الفيديو...', 'typing');
+      
+      const typing = addMessage('⏳ جاري توليد الفيديو بالذكاء الاصطناعي (قد يستغرق دقائق)...', 'typing');
+      
       try {
         const res = await fetch(videoApiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': '69420'
+          },
           body: JSON.stringify({ images: imgs, prompt: text || "Animate images" })
         });
+        
         typing.wrap.remove();
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("السيرفر لم يعيد استجابة JSON صحيحة (تأكد من رابط الـ API وتجاوز تحذيرات Ngrok)");
+        }
+
         const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || `خطأ في السيرفر: ${res.status}`);
+        }
+
         if (data.video_url || data.url) {
           const vUrl = data.video_url || data.url;
           addMessage(`تم توليد الفيديو بنجاح:<br><video controls autoplay loop width="100%"><source src="${vUrl}" type="video/mp4"></video>`, 'bot', true);
@@ -319,14 +369,15 @@
         }
       } catch (err) {
         typing.wrap.remove();
-        addMessage('خطأ في الاتصال: ' + err.message, 'error');
+        addMessage('خطأ في الاتصال أو السيرفر: ' + err.message, 'error');
       }
       return;
     }
 
+    // حالة الشات النصي العادي مع Groq
     if (!text) return;
     if (!apiKey) {
-      addMessage('أدخل الـ API key من الإعدادات أولاً', 'error');
+      addMessage('أدخل الـ API key الخاص بـ Groq من الإعدادات أولاً', 'error');
       return;
     }
 
@@ -347,6 +398,12 @@
         })
       });
       typing.wrap.remove();
+      
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `خطأ API: ${res.status}`);
+      }
+
       const data = await res.json();
       const reply = data.choices?.[0]?.message?.content || 'مفيش رد';
       addMessage(reply, 'bot');
@@ -359,7 +416,12 @@
   }
 
   sendBtn.onclick = sendMessage;
-  userInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+  userInput.onkeydown = (e) => { 
+    if (e.key === 'Enter' && !e.shiftKey) { 
+      e.preventDefault(); 
+      sendMessage(); 
+    } 
+  };
 </script>
 
 </body>
