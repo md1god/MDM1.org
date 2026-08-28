@@ -39,7 +39,6 @@
     border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; transition: all 0.2s;
   }
   .icon-btn:hover { color: var(--text); border-color: var(--accent); }
-  .icon-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(79,140,255,0.1); }
 
   .marquee-bar {
     background: linear-gradient(90deg, rgba(79,140,255,0.15), rgba(79,140,255,0.05));
@@ -49,7 +48,6 @@
   .marquee-track {
     display: inline-block; padding-left: 100%; direction: ltr; animation: marquee-scroll 18s linear infinite;
   }
-  .marquee-bar:hover .marquee-track { animation-play-state: paused; }
   .marquee-track span { font-weight: 600; }
   .marquee-track a { color: var(--accent); text-decoration: underline; font-weight: 700; }
   @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
@@ -72,7 +70,6 @@
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 8px 10px; border-radius: 6px; font-size: 13px; width: 100%;
   }
-  #settingsPanel select:disabled, #settingsPanel input:disabled { opacity: 0.4; cursor: not-allowed; }
   #settingsPanel .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
   #settingsPanel .field { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 4px; }
   .key-input-wrap { position: relative; display: flex; align-items: center; }
@@ -96,15 +93,14 @@
   }
   .msg-wrap { display: flex; flex-direction: column; max-width: 75%; }
   .msg-wrap.user { align-items: flex-end; align-self: flex-end; }
-  .msg-wrap.bot, .msg-wrap.error, .msg-wrap.reasoning { align-items: flex-start; align-self: flex-start; }
+  .msg-wrap.bot, .msg-wrap.error, .msg-wrap.loading { align-items: flex-start; align-self: flex-start; }
   .msg {
     padding: 10px 14px; border-radius: 10px; line-height: 1.6; font-size: 14px; white-space: pre-wrap; word-wrap: break-word;
   }
   .msg.user { background: var(--user-bubble); }
   .msg.bot { background: var(--bot-bubble); border: 1px solid var(--border); }
-  .msg.reasoning { background: var(--reasoning-bubble); border: 1px dashed var(--border); color: var(--muted); font-size: 12.5px; }
-  .msg.error { background: rgba(255, 92, 92, 0.1); border: 1px solid var(--error); color: var(--error); }
-  .msg.typing { align-self: flex-start; color: var(--muted); font-style: italic; background: none; }
+  .msg.loading { background: rgba(79, 140, 255, 0.1); border: 1px dashed var(--accent); color: var(--accent); font-size: 13px; }
+  .msg.error { background: rgba(255, 92, 92, 0.12); border: 1px solid var(--error); color: var(--error); font-size: 13.5px; }
   .msg img, .msg video { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
 
   .image-preview-container {
@@ -133,7 +129,6 @@
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
   }
   .action-icon-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .action-icon-btn.active { background: var(--error); border-color: var(--error); color: white; }
   #sendBtn {
     background: var(--accent); border: none; color: white; padding: 0 20px; height: 44px;
     border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
@@ -206,7 +201,6 @@
   const chatWindow = document.getElementById('chatWindow');
   const userInput = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
-  const micBtn = document.getElementById('micBtn');
   const uploadImgBtn = document.getElementById('uploadImgBtn');
   const imageUploadInput = document.getElementById('imageUploadInput');
   const imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -333,11 +327,11 @@
       userInput.value = '';
       
       if (!videoApiUrl) {
-        addMessage('⚠ يرجى ضبط رابط API الفيديو (Backend) من الإعدادات.', 'error');
+        addMessage('⚠ يرجى ضبط رابط API الفيديو (Backend) من الإعدادات أولاً.', 'error');
         return;
       }
       
-      const typing = addMessage('⏳ جاري توليد الفيديو بالذكاء الاصطناعي (قد يستغرق دقائق)...', 'typing');
+      const statusMsg = addMessage('⏳ جاري إرسال الصور وبدء توليد الفيديو (قد يستغرق دقائق)...', 'loading');
       
       try {
         const res = await fetch(videoApiUrl, {
@@ -349,27 +343,28 @@
           body: JSON.stringify({ images: imgs, prompt: text || "Animate images" })
         });
         
-        typing.wrap.remove();
+        statusMsg.wrap.remove();
 
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("السيرفر لم يعيد استجابة JSON صحيحة (تأكد من رابط الـ API وتجاوز تحذيرات Ngrok)");
+          const rawText = await res.text();
+          throw new Error(`السيرفر لم يعيد JSON صحيح (ربما صفحة تحذير Ngrok أو خطأ 500). الاستجابة: ${rawText.substring(0, 100)}...`);
         }
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.detail || `خطأ في السيرفر: ${res.status}`);
+          throw new Error(data.detail || data.error || `خطأ من السيرفر برمز: ${res.status}`);
         }
 
         if (data.video_url || data.url) {
           const vUrl = data.video_url || data.url;
-          addMessage(`تم توليد الفيديو بنجاح:<br><video controls autoplay loop width="100%"><source src="${vUrl}" type="video/mp4"></video>`, 'bot', true);
+          addMessage(`✅ تم توليد الفيديو بنجاح:<br><video controls autoplay loop width="100%"><source src="${vUrl}" type="video/mp4"></video>`, 'bot', true);
         } else {
-          addMessage('فشل الحصول على رابط الفيديو من السيرفر.', 'error');
+          throw new Error('فشل السيرفر في إرجاع رابط الفيديو المطلوب.');
         }
       } catch (err) {
-        typing.wrap.remove();
-        addMessage('خطأ في الاتصال أو السيرفر: ' + err.message, 'error');
+        statusMsg.wrap.remove();
+        addMessage(`❌ خطأ أثناء توليد الفيديو: ${err.message}`, 'error');
       }
       return;
     }
@@ -377,7 +372,7 @@
     // حالة الشات النصي العادي مع Groq
     if (!text) return;
     if (!apiKey) {
-      addMessage('أدخل الـ API key الخاص بـ Groq من الإعدادات أولاً', 'error');
+      addMessage('⚠ يرجى إدخال Groq API key الخاص بك من قائمة الإعدادات.', 'error');
       return;
     }
 
@@ -386,7 +381,7 @@
     userInput.value = '';
     sendBtn.disabled = true;
 
-    const typing = addMessage('بيكتب...', 'typing');
+    const statusMsg = addMessage('جاري الرد...', 'loading');
     try {
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -397,11 +392,11 @@
           temperature: 0.7
         })
       });
-      typing.wrap.remove();
+      statusMsg.wrap.remove();
       
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `خطأ API: ${res.status}`);
+        throw new Error(errData.error?.message || `خطأ من Groq API برمز: ${res.status}`);
       }
 
       const data = await res.json();
@@ -409,8 +404,8 @@
       addMessage(reply, 'bot');
       history.push({ role: 'assistant', content: reply });
     } catch (err) {
-      typing.wrap.remove();
-      addMessage('خطأ الاتصال: ' + err.message, 'error');
+      statusMsg.wrap.remove();
+      addMessage(`❌ خطأ في الاتصال: ${err.message}`, 'error');
     }
     sendBtn.disabled = false;
   }
