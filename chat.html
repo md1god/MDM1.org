@@ -153,7 +153,6 @@
     </div>
   </div>
   <div class="header-actions">
-    <!-- زر زيارة الموقع -->
     <a href="https://mdm1.org" target="_blank" class="icon-btn" title="زيارة الموقع الرسمي">🌐 زيارة الموقع</a>
     <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
   </div>
@@ -181,8 +180,8 @@
     </div>
 
     <div class="field">
-      <label>رابط API توليد الفيديو (Backend / Gradio)</label>
-      <input type="text" id="videoApiInput" placeholder="https://xxxx.gradio.live أو http://localhost:8000" autocomplete="off">
+      <label>رابط API توليد الفيديو (Backend)</label>
+      <input type="text" id="videoApiInput" placeholder="https://xxxx.gradio.live أو رابط الـ API" autocomplete="off">
     </div>
 
     <div class="field" style="grid-column: 1 / -1;">
@@ -332,7 +331,7 @@
   async function sendMessage() {
     const text = userInput.value.trim();
     
-    // حالة إرسال صور لتوليد فيديو عبر السيرفر الخارجي (Gradia / Backend)
+    // إرسال الصور (توليد الفيديو)
     if (attachedImagesBase64.length > 0) {
       let imgs = [...attachedImagesBase64];
       let htmlTag = imgs.map(i => `<img src="${i}">`).join('');
@@ -343,12 +342,16 @@
       userInput.value = '';
       
       if (!videoApiUrl) {
-        addMessage('⚠ يرجى ضبط رابط API الفيديو (Backend) من قائمة الإعدادات أولاً.', 'error');
+        addMessage('⚠ يرجى ضبط رابط API الفيديو في قائمة الإعدادات أولاً.', 'error');
         return;
       }
       
-      const statusMsg = addMessage('⏳ جاري إرسال الصور وبدء توليد الفيديو (قد يستغرق دقائق)...', 'loading');
+      const statusMsg = addMessage('⏳ جاري إرسال الطلب والتواصل مع السيرفر...', 'loading');
       
+      // استخدام AbortController لمنع التعليق اللانهائي (مهلة 45 ثانية)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
+
       try {
         const res = await fetch(videoApiUrl, {
           method: 'POST',
@@ -356,15 +359,17 @@
             'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': '69420'
           },
-          body: JSON.stringify({ images: imgs, prompt: text || "Animate images" })
+          body: JSON.stringify({ images: imgs, prompt: text || "Animate images" }),
+          signal: controller.signal
         });
         
+        clearTimeout(timeoutId);
         statusMsg.wrap.remove();
 
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           const rawText = await res.text();
-          throw new Error(`السيرفر لم يعيد JSON صحيح (ربما صفحة تحذير Ngrok أو خطأ بالسيرفر). التفاصيل: ${rawText.substring(0, 100)}...`);
+          throw new Error(`السيرفر لم يعيد JSON صالح (ربما صفحة حماية أو خطأ 500). الاستجابة: ${rawText.substring(0, 120)}...`);
         }
 
         const data = await res.json();
@@ -376,11 +381,16 @@
           const vUrl = data.video_url || data.url;
           addMessage(`✅ تم توليد الفيديو بنجاح:<br><video controls autoplay loop width="100%"><source src="${vUrl}" type="video/mp4"></video>`, 'bot', true);
         } else {
-          throw new Error('فشل السيرفر في إرجاع رابط الفيديو.');
+          throw new Error('فشل السيرفر في إرجاع رابط الفيديو المطلوب.');
         }
       } catch (err) {
+        clearTimeout(timeoutId);
         statusMsg.wrap.remove();
-        addMessage(`❌ خطأ أثناء توليد الفيديو: ${err.message}`, 'error');
+        if (err.name === 'AbortError') {
+          addMessage('❌ انتهت مهلة الاتصال (Timeout) — السيرفر أخد وقت أطول من اللازم ولم يرد.', 'error');
+        } else {
+          addMessage(`❌ خطأ أثناء الاتصال بالسيرفر: ${err.message}`, 'error');
+        }
       }
       return;
     }
