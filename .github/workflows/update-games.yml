@@ -2,10 +2,9 @@ name: Fetch All Games Catalog Daily
 
 on:
   schedule:
-    - cron: '0 2 * * *' # يعمل يومياً الساعة 2 صباحاً
-  workflow_dispatch: # إمكانية التشغيل اليدوي بنقرة زر
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
-# إضافة صلاحيات الكتابة ليتمكن الـ Bot من الحفظ والرفع إلى المستودع
 permissions:
   contents: write
 
@@ -29,6 +28,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/games.json data/games-meta.json
+          git add -A data/
           git commit -m "Auto-update full games catalog [skip ci]" || exit 0
           git push
