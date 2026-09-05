@@ -850,9 +850,9 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   /* ============================================================
      CONFIG
      ============================================================ */
-  // GameMonetize public JSON feed. format=0 => JSON, page => pagination.
   const FEED_BASE = "https://gamemonetize.com/feed.php?format=0";
-  const LOCAL_CACHE_URL = "data/games.json"; // local file with ALL games (updated by GitHub workflow)
+  const LOCAL_CACHE_URL = "data/games.json";           // full catalog
+  const FAMOUS_CACHE_URL = "data/famous_games.json";   // famous games subset
   const I18N_BASE = "i18n/";
   const AVAILABLE_LANGS = ["ar", "en", "fr"];
 
@@ -860,13 +860,10 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const BATCH_SIZE = IS_MOBILE ? 12 : 40;
-  // If local file is missing, we fallback to fetching from feed.
-  // Increase these numbers to get more games in fallback mode.
   const FEED_PAGES_ON_LOAD = IS_MOBILE ? 5 : 20;
   const FEED_PAGES_PER_FETCH_MORE = IS_MOBILE ? 3 : 10;
   const NEW_GAME_WINDOW_DAYS = 30;
 
-  // Famous keywords (same as before)
   const FAMOUS_KEYWORDS = [
     "minecraft", "roblox", "among us", "subway surf", "subway surfers",
     "fortnite", "gta", "grand theft auto", "fnaf", "five nights",
@@ -921,11 +918,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   let isFetchingMore = false;
 
   /* ============================================================
-     I18N (same as before, omitted for brevity but include full object)
+     I18N (full object as provided)
      ============================================================ */
-  // I'll include a simplified version; you should keep your existing FALLBACK_I18N and loadLanguage functions unchanged.
-  // (For full code, copy from your original file.)
-
   const FALLBACK_I18N = {
     ar: {
       dir: "rtl", lang_flag: "🇪🇬", lang_name: "العربية",
@@ -1065,7 +1059,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   });
 
   /* ============================================================
-     CATEGORY NORMALIZATION (same as before, keep all functions)
+     CATEGORY NORMALIZATION
      ============================================================ */
   function normalizeCategory(category, tags, title) {
     const c = String(category || "").trim().toLowerCase();
@@ -1125,6 +1119,9 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     const rating = parseFloat(raw.rating_avg || raw.rating || 0) || 0;
     const ratingCount = parseInt(raw.rating_count || 0, 10) || 0;
 
+    // إذا كانت البيانات تحتوي على خاصية famous (من ملف famous_games.json)، نستخدمها
+    const famousFlag = (raw.famous !== undefined) ? raw.famous : isFamousGame(title, tags, category);
+
     return {
       id: raw.id || raw.url,
       title: title,
@@ -1136,7 +1133,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       _dateAdded: dateAdded,
       _rating: rating,
       _ratingCount: ratingCount,
-      _famous: isFamousGame(title, tags, category),
+      _famous: famousFlag,
       _is3d: is3DGame(tags, category, title),
       featured: (rating >= 4.3 && ratingCount >= 50),
       width: raw.width || "800",
@@ -1161,6 +1158,12 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
         ALL_GAMES.push(g);
         seen.add(g.id);
         added++;
+      } else {
+        // إذا كانت اللعبة موجودة مسبقاً، قد نرغب في تحديث خاصية _famous إذا كانت قادمة من ملف الشهيرة
+        const idx = ALL_GAMES.findIndex(existing => existing.id === g.id);
+        if (idx !== -1 && g._famous) {
+          ALL_GAMES[idx]._famous = true;
+        }
       }
     }
     return added;
@@ -1172,7 +1175,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       const page = nextFeedPage;
       try {
         const items = await fetchFeedPage(page);
-        if (!items.length) break; // no more pages
+        if (!items.length) break;
         totalAdded += mergeGames(items);
         nextFeedPage++;
       } catch (err) {
@@ -1184,7 +1187,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   }
 
   /* ============================================================
-     LOCAL FILE LOADING (primary source)
+     LOCAL FILE LOADING (primary sources)
      ============================================================ */
   async function loadLocalGames() {
     try {
@@ -1202,6 +1205,25 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     }
   }
 
+  async function loadFamousGames() {
+    try {
+      const res = await fetch(FAMOUS_CACHE_URL, { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
+      // تحويل كل لعبة إلى نفس البنية مع تعيين famous = true
+      const famousItems = data.map(raw => {
+        const game = normalizeFeedItem(raw);
+        if (game) game._famous = true;
+        return game;
+      }).filter(Boolean);
+      // دمج الشهيرة مع القائمة الرئيسية (قد تكون غير موجودة في القائمة الكاملة إذا فشل تحميلها)
+      mergeGames(famousItems);
+    } catch (e) {
+      console.warn("Famous games file not available.", e);
+    }
+  }
+
   /* ============================================================
      INITIAL LOAD
      ============================================================ */
@@ -1209,11 +1231,14 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     portalLoader.style.display = "block";
     gamesGrid.innerHTML = "";
 
-    // Try local file first (no expiration, always latest via GitHub workflow)
+    // تحميل الكتالوج الكامل أولاً
     const loadedLocal = await loadLocalGames();
 
-    if (!loadedLocal) {
-      // Fallback to fetching from GameMonetize feed
+    // ثم تحميل الشهيرة ودمجها (أو وضع علامة على الموجودة)
+    await loadFamousGames();
+
+    if (!loadedLocal && !ALL_GAMES.length) {
+      // إذا لم نتمكن من تحميل أي ملف محلي، نجلب من الفيد
       try {
         await fetchFeedPages(FEED_PAGES_ON_LOAD);
       } catch (e) {
@@ -1239,7 +1264,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     initialLoad();
   });
 
-  // Fetch more button (only relevant in fallback mode)
   async function fetchMoreFromSource() {
     if (isFetchingMore) return;
     isFetchingMore = true;
@@ -1260,7 +1284,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   fetchMoreBtn.addEventListener("click", fetchMoreFromSource);
 
   /* ============================================================
-     PINNED ROW (same as before)
+     PINNED ROW
      ============================================================ */
   function renderPinnedRow() {
     const famous = ALL_GAMES.filter(g => g._famous);
@@ -1277,7 +1301,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   }
 
   /* ============================================================
-     FILTERING & RENDER (same as before)
+     FILTERING & RENDER
      ============================================================ */
   function isNewGame(game) {
     if (!game._dateAdded) return false;
@@ -1393,7 +1417,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   loadMoreBtn.addEventListener("click", renderNextBatch);
 
   /* ============================================================
-     TICKER (same as before)
+     TICKER
      ============================================================ */
   function renderTicker() {
     const top = ALL_GAMES
@@ -1406,7 +1430,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   }
 
   /* ============================================================
-     CATEGORY NAVIGATION (same as before)
+     CATEGORY NAVIGATION
      ============================================================ */
   function setActiveCategory(cat) {
     activeCategory = cat;
@@ -1427,7 +1451,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   });
 
   /* ============================================================
-     SEARCH (same as before)
+     SEARCH
      ============================================================ */
   let searchDebounce = null;
   gamesSearch.addEventListener("input", (e) => {
@@ -1462,7 +1486,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   }
 
   /* ============================================================
-     PLAY OVERLAY (same as before)
+     PLAY OVERLAY
      ============================================================ */
   let wasMusicPlayingBeforeGame = false;
 
@@ -1518,7 +1542,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   });
 
   /* ============================================================
-     AUDIO TOGGLE (same as before)
+     AUDIO TOGGLE
      ============================================================ */
   audioToggle.addEventListener("click", () => {
     if (bgMusic.paused) {
