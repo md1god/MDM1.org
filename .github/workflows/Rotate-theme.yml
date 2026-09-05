@@ -1,0 +1,34 @@
+name: Rotate Games Page Theme
+
+# يشتغل لوحده كل 14 يوم (يوم السبت الساعة 3 صباحًا UTC)
+# وكمان تقدر تشغله يدوي في أي وقت من تبويب Actions -> Run workflow
+on:
+  schedule:
+    - cron: "0 3 */14 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  rotate-theme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run theme rotator script
+        run: node scripts/rotate-theme.js
+
+      - name: Commit updated theme.json
+        run: |
+          git config user.name "theme-bot"
+          git config user.email "theme-bot@users.noreply.github.com"
+          git add data/theme.json
+          git diff --cached --quiet || git commit -m "🎨 تحديث شكل الموقع الدوري"
+          git push
