@@ -26,7 +26,6 @@ async function fetchAllGames() {
   const seenIds = new Set();
   let keepFetching = true;
 
-  // جلب أول 15 صفحة كمرحلة أولى لتأكيد العمل فوراً (15,000 لعبة)
   while (keepFetching && page <= 35) {
     const url = `https://gamemonetize.com/feed.php?format=0&num=1000&page=${page}`;
     console.log(`📦 جلب الصفحة ${page}...`);
@@ -86,7 +85,7 @@ async function fetchAllGames() {
     'utf8'
   );
 
-  console.log('💾 تم الحفظ بنجاح.');
+  console.log('💾 تم الحفظ بنجاح في مجلد data.');
 }
 
 fetchAllGames();
