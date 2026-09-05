@@ -44,6 +44,21 @@ body {
   width: 100%;
 }
 
+/* Global scrollbar — pink, thin, visible everywhere (was reset to gray earlier) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-pink) rgba(255,255,255,0.06);
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-pink), var(--accent-purple));
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--accent-pink); background-clip: padding-box; }
+
 [dir="ltr"] * { direction: ltr; }
 
 /* ============================================================
@@ -63,6 +78,7 @@ body {
   gap: 0.6rem;
   width: 100%;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .brand-logo {
@@ -90,6 +106,42 @@ body {
 @keyframes badgeShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+/* Centered, glowing portal title */
+.portal-title-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 0 6px rgba(0, 212, 255, 0.9),
+    0 0 14px rgba(255, 45, 120, 0.7),
+    0 0 24px rgba(139, 92, 246, 0.6);
+  animation: titleGlow 2.4s ease-in-out infinite;
+  letter-spacing: 0.5px;
+}
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow:
+      0 0 6px rgba(0, 212, 255, 0.7),
+      0 0 12px rgba(255, 45, 120, 0.5),
+      0 0 20px rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 12px rgba(0, 212, 255, 1),
+      0 0 22px rgba(255, 45, 120, 0.9),
+      0 0 36px rgba(139, 92, 246, 0.8);
+  }
+}
+@media (max-width: 700px) {
+  .portal-title-center { display: none; } /* avoid overlapping nav-actions on small screens */
 }
 
 .nav-actions {
@@ -204,6 +256,7 @@ body {
   position: sticky;
   top: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 [dir="ltr"] .category-rail { border-left: none; border-right: 1px solid rgba(255,255,255,0.06); }
 
@@ -223,6 +276,7 @@ body {
   width: 100%;
   text-align: inherit;
   transition: background 0.15s, color 0.15s, transform 0.1s;
+  flex-shrink: 0;
 }
 .rail-link:hover { background: rgba(255,255,255,0.06); color: #fff; transform: translateX(2px); }
 [dir="ltr"] .rail-link:hover { transform: translateX(-2px); }
@@ -235,6 +289,7 @@ body {
   opacity: 0.6;
   padding: 0.8rem 0.6rem 0.2rem;
   font-weight: 800;
+  flex-shrink: 0;
 }
 
 .main-container {
@@ -244,6 +299,42 @@ body {
   padding: 0.8rem 1rem 2rem;
   width: 100%;
 }
+
+/* ============================================================
+   PINNED / FEATURED GAMES ROW (hand-picked famous titles)
+   ============================================================ */
+.pinned-row {
+  margin-bottom: 0.8rem;
+}
+.pinned-row-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-yellow);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.pinned-scroll {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+}
+.pinned-card {
+  flex: 0 0 auto;
+  width: 120px;
+  cursor: pointer;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(255,204,0,0.4);
+  transition: transform 0.15s ease;
+}
+.pinned-card:hover { transform: translateY(-3px); border-color: var(--accent-yellow); }
+.pinned-card .game-thumb { aspect-ratio: 1/1; }
+.pinned-card .game-details { padding: 0.35rem 0.4rem; }
+.pinned-card .game-title { font-size: 0.72rem; }
 
 /* ============================================================
    TRENDING TICKER (single deliberate motion element)
@@ -284,6 +375,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ticker-track { animation: none; }
   .brand-badge { animation: none; }
+  .portal-title-center { animation: none; }
 }
 
 /* ============================================================
@@ -443,6 +535,7 @@ body {
 .corner-badge.featured { background: var(--accent-pink); color: #fff; }
 .corner-badge.new { background: var(--accent-green); color: #06231e; }
 .corner-badge.top { background: var(--accent-purple); color: #fff; }
+.corner-badge.pinned3d { background: var(--accent-cyan); color: #06231e; }
 
 .play-badge {
   position: absolute;
@@ -600,13 +693,11 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 <header class="app-navbar">
   <a href="index.html" class="brand-logo">
     <span class="brand-badge">MDM1</span>
-    <span id="portalTitleText">بوابة الألعاب</span>
   </a>
 
+  <span class="portal-title-center" id="portalTitleText">بوابة الألعاب</span>
+
   <div class="nav-actions">
-    <a href="https://md1usd.com" class="btn-md1" target="_blank" rel="noopener">
-      <span>💎</span><span>MD1$</span>
-    </a>
     <button id="refreshBtn" class="btn-refresh" title="تحديث الألعاب">
       <span>🔄</span><span>تحديث</span>
     </button>
@@ -635,6 +726,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     <button class="rail-link active" data-category="all"><span>🔥</span><span data-i18n="cat_all">الأكثر شهرة</span></button>
     <button class="rail-link" data-category="new"><span>🆕</span><span data-i18n="cat_new">جديد</span></button>
     <button class="rail-link" data-category="top"><span>🏆</span><span data-i18n="cat_top">الأعلى تقييماً</span></button>
+    <button class="rail-link" data-category="famous"><span>🌟</span><span data-i18n="cat_famous">الألعاب الشهيرة</span></button>
+    <button class="rail-link" data-category="3d"><span>🧊</span><span data-i18n="cat_3d">ثلاثية الأبعاد</span></button>
     <button class="rail-link" data-category="multiplayer"><span>👥</span><span data-i18n="cat_multiplayer">متعدد اللاعبين</span></button>
     <button class="rail-link" data-category="2player"><span>🎮</span><span data-i18n="cat_2player">لاعبان</span></button>
     <div class="rail-section-title" data-i18n="cat_section_title">الفئات</div>
@@ -657,6 +750,11 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 
   <main class="main-container">
 
+    <div class="pinned-row" id="pinnedRow" style="display:none;">
+      <div class="pinned-row-title">🌟 <span data-i18n="pinned_title">أشهر الألعاب</span></div>
+      <div class="pinned-scroll" id="pinnedScroll"></div>
+    </div>
+
     <div class="trending-ticker">
       <span class="ticker-label" data-i18n="trending_ticker_label">الأكثر لعباً الآن</span>
       <div class="ticker-track-wrap">
@@ -677,6 +775,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       <button class="chip-btn active" data-category="all">🔥 <span data-i18n="cat_all">شهرة</span></button>
       <button class="chip-btn" data-category="new">🆕 <span data-i18n="cat_new">جديد</span></button>
       <button class="chip-btn" data-category="top">🏆 <span data-i18n="cat_top">الأعلى</span></button>
+      <button class="chip-btn" data-category="famous">🌟 <span data-i18n="cat_famous">شهيرة</span></button>
+      <button class="chip-btn" data-category="3d">🧊 <span data-i18n="cat_3d">3D</span></button>
       <button class="chip-btn edu-chip" data-category="educational">🎓 <span data-i18n="cat_educational">تعليمية</span></button>
       <button class="chip-btn" data-category="unity">⭐ <span data-i18n="cat_unity">يونيتي</span></button>
       <button class="chip-btn" data-category="action">⚔️ <span data-i18n="cat_action">أكشن</span></button>
@@ -740,8 +840,21 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   const FEED_PAGES_ON_LOAD = 6;      // how many feed pages to pull on first load (more pages = more games)
   const FEED_PAGES_PER_FETCH_MORE = 4; // extra pages pulled when user clicks "fetch more"
   const NEW_GAME_WINDOW_DAYS = 30;   // games added within this many days count as "new"
-  const CACHE_KEY = "mdm1_games_cache_v2";
+  const CACHE_KEY = "mdm1_games_cache_v3";
   const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6 hours
+
+  // Famous/well-known titles we want easy to find even before the feed
+  // happens to surface them. Matched case-insensitively against title text.
+  // These get tagged _famous = true and surfaced in the "famous" category
+  // and the pinned row at the top, regardless of rating/date.
+  const FAMOUS_KEYWORDS = [
+    "minecraft", "roblox", "among us", "subway surf", "subway surfers",
+    "fortnite", "gta", "grand theft auto", "fnaf", "five nights",
+    "temple run", "clash royale", "clash of clans", "brawl stars",
+    "candy crush", "pubg", "call of duty", "free fire", "slither",
+    "agar.io", "stumble guys", "granny", "poppy playtime", "geometry dash",
+    "moto x3m", "basketball stars", "soccer", "8 ball pool", "wordle"
+  ];
 
   /* DOM */
   const gamesGrid = document.getElementById("gamesGrid");
@@ -770,6 +883,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   const micBtn = document.getElementById("micBtn");
   const tickerTrack = document.getElementById("tickerTrack");
   const refreshBtn = document.getElementById("refreshBtn");
+  const pinnedRow = document.getElementById("pinnedRow");
+  const pinnedScroll = document.getElementById("pinnedScroll");
 
   /* STATE */
   let ALL_GAMES = [];
@@ -797,13 +912,15 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       play_default_title: "اسم اللعبة", btn_reload: "⟳ إعادة", btn_fullscreen: "⛶ شاشة كاملة", btn_close: "✖ إغلاق",
       games_loading: "جاري تحميل مكتبة الألعاب...", games_count_suffix: "لعبة متوفرة حالياً",
       no_results: "لا توجد ألعاب مطابقة", opening_game: "جاري فتح اللعبة...",
-      trending_ticker_label: "الأكثر لعباً الآن",
+      trending_ticker_label: "الأكثر لعباً الآن", pinned_title: "أشهر الألعاب",
       cat_all: "الأكثر شهرة", cat_new: "جديد", cat_top: "الأعلى تقييماً", cat_multiplayer: "متعدد اللاعبين",
       cat_2player: "لاعبان", cat_section_title: "الفئات", cat_educational: "تعليمية", cat_unity: "جودة يونيتي",
       cat_action: "أكشن", cat_shooting: "إطلاق نار", cat_racing: "سباقات", cat_puzzle: "ألغاز",
       cat_sports: "رياضة", cat_simulation: "محاكاة", cat_adventure: "مغامرة", cat_arcade: "أركيد",
       cat_girls: "فتيات", cat_kids: "أطفال", cat_io: "ألعاب آيو", cat_cooking: "طبخ", cat_clicker: "نقر وخمول",
-      educational_badge: "تعليمية", unity_badge: "يونيتي", featured_badge: "مميزة", new_badge: "جديد", top_badge: "الأعلى"
+      cat_famous: "الألعاب الشهيرة", cat_3d: "ثلاثية الأبعاد",
+      educational_badge: "تعليمية", unity_badge: "يونيتي", featured_badge: "مميزة", new_badge: "جديد", top_badge: "الأعلى",
+      pinned3d_badge: "3D"
     },
     en: {
       dir: "ltr", lang_flag: "🇬🇧", lang_name: "English",
@@ -813,13 +930,15 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       play_default_title: "Game", btn_reload: "⟳ Reload", btn_fullscreen: "⛶ Fullscreen", btn_close: "✖ Close",
       games_loading: "Loading games library...", games_count_suffix: "games available",
       no_results: "No matching games", opening_game: "Opening game...",
-      trending_ticker_label: "Trending now",
+      trending_ticker_label: "Trending now", pinned_title: "Most Famous Games",
       cat_all: "Popular", cat_new: "New", cat_top: "Top Rated", cat_multiplayer: "Multiplayer",
       cat_2player: "2 Player", cat_section_title: "Categories", cat_educational: "Educational", cat_unity: "Unity Quality",
       cat_action: "Action", cat_shooting: "Shooting", cat_racing: "Racing", cat_puzzle: "Puzzle",
       cat_sports: "Sports", cat_simulation: "Simulation", cat_adventure: "Adventure", cat_arcade: "Arcade",
       cat_girls: "Girls", cat_kids: "Kids", cat_io: "IO Games", cat_cooking: "Cooking", cat_clicker: "Clicker",
-      educational_badge: "Edu", unity_badge: "Unity", featured_badge: "Featured", new_badge: "New", top_badge: "Top"
+      cat_famous: "Famous Games", cat_3d: "3D",
+      educational_badge: "Edu", unity_badge: "Unity", featured_badge: "Featured", new_badge: "New", top_badge: "Top",
+      pinned3d_badge: "3D"
     },
     fr: {
       dir: "ltr", lang_flag: "🇫🇷", lang_name: "Français",
@@ -829,13 +948,15 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       play_default_title: "Jeu", btn_reload: "⟳ Recharger", btn_fullscreen: "⛶ Plein écran", btn_close: "✖ Fermer",
       games_loading: "Chargement de la bibliothèque...", games_count_suffix: "jeux disponibles",
       no_results: "Aucun jeu trouvé", opening_game: "Ouverture du jeu...",
-      trending_ticker_label: "Tendance actuellement",
+      trending_ticker_label: "Tendance actuellement", pinned_title: "Jeux les plus célèbres",
       cat_all: "Populaire", cat_new: "Nouveau", cat_top: "Les mieux notés", cat_multiplayer: "Multijoueur",
       cat_2player: "2 Joueurs", cat_section_title: "Catégories", cat_educational: "Éducatif", cat_unity: "Qualité Unity",
       cat_action: "Action", cat_shooting: "Tir", cat_racing: "Course", cat_puzzle: "Puzzle",
       cat_sports: "Sport", cat_simulation: "Simulation", cat_adventure: "Aventure", cat_arcade: "Arcade",
       cat_girls: "Filles", cat_kids: "Enfants", cat_io: "Jeux IO", cat_cooking: "Cuisine", cat_clicker: "Clicker",
-      educational_badge: "Éduc", unity_badge: "Unity", featured_badge: "Vedette", new_badge: "Nouveau", top_badge: "Top"
+      cat_famous: "Jeux célèbres", cat_3d: "3D",
+      educational_badge: "Éduc", unity_badge: "Unity", featured_badge: "Vedette", new_badge: "Nouveau", top_badge: "Top",
+      pinned3d_badge: "3D"
     }
   };
 
@@ -886,6 +1007,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     if (ALL_GAMES.length) {
       applyFilters();
       renderTicker();
+      renderPinnedRow();
     }
   }
 
@@ -949,6 +1071,16 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     return c || "arcade";
   }
 
+  function isFamousGame(title, tags, category) {
+    const hay = (String(title || "") + " " + String(tags || "") + " " + String(category || "")).toLowerCase();
+    return FAMOUS_KEYWORDS.some(kw => hay.includes(kw));
+  }
+
+  function is3DGame(tags, category, title) {
+    const hay = (String(tags || "") + " " + String(category || "") + " " + String(title || "")).toLowerCase();
+    return /\b3d\b/.test(hay);
+  }
+
   function categoryLabel(cat) {
     const key = "cat_" + cat;
     return t(key, cat || "");
@@ -982,6 +1114,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       _dateAdded: dateAdded,
       _rating: rating,
       _ratingCount: ratingCount,
+      _famous: isFamousGame(title, tags, category),
+      _is3d: is3DGame(tags, category, title),
       featured: (rating >= 4.3 && ratingCount >= 50),
       width: raw.width || "800",
       height: raw.height || "600"
@@ -1046,13 +1180,21 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 
   async function fetchFeedPages(pageCount) {
     let totalAdded = 0;
+    let consecutiveEmpty = 0;
     for (let i = 0; i < pageCount; i++) {
       const page = nextFeedPage;
       try {
         const items = await fetchFeedPage(page);
         if (!items.length) {
-          break;
+          consecutiveEmpty++;
+          nextFeedPage++;
+          // Some feed pages can legitimately come back empty/duplicated;
+          // only stop after a few in a row so we don't cut the crawl short
+          // and shrink the effective game count over time.
+          if (consecutiveEmpty >= 3) break;
+          continue;
         }
+        consecutiveEmpty = 0;
         totalAdded += mergeGames(items);
         nextFeedPage++;
       } catch (err) {
@@ -1072,6 +1214,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       portalLoader.style.display = "none";
       applyFilters();
       renderTicker();
+      renderPinnedRow();
     }
 
     let added = 0;
@@ -1095,6 +1238,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     saveCache();
     applyFilters();
     renderTicker();
+    renderPinnedRow();
   }
 
   async function fetchMoreFromSource() {
@@ -1106,6 +1250,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       saveCache();
       applyFilters();
       renderTicker();
+      renderPinnedRow();
     } catch (e) {
       console.error("fetchMoreFromSource failed", e);
     } finally {
@@ -1121,6 +1266,23 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     nextFeedPage = 1;
     initialLoad();
   });
+
+  /* ============================================================
+     PINNED ROW (famous titles surfaced immediately)
+     ============================================================ */
+  function renderPinnedRow() {
+    const famous = ALL_GAMES.filter(g => g._famous);
+    if (!famous.length) {
+      pinnedRow.style.display = "none";
+      return;
+    }
+    pinnedRow.style.display = "block";
+    pinnedScroll.innerHTML = "";
+    famous.slice(0, 20).forEach(game => {
+      const card = createGameCard(game, { pinned: true });
+      pinnedScroll.appendChild(card);
+    });
+  }
 
   /* ============================================================
      FILTERING & RENDER
@@ -1140,6 +1302,12 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     }
     if (cat === "top") {
       return ALL_GAMES.filter(g => g._ratingCount > 0).sort((a, b) => b._rating - a._rating || b._ratingCount - a._ratingCount);
+    }
+    if (cat === "famous") {
+      return ALL_GAMES.filter(g => g._famous);
+    }
+    if (cat === "3d") {
+      return ALL_GAMES.filter(g => g._is3d).sort((a, b) => (b._rating * b._ratingCount) - (a._rating * a._ratingCount));
     }
     return ALL_GAMES.filter(g => g._cat === cat);
   }
@@ -1175,9 +1343,11 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     gamesCount.textContent = n.toLocaleString(currentLang === "ar" ? "ar-EG" : currentLang) + " " + t("games_count_suffix");
   }
 
-  function createGameCard(game) {
+  function createGameCard(game, opts) {
+    opts = opts || {};
     const li = document.createElement("li");
     li.className = "game-card";
+    if (opts.pinned) li.classList.add("pinned-card");
     if (game._cat === "educational") li.classList.add("edu-card");
     if (game._cat === "unity") li.classList.add("unity-card");
 
@@ -1188,7 +1358,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:2rem;">🎮</div>`;
 
     let badge = "";
-    if (game._cat === "educational") badge = `<span class="corner-badge edu">${escapeHTML(t("educational_badge"))}</span>`;
+    if (opts.pinned && game._is3d) badge = `<span class="corner-badge pinned3d">${escapeHTML(t("pinned3d_badge"))}</span>`;
+    else if (game._cat === "educational") badge = `<span class="corner-badge edu">${escapeHTML(t("educational_badge"))}</span>`;
     else if (game._cat === "unity") badge = `<span class="corner-badge unity">${escapeHTML(t("unity_badge"))}</span>`;
     else if (isNewGame(game)) badge = `<span class="corner-badge new">${escapeHTML(t("new_badge"))}</span>`;
     else if (game.featured) badge = `<span class="corner-badge featured">${escapeHTML(t("featured_badge"))}</span>`;
