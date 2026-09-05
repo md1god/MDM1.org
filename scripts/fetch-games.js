@@ -1,60 +1,71 @@
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          resolve([]);
+        }
+      });
+    }).on('error', err => reject(err));
+  });
+}
 
 async function fetchAllGames() {
-  console.log('🚀 بدء جلب كتالوج الألعاب الكامل من GameMonetize...');
+  console.log('🚀 بدء جلب الكتالوج الكامل...');
   
   let page = 1;
   let allGames = [];
-  let hasMore = true;
-  
-  // معالجة وإزالة الألعاب المكررة بناءً على الـ ID
   const seenIds = new Set();
+  let keepFetching = true;
 
-  while (hasMore) {
-    // يمكنك تجربة format=0 (JSON) أو format=xml
+  // جلب أول 15 صفحة كمرحلة أولى لتأكيد العمل فوراً (15,000 لعبة)
+  while (keepFetching && page <= 35) {
     const url = `https://gamemonetize.com/feed.php?format=0&num=1000&page=${page}`;
     console.log(`📦 جلب الصفحة ${page}...`);
 
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.log(`⚠️ توقف عند الصفحة ${page} (رمز الاستجابة: ${response.status})`);
-        break;
-      }
-
-      const data = await response.json();
+      const data = await fetchJson(url);
 
       if (Array.isArray(data) && data.length > 0) {
-        let newGamesInPage = 0;
-
+        let added = 0;
         for (const game of data) {
           if (game && game.url && !seenIds.has(game.id)) {
             seenIds.add(game.id);
-            allGames.push(game);
-            newGamesInPage++;
+            allGames.push({
+              id: String(game.id || ''),
+              title: String(game.title || ''),
+              category: String(game.category || 'other'),
+              tags: String(game.tags || ''),
+              thumb: String(game.thumb || ''),
+              url: String(game.url || ''),
+              width: game.width || 800,
+              height: game.height || 600
+            });
+            added++;
           }
         }
-
-        console.log(`✅ تم إضافة ${newGamesInPage} لعبة جديدة من الصفحة ${page}`);
+        console.log(`✅ تم إضافة ${added} لعبة من الصفحة ${page}`);
         page++;
-
-        // فاصل زمني صغير لمنع حظر السيرفر
-        await new Promise(resolve => setTimeout(resolve, 300));
       } else {
-        console.log('🏁 تم الوصول إلى نهاية الكتالوج.');
-        hasMore = false;
+        keepFetching = false;
       }
-    } catch (error) {
-      console.error(`❌ خطأ أثناء جلب الصفحة ${page}:`, error.message);
-      hasMore = false;
+    } catch (err) {
+      console.error(`❌ خطأ في الصفحة ${page}:`, err.message);
+      keepFetching = false;
     }
   }
 
-  console.log(`🎉 إجمالي الألعاب المجمعة: ${allGames.length} لعبة.`);
+  console.log(`🎉 الإجمالي: ${allGames.length} لعبة.`);
 
-  // حفظ الكتالوج الكامل
-  const dataDir = path.join(__dirname, '../data');
+  const dataDir = path.join(process.cwd(), 'data');
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
@@ -65,20 +76,17 @@ async function fetchAllGames() {
     'utf8'
   );
 
-  // حفظ بيانات Metadata
-  const meta = {
-    total: allGames.length,
-    updatedAt: new Date().toISOString(),
-    version: Date.now().toString()
-  };
-
   fs.writeFileSync(
     path.join(dataDir, 'games-meta.json'),
-    JSON.stringify(meta, null, 2),
+    JSON.stringify({
+      total: allGames.length,
+      updatedAt: new Date().toISOString(),
+      version: Date.now().toString()
+    }, null, 2),
     'utf8'
   );
 
-  console.log('💾 تم حفظ الملفات بنجاح في مجلد data/');
+  console.log('💾 تم الحفظ بنجاح.');
 }
 
 fetchAllGames();
