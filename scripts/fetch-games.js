@@ -1,22 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
-
-function fetchJson(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch (e) {
-          resolve([]);
-        }
-      });
-    }).on('error', err => reject(err));
-  });
-}
 
 async function fetchAllGames() {
   console.log('🚀 بدء جلب الكتالوج الكامل...');
@@ -31,7 +14,18 @@ async function fetchAllGames() {
     console.log(`📦 جلب الصفحة ${page}...`);
 
     try {
-      const data = await fetchJson(url);
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+
+      if (!response.ok) {
+        console.log(`⚠️ توقف عند الصفحة ${page} - رمز الحالة: ${response.status}`);
+        break;
+      }
+
+      const data = await response.json();
 
       if (Array.isArray(data) && data.length > 0) {
         let added = 0;
@@ -53,7 +47,9 @@ async function fetchAllGames() {
         }
         console.log(`✅ تم إضافة ${added} لعبة من الصفحة ${page}`);
         page++;
+        await new Promise(r => setTimeout(r, 200));
       } else {
+        console.log('🏁 لا توجد بيانات إضافية.');
         keepFetching = false;
       }
     } catch (err) {
@@ -62,7 +58,7 @@ async function fetchAllGames() {
     }
   }
 
-  console.log(`🎉 الإجمالي: ${allGames.length} لعبة.`);
+  console.log(`🎉 إجمالي الألعاب المجمعة: ${allGames.length}`);
 
   const dataDir = path.join(process.cwd(), 'data');
   if (!fs.existsSync(dataDir)) {
@@ -85,7 +81,7 @@ async function fetchAllGames() {
     'utf8'
   );
 
-  console.log('💾 تم الحفظ بنجاح في مجلد data.');
+  console.log('💾 تم التحديث والحفظ بنجاح.');
 }
 
 fetchAllGames();
