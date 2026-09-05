@@ -1,0 +1,30 @@
+name: Fetch All Games Catalog Daily
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # يعمل يومياً الساعة 2 صباحاً
+  workflow_dispatch: # إمكانية التشغيل اليدوي بنقرة زر
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Fetch Games
+        run: node scripts/fetch-games.js
+
+      - name: Commit and Push Updated Catalog
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/games.json data/games-meta.json
+          git commit -m "Auto-update full games catalog (${{ env.CURRENT_DATE }}) [skip ci]" || exit 0
+          git push
