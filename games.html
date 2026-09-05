@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MDM1 — بوابة الألعاب الأسطورية</title>
+<title id="pageTitle">MDM1 — بوابة الألعاب الأسطورية</title>
 
 <style>
 /* ============================================================
-   RESET & CORE KIDS/GAMING THEME (BRIGHT & VIBRANT)
+   RESET & CORE THEME
    ============================================================ */
 :root {
   --bg-dark: #0b0c14;
@@ -18,8 +18,11 @@
   --accent-yellow: #ffcc00;
   --accent-purple: #8b5cf6;
   --accent-green: #2bd67b;
+  --edu-orange: #ff8a3d;
+  --edu-teal: #14c8b0;
   --text-bright: #ffffff;
   --text-sub: #9aa0b8;
+  --grad-hero: linear-gradient(120deg, var(--accent-pink), var(--accent-purple) 55%, var(--accent-cyan));
 }
 
 * {
@@ -30,44 +33,36 @@
   user-select: none;
 }
 
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
+html, body { max-width: 100%; overflow-x: hidden; }
 
 body {
   background: var(--bg-dark);
   color: var(--text-bright);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
+[dir="ltr"] * { direction: ltr; }
+
 /* ============================================================
-   NAVBAR (FULL WIDTH, NO WASTED SIDE SPACE)
+   NAVBAR
    ============================================================ */
 .app-navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(18, 16, 43, 0.96);
+  background: rgba(18, 16, 43, 0.97);
+  backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.6rem 0.8rem;
+  padding: 0.6rem 0.9rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.6rem;
   width: 100%;
   flex-wrap: wrap;
-}
-
-@media (max-width: 700px) {
-  .app-navbar { padding: 0.5rem 0.6rem; }
-  .brand-logo { font-size: 1.05rem; gap: 0.35rem; }
-  .brand-badge { padding: 0.15rem 0.45rem; font-size: 0.8rem; }
-  .btn-md1 { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
-  .btn-audio { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
-  .btn-audio #audioText { display: none; }
 }
 
 .brand-logo {
@@ -75,77 +70,128 @@ body {
   align-items: center;
   gap: 0.6rem;
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 900;
   color: #fff;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .brand-badge {
-  background: var(--accent-pink);
+  background: var(--grad-hero);
+  background-size: 200% 200%;
+  animation: badgeShift 6s ease infinite;
   color: #fff;
   padding: 0.25rem 0.7rem;
   border-radius: 8px;
   font-size: 1rem;
 }
 
+@keyframes badgeShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .btn-md1 {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: var(--accent-yellow);
   color: #12102b;
   font-weight: 800;
-  font-size: 0.95rem;
-  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 20px;
   text-decoration: none;
   transition: transform 0.15s ease;
 }
+.btn-md1:hover { transform: translateY(-1px) scale(1.03); }
 
-.btn-md1:hover {
-  transform: translateY(-1px);
-}
-
-.btn-audio {
+.btn-audio, .btn-lang {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
-  padding: 0.5rem 0.85rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 16px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   transition: background 0.15s;
+  white-space: nowrap;
 }
-
-.btn-audio:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
+.btn-audio:hover, .btn-lang:hover { background: rgba(255, 255, 255, 0.16); }
 
 /* ============================================================
-   MAIN CONTENT AREA — FULL BLEED, NO EMPTY SIDE GAPS
+   LANGUAGE MODAL
    ============================================================ */
-body {
-  flex-direction: column;
+.lang-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,6,16,0.85);
+  z-index: 3000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
+.lang-modal-overlay.open { display: flex; }
 
-.page-body {
-  display: flex;
+.lang-modal {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 1.2rem;
   width: 100%;
-  flex: 1;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-/* LEFT CATEGORY RAIL — like the reference site's right-hand nav, dense and always visible */
+.lang-modal h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  color: var(--accent-cyan);
+}
+
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 0.7rem 0.6rem;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: all 0.15s;
+}
+.lang-option .flag { font-size: 1.5rem; }
+.lang-option:hover { background: rgba(255,255,255,0.1); }
+.lang-option.active { border-color: var(--accent-pink); background: rgba(255,45,120,0.12); }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-body { display: flex; width: 100%; flex: 1; }
+
 .category-rail {
   width: 190px;
   flex-shrink: 0;
@@ -159,12 +205,13 @@ body {
   top: 0;
   overflow-y: auto;
 }
+[dir="ltr"] .category-rail { border-left: none; border-right: 1px solid rgba(255,255,255,0.06); }
 
 .rail-link {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.5rem 0.6rem;
+  padding: 0.55rem 0.6rem;
   border-radius: 8px;
   color: var(--text-sub);
   font-size: 0.85rem;
@@ -174,11 +221,13 @@ body {
   background: transparent;
   border: none;
   width: 100%;
-  text-align: right;
+  text-align: inherit;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
 }
-
-.rail-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.rail-link:hover { background: rgba(255,255,255,0.06); color: #fff; transform: translateX(2px); }
+[dir="ltr"] .rail-link:hover { transform: translateX(-2px); }
 .rail-link.active { background: var(--accent-pink); color: #fff; }
+.rail-link.edu-link.active { background: linear-gradient(90deg, var(--edu-orange), var(--edu-teal)); }
 
 .rail-section-title {
   font-size: 0.72rem;
@@ -196,11 +245,50 @@ body {
   width: 100%;
 }
 
-@media (max-width: 700px) {
-  .main-container { padding: 0.6rem 0.6rem 1.5rem; }
+/* ============================================================
+   TRENDING TICKER (single deliberate motion element)
+   ============================================================ */
+.trending-ticker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(90deg, rgba(255,45,120,0.15), rgba(0,212,255,0.1));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 0.7rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-label {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--accent-yellow);
+  padding-inline-end: 0.6rem;
+  border-inline-end: 1px solid rgba(255,255,255,0.15);
+}
+.ticker-track-wrap { overflow: hidden; flex: 1; }
+.ticker-track {
+  display: flex;
+  gap: 1.4rem;
+  animation: tickerScroll 28s linear infinite;
+  width: max-content;
+}
+[dir="rtl"] .ticker-track { animation-direction: reverse; }
+.ticker-item { font-size: 0.8rem; color: var(--text-sub); font-weight: 600; }
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .brand-badge { animation: none; }
 }
 
-/* TOP BAR: SEARCH + STATS, ONE TIGHT ROW */
+/* ============================================================
+   TOOLBAR: SEARCH + STATS + VOICE
+   ============================================================ */
 .toolbar-section {
   margin: 0 0 0.8rem;
   display: flex;
@@ -209,14 +297,8 @@ body {
   flex-wrap: wrap;
   width: 100%;
 }
-
-.stats-bar {
-  order: 2;
-}
-.search-wrapper {
-  order: 1;
-}
-
+.stats-bar { order: 2; }
+.search-wrapper { order: 1; }
 @media (max-width: 700px) {
   .stats-bar { order: 1; width: 100%; }
   .search-wrapper { order: 2; width: 100%; }
@@ -230,17 +312,20 @@ body {
 
 .search-input {
   width: 100%;
-  padding: 0.6rem 1rem 0.6rem 2.6rem;
+  padding: 0.6rem 3rem 0.6rem 2.6rem;
   background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   color: #fff;
   font-size: 0.92rem;
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+[dir="ltr"] .search-input { padding: 0.6rem 2.6rem 0.6rem 3rem; }
 
 .search-input:focus {
   border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 4px rgba(0,212,255,0.15);
 }
 
 .search-icon {
@@ -252,6 +337,36 @@ body {
   color: var(--text-sub);
   pointer-events: none;
 }
+[dir="ltr"] .search-icon { left: auto; right: 0.9rem; }
+
+.mic-btn {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+[dir="ltr"] .mic-btn { right: auto; left: 0.6rem; }
+.mic-btn:hover { background: rgba(255,255,255,0.16); }
+.mic-btn.listening {
+  background: var(--accent-pink);
+  animation: micPulse 1s ease infinite;
+}
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,45,120,0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(255,45,120,0); }
+}
 
 .stats-bar {
   display: flex;
@@ -262,56 +377,46 @@ body {
   font-weight: 700;
   white-space: nowrap;
 }
-
 #gamesCount { color: var(--accent-green); }
 
-/* MOBILE CATEGORY CHIPS — only shown under the rail breakpoint */
-.filter-bar {
-  display: none;
-}
+.filter-bar { display: none; }
 
 /* ============================================================
-   GAMES GRID (FULL WIDTH, MORE COLUMNS ON WIDE SCREENS)
+   GAMES GRID
    ============================================================ */
 .games-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 0.55rem;
   list-style: none;
   margin-top: 0.3rem;
   width: 100%;
 }
-
-@media (min-width: 500px) {
-  .games-grid { grid-template-columns: repeat(4, 1fr); }
-}
-@media (min-width: 700px) {
-  .games-grid { grid-template-columns: repeat(5, 1fr); }
-}
-@media (min-width: 950px) {
-  .games-grid { grid-template-columns: repeat(6, 1fr); }
-}
-@media (min-width: 1200px) {
-  .games-grid { grid-template-columns: repeat(7, 1fr); }
-}
-@media (min-width: 1500px) {
-  .games-grid { grid-template-columns: repeat(8, 1fr); }
-}
+@media (min-width: 500px) { .games-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 700px) { .games-grid { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 950px) { .games-grid { grid-template-columns: repeat(6, 1fr); } }
+@media (min-width: 1200px) { .games-grid { grid-template-columns: repeat(7, 1fr); } }
+@media (min-width: 1500px) { .games-grid { grid-template-columns: repeat(8, 1fr); } }
 
 .game-card {
   background: var(--bg-card);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: transform 0.12s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex;
   flex-direction: column;
+  border: 2px solid transparent;
 }
-
 .game-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
+.game-card.edu-card { border-color: rgba(20, 200, 176, 0.35); }
+.game-card.edu-card:hover { border-color: var(--edu-teal); }
+.game-card.unity-card { border-color: rgba(255, 204, 0, 0.35); }
+.game-card.unity-card:hover { border-color: var(--accent-yellow); }
 
 .game-thumb {
   position: relative;
@@ -320,13 +425,22 @@ body {
   overflow: hidden;
   background: #0a0920;
 }
+.game-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.game-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.corner-badge {
+  position: absolute;
+  top: 6px;
+  inset-inline-start: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  color: #12102b;
+  z-index: 2;
 }
+.corner-badge.edu { background: var(--edu-teal); color: #06231e; }
+.corner-badge.unity { background: var(--accent-yellow); }
+.corner-badge.featured { background: var(--accent-pink); color: #fff; }
 
 .play-badge {
   position: absolute;
@@ -338,10 +452,7 @@ body {
   opacity: 0;
   transition: opacity 0.12s ease;
 }
-
-.game-card:hover .play-badge {
-  opacity: 1;
-}
+.game-card:hover .play-badge { opacity: 1; }
 
 .play-btn-circle {
   width: 36px;
@@ -361,7 +472,6 @@ body {
   flex-direction: column;
   gap: 0.1rem;
 }
-
 .game-title {
   font-size: 0.78rem;
   font-weight: 700;
@@ -370,38 +480,29 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.game-cat-tag { font-size: 0.66rem; font-weight: 600; color: var(--text-sub); }
 
-.game-cat-tag {
-  font-size: 0.66rem;
-  font-weight: 600;
-  color: var(--text-sub);
-}
-
-/* LOADER & LOAD MORE */
-.portal-loader {
+/* EMPTY STATE FOR CATEGORIES WITH NO GAMES YET (e.g. fresh "new") */
+.empty-state {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-sub);
 }
+.empty-state .emoji { font-size: 2.5rem; margin-bottom: 0.6rem; }
 
+/* LOADER & LOAD MORE */
+.portal-loader { text-align: center; padding: 3rem 1rem; color: var(--text-sub); }
 .spinner {
-  width: 42px;
-  height: 42px;
-  margin: 0 auto 1rem;
+  width: 42px; height: 42px; margin: 0 auto 1rem;
   border: 4px solid rgba(255,255,255,0.12);
   border-top-color: var(--accent-cyan);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.load-more-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-}
-
+.load-more-wrap { display: flex; justify-content: center; margin: 2rem 0; }
 .btn-load-more {
   display: none;
   background: var(--bg-card);
@@ -413,20 +514,13 @@ body {
   font-size: 0.9rem;
   cursor: pointer;
 }
-
-.btn-load-more:hover {
-  background: var(--accent-cyan);
-  color: #0b0c14;
-}
+.btn-load-more:hover { background: var(--accent-cyan); color: #0b0c14; }
 
 @media (max-width: 700px) {
   .category-rail { display: none; }
   .filter-bar {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding: 0.3rem 0 0.7rem;
-    scrollbar-width: none;
+    display: flex; gap: 0.5rem; overflow-x: auto;
+    padding: 0.3rem 0 0.7rem; scrollbar-width: none;
   }
   .filter-bar::-webkit-scrollbar { display: none; }
   .chip-btn {
@@ -439,126 +533,80 @@ body {
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
+    transition: transform 0.1s;
   }
+  .chip-btn:active { transform: scale(0.95); }
   .chip-btn.active { background: var(--accent-pink); color: #fff; border-color: transparent; }
+  .chip-btn.edu-chip.active { background: linear-gradient(90deg, var(--edu-orange), var(--edu-teal)); }
 }
 
 /* ============================================================
-   PLAY OVERLAY MODAL (IFRAME SCREEN)
+   PLAY OVERLAY
    ============================================================ */
 .play-overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(5, 6, 16, 0.97);
-  z-index: 2000;
-  display: none;
-  flex-direction: column;
+  z-index: 2000; display: none; flex-direction: column;
 }
-
-.play-overlay.open {
-  display: flex;
-}
+.play-overlay.open { display: flex; }
 
 .overlay-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 1.2rem;
-  background: #171432;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.8rem 1.2rem; background: #171432;
   border-bottom: 2px solid rgba(255, 255, 255, 0.08);
 }
-
 .overlay-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--accent-cyan);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 50%;
+  font-size: 1.05rem; font-weight: 800; color: var(--accent-cyan);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%;
 }
-
-.topbar-btns {
-  display: flex;
-  gap: 0.6rem;
-}
-
+.topbar-btns { display: flex; gap: 0.6rem; }
 .ctrl-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #fff;
-  padding: 0.5rem 0.9rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  transition: all 0.2s;
+  color: #fff; padding: 0.5rem 0.9rem; border-radius: 10px;
+  cursor: pointer; font-size: 0.9rem; font-weight: 700;
+  display: flex; align-items: center; gap: 0.3rem; transition: all 0.2s;
 }
+.ctrl-btn:hover { background: rgba(255, 61, 154, 0.22); border-color: var(--accent-pink); }
+.ctrl-btn.close-btn { background: rgba(255, 61, 154, 0.85); border-color: transparent; }
+.ctrl-btn.close-btn:hover { background: var(--accent-pink); box-shadow: 0 0 12px rgba(255, 61, 154, 0.6); }
 
-.ctrl-btn:hover {
-  background: rgba(255, 61, 154, 0.22);
-  border-color: var(--accent-pink);
-}
-
-.ctrl-btn.close-btn {
-  background: rgba(255, 61, 154, 0.85);
-  border-color: transparent;
-}
-
-.ctrl-btn.close-btn:hover {
-  background: var(--accent-pink);
-  box-shadow: 0 0 12px rgba(255, 61, 154, 0.6);
-}
-
-.stage-wrapper {
-  position: relative;
-  flex: 1;
-  background: #000;
-}
-
-.stage-wrapper iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
+.stage-wrapper { position: relative; flex: 1; background: #000; }
+.stage-wrapper iframe { width: 100%; height: 100%; border: none; display: block; }
 
 .stage-loader-box {
-  position: absolute;
-  inset: 0;
-  background: #12102b;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  z-index: 10;
+  position: absolute; inset: 0; background: #12102b;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; z-index: 10;
 }
-
 .stage-loader-box.hidden { display: none; }
+
+/* Accessible focus visibility */
+button:focus-visible, input:focus-visible, .game-card:focus-visible {
+  outline: 3px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
 </style>
 </head>
 <body>
 
-<!-- AUDIO -->
 <audio id="bg-music" src="audio/games.opus" loop preload="none"></audio>
 
 <!-- NAVBAR -->
 <header class="app-navbar">
   <a href="index.html" class="brand-logo">
     <span class="brand-badge">MDM1</span>
-    <span>بوابة الألعاب</span>
+    <span id="portalTitleText">بوابة الألعاب</span>
   </a>
 
   <div class="nav-actions">
     <a href="https://md1usd.com" class="btn-md1" target="_blank" rel="noopener">
-      <span>💎</span>
-      <span>MD1$</span>
+      <span>💎</span><span>MD1$</span>
     </a>
-
+    <button id="langToggle" class="btn-lang">
+      <span id="langFlag">🇪🇬</span>
+      <span id="langButtonText">اللغة</span>
+    </button>
     <button id="audioToggle" class="btn-audio">
       <span id="audioIcon">🔊</span>
       <span id="audioText">الموسيقى</span>
@@ -566,108 +614,114 @@ body {
   </div>
 </header>
 
-<!-- PAGE BODY: LEFT CATEGORY RAIL + MAIN GRID -->
+<!-- LANGUAGE MODAL -->
+<div class="lang-modal-overlay" id="langModal">
+  <div class="lang-modal">
+    <h3 id="langModalTitle">اختر لغتك</h3>
+    <div class="lang-grid" id="langGrid"></div>
+  </div>
+</div>
+
 <div class="page-body">
 
-  <!-- CATEGORY RAIL (DESKTOP) -->
   <aside class="category-rail" id="categoryRail">
-    <button class="rail-link active" data-category="all">🔥 الأكثر شهرة</button>
-    <button class="rail-link" data-category="new">🆕 جديد</button>
-    <button class="rail-link" data-category="multiplayer">👥 متعدد اللاعبين</button>
-    <div class="rail-section-title">الفئات</div>
-    <button class="rail-link" data-category="action">⚔️ أكشن</button>
-    <button class="rail-link" data-category="shooting">🔫 إطلاق نار</button>
-    <button class="rail-link" data-category="racing">🏎️ سباقات</button>
-    <button class="rail-link" data-category="puzzle">🧩 ألغاز</button>
-    <button class="rail-link" data-category="sports">⚽ رياضة</button>
-    <button class="rail-link" data-category="simulation">🏗️ محاكاة</button>
-    <button class="rail-link" data-category="adventure">🗺️ مغامرة</button>
-    <button class="rail-link" data-category="arcade">🕹️ أركيد</button>
-    <button class="rail-link" data-category="kids">🧸 أطفال</button>
-    <button class="rail-link" data-category="io">🌐 ألعاب آيو</button>
+    <button class="rail-link active" data-category="all"><span>🔥</span><span data-i18n="cat_all">الأكثر شهرة</span></button>
+    <button class="rail-link" data-category="new"><span>🆕</span><span data-i18n="cat_new">جديد</span></button>
+    <button class="rail-link" data-category="multiplayer"><span>👥</span><span data-i18n="cat_multiplayer">متعدد اللاعبين</span></button>
+    <div class="rail-section-title" data-i18n="cat_section_title">الفئات</div>
+    <button class="rail-link edu-link" data-category="educational"><span>🎓</span><span data-i18n="cat_educational">تعليمية</span></button>
+    <button class="rail-link" data-category="unity"><span>⭐</span><span data-i18n="cat_unity">جودة يونيتي</span></button>
+    <button class="rail-link" data-category="action"><span>⚔️</span><span data-i18n="cat_action">أكشن</span></button>
+    <button class="rail-link" data-category="shooting"><span>🔫</span><span data-i18n="cat_shooting">إطلاق نار</span></button>
+    <button class="rail-link" data-category="racing"><span>🏎️</span><span data-i18n="cat_racing">سباقات</span></button>
+    <button class="rail-link" data-category="puzzle"><span>🧩</span><span data-i18n="cat_puzzle">ألغاز</span></button>
+    <button class="rail-link" data-category="sports"><span>⚽</span><span data-i18n="cat_sports">رياضة</span></button>
+    <button class="rail-link" data-category="simulation"><span>🏗️</span><span data-i18n="cat_simulation">محاكاة</span></button>
+    <button class="rail-link" data-category="adventure"><span>🗺️</span><span data-i18n="cat_adventure">مغامرة</span></button>
+    <button class="rail-link" data-category="arcade"><span>🕹️</span><span data-i18n="cat_arcade">أركيد</span></button>
+    <button class="rail-link" data-category="kids"><span>🧸</span><span data-i18n="cat_kids">أطفال</span></button>
+    <button class="rail-link" data-category="io"><span>🌐</span><span data-i18n="cat_io">ألعاب آيو</span></button>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main-container">
 
-    <!-- TOOLBAR: SEARCH & STATS -->
+    <div class="trending-ticker">
+      <span class="ticker-label" data-i18n="trending_ticker_label">الأكثر لعباً الآن</span>
+      <div class="ticker-track-wrap">
+        <div class="ticker-track" id="tickerTrack"></div>
+      </div>
+    </div>
+
     <div class="toolbar-section">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
         <input id="gamesSearch" class="search-input" type="search" placeholder="ابحث عن لعبه مفضلة..." autocomplete="off">
+        <button id="micBtn" class="mic-btn" title="بحث صوتي">🎤</button>
       </div>
-
-      <div class="stats-bar">
-        <span id="gamesCount">جاري جلب الألعاب...</span>
-      </div>
+      <div class="stats-bar"><span id="gamesCount">جاري جلب الألعاب...</span></div>
     </div>
 
-    <!-- MOBILE CATEGORY CHIPS -->
     <nav class="filter-bar" id="filterBar">
-      <button class="chip-btn active" data-category="all">🔥 شهرة</button>
-      <button class="chip-btn" data-category="new">🆕 جديد</button>
-      <button class="chip-btn" data-category="action">⚔️ أكشن</button>
-      <button class="chip-btn" data-category="shooting">🔫 نار</button>
-      <button class="chip-btn" data-category="racing">🏎️ سباقات</button>
-      <button class="chip-btn" data-category="puzzle">🧩 ألغاز</button>
-      <button class="chip-btn" data-category="sports">⚽ رياضة</button>
-      <button class="chip-btn" data-category="simulation">🏗️ محاكاة</button>
-      <button class="chip-btn" data-category="kids">🧸 أطفال</button>
+      <button class="chip-btn active" data-category="all">🔥 <span data-i18n="cat_all">شهرة</span></button>
+      <button class="chip-btn" data-category="new">🆕 <span data-i18n="cat_new">جديد</span></button>
+      <button class="chip-btn edu-chip" data-category="educational">🎓 <span data-i18n="cat_educational">تعليمية</span></button>
+      <button class="chip-btn" data-category="unity">⭐ <span data-i18n="cat_unity">يونيتي</span></button>
+      <button class="chip-btn" data-category="action">⚔️ <span data-i18n="cat_action">أكشن</span></button>
+      <button class="chip-btn" data-category="shooting">🔫 <span data-i18n="cat_shooting">نار</span></button>
+      <button class="chip-btn" data-category="racing">🏎️ <span data-i18n="cat_racing">سباقات</span></button>
+      <button class="chip-btn" data-category="puzzle">🧩 <span data-i18n="cat_puzzle">ألغاز</span></button>
+      <button class="chip-btn" data-category="sports">⚽ <span data-i18n="cat_sports">رياضة</span></button>
+      <button class="chip-btn" data-category="kids">🧸 <span data-i18n="cat_kids">أطفال</span></button>
     </nav>
 
-    <!-- LOADER -->
     <div id="portalLoader" class="portal-loader">
       <div class="spinner"></div>
-      <div>جاري تحميل مكتبة الألعاب...</div>
+      <div data-i18n="games_loading">جاري تحميل مكتبة الألعاب...</div>
     </div>
 
-    <!-- GRID -->
     <ul class="games-grid" id="gamesGrid"></ul>
 
-    <!-- LOAD MORE -->
     <div class="load-more-wrap">
-      <button id="loadMoreBtn" class="btn-load-more">عرض المزيد ✨</button>
+      <button id="loadMoreBtn" class="btn-load-more" data-i18n="load_more">عرض المزيد ✨</button>
     </div>
 
   </main>
 </div>
 
-<!-- PLAY OVERLAY MODAL -->
+<!-- PLAY OVERLAY -->
 <div class="play-overlay" id="playOverlay">
   <div class="overlay-topbar">
     <span class="overlay-title" id="playTitle">اسم اللعبة</span>
-
     <div class="topbar-btns">
-      <button class="ctrl-btn" id="btnReload" title="إعادة تشغيل">⟳ إعادة</button>
-      <button class="ctrl-btn" id="btnFullscreen" title="شاشة كاملة">⛶ شاشة كاملة</button>
-      <button class="ctrl-btn close-btn" id="btnClose">✖ إغلاق</button>
+      <button class="ctrl-btn" id="btnReload" data-i18n="btn_reload">⟳ إعادة</button>
+      <button class="ctrl-btn" id="btnFullscreen" data-i18n="btn_fullscreen">⛶ شاشة كاملة</button>
+      <button class="ctrl-btn close-btn" id="btnClose" data-i18n="btn_close">✖ إغلاق</button>
     </div>
   </div>
-
   <div class="stage-wrapper" id="playStage">
     <div class="stage-loader-box" id="stageLoader">
       <div class="spinner"></div>
-      <span>جاري فتح اللعبة...</span>
+      <span data-i18n="opening_game">جاري فتح اللعبة...</span>
     </div>
     <iframe id="gameFrame" src="about:blank" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Canvas" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
   </div>
 </div>
 
-<!-- ALL-IN-ONE SELF-CONTAINED JAVASCRIPT -->
 <script>
 (function () {
   "use strict";
 
   const DATA_URL = "data/games.json";
+  const I18N_BASE = "i18n/";
+  const AVAILABLE_LANGS = ["ar", "en", "fr"]; // add more codes here as JSON files are added
   const BATCH_SIZE = 40;
 
-  /* DOM ELEMENTS */
+  /* DOM */
   const gamesGrid = document.getElementById("gamesGrid");
   const filterBar = document.getElementById("filterBar");
   const categoryRail = document.getElementById("categoryRail");
   const gamesSearch = document.getElementById("gamesSearch");
   const gamesCount = document.getElementById("gamesCount");
-  const gamesStatus = document.getElementById("gamesStatus");
   const portalLoader = document.getElementById("portalLoader");
   const loadMoreBtn = document.getElementById("loadMoreBtn");
   const playOverlay = document.getElementById("playOverlay");
@@ -681,6 +735,12 @@ body {
   const bgMusic = document.getElementById("bg-music");
   const audioToggle = document.getElementById("audioToggle");
   const audioIcon = document.getElementById("audioIcon");
+  const langToggle = document.getElementById("langToggle");
+  const langModal = document.getElementById("langModal");
+  const langGrid = document.getElementById("langGrid");
+  const langFlag = document.getElementById("langFlag");
+  const micBtn = document.getElementById("micBtn");
+  const tickerTrack = document.getElementById("tickerTrack");
 
   /* STATE */
   let ALL_GAMES = [];
@@ -691,15 +751,99 @@ body {
   let currentGame = null;
   let audioTimeBeforeGame = 0;
   let isMuted = false;
+  let I18N = {};
+  let currentLang = localStorage.getItem("mdm1_lang") || "ar";
 
-  /* CATEGORY MAPPING — WIDER MATCHING SO MORE GAMES LAND IN A REAL CATEGORY
-     INSTEAD OF FALLING INTO "OTHER" */
+  /* ============================================================
+     I18N
+     ============================================================ */
+  async function loadLanguage(code) {
+    try {
+      const res = await fetch(I18N_BASE + code + ".json");
+      if (!res.ok) throw new Error("lang not found");
+      I18N = await res.json();
+      currentLang = code;
+      localStorage.setItem("mdm1_lang", code);
+      applyTranslations();
+      buildLangGrid();
+    } catch (err) {
+      console.error("Language load failed:", code, err);
+    }
+  }
+
+  function t(key, fallback) {
+    return (I18N && I18N[key] !== undefined) ? I18N[key] : (fallback || key);
+  }
+
+  function applyTranslations() {
+    const html = document.getElementById("htmlRoot");
+    html.setAttribute("lang", currentLang);
+    html.setAttribute("dir", I18N.dir || "ltr");
+    document.getElementById("pageTitle").textContent = "MDM1 — " + t("portal_title");
+    document.getElementById("portalTitleText").textContent = t("portal_title");
+    document.getElementById("audioText").textContent = t("audio_label");
+    document.getElementById("langButtonText").textContent = t("language_button");
+    document.getElementById("langModalTitle").textContent = t("language_modal_title");
+    document.getElementById("langFlag").textContent = t("lang_flag");
+    gamesSearch.placeholder = t("search_placeholder");
+    micBtn.title = t("voice_search_title");
+    loadMoreBtn.textContent = t("load_more");
+    playTitle.textContent = currentGame ? (currentGame.title || t("play_default_title")) : t("play_default_title");
+    btnReload.textContent = t("btn_reload");
+    btnFullscreen.textContent = t("btn_fullscreen");
+    btnClose.textContent = t("btn_close");
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
+    });
+
+    updateStats();
+    if (ALL_GAMES.length) {
+      // re-render category labels on cards
+      renderTicker();
+    }
+  }
+
+  async function buildLangGrid() {
+    langGrid.innerHTML = "";
+    for (const code of AVAILABLE_LANGS) {
+      let meta;
+      try {
+        if (code === currentLang) {
+          meta = I18N;
+        } else {
+          const res = await fetch(I18N_BASE + code + ".json");
+          meta = await res.json();
+        }
+      } catch (e) { continue; }
+      const btn = document.createElement("button");
+      btn.className = "lang-option" + (code === currentLang ? " active" : "");
+      btn.innerHTML = `<span class="flag">${meta.lang_flag || "🏳️"}</span><span>${meta.lang_name || code}</span>`;
+      btn.addEventListener("click", () => {
+        loadLanguage(code);
+        langModal.classList.remove("open");
+      });
+      langGrid.appendChild(btn);
+    }
+  }
+
+  langToggle.addEventListener("click", () => langModal.classList.add("open"));
+  langModal.addEventListener("click", (e) => {
+    if (e.target === langModal) langModal.classList.remove("open");
+  });
+
+  /* ============================================================
+     CATEGORY NORMALIZATION
+     ============================================================ */
   function normalizeCategory(category, tags, title) {
     const c = String(category || "").trim().toLowerCase();
-    const t = String(tags || "").trim().toLowerCase();
+    const t2 = String(tags || "").trim().toLowerCase();
     const ti = String(title || "").trim().toLowerCase();
-    const hay = c + " " + t + " " + ti;
+    const hay = c + " " + t2 + " " + ti;
 
+    if (c === "educational" || /educational|learn|abc|alphabet|tracing|toddler|preschool/.test(hay)) return "educational";
+    if (c === "unity" || /unity3d|unity engine/.test(hay)) return "unity";
     if (/shoot|gun|sniper|swat|fps|war|army|zombie/.test(hay)) return "shooting";
     if (/action|fight|boxing|battle|combat|ninja|hero/.test(hay)) return "action";
     if (/puzzle|brain|logic|match|block|maze/.test(hay)) return "puzzle";
@@ -715,20 +859,17 @@ body {
   }
 
   function categoryLabel(cat) {
-    const map = {
-      action: "أكشن", puzzle: "ألغاز", racing: "سباقات", sports: "رياضة",
-      shooting: "إطلاق نار", simulation: "محاكاة", adventure: "مغامرة",
-      arcade: "أركيد", kids: "أطفال", multiplayer: "متعدد اللاعبين", io: "آيو"
-    };
-    return map[cat] || cat || "العاب";
+    const key = "cat_" + cat;
+    return t(key, cat || "");
   }
 
-  /* ESCAPE HTML */
   function escapeHTML(str) {
     return String(str || "").replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[m]));
   }
 
-  /* FILTERING */
+  /* ============================================================
+     FILTERING & RENDER
+     ============================================================ */
   function applyFilters() {
     const q = searchText.trim().toLowerCase();
     visibleGames = ALL_GAMES.filter(game => {
@@ -740,31 +881,47 @@ body {
     renderedCount = 0;
     gamesGrid.innerHTML = "";
     updateStats();
+
+    if (visibleGames.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty-state";
+      const isEduEmpty = activeCategory === "educational";
+      li.innerHTML = `<div class="emoji">${isEduEmpty ? "🎓" : "🔍"}</div><div>${escapeHTML(t("no_results"))}</div>`;
+      gamesGrid.appendChild(li);
+      loadMoreBtn.style.display = "none";
+      return;
+    }
+
     renderNextBatch();
   }
 
-  /* REAL COUNT — TAKEN DIRECTLY FROM THE LOADED DATA FILE, NEVER HARDCODED */
   function updateStats() {
-    gamesCount.textContent = visibleGames.length.toLocaleString("ar-EG") + " لعبة متاحة";
+    const n = visibleGames.length || ALL_GAMES.filter(g => activeCategory === "all" || g._cat === activeCategory).length;
+    gamesCount.textContent = n.toLocaleString(currentLang === "ar" ? "ar-EG" : currentLang) + " " + t("games_count_suffix");
   }
 
-  /* CARD CREATION WITH FULL COVER IMAGES & NO INNER PADDING */
   function createGameCard(game) {
     const li = document.createElement("li");
     li.className = "game-card";
+    if (game._cat === "educational") li.classList.add("edu-card");
+    if (game._cat === "unity") li.classList.add("unity-card");
 
-    const title = escapeHTML(game.title || "لعبة");
+    const title = escapeHTML(game.title || "Game");
     const cat = escapeHTML(categoryLabel(game._cat));
     const thumb = game.thumb
       ? `<img src="${escapeHTML(game.thumb)}" alt="${title}" loading="lazy" onerror="this.src='images/placeholder.png'">`
       : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:2rem;">🎮</div>`;
 
+    let badge = "";
+    if (game._cat === "educational") badge = `<span class="corner-badge edu">${escapeHTML(t("educational_badge"))}</span>`;
+    else if (game._cat === "unity") badge = `<span class="corner-badge unity">${escapeHTML(t("unity_badge"))}</span>`;
+    else if (game.featured) badge = `<span class="corner-badge featured">${escapeHTML(t("featured_badge"))}</span>`;
+
     li.innerHTML = `
       <div class="game-thumb">
+        ${badge}
         ${thumb}
-        <div class="play-badge">
-          <div class="play-btn-circle">▶</div>
-        </div>
+        <div class="play-badge"><div class="play-btn-circle">▶</div></div>
       </div>
       <div class="game-details">
         <div class="game-title">${title}</div>
@@ -773,6 +930,8 @@ body {
     `;
 
     li.addEventListener("click", () => openGame(game));
+    li.setAttribute("tabindex", "0");
+    li.addEventListener("keydown", (e) => { if (e.key === "Enter") openGame(game); });
     return li;
   }
 
@@ -781,53 +940,53 @@ body {
       loadMoreBtn.style.display = "none";
       return;
     }
-
     const fragment = document.createDocumentFragment();
     const end = Math.min(renderedCount + BATCH_SIZE, visibleGames.length);
-
-    for (let i = renderedCount; i < end; i++) {
-      fragment.appendChild(createGameCard(visibleGames[i]));
-    }
-
+    for (let i = renderedCount; i < end; i++) fragment.appendChild(createGameCard(visibleGames[i]));
     gamesGrid.appendChild(fragment);
     renderedCount = end;
-
     loadMoreBtn.style.display = renderedCount < visibleGames.length ? "inline-block" : "none";
   }
 
-  /* LOAD DATA */
+  function renderTicker() {
+    if (!ALL_GAMES.length) return;
+    const top = ALL_GAMES.slice(0, 14);
+    const items = top.map(g => `<span class="ticker-item">🎮 ${escapeHTML(g.title || "")}</span>`).join("");
+    tickerTrack.innerHTML = items + items; // duplicate for seamless loop
+  }
+
+  /* ============================================================
+     LOAD DATA
+     ============================================================ */
   async function loadGames() {
     try {
       portalLoader.style.display = "block";
       const res = await fetch(DATA_URL);
-      if (!res.ok) throw new Error("فشل التحميل");
+      if (!res.ok) throw new Error("failed to load");
       const data = await res.json();
 
       ALL_GAMES = data
-        .filter(g => g && g.url)
+        .filter(g => g && g.url && g.url !== "REPLACE_ME_WITH_ITCH_EMBED_URL")
         .map(g => ({ ...g, _cat: normalizeCategory(g.category, g.tags, g.title) }));
 
-      // شكّل الأحدث أولاً لو فيه ترتيب زمني في البيانات (id تصاعدي غالباً = ترتيب الإضافة في الفييد)
       visibleGames = ALL_GAMES.slice();
       portalLoader.style.display = "none";
 
       updateStats();
       renderNextBatch();
+      renderTicker();
     } catch (err) {
-      portalLoader.innerHTML = `<div>⚠️ تعذر تحميل مكتبة الألعاب. يرجى التأكد من مسار data/games.json</div>`;
+      portalLoader.innerHTML = `<div>⚠️ ${escapeHTML(t("games_load_error"))}</div>`;
     }
   }
 
-  /* AUDIO HANDLING */
+  /* ============================================================
+     AUDIO
+     ============================================================ */
   audioToggle.addEventListener("click", () => {
     isMuted = !isMuted;
-    if (isMuted) {
-      bgMusic.pause();
-      audioIcon.textContent = "🔇";
-    } else {
-      bgMusic.play().catch(() => {});
-      audioIcon.textContent = "🔊";
-    }
+    if (isMuted) { bgMusic.pause(); audioIcon.textContent = "🔇"; }
+    else { bgMusic.play().catch(() => {}); audioIcon.textContent = "🔊"; }
   });
 
   const enableAudioOnTouch = () => {
@@ -839,11 +998,13 @@ body {
   };
   document.addEventListener("pointerdown", enableAudioOnTouch);
 
-  /* OPEN GAME (PAUSE MUSIC & RECORD TIME) */
+  /* ============================================================
+     PLAY OVERLAY
+     ============================================================ */
   function openGame(game) {
     if (!game || !game.url) return;
     currentGame = game;
-    playTitle.textContent = game.title || "اللعبة";
+    playTitle.textContent = game.title || t("play_default_title");
 
     if (!bgMusic.paused) {
       audioTimeBeforeGame = bgMusic.currentTime;
@@ -856,27 +1017,20 @@ body {
     document.body.style.overflow = "hidden";
   }
 
-  /* CLOSE GAME (RESUME MUSIC FROM EXACT TIME) */
   function closeGame() {
     playOverlay.classList.remove("open");
     document.body.style.overflow = "";
     gameFrame.src = "about:blank";
-
     if (!isMuted) {
       bgMusic.currentTime = audioTimeBeforeGame;
       bgMusic.play().catch(() => {});
     }
-
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    }
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     currentGame = null;
   }
 
   gameFrame.addEventListener("load", () => {
-    if (gameFrame.src && gameFrame.src !== "about:blank") {
-      stageLoader.classList.add("hidden");
-    }
+    if (gameFrame.src && gameFrame.src !== "about:blank") stageLoader.classList.add("hidden");
   });
 
   btnReload.addEventListener("click", () => {
@@ -891,12 +1045,13 @@ body {
   });
 
   btnClose.addEventListener("click", closeGame);
-
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && playOverlay.classList.contains("open")) closeGame();
   });
 
-  /* SEARCH & FILTERS LISTENERS */
+  /* ============================================================
+     SEARCH, VOICE SEARCH & FILTERS
+     ============================================================ */
   let searchTimer;
   gamesSearch.addEventListener("input", () => {
     clearTimeout(searchTimer);
@@ -905,6 +1060,40 @@ body {
       applyFilters();
     }, 150);
   });
+
+  // Voice search — follows whichever UI language is currently active.
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const VOICE_LANG_MAP = { ar: "ar-EG", en: "en-US", fr: "fr-FR" };
+
+  if (SpeechRecognitionAPI) {
+    micBtn.addEventListener("click", () => {
+      const recognizer = new SpeechRecognitionAPI();
+      recognizer.lang = VOICE_LANG_MAP[currentLang] || "en-US";
+      recognizer.interimResults = false;
+      recognizer.maxAlternatives = 1;
+
+      micBtn.classList.add("listening");
+      gamesSearch.placeholder = t("voice_search_listening");
+
+      recognizer.onresult = (event) => {
+        const heard = event.results[0][0].transcript;
+        gamesSearch.value = heard;
+        searchText = heard;
+        applyFilters();
+      };
+      recognizer.onend = () => {
+        micBtn.classList.remove("listening");
+        gamesSearch.placeholder = t("search_placeholder");
+      };
+      recognizer.onerror = () => {
+        micBtn.classList.remove("listening");
+        gamesSearch.placeholder = t("search_placeholder");
+      };
+      recognizer.start();
+    });
+  } else {
+    micBtn.style.display = "none";
+  }
 
   function setActiveCategory(cat) {
     activeCategory = cat || "all";
@@ -927,7 +1116,13 @@ body {
 
   loadMoreBtn.addEventListener("click", renderNextBatch);
 
-  loadGames();
+  /* ============================================================
+     BOOT
+     ============================================================ */
+  (async function boot() {
+    await loadLanguage(currentLang);
+    await loadGames();
+  })();
 })();
 </script>
 </body>
