@@ -141,7 +141,21 @@ body {
   }
 }
 @media (max-width: 700px) {
-  .portal-title-center { display: none; } /* avoid overlapping nav-actions on small screens */
+  /* Keep it visible on mobile (was hidden before) but move it to its own
+     row under the icons instead of overlapping them, and drop the glow
+     animation (handled above) so it doesn't fight for attention with the
+     rest of a busy small screen. */
+  .app-navbar { flex-direction: column; align-items: stretch; padding-bottom: 0.5rem; }
+  .portal-title-center {
+    position: static;
+    transform: none;
+    order: 3;
+    width: 100%;
+    text-align: center;
+    margin-top: 0.35rem;
+    font-size: 1rem;
+  }
+  .brand-logo, .nav-actions { order: 1; }
 }
 
 .nav-actions {
@@ -376,6 +390,17 @@ body {
   .ticker-track { animation: none; }
   .brand-badge { animation: none; }
   .portal-title-center { animation: none; }
+}
+
+/* Mobile performance mode: continuous CSS animations (glow/shift/ticker-scroll)
+   keep the GPU/CPU busy at all times, which is a real contributor to heat and
+   battery drain on phones. On narrow screens we keep the visuals (color,
+   pink glow) but stop them from running nonstop — they still render, just
+   as a static glow instead of an infinite animation loop. */
+@media (max-width: 700px) {
+  .brand-badge { animation: none; background-position: 30% 50%; }
+  .portal-title-center { animation: none; }
+  .ticker-track { animation-duration: 45s; }
 }
 
 /* ============================================================
@@ -836,9 +861,18 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   const LOCAL_CACHE_URL = "data/games.json"; // optional local fallback/cache file you can regenerate
   const I18N_BASE = "i18n/";
   const AVAILABLE_LANGS = ["ar", "en", "fr"];
-  const BATCH_SIZE = 40;
-  const FEED_PAGES_ON_LOAD = 6;      // how many feed pages to pull on first load (more pages = more games)
-  const FEED_PAGES_PER_FETCH_MORE = 4; // extra pages pulled when user clicks "fetch more"
+
+  // Mobile gets a lighter profile: fewer games fetched/rendered at once.
+  // Nothing is hidden or removed from mobile — every category still works —
+  // it's just paged more conservatively so a phone isn't holding thousands
+  // of images/DOM nodes in memory at the same time, which is what was
+  // causing the heat and slowdown.
+  const IS_MOBILE = window.matchMedia("(max-width: 700px)").matches
+    || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  const BATCH_SIZE = IS_MOBILE ? 12 : 40;
+  const FEED_PAGES_ON_LOAD = IS_MOBILE ? 2 : 6;       // how many feed pages to pull on first load
+  const FEED_PAGES_PER_FETCH_MORE = IS_MOBILE ? 2 : 4; // extra pages pulled when user clicks "fetch more"
   const NEW_GAME_WINDOW_DAYS = 30;   // games added within this many days count as "new"
   const CACHE_KEY = "mdm1_games_cache_v3";
   const CACHE_TTL_MS = 1000 * 60 * 60 * 6; // 6 hours
@@ -1472,6 +1506,12 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   /* ============================================================
      PLAY OVERLAY
      ============================================================ */
+  // Tracks whether music was actually playing right before we opened a game,
+  // independent of bgMusic.paused — mobile browsers can leave that flag in
+  // an inconsistent state around autoplay restrictions, which is why music
+  // wasn't reliably stopping/resuming before.
+  let wasMusicPlayingBeforeGame = false;
+
   function openGame(game) {
     currentGame = game;
     playTitle.textContent = game.title || t("play_default_title");
@@ -1480,7 +1520,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     playOverlay.classList.add("open");
     document.body.style.overflow = "hidden";
 
-    if (!bgMusic.paused) {
+    wasMusicPlayingBeforeGame = !bgMusic.paused && !isMuted;
+    if (wasMusicPlayingBeforeGame) {
       audioTimeBeforeGame = bgMusic.currentTime;
       bgMusic.pause();
     }
@@ -1499,10 +1540,11 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     gameFrame.src = "about:blank";
     document.body.style.overflow = "";
     currentGame = null;
-    if (!isMuted && audioTimeBeforeGame) {
+    if (wasMusicPlayingBeforeGame) {
       bgMusic.currentTime = audioTimeBeforeGame;
       bgMusic.play().catch(() => {});
     }
+    wasMusicPlayingBeforeGame = false;
   }
 
   btnClose.addEventListener("click", closeGame);
