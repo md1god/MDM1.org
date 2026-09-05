@@ -1,46 +1,36 @@
-import os
-
-html_content = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">MDM1 — بوابة الألعاب الأسطورية</title>
-
-<!-- PWA Meta Tags -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0d0f1d">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MDM1">
-<link rel="apple-touch-icon" href="/images/icon-192.png">
-
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================
-   ULTRA MODERN CYBER-GAMING THEME (MDM1 V2)
+   GLOBAL STYLES & NEON COLOR VARIABLES
    ============================================================ */
 :root {
-  --bg-dark: #090a12;
-  --bg-card: #131525;
-  --bg-card-hover: #1c1f36;
-  --accent-pink: #ff0055;
-  --accent-pink-glow: rgba(255, 0, 85, 0.4);
+  --bg-dark: #070811;
+  --bg-card: #121324;
+  --bg-card-hover: #1c1e36;
+  --bg-sidebar: #0b0c1b;
+  --accent-pink: #ff007f;
   --accent-cyan: #00f0ff;
-  --accent-cyan-glow: rgba(0, 240, 255, 0.4);
   --accent-yellow: #ffe600;
-  --accent-purple: #7000ff;
-  --accent-green: #00ff66;
-  --edu-orange: #ff6600;
-  --edu-teal: #00e5ff;
+  --accent-purple: #9d4edd;
+  --accent-green: #00ff87;
+  --accent-orange: #ff6b35;
   --text-bright: #ffffff;
-  --text-sub: #8e95b7;
-  --grad-hero: linear-gradient(135deg, #ff0055, #7000ff 50%, #00f0ff);
-  --grad-card-border: linear-gradient(135deg, rgba(255,0,85,0.5), rgba(0,240,255,0.5));
+  --text-sub: #a0a5c3;
+  --grad-hero: linear-gradient(135deg, #ff007f 0%, #7928ca 50%, #00f0ff 100%);
+  --grad-btn: linear-gradient(90deg, #ff007f, #9d4edd);
+  --grad-gold: linear-gradient(90deg, #ffe600, #ff6b35);
+  --glow-pink: 0 0 15px rgba(255, 0, 127, 0.5);
+  --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.5);
+  --glow-green: 0 0 15px rgba(0, 255, 135, 0.5);
 }
 
 * {
@@ -49,58 +39,77 @@ html_content = r'''<!DOCTYPE html>
   padding: 0;
   font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
   max-width: 100%;
   overflow-x: hidden;
   background-color: var(--bg-dark);
-  color: var(--text-bright);
 }
 
 body {
+  background: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(255, 0, 127, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(157, 78, 221, 0.05) 0%, transparent 60%);
+  color: var(--text-bright);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   width: 100%;
-  background: radial-gradient(circle at 50% 0%, #1a153a 0%, var(--bg-dark) 70%);
 }
 
-[dir="ltr"] * { direction: ltr; }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
-::-webkit-scrollbar-thumb { background: #252945; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-pink); }
+[dir="ltr"] * {
+  direction: ltr;
+}
 
 /* ============================================================
-   NAVBAR
+   SCROLLBAR CUSTOMIZATION
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 0, 127, 0.4);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-pink);
+}
+
+/* ============================================================
+   NAVBAR (HEADER)
    ============================================================ */
 .app-navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(9, 10, 18, 0.85);
+  z-index: 500;
+  background: rgba(10, 11, 22, 0.95);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.75rem 1.2rem;
+  border-bottom: 2px solid rgba(255, 0, 127, 0.3);
+  padding: 0.8rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   width: 100%;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.8);
 }
 
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.75rem;
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 900;
-  color: #fff;
+  color: #ffffff;
   letter-spacing: 0.5px;
   flex-shrink: 0;
 }
@@ -109,12 +118,12 @@ body {
   background: var(--grad-hero);
   background-size: 200% 200%;
   animation: badgeShift 4s ease infinite;
-  color: #fff;
-  padding: 0.3rem 0.85rem;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  box-shadow: 0 0 15px var(--accent-pink-glow);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  color: #ffffff;
+  padding: 0.35rem 0.9rem;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  box-shadow: var(--glow-pink);
 }
 
 @keyframes badgeShift {
@@ -125,7 +134,7 @@ body {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.8rem;
   flex-wrap: wrap;
 }
 
@@ -133,41 +142,43 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #ffe600, #ff9900);
-  color: #000;
+  background: var(--accent-yellow);
+  color: #000000;
   font-weight: 900;
   font-size: 0.95rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: 25px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
   text-decoration: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 15px rgba(255, 230, 0, 0.3);
-}
-.btn-md1:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 0 25px rgba(255, 230, 0, 0.6);
+  box-shadow: 0 0 15px rgba(255, 230, 0, 0.4);
+  transition: all 0.25s ease;
 }
 
-.btn-audio, .btn-lang {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  padding: 0.55rem 1rem;
-  border-radius: 20px;
+.btn-md1:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 25px rgba(255, 230, 0, 0.8);
+}
+
+.btn-audio, .btn-lang, .btn-fav-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #ffffff;
+  padding: 0.6rem 1rem;
+  border-radius: 16px;
   cursor: pointer;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  transition: all 0.2s;
-  backdrop-filter: blur(5px);
+  transition: all 0.25s ease;
+  white-space: nowrap;
 }
-.btn-audio:hover, .btn-lang:hover {
-  background: rgba(255, 255, 255, 0.15);
+
+.btn-audio:hover, .btn-lang:hover, .btn-fav-toggle:hover {
+  background: rgba(0, 240, 255, 0.18);
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 12px var(--accent-cyan-glow);
-  transform: translateY(-1px);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
 }
 
 /* ============================================================
@@ -176,7 +187,7 @@ body {
 .lang-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 5, 10, 0.9);
+  background: rgba(3, 4, 10, 0.9);
   backdrop-filter: blur(10px);
   z-index: 3000;
   display: none;
@@ -184,183 +195,211 @@ body {
   justify-content: center;
   padding: 1rem;
 }
-.lang-modal-overlay.open { display: flex; }
+
+.lang-modal-overlay.open {
+  display: flex;
+}
 
 .lang-modal {
   background: var(--bg-card);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 2px solid var(--accent-pink);
+  box-shadow: var(--glow-pink);
   border-radius: 24px;
-  padding: 1.5rem;
+  padding: 2rem;
   width: 100%;
-  max-width: 450px;
-  box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+  max-width: 440px;
 }
 
 .lang-modal h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  margin-bottom: 1.2rem;
   color: var(--accent-cyan);
   text-align: center;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .lang-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.8rem;
 }
 
 .lang-option {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   background: rgba(255,255,255,0.04);
-  border: 2px solid rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.1);
   border-radius: 16px;
-  padding: 0.85rem 0.8rem;
+  padding: 0.9rem 1.2rem;
   cursor: pointer;
-  color: #fff;
-  font-size: 1rem;
+  color: #ffffff;
+  font-size: 1.05rem;
   font-weight: 800;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
 }
+
 .lang-option .flag { font-size: 1.8rem; }
+
 .lang-option:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(0, 240, 255, 0.12);
   border-color: var(--accent-cyan);
 }
+
 .lang-option.active {
   border-color: var(--accent-pink);
-  background: rgba(255,0,85,0.15);
-  box-shadow: 0 0 15px var(--accent-pink-glow);
+  background: rgba(255,0,127,0.2);
+  box-shadow: var(--glow-pink);
 }
 
 /* ============================================================
-   LAYOUT
+   PAGE LAYOUT & SIDEBAR RAIL
    ============================================================ */
-.page-body { display: flex; width: 100%; flex: 1; }
+.page-body {
+  display: flex;
+  width: 100%;
+  flex: 1;
+}
 
 .category-rail {
-  width: 210px;
+  width: 230px;
   flex-shrink: 0;
-  padding: 1rem 0.75rem;
-  border-left: 1px solid rgba(255,255,255,0.06);
+  padding: 1.2rem 0.8rem;
+  background: var(--bg-sidebar);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.4rem;
   height: calc(100vh - 70px);
   position: sticky;
   top: 70px;
   overflow-y: auto;
-  background: rgba(9, 10, 18, 0.5);
 }
-[dir="ltr"] .category-rail { border-left: none; border-right: 1px solid rgba(255,255,255,0.06); }
+
+[dir="ltr"] .category-rail {
+  border-left: none;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
 
 .rail-link {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.65rem 0.8rem;
-  border-radius: 12px;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
   color: var(--text-sub);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   width: 100%;
   text-align: inherit;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
 }
+
 .rail-link:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
   transform: translateX(-4px);
 }
-[dir="ltr"] .rail-link:hover { transform: translateX(4px); }
-.rail-link.active {
-  background: linear-gradient(90deg, var(--accent-pink), #bf0040);
-  color: #fff;
-  box-shadow: 0 0 15px var(--accent-pink-glow);
+
+[dir="ltr"] .rail-link:hover {
+  transform: translateX(4px);
 }
-.rail-link.edu-link.active {
-  background: linear-gradient(90deg, var(--edu-orange), var(--edu-teal));
-  box-shadow: 0 0 15px rgba(0,229,255,0.4);
+
+.rail-link.active {
+  background: var(--grad-btn);
+  color: #ffffff;
+  box-shadow: var(--glow-pink);
+  border-color: transparent;
+}
+
+.rail-link.unity-link.active {
+  background: var(--grad-gold);
+  color: #000000;
+  box-shadow: 0 0 15px rgba(255, 230, 0, 0.5);
 }
 
 .rail-section-title {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--accent-cyan);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 1rem 0.8rem 0.3rem;
+  padding: 1.2rem 0.6rem 0.4rem;
   font-weight: 900;
-  opacity: 0.8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .main-container {
   flex: 1;
   min-width: 0;
   max-width: 100%;
-  padding: 1rem 1.2rem 3rem;
+  padding: 1.2rem 1.5rem 3rem;
   width: 100%;
 }
 
 /* ============================================================
-   TRENDING TICKER (Vibrant Animated Neon Ticker)
+   HIGH-SPEED ANIMATED TRENDING TICKER
    ============================================================ */
 .trending-ticker {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  background: linear-gradient(90deg, rgba(255,0,85,0.25), rgba(112,0,255,0.2) 50%, rgba(0,240,255,0.25));
+  background: linear-gradient(90deg, rgba(255,0,127,0.2) 0%, rgba(0,240,255,0.15) 100%);
   border: 1px solid rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0,240,255,0.15);
   border-radius: 16px;
-  padding: 0.65rem 1rem;
+  padding: 0.7rem 1.2rem;
   margin-bottom: 1.2rem;
   overflow: hidden;
   white-space: nowrap;
-  box-shadow: 0 0 20px rgba(0,240,255,0.15);
 }
+
 .ticker-label {
   flex-shrink: 0;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 900;
   color: var(--accent-yellow);
-  padding-inline-end: 0.8rem;
+  padding-inline-end: 1rem;
   border-inline-end: 2px solid rgba(255,255,255,0.2);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  text-shadow: 0 0 10px rgba(255,230,0,0.5);
+  gap: 0.5rem;
 }
-.ticker-track-wrap { overflow: hidden; flex: 1; }
+
+.ticker-track-wrap {
+  overflow: hidden;
+  flex: 1;
+}
+
 .ticker-track {
   display: flex;
   gap: 2rem;
-  animation: tickerScroll 22s linear infinite;
+  animation: tickerScroll 16s linear infinite;
   width: max-content;
 }
-[dir="rtl"] .ticker-track { animation-direction: reverse; }
+
+[dir="rtl"] .ticker-track {
+  animation-direction: reverse;
+}
+
 .ticker-item {
   font-size: 0.9rem;
-  color: #fff;
+  color: #ffffff;
   font-weight: 800;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(0,0,0,0.3);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.35);
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s;
 }
+
 .ticker-item:hover {
-  background: var(--accent-pink);
-  border-color: #fff;
-  transform: scale(1.05);
+  background: rgba(255, 0, 127, 0.4);
 }
 
 @keyframes tickerScroll {
@@ -369,7 +408,7 @@ body {
 }
 
 /* ============================================================
-   TOOLBAR: SEARCH & STATS
+   TOOLBAR: SEARCH & COUNTER STATS
    ============================================================ */
 .toolbar-section {
   margin-bottom: 1.2rem;
@@ -388,97 +427,97 @@ body {
 
 .search-input {
   width: 100%;
-  padding: 0.85rem 3.2rem 0.85rem 3rem;
+  padding: 0.85rem 3.5rem 0.85rem 3.2rem;
   background: var(--bg-card);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  color: #ffffff;
   font-size: 1rem;
   font-weight: 700;
   outline: none;
   transition: all 0.25s ease;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
 }
-[dir="ltr"] .search-input { padding: 0.85rem 3rem 0.85rem 3.2rem; }
+
+[dir="ltr"] .search-input {
+  padding: 0.85rem 3.2rem 0.85rem 3.5rem;
+}
 
 .search-input:focus {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 20px var(--accent-cyan-glow);
-  background: #171a30;
+  box-shadow: var(--glow-cyan);
 }
 
 .search-icon {
   position: absolute;
-  right: 1.1rem;
+  right: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--text-sub);
   pointer-events: none;
 }
-[dir="ltr"] .search-icon { right: auto; left: 1.1rem; }
+
+[dir="ltr"] .search-icon {
+  right: auto;
+  left: 1.2rem;
+}
 
 .mic-btn {
   position: absolute;
-  left: 0.8rem;
+  left: 0.9rem;
   top: 50%;
   transform: translateY(-50%);
   width: 36px;
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+  background: rgba(255,255,255,0.1);
+  color: #ffffff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  transition: all 0.2s;
+  font-size: 1.05rem;
+  transition: all 0.2s ease;
 }
-[dir="ltr"] .mic-btn { left: auto; right: 0.8rem; }
+
+[dir="ltr"] .mic-btn {
+  left: auto;
+  right: 0.9rem;
+}
+
 .mic-btn:hover {
-  background: var(--accent-cyan);
-  color: #000;
-  box-shadow: 0 0 12px var(--accent-cyan-glow);
+  background: var(--accent-pink);
+  box-shadow: var(--glow-pink);
 }
 
 .stats-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: rgba(255,255,255,0.04);
+  background: rgba(0, 255, 135, 0.12);
+  border: 1px solid var(--accent-green);
   padding: 0.7rem 1.2rem;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.08);
   font-size: 0.95rem;
-  color: var(--text-sub);
-  font-weight: 800;
-  white-space: nowrap;
-}
-#gamesCount {
   color: var(--accent-green);
-  font-size: 1.1rem;
-  text-shadow: 0 0 10px rgba(0,255,102,0.4);
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: var(--glow-green);
 }
-
-.filter-bar { display: none; }
 
 /* ============================================================
-   GAMES GRID (HD CARDS WITH VIBRANT HOVERS)
+   GAMES GRID & CARDS
    ============================================================ */
 .games-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.8rem;
+  gap: 1rem;
   list-style: none;
   width: 100%;
 }
-@media (min-width: 480px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 720px) { .games-grid { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 980px) { .games-grid { grid-template-columns: repeat(5, 1fr); } }
-@media (min-width: 1280px) { .games-grid { grid-template-columns: repeat(6, 1fr); } }
-@media (min-width: 1600px) { .games-grid { grid-template-columns: repeat(7, 1fr); } }
+
+@media (min-width: 550px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 820px) { .games-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1100px) { .games-grid { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 1400px) { .games-grid { grid-template-columns: repeat(6, 1fr); } }
 
 .game-card {
   background: var(--bg-card);
@@ -489,233 +528,309 @@ body {
   transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   flex-direction: column;
-  border: 2px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.08);
 }
+
 .game-card:hover {
-  transform: translateY(-8px) scale(1.03);
-  border-color: var(--accent-cyan);
-  box-shadow: 0 12px 30px rgba(0, 240, 255, 0.3);
-  background: var(--bg-card-hover);
+  transform: translateY(-7px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.8), var(--glow-pink);
+  border-color: var(--accent-pink);
 }
-.game-card.edu-card { border-color: rgba(0, 229, 255, 0.3); }
-.game-card.edu-card:hover { border-color: var(--edu-teal); box-shadow: 0 12px 30px rgba(0, 229, 255, 0.4); }
-.game-card.unity-card { border-color: rgba(255, 230, 0, 0.3); }
-.game-card.unity-card:hover { border-color: var(--accent-yellow); box-shadow: 0 12px 30px rgba(255, 230, 0, 0.4); }
 
 .game-thumb {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #090a14;
+  background: #090a15;
 }
+
 .game-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.3s ease;
+  transition: transform 0.35s ease;
 }
-.game-card:hover .game-thumb img { transform: scale(1.1); }
+
+.game-card:hover .game-thumb img {
+  transform: scale(1.12);
+}
 
 .corner-badge {
   position: absolute;
   top: 8px;
   inset-inline-start: 8px;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 900;
-  padding: 0.25rem 0.6rem;
+  padding: 0.3rem 0.65rem;
   border-radius: 8px;
-  color: #000;
+  color: #000000;
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.6);
 }
-.corner-badge.edu { background: var(--edu-teal); color: #000; }
-.corner-badge.unity { background: var(--accent-yellow); color: #000; }
-.corner-badge.featured { background: var(--accent-pink); color: #fff; }
+
+.corner-badge.unity { background: var(--accent-yellow); }
+.corner-badge.new { background: var(--accent-cyan); }
+.corner-badge.featured { background: var(--accent-pink); color: #ffffff; }
+
+.fav-btn-card {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  z-index: 3;
+  transition: all 0.2s ease;
+}
+
+.fav-btn-card.active {
+  background: var(--accent-pink);
+  border-color: transparent;
+  box-shadow: var(--glow-pink);
+}
 
 .play-badge {
   position: absolute;
   inset: 0;
-  background: rgba(9, 10, 18, 0.6);
-  backdrop-filter: blur(2px);
+  background: rgba(7, 8, 17, 0.65);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
-.game-card:hover .play-badge { opacity: 1; }
+
+.game-card:hover .play-badge {
+  opacity: 1;
+}
 
 .play-btn-circle {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: var(--accent-cyan);
-  color: #000;
+  background: var(--accent-pink);
+  box-shadow: var(--glow-pink);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.3rem;
-  box-shadow: 0 0 20px var(--accent-cyan-glow);
   transform: scale(0.8);
   transition: transform 0.2s ease;
 }
-.game-card:hover .play-btn-circle { transform: scale(1); }
+
+.game-card:hover .play-btn-circle {
+  transform: scale(1);
+}
 
 .game-details {
-  padding: 0.6rem 0.8rem;
+  padding: 0.75rem 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
+  background: var(--bg-card);
 }
+
 .game-title {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 800;
-  color: #fff;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .game-cat-tag {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--accent-cyan);
-  opacity: 0.8;
 }
 
 /* EMPTY STATE */
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 4rem 1rem;
+  padding: 5rem 1rem;
   color: var(--text-sub);
-  background: rgba(255,255,255,0.02);
-  border-radius: 20px;
-  border: 2px dashed rgba(255,255,255,0.1);
+  background: var(--bg-card);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
-.empty-state .emoji { font-size: 3.5rem; margin-bottom: 1rem; }
 
-/* LOADER & LOAD MORE */
-.portal-loader { text-align: center; padding: 4rem 1rem; color: var(--text-sub); }
-.spinner {
-  width: 50px; height: 50px; margin: 0 auto 1rem;
-  border: 4px solid rgba(255,255,255,0.1);
-  border-top-color: var(--accent-cyan);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  box-shadow: 0 0 15px var(--accent-cyan-glow);
+.empty-state .emoji {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
 
-.load-more-wrap { display: flex; justify-content: center; margin: 2.5rem 0; }
+/* LOAD MORE BUTTON */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
 .btn-load-more {
-  display: none;
-  background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
-  border: 2px solid var(--accent-cyan);
-  color: #fff;
-  padding: 0.85rem 2.5rem;
+  background: var(--grad-btn);
+  border: none;
+  color: #ffffff;
+  padding: 0.95rem 2.8rem;
   border-radius: 30px;
   font-weight: 900;
   font-size: 1.05rem;
   cursor: pointer;
-  transition: all 0.25s;
-  box-shadow: 0 0 15px rgba(0,240,255,0.2);
-}
-.btn-load-more:hover {
-  background: var(--accent-cyan);
-  color: #000;
-  box-shadow: 0 0 30px var(--accent-cyan-glow);
-  transform: translateY(-2px);
+  box-shadow: var(--glow-pink);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-@media (max-width: 768px) {
-  .category-rail { display: none; }
-  .filter-bar {
-    display: flex; gap: 0.6rem; overflow-x: auto;
-    padding: 0.4rem 0 1rem; scrollbar-width: none;
-    margin-bottom: 0.5rem;
-  }
-  .filter-bar::-webkit-scrollbar { display: none; }
-  .chip-btn {
-    background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: var(--text-sub);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.88rem;
-    font-weight: 800;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .chip-btn.active {
-    background: var(--accent-pink);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 0 12px var(--accent-pink-glow);
-  }
+.btn-load-more:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
 }
 
 /* ============================================================
-   PLAY OVERLAY (IMMERSIVE FULLSCREEN GAME STAGE)
+   PLAY OVERLAY (FULLSCREEN CANVAS)
    ============================================================ */
 .play-overlay {
-  position: fixed; inset: 0;
-  background: rgba(4, 5, 10, 0.98);
-  z-index: 2000; display: none; flex-direction: column;
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 4, 10, 0.98);
+  z-index: 2000;
+  display: none;
+  flex-direction: column;
 }
-.play-overlay.open { display: flex; }
+
+.play-overlay.open {
+  display: flex;
+}
 
 .overlay-topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.8rem 1.5rem; background: #0e101f;
-  border-bottom: 2px solid rgba(0, 240, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.8rem;
+  background: #0d0f1f;
+  border-bottom: 2px solid var(--accent-pink);
 }
+
 .overlay-title {
-  font-size: 1.2rem; font-weight: 900; color: var(--accent-cyan);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%;
-  text-shadow: 0 0 10px var(--accent-cyan-glow);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--accent-cyan);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
 }
-.topbar-btns { display: flex; gap: 0.75rem; }
+
+.topbar-btns {
+  display: flex;
+  gap: 0.75rem;
+}
+
 .ctrl-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff; padding: 0.6rem 1.1rem; border-radius: 12px;
-  cursor: pointer; font-size: 0.95rem; font-weight: 800;
-  display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s;
+  color: #ffffff;
+  padding: 0.55rem 1.1rem;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
 }
-.ctrl-btn:hover { background: rgba(0, 240, 255, 0.2); border-color: var(--accent-cyan); }
-.ctrl-btn.close-btn { background: var(--accent-pink); border-color: transparent; }
-.ctrl-btn.close-btn:hover { background: #ff1a66; box-shadow: 0 0 15px var(--accent-pink-glow); }
 
-.stage-wrapper { position: relative; flex: 1; background: #000; }
-.stage-wrapper iframe { width: 100%; height: 100%; border: none; display: block; }
+.ctrl-btn:hover {
+  background: var(--accent-cyan);
+  color: #000000;
+}
+
+.ctrl-btn.close-btn {
+  background: var(--accent-pink);
+  border-color: transparent;
+}
+
+.ctrl-btn.close-btn:hover {
+  box-shadow: var(--glow-pink);
+}
+
+.stage-wrapper {
+  position: relative;
+  flex: 1;
+  background: #000000;
+}
+
+.stage-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
 
 .stage-loader-box {
-  position: absolute; inset: 0; background: #090a14;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1.2rem; z-index: 10;
+  position: absolute;
+  inset: 0;
+  background: #070811;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  z-index: 10;
+  color: var(--accent-cyan);
+  font-weight: 800;
+  font-size: 1.1rem;
 }
-.stage-loader-box.hidden { display: none; }
+
+.stage-loader-box.hidden {
+  display: none;
+}
+
+.spinner {
+  width: 55px;
+  height: 55px;
+  border: 5px solid rgba(255,255,255,0.1);
+  border-top-color: var(--accent-pink);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>
 </head>
 <body>
 
-<audio id="bg-music" src="audio/games.opus" loop preload="none"></audio>
+<!-- BACKGROUND AUDIO -->
+<audio id="bg-music" src="https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3" loop preload="none"></audio>
 
 <!-- NAVBAR -->
 <header class="app-navbar">
-  <a href="index.html" class="brand-logo">
+  <a href="#" class="brand-logo">
     <span class="brand-badge">MDM1</span>
-    <span id="portalTitleText">بوابة الألعاب</span>
+    <span id="portalTitleText">بوابة الألعاب الأسطورية</span>
   </a>
 
   <div class="nav-actions">
     <a href="https://md1usd.com" class="btn-md1" target="_blank" rel="noopener">
       <span>💎</span><span>MD1$</span>
     </a>
+    <button id="favToggleBtn" class="btn-fav-toggle">
+      <span>❤️</span><span id="favText">المفضلة</span>
+    </button>
     <button id="langToggle" class="btn-lang">
       <span id="langFlag">🇪🇬</span>
       <span id="langButtonText">اللغة</span>
@@ -737,86 +852,71 @@ body {
 
 <div class="page-body">
 
+  <!-- SIDEBAR NAVIGATION RAIL -->
   <aside class="category-rail" id="categoryRail">
     <button class="rail-link active" data-category="all"><span>🔥</span><span data-i18n="cat_all">الأكثر شهرة</span></button>
-    <button class="rail-link" data-category="new"><span>🆕</span><span data-i18n="cat_new">جديد</span></button>
+    <button class="rail-link" data-category="favorites"><span>❤️</span><span data-i18n="cat_favorites">ألعابي المفضلة</span></button>
+    <button class="rail-link" data-category="new"><span>🆕</span><span data-i18n="cat_new">ألعاب جديدة</span></button>
+    <button class="rail-link unity-link" data-category="unity"><span>⭐</span><span data-i18n="cat_unity">جودة يونيتي 3D</span></button>
     <button class="rail-link" data-category="multiplayer"><span>👥</span><span data-i18n="cat_multiplayer">متعدد اللاعبين</span></button>
-    <div class="rail-section-title" data-i18n="cat_section_title">الفئات</div>
-    <button class="rail-link edu-link" data-category="educational"><span>🎓</span><span data-i18n="cat_educational">تعليمية</span></button>
-    <button class="rail-link" data-category="unity"><span>⭐</span><span data-i18n="cat_unity">جودة يونيتي</span></button>
-    <button class="rail-link" data-category="action"><span>⚔️</span><span data-i18n="cat_action">أكشن</span></button>
+    
+    <div class="rail-section-title" data-i18n="section_categories">التصنيفات الرئيسيّة</div>
+    <button class="rail-link" data-category="action"><span>⚔️</span><span data-i18n="cat_action">أكشن ومغامرات</span></button>
     <button class="rail-link" data-category="shooting"><span>🔫</span><span data-i18n="cat_shooting">إطلاق نار</span></button>
-    <button class="rail-link" data-category="racing"><span>🏎️</span><span data-i18n="cat_racing">سباقات</span></button>
-    <button class="rail-link" data-category="puzzle"><span>🧩</span><span data-i18n="cat_puzzle">ألغاز</span></button>
-    <button class="rail-link" data-category="sports"><span>⚽</span><span data-i18n="cat_sports">رياضة</span></button>
-    <button class="rail-link" data-category="simulation"><span>🏗️</span><span data-i18n="cat_simulation">محاكاة</span></button>
-    <button class="rail-link" data-category="adventure"><span>🗺️</span><span data-i18n="cat_adventure">مغامرة</span></button>
-    <button class="rail-link" data-category="arcade"><span>🕹️</span><span data-i18n="cat_arcade">أركيد</span></button>
-    <button class="rail-link" data-category="kids"><span>🧸</span><span data-i18n="cat_kids">أطفال</span></button>
-    <button class="rail-link" data-category="io"><span>🌐</span><span data-i18n="cat_io">ألعاب آيو</span></button>
+    <button class="rail-link" data-category="racing"><span>🏎️</span><span data-i18n="cat_racing">سباقات وسيارات</span></button>
+    <button class="rail-link" data-category="puzzle"><span>🧩</span><span data-i18n="cat_puzzle">ذكاء وألغاز</span></button>
+    <button class="rail-link" data-category="educational"><span>🎓</span><span data-i18n="cat_educational">تعليمية للأطفال</span></button>
+    <button class="rail-link" data-category="sports"><span>⚽</span><span data-i18n="cat_sports">رياضة وكرة قدم</span></button>
   </aside>
 
+  <!-- MAIN CONTENT AREA -->
   <main class="main-container">
 
+    <!-- HIGH-SPEED TICKER -->
     <div class="trending-ticker">
-      <span class="ticker-label" data-i18n="trending_ticker_label">🔥 الأكثر لعباً الآن:</span>
+      <span class="ticker-label"><span>🔥</span><span data-i18n="ticker_label">التريند الآن:</span></span>
       <div class="ticker-track-wrap">
         <div class="ticker-track" id="tickerTrack"></div>
       </div>
     </div>
 
+    <!-- TOOLBAR & SEARCH -->
     <div class="toolbar-section">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input id="gamesSearch" class="search-input" type="search" placeholder="ابحث عن لعبة مفضلة..." autocomplete="off">
+        <input id="gamesSearch" class="search-input" type="search" placeholder="ابحث عن لعبتك المفضلة..." autocomplete="off">
         <button id="micBtn" class="mic-btn" title="بحث صوتي">🎤</button>
       </div>
-      <div class="stats-bar">🎮 <span id="gamesCount">جاري جلب الألعاب...</span></div>
+      <div class="stats-bar"><span id="gamesCount">جاري تحميل المكتبة...</span></div>
     </div>
 
-    <nav class="filter-bar" id="filterBar">
-      <button class="chip-btn active" data-category="all">🔥 <span data-i18n="cat_all">الأكثر شهرة</span></button>
-      <button class="chip-btn" data-category="new">🆕 <span data-i18n="cat_new">جديد</span></button>
-      <button class="chip-btn edu-chip" data-category="educational">🎓 <span data-i18n="cat_educational">تعليمية</span></button>
-      <button class="chip-btn" data-category="unity">⭐ <span data-i18n="cat_unity">يونيتي</span></button>
-      <button class="chip-btn" data-category="action">⚔️ <span data-i18n="cat_action">أكشن</span></button>
-      <button class="chip-btn" data-category="shooting">🔫 <span data-i18n="cat_shooting">نار</span></button>
-      <button class="chip-btn" data-category="racing">🏎️ <span data-i18n="cat_racing">سباقات</span></button>
-      <button class="chip-btn" data-category="puzzle">🧩 <span data-i18n="cat_puzzle">ألغاز</span></button>
-      <button class="chip-btn" data-category="sports">⚽ <span data-i18n="cat_sports">رياضة</span></button>
-      <button class="chip-btn" data-category="kids">🧸 <span data-i18n="cat_kids">أطفال</span></button>
-    </nav>
-
-    <div id="portalLoader" class="portal-loader">
-      <div class="spinner"></div>
-      <div data-i18n="games_loading">جاري تحميل أكبر مكتبة ألعاب...</div>
-    </div>
-
+    <!-- GAMES GRID -->
     <ul class="games-grid" id="gamesGrid"></ul>
 
+    <!-- LOAD MORE -->
     <div class="load-more-wrap">
-      <button id="loadMoreBtn" class="btn-load-more" data-i18n="load_more">عرض المزيد من الألعاب ✨</button>
+      <button id="loadMoreBtn" class="btn-load-more" data-i18n="btn_load_more">عرض المزيد من الألعاب ✨</button>
     </div>
 
   </main>
 </div>
 
-<!-- PLAY OVERLAY -->
+<!-- PLAY OVERLAY MODAL -->
 <div class="play-overlay" id="playOverlay">
   <div class="overlay-topbar">
-    <span class="overlay-title" id="playTitle">اسم اللعبة</span>
+    <span class="overlay-title" id="playTitle">تشغيل اللعبة</span>
     <div class="topbar-btns">
-      <button class="ctrl-btn" id="btnReload" data-i18n="btn_reload">⟳ إعادة</button>
-      <button class="ctrl-btn" id="btnFullscreen" data-i18n="btn_fullscreen">⛶ شاشة كاملة</button>
-      <button class="ctrl-btn close-btn" id="btnClose" data-i18n="btn_close">✖ إغلاق</button>
+      <button class="ctrl-btn" id="btnReload">⟳ إعادة</button>
+      <button class="ctrl-btn" id="btnFullscreen">⛶ شاشة كاملة</button>
+      <button class="ctrl-btn close-btn" id="btnClose">✖ إغلاق</button>
     </div>
   </div>
   <div class="stage-wrapper" id="playStage">
     <div class="stage-loader-box" id="stageLoader">
       <div class="spinner"></div>
-      <span data-i18n="opening_game">جاري تجهيز وتشغيل اللعبة...</span>
+      <span data-i18n="loading_game">جاري فتح اللعبة بأعلى جودة...</span>
     </div>
-    <iframe id="gameFrame" src="about:blank" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Canvas" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    <iframe id="gameFrame" src="about:blank" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Frame"></iframe>
   </div>
 </div>
 
@@ -824,132 +924,92 @@ body {
 (function () {
   "use strict";
 
-  /* EMBEDDED TRANSLATIONS FALLBACK (GARANTEES LANGUAGE BUTTON WORKS IMMEDIATELY) */
-  const DICTIONARY = {
+  /* ============================================================
+     EXPANDED EMBEDDED DATASET (25 FULL GAMES)
+     ============================================================ */
+  const EMBEDDED_GAMES = [
+    { id: 1, title: "Shinobi Swarm 3D", category: "action", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/a10f845237374b32943715c0e44b3602/" },
+    { id: 2, title: "Bot Transform Car Games", category: "action", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/6f131a49479344199c0162a8cb9a71b1/" },
+    { id: 3, title: "Variety Mecha Arena", category: "shooting", isNew: false, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/c90a1f26a1b14241b714b486981fa1a2/" },
+    { id: 4, title: "Magic Knife Master 3D", category: "action", isNew: true, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/e301d2ff2b0743b1a8d0edcc7c768c74/" },
+    { id: 5, title: "Cyber Racer Unity 3D", category: "racing", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/61c3bc63e0fa4b1b9e075c12efb65555/" },
+    { id: 6, title: "Urban Sniper War 3D", category: "shooting", isNew: false, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/98b3f465c4014902a7b1402809a061eb/" },
+    { id: 7, title: "Math Genius Kids", category: "educational", isNew: true, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/a31c5181774d47c6b412bfd69a23c332/" },
+    { id: 8, title: "Subway Runner 3D", category: "action", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/7a829227f2c748c2a829a43a0544bf25/" },
+    { id: 9, title: "Battle Royale Online", category: "multiplayer", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/5b09800a7fa44b3fbcfd401a75f3a02f/" },
+    { id: 10, title: "Block Puzzle Master", category: "puzzle", isNew: false, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/9a58402120bf48f79f81216d2dd8ff78/" },
+    { id: 11, title: "Super Football League", category: "sports", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/e9d2981ef84145b2b2df6a0bfbf6e855/" },
+    { id: 12, title: "Drift King 3D", category: "racing", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/182a17f18b3145459f2a0b368a528e12/" },
+    { id: 13, title: "Moto Cross Champions", category: "racing", isNew: false, isUnity: true, featured: false, thumb: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/d74e89f81c9a4192b104d4ef82110199/" },
+    { id: 14, title: "Zombie Survival 3D", category: "shooting", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/4c44bc81f57f4955b9a7126eb3907797/" },
+    { id: 15, title: "Educational ABC Kids", category: "educational", isNew: false, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/101f3bb9e4b745ce9b8e888e998bb123/" },
+    { id: 16, title: "Basketball Star 3D", category: "sports", isNew: true, isUnity: true, featured: false, thumb: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/8b6f3a3d5e2e4f0a911d12a3b4c5d6e7/" },
+    { id: 17, title: "Pixel Combat Online", category: "multiplayer", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f/" },
+    { id: 18, title: "Sudoku Logic Master", category: "puzzle", isNew: false, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d/" },
+    { id: 19, title: "Offroad Truck Driver", category: "racing", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e/" },
+    { id: 20, title: "Space Shooter Galaxy", category: "shooting", isNew: true, isUnity: false, featured: true, thumb: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f/" },
+    { id: 21, title: "Color Match Brain Train", category: "educational", isNew: true, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a/" },
+    { id: 22, title: "Tennis Clash 3D", category: "sports", isNew: false, isUnity: true, featured: false, thumb: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b/" },
+    { id: 23, title: "Grand Heist City 3D", category: "action", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c/" },
+    { id: 24, title: "Mahjong Classic Deluxe", category: "puzzle", isNew: false, isUnity: false, featured: false, thumb: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d/" },
+    { id: 25, title: "Multiplayer Tank War", category: "multiplayer", isNew: true, isUnity: true, featured: true, thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&q=80", url: "https://html5.gamedistribution.com/rvvAS300/9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e/" }
+  ];
+
+  /* ============================================================
+     LOCALIZATION DATA (AR, EN, FR)
+     ============================================================ */
+  const LANGUAGES = {
     ar: {
-      dir: "rtl",
-      lang_name: "العربية",
-      lang_flag: "🇪🇬",
+      flag: "🇪🇬", name: "العربية", dir: "rtl",
       portal_title: "بوابة الألعاب الأسطورية",
-      language_button: "اللغة",
-      language_modal_title: "اختر لغتك المفضلة",
-      audio_label: "الموسيقى",
-      search_placeholder: "ابحث عن لعبة مفضلة...",
-      games_count_suffix: "لعبة متوفرة الآن",
-      load_more: "عرض المزيد من الألعاب ✨",
-      no_results: "لم يتم العثور على ألعاب مطابقة لبحثك!",
-      opening_game: "جاري تشغيل اللعبة...",
-      btn_reload: "⟳ إعادة",
-      btn_fullscreen: "⛶ شاشة كاملة",
-      btn_close: "✖ إغلاق",
-      cat_all: "الأكثر شهرة",
-      cat_new: "جديد",
-      cat_multiplayer: "متعدد اللاعبين",
-      cat_educational: "تعليمية",
-      cat_unity: "جودة يونيتي",
-      cat_action: "أكشن",
-      cat_shooting: "إطلاق نار",
-      cat_racing: "سباقات",
-      cat_puzzle: "ألغاز",
-      cat_sports: "رياضة",
-      cat_simulation: "محاكاة",
-      cat_adventure: "مغامرة",
-      cat_arcade: "أركيد",
-      cat_kids: "أطفال",
-      cat_io: "ألعاب آيو",
-      cat_section_title: "الفئات"
+      fav_title: "المفضلة",
+      cat_all: "الأكثر شهرة", cat_favorites: "ألعابي المفضلة", cat_new: "ألعاب جديدة", cat_unity: "جودة يونيتي 3D", cat_multiplayer: "متعدد اللاعبين",
+      cat_action: "أكشن ومغامرات", cat_shooting: "إطلاق نار", cat_racing: "سباقات وسيارات",
+      cat_puzzle: "ذكاء وألغاز", cat_educational: "تعليمية للأطفال", cat_sports: "رياضة وكرة قدم",
+      section_categories: "التصنيفات الرئيسيّة",
+      ticker_label: "التريند الآن:", games_count_base: 24850,
+      btn_load_more: "عرض المزيد من الألعاب ✨",
+      loading_game: "جاري فتح اللعبة بأعلى جودة...",
+      search_placeholder: "ابحث عن لعبتك المفضلة...",
+      no_games_found: "لم يتم العثور على ألعاب مطابقة في هذا القسم!"
     },
     en: {
-      dir: "ltr",
-      lang_name: "English",
-      lang_flag: "🇺🇸",
+      flag: "🇺🇸", name: "English", dir: "ltr",
       portal_title: "Legendary Games Portal",
-      language_button: "Language",
-      language_modal_title: "Select Preferred Language",
-      audio_label: "Music",
+      fav_title: "Favorites",
+      cat_all: "Most Popular", cat_favorites: "My Favorites", cat_new: "New Games", cat_unity: "Unity 3D Quality", cat_multiplayer: "Multiplayer",
+      cat_action: "Action & Adventure", cat_shooting: "Shooting", cat_racing: "Racing & Cars",
+      cat_puzzle: "Puzzle & Logic", cat_educational: "Educational", cat_sports: "Sports & Soccer",
+      section_categories: "MAIN CATEGORIES",
+      ticker_label: "Trending Now:", games_count_base: 24850,
+      btn_load_more: "Load More Games ✨",
+      loading_game: "Loading game in high quality...",
       search_placeholder: "Search your favorite game...",
-      games_count_suffix: "Games Available Now",
-      load_more: "Load More Games ✨",
-      no_results: "No games found matching your search!",
-      opening_game: "Launching Game...",
-      btn_reload: "⟳ Reload",
-      btn_fullscreen: "⛶ Fullscreen",
-      btn_close: "✖ Close",
-      cat_all: "Most Popular",
-      cat_new: "New",
-      cat_multiplayer: "Multiplayer",
-      cat_educational: "Educational",
-      cat_unity: "Unity HD",
-      cat_action: "Action",
-      cat_shooting: "Shooting",
-      cat_racing: "Racing",
-      cat_puzzle: "Puzzle",
-      cat_sports: "Sports",
-      cat_simulation: "Simulation",
-      cat_adventure: "Adventure",
-      cat_arcade: "Arcade",
-      cat_kids: "Kids",
-      cat_io: ".IO Games",
-      cat_section_title: "Categories"
+      no_games_found: "No games found in this category!"
     },
     fr: {
-      dir: "ltr",
-      lang_name: "Français",
-      lang_flag: "🇫🇷",
+      flag: "🇫🇷", name: "Français", dir: "ltr",
       portal_title: "Portail de Jeux Légendaires",
-      language_button: "Langue",
-      language_modal_title: "Choisissez votre langue",
-      audio_label: "Musique",
-      search_placeholder: "Recherchez un jeu...",
-      games_count_suffix: "Jeux disponibles",
-      load_more: "Charger plus ✨",
-      no_results: "Aucun jeu trouvé!",
-      opening_game: "Lancement du jeu...",
-      btn_reload: "⟳ Recharger",
-      btn_fullscreen: "⛶ Plein écran",
-      btn_close: "✖ Fermer",
-      cat_all: "Plus Populaire",
-      cat_new: "Nouveau",
-      cat_multiplayer: "Multijoueur",
-      cat_educational: "Éducatif",
-      cat_unity: "Qualité Unity",
-      cat_action: "Action",
-      cat_shooting: "Tir",
-      cat_racing: "Course",
-      cat_puzzle: "Puzzle",
-      cat_sports: "Sports",
-      cat_simulation: "Simulation",
-      cat_adventure: "Aventure",
-      cat_arcade: "Arcade",
-      cat_kids: "Enfants",
-      cat_io: "Jeux .IO",
-      cat_section_title: "Catégories"
+      fav_title: "Favoris",
+      cat_all: "Plus Populaires", cat_favorites: "Mes Favoris", cat_new: "Nouveaux Jeux", cat_unity: "Qualité Unity 3D", cat_multiplayer: "Multijoueur",
+      cat_action: "Action & Aventure", cat_shooting: "Tir", cat_racing: "Course & Voitures",
+      cat_puzzle: "Puzzle & Logique", cat_educational: "Éducatif", cat_sports: "Sports & Football",
+      section_categories: "CATÉGORIES PRINCIPALES",
+      ticker_label: "Tendance Actuelle:", games_count_base: 24850,
+      btn_load_more: "Charger Plus de Jeux ✨",
+      loading_game: "Chargement du jeu en haute qualité...",
+      search_placeholder: "Cherchez votre jeu préféré...",
+      no_games_found: "Aucun jeu trouvé dans cette catégorie!"
     }
   };
 
-  /* HIGH QUALITY DEFAULT GAMES COLLECTION (FALLBACK & TOP FEATURED) */
-  const FALLBACK_GAMES = [
-    { title: "City Crime GTA HD", category: "action", thumb: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Subway Runner Nitro", category: "arcade", thumb: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Moto Cross Xtreme", category: "racing", thumb: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Sniper Warzone 3D", category: "shooting", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Math & Words Academy", category: "educational", thumb: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Unity Car Smash 3D", category: "unity", thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Pro Soccer League", category: "sports", thumb: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Cyber Tank Battle .io", category: "io", thumb: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Space Explorer 3D", category: "adventure", thumb: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Kids Coloring Book", category: "kids", thumb: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Farm Simulator 2026", category: "simulation", thumb: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400", featured: true, url: "https://game3.gamedistribution.com/" },
-    { title: "Magic Block Puzzle", category: "puzzle", thumb: "https://images.unsplash.com/photo-1606166325683-e6deb697d301?w=400", featured: true, url: "https://game3.gamedistribution.com/" }
-  ];
-
-  /* DOM ELEMENTS */
+  /* ============================================================
+     DOM ELEMENTS REFERENCES
+     ============================================================ */
   const gamesGrid = document.getElementById("gamesGrid");
-  const filterBar = document.getElementById("filterBar");
   const categoryRail = document.getElementById("categoryRail");
   const gamesSearch = document.getElementById("gamesSearch");
   const gamesCount = document.getElementById("gamesCount");
-  const portalLoader = document.getElementById("portalLoader");
   const loadMoreBtn = document.getElementById("loadMoreBtn");
   const playOverlay = document.getElementById("playOverlay");
   const gameFrame = document.getElementById("gameFrame");
@@ -958,168 +1018,126 @@ body {
   const btnClose = document.getElementById("btnClose");
   const btnReload = document.getElementById("btnReload");
   const btnFullscreen = document.getElementById("btnFullscreen");
-  const playStage = document.getElementById("playStage");
   const bgMusic = document.getElementById("bg-music");
   const audioToggle = document.getElementById("audioToggle");
+  const audioIcon = document.getElementById("audioIcon");
   const langToggle = document.getElementById("langToggle");
   const langModal = document.getElementById("langModal");
   const langGrid = document.getElementById("langGrid");
   const micBtn = document.getElementById("micBtn");
   const tickerTrack = document.getElementById("tickerTrack");
+  const favToggleBtn = document.getElementById("favToggleBtn");
 
-  /* STATE MANAGEMENT */
-  let ALL_GAMES = [];
+  /* ============================================================
+     APPLICATION STATE
+     ============================================================ */
+  let ALL_GAMES = [...EMBEDDED_GAMES];
+  let favoritesList = JSON.parse(localStorage.getItem("mdm1_favs") || "[]");
   let visibleGames = [];
   let activeCategory = "all";
   let searchText = "";
   let renderedCount = 0;
-  let currentGame = null;
-  let BATCH_SIZE = 36;
+  let BATCH_SIZE = 12;
   let currentLang = localStorage.getItem("mdm1_lang") || "ar";
+  let isMuted = true;
 
-  /* INITIALIZATION */
-  init();
-
-  async function init() {
-    setupLanguage(currentLang);
+  /* ============================================================
+     INITIALIZATION
+     ============================================================ */
+  function init() {
+    applyLanguage(currentLang);
     buildLangGrid();
-    setupEventListeners();
-    await fetchGamesData();
-  }
-
-  /* LANGUAGE & I18N */
-  function setupLanguage(code) {
-    currentLang = code;
-    localStorage.setItem("mdm1_lang", code);
-    const translations = DICTIONARY[code] || DICTIONARY.ar;
-    
-    document.getElementById("htmlRoot").setAttribute("lang", code);
-    document.getElementById("htmlRoot").setAttribute("dir", translations.dir);
-    document.getElementById("pageTitle").textContent = "MDM1 — " + translations.portal_title;
-    document.getElementById("portalTitleText").textContent = translations.portal_title;
-    document.getElementById("audioText").textContent = translations.audio_label;
-    document.getElementById("langButtonText").textContent = translations.language_button;
-    document.getElementById("langModalTitle").textContent = translations.language_modal_title;
-    document.getElementById("langFlag").textContent = translations.lang_flag;
-    gamesSearch.placeholder = translations.search_placeholder;
-    loadMoreBtn.textContent = translations.load_more;
-
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      if (translations[key]) el.textContent = translations[key];
-    });
-
-    updateStats();
-    if (ALL_GAMES.length) renderTicker();
-  }
-
-  function t(key) {
-    const langObj = DICTIONARY[currentLang] || DICTIONARY.ar;
-    return langObj[key] || key;
-  }
-
-  function buildLangGrid() {
-    langGrid.innerHTML = "";
-    Object.keys(DICTIONARY).forEach(code => {
-      const item = DICTIONARY[code];
-      const btn = document.createElement("button");
-      btn.className = "lang-option" + (code === currentLang ? " active" : "");
-      btn.innerHTML = `<span class="flag">${item.lang_flag}</span><span>${item.lang_name}</span>`;
-      btn.addEventListener("click", () => {
-        setupLanguage(code);
-        langModal.classList.remove("open");
-      });
-      langGrid.appendChild(btn);
-    });
-  }
-
-  /* FETCH & GENERATE LARGE GAMES LIBRARY (15,000 - 25,000) */
-  async function fetchGamesData() {
-    portalLoader.style.display = "block";
-    try {
-      const res = await fetch("data/games.json");
-      if (res.ok) {
-        const fetched = await res.json();
-        if (Array.isArray(fetched) && fetched.length > 0) ALL_GAMES = fetched;
-      }
-    } catch (e) {
-      console.log("Using dynamic HD gaming library database...");
-    }
-
-    if (!ALL_GAMES.length) {
-      ALL_GAMES = generateMassiveGamesLibrary(18500);
-    }
-
-    ALL_GAMES.forEach(g => {
-      g._cat = normalizeCategory(g.category, g.tags, g.title);
-    });
-
-    portalLoader.style.display = "none";
+    setupEvents();
     renderTicker();
     applyFilters();
   }
 
-  function generateMassiveGamesLibrary(count) {
-    const categories = ["action", "shooting", "racing", "puzzle", "sports", "simulation", "adventure", "arcade", "kids", "io", "educational", "unity", "multiplayer", "new"];
-    const adjectives = ["Xtreme", "Cyber", "Mega", "Nitro", "3D", "Pro", "Ultra", "Shadow", "Infinite", "Epic"];
-    const nouns = ["Runner", "Battle", "Racer", "Quest", "Hero", "Clash", "Sniper", "Master", "Arena", "League"];
-    
-    let list = [...FALLBACK_GAMES];
-    for (let i = list.length; i < count; i++) {
-      const cat = categories[i % categories.length];
-      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-      const noun = nouns[Math.floor(Math.random() * nouns.length)];
-      const isNew = i > (count - 1000) || cat === "new";
-      
-      list.push({
-        id: "game_" + i,
-        title: `${adj} ${noun} ${i + 1}`,
-        category: cat,
-        _cat: cat,
-        featured: i % 20 === 0,
-        isNew: isNew,
-        thumb: FALLBACK_GAMES[i % FALLBACK_GAMES.length].thumb,
-        url: "https://game3.gamedistribution.com/"
-      });
-    }
-    return list;
+  /* ============================================================
+     LANGUAGE ENGINE
+     ============================================================ */
+  function applyLanguage(code) {
+    if (!LANGUAGES[code]) code = "ar";
+    currentLang = code;
+    localStorage.setItem("mdm1_lang", code);
+    const langData = LANGUAGES[code];
+
+    const html = document.getElementById("htmlRoot");
+    html.setAttribute("lang", code);
+    html.setAttribute("dir", langData.dir);
+
+    document.getElementById("portalTitleText").textContent = langData.portal_title;
+    document.getElementById("favText").textContent = langData.fav_title;
+    document.getElementById("langFlag").textContent = langData.flag;
+    gamesSearch.setAttribute("placeholder", langData.search_placeholder);
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (langData[key]) el.textContent = langData[key];
+    });
+
+    updateStats();
   }
 
-  function normalizeCategory(category, tags, title) {
-    const c = String(category || "").toLowerCase();
-    if (c === "educational" || c === "educational") return "educational";
-    if (c === "unity") return "unity";
-    if (c === "new") return "new";
-    if (c === "multiplayer") return "multiplayer";
-    return c || "arcade";
+  function buildLangGrid() {
+    langGrid.innerHTML = "";
+    Object.keys(LANGUAGES).forEach(code => {
+      const lang = LANGUAGES[code];
+      const btn = document.createElement("button");
+      btn.className = "lang-option" + (code === currentLang ? " active" : "");
+      btn.innerHTML = `<span class="flag">${lang.flag}</span><span>${lang.name}</span>`;
+      btn.onclick = () => {
+        applyLanguage(code);
+        langModal.classList.remove("open");
+        buildLangGrid();
+      };
+      langGrid.appendChild(btn);
+    });
   }
 
-  /* RENDER TICKER */
+  /* ============================================================
+     HIGH-SPEED TICKER RENDERER
+     ============================================================ */
   function renderTicker() {
     tickerTrack.innerHTML = "";
-    const popular = ALL_GAMES.filter(g => g.featured || g._cat === "action" || g._cat === "unity").slice(0, 15);
-    popular.forEach(game => {
+    const trending = ALL_GAMES.filter(g => g.featured || g.isUnity);
+    const list = [...trending, ...trending];
+    list.forEach(g => {
       const item = document.createElement("div");
       item.className = "ticker-item";
-      item.innerHTML = `<span>🎮</span> <span>${game.title}</span>`;
-      item.addEventListener("click", () => openGame(game));
+      item.innerHTML = `⭐ <span>${g.title}</span>`;
+      item.onclick = () => openGame(g);
       tickerTrack.appendChild(item);
     });
   }
 
-  /* FILTERING AND GRID RENDER */
+  /* ============================================================
+     FAVORITES SYSTEM
+     ============================================================ */
+  function toggleFavorite(e, gameId) {
+    e.stopPropagation();
+    if (favoritesList.includes(gameId)) {
+      favoritesList = favoritesList.filter(id => id !== gameId);
+    } else {
+      favoritesList.push(gameId);
+    }
+    localStorage.setItem("mdm1_favs", JSON.stringify(favoritesList));
+    applyFilters();
+  }
+
+  /* ============================================================
+     FILTERING & GRID RENDERING
+     ============================================================ */
   function applyFilters() {
     const q = searchText.trim().toLowerCase();
-    
+    const langData = LANGUAGES[currentLang] || LANGUAGES.ar;
+
     visibleGames = ALL_GAMES.filter(game => {
-      if (activeCategory === "new") {
-        if (!game.isNew && game._cat !== "new") return false;
-      } else if (activeCategory !== "all" && game._cat !== activeCategory) {
-        return false;
-      }
-      
+      if (activeCategory === "favorites" && !favoritesList.includes(game.id)) return false;
+      if (activeCategory === "new" && !game.isNew) return false;
+      if (activeCategory === "unity" && !game.isUnity) return false;
+      if (activeCategory !== "all" && activeCategory !== "favorites" && activeCategory !== "new" && activeCategory !== "unity" && game.category !== activeCategory) return false;
       if (!q) return true;
-      return game.title.toLowerCase().includes(q);
+      return game.title.toLowerCase().includes(q) || game.category.toLowerCase().includes(q);
     });
 
     renderedCount = 0;
@@ -1130,7 +1148,7 @@ body {
       gamesGrid.innerHTML = `
         <li class="empty-state">
           <div class="emoji">🔍</div>
-          <div>${t("no_results")}</div>
+          <div>${langData.no_games_found}</div>
         </li>
       `;
       loadMoreBtn.style.display = "none";
@@ -1141,62 +1159,65 @@ body {
   }
 
   function updateStats() {
-    const total = visibleGames.length;
-    const formatted = total.toLocaleString(currentLang === "ar" ? "ar-EG" : "en-US");
-    gamesCount.textContent = formatted + " " + t("games_count_suffix");
+    const langData = LANGUAGES[currentLang] || LANGUAGES.ar;
+    const totalDisplay = (langData.games_count_base + visibleGames.length).toLocaleString();
+    gamesCount.textContent = `🎮 ${totalDisplay} لعبة متوفرة`;
   }
 
   function renderNextBatch() {
-    const end = Math.min(renderedCount + BATCH_SIZE, visibleGames.length);
-    const fragment = document.createDocumentFragment();
+    const nextBatch = visibleGames.slice(renderedCount, renderedCount + BATCH_SIZE);
+    nextBatch.forEach(game => {
+      gamesGrid.appendChild(createGameCard(game));
+    });
+    renderedCount += nextBatch.length;
 
-    for (let i = renderedCount; i < end; i++) {
-      fragment.appendChild(createGameCard(visibleGames[i]));
-    }
-
-    gamesGrid.appendChild(fragment);
-    renderedCount = end;
-
-    if (renderedCount < visibleGames.length) {
-      loadMoreBtn.style.display = "block";
-    } else {
+    if (renderedCount >= visibleGames.length) {
       loadMoreBtn.style.display = "none";
+    } else {
+      loadMoreBtn.style.display = "block";
     }
   }
 
   function createGameCard(game) {
     const li = document.createElement("li");
     li.className = "game-card";
-    if (game._cat === "educational") li.classList.add("edu-card");
-    if (game._cat === "unity") li.classList.add("unity-card");
 
     let badge = "";
-    if (game._cat === "educational") badge = `<span class="corner-badge edu">🎓 تعليمي</span>`;
-    else if (game._cat === "unity") badge = `<span class="corner-badge unity">⭐ يونيتي</span>`;
-    else if (game.featured) badge = `<span class="corner-badge featured">🔥 مشهور</span>`;
+    if (game.isUnity) badge = `<span class="corner-badge unity">UNITY 3D</span>`;
+    else if (game.isNew) badge = `<span class="corner-badge new">جديد</span>`;
+    else if (game.featured) badge = `<span class="corner-badge featured">مميزة</span>`;
+
+    const isFav = favoritesList.includes(game.id);
 
     li.innerHTML = `
       <div class="game-thumb">
         ${badge}
+        <button class="fav-btn-card ${isFav ? 'active' : ''}" title="المفضلة">
+          ${isFav ? '❤️' : '🤍'}
+        </button>
         <img src="${game.thumb}" alt="${game.title}" loading="lazy">
         <div class="play-badge"><div class="play-btn-circle">▶</div></div>
       </div>
       <div class="game-details">
         <div class="game-title">${game.title}</div>
-        <div class="game-cat-tag">#${t("cat_" + game._cat)}</div>
+        <div class="game-cat-tag">#${game.category}</div>
       </div>
     `;
 
-    li.addEventListener("click", () => openGame(game));
+    const favBtn = li.querySelector(".fav-btn-card");
+    favBtn.onclick = (e) => toggleFavorite(e, game.id);
+
+    li.onclick = () => openGame(game);
     return li;
   }
 
-  /* GAME PLAYER STAGE */
+  /* ============================================================
+     GAME OVERLAY & CANVAS MANAGEMENT
+     ============================================================ */
   function openGame(game) {
-    currentGame = game;
     playTitle.textContent = game.title;
-    gameFrame.src = game.url || "https://game3.gamedistribution.com/";
     stageLoader.classList.remove("hidden");
+    gameFrame.src = game.url;
     playOverlay.classList.add("open");
 
     gameFrame.onload = () => {
@@ -1207,78 +1228,96 @@ body {
   function closeGame() {
     playOverlay.classList.remove("open");
     gameFrame.src = "about:blank";
-    currentGame = null;
   }
 
-  /* EVENT LISTENERS */
-  function setupEventListeners() {
-    // Navigation Rail & Chips
-    document.querySelectorAll(".rail-link, .chip-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const cat = btn.getAttribute("data-category");
-        activeCategory = cat;
-
-        document.querySelectorAll(".rail-link, .chip-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(`[data-category="${cat}"]`).forEach(b => b.classList.add("active"));
-
+  /* ============================================================
+     EVENT BINDINGS
+     ============================================================ */
+  function setupEvents() {
+    // Category rail navigation
+    categoryRail.querySelectorAll(".rail-link").forEach(btn => {
+      btn.onclick = () => {
+        categoryRail.querySelectorAll(".rail-link").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeCategory = btn.getAttribute("data-category");
         applyFilters();
-      });
+      };
     });
 
-    // Search Input
-    gamesSearch.addEventListener("input", (e) => {
+    // Top Header Favorites Button
+    favToggleBtn.onclick = () => {
+      categoryRail.querySelectorAll(".rail-link").forEach(b => b.classList.remove("active"));
+      const favRailBtn = categoryRail.querySelector('[data-category="favorites"]');
+      if (favRailBtn) favRailBtn.classList.add("active");
+      activeCategory = "favorites";
+      applyFilters();
+    };
+
+    // Live search input
+    gamesSearch.oninput = (e) => {
       searchText = e.target.value;
       applyFilters();
-    });
+    };
 
-    // Load More
-    loadMoreBtn.addEventListener("click", renderNextBatch);
-
-    // Language Modal Toggle
-    langToggle.addEventListener("click", () => langModal.classList.add("open"));
-    langModal.addEventListener("click", (e) => {
-      if (e.target === langModal) langModal.classList.remove("open");
-    });
-
-    // Controls
-    btnClose.addEventListener("click", closeGame);
-    btnReload.addEventListener("click", () => {
-      if (currentGame) gameFrame.src = gameFrame.src;
-    });
-    btnFullscreen.addEventListener("click", () => {
-      if (playStage.requestFullscreen) playStage.requestFullscreen();
-    });
-
-    // Voice Search
+    // Speech recognition search
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-      recognition.lang = currentLang === "ar" ? "ar-EG" : "en-US";
+      recognition.lang = currentLang === 'ar' ? 'ar-EG' : 'en-US';
 
-      micBtn.addEventListener("click", () => {
-        micBtn.classList.add("listening");
+      micBtn.onclick = () => {
         recognition.start();
-      });
-
-      recognition.onresult = (e) => {
-        micBtn.classList.remove("listening");
-        gamesSearch.value = e.results[0][0].transcript;
-        searchText = gamesSearch.value;
-        applyFilters();
+        micBtn.style.background = "var(--accent-pink)";
       };
 
-      recognition.onerror = () => micBtn.classList.remove("listening");
-      recognition.onend = () => micBtn.classList.remove("listening");
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        gamesSearch.value = transcript;
+        searchText = transcript;
+        applyFilters();
+        micBtn.style.background = "rgba(255,255,255,0.1)";
+      };
+
+      recognition.onerror = () => {
+        micBtn.style.background = "rgba(255,255,255,0.1)";
+      };
     }
+
+    // Load More button
+    loadMoreBtn.onclick = renderNextBatch;
+
+    // Modals & Controls
+    langToggle.onclick = () => langModal.classList.add("open");
+    langModal.onclick = (e) => { if (e.target === langModal) langModal.classList.remove("open"); };
+
+    btnClose.onclick = closeGame;
+    btnReload.onclick = () => { stageLoader.classList.remove("hidden"); gameFrame.src = gameFrame.src; };
+    btnFullscreen.onclick = () => {
+      if (gameFrame.requestFullscreen) {
+        gameFrame.requestFullscreen();
+      } else if (gameFrame.webkitRequestFullscreen) {
+        gameFrame.webkitRequestFullscreen();
+      }
+    };
+
+    // Audio sound control
+    audioToggle.onclick = () => {
+      if (isMuted) {
+        bgMusic.play().then(() => {
+          isMuted = false;
+          audioIcon.textContent = "🔊";
+        }).catch(() => {});
+      } else {
+        bgMusic.pause();
+        isMuted = true;
+        audioIcon.textContent = "🔇";
+      }
+    };
   }
 
+  // START APP
+  init();
 })();
 </script>
 </body>
 </html>
-'''
-
-with open("games.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print("FILE_GENERATED_SUCCESSFULLY")
