@@ -1,16 +1,19 @@
 name: 🚀 Deploy to GitHub Pages
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
-# الصلاحيات دي مؤقتة وتلقائية بالكامل — مفيش أي token أو secret بتحطه إنت
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: "pages"
   cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,28 +24,10 @@ jobs:
       - name: ✅ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🧩 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: 🏗️ Build City Crime (React/Babylon.js)
-        working-directory: pages/city-crime/babylon-react-src
-        run: |
-          npm install --legacy-peer-deps
-          npm run build
-
-      - name: 📂 Copy Build Output into pages/city-crime
-        run: |
-          # يفرغ محتوى city-crime القديم (النسخة السابقة من الموقع) ويستبدله بناتج البناء الجديد كاملاً،
-          # بحيث تبقى المسارات النسبية بين index.html ومجلد assets كما أنتجها Vite تماماً.
-          find pages/city-crime -maxdepth 1 -mindepth 1 ! -name 'babylon-react-src' -exec rm -rf {} +
-          cp -r pages/city-crime/babylon-react-src/dist/public/* pages/city-crime/
-
       - name: 📦 Prepare Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'   # ينشر الريبو كله كما هو، شاملاً index.html المبني حديثاً
+          path: '.'   # رفع كامل ملفات المستودع للنشر المباشر
 
       - name: 🌐 Deploy
         id: deployment
