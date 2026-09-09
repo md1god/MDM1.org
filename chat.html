@@ -135,6 +135,8 @@
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
   }
   .action-icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .action-icon-btn.recording { background: var(--error); color: white; animation: pulse 1s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
   #sendBtn {
     background: var(--accent); border: none; color: white; padding: 0 20px; height: 44px;
     border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
@@ -160,7 +162,7 @@
 
 <div class="marquee-bar">
   <div class="marquee-track">
-    <span>شات ذكي مدعوم بنماذج Groq مع إمكانية رفع صور متعددة وتوليد فيديو ⚡</span>
+    <span>شات ذكي مدعوم بنماذج الذكاء الاصطناعي مع إمكانية رفع صور متعددة وتوليد فيديو ⚡</span>
     <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاحك الآن ↗</a>
   </div>
 </div>
@@ -185,15 +187,21 @@
     </div>
 
     <div class="field" style="grid-column: 1 / -1;">
-      <label>اختر النموذج الذكي (Groq Models)</label>
+      <label>اختر النموذج الذكي (AI Model)</label>
       <select id="modelSelect">
-        <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile (الأقوى والأدق)</option>
-        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (فائق السرعة)</option>
-        <option value="llama3-70b-8192">Llama 3 70B (8192 context)</option>
-        <option value="llama3-8b-8192">Llama 3 8B (8192 context)</option>
-        <option value="mixtral-8x7b-32768">Mixtral 8x7b Instruct (32k context)</option>
-        <option value="gemma2-9b-it">Gemma 2 9B IT</option>
-        <option value="gemma-7b-it">Gemma 7B IT</option>
+        <option value="canopylabs/orpheus-arabic-saudi">canopylabs/orpheus-arabic-saudi</option>
+        <option value="canopylabs/orpheus-v1-english">canopylabs/orpheus-v1-english</option>
+        <option value="groq/compound">groq/compound</option>
+        <option value="groq/compound-mini">groq/compound-mini</option>
+        <option value="meta-llama/llama-prompt-guard-2-22m">meta-llama/llama-prompt-guard-2-22m</option>
+        <option value="meta-llama/llama-prompt-guard-2-86m">meta-llama/llama-prompt-guard-2-86m</option>
+        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
+        <option value="openai/gpt-oss-safeguard-20b">openai/gpt-oss-safeguard-20b</option>
+        <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b</option>
+        <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b</option>
+        <option value="whisper-large-v3">whisper-large-v3</option>
+        <option value="whisper-large-v3-turbo">whisper-large-v3-turbo</option>
       </select>
     </div>
   </div>
@@ -228,11 +236,12 @@
   const statusLine = document.getElementById('statusLine');
   const groqKeyLen = document.getElementById('groqKeyLen');
   const keyToggleEye = document.querySelector('.key-toggle-eye');
+  const micBtn = document.getElementById('micBtn');
 
   let attachedImagesBase64 = [];
   let apiKey = localStorage.getItem('md1_groq_key') || '';
   let videoApiUrl = localStorage.getItem('md1_video_api') || '';
-  let model = localStorage.getItem('md1_groq_model') || 'llama-3.3-70b-versatile';
+  let model = localStorage.getItem('md1_groq_model') || 'qwen/qwen3.8-27b';
   let history = [];
 
   function cleanKey(v) { return v.replace(/[\u200B-\u200D\uFEFF\s]/g, ''); }
@@ -328,6 +337,46 @@
     return { wrap, div };
   }
 
+  // دعم التسجيل الصوتي وتفريغه لنص
+  let recognition = null;
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ar-SA';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      micBtn.classList.add('recording');
+      micBtn.title = "جاري الاستماع...";
+    };
+
+    recognition.onresult = (e) => {
+      const text = e.results[0][0].transcript;
+      userInput.value += (userInput.value ? ' ' : '') + text;
+    };
+
+    recognition.onerror = (e) => {
+      console.error('Speech Recognition Error:', e.error);
+      micBtn.classList.remove('recording');
+    };
+
+    recognition.onend = () => {
+      micBtn.classList.remove('recording');
+      micBtn.title = "تسجيل صوتي";
+    };
+
+    micBtn.onclick = () => {
+      if (micBtn.classList.contains('recording')) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    };
+  } else {
+    micBtn.onclick = () => alert('خاصية التعرف على الصوت غير مدعومة في متصفحك.');
+  }
+
   async function sendMessage() {
     const text = userInput.value.trim();
     
@@ -348,7 +397,6 @@
       
       const statusMsg = addMessage('⏳ جاري إرسال الطلب والتواصل مع السيرفر...', 'loading');
       
-      // استخدام AbortController لمنع التعليق اللانهائي (مهلة 45 ثانية)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
 
@@ -395,7 +443,7 @@
       return;
     }
 
-    // الشات النصي العادي مع Groq
+    // الشات النصي العادي
     if (!text) return;
     if (!apiKey) {
       addMessage('⚠ يرجى إدخال Groq API key الخاص بك من قائمة الإعدادات.', 'error');
@@ -422,7 +470,7 @@
       
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `خطأ من Groq API برمز: ${res.status}`);
+        throw new Error(errData.error?.message || `خطأ من API برمز: ${res.status}`);
       }
 
       const data = await res.json();
