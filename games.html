@@ -704,11 +704,86 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   outline: 3px solid var(--accent-cyan);
   outline-offset: 2px;
 }
+
+/* ============================================================
+   PARTICLES — نجوم خفيفة جدًا في الخلفية (عدد قليل + بدون
+   معالجة إضافية أثناء اللعب؛ animation-only بالـ CSS، وتوقف
+   تلقائي على الموبايل حفاظًا على الأداء المطلوب في هذه الصفحة)
+   ============================================================ */
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
+@keyframes drift {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: .6; }
+  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+.app-navbar, .page-body, .play-overlay { position: relative; z-index: 1; }
+@media (max-width: 700px) {
+  /* على الموبايل نوقف النجوم تمامًا وقت فتح اللعبة عشان الأداء */
+  .play-overlay.open ~ #particles,
+  body:has(.play-overlay.open) #particles { display: none; }
+}
+
+/* ============================================================
+   MUSIC BUTTON — مطابق لباقي صفحات الموقع (اختياري، خفيف)
+   ============================================================ */
+#musicBtn.playing {
+  animation: musicPulse 2s ease-in-out infinite;
+  border-color: rgba(255,255,255,0.3);
+}
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,255,255,0.1); }
+  50%       { box-shadow: 0 0 16px rgba(255,255,255,0.3); }
+}
+
+/* ============================================================
+   FLOATING MENU — نفس مكوّن باقي صفحات الموقع
+   ============================================================ */
+#mdm1m-btn{
+  position:fixed; bottom:1.5rem; right:1.5rem; z-index:1500;
+  width:48px; height:48px; border-radius:50%;
+  border:1px solid rgba(201,168,76,0.5);
+  background:rgba(0,0,0,0.75);
+  color:#c9a84c; font-size:1.3rem;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:border-color .3s, box-shadow .3s, transform .2s;
+  box-shadow:0 0 15px rgba(201,168,76,0.1);
+}
+#mdm1m-btn:hover{ border-color:#c9a84c; box-shadow:0 0 25px rgba(201,168,76,.35); transform:scale(1.08); }
+#mdm1m-panel{
+  position:fixed; bottom:5.5rem; right:1.5rem; z-index:1500;
+  width:min(78vw, 260px);
+  max-height:70vh; overflow-y:auto;
+  background:rgba(5,4,3,0.96);
+  border:1px solid rgba(201,168,76,0.35);
+  border-radius:12px;
+  padding:.75rem;
+  opacity:0; transform:translateY(12px);
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+}
+#mdm1m-panel.is-open{ opacity:1; transform:translateY(0); pointer-events:auto; }
+#mdm1m-panel a{
+  display:block; padding:.55rem .6rem; border-radius:6px;
+  color:#e8d5a3; text-decoration:none; font-family:'Tajawal',sans-serif;
+  font-size:.9rem; text-align:right; transition:background .2s, color .2s;
+}
+#mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
+#mdm1m-panel .mdm1m-sep{
+  border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0;
+}
 </style>
 </head>
 <body>
 
+<div id="particles"></div>
+
 <audio id="bg-music" src="audio/games.opus" loop preload="none"></audio>
+<audio id="site-music" loop preload="none">
+  <source src="audio/index.mp3" type="audio/mpeg">
+  <source src="audio/index.ogg" type="audio/ogg">
+</audio>
 
 <!-- NAVBAR -->
 <header class="app-navbar">
@@ -730,6 +805,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       <span id="audioIcon">🔊</span>
       <span id="audioText">الموسيقى</span>
     </button>
+    <button id="musicBtn" class="btn-audio" title="موسيقى خلفية الموقع">🔇</button>
   </div>
 </header>
 
@@ -1561,6 +1637,146 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
      ============================================================ */
   loadLanguage(currentLang).then(initialLoad);
 
+})();
+</script>
+
+<!-- ── زرار القائمة العائمة — مطابق لباقي صفحات الموقع ── -->
+<button id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الصفحات">🏛️</button>
+<nav id="mdm1m-panel">
+  <a href="index.html">🦅 الرئيسية</a>
+  <a href="whitepaper.html">📃 الورقة البيضاء</a>
+  <div class="mdm1m-sep"></div>
+  <a href="pages/ideas.html">💡 الأفكار</a>
+  <a href="pages/quiz.html">🧩 اختبار الجانب</a>
+  <a href="pages/join.html">🔑 الانضمام</a>
+  <a href="pages/community.html">🤝 المجتمع</a>
+  <a href="pages/faq.html">❓ الأسئلة الشائعة</a>
+  <a href="pages/roadmap.html">🗺️ خارطة الطريق</a>
+  <a href="pages/blog.html">📰 المدونة</a>
+  <a href="pages/game.html">🎮 بوابة الفراعنة</a>
+  <div class="mdm1m-sep"></div>
+  <a href="pages/md1usd.html">💎 MD1$</a>
+  <a href="pages/about.html">ℹ️ من نحن</a>
+  <a href="chat.html" style="color:#f0d08b;border:1px solid rgba(224,166,64,.7);padding:7px 11px;margin-inline:4px;background:rgba(224,166,64,.08);font-weight:700;letter-spacing:.08em">💬 الشات الذكي</a>
+</nav>
+
+<script>
+(function () {
+  "use strict";
+
+  const IS_MOBILE_ENV = window.matchMedia("(max-width: 700px)").matches
+    || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  /* ── PARTICLES (نجوم خفيفة جدًا — عدد أقل بكتير على الموبايل حفاظًا على الأداء) ── */
+  (function initParticles(){
+    const pc = document.getElementById("particles");
+    if (!pc) return;
+    const count = IS_MOBILE_ENV ? 10 : 22;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const d = document.createElement("div");
+      d.className = "p";
+      const size = Math.random() * 2.5 + 1;
+      const pink = Math.random() > 0.5;
+      d.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        background:${pink ? "#ff2d78" : "#ffffff"};
+        opacity:${Math.random()*0.4+0.08};
+        animation-duration:${Math.random()*12+10}s;
+        animation-delay:${Math.random()*8}s;
+      `;
+      frag.appendChild(d);
+    }
+    pc.appendChild(frag);
+
+    // إيقاف النجوم تمامًا أثناء تشغيل اللعبة على الموبايل (أداء)
+    if (IS_MOBILE_ENV) {
+      const overlay = document.getElementById("playOverlay");
+      if (overlay) {
+        const obs = new MutationObserver(() => {
+          pc.style.display = overlay.classList.contains("open") ? "none" : "block";
+        });
+        obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
+      }
+    }
+  })();
+
+  /* ── SITE MUSIC (نفس منطق باقي صفحات الموقع) ── */
+  (function initSiteMusic(){
+    const audio = document.getElementById("site-music");
+    const btn = document.getElementById("musicBtn");
+    if (!audio || !btn) return;
+    const MUSIC_KEY = "mdm1_music_choice";
+
+    function fadeVolume(el, from, to, duration, onDone) {
+      const steps = 30, interval = duration / steps, delta = (to - from) / steps;
+      let current = from;
+      el.volume = Math.max(0, Math.min(1, from));
+      const timer = setInterval(() => {
+        current += delta;
+        el.volume = Math.max(0, Math.min(1, current));
+        if ((delta > 0 && current >= to) || (delta < 0 && current <= to)) {
+          clearInterval(timer);
+          if (onDone) onDone();
+        }
+      }, interval);
+    }
+
+    function playMusic(fadeMs) {
+      if (!audio.paused) return;
+      audio.muted = true;
+      audio.play().then(() => {
+        audio.muted = false;
+        audio.volume = 0;
+        fadeVolume(audio, 0, 0.45, fadeMs);
+        btn.textContent = "🔊";
+        btn.classList.add("playing");
+      }).catch(() => {});
+    }
+
+    const saved = sessionStorage.getItem(MUSIC_KEY);
+    if (saved === "yes") {
+      btn.textContent = "🔇";
+      setTimeout(() => playMusic(1500), 300);
+    }
+
+    btn.addEventListener("click", () => {
+      if (audio.paused) {
+        sessionStorage.setItem(MUSIC_KEY, "yes");
+        audio.muted = false;
+        audio.play().catch(() => {});
+        fadeVolume(audio, 0, 0.45, 1200);
+        btn.textContent = "🔊";
+        btn.classList.add("playing");
+      } else {
+        sessionStorage.setItem(MUSIC_KEY, "no");
+        fadeVolume(audio, audio.volume, 0, 800, () => audio.pause());
+        btn.textContent = "🔇";
+        btn.classList.remove("playing");
+      }
+    });
+
+    window.addEventListener("pageshow", () => {
+      if (sessionStorage.getItem(MUSIC_KEY) === "yes" && audio.paused) playMusic(1200);
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && sessionStorage.getItem(MUSIC_KEY) === "yes" && audio.paused) playMusic(1200);
+    });
+  })();
+
+  /* ── FLOATING MENU ── */
+  (function initFloatingMenu(){
+    const trigger = document.getElementById("mdm1m-btn");
+    const panel = document.getElementById("mdm1m-panel");
+    if (!trigger || !panel) return;
+    trigger.addEventListener("click", () => panel.classList.toggle("is-open"));
+    document.addEventListener("click", (e) => {
+      if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+        panel.classList.remove("is-open");
+      }
+    });
+  })();
 })();
 </script>
 </body>
