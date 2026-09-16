@@ -390,13 +390,13 @@ body {
 
 /* Mobile performance mode: continuous CSS animations (glow/shift/ticker-scroll)
    keep the GPU/CPU busy at all times, which is a real contributor to heat and
-   battery drain on phones. On narrow screens we keep the visuals (color,
-   pink glow) but stop them from running nonstop — they still render, just
-   as a static glow instead of an infinite animation loop. */
+   battery drain on phones. On narrow screens we now fully disable the
+   decorative loops instead of just slowing them down. */
 @media (max-width: 700px) {
   .brand-badge { animation: none; background-position: 30% 50%; }
-  .portal-title-center { animation: none; }
-  .ticker-track { animation-duration: 45s; }
+  .portal-title-center { animation: none; text-shadow: 0 0 10px rgba(255,45,120,0.6); }
+  .ticker-track { animation: none; }
+  .app-navbar { backdrop-filter: none; background: rgba(18, 16, 43, 1); }
 }
 
 /* ============================================================
@@ -706,9 +706,10 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 }
 
 /* ============================================================
-   PARTICLES — نجوم خفيفة جدًا في الخلفية (عدد قليل + بدون
-   معالجة إضافية أثناء اللعب؛ animation-only بالـ CSS، وتوقف
-   تلقائي على الموبايل حفاظًا على الأداء المطلوب في هذه الصفحة)
+   PARTICLES — نجوم خفيفة جدًا في الخلفية. على الموبايل نوقف
+   الأنيميشن تمامًا (mobile-safe): العدد قليل جدًا والحركة
+   متوقفة بالكامل بدل إبطائها، وتُزال من الـ DOM فعليًا
+   (مش بس إخفاء بصري) وقت فتح أي لعبة.
    ============================================================ */
 #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
@@ -720,9 +721,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 }
 .app-navbar, .page-body, .play-overlay { position: relative; z-index: 1; }
 @media (max-width: 700px) {
-  /* على الموبايل نوقف النجوم تمامًا وقت فتح اللعبة عشان الأداء */
-  .play-overlay.open ~ #particles,
-  body:has(.play-overlay.open) #particles { display: none; }
+  .p { animation-play-state: paused !important; opacity: .25 !important; }
 }
 
 /* ============================================================
@@ -735,6 +734,9 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 @keyframes musicPulse {
   0%, 100% { box-shadow: 0 0 6px rgba(255,255,255,0.1); }
   50%       { box-shadow: 0 0 16px rgba(255,255,255,0.3); }
+}
+@media (max-width: 700px) {
+  #musicBtn.playing { animation: none; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
 }
 
 /* ============================================================
@@ -915,7 +917,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       <div class="spinner"></div>
       <span data-i18n="opening_game">جاري فتح اللعبة...</span>
     </div>
-    <iframe id="gameFrame" src="about:blank" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Canvas" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    <iframe id="gameFrame" src="about:blank" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Canvas" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -1567,10 +1569,10 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   let wasMusicPlayingBeforeGame = false;
 
   function openGame(game) {
+    if (!game || !game.url) return;
     currentGame = game;
     playTitle.textContent = game.title || t("play_default_title");
     stageLoader.classList.remove("hidden");
-    gameFrame.src = "about:blank";
     playOverlay.classList.add("open");
     document.body.style.overflow = "hidden";
 
@@ -1580,11 +1582,15 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       bgMusic.pause();
     }
 
-    setTimeout(() => { gameFrame.src = game.url; }, 60);
+    // Directly assign the game URL — no sandbox attribute on the iframe,
+    // since GameMonetize/HTML5 games generally need full script + same-origin
+    // + popup + top-navigation permissions to boot correctly. A restrictive
+    // sandbox silently breaks most of these games (blank frame, no error).
+    gameFrame.src = game.url;
   }
 
   gameFrame.addEventListener("load", () => {
-    if (gameFrame.src !== "about:blank") {
+    if (gameFrame.src && gameFrame.src !== "about:blank") {
       stageLoader.classList.add("hidden");
     }
   });
@@ -1667,11 +1673,12 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   const IS_MOBILE_ENV = window.matchMedia("(max-width: 700px)").matches
     || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  /* ── PARTICLES (نجوم خفيفة جدًا — عدد أقل بكتير على الموبايل حفاظًا على الأداء) ── */
+  /* ── PARTICLES (نجوم خفيفة جدًا — قليلة جدًا وثابتة (بدون حركة)
+     على الموبايل حفاظًا على الأداء) ── */
   (function initParticles(){
     const pc = document.getElementById("particles");
     if (!pc) return;
-    const count = IS_MOBILE_ENV ? 10 : 22;
+    const count = IS_MOBILE_ENV ? 6 : 22;
     const frag = document.createDocumentFragment();
     for (let i = 0; i < count; i++) {
       const d = document.createElement("div");
@@ -1681,6 +1688,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       d.style.cssText = `
         width:${size}px; height:${size}px;
         left:${Math.random()*100}%;
+        top:${IS_MOBILE_ENV ? (Math.random()*100 + "%") : "auto"};
         background:${pink ? "#ff2d78" : "#ffffff"};
         opacity:${Math.random()*0.4+0.08};
         animation-duration:${Math.random()*12+10}s;
@@ -1690,15 +1698,14 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     }
     pc.appendChild(frag);
 
-    // إيقاف النجوم تمامًا أثناء تشغيل اللعبة على الموبايل (أداء)
-    if (IS_MOBILE_ENV) {
-      const overlay = document.getElementById("playOverlay");
-      if (overlay) {
-        const obs = new MutationObserver(() => {
-          pc.style.display = overlay.classList.contains("open") ? "none" : "block";
-        });
-        obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
-      }
+    // إيقاف النجوم تمامًا (إزالة من الـ DOM) أثناء تشغيل اللعبة — أداء أفضل
+    // من مجرد إخفائها بصريًا، لأن الأنيميشن بيفضل شغال في الخلفية غير كده.
+    const overlay = document.getElementById("playOverlay");
+    if (overlay) {
+      const obs = new MutationObserver(() => {
+        pc.style.display = overlay.classList.contains("open") ? "none" : "block";
+      });
+      obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
     }
   })();
 
