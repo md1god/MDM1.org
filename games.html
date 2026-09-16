@@ -6,9 +6,6 @@
 <title id="pageTitle">MDM1 — بوابة الألعاب الأسطورية</title>
 
 <style>
-/* ============================================================
-   RESET & CORE THEME
-   ============================================================ */
 :root {
   --bg-dark: #0b0c14;
   --bg-card: #171826;
@@ -44,7 +41,6 @@ body {
   width: 100%;
 }
 
-/* Global scrollbar — pink, thin, visible everywhere (was reset to gray earlier) */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--accent-pink) rgba(255,255,255,0.06);
@@ -61,15 +57,11 @@ body {
 
 [dir="ltr"] * { direction: ltr; }
 
-/* ============================================================
-   NAVBAR
-   ============================================================ */
 .app-navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(18, 16, 43, 0.97);
-  backdrop-filter: blur(6px);
+  background: rgba(18, 16, 43, 1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.6rem 0.9rem;
   display: flex;
@@ -78,7 +70,6 @@ body {
   gap: 0.6rem;
   width: 100%;
   flex-wrap: wrap;
-  position: relative;
 }
 
 .brand-logo {
@@ -95,20 +86,12 @@ body {
 
 .brand-badge {
   background: var(--grad-hero);
-  background-size: 200% 200%;
-  animation: badgeShift 6s ease infinite;
   color: #fff;
   padding: 0.25rem 0.7rem;
   border-radius: 8px;
   font-size: 1rem;
 }
 
-@keyframes badgeShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* Centered, glowing portal title */
 .portal-title-center {
   position: absolute;
   left: 50%;
@@ -119,29 +102,10 @@ body {
   color: #fff;
   white-space: nowrap;
   pointer-events: none;
-  text-shadow:
-    0 0 6px rgba(0, 212, 255, 0.9),
-    0 0 14px rgba(255, 45, 120, 0.7),
-    0 0 24px rgba(139, 92, 246, 0.6);
-  animation: titleGlow 2.4s ease-in-out infinite;
   letter-spacing: 0.5px;
 }
-@keyframes titleGlow {
-  0%, 100% {
-    text-shadow:
-      0 0 6px rgba(0, 212, 255, 0.7),
-      0 0 12px rgba(255, 45, 120, 0.5),
-      0 0 20px rgba(139, 92, 246, 0.4);
-  }
-  50% {
-    text-shadow:
-      0 0 12px rgba(0, 212, 255, 1),
-      0 0 22px rgba(255, 45, 120, 0.9),
-      0 0 36px rgba(139, 92, 246, 0.8);
-  }
-}
 @media (max-width: 700px) {
-  .app-navbar { flex-direction: column; align-items: stretch; padding-bottom: 0.5rem; }
+  .app-navbar { flex-direction: column; align-items: stretch; padding-bottom: 0.5rem; position: sticky; }
   .portal-title-center {
     position: static;
     transform: none;
@@ -172,9 +136,7 @@ body {
   padding: 0.5rem 0.9rem;
   border-radius: 20px;
   text-decoration: none;
-  transition: transform 0.15s ease;
 }
-.btn-md1:hover { transform: translateY(-1px) scale(1.03); }
 
 .btn-audio, .btn-lang, .btn-refresh {
   background: rgba(255, 255, 255, 0.08);
@@ -188,14 +150,9 @@ body {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  transition: background 0.15s;
   white-space: nowrap;
 }
-.btn-audio:hover, .btn-lang:hover, .btn-refresh:hover { background: rgba(255, 255, 255, 0.16); }
 
-/* ============================================================
-   LANGUAGE MODAL
-   ============================================================ */
 .lang-modal-overlay {
   position: fixed;
   inset: 0;
@@ -243,15 +200,10 @@ body {
   color: #fff;
   font-size: 0.95rem;
   font-weight: 700;
-  transition: all 0.15s;
 }
 .lang-option .flag { font-size: 1.5rem; }
-.lang-option:hover { background: rgba(255,255,255,0.1); }
 .lang-option.active { border-color: var(--accent-pink); background: rgba(255,45,120,0.12); }
 
-/* ============================================================
-   LAYOUT
-   ============================================================ */
 .page-body { display: flex; width: 100%; flex: 1; }
 
 .category-rail {
@@ -285,11 +237,8 @@ body {
   border: none;
   width: 100%;
   text-align: inherit;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
   flex-shrink: 0;
 }
-.rail-link:hover { background: rgba(255,255,255,0.06); color: #fff; transform: translateX(2px); }
-[dir="ltr"] .rail-link:hover { transform: translateX(-2px); }
 .rail-link.active { background: var(--accent-pink); color: #fff; }
 .rail-link.edu-link.active { background: linear-gradient(90deg, var(--edu-orange), var(--edu-teal)); }
 
@@ -310,9 +259,6 @@ body {
   width: 100%;
 }
 
-/* ============================================================
-   PINNED / FEATURED GAMES ROW (hand-picked famous titles)
-   ============================================================ */
 .pinned-row {
   margin-bottom: 0.8rem;
 }
@@ -339,16 +285,11 @@ body {
   border-radius: 12px;
   overflow: hidden;
   border: 2px solid rgba(255,204,0,0.4);
-  transition: transform 0.15s ease;
 }
-.pinned-card:hover { transform: translateY(-3px); border-color: var(--accent-yellow); }
 .pinned-card .game-thumb { aspect-ratio: 1/1; }
 .pinned-card .game-details { padding: 0.35rem 0.4rem; }
 .pinned-card .game-title { font-size: 0.72rem; }
 
-/* ============================================================
-   TRENDING TICKER (single deliberate motion element)
-   ============================================================ */
 .trending-ticker {
   display: flex;
   align-items: center;
@@ -373,35 +314,10 @@ body {
 .ticker-track {
   display: flex;
   gap: 1.4rem;
-  animation: tickerScroll 28s linear infinite;
   width: max-content;
 }
-[dir="rtl"] .ticker-track { animation-direction: reverse; }
 .ticker-item { font-size: 0.8rem; color: var(--text-sub); font-weight: 600; }
-@keyframes tickerScroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; }
-  .brand-badge { animation: none; }
-  .portal-title-center { animation: none; }
-}
 
-/* Mobile performance mode: continuous CSS animations (glow/shift/ticker-scroll)
-   keep the GPU/CPU busy at all times, which is a real contributor to heat and
-   battery drain on phones. On narrow screens we now fully disable the
-   decorative loops instead of just slowing them down. */
-@media (max-width: 700px) {
-  .brand-badge { animation: none; background-position: 30% 50%; }
-  .portal-title-center { animation: none; text-shadow: 0 0 10px rgba(255,45,120,0.6); }
-  .ticker-track { animation: none; }
-  .app-navbar { backdrop-filter: none; background: rgba(18, 16, 43, 1); }
-}
-
-/* ============================================================
-   TOOLBAR: SEARCH + STATS + VOICE
-   ============================================================ */
 .toolbar-section {
   margin: 0 0 0.8rem;
   display: flex;
@@ -432,14 +348,9 @@ body {
   color: #fff;
   font-size: 0.92rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
 }
 [dir="ltr"] .search-input { padding: 0.6rem 2.6rem 0.6rem 3rem; }
-
-.search-input:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 4px rgba(0,212,255,0.15);
-}
+.search-input:focus { border-color: var(--accent-cyan); }
 
 .search-icon {
   position: absolute;
@@ -468,18 +379,9 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
-  transition: background 0.15s;
 }
 [dir="ltr"] .mic-btn { right: auto; left: 0.6rem; }
-.mic-btn:hover { background: rgba(255,255,255,0.16); }
-.mic-btn.listening {
-  background: var(--accent-pink);
-  animation: micPulse 1s ease infinite;
-}
-@keyframes micPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,45,120,0.5); }
-  50% { box-shadow: 0 0 0 8px rgba(255,45,120,0); }
-}
+.mic-btn.listening { background: var(--accent-pink); }
 
 .stats-bar {
   display: flex;
@@ -494,9 +396,6 @@ body {
 
 .filter-bar { display: none; }
 
-/* ============================================================
-   GAMES GRID
-   ============================================================ */
 .games-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -517,19 +416,12 @@ body {
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex;
   flex-direction: column;
   border: 2px solid transparent;
 }
-.game-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
 .game-card.edu-card { border-color: rgba(20, 200, 176, 0.35); }
-.game-card.edu-card:hover { border-color: var(--edu-teal); }
 .game-card.unity-card { border-color: rgba(255, 204, 0, 0.35); }
-.game-card.unity-card:hover { border-color: var(--accent-yellow); }
 
 .game-thumb {
   position: relative;
@@ -566,7 +458,6 @@ body {
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.12s ease;
 }
 .game-card:hover .play-badge { opacity: 1; }
 
@@ -598,7 +489,6 @@ body {
 }
 .game-cat-tag { font-size: 0.66rem; font-weight: 600; color: var(--text-sub); }
 
-/* EMPTY STATE FOR CATEGORIES WITH NO GAMES YET (e.g. fresh "new") */
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
@@ -607,7 +497,6 @@ body {
 }
 .empty-state .emoji { font-size: 2.5rem; margin-bottom: 0.6rem; }
 
-/* LOADER & LOAD MORE */
 .portal-loader { text-align: center; padding: 3rem 1rem; color: var(--text-sub); }
 .spinner {
   width: 42px; height: 42px; margin: 0 auto 1rem;
@@ -630,9 +519,7 @@ body {
   font-size: 0.9rem;
   cursor: pointer;
 }
-.btn-load-more:hover { background: var(--accent-cyan); color: #0b0c14; }
 .btn-load-more.secondary { border-color: var(--accent-pink); }
-.btn-load-more.secondary:hover { background: var(--accent-pink); }
 
 @media (max-width: 700px) {
   .category-rail { display: none; }
@@ -651,46 +538,66 @@ body {
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
-    transition: transform 0.1s;
   }
-  .chip-btn:active { transform: scale(0.95); }
   .chip-btn.active { background: var(--accent-pink); color: #fff; border-color: transparent; }
   .chip-btn.edu-chip.active { background: linear-gradient(90deg, var(--edu-orange), var(--edu-teal)); }
 }
 
 /* ============================================================
-   PLAY OVERLAY
+   PLAY OVERLAY — يفتح فوق كل حاجة، في المنتصف، بأعلى ز-إندكس
    ============================================================ */
 .play-overlay {
-  position: fixed; inset: 0;
-  background: rgba(5, 6, 16, 0.97);
-  z-index: 2000; display: none; flex-direction: column;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  background: rgba(5, 6, 16, 0.98);
+  z-index: 999999 !important;
+  display: none;
+  flex-direction: column;
 }
-.play-overlay.open { display: flex; }
+.play-overlay.open { display: flex !important; }
 
 .overlay-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0.8rem 1.2rem; background: #171432;
+  padding: 0.7rem 1rem; background: #171432;
   border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 .overlay-title {
-  font-size: 1.05rem; font-weight: 800; color: var(--accent-cyan);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%;
+  font-size: 1rem; font-weight: 800; color: var(--accent-cyan);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%;
 }
-.topbar-btns { display: flex; gap: 0.6rem; }
+.topbar-btns { display: flex; gap: 0.5rem; }
 .ctrl-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #fff; padding: 0.5rem 0.9rem; border-radius: 10px;
-  cursor: pointer; font-size: 0.9rem; font-weight: 700;
-  display: flex; align-items: center; gap: 0.3rem; transition: all 0.2s;
+  color: #fff; padding: 0.45rem 0.8rem; border-radius: 10px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  display: flex; align-items: center; gap: 0.3rem;
 }
-.ctrl-btn:hover { background: rgba(255, 61, 154, 0.22); border-color: var(--accent-pink); }
 .ctrl-btn.close-btn { background: rgba(255, 61, 154, 0.85); border-color: transparent; }
-.ctrl-btn.close-btn:hover { background: var(--accent-pink); box-shadow: 0 0 12px rgba(255, 61, 154, 0.6); }
 
-.stage-wrapper { position: relative; flex: 1; background: #000; }
-.stage-wrapper iframe { width: 100%; height: 100%; border: none; display: block; }
+.stage-wrapper {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #000;
+  width: 100%;
+}
+.stage-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
 
 .stage-loader-box {
   position: absolute; inset: 0; background: #12102b;
@@ -699,49 +606,17 @@ body {
 }
 .stage-loader-box.hidden { display: none; }
 
-/* Accessible focus visibility */
 button:focus-visible, input:focus-visible, .game-card:focus-visible {
   outline: 3px solid var(--accent-cyan);
   outline-offset: 2px;
 }
 
-/* ============================================================
-   PARTICLES — نجوم خفيفة جدًا في الخلفية. على الموبايل نوقف
-   الأنيميشن تمامًا (mobile-safe): العدد قليل جدًا والحركة
-   متوقفة بالكامل بدل إبطائها، وتُزال من الـ DOM فعليًا
-   (مش بس إخفاء بصري) وقت فتح أي لعبة.
-   ============================================================ */
 #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
-@keyframes drift {
-  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: .6; }
-  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-}
-.app-navbar, .page-body, .play-overlay { position: relative; z-index: 1; }
-@media (max-width: 700px) {
-  .p { animation-play-state: paused !important; opacity: .25 !important; }
-}
+.p { position: absolute; border-radius: 50%; }
+.app-navbar, .page-body { position: relative; z-index: 1; }
 
-/* ============================================================
-   MUSIC BUTTON — مطابق لباقي صفحات الموقع (اختياري، خفيف)
-   ============================================================ */
-#musicBtn.playing {
-  animation: musicPulse 2s ease-in-out infinite;
-  border-color: rgba(255,255,255,0.3);
-}
-@keyframes musicPulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(255,255,255,0.1); }
-  50%       { box-shadow: 0 0 16px rgba(255,255,255,0.3); }
-}
-@media (max-width: 700px) {
-  #musicBtn.playing { animation: none; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-}
+#musicBtn.playing { border-color: rgba(255,255,255,0.3); }
 
-/* ============================================================
-   FLOATING MENU — نفس مكوّن باقي صفحات الموقع
-   ============================================================ */
 #mdm1m-btn{
   position:fixed; bottom:1.5rem; right:1.5rem; z-index:1500;
   width:48px; height:48px; border-radius:50%;
@@ -749,10 +624,9 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   background:rgba(0,0,0,0.75);
   color:#c9a84c; font-size:1.3rem;
   display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:border-color .3s, box-shadow .3s, transform .2s;
+  cursor:pointer;
   box-shadow:0 0 15px rgba(201,168,76,0.1);
 }
-#mdm1m-btn:hover{ border-color:#c9a84c; box-shadow:0 0 25px rgba(201,168,76,.35); transform:scale(1.08); }
 #mdm1m-panel{
   position:fixed; bottom:5.5rem; right:1.5rem; z-index:1500;
   width:min(78vw, 260px);
@@ -763,17 +637,23 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   padding:.75rem;
   opacity:0; transform:translateY(12px);
   pointer-events:none;
-  transition:opacity .25s ease, transform .25s ease;
 }
 #mdm1m-panel.is-open{ opacity:1; transform:translateY(0); pointer-events:auto; }
 #mdm1m-panel a{
   display:block; padding:.55rem .6rem; border-radius:6px;
   color:#e8d5a3; text-decoration:none; font-family:'Tajawal',sans-serif;
-  font-size:.9rem; text-align:right; transition:background .2s, color .2s;
+  font-size:.9rem; text-align:right;
 }
-#mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
 #mdm1m-panel .mdm1m-sep{
   border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0;
+}
+
+/* منع سكرول الصفحة الأساسية والـ body لما اللعبة مفتوحة */
+body.game-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>
 </head>
@@ -787,7 +667,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   <source src="audio/index.ogg" type="audio/ogg">
 </audio>
 
-<!-- NAVBAR -->
 <header class="app-navbar">
   <a href="index.html" class="brand-logo">
     <span class="brand-badge">MDM1</span>
@@ -811,7 +690,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   </div>
 </header>
 
-<!-- LANGUAGE MODAL -->
 <div class="lang-modal-overlay" id="langModal">
   <div class="lang-modal">
     <h3 id="langModalTitle">اختر لغتك</h3>
@@ -902,7 +780,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   </main>
 </div>
 
-<!-- PLAY OVERLAY -->
 <div class="play-overlay" id="playOverlay">
   <div class="overlay-topbar">
     <span class="overlay-title" id="playTitle">اسم اللعبة</span>
@@ -925,12 +802,9 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 (function () {
   "use strict";
 
-  /* ============================================================
-     CONFIG
-     ============================================================ */
   const FEED_BASE = "https://gamemonetize.com/feed.php?format=0";
-  const LOCAL_CACHE_URL = "data/games.json";           // full catalog
-  const FAMOUS_CACHE_URL = "data/famous_games.json";   // famous games subset
+  const LOCAL_CACHE_URL = "data/games.json";
+  const FAMOUS_CACHE_URL = "data/famous_games.json";
   const I18N_BASE = "i18n/";
   const AVAILABLE_LANGS = ["ar", "en", "fr"];
 
@@ -951,7 +825,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     "moto x3m", "basketball stars", "soccer", "8 ball pool", "wordle"
   ];
 
-  /* DOM */
   const gamesGrid = document.getElementById("gamesGrid");
   const filterBar = document.getElementById("filterBar");
   const categoryRail = document.getElementById("categoryRail");
@@ -974,14 +847,12 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   const langToggle = document.getElementById("langToggle");
   const langModal = document.getElementById("langModal");
   const langGrid = document.getElementById("langGrid");
-  const langFlag = document.getElementById("langFlag");
   const micBtn = document.getElementById("micBtn");
   const tickerTrack = document.getElementById("tickerTrack");
   const refreshBtn = document.getElementById("refreshBtn");
   const pinnedRow = document.getElementById("pinnedRow");
   const pinnedScroll = document.getElementById("pinnedScroll");
 
-  /* STATE */
   let ALL_GAMES = [];
   let visibleGames = [];
   let activeCategory = "all";
@@ -994,10 +865,8 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   let currentLang = localStorage.getItem("mdm1_lang") || "ar";
   let nextFeedPage = 1;
   let isFetchingMore = false;
+  let savedScrollY = 0;
 
-  /* ============================================================
-     I18N (full object as provided)
-     ============================================================ */
   const FALLBACK_I18N = {
     ar: {
       dir: "rtl", lang_flag: "🇪🇬", lang_name: "العربية",
@@ -1136,9 +1005,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     if (e.target === langModal) langModal.classList.remove("open");
   });
 
-  /* ============================================================
-     CATEGORY NORMALIZATION
-     ============================================================ */
   function normalizeCategory(category, tags, title) {
     const c = String(category || "").trim().toLowerCase();
     const t2 = String(tags || "").trim().toLowerCase();
@@ -1184,9 +1050,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     return String(str || "").replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[m]));
   }
 
-  /* ============================================================
-     GAME MONETIZE FEED — FETCH & NORMALIZE (fallback)
-     ============================================================ */
   function normalizeFeedItem(raw) {
     if (!raw || !raw.url) return null;
     const title = raw.title || raw.name || "Game";
@@ -1196,8 +1059,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     const dateAdded = parseInt(raw.date_added || raw.date_modified || 0, 10) || 0;
     const rating = parseFloat(raw.rating_avg || raw.rating || 0) || 0;
     const ratingCount = parseInt(raw.rating_count || 0, 10) || 0;
-
-    // إذا كانت البيانات تحتوي على خاصية famous (من ملف famous_games.json)، نستخدمها
     const famousFlag = (raw.famous !== undefined) ? raw.famous : isFamousGame(title, tags, category);
 
     return {
@@ -1237,7 +1098,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
         seen.add(g.id);
         added++;
       } else {
-        // إذا كانت اللعبة موجودة مسبقاً، قد نرغب في تحديث خاصية _famous إذا كانت قادمة من ملف الشهيرة
         const idx = ALL_GAMES.findIndex(existing => existing.id === g.id);
         if (idx !== -1 && g._famous) {
           ALL_GAMES[idx]._famous = true;
@@ -1264,9 +1124,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     return totalAdded;
   }
 
-  /* ============================================================
-     LOCAL FILE LOADING (primary sources)
-     ============================================================ */
   async function loadLocalGames() {
     try {
       const res = await fetch(LOCAL_CACHE_URL, { cache: "no-store" });
@@ -1289,34 +1146,25 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       if (!res.ok) return;
       const data = await res.json();
       if (!Array.isArray(data)) return;
-      // تحويل كل لعبة إلى نفس البنية مع تعيين famous = true
       const famousItems = data.map(raw => {
         const game = normalizeFeedItem(raw);
         if (game) game._famous = true;
         return game;
       }).filter(Boolean);
-      // دمج الشهيرة مع القائمة الرئيسية (قد تكون غير موجودة في القائمة الكاملة إذا فشل تحميلها)
       mergeGames(famousItems);
     } catch (e) {
       console.warn("Famous games file not available.", e);
     }
   }
 
-  /* ============================================================
-     INITIAL LOAD
-     ============================================================ */
   async function initialLoad() {
     portalLoader.style.display = "block";
     gamesGrid.innerHTML = "";
 
-    // تحميل الكتالوج الكامل أولاً
     const loadedLocal = await loadLocalGames();
-
-    // ثم تحميل الشهيرة ودمجها (أو وضع علامة على الموجودة)
     await loadFamousGames();
 
     if (!loadedLocal && !ALL_GAMES.length) {
-      // إذا لم نتمكن من تحميل أي ملف محلي، نجلب من الفيد
       try {
         await fetchFeedPages(FEED_PAGES_ON_LOAD);
       } catch (e) {
@@ -1361,9 +1209,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 
   fetchMoreBtn.addEventListener("click", fetchMoreFromSource);
 
-  /* ============================================================
-     PINNED ROW
-     ============================================================ */
   function renderPinnedRow() {
     const famous = ALL_GAMES.filter(g => g._famous);
     if (!famous.length) {
@@ -1378,9 +1223,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     });
   }
 
-  /* ============================================================
-     FILTERING & RENDER
-     ============================================================ */
   function isNewGame(game) {
     if (!game._dateAdded) return false;
     const ageMs = Date.now() - (game._dateAdded * 1000);
@@ -1494,9 +1336,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
 
   loadMoreBtn.addEventListener("click", renderNextBatch);
 
-  /* ============================================================
-     TICKER
-     ============================================================ */
   function renderTicker() {
     const top = ALL_GAMES
       .filter(g => g._ratingCount > 0)
@@ -1507,9 +1346,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     tickerTrack.innerHTML = items.concat(items).join("");
   }
 
-  /* ============================================================
-     CATEGORY NAVIGATION
-     ============================================================ */
   function setActiveCategory(cat) {
     activeCategory = cat;
     document.querySelectorAll(".rail-link, .chip-btn").forEach(btn => {
@@ -1528,9 +1364,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     if (btn) setActiveCategory(btn.dataset.category);
   });
 
-  /* ============================================================
-     SEARCH
-     ============================================================ */
   let searchDebounce = null;
   gamesSearch.addEventListener("input", (e) => {
     searchText = e.target.value;
@@ -1538,7 +1371,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     searchDebounce = setTimeout(applyFilters, 200);
   });
 
-  /* Voice search */
   const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognitionAPI) {
     const recognition = new SpeechRecognitionAPI();
@@ -1549,7 +1381,7 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
         recognition.lang = currentLang === "ar" ? "ar-EG" : (currentLang === "fr" ? "fr-FR" : "en-US");
         recognition.start();
         micBtn.classList.add("listening");
-      } catch (e) { /* recognition may already be running */ }
+      } catch (e) {}
     });
     recognition.addEventListener("result", (e) => {
       const text = e.results[0][0].transcript;
@@ -1563,9 +1395,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     micBtn.style.display = "none";
   }
 
-  /* ============================================================
-     PLAY OVERLAY
-     ============================================================ */
   let wasMusicPlayingBeforeGame = false;
 
   function openGame(game) {
@@ -1573,8 +1402,14 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     currentGame = game;
     playTitle.textContent = game.title || t("play_default_title");
     stageLoader.classList.remove("hidden");
+
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+
+    document.body.classList.add("game-open");
+    document.body.style.top = -savedScrollY + "px";
+
+    document.body.appendChild(playOverlay);
     playOverlay.classList.add("open");
-    document.body.style.overflow = "hidden";
 
     wasMusicPlayingBeforeGame = !bgMusic.paused && !isMuted;
     if (wasMusicPlayingBeforeGame) {
@@ -1582,11 +1417,13 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
       bgMusic.pause();
     }
 
-    // Directly assign the game URL — no sandbox attribute on the iframe,
-    // since GameMonetize/HTML5 games generally need full script + same-origin
-    // + popup + top-navigation permissions to boot correctly. A restrictive
-    // sandbox silently breaks most of these games (blank frame, no error).
     gameFrame.src = game.url;
+
+    if (window.matchMedia("(max-width: 700px)").matches) {
+      setTimeout(() => {
+        playOverlay.scrollIntoView({ block: "start" });
+      }, 30);
+    }
   }
 
   gameFrame.addEventListener("load", () => {
@@ -1598,7 +1435,9 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   function closeGame() {
     playOverlay.classList.remove("open");
     gameFrame.src = "about:blank";
-    document.body.style.overflow = "";
+    document.body.classList.remove("game-open");
+    document.body.style.top = "";
+    window.scrollTo(0, savedScrollY);
     currentGame = null;
     if (wasMusicPlayingBeforeGame) {
       bgMusic.currentTime = audioTimeBeforeGame;
@@ -1623,9 +1462,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     if (e.key === "Escape" && playOverlay.classList.contains("open")) closeGame();
   });
 
-  /* ============================================================
-     AUDIO TOGGLE
-     ============================================================ */
   audioToggle.addEventListener("click", () => {
     if (bgMusic.paused) {
       bgMusic.play().catch(() => {});
@@ -1638,15 +1474,11 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     }
   });
 
-  /* ============================================================
-     BOOT
-     ============================================================ */
   loadLanguage(currentLang).then(initialLoad);
 
 })();
 </script>
 
-<!-- ── زرار القائمة العائمة — مطابق لباقي صفحات الموقع ── -->
 <button id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الصفحات">🏛️</button>
 <nav id="mdm1m-panel">
   <a href="index.html">🦅 الرئيسية</a>
@@ -1673,43 +1505,27 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
   const IS_MOBILE_ENV = window.matchMedia("(max-width: 700px)").matches
     || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  /* ── PARTICLES (نجوم خفيفة جدًا — قليلة جدًا وثابتة (بدون حركة)
-     على الموبايل حفاظًا على الأداء) ── */
   (function initParticles(){
     const pc = document.getElementById("particles");
     if (!pc) return;
-    const count = IS_MOBILE_ENV ? 6 : 22;
+    const count = IS_MOBILE_ENV ? 4 : 16;
     const frag = document.createDocumentFragment();
     for (let i = 0; i < count; i++) {
       const d = document.createElement("div");
       d.className = "p";
-      const size = Math.random() * 2.5 + 1;
-      const pink = Math.random() > 0.5;
+      const size = Math.random() * 2 + 1;
       d.style.cssText = `
         width:${size}px; height:${size}px;
         left:${Math.random()*100}%;
-        top:${IS_MOBILE_ENV ? (Math.random()*100 + "%") : "auto"};
-        background:${pink ? "#ff2d78" : "#ffffff"};
-        opacity:${Math.random()*0.4+0.08};
-        animation-duration:${Math.random()*12+10}s;
-        animation-delay:${Math.random()*8}s;
+        top:${Math.random()*100}%;
+        background:#ff2d78;
+        opacity:0.15;
       `;
       frag.appendChild(d);
     }
     pc.appendChild(frag);
-
-    // إيقاف النجوم تمامًا (إزالة من الـ DOM) أثناء تشغيل اللعبة — أداء أفضل
-    // من مجرد إخفائها بصريًا، لأن الأنيميشن بيفضل شغال في الخلفية غير كده.
-    const overlay = document.getElementById("playOverlay");
-    if (overlay) {
-      const obs = new MutationObserver(() => {
-        pc.style.display = overlay.classList.contains("open") ? "none" : "block";
-      });
-      obs.observe(overlay, { attributes: true, attributeFilter: ["class"] });
-    }
   })();
 
-  /* ── SITE MUSIC (نفس منطق باقي صفحات الموقع) ── */
   (function initSiteMusic(){
     const audio = document.getElementById("site-music");
     const btn = document.getElementById("musicBtn");
@@ -1772,7 +1588,6 @@ button:focus-visible, input:focus-visible, .game-card:focus-visible {
     });
   })();
 
-  /* ── FLOATING MENU ── */
   (function initFloatingMenu(){
     const trigger = document.getElementById("mdm1m-btn");
     const panel = document.getElementById("mdm1m-panel");
