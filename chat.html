@@ -4,76 +4,101 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MD1 Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1115;
-    --panel: #161920;
-    --border: #262a33;
-    --text: #e6e8eb;
-    --muted: #8a8f98;
-    --accent: #4f8cff;
-    --user-bubble: #1f2937;
-    --bot-bubble: #171b24;
+    --gold: #c9a84c;
+    --gold-bright: #f0c060;
+    --gold-dim: #6b4f1a;
+    --light: #e8d5a3;
+    --dark: #050403;
+    --void: #000000;
+    --panel: #0c0a06;
+    --border: rgba(201,168,76,0.18);
+    --user-bubble: rgba(201,168,76,0.10);
+    --bot-bubble: #0f0d09;
     --error: #ff5c5c;
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+    margin: 0; background: var(--void); color: var(--light);
+    font-family: 'Tajawal', sans-serif;
     height: 100vh; display: flex; flex-direction: column;
   }
   header {
-    padding: 12px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; background: var(--panel);
+    padding: 10px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.97), rgba(0,0,0,0.9));
     flex-wrap: wrap; gap: 10px;
   }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .logo {
-    width: 32px; height: 32px; background: var(--accent); border-radius: 8px;
-    display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px;
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .logo-eagle {
+    font-size: 26px; text-decoration: none; line-height: 1;
+    filter: drop-shadow(0 0 6px rgba(201,168,76,0.7)) drop-shadow(0 0 14px rgba(201,168,76,0.4));
+    transition: filter 0.3s;
   }
-  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
-  header .status { font-size: 12px; color: var(--muted); }
-  
-  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .logo-eagle:hover { filter: drop-shadow(0 0 10px rgba(240,192,96,0.9)) drop-shadow(0 0 22px rgba(201,168,76,0.6)); }
+  header h1 {
+    font-size: 15px; margin: 0; font-weight: 700; color: var(--gold-bright);
+    font-family: 'Cinzel', serif; letter-spacing: 1px;
+  }
+  header .status { font-size: 11px; color: rgba(232,213,163,0.5); }
+
+  .header-center { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .md1usd-link {
+    font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+    color: var(--gold-bright); text-decoration: none; letter-spacing: 0.5px;
+    text-shadow: 0 0 12px rgba(201,168,76,0.5); transition: text-shadow 0.3s;
+  }
+  .md1usd-link:hover { text-shadow: 0 0 20px rgba(240,192,96,0.8); }
+  .chat-core-label {
+    font-size: 9.5px; color: var(--gold-dim); letter-spacing: 3px; text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+  }
+
+  .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .icon-btn {
-    background: none; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px; transition: all 0.2s;
-    text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+    background: transparent; border: 1px solid var(--border); color: rgba(232,213,163,0.75);
+    border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 12px; transition: all 0.25s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 5px; font-weight: 700;
   }
-  .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+  .icon-btn:hover { color: var(--gold-bright); border-color: var(--gold); box-shadow: 0 0 14px rgba(201,168,76,0.2); }
 
   .marquee-bar {
-    background: linear-gradient(90deg, rgba(79,140,255,0.15), rgba(79,140,255,0.05));
-    border-bottom: 1px solid var(--border); padding: 6px 0; font-size: 13px; color: var(--accent);
+    background: linear-gradient(90deg, rgba(201,168,76,0.14), rgba(201,168,76,0.03));
+    border-bottom: 1px solid var(--border); padding: 6px 0; font-size: 12.5px; color: var(--gold-bright);
     overflow: hidden; white-space: nowrap;
   }
   .marquee-track {
-    display: inline-block; padding-left: 100%; direction: ltr; animation: marquee-scroll 18s linear infinite;
+    display: inline-block; padding-left: 100%; direction: ltr; animation: marquee-scroll 20s linear infinite;
   }
   .marquee-bar:hover .marquee-track { animation-play-state: paused; }
-  .marquee-track span { font-weight: 600; }
-  .marquee-track a { color: var(--accent); text-decoration: underline; font-weight: 700; }
+  .marquee-track span { font-weight: 700; }
+  .marquee-track a { color: var(--gold); text-decoration: underline; font-weight: 800; }
   @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
   #settingsPanel {
-    display: none; padding: 16px 20px; background: var(--panel);
+    display: none; padding: 16px 18px; background: var(--panel);
     border-bottom: 1px solid var(--border); gap: 16px; flex-direction: column;
   }
   #settingsPanel.open { display: flex; }
   #settingsPanel .section-label {
-    font-size: 11px; color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.5px; border-top: 1px solid var(--border); padding-top: 12px;
+    font-size: 11px; color: var(--gold-dim); text-transform: uppercase;
+    letter-spacing: 1.5px; border-top: 1px solid var(--border); padding-top: 12px;
+    font-family: 'Cinzel', serif;
   }
   #settingsPanel .section-label:first-child { border-top: none; padding-top: 0; }
   #settingsPanel label {
-    font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
+    font-size: 12px; color: rgba(232,213,163,0.65); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
   }
-  #settingsPanel label a { color: var(--accent); text-decoration: none; font-size: 11px; }
+  #settingsPanel label a { color: var(--gold); text-decoration: none; font-size: 11px; }
   #settingsPanel input, #settingsPanel select {
-    background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 100%;
+    background: var(--void); border: 1px solid var(--border); color: var(--light);
+    padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 100%; font-family: inherit;
   }
+  #settingsPanel input:focus, #settingsPanel select:focus { outline: none; border-color: var(--gold); }
   #settingsPanel .settings-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; width: 100%;
   }
@@ -81,128 +106,275 @@
   .key-input-wrap { position: relative; display: flex; align-items: center; }
   .key-input-wrap input { padding-left: 36px; font-family: monospace; direction: ltr; text-align: left; }
   .key-toggle-eye {
-    position: absolute; left: 6px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px;
+    position: absolute; left: 6px; background: none; border: none; color: rgba(232,213,163,0.5); cursor: pointer; font-size: 14px; padding: 4px;
   }
-  .key-len { font-size: 10px; color: var(--muted); margin-top: 4px; direction: ltr; text-align: left; }
+  .key-len { font-size: 10px; color: rgba(232,213,163,0.5); margin-top: 4px; direction: ltr; text-align: left; }
   .key-len.ok { color: #4ade80; }
   .security-warning {
-    font-size: 11.5px; color: var(--error); background: rgba(255,92,92,0.08);
-    border: 1px solid rgba(255,92,92,0.35); border-radius: 6px; padding: 8px 12px; line-height: 1.5;
+    font-size: 11.5px; color: var(--gold-bright); background: rgba(201,168,76,0.06);
+    border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; line-height: 1.5;
   }
-  #saveSettings {
-    background: var(--accent); border: none; color: white; padding: 8px 20px;
-    border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; align-self: flex-start;
+  .provider-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .provider-tab {
+    background: var(--void); border: 1px solid var(--border); color: rgba(232,213,163,0.6);
+    padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 12.5px; font-weight: 700;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .provider-tab.active { background: linear-gradient(135deg, var(--gold), #8b6914); color: #000; border-color: transparent; }
+  .provider-tab:hover:not(.active) { border-color: var(--gold); color: var(--gold-bright); }
+  .provider-panel { display: none; flex-direction: column; gap: 14px; }
+  .provider-panel.active { display: flex; }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-row input[type="range"] {
+    flex: 1; accent-color: var(--gold); height: 4px; padding: 0;
+  }
+  .slider-val {
+    font-size: 12px; color: var(--gold-bright); min-width: 34px; text-align: center;
+    font-family: monospace; direction: ltr;
   }
 
-  #chatWindow {
-    flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  #saveSettings {
+    background: linear-gradient(135deg, var(--gold), #8b6914); border: none; color: #000; padding: 9px 24px;
+    border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 900; align-self: flex-start;
+    letter-spacing: 0.5px; transition: transform 0.2s;
   }
-  .msg-wrap { display: flex; flex-direction: column; max-width: 80%; }
+  #saveSettings:hover { transform: translateY(-2px); }
+
+  #chatWindow {
+    flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .msg-wrap { display: flex; flex-direction: column; max-width: 82%; }
   .msg-wrap.user { align-items: flex-end; align-self: flex-end; }
   .msg-wrap.bot, .msg-wrap.error, .msg-wrap.loading { align-items: flex-start; align-self: flex-start; }
   .msg {
-    padding: 12px 16px; border-radius: 10px; line-height: 1.6; font-size: 14px; white-space: pre-wrap; word-wrap: break-word;
+    padding: 12px 16px; border-radius: 12px; line-height: 1.7; font-size: 14px; white-space: pre-wrap; word-wrap: break-word;
   }
-  .msg.user { background: var(--user-bubble); }
+  .msg.user { background: var(--user-bubble); border: 1px solid var(--border); }
   .msg.bot { background: var(--bot-bubble); border: 1px solid var(--border); }
-  .msg.loading { background: rgba(79, 140, 255, 0.1); border: 1px dashed var(--accent); color: var(--accent); font-size: 13px; }
-  .msg.error { background: rgba(255, 92, 92, 0.12); border: 1px solid var(--error); color: var(--error); font-size: 13.5px; }
+  .msg.loading { background: rgba(201,168,76,0.06); border: 1px dashed var(--gold-dim); color: var(--gold-bright); font-size: 13px; }
+  .msg.error { background: rgba(255, 92, 92, 0.1); border: 1px solid var(--error); color: var(--error); font-size: 13.5px; }
   .msg img, .msg video { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
 
-  .image-preview-container {
-    padding: 10px 20px; display: flex; align-items: center; gap: 10px; background: var(--panel);
-    flex-wrap: wrap; max-height: 140px; overflow-y: auto; border-top: 1px solid var(--border);
-  }
-  .image-preview-box { position: relative; display: inline-block; flex-shrink: 0; }
-  .image-preview-box img { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent); }
-  .remove-img-btn {
-    position: absolute; top: -6px; right: -6px; background: var(--error); color: white;
-    border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-
   #inputBar {
-    display: flex; gap: 8px; padding: 16px 20px; border-top: 1px solid var(--border); background: var(--panel); align-items: flex-end;
+    display: flex; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); background: var(--panel); align-items: flex-end;
   }
   #userInput {
-    flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 12px 14px; border-radius: 8px; font-size: 14px; resize: none; font-family: inherit;
+    flex: 1; background: var(--void); border: 1px solid var(--border); color: var(--light);
+    padding: 12px 14px; border-radius: 10px; font-size: 14px; resize: none; font-family: inherit;
+    max-height: 200px;
   }
-  #userInput:focus { outline: none; border-color: var(--accent); }
+  #userInput:focus { outline: none; border-color: var(--gold); }
   .action-icon-btn {
-    background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    width: 44px; height: 44px; border-radius: 8px; cursor: pointer; font-size: 18px;
+    background: var(--void); border: 1px solid var(--border); color: var(--light);
+    width: 44px; height: 44px; border-radius: 10px; cursor: pointer; font-size: 18px;
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
   }
-  .action-icon-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .action-icon-btn.recording { background: var(--error); color: white; animation: pulse 1s infinite; }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+  .action-icon-btn:hover { border-color: var(--gold); color: var(--gold-bright); }
   #sendBtn {
-    background: var(--accent); border: none; color: white; padding: 0 20px; height: 44px;
-    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--gold), #8b6914); border: none; color: #000; padding: 0 22px; height: 44px;
+    border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 900; flex-shrink: 0;
   }
   #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+  #sendBtn:hover:not(:disabled) { box-shadow: 0 0 18px rgba(201,168,76,0.4); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 13.5px; }
+    .icon-btn { padding: 5px 10px; font-size: 11px; }
+  }
+
+  /* ── PARTICLES (نجوم متطايرة خفيفة) ── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
+  @keyframes drift {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: .6; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+  header, .marquee-bar, #settingsPanel, #chatWindow, #inputBar {
+    position: relative; z-index: 1;
+  }
+
+  /* ── MUSIC BUTTON ── */
+  #musicBtn.playing { border-color: rgba(201,168,76,0.6); animation: musicPulse 2s ease-in-out infinite; }
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(201,168,76,0.15); }
+    50%       { box-shadow: 0 0 16px rgba(201,168,76,0.4); }
+  }
+
+  /* ── FLOATING MENU (مطابقة لباقي صفحات الموقع) ── */
+  #mdm1m-btn{
+    position:fixed; bottom:5.5rem; right:1rem; z-index:998;
+    width:44px; height:44px; border-radius:50%;
+    border:1px solid rgba(201,168,76,0.5);
+    background:rgba(10,8,5,0.92);
+    color:#c9a84c; font-size:1.15rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:border-color .3s, box-shadow .3s, transform .2s;
+    box-shadow:0 0 15px rgba(201,168,76,0.1);
+  }
+  #mdm1m-btn:hover{ border-color:#c9a84c; box-shadow:0 0 25px rgba(201,168,76,.35); transform:scale(1.08); }
+  #mdm1m-panel{
+    position:fixed; bottom:9.5rem; right:1rem; z-index:998;
+    width:min(78vw, 260px);
+    max-height:70vh; overflow-y:auto;
+    background:rgba(5,4,3,0.96);
+    border:1px solid rgba(201,168,76,0.35);
+    border-radius:12px;
+    padding:.75rem;
+    backdrop-filter:blur(10px);
+    opacity:0; visibility:hidden; transform:translateY(12px);
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease, visibility .25s;
+  }
+  #mdm1m-panel.is-open{ opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto; }
+  #mdm1m-panel a{
+    display:block; padding:.55rem .6rem; border-radius:6px;
+    color:#e8d5a3; text-decoration:none; font-family:'Tajawal',sans-serif;
+    font-size:.9rem; text-align:right; transition:background .2s, color .2s;
+  }
+  #mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
+  #mdm1m-panel .mdm1m-sep{
+    border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0;
+  }
 </style>
 </head>
 <body>
 
+<div id="particles"></div>
+
+<audio id="bg-music" loop preload="none">
+  <source src="audio/index.mp3" type="audio/mpeg">
+  <source src="audio/index.ogg" type="audio/ogg">
+</audio>
+
 <header>
   <div class="brand">
-    <div class="logo">MD1</div>
+    <a href="../index.html" class="logo-eagle" title="الرئيسية">🦅</a>
     <div>
       <h1>MD1 Chat</h1>
       <div class="status" id="statusLine">مش متصل — افتح الإعدادات وحط الـ API key</div>
     </div>
   </div>
+  <div class="header-center">
+    <a href="https://md1usd.com" target="_blank" class="md1usd-link" title="MD1$">💎 MD1$</a>
+    <span class="chat-core-label">CHAT Core</span>
+  </div>
   <div class="header-actions">
-    <a href="https://mdm1.org" target="_blank" class="icon-btn" title="زيارة الموقع الرسمي">🌐 زيارة الموقع</a>
     <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
   </div>
 </header>
 
 <div class="marquee-bar">
   <div class="marquee-track">
-    <span>شات ذكي مدعوم بنماذج الذكاء الاصطناعي مع إمكانية رفع صور متعددة وتوليد فيديو ⚡</span>
-    <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاحك الآن ↗</a>
+    <span>شات ذكي مدعوم بنماذج الذكاء الاصطناعي ⚡</span>
+    <a href="https://opencode.ai" target="_blank">احصل على مفتاح Open Code الآن ↗</a>
   </div>
 </div>
 
 <div id="settingsPanel">
   <div class="section-label">إعدادات النظام والذكاء الاصطناعي</div>
   <div class="security-warning">⚠ المفتاح يتخزين محليًا في متصفحك (localStorage) فقط لضمان الخصوصية.</div>
-  
-  <div class="settings-grid">
-    <div class="field">
-      <label>Groq API Key <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاح مجاني ↗</a></label>
-      <div class="key-input-wrap">
-        <button type="button" class="key-toggle-eye" data-target="apiKeyInput">👁</button>
-        <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+
+  <div class="provider-tabs">
+    <button type="button" class="provider-tab active" data-provider="opencode">Open Code</button>
+    <button type="button" class="provider-tab" data-provider="groq">Groq</button>
+  </div>
+
+  <!-- ============ Open Code Provider Panel ============ -->
+  <div class="provider-panel active" id="panel-opencode">
+    <div class="settings-grid">
+      <div class="field">
+        <label>Open Code API Key <a href="https://opencode.ai" target="_blank">احصل على مفتاح ↗</a></label>
+        <div class="key-input-wrap">
+          <button type="button" class="key-toggle-eye" data-target="ocKeyInput">👁</button>
+          <input type="password" id="ocKeyInput" placeholder="oc_..." autocomplete="off" spellcheck="false">
+        </div>
+        <div class="key-len" id="ocKeyLen"></div>
       </div>
-      <div class="key-len" id="groqKeyLen"></div>
-    </div>
 
-    <div class="field">
-      <label>رابط API توليد الفيديو (Backend)</label>
-      <input type="text" id="videoApiInput" placeholder="https://xxxx.gradio.live أو رابط الـ API" autocomplete="off">
-    </div>
+      <div class="field">
+        <label>المزوّد (Provider)</label>
+        <select id="ocProviderSelect">
+          <option value="opencode">Open Code (zen)</option>
+          <option value="anthropic">Anthropic</option>
+          <option value="openai">OpenAI</option>
+          <option value="google">Google</option>
+          <option value="groq">Groq (عبر Open Code)</option>
+          <option value="openrouter">OpenRouter</option>
+          <option value="custom">مخصص (Custom Base URL)</option>
+        </select>
+      </div>
 
-    <div class="field" style="grid-column: 1 / -1;">
-      <label>اختر النموذج الذكي (AI Model)</label>
-      <select id="modelSelect">
-        <option value="canopylabs/orpheus-arabic-saudi">canopylabs/orpheus-arabic-saudi</option>
-        <option value="canopylabs/orpheus-v1-english">canopylabs/orpheus-v1-english</option>
-        <option value="groq/compound">groq/compound</option>
-        <option value="groq/compound-mini">groq/compound-mini</option>
-        <option value="meta-llama/llama-prompt-guard-2-22m">meta-llama/llama-prompt-guard-2-22m</option>
-        <option value="meta-llama/llama-prompt-guard-2-86m">meta-llama/llama-prompt-guard-2-86m</option>
-        <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
-        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
-        <option value="openai/gpt-oss-safeguard-20b">openai/gpt-oss-safeguard-20b</option>
-        <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b</option>
-        <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b</option>
-        <option value="whisper-large-v3">whisper-large-v3</option>
-        <option value="whisper-large-v3-turbo">whisper-large-v3-turbo</option>
-      </select>
+      <div class="field" id="ocCustomUrlField" style="display:none;">
+        <label>Base URL مخصص</label>
+        <input type="text" id="ocCustomUrl" placeholder="https://api.example.com/v1" autocomplete="off" style="direction:ltr; text-align:left;">
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>اختر النموذج الذكي (AI Model)</label>
+        <select id="ocModelSelect">
+          <option value="zen/big-pickle">🥎 Big Pickle 🥒 (zen)</option>
+          <option value="anthropic/claude-sonnet-4-6">anthropic/claude-sonnet-4-6</option>
+          <option value="anthropic/claude-opus-4-1">anthropic/claude-opus-4-1</option>
+          <option value="anthropic/claude-haiku-4-5">anthropic/claude-haiku-4-5</option>
+          <option value="openai/gpt-5">openai/gpt-5</option>
+          <option value="openai/gpt-5-mini">openai/gpt-5-mini</option>
+          <option value="google/gemini-2.5-pro">google/gemini-2.5-pro</option>
+          <option value="google/gemini-2.5-flash">google/gemini-2.5-flash</option>
+          <option value="groq/compound">groq/compound</option>
+          <option value="groq/compound-mini">groq/compound-mini</option>
+          <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+          <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
+          <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b</option>
+        </select>
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>قوة النموذج (Temperature) <span id="ocTempLabel">0.7</span></label>
+        <div class="slider-row">
+          <input type="range" id="ocTempRange" min="0" max="2" step="0.1" value="0.7">
+          <span class="slider-val" id="ocTempVal">0.7</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Groq Provider Panel ============ -->
+  <div class="provider-panel" id="panel-groq">
+    <div class="settings-grid">
+      <div class="field">
+        <label>Groq API Key <a href="https://console.groq.com/keys" target="_blank">احصل على مفتاح مجاني ↗</a></label>
+        <div class="key-input-wrap">
+          <button type="button" class="key-toggle-eye" data-target="groqKeyInput">👁</button>
+          <input type="password" id="groqKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+        </div>
+        <div class="key-len" id="groqKeyLen"></div>
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>اختر النموذج الذكي (AI Model)</label>
+        <select id="groqModelSelect">
+          <option value="groq/compound">groq/compound</option>
+          <option value="groq/compound-mini">groq/compound-mini</option>
+          <option value="meta-llama/llama-prompt-guard-2-22m">meta-llama/llama-prompt-guard-2-22m</option>
+          <option value="meta-llama/llama-prompt-guard-2-86m">meta-llama/llama-prompt-guard-2-86m</option>
+          <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+          <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
+          <option value="openai/gpt-oss-safeguard-20b">openai/gpt-oss-safeguard-20b</option>
+          <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b</option>
+          <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b</option>
+        </select>
+      </div>
+
+      <div class="field" style="grid-column: 1 / -1;">
+        <label>قوة النموذج (Temperature) <span id="groqTempLabel">0.7</span></label>
+        <div class="slider-row">
+          <input type="range" id="groqTempRange" min="0" max="2" step="0.1" value="0.7">
+          <span class="slider-val" id="groqTempVal">0.7</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -210,13 +382,10 @@
 </div>
 
 <div id="chatWindow"></div>
-<div id="imagePreviewContainer" class="image-preview-container" style="display: none;"></div>
 
 <div id="inputBar">
-  <button id="micBtn" class="action-icon-btn" title="تسجيل صوتي">🎤</button>
-  <input type="file" id="imageUploadInput" accept="image/*" multiple style="display: none;">
-  <button id="uploadImgBtn" class="action-icon-btn" title="رفع صور">📷</button>
-  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك أو ارفع صوراً لتوليد فيديو..."></textarea>
+  <button id="musicBtn" class="action-icon-btn" title="تشغيل/إيقاف الموسيقى">🔇</button>
+  <textarea id="userInput" rows="1" placeholder="اكتب رسالتك..."></textarea>
   <button id="sendBtn">إرسال</button>
 </div>
 
@@ -224,106 +393,155 @@
   const chatWindow = document.getElementById('chatWindow');
   const userInput = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
-  const uploadImgBtn = document.getElementById('uploadImgBtn');
-  const imageUploadInput = document.getElementById('imageUploadInput');
-  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsPanel = document.getElementById('settingsPanel');
-  const apiKeyInput = document.getElementById('apiKeyInput');
-  const videoApiInput = document.getElementById('videoApiInput');
-  const modelSelect = document.getElementById('modelSelect');
   const saveSettings = document.getElementById('saveSettings');
   const statusLine = document.getElementById('statusLine');
-  const groqKeyLen = document.getElementById('groqKeyLen');
-  const keyToggleEye = document.querySelector('.key-toggle-eye');
-  const micBtn = document.getElementById('micBtn');
 
-  let attachedImagesBase64 = [];
-  let apiKey = localStorage.getItem('md1_groq_key') || '';
-  let videoApiUrl = localStorage.getItem('md1_video_api') || '';
-  let model = localStorage.getItem('md1_groq_model') || 'qwen/qwen3.8-27b';
+  // Provider tabs
+  const providerTabs = document.querySelectorAll('.provider-tab');
+  const providerPanels = document.querySelectorAll('.provider-panel');
+
+  // Open Code fields
+  const ocKeyInput = document.getElementById('ocKeyInput');
+  const ocKeyLen = document.getElementById('ocKeyLen');
+  const ocProviderSelect = document.getElementById('ocProviderSelect');
+  const ocCustomUrlField = document.getElementById('ocCustomUrlField');
+  const ocCustomUrl = document.getElementById('ocCustomUrl');
+  const ocModelSelect = document.getElementById('ocModelSelect');
+  const ocTempRange = document.getElementById('ocTempRange');
+  const ocTempVal = document.getElementById('ocTempVal');
+
+  // Groq fields
+  const groqKeyInput = document.getElementById('groqKeyInput');
+  const groqKeyLen = document.getElementById('groqKeyLen');
+  const groqModelSelect = document.getElementById('groqModelSelect');
+  const groqTempRange = document.getElementById('groqTempRange');
+  const groqTempVal = document.getElementById('groqTempVal');
+
+
+  let activeProvider = localStorage.getItem('md1_active_provider') || 'opencode';
+
+  let ocKey = localStorage.getItem('md1_oc_key') || '';
+  let ocProvider = localStorage.getItem('md1_oc_provider') || 'opencode';
+  let ocCustomUrlVal = localStorage.getItem('md1_oc_custom_url') || '';
+  let ocModel = localStorage.getItem('md1_oc_model') || 'zen/big-pickle';
+  let ocTemp = parseFloat(localStorage.getItem('md1_oc_temp') || '0.7');
+
+  let groqKey = localStorage.getItem('md1_groq_key') || '';
+  let groqModel = localStorage.getItem('md1_groq_model') || 'qwen/qwen3.8-27b';
+  let groqTemp = parseFloat(localStorage.getItem('md1_groq_temp') || '0.7');
+
   let history = [];
 
   function cleanKey(v) { return v.replace(/[\u200B-\u200D\uFEFF\s]/g, ''); }
-  
-  function updateKeyLenInfo(val) {
+
+  function updateKeyLenInfo(el, val) {
     const len = val.length;
     if (len === 0) {
-      groqKeyLen.textContent = '';
-      groqKeyLen.className = 'key-len';
+      el.textContent = '';
+      el.className = 'key-len';
     } else {
-      groqKeyLen.textContent = `الطول: ${len} حرف — يبدأ بـ ${val.substring(0, 6)}...`;
-      groqKeyLen.className = len > 50 ? 'key-len ok' : 'key-len';
+      el.textContent = `الطول: ${len} حرف — يبدأ بـ ${val.substring(0, 6)}...`;
+      el.className = len > 20 ? 'key-len ok' : 'key-len';
     }
   }
 
-  function updateStatus() { 
-    statusLine.textContent = apiKey ? `متصل — ${model}` : 'مش متصل — حط الـ API key من الإعدادات'; 
+  function currentModelLabel() {
+    return activeProvider === 'opencode' ? ocModel : groqModel;
   }
 
-  apiKeyInput.value = apiKey;
-  videoApiInput.value = videoApiUrl;
-  modelSelect.value = model;
-  updateKeyLenInfo(apiKey);
+  function isConnected() {
+    return activeProvider === 'opencode' ? !!ocKey : !!groqKey;
+  }
+
+  function updateStatus() {
+    statusLine.textContent = isConnected()
+      ? `متصل — ${activeProvider === 'opencode' ? 'Open Code' : 'Groq'} — ${currentModelLabel()}`
+      : 'مش متصل — حط الـ API key من الإعدادات';
+  }
+
+  // ---- init provider tabs ----
+  function setActiveProviderTab(p) {
+    providerTabs.forEach(btn => btn.classList.toggle('active', btn.dataset.provider === p));
+    providerPanels.forEach(panel => panel.classList.toggle('active', panel.id === 'panel-' + p));
+  }
+  providerTabs.forEach(btn => {
+    btn.addEventListener('click', () => setActiveProviderTab(btn.dataset.provider));
+  });
+
+  // ---- init field values ----
+  ocKeyInput.value = ocKey;
+  ocProviderSelect.value = ocProvider;
+  ocCustomUrl.value = ocCustomUrlVal;
+  ocCustomUrlField.style.display = ocProvider === 'custom' ? 'flex' : 'none';
+  ocModelSelect.value = ocModel;
+  ocTempRange.value = ocTemp;
+  ocTempVal.textContent = ocTemp.toFixed(1);
+
+  groqKeyInput.value = groqKey;
+  groqModelSelect.value = groqModel;
+  groqTempRange.value = groqTemp;
+  groqTempVal.textContent = groqTemp.toFixed(1);
+
+  updateKeyLenInfo(ocKeyLen, ocKey);
+  updateKeyLenInfo(groqKeyLen, groqKey);
+  setActiveProviderTab(activeProvider);
   updateStatus();
 
-  apiKeyInput.oninput = (e) => updateKeyLenInfo(e.target.value);
+  ocKeyInput.oninput = (e) => updateKeyLenInfo(ocKeyLen, e.target.value);
+  groqKeyInput.oninput = (e) => updateKeyLenInfo(groqKeyLen, e.target.value);
 
-  keyToggleEye.onclick = () => {
-    if (apiKeyInput.type === 'password') {
-      apiKeyInput.type = 'text';
-      keyToggleEye.textContent = '🙈';
-    } else {
-      apiKeyInput.type = 'password';
-      keyToggleEye.textContent = '👁';
-    }
+  ocProviderSelect.onchange = () => {
+    ocCustomUrlField.style.display = ocProviderSelect.value === 'custom' ? 'flex' : 'none';
   };
 
+  ocTempRange.oninput = () => { ocTempVal.textContent = parseFloat(ocTempRange.value).toFixed(1); };
+  groqTempRange.oninput = () => { groqTempVal.textContent = parseFloat(groqTempRange.value).toFixed(1); };
+
+  document.querySelectorAll('.key-toggle-eye').forEach(btn => {
+    btn.onclick = () => {
+      const target = document.getElementById(btn.dataset.target);
+      if (target.type === 'password') {
+        target.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        target.type = 'password';
+        btn.textContent = '👁';
+      }
+    };
+  });
+
   settingsBtn.onclick = () => settingsPanel.classList.toggle('open');
-  
+
   saveSettings.onclick = () => {
-    apiKey = cleanKey(apiKeyInput.value);
-    videoApiUrl = videoApiInput.value.trim();
-    model = modelSelect.value;
-    localStorage.setItem('md1_groq_key', apiKey);
-    localStorage.setItem('md1_video_api', videoApiUrl);
-    localStorage.setItem('md1_groq_model', model);
-    updateKeyLenInfo(apiKey);
+    activeProvider = document.querySelector('.provider-tab.active').dataset.provider;
+
+    ocKey = cleanKey(ocKeyInput.value);
+    ocProvider = ocProviderSelect.value;
+    ocCustomUrlVal = ocCustomUrl.value.trim();
+    ocModel = ocModelSelect.value;
+    ocTemp = parseFloat(ocTempRange.value);
+
+    groqKey = cleanKey(groqKeyInput.value);
+    groqModel = groqModelSelect.value;
+    groqTemp = parseFloat(groqTempRange.value);
+
+    localStorage.setItem('md1_active_provider', activeProvider);
+    localStorage.setItem('md1_oc_key', ocKey);
+    localStorage.setItem('md1_oc_provider', ocProvider);
+    localStorage.setItem('md1_oc_custom_url', ocCustomUrlVal);
+    localStorage.setItem('md1_oc_model', ocModel);
+    localStorage.setItem('md1_oc_temp', ocTemp);
+    localStorage.setItem('md1_groq_key', groqKey);
+    localStorage.setItem('md1_groq_model', groqModel);
+    localStorage.setItem('md1_groq_temp', groqTemp);
+
+    updateKeyLenInfo(ocKeyLen, ocKey);
+    updateKeyLenInfo(groqKeyLen, groqKey);
     updateStatus();
     settingsPanel.classList.remove('open');
   };
-
-  uploadImgBtn.onclick = () => imageUploadInput.click();
-  
-  imageUploadInput.onchange = (e) => {
-    Array.from(e.target.files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        attachedImagesBase64.push(ev.target.result);
-        renderPreviews();
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  function renderPreviews() {
-    imagePreviewContainer.innerHTML = '';
-    if (attachedImagesBase64.length === 0) {
-      imagePreviewContainer.style.display = 'none';
-      return;
-    }
-    imagePreviewContainer.style.display = 'flex';
-    attachedImagesBase64.forEach((img, idx) => {
-      const box = document.createElement('div');
-      box.className = 'image-preview-box';
-      box.innerHTML = `<img src="${img}"><button type="button" class="remove-img-btn">✕</button>`;
-      box.querySelector('button').onclick = () => {
-        attachedImagesBase64.splice(idx, 1);
-        renderPreviews();
-      };
-      imagePreviewContainer.appendChild(box);
-    });
-  }
 
   function addMessage(content, cls, isHtml = false) {
     const wrap = document.createElement('div');
@@ -337,137 +555,68 @@
     return { wrap, div };
   }
 
-  // دعم التسجيل الصوتي وتفريغه لنص
-  let recognition = null;
-  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'ar-SA';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+  // مربع الكتابة: نسخ/لصق طبيعي بدون سقف لعدد الأحرف، وتمدد تلقائي
+  userInput.addEventListener('input', () => {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
+  });
 
-    recognition.onstart = () => {
-      micBtn.classList.add('recording');
-      micBtn.title = "جاري الاستماع...";
-    };
-
-    recognition.onresult = (e) => {
-      const text = e.results[0][0].transcript;
-      userInput.value += (userInput.value ? ' ' : '') + text;
-    };
-
-    recognition.onerror = (e) => {
-      console.error('Speech Recognition Error:', e.error);
-      micBtn.classList.remove('recording');
-    };
-
-    recognition.onend = () => {
-      micBtn.classList.remove('recording');
-      micBtn.title = "تسجيل صوتي";
-    };
-
-    micBtn.onclick = () => {
-      if (micBtn.classList.contains('recording')) {
-        recognition.stop();
-      } else {
-        recognition.start();
-      }
-    };
-  } else {
-    micBtn.onclick = () => alert('خاصية التعرف على الصوت غير مدعومة في متصفحك.');
+  function ocBaseUrl() {
+    switch (ocProvider) {
+      case 'opencode': return 'https://opencode.ai/zen/v1/chat/completions';
+      case 'anthropic': return 'https://api.anthropic.com/v1/messages';
+      case 'openai': return 'https://api.openai.com/v1/chat/completions';
+      case 'google': return 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+      case 'groq': return 'https://api.groq.com/openai/v1/chat/completions';
+      case 'openrouter': return 'https://openrouter.ai/api/v1/chat/completions';
+      case 'custom': return ocCustomUrlVal;
+      default: return 'https://opencode.ai/zen/v1/chat/completions';
+    }
   }
 
   async function sendMessage() {
     const text = userInput.value.trim();
-    
-    // إرسال الصور (توليد الفيديو)
-    if (attachedImagesBase64.length > 0) {
-      let imgs = [...attachedImagesBase64];
-      let htmlTag = imgs.map(i => `<img src="${i}">`).join('');
-      addMessage(text ? `${text}<br>${htmlTag}` : htmlTag, 'user', true);
-      
-      attachedImagesBase64 = [];
-      imagePreviewContainer.style.display = 'none';
-      userInput.value = '';
-      
-      if (!videoApiUrl) {
-        addMessage('⚠ يرجى ضبط رابط API الفيديو في قائمة الإعدادات أولاً.', 'error');
-        return;
-      }
-      
-      const statusMsg = addMessage('⏳ جاري إرسال الطلب والتواصل مع السيرفر...', 'loading');
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
-
-      try {
-        const res = await fetch(videoApiUrl, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': '69420'
-          },
-          body: JSON.stringify({ images: imgs, prompt: text || "Animate images" }),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        statusMsg.wrap.remove();
-
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const rawText = await res.text();
-          throw new Error(`السيرفر لم يعيد JSON صالح (ربما صفحة حماية أو خطأ 500). الاستجابة: ${rawText.substring(0, 120)}...`);
-        }
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.detail || data.error || `خطأ من السيرفر برمز: ${res.status}`);
-        }
-
-        if (data.video_url || data.url) {
-          const vUrl = data.video_url || data.url;
-          addMessage(`✅ تم توليد الفيديو بنجاح:<br><video controls autoplay loop width="100%"><source src="${vUrl}" type="video/mp4"></video>`, 'bot', true);
-        } else {
-          throw new Error('فشل السيرفر في إرجاع رابط الفيديو المطلوب.');
-        }
-      } catch (err) {
-        clearTimeout(timeoutId);
-        statusMsg.wrap.remove();
-        if (err.name === 'AbortError') {
-          addMessage('❌ انتهت مهلة الاتصال (Timeout) — السيرفر أخد وقت أطول من اللازم ولم يرد.', 'error');
-        } else {
-          addMessage(`❌ خطأ أثناء الاتصال بالسيرفر: ${err.message}`, 'error');
-        }
-      }
-      return;
-    }
 
     // الشات النصي العادي
     if (!text) return;
-    if (!apiKey) {
-      addMessage('⚠ يرجى إدخال Groq API key الخاص بك من قائمة الإعدادات.', 'error');
+
+    const key = activeProvider === 'opencode' ? ocKey : groqKey;
+    if (!key) {
+      addMessage('⚠ يرجى إدخال API key الخاص بك من قائمة الإعدادات.', 'error');
       return;
     }
 
     addMessage(text, 'user');
     history.push({ role: 'user', content: text });
     userInput.value = '';
+    userInput.style.height = 'auto';
     sendBtn.disabled = true;
 
     const statusMsg = addMessage('جاري الرد...', 'loading');
     try {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-        body: JSON.stringify({
-          model: model,
+      let url, headers, body;
+
+      if (activeProvider === 'opencode') {
+        url = ocBaseUrl();
+        headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ocKey };
+        body = JSON.stringify({
+          model: ocModel,
           messages: [{ role: 'system', content: 'إنت مساعد ذكي وودود باللهجة المصرية.' }, ...history],
-          temperature: 0.7
-        })
-      });
+          temperature: ocTemp
+        });
+      } else {
+        url = 'https://api.groq.com/openai/v1/chat/completions';
+        headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey };
+        body = JSON.stringify({
+          model: groqModel,
+          messages: [{ role: 'system', content: 'إنت مساعد ذكي وودود باللهجة المصرية.' }, ...history],
+          temperature: groqTemp
+        });
+      }
+
+      const res = await fetch(url, { method: 'POST', headers, body });
       statusMsg.wrap.remove();
-      
+
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error?.message || `خطأ من API برمز: ${res.status}`);
@@ -485,13 +634,135 @@
   }
 
   sendBtn.onclick = sendMessage;
-  userInput.onkeydown = (e) => { 
-    if (e.key === 'Enter' && !e.shiftKey) { 
-      e.preventDefault(); 
-      sendMessage(); 
-    } 
+  userInput.onkeydown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
+
+  // ── MUSIC (نفس منطق باقي صفحات الموقع) ──
+  (function initMusic(){
+    const audio = document.getElementById('bg-music');
+    const btn = document.getElementById('musicBtn');
+    if (!audio || !btn) return;
+    const MUSIC_KEY = 'mdm1_music_choice';
+
+    function fadeVolume(el, from, to, duration, onDone) {
+      const steps = 30, interval = duration / steps, delta = (to - from) / steps;
+      let current = from;
+      el.volume = Math.max(0, Math.min(1, from));
+      const timer = setInterval(() => {
+        current += delta;
+        el.volume = Math.max(0, Math.min(1, current));
+        if ((delta > 0 && current >= to) || (delta < 0 && current <= to)) {
+          clearInterval(timer);
+          if (onDone) onDone();
+        }
+      }, interval);
+    }
+
+    function playMusic(fadeMs) {
+      if (!audio.paused) return;
+      audio.muted = true;
+      audio.play().then(() => {
+        audio.muted = false;
+        audio.volume = 0;
+        fadeVolume(audio, 0, 0.45, fadeMs);
+        btn.textContent = '🔊';
+        btn.classList.add('playing');
+      }).catch(() => {});
+    }
+
+    const saved = sessionStorage.getItem(MUSIC_KEY);
+    if (saved === 'yes') {
+      btn.textContent = '🔇';
+      setTimeout(() => playMusic(1500), 300);
+    }
+
+    btn.addEventListener('click', () => {
+      if (audio.paused) {
+        sessionStorage.setItem(MUSIC_KEY, 'yes');
+        audio.muted = false;
+        audio.play().catch(() => {});
+        fadeVolume(audio, 0, 0.45, 1200);
+        btn.textContent = '🔊';
+        btn.classList.add('playing');
+      } else {
+        sessionStorage.setItem(MUSIC_KEY, 'no');
+        fadeVolume(audio, audio.volume, 0, 800, () => audio.pause());
+        btn.textContent = '🔇';
+        btn.classList.remove('playing');
+      }
+    });
+
+    window.addEventListener('pageshow', () => {
+      if (sessionStorage.getItem(MUSIC_KEY) === 'yes' && audio.paused) playMusic(1200);
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && sessionStorage.getItem(MUSIC_KEY) === 'yes' && audio.paused) playMusic(1200);
+    });
+  })();
+
+  // ── PARTICLES (نجوم خفيفة — عدد أقل على الموبايل) ──
+  (function initParticles(){
+    const pc = document.getElementById('particles');
+    if (!pc) return;
+    const isMobile = window.matchMedia('(max-width: 700px)').matches;
+    const count = isMobile ? 14 : 26;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const d = document.createElement('div');
+      d.className = 'p';
+      const size = Math.random() * 3 + 1;
+      const gold = Math.random() > 0.5;
+      d.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        background:${gold ? '#c9a84c' : '#ffffff'};
+        opacity:${Math.random()*0.5+0.1};
+        animation-duration:${Math.random()*10+8}s;
+        animation-delay:${Math.random()*8}s;
+      `;
+      frag.appendChild(d);
+    }
+    pc.appendChild(frag);
+  })();
+
+  // ── FLOATING MENU ──
+  (function initFloatingMenu(){
+    const trigger = document.getElementById('mdm1m-btn');
+    const panel = document.getElementById('mdm1m-panel');
+    if (!trigger || !panel) return;
+    trigger.addEventListener('click', () => panel.classList.toggle('is-open'));
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+        panel.classList.remove('is-open');
+      }
+    });
+  })();
 </script>
+
+<!-- ── زرار القائمة العائمة — مطابق لباقي صفحات الموقع ── -->
+<button id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الصفحات">🏛️</button>
+<nav id="mdm1m-panel">
+  <a href="../index.html">🦅 الرئيسية</a>
+  <a href="../whitepaper.html">📃 الورقة البيضاء</a>
+  <div class="mdm1m-sep"></div>
+  <a href="ideas.html">💡 الأفكار</a>
+  <a href="quiz.html">🧩 اختبار الجانب</a>
+  <a href="join.html">🔑 الانضمام</a>
+  <a href="community.html">🤝 المجتمع</a>
+  <a href="faq.html">❓ الأسئلة الشائعة</a>
+  <a href="roadmap.html">🗺️ خارطة الطريق</a>
+  <a href="blog.html">📰 المدونة</a>
+  <a href="game.html">🎮 بوابة الفراعنة</a>
+  <a href="../games.html" style="color:#f0d08b;border:1px solid rgba(224,166,64,.7);padding:7px 11px;margin-inline:4px;background:rgba(224,166,64,.08);font-weight:700;letter-spacing:.08em">●Games 🎮 Portal</a>
+  <div class="mdm1m-sep"></div>
+  <a href="md1usd.html">💎 MD1$</a>
+  <a href="about.html">ℹ️ من نحن</a>
+  <a href="18.html">👈يوميا🙈صفحة🙊تولد🙉تلقائيا👉</a>
+</nav>
 
 </body>
 </html>
