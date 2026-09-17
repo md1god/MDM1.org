@@ -69,9 +69,10 @@
   }
   .md1usd-link:hover { text-shadow: 0 0 20px rgba(240,192,96,0.8); }
   .chat-core-label {
-    font-size: 11px; font-weight: 700; color: var(--gold-dim);
-    letter-spacing: 2px; text-transform: uppercase;
+    font-size: 18px; font-weight: 900; color: var(--gold-bright);
+    letter-spacing: 1px; text-transform: uppercase;
     font-family: 'Cinzel', serif;
+    text-shadow: 0 0 14px rgba(201,168,76,0.55);
   }
 
   .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -265,7 +266,7 @@
   @media (max-width: 600px) {
     header h1 { font-size: 13.5px; }
     .icon-btn { padding: 5px 10px; font-size: 11px; }
-    .chat-core-label { font-size: 9px; }
+    .chat-core-label { font-size: 14px; }
   }
 </style>
 </head>
@@ -288,7 +289,7 @@
   </div>
   <div class="header-center">
     <a href="https://md1usd.com" target="_blank" class="md1usd-link" title="MD1$">💎 MD1$</a>
-    <span class="chat-core-label">CHAT Core</span>
+    <span class="chat-core-label">MD1 AI Conversation</span>
   </div>
   <div class="header-actions">
     <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
@@ -841,6 +842,21 @@ function populateModelSelect(providerId) {
   }
 }
 
+function isModelFree(providerId, model) {
+  const p = PROVIDERS_DB[providerId];
+  if (!p) return false;
+  if (p.authStyle === 'none') return true; // سيرفرات محلية بالكامل مجانية
+  if (!model) return !p.paid;
+  const m = model.toLowerCase();
+  if (m.endsWith('-free') || m.endsWith(':free') || m === 'local-model') return true;
+  return !p.paid;
+}
+
+function updatePaidBadge() {
+  const model = providerModelSelect.value;
+  paidBadge.classList.toggle('hidden', isModelFree(activeProviderId, model));
+}
+
 function updateKeyFieldsForProvider(providerId) {
   const p = PROVIDERS_DB[providerId];
   if (!p) return;
@@ -849,7 +865,7 @@ function updateKeyFieldsForProvider(providerId) {
   keyToggleEye.textContent = '👁';
   providerKeyInput.placeholder = p.keyPlaceholder || '...';
   updateKeyLen();
-  paidBadge.classList.toggle('hidden', !p.paid);
+  updatePaidBadge();
 
   if (providerId === 'custom') {
     getKeyBtn.classList.add('disabled');
@@ -930,6 +946,7 @@ providerSelect.addEventListener('change', () => {
 
 providerModelSelect.addEventListener('change', () => {
   providerModels[activeProviderId] = providerModelSelect.value;
+  updatePaidBadge();
 });
 
 providerKeyInput.addEventListener('input', updateKeyLen);
@@ -963,13 +980,33 @@ saveSettingsBtn.addEventListener('click', () => {
   settingsPanel.classList.remove('open');
 });
 
-function updateStatusLine() {
+let statusCheckToken = 0;
+
+async function updateStatusLine() {
+  const myToken = ++statusCheckToken;
   const p = PROVIDERS_DB[activeProviderId];
-  const hasKey = !!(providerKeys[activeProviderId] && providerKeys[activeProviderId].trim());
+  const apiKey = (providerKeys[activeProviderId] || '').trim();
+  const model = providerModels[activeProviderId] || providerModelSelect.value;
   const noKeyNeeded = p && p.authStyle === 'none';
-  statusLine.textContent = (hasKey || noKeyNeeded)
-    ? `جاهز — ${p ? p.name : activeProviderId}`
-    : 'مش متصل — افتح الإعدادات وحط الـ API key';
+
+  if (!apiKey && !noKeyNeeded) {
+    statusLine.textContent = 'مش متصل — افتح الإعدادات وحط الـ API key';
+    return;
+  }
+  if (!model) {
+    statusLine.textContent = 'مش متصل — اختر نموذج من الإعدادات';
+    return;
+  }
+
+  statusLine.textContent = `جاري التحقق من الاتصال بـ ${p ? p.name : activeProviderId}...`;
+  try {
+    await callProvider(activeProviderId, apiKey, model, [{ role: 'user', content: 'ping' }], 0);
+    if (myToken !== statusCheckToken) return; // تغيّر الموفّر أثناء الفحص
+    statusLine.textContent = `متصل ✓ — ${p ? p.name : activeProviderId}`;
+  } catch (err) {
+    if (myToken !== statusCheckToken) return;
+    statusLine.textContent = `فشل الاتصال — ${(err && err.message) || 'تحقق من المفتاح'}`;
+  }
 }
 
 /* ========================= Init ========================= */
