@@ -26,7 +26,22 @@
     margin: 0; background: var(--void); color: var(--light);
     font-family: 'Tajawal', sans-serif;
     height: 100vh; display: flex; flex-direction: column;
+    position: relative;
   }
+
+  /* ── PARTICLES (نجوم متطايرة) ── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
+  @keyframes drift {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: .6; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+  header, .marquee-bar, #settingsPanel, #chatWindow, #inputBar, #mdm1m-btn, #mdm1m-panel {
+    position: relative; z-index: 1;
+  }
+
   header {
     padding: 10px 18px; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
@@ -54,10 +69,9 @@
   }
   .md1usd-link:hover { text-shadow: 0 0 20px rgba(240,192,96,0.8); }
   .chat-core-label {
-    font-size: 18px; font-weight: 900; color: var(--gold-bright);
-    letter-spacing: 1px; text-transform: uppercase;
+    font-size: 11px; font-weight: 700; color: var(--gold-dim);
+    letter-spacing: 2px; text-transform: uppercase;
     font-family: 'Cinzel', serif;
-    text-shadow: 0 0 14px rgba(201,168,76,0.55);
   }
 
   .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -81,7 +95,7 @@
   .marquee-track a { color: var(--gold); text-decoration: underline; font-weight: 800; }
   @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-  /* ===== Settings panel — compact, capped width, scrolls if tall ===== */
+  /* ===== Settings panel ===== */
   #settingsPanel {
     display: none; padding: 14px 16px; background: var(--panel);
     border-bottom: 1px solid var(--border); gap: 12px; flex-direction: column;
@@ -170,12 +184,22 @@
   .msg-wrap.bot, .msg-wrap.error, .msg-wrap.loading { align-items: flex-start; align-self: flex-start; }
   .msg {
     padding: 12px 16px; border-radius: 12px; line-height: 1.7; font-size: 14px; white-space: pre-wrap; word-wrap: break-word;
+    position: relative;
   }
   .msg.user { background: var(--user-bubble); border: 1px solid var(--border); }
   .msg.bot { background: var(--bot-bubble); border: 1px solid var(--border); }
   .msg.loading { background: rgba(201,168,76,0.06); border: 1px dashed var(--gold-dim); color: var(--gold-bright); font-size: 13px; }
   .msg.error { background: rgba(255, 92, 92, 0.1); border: 1px solid var(--error); color: var(--error); font-size: 13.5px; }
   .msg img, .msg video { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
+
+  /* ── زر نسخ رد البوت ── */
+  .msg-actions { display: flex; gap: 6px; margin-top: 6px; }
+  .msg-copy-btn {
+    background: transparent; border: 1px solid var(--border); color: rgba(232,213,163,0.6);
+    border-radius: 6px; padding: 3px 9px; font-size: 11px; cursor: pointer; transition: all 0.2s;
+  }
+  .msg-copy-btn:hover { color: var(--gold-bright); border-color: var(--gold); }
+  .msg-copy-btn.copied { color: #4ade80; border-color: #4ade80; }
 
   #inputBar {
     display: flex; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); background: var(--panel); align-items: flex-end;
@@ -199,35 +223,19 @@
   #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
   #sendBtn:hover:not(:disabled) { box-shadow: 0 0 18px rgba(201,168,76,0.4); }
 
-  @media (max-width: 600px) {
-    header h1 { font-size: 13.5px; }
-    .icon-btn { padding: 5px 10px; font-size: 11px; }
-    .chat-core-label { font-size: 14px; }
-  }
-
-  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
-  @keyframes drift {
-    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: .6; }
-    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-  }
-  header, .marquee-bar, #settingsPanel, #chatWindow, #inputBar { position: relative; z-index: 1; }
-
   #musicBtn.playing { border-color: rgba(201,168,76,0.6); animation: musicPulse 2s ease-in-out infinite; }
   @keyframes musicPulse {
     0%, 100% { box-shadow: 0 0 6px rgba(201,168,76,0.15); }
     50%       { box-shadow: 0 0 16px rgba(201,168,76,0.4); }
   }
 
-  /* ── FLOATING MENU (restored) ── */
+  /* ── FLOATING MENU — مطابق لباقي صفحات الموقع ── */
   #mdm1m-btn{
     position:fixed; bottom:5.5rem; right:1rem; z-index:998;
-    width:44px; height:44px; border-radius:50%;
+    width:48px; height:48px; border-radius:50%;
     border:1px solid rgba(201,168,76,0.5);
     background:rgba(10,8,5,0.92);
-    color:#c9a84c; font-size:1.15rem;
+    color:#c9a84c; font-size:1.3rem;
     display:flex; align-items:center; justify-content:center;
     cursor:pointer; transition:border-color .3s, box-shadow .3s, transform .2s;
     box-shadow:0 0 15px rgba(201,168,76,0.1);
@@ -241,7 +249,6 @@
     border:1px solid rgba(201,168,76,0.35);
     border-radius:12px;
     padding:.75rem;
-    backdrop-filter:blur(10px);
     opacity:0; visibility:hidden; transform:translateY(12px);
     pointer-events:none;
     transition:opacity .25s ease, transform .25s ease, visibility .25s;
@@ -254,6 +261,12 @@
   }
   #mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
   #mdm1m-panel .mdm1m-sep{ border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 13.5px; }
+    .icon-btn { padding: 5px 10px; font-size: 11px; }
+    .chat-core-label { font-size: 9px; }
+  }
 </style>
 </head>
 <body>
@@ -275,7 +288,7 @@
   </div>
   <div class="header-center">
     <a href="https://md1usd.com" target="_blank" class="md1usd-link" title="MD1$">💎 MD1$</a>
-    <span class="chat-core-label">MD1 AI Conversation</span>
+    <span class="chat-core-label">CHAT Core</span>
   </div>
   <div class="header-actions">
     <button id="settingsBtn" class="icon-btn">⚙ الإعدادات</button>
@@ -356,16 +369,26 @@
   <button id="sendBtn">إرسال</button>
 </div>
 
-<!-- Floating menu (restored) -->
-<button id="mdm1m-btn" title="القائمة">☰</button>
-<div id="mdm1m-panel">
-  <a href="../index.html">🏠 الرئيسية</a>
-  <a href="https://md1usd.com" target="_blank">💎 MD1$</a>
-  <a href="../games.html">🎮 بوابة الألعاب</a>
+<!-- ── زرار القائمة العائمة — مطابق لباقي صفحات الموقع ── -->
+<button id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الصفحات">🏛️</button>
+<nav id="mdm1m-panel">
+  <a href="../index.html">🦅 الرئيسية</a>
+  <a href="../whitepaper.html">📃 الورقة البيضاء</a>
   <div class="mdm1m-sep"></div>
-  <a href="../community.html">🤝 المجتمع</a>
-  <a href="https://github.com/dido599999" target="_blank">💻 GitHub</a>
-</div>
+  <a href="ideas.html">💡 الأفكار</a>
+  <a href="quiz.html">🧩 اختبار الجانب</a>
+  <a href="join.html">🔑 الانضمام</a>
+  <a href="community.html">🤝 المجتمع</a>
+  <a href="faq.html">❓ الأسئلة الشائعة</a>
+  <a href="roadmap.html">🗺️ خارطة الطريق</a>
+  <a href="blog.html">📰 المدونة</a>
+  <a href="game.html">🎮 بوابة الفراعنة</a>
+  <a href="../games.html" style="color:#f0d08b;border:1px solid rgba(224,166,64,.7);padding:7px 11px;margin-inline:4px;background:rgba(224,166,64,.08);font-weight:700;letter-spacing:.08em">●Games 🎮 Portal</a>
+  <div class="mdm1m-sep"></div>
+  <a href="md1usd.html">💎 MD1$</a>
+  <a href="about.html">ℹ️ من نحن</a>
+  <a href="18.html">👈يوميا🙈صفحة🙊تولد🙉تلقائيا👉</a>
+</nav>
 
 <script>
 /* =========================================================
@@ -550,16 +573,6 @@ const PROVIDERS_DB = {
     models: ["qwen-3-coder-480b","llama-3.3-70b","llama3.1-8b"]
   },
 
-  azure_cognitive: {
-    paid: true,
-    name: "Azure Cognitive Services",
-    keyUrl: "https://portal.azure.com/",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "apikey-header",
-    models: ["gpt-5-mini","gpt-4o","gpt-4o-mini"]
-  },
-
   fireworks: {
     paid: true,
     name: "Fireworks AI",
@@ -630,36 +643,6 @@ const PROVIDERS_DB = {
     models: ["meta-llama/Llama-3.3-70B-Instruct","meta-llama/Llama-3.1-405B-Instruct","meta-llama/Llama-3.1-70B-Instruct","Qwen2.5-72B-Instruct","Qwen/Qwen2.5-Coder-32B-Instruct","deepseek-ai/DeepSeek-R1","deepseek-ai/DeepSeek-R1-Distill-Llama-70B","mistralai/Mistral-Large-Instruct-2411","microsoft/phi-4","google/gemma-3-27b-it","THUDM/glm-4-9b-chat","NousResearch/Hermes-3-Llama-3.1-70B","CohereForAI/aya-expanse-32b","BAAI/bge-multilingual-gemma2","neuralmagic/Llama-3.1-Nemotron-70B","Qwen/QwQ-32B","openbmb/MiniCPM3-4B","ibm-granite/granite-3.1-8b-instruct"]
   },
 
-  gmi_cloud: {
-    paid: true,
-    name: "GMI Cloud",
-    keyUrl: "https://console.gmicloud.ai/",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["deepseek-v3","llama-3.3-70b","qwen2.5-72b"]
-  },
-
-  baseten: {
-    paid: true,
-    name: "Baseten",
-    keyUrl: "https://app.baseten.co/settings/api-keys",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["llama-3.3-70b","deepseek-v3","qwen2.5-72b"]
-  },
-
-  cortecs: {
-    paid: true,
-    name: "Cortecs",
-    keyUrl: "https://cortecs.ai/",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["kimi-k2-instruct","llama-3.3-70b"]
-  },
-
   scaleway: {
     paid: true,
     name: "Scaleway",
@@ -668,26 +651,6 @@ const PROVIDERS_DB = {
     apiBase: "https://api.scaleway.ai/v1",
     authStyle: "bearer",
     models: ["devstral-2-123b-instruct-2512","gpt-oss-120b","llama-3.3-70b-instruct"]
-  },
-
-  ovhcloud: {
-    paid: true,
-    name: "OVHcloud AI Endpoints",
-    keyUrl: "https://ovh.com/manager",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["gpt-oss-120b","llama-3.3-70b-instruct","mistral-nemo-instruct"]
-  },
-
-  scx_ai: {
-    paid: true,
-    name: "SCX.ai",
-    keyUrl: "https://platform.scx.ai",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["MiniMax-M2.7","GLM-5.2"]
   },
 
   digitalocean: {
@@ -730,16 +693,6 @@ const PROVIDERS_DB = {
     models: ["anthropic/claude-sonnet-5","openai/gpt-5.5","mistral/mistral-large-3"]
   },
 
-  helicone: {
-    paid: true,
-    name: "Helicone",
-    keyUrl: "https://helicone.ai/",
-    keyPlaceholder: "...",
-    apiBase: "https://ai-gateway.helicone.ai",
-    authStyle: "bearer",
-    models: ["gpt-4o","claude-sonnet-4-20250514"]
-  },
-
   vercel_gateway: {
     paid: true,
     name: "Vercel AI Gateway",
@@ -748,126 +701,6 @@ const PROVIDERS_DB = {
     apiBase: "https://ai-gateway.vercel.sh/v1",
     authStyle: "bearer",
     models: ["anthropic/claude-sonnet-4","openai/gpt-5.5","google/gemini-3.1-pro","xai/grok-4.6"]
-  },
-
-  cloudflare_gateway: {
-    paid: true,
-    name: "Cloudflare AI Gateway",
-    keyUrl: "https://dash.cloudflare.com/",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["openai/gpt-4o","anthropic/claude-sonnet-4"]
-  },
-
-  cloudflare_workers_ai: {
-    paid: true,
-    name: "Cloudflare Workers AI",
-    keyUrl: "https://dash.cloudflare.com/",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["@cf/meta/llama-3.3-70b-instruct","@cf/qwen/qwen2.5-coder-32b-instruct"]
-  },
-
-  azure_openai: {
-    paid: true,
-    name: "Azure OpenAI",
-    keyUrl: "https://portal.azure.com/",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "apikey-header",
-    models: ["gpt-5-mini","gpt-4o","gpt-4o-mini"]
-  },
-
-  amazon_bedrock: {
-    paid: true,
-    name: "Amazon Bedrock",
-    keyUrl: "https://console.aws.amazon.com/bedrock/",
-    keyPlaceholder: "Bearer Token",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["anthropic.claude-sonnet-4-5","anthropic.claude-opus-4-5","meta.llama-3.3-70b"]
-  },
-
-  sap_ai_core: {
-    paid: true,
-    name: "SAP AI Core",
-    keyUrl: "https://account.hana.ondemand.com/",
-    keyPlaceholder: "service key JSON",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["gpt-5","claude-sonnet-5","gemini-3.1-pro"]
-  },
-
-  snowflake_cortex: {
-    paid: true,
-    name: "Snowflake Cortex",
-    keyUrl: "https://signup.snowflake.com/",
-    keyPlaceholder: "PAT / bearer token",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["claude-sonnet-4-6","claude-haiku-4-5","gpt-5"]
-  },
-
-  stackit: {
-    paid: true,
-    name: "STACKIT",
-    keyUrl: "https://portal.stackit.cloud",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["Qwen3-VL-235B","Llama-3.3-70B"]
-  },
-
-  poolside: {
-    paid: true,
-    name: "Poolside",
-    keyUrl: "https://platform.poolside.ai",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["poolside-standard","poolside-pro"]
-  },
-
-  venice_ai: {
-    paid: true,
-    name: "Venice AI",
-    keyUrl: "https://venice.ai/",
-    keyPlaceholder: "...",
-    apiBase: "https://api.venice.ai/api/v1",
-    authStyle: "bearer",
-    models: ["llama-3.3-70b","qwen2.5-coder-32b"]
-  },
-
-  aa_302: {
-    paid: true,
-    name: "302.AI",
-    keyUrl: "https://302.ai/",
-    keyPlaceholder: "...",
-    apiBase: "https://api.302.ai/v1",
-    authStyle: "bearer",
-    models: ["gpt-5.5","claude-sonnet-5","gemini-3.1-pro"]
-  },
-
-  frogbot: {
-    paid: true,
-    name: "FrogBot",
-    keyUrl: "https://app.frogbot.ai/signup",
-    keyPlaceholder: "...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["frogbot-default"]
-  },
-
-  modal: {
-    paid: true,
-    name: "Modal",
-    keyUrl: "https://modal.com/endpoints",
-    keyPlaceholder: "wk-<id>.ws-<secret>",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["custom-endpoint"]
   },
 
   ollama_cloud: {
@@ -908,46 +741,6 @@ const PROVIDERS_DB = {
     apiBase: "http://127.0.0.1:8080/v1",
     authStyle: "none",
     models: ["qwen3-coder:a3b","llama-3.3-70b-gguf","local-model"]
-  },
-
-  atomic_chat_local: {
-    paid: false,
-    name: "Atomic Chat (محلي)",
-    keyUrl: "https://atomic.chat",
-    keyPlaceholder: "لا حاجة لمفتاح — محلي",
-    apiBase: "http://127.0.0.1:1337/v1",
-    authStyle: "none",
-    models: ["local-model"]
-  },
-
-  chatgpt_plus: {
-    paid: false,
-    name: "ChatGPT Plus/Pro (OAuth)",
-    keyUrl: "https://chatgpt.com/pricing",
-    keyPlaceholder: "OAuth Token",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["gpt-5.5","gpt-5.4","gpt-5-codex"]
-  },
-
-  github_copilot: {
-    paid: true,
-    name: "GitHub Copilot",
-    keyUrl: "https://github.com/features/copilot/plans",
-    keyPlaceholder: "Device OAuth Token",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["gpt-5","claude-sonnet-4-5"]
-  },
-
-  gitlab_duo: {
-    paid: true,
-    name: "GitLab Duo",
-    keyUrl: "https://gitlab.com/-/user_settings/personal_access_tokens",
-    keyPlaceholder: "glpat-...",
-    apiBase: "",
-    authStyle: "bearer",
-    models: ["duo-chat-haiku-4-5","duo-chat-sonnet-4-5","duo-chat-opus-4-5"]
   },
 
   custom: {
@@ -996,9 +789,12 @@ let temperature = parseFloat(localStorage.getItem('md1_temperature') || '0.7');
 let customProviderData = JSON.parse(localStorage.getItem('md1_custom_provider') || '{"name":"","baseUrl":"","models":[]}');
 let chatHistory = [];
 
+if (!PROVIDERS_DB[activeProviderId]) activeProviderId = 'opencode_zen';
+
 /* ========================= Provider / model selects ========================= */
 function populateProviderSelect(filter) {
   const q = (filter || '').trim().toLowerCase();
+  const prevValue = activeProviderId;
   providerSelect.innerHTML = '';
   Object.keys(PROVIDERS_DB).forEach(id => {
     const p = PROVIDERS_DB[id];
@@ -1008,16 +804,16 @@ function populateProviderSelect(filter) {
     opt.textContent = p.name;
     providerSelect.appendChild(opt);
   });
-  if (![...providerSelect.options].some(o => o.value === activeProviderId)) {
-    const p = PROVIDERS_DB[activeProviderId];
+  if (![...providerSelect.options].some(o => o.value === prevValue)) {
+    const p = PROVIDERS_DB[prevValue];
     if (p) {
       const opt = document.createElement('option');
-      opt.value = activeProviderId;
+      opt.value = prevValue;
       opt.textContent = p.name;
       providerSelect.insertBefore(opt, providerSelect.firstChild);
     }
   }
-  providerSelect.value = activeProviderId;
+  providerSelect.value = prevValue;
 }
 
 function populateModelSelect(providerId) {
@@ -1037,7 +833,12 @@ function populateModelSelect(providerId) {
     providerModelSelect.appendChild(opt);
   });
   const saved = providerModels[providerId];
-  if (saved && models.includes(saved)) providerModelSelect.value = saved;
+  if (saved && models.includes(saved)) {
+    providerModelSelect.value = saved;
+  } else {
+    providerModelSelect.value = models[0];
+    providerModels[providerId] = models[0];
+  }
 }
 
 function updateKeyFieldsForProvider(providerId) {
@@ -1087,7 +888,10 @@ function renderCustomModelsList() {
     input.value = m;
     input.style.direction = 'ltr';
     input.style.textAlign = 'left';
-    input.addEventListener('input', () => { customProviderData.models[idx] = input.value.trim(); });
+    input.addEventListener('input', () => {
+      if (!customProviderData.models) customProviderData.models = [];
+      customProviderData.models[idx] = input.value.trim();
+    });
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.textContent = '✕';
@@ -1108,7 +912,7 @@ addCustomModelBtn.addEventListener('click', () => {
   renderCustomModelsList();
 });
 
-/* ========================= Eye toggle (fixed) ========================= */
+/* ========================= Eye toggle ========================= */
 keyToggleEye.addEventListener('click', () => {
   const isHidden = providerKeyInput.type === 'password';
   providerKeyInput.type = isHidden ? 'text' : 'password';
@@ -1122,6 +926,10 @@ providerSelect.addEventListener('change', () => {
   activeProviderId = providerSelect.value;
   populateModelSelect(activeProviderId);
   updateKeyFieldsForProvider(activeProviderId);
+});
+
+providerModelSelect.addEventListener('change', () => {
+  providerModels[activeProviderId] = providerModelSelect.value;
 });
 
 providerKeyInput.addEventListener('input', updateKeyLen);
@@ -1156,8 +964,12 @@ saveSettingsBtn.addEventListener('click', () => {
 });
 
 function updateStatusLine() {
+  const p = PROVIDERS_DB[activeProviderId];
   const hasKey = !!(providerKeys[activeProviderId] && providerKeys[activeProviderId].trim());
-  statusLine.textContent = hasKey ? 'جاهز — المفتاح محفوظ' : 'مش متصل — افتح الإعدادات وحط الـ API key';
+  const noKeyNeeded = p && p.authStyle === 'none';
+  statusLine.textContent = (hasKey || noKeyNeeded)
+    ? `جاهز — ${p ? p.name : activeProviderId}`
+    : 'مش متصل — افتح الإعدادات وحط الـ API key';
 }
 
 /* ========================= Init ========================= */
@@ -1169,33 +981,97 @@ tempVal.textContent = temperature;
 tempLabel.textContent = temperature;
 updateStatusLine();
 
+/* ========================= Particles (نجوم متطايرة) ========================= */
+(function initParticles(){
+  const pc = document.getElementById('particles');
+  if (!pc) return;
+  const isMobile = window.matchMedia('(max-width: 700px)').matches;
+  const count = isMobile ? 16 : 30;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'p';
+    const size = Math.random() * 3 + 1;
+    const gold = Math.random() > 0.5;
+    d.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${gold ? '#c9a84c' : '#ffffff'};
+      opacity:${Math.random()*0.5+0.1};
+      animation-duration:${Math.random()*10+8}s;
+      animation-delay:${Math.random()*8}s;
+    `;
+    frag.appendChild(d);
+  }
+  pc.appendChild(frag);
+})();
+
 /* ========================= Music ========================= */
 const musicBtn = document.getElementById('musicBtn');
 const bgMusic = document.getElementById('bg-music');
+const MUSIC_KEY = 'mdm1_music_choice';
+
+function fadeVolume(el, from, to, duration, onDone) {
+  const steps = 30, interval = duration / steps, delta = (to - from) / steps;
+  let current = from;
+  el.volume = Math.max(0, Math.min(1, from));
+  const timer = setInterval(() => {
+    current += delta;
+    el.volume = Math.max(0, Math.min(1, current));
+    if ((delta > 0 && current >= to) || (delta < 0 && current <= to)) {
+      clearInterval(timer);
+      if (onDone) onDone();
+    }
+  }, interval);
+}
+
+function playBgMusic(fadeMs) {
+  if (!bgMusic.paused) return;
+  bgMusic.muted = true;
+  bgMusic.play().then(() => {
+    bgMusic.muted = false;
+    bgMusic.volume = 0;
+    fadeVolume(bgMusic, 0, 0.45, fadeMs);
+    musicBtn.textContent = '🔊';
+    musicBtn.classList.add('playing');
+  }).catch(() => {});
+}
+
+if (sessionStorage.getItem(MUSIC_KEY) === 'yes') {
+  setTimeout(() => playBgMusic(1200), 300);
+}
+
 musicBtn.addEventListener('click', () => {
   if (bgMusic.paused) {
+    sessionStorage.setItem(MUSIC_KEY, 'yes');
+    bgMusic.muted = false;
     bgMusic.play().catch(() => {});
+    fadeVolume(bgMusic, 0, 0.45, 1000);
     musicBtn.textContent = '🔊';
     musicBtn.classList.add('playing');
   } else {
-    bgMusic.pause();
+    sessionStorage.setItem(MUSIC_KEY, 'no');
+    fadeVolume(bgMusic, bgMusic.volume, 0, 700, () => bgMusic.pause());
     musicBtn.textContent = '🔇';
     musicBtn.classList.remove('playing');
   }
 });
 
 /* ========================= Floating menu ========================= */
-const mdm1mBtn = document.getElementById('mdm1m-btn');
-const mdm1mPanel = document.getElementById('mdm1m-panel');
-mdm1mBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  mdm1mPanel.classList.toggle('is-open');
-});
-document.addEventListener('click', (e) => {
-  if (!mdm1mPanel.contains(e.target) && e.target !== mdm1mBtn) {
-    mdm1mPanel.classList.remove('is-open');
-  }
-});
+(function initFloatingMenu(){
+  const trigger = document.getElementById('mdm1m-btn');
+  const panel = document.getElementById('mdm1m-panel');
+  if (!trigger || !panel) return;
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.classList.toggle('is-open');
+  });
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+      panel.classList.remove('is-open');
+    }
+  });
+})();
 
 /* ========================= Chat rendering ========================= */
 function appendMsg(text, cls) {
@@ -1205,6 +1081,30 @@ function appendMsg(text, cls) {
   bubble.className = `msg ${cls}`;
   bubble.textContent = text;
   wrap.appendChild(bubble);
+
+  if (cls === 'bot') {
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'msg-copy-btn';
+    copyBtn.textContent = '📋 نسخ';
+    copyBtn.type = 'button';
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = '✓ اتنسخ';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = '📋 نسخ';
+          copyBtn.classList.remove('copied');
+        }, 1500);
+      }).catch(() => {
+        copyBtn.textContent = '❌ فشل';
+      });
+    });
+    actions.appendChild(copyBtn);
+    wrap.appendChild(actions);
+  }
+
   chatWindow.appendChild(wrap);
   chatWindow.scrollTop = chatWindow.scrollHeight;
   return bubble;
@@ -1225,6 +1125,7 @@ async function callProvider(providerId, apiKey, model, messages, temp) {
   if (p.authStyle === 'anthropic') {
     headers['x-api-key'] = apiKey;
     headers['anthropic-version'] = '2023-06-01';
+    headers['anthropic-dangerous-direct-browser-access'] = 'true';
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers,
@@ -1235,24 +1136,33 @@ async function callProvider(providerId, apiKey, model, messages, temp) {
         messages: messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }))
       })
     });
-    if (!res.ok) throw new Error('خطأ من Anthropic: ' + res.status + ' ' + (await res.text()).slice(0, 300));
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error('خطأ من Anthropic: ' + res.status + ' — ' + errBody.slice(0, 300));
+    }
     const data = await res.json();
     const textBlock = (data.content || []).find(b => b.type === 'text');
     return textBlock ? textBlock.text : '(لا يوجد رد نصي)';
   }
 
-  if (p.authStyle === 'apikey-header') {
-    headers['api-key'] = apiKey;
-  } else if (p.authStyle === 'bearer') {
+  if (p.authStyle === 'bearer') {
     headers['Authorization'] = 'Bearer ' + apiKey;
+  } else if (p.authStyle === 'apikey-header') {
+    headers['api-key'] = apiKey;
   }
+  // authStyle === 'none' -> لا حاجة لأي هيدر مفتاح (سيرفرات محلية)
 
   const url = p.apiBase.replace(/\/+$/, '') + '/chat/completions';
-  const res = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ model, temperature: temp, messages })
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model, temperature: temp, messages })
+    });
+  } catch (networkErr) {
+    throw new Error(`تعذّر الوصول إلى ${p.name} (${url}) — تأكد من الاتصال بالإنترنت أو من صحة الرابط. تفاصيل: ${networkErr.message}`);
+  }
 
   if (!res.ok) {
     const body = await res.text().catch(() => '');
@@ -1269,9 +1179,10 @@ async function handleSend() {
   const text = userInput.value.trim();
   if (!text) return;
 
+  const p = PROVIDERS_DB[activeProviderId];
   const apiKey = (providerKeys[activeProviderId] || '').trim();
   const model = providerModels[activeProviderId] || providerModelSelect.value;
-  const requiresKey = PROVIDERS_DB[activeProviderId] ? PROVIDERS_DB[activeProviderId].authStyle !== 'none' : true;
+  const requiresKey = p ? p.authStyle !== 'none' : true;
 
   if (!apiKey && requiresKey) {
     appendMsg('حط الـ API key الخاص بالموفّر ده في الإعدادات الأول.', 'error');
@@ -1284,6 +1195,7 @@ async function handleSend() {
 
   appendMsg(text, 'user');
   userInput.value = '';
+  userInput.style.height = 'auto';
   chatHistory.push({ role: 'user', content: text });
 
   sendBtn.disabled = true;
@@ -1308,6 +1220,10 @@ userInput.addEventListener('keydown', (e) => {
     e.preventDefault();
     handleSend();
   }
+});
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
 });
 </script>
 </body>
