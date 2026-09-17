@@ -54,7 +54,7 @@
   }
   .md1usd-link:hover { text-shadow: 0 0 20px rgba(240,192,96,0.8); }
   .chat-core-label {
-    font-size: 20px; font-weight: 900; color: var(--gold-bright);
+    font-size: 18px; font-weight: 900; color: var(--gold-bright);
     letter-spacing: 1px; text-transform: uppercase;
     font-family: 'Cinzel', serif;
     text-shadow: 0 0 14px rgba(201,168,76,0.55);
@@ -81,98 +81,86 @@
   .marquee-track a { color: var(--gold); text-decoration: underline; font-weight: 800; }
   @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
+  /* ===== Settings panel — compact, capped width, scrolls if tall ===== */
   #settingsPanel {
-    display: none; padding: 16px 18px; background: var(--panel);
-    border-bottom: 1px solid var(--border); gap: 16px; flex-direction: column;
+    display: none; padding: 14px 16px; background: var(--panel);
+    border-bottom: 1px solid var(--border); gap: 12px; flex-direction: column;
+    max-height: 60vh; overflow-y: auto;
   }
   #settingsPanel.open { display: flex; }
-  #settingsPanel .section-label {
-    font-size: 11px; color: var(--gold-dim); text-transform: uppercase;
-    letter-spacing: 1.5px; border-top: 1px solid var(--border); padding-top: 12px;
-    font-family: 'Cinzel', serif;
+  #settingsPanel .settings-inner {
+    max-width: 640px; margin: 0 auto; width: 100%;
+    display: flex; flex-direction: column; gap: 12px;
   }
-  #settingsPanel .section-label:first-child { border-top: none; padding-top: 0; }
   #settingsPanel label {
     font-size: 12px; color: rgba(232,213,163,0.65); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
   }
-  #settingsPanel label a { color: var(--gold); text-decoration: none; font-size: 11px; }
   #settingsPanel input, #settingsPanel select {
     background: var(--void); border: 1px solid var(--border); color: var(--light);
-    padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 100%; font-family: inherit;
+    padding: 7px 10px; border-radius: 6px; font-size: 13px; width: 100%; font-family: inherit;
   }
   #settingsPanel input:focus, #settingsPanel select:focus { outline: none; border-color: var(--gold); }
-  #settingsPanel .settings-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; width: 100%;
-  }
   .field { display: flex; flex-direction: column; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
   .key-input-wrap { position: relative; display: flex; align-items: center; }
-  .key-input-wrap input { padding-left: 36px; font-family: monospace; direction: ltr; text-align: left; }
+  .key-input-wrap input { padding-left: 34px; font-family: monospace; direction: ltr; text-align: left; }
   .key-toggle-eye {
-    position: absolute; left: 6px; background: none; border: none; color: rgba(232,213,163,0.5); cursor: pointer; font-size: 14px; padding: 4px;
+    position: absolute; left: 4px; background: none; border: none; color: rgba(232,213,163,0.6);
+    cursor: pointer; font-size: 15px; padding: 4px 6px; z-index: 2; line-height: 1;
   }
-  .key-len { font-size: 10px; color: rgba(232,213,163,0.5); margin-top: 4px; direction: ltr; text-align: left; }
+  .key-toggle-eye:hover { color: var(--gold-bright); }
+  .key-len { font-size: 10px; color: rgba(232,213,163,0.5); margin-top: 3px; direction: ltr; text-align: left; }
   .key-len.ok { color: #4ade80; }
   .security-warning {
-    font-size: 11.5px; color: var(--gold-bright); background: rgba(201,168,76,0.06);
-    border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; line-height: 1.5;
+    font-size: 11px; color: var(--gold-bright); background: rgba(201,168,76,0.06);
+    border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; line-height: 1.5;
   }
 
-  /* Provider select bar (replaces old two-tab system) */
-  .provider-select-row { display: flex; flex-direction: column; gap: 6px; }
-  .provider-select-row select#providerSelect {
-    font-weight: 700; font-size: 14px; padding: 10px 12px;
-  }
-  .provider-search {
-    font-size: 12px !important; padding: 7px 10px !important;
-  }
-  .provider-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .provider-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .provider-meta-row label { margin-bottom: 0; }
   .get-key-btn {
     background: linear-gradient(135deg, var(--gold), #8b6914); color: #000; border: none;
-    padding: 6px 14px; border-radius: 16px; font-size: 11.5px; font-weight: 900; cursor: pointer;
+    padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 900; cursor: pointer;
     text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
-    transition: transform 0.2s;
   }
-  .get-key-btn:hover { transform: translateY(-2px); }
-  .get-key-btn[disabled], .get-key-btn.disabled {
-    opacity: 0.4; cursor: not-allowed; pointer-events: none;
+  .get-key-btn.disabled { opacity: 0.35; pointer-events: none; }
+  .paid-badge {
+    background: rgba(201,168,76,0.18); color: var(--gold-bright);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 9.5px; font-weight: 900; padding: 1px 6px; margin-right: 5px;
+    display: inline-block; vertical-align: middle;
   }
+  .paid-badge.hidden { display: none; }
 
-  /* Custom provider fields */
   #customProviderFields {
-    display: none; flex-direction: column; gap: 12px;
-    border: 1px dashed var(--border); border-radius: 8px; padding: 12px;
+    display: none; flex-direction: column; gap: 10px;
+    border: 1px dashed var(--border); border-radius: 8px; padding: 10px;
     background: rgba(201,168,76,0.03);
   }
   #customProviderFields.show { display: flex; }
-  #customModelsList {
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .custom-model-row { display: flex; gap: 6px; }
-  .custom-model-row input { flex: 1; }
+  #customModelsList { display: flex; flex-direction: column; gap: 5px; }
+  .custom-model-row { display: flex; gap: 5px; }
+  .custom-model-row input { flex: 1; font-size: 12px; }
   .custom-model-row button {
     background: rgba(255,92,92,0.12); border: 1px solid var(--error); color: var(--error);
-    border-radius: 6px; width: 34px; cursor: pointer; font-size: 13px; flex-shrink: 0;
+    border-radius: 6px; width: 30px; cursor: pointer; font-size: 12px; flex-shrink: 0;
   }
   #addCustomModelBtn {
     align-self: flex-start; background: transparent; border: 1px dashed var(--gold-dim);
-    color: var(--gold-bright); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 12px;
+    color: var(--gold-bright); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 11.5px;
   }
 
   .slider-row { display: flex; align-items: center; gap: 10px; }
-  .slider-row input[type="range"] {
-    flex: 1; accent-color: var(--gold); height: 4px; padding: 0;
-  }
-  .slider-val {
-    font-size: 12px; color: var(--gold-bright); min-width: 34px; text-align: center;
-    font-family: monospace; direction: ltr;
-  }
+  .slider-row input[type="range"] { flex: 1; accent-color: var(--gold); height: 4px; padding: 0; }
+  .slider-val { font-size: 12px; color: var(--gold-bright); min-width: 30px; text-align: center; font-family: monospace; direction: ltr; }
 
   #saveSettings {
-    background: linear-gradient(135deg, var(--gold), #8b6914); border: none; color: #000; padding: 9px 24px;
-    border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 900; align-self: flex-start;
-    letter-spacing: 0.5px; transition: transform 0.2s;
+    background: linear-gradient(135deg, var(--gold), #8b6914); border: none; color: #000; padding: 8px 22px;
+    border-radius: 18px; cursor: pointer; font-size: 13px; font-weight: 900; align-self: flex-start;
+    letter-spacing: 0.5px;
   }
-  #saveSettings:hover { transform: translateY(-2px); }
 
   #chatWindow {
     flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px;
@@ -214,10 +202,9 @@
   @media (max-width: 600px) {
     header h1 { font-size: 13.5px; }
     .icon-btn { padding: 5px 10px; font-size: 11px; }
-    .chat-core-label { font-size: 15px; }
+    .chat-core-label { font-size: 14px; }
   }
 
-  /* ── PARTICLES (نجوم متطايرة خفيفة) ── */
   #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
   .p { position: absolute; border-radius: 50%; animation: drift linear infinite; }
   @keyframes drift {
@@ -226,18 +213,15 @@
     90%  { opacity: .6; }
     100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
   }
-  header, .marquee-bar, #settingsPanel, #chatWindow, #inputBar {
-    position: relative; z-index: 1;
-  }
+  header, .marquee-bar, #settingsPanel, #chatWindow, #inputBar { position: relative; z-index: 1; }
 
-  /* ── MUSIC BUTTON ── */
   #musicBtn.playing { border-color: rgba(201,168,76,0.6); animation: musicPulse 2s ease-in-out infinite; }
   @keyframes musicPulse {
     0%, 100% { box-shadow: 0 0 6px rgba(201,168,76,0.15); }
     50%       { box-shadow: 0 0 16px rgba(201,168,76,0.4); }
   }
 
-  /* ── FLOATING MENU (مطابقة لباقي صفحات الموقع) ── */
+  /* ── FLOATING MENU (restored) ── */
   #mdm1m-btn{
     position:fixed; bottom:5.5rem; right:1rem; z-index:998;
     width:44px; height:44px; border-radius:50%;
@@ -269,9 +253,7 @@
     font-size:.9rem; text-align:right; transition:background .2s, color .2s;
   }
   #mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
-  #mdm1m-panel .mdm1m-sep{
-    border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0;
-  }
+  #mdm1m-panel .mdm1m-sep{ border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0; }
 </style>
 </head>
 <body>
@@ -308,62 +290,62 @@
 </div>
 
 <div id="settingsPanel">
-  <div class="section-label">إعدادات النظام والذكاء الاصطناعي</div>
-  <div class="security-warning">⚠ المفتاح يتخزين محليًا في متصفحك (localStorage) فقط لضمان الخصوصية.</div>
+  <div class="settings-inner">
+    <div class="security-warning">⚠ المفتاح يتخزن محليًا في متصفحك (localStorage) فقط.</div>
 
-  <div class="provider-select-row">
-    <label>اختر الموفّر (Provider)</label>
-    <input type="text" id="providerSearch" class="provider-search" placeholder="🔍 ابحث عن موفّر...">
-    <select id="providerSelect"></select>
-  </div>
-
-  <div class="settings-grid">
     <div class="field">
-      <div class="provider-meta-row">
-        <label style="margin-bottom:0;">مفتاح API (API Key)</label>
-        <a id="getKeyBtn" class="get-key-btn" href="#" target="_blank" rel="noopener">🔑 احصل على مفتاح ↗</a>
+      <label>اختر الموفّر (Provider)</label>
+      <input type="text" id="providerSearch" placeholder="🔍 ابحث عن موفّر..." style="margin-bottom:6px;">
+      <select id="providerSelect"></select>
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <div class="provider-meta-row">
+          <label>مفتاح API <span id="paidBadge" class="paid-badge">برو</span></label>
+          <a id="getKeyBtn" class="get-key-btn" href="#" target="_blank" rel="noopener">🔑 احصل على مفتاح ↗</a>
+        </div>
+        <div class="key-input-wrap">
+          <button type="button" class="key-toggle-eye" id="keyToggleEye">👁</button>
+          <input type="password" id="providerKeyInput" placeholder="..." autocomplete="off" spellcheck="false">
+        </div>
+        <div class="key-len" id="providerKeyLen"></div>
       </div>
-      <div class="key-input-wrap">
-        <button type="button" class="key-toggle-eye" data-target="providerKeyInput">👁</button>
-        <input type="password" id="providerKeyInput" placeholder="..." autocomplete="off" spellcheck="false">
+
+      <div class="field">
+        <label>النموذج (Model)</label>
+        <select id="providerModelSelect"></select>
       </div>
-      <div class="key-len" id="providerKeyLen"></div>
     </div>
 
     <div class="field">
-      <label>اختر النموذج الذكي (AI Model)</label>
-      <select id="providerModelSelect"></select>
-    </div>
-
-    <div class="field" style="grid-column: 1 / -1;">
       <label>قوة النموذج (Temperature) <span id="tempLabel">0.7</span></label>
       <div class="slider-row">
         <input type="range" id="tempRange" min="0" max="2" step="0.1" value="0.7">
         <span class="slider-val" id="tempVal">0.7</span>
       </div>
     </div>
-  </div>
 
-  <!-- Custom provider fields, shown only when providerSelect === custom -->
-  <div id="customProviderFields">
-    <div class="settings-grid">
-      <div class="field">
-        <label>اسم الموفّر المخصص</label>
-        <input type="text" id="customProviderName" placeholder="مثال: My Local Server">
+    <div id="customProviderFields">
+      <div class="two-col">
+        <div class="field">
+          <label>اسم الموفّر المخصص</label>
+          <input type="text" id="customProviderName" placeholder="مثال: My Local Server">
+        </div>
+        <div class="field">
+          <label>Base URL</label>
+          <input type="text" id="customBaseUrl" placeholder="https://api.example.com/v1" style="direction:ltr; text-align:left;">
+        </div>
       </div>
       <div class="field">
-        <label>رابط الـ Base URL</label>
-        <input type="text" id="customBaseUrl" placeholder="https://api.example.com/v1" style="direction:ltr; text-align:left;">
+        <label>النماذج المتاحة</label>
+        <div id="customModelsList"></div>
+        <button type="button" id="addCustomModelBtn">+ إضافة نموذج</button>
       </div>
     </div>
-    <div class="field">
-      <label>النماذج المتاحة على هذا الموفّر (أضف واحد أو أكثر)</label>
-      <div id="customModelsList"></div>
-      <button type="button" id="addCustomModelBtn">+ إضافة نموذج</button>
-    </div>
-  </div>
 
-  <button id="saveSettings">حفظ الإعدادات</button>
+    <button id="saveSettings">حفظ الإعدادات</button>
+  </div>
 </div>
 
 <div id="chatWindow"></div>
@@ -374,18 +356,30 @@
   <button id="sendBtn">إرسال</button>
 </div>
 
+<!-- Floating menu (restored) -->
+<button id="mdm1m-btn" title="القائمة">☰</button>
+<div id="mdm1m-panel">
+  <a href="../index.html">🏠 الرئيسية</a>
+  <a href="https://md1usd.com" target="_blank">💎 MD1$</a>
+  <a href="../games.html">🎮 بوابة الألعاب</a>
+  <div class="mdm1m-sep"></div>
+  <a href="../community.html">🤝 المجتمع</a>
+  <a href="https://github.com/dido599999" target="_blank">💻 GitHub</a>
+</div>
+
 <script>
 /* =========================================================
    MD1 Chat — Providers Database
-   كل موفر: name / keyUrl (رابط الحصول على المفتاح مباشرة) /
-   keyPlaceholder / models[]
    ========================================================= */
 const PROVIDERS_DB = {
 
   opencode_zen: {
+    paid: true,
     name: "OpenCode Zen",
     keyUrl: "https://opencode.ai/auth",
     keyPlaceholder: "oc_...",
+    apiBase: "https://opencode.ai/zen/v1",
+    authStyle: "bearer",
     models: [
       "claude-fable-5-1","claude-fable-5","claude-opus-5","claude-opus-4-8","claude-opus-4-7","claude-opus-4-6","claude-opus-4-5",
       "claude-sonnet-5","claude-sonnet-4-6","claude-sonnet-4-5","claude-sonnet-4","claude-haiku-4-5",
@@ -407,387 +401,562 @@ const PROVIDERS_DB = {
   },
 
   opencode_go: {
+    paid: true,
     name: "OpenCode Go",
     keyUrl: "https://opencode.ai/auth",
     keyPlaceholder: "oc_...",
+    apiBase: "https://opencode.ai/zen/go/v1",
+    authStyle: "bearer",
     models: ["deepseek-v4-pro","kimi-k2.6","glm-5.2","qwen3.6-plus","minimax-m3","big-pickle"]
   },
 
   anthropic: {
+    paid: true,
     name: "Anthropic",
     keyUrl: "https://console.anthropic.com/settings/keys",
     keyPlaceholder: "sk-ant-...",
+    apiBase: "https://api.anthropic.com/v1",
+    authStyle: "anthropic",
     models: ["claude-opus-5","claude-sonnet-5","claude-haiku-4-5","claude-sonnet-4-6","claude-sonnet-4-5","claude-opus-4-5","claude-sonnet-4","claude-haiku-4-5-20251001"]
   },
 
   openai: {
+    paid: true,
     name: "OpenAI",
     keyUrl: "https://platform.openai.com/api-keys",
     keyPlaceholder: "sk-...",
+    apiBase: "https://api.openai.com/v1",
+    authStyle: "bearer",
     models: ["gpt-5.5","gpt-5.5-pro","gpt-5.4","gpt-5.4-mini","gpt-5.4-nano","gpt-5.2","gpt-5.1","gpt-5","gpt-5-codex","gpt-5-nano","gpt-4o","gpt-4o-mini","o3","o3-mini"]
   },
 
   google: {
+    paid: true,
     name: "Google (Gemini)",
     keyUrl: "https://aistudio.google.com/app/apikey",
     keyPlaceholder: "AIza...",
+    apiBase: "https://generativelanguage.googleapis.com/v1beta/openai",
+    authStyle: "bearer",
     models: ["gemini-3.1-pro","gemini-3-flash","gemini-3.5-flash","gemini-3.5-flash-lite","gemini-2.5-pro","gemini-2.5-flash","gemini-2.0-flash"]
   },
 
   google_vertex: {
+    paid: true,
     name: "Google Vertex AI",
     keyUrl: "https://console.cloud.google.com/vertex-ai/model-garden",
-    keyPlaceholder: "GOOGLE_APPLICATION_CREDENTIALS",
+    keyPlaceholder: "Access Token",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["gemini-3.1-pro","gemini-3-flash","claude-sonnet-5 (شريك)","llama-3.3-70b (شريك)"]
   },
 
   alibaba_qwen: {
+    paid: true,
     name: "Alibaba Cloud (Qwen)",
     keyUrl: "https://bailian.console.alibabacloud.com/",
     keyPlaceholder: "sk-...",
-    models: ["qwen3.6-plus","qwen3.5-plus","qwen3-max","qwen3-coder-480b","qwen2.5-72b-instruct","qwen-vl-max"]
+    apiBase: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    authStyle: "bearer",
+    models: ["qwen3.6-plus","qwen3.5-plus","qwen3-max","qwen3-coder-480b","qwen3-coder-plus","qwen2.5-72b-instruct","qwen2.5-32b-instruct","qwen2.5-14b-instruct","qwen2.5-7b-instruct","qwen-vl-max","qwen-vl-plus","qwen-turbo","qwen-plus","qwen-long"]
   },
 
   groq: {
+    paid: true,
     name: "Groq",
     keyUrl: "https://console.groq.com/keys",
     keyPlaceholder: "gsk_...",
+    apiBase: "https://api.groq.com/openai/v1",
+    authStyle: "bearer",
     models: ["groq/compound","groq/compound-mini","openai/gpt-oss-120b","openai/gpt-oss-20b","openai/gpt-oss-safeguard-20b","qwen/qwen3.8-27b","qwen/qwen3.6-27b","meta-llama/llama-prompt-guard-2-22m","meta-llama/llama-prompt-guard-2-86m","llama-3.3-70b-versatile","llama-3.1-8b-instant"]
   },
 
   openrouter: {
+    paid: true,
     name: "OpenRouter",
     keyUrl: "https://openrouter.ai/settings/keys",
     keyPlaceholder: "sk-or-...",
+    apiBase: "https://openrouter.ai/api/v1",
+    authStyle: "bearer",
     models: ["anthropic/claude-sonnet-5","openai/gpt-5.5","google/gemini-3.1-pro","moonshotai/kimi-k2.6","deepseek/deepseek-v4-pro","meta-llama/llama-3.3-70b","qwen/qwen3.6-plus","mistralai/mistral-large-3","x-ai/grok-4.6"]
   },
 
   deepseek: {
+    paid: true,
     name: "DeepSeek",
     keyUrl: "https://platform.deepseek.com/api_keys",
     keyPlaceholder: "sk-...",
+    apiBase: "https://api.deepseek.com/v1",
+    authStyle: "bearer",
     models: ["deepseek-v4-pro","deepseek-v4-flash","deepseek-chat","deepseek-reasoner"]
   },
 
   xai: {
+    paid: true,
     name: "xAI (Grok)",
     keyUrl: "https://console.x.ai/",
     keyPlaceholder: "xai-...",
+    apiBase: "https://api.x.ai/v1",
+    authStyle: "bearer",
     models: ["grok-4.6","grok-4.5","grok-build-0.1","grok-beta","grok-2"]
   },
 
   moonshot: {
+    paid: true,
     name: "Moonshot AI (Kimi)",
     keyUrl: "https://platform.moonshot.ai/console/api-keys",
     keyPlaceholder: "sk-...",
+    apiBase: "https://api.moonshot.ai/v1",
+    authStyle: "bearer",
     models: ["kimi-k3","kimi-k2.7-code","kimi-k2.6","kimi-k2.5","kimi-k2"]
   },
 
   zhipu_zai: {
+    paid: true,
     name: "Z.AI (GLM)",
     keyUrl: "https://z.ai/manage-apikey/apikey-list",
     keyPlaceholder: "zai-...",
+    apiBase: "https://api.z.ai/api/paas/v4",
+    authStyle: "bearer",
     models: ["glm-5.3","glm-5.3-flash","glm-5.2","glm-5.1","glm-5","glm-4.7","glm-4.6"]
   },
 
   minimax: {
+    paid: true,
     name: "MiniMax",
     keyUrl: "https://platform.minimax.io/user-center/basic-information/interface-key",
     keyPlaceholder: "eyJhbGciOi...",
+    apiBase: "https://api.minimax.io/v1",
+    authStyle: "bearer",
     models: ["minimax-m3","minimax-m2.7","minimax-m2.5","minimax-m2.1","abab6.5s-chat"]
   },
 
   mistral: {
+    paid: true,
     name: "Mistral AI",
     keyUrl: "https://console.mistral.ai/api-keys",
     keyPlaceholder: "...",
+    apiBase: "https://api.mistral.ai/v1",
+    authStyle: "bearer",
     models: ["mistral-large-3","mistral-large-2","mistral-small-3","codestral-2","pixtral-large"]
   },
 
   cerebras: {
+    paid: true,
     name: "Cerebras",
-    keyUrl: "https://cloud.cerebras.ai/platform/",
+    keyUrl: "https://inference.cerebras.ai/",
     keyPlaceholder: "csk-...",
+    apiBase: "https://api.cerebras.ai/v1",
+    authStyle: "bearer",
     models: ["qwen-3-coder-480b","llama-3.3-70b","llama3.1-8b"]
   },
 
+  azure_cognitive: {
+    paid: true,
+    name: "Azure Cognitive Services",
+    keyUrl: "https://portal.azure.com/",
+    keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "apikey-header",
+    models: ["gpt-5-mini","gpt-4o","gpt-4o-mini"]
+  },
+
   fireworks: {
+    paid: true,
     name: "Fireworks AI",
     keyUrl: "https://app.fireworks.ai/settings/users/api-keys",
     keyPlaceholder: "fw_...",
+    apiBase: "https://api.fireworks.ai/inference/v1",
+    authStyle: "bearer",
     models: ["kimi-k2-instruct","llama-v3p3-70b-instruct","qwen2p5-72b-instruct","deepseek-v3"]
   },
 
   together: {
+    paid: true,
     name: "Together AI",
     keyUrl: "https://api.together.ai/settings/api-keys",
     keyPlaceholder: "...",
+    apiBase: "https://api.together.xyz/v1",
+    authStyle: "bearer",
     models: ["kimi-k2-instruct","meta-llama/Llama-3.3-70B-Instruct-Turbo","Qwen/Qwen2.5-72B-Instruct-Turbo","deepseek-ai/DeepSeek-V3"]
   },
 
   deepinfra: {
+    paid: true,
     name: "Deep Infra",
     keyUrl: "https://deepinfra.com/dash/api_keys",
     keyPlaceholder: "...",
+    apiBase: "https://api.deepinfra.com/v1/openai",
+    authStyle: "bearer",
     models: ["meta-llama/Meta-Llama-3.3-70B-Instruct","Qwen/Qwen2.5-72B-Instruct","deepseek-ai/DeepSeek-V3"]
   },
 
   huggingface: {
+    paid: true,
     name: "Hugging Face",
     keyUrl: "https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained",
     keyPlaceholder: "hf_...",
-    models: ["moonshotai/Kimi-K2-Instruct","zai-org/GLM-4.6","Qwen/Qwen3-Coder-480B","meta-llama/Llama-3.3-70B-Instruct"]
+    apiBase: "https://router.huggingface.co/v1",
+    authStyle: "bearer",
+    models: ["moonshotai/Kimi-K2-Instruct","zai-org/GLM-4.6","zai-org/GLM-4.7","Qwen/Qwen3-Coder-480B","Qwen/Qwen3-235B-A22B","meta-llama/Llama-3.3-70B-Instruct","meta-llama/Llama-3.1-405B-Instruct","deepseek-ai/DeepSeek-V3","deepseek-ai/DeepSeek-R1","mistralai/Mistral-Large-Instruct-2411","google/gemma-3-27b-it","microsoft/phi-4","NousResearch/Hermes-4-70B"]
   },
 
   nvidia: {
+    paid: true,
     name: "NVIDIA (build.nvidia.com)",
     keyUrl: "https://build.nvidia.com/",
     keyPlaceholder: "nvapi-...",
+    apiBase: "https://integrate.api.nvidia.com/v1",
+    authStyle: "bearer",
     models: ["nemotron-3-super-120b-a12b","nemotron-3-ultra","llama-3.3-nemotron-70b"]
   },
 
   nebius: {
+    paid: true,
     name: "Nebius Token Factory",
     keyUrl: "https://tokenfactory.nebius.com/",
     keyPlaceholder: "...",
+    apiBase: "https://api.studio.nebius.com/v1",
+    authStyle: "bearer",
     models: ["Qwen/Qwen3-Coder-480B","moonshotai/Kimi-K2-Instruct","deepseek-ai/DeepSeek-V3"]
   },
 
   ionet: {
+    paid: true,
     name: "IO.NET",
     keyUrl: "https://ai.io.net/",
     keyPlaceholder: "...",
-    models: ["meta-llama/Llama-3.3-70B-Instruct","Qwen2.5-72B-Instruct","deepseek-ai/DeepSeek-R1"]
+    apiBase: "https://api.intelligence.io.solutions/api/v1",
+    authStyle: "bearer",
+    models: ["meta-llama/Llama-3.3-70B-Instruct","meta-llama/Llama-3.1-405B-Instruct","meta-llama/Llama-3.1-70B-Instruct","Qwen2.5-72B-Instruct","Qwen/Qwen2.5-Coder-32B-Instruct","deepseek-ai/DeepSeek-R1","deepseek-ai/DeepSeek-R1-Distill-Llama-70B","mistralai/Mistral-Large-Instruct-2411","microsoft/phi-4","google/gemma-3-27b-it","THUDM/glm-4-9b-chat","NousResearch/Hermes-3-Llama-3.1-70B","CohereForAI/aya-expanse-32b","BAAI/bge-multilingual-gemma2","neuralmagic/Llama-3.1-Nemotron-70B","Qwen/QwQ-32B","openbmb/MiniCPM3-4B","ibm-granite/granite-3.1-8b-instruct"]
   },
 
   gmi_cloud: {
+    paid: true,
     name: "GMI Cloud",
     keyUrl: "https://console.gmicloud.ai/",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["deepseek-v3","llama-3.3-70b","qwen2.5-72b"]
   },
 
   baseten: {
+    paid: true,
     name: "Baseten",
     keyUrl: "https://app.baseten.co/settings/api-keys",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["llama-3.3-70b","deepseek-v3","qwen2.5-72b"]
   },
 
   cortecs: {
+    paid: true,
     name: "Cortecs",
     keyUrl: "https://cortecs.ai/",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["kimi-k2-instruct","llama-3.3-70b"]
   },
 
   scaleway: {
+    paid: true,
     name: "Scaleway",
     keyUrl: "https://console.scaleway.com/iam/api-keys",
     keyPlaceholder: "...",
+    apiBase: "https://api.scaleway.ai/v1",
+    authStyle: "bearer",
     models: ["devstral-2-123b-instruct-2512","gpt-oss-120b","llama-3.3-70b-instruct"]
   },
 
   ovhcloud: {
+    paid: true,
     name: "OVHcloud AI Endpoints",
     keyUrl: "https://ovh.com/manager",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["gpt-oss-120b","llama-3.3-70b-instruct","mistral-nemo-instruct"]
   },
 
   scx_ai: {
+    paid: true,
     name: "SCX.ai",
     keyUrl: "https://platform.scx.ai",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["MiniMax-M2.7","GLM-5.2"]
   },
 
   digitalocean: {
+    paid: true,
     name: "DigitalOcean",
     keyUrl: "https://cloud.digitalocean.com/",
     keyPlaceholder: "...",
+    apiBase: "https://inference.do-ai.run/v1",
+    authStyle: "bearer",
     models: ["gpt-oss-120b","llama-3.3-70b","qwen2.5-72b","deepseek-v3"]
   },
 
   llmgateway: {
+    paid: true,
     name: "LLM Gateway",
     keyUrl: "https://llmgateway.io/dashboard",
     keyPlaceholder: "...",
+    apiBase: "https://api.llmgateway.io/v1",
+    authStyle: "bearer",
     models: ["glm-4.7","gpt-5.2","gemini-2.5-pro","claude-3-5-sonnet-20241022"]
   },
 
   zenmux: {
+    paid: true,
     name: "ZenMux",
     keyUrl: "https://zenmux.ai/settings/keys",
     keyPlaceholder: "...",
+    apiBase: "https://zenmux.ai/api/v1",
+    authStyle: "bearer",
     models: ["anthropic/claude-sonnet-5","openai/gpt-5.5","google/gemini-3.1-pro"]
   },
 
   eden_ai: {
+    paid: true,
     name: "Eden AI",
     keyUrl: "https://app.edenai.run/user/register",
     keyPlaceholder: "...",
+    apiBase: "https://api.edenai.run/v3",
+    authStyle: "bearer",
     models: ["anthropic/claude-sonnet-5","openai/gpt-5.5","mistral/mistral-large-3"]
   },
 
   helicone: {
+    paid: true,
     name: "Helicone",
     keyUrl: "https://helicone.ai/",
     keyPlaceholder: "...",
+    apiBase: "https://ai-gateway.helicone.ai",
+    authStyle: "bearer",
     models: ["gpt-4o","claude-sonnet-4-20250514"]
   },
 
   vercel_gateway: {
+    paid: true,
     name: "Vercel AI Gateway",
     keyUrl: "https://vercel.com/",
     keyPlaceholder: "...",
+    apiBase: "https://ai-gateway.vercel.sh/v1",
+    authStyle: "bearer",
     models: ["anthropic/claude-sonnet-4","openai/gpt-5.5","google/gemini-3.1-pro","xai/grok-4.6"]
   },
 
   cloudflare_gateway: {
+    paid: true,
     name: "Cloudflare AI Gateway",
     keyUrl: "https://dash.cloudflare.com/",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["openai/gpt-4o","anthropic/claude-sonnet-4"]
   },
 
   cloudflare_workers_ai: {
+    paid: true,
     name: "Cloudflare Workers AI",
     keyUrl: "https://dash.cloudflare.com/",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["@cf/meta/llama-3.3-70b-instruct","@cf/qwen/qwen2.5-coder-32b-instruct"]
   },
 
   azure_openai: {
+    paid: true,
     name: "Azure OpenAI",
     keyUrl: "https://portal.azure.com/",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "apikey-header",
     models: ["gpt-5-mini","gpt-4o","gpt-4o-mini"]
   },
 
   amazon_bedrock: {
+    paid: true,
     name: "Amazon Bedrock",
     keyUrl: "https://console.aws.amazon.com/bedrock/",
-    keyPlaceholder: "AWS keys / bearer token",
+    keyPlaceholder: "Bearer Token",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["anthropic.claude-sonnet-4-5","anthropic.claude-opus-4-5","meta.llama-3.3-70b"]
   },
 
   sap_ai_core: {
+    paid: true,
     name: "SAP AI Core",
     keyUrl: "https://account.hana.ondemand.com/",
     keyPlaceholder: "service key JSON",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["gpt-5","claude-sonnet-5","gemini-3.1-pro"]
   },
 
   snowflake_cortex: {
+    paid: true,
     name: "Snowflake Cortex",
     keyUrl: "https://signup.snowflake.com/",
     keyPlaceholder: "PAT / bearer token",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["claude-sonnet-4-6","claude-haiku-4-5","gpt-5"]
   },
 
   stackit: {
+    paid: true,
     name: "STACKIT",
     keyUrl: "https://portal.stackit.cloud",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["Qwen3-VL-235B","Llama-3.3-70B"]
   },
 
   poolside: {
+    paid: true,
     name: "Poolside",
     keyUrl: "https://platform.poolside.ai",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["poolside-standard","poolside-pro"]
   },
 
   venice_ai: {
+    paid: true,
     name: "Venice AI",
     keyUrl: "https://venice.ai/",
     keyPlaceholder: "...",
+    apiBase: "https://api.venice.ai/api/v1",
+    authStyle: "bearer",
     models: ["llama-3.3-70b","qwen2.5-coder-32b"]
   },
 
   aa_302: {
+    paid: true,
     name: "302.AI",
     keyUrl: "https://302.ai/",
     keyPlaceholder: "...",
+    apiBase: "https://api.302.ai/v1",
+    authStyle: "bearer",
     models: ["gpt-5.5","claude-sonnet-5","gemini-3.1-pro"]
   },
 
   frogbot: {
+    paid: true,
     name: "FrogBot",
     keyUrl: "https://app.frogbot.ai/signup",
     keyPlaceholder: "...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["frogbot-default"]
   },
 
   modal: {
+    paid: true,
     name: "Modal",
     keyUrl: "https://modal.com/endpoints",
     keyPlaceholder: "wk-<id>.ws-<secret>",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["custom-endpoint"]
   },
 
   ollama_cloud: {
+    paid: true,
     name: "Ollama Cloud",
     keyUrl: "https://ollama.com/settings/keys",
     keyPlaceholder: "...",
-    models: ["gpt-oss:20b-cloud","gpt-oss:120b-cloud","qwen3-coder:480b-cloud"]
+    apiBase: "https://ollama.com/v1",
+    authStyle: "bearer",
+    models: ["gpt-oss:20b-cloud","gpt-oss:120b-cloud","qwen3-coder:480b-cloud","deepseek-v3.1:671b-cloud","kimi-k2:1t-cloud"]
   },
 
   ollama_local: {
+    paid: false,
     name: "Ollama (محلي)",
     keyUrl: "https://ollama.com/",
     keyPlaceholder: "لا حاجة لمفتاح — محلي",
-    models: ["llama3.2","qwen2.5-coder","deepseek-r1"]
+    apiBase: "http://localhost:11434/v1",
+    authStyle: "none",
+    models: ["llama3.2","llama3.2:1b","llama3.1:8b","llama3.1:70b","qwen2.5-coder","qwen2.5-coder:32b","qwen2.5:72b","deepseek-r1","deepseek-r1:32b","deepseek-r1:70b","mistral","mistral-nemo","phi4","gemma2","gemma2:27b","codellama","codegemma","starcoder2"]
   },
 
   lmstudio_local: {
+    paid: false,
     name: "LM Studio (محلي)",
     keyUrl: "https://lmstudio.ai/",
     keyPlaceholder: "لا حاجة لمفتاح — محلي",
-    models: ["google/gemma-3n-e4b","local-model"]
+    apiBase: "http://127.0.0.1:1234/v1",
+    authStyle: "none",
+    models: ["google/gemma-3n-e4b","qwen2.5-coder-32b-instruct","llama-3.3-70b-instruct","deepseek-r1-distill-qwen-32b","local-model"]
   },
 
   llamacpp_local: {
+    paid: false,
     name: "llama.cpp (محلي)",
     keyUrl: "https://github.com/ggml-org/llama.cpp",
     keyPlaceholder: "لا حاجة لمفتاح — محلي",
-    models: ["qwen3-coder:a3b","local-model"]
+    apiBase: "http://127.0.0.1:8080/v1",
+    authStyle: "none",
+    models: ["qwen3-coder:a3b","llama-3.3-70b-gguf","local-model"]
   },
 
   atomic_chat_local: {
+    paid: false,
     name: "Atomic Chat (محلي)",
     keyUrl: "https://atomic.chat",
     keyPlaceholder: "لا حاجة لمفتاح — محلي",
+    apiBase: "http://127.0.0.1:1337/v1",
+    authStyle: "none",
     models: ["local-model"]
   },
 
   chatgpt_plus: {
+    paid: false,
     name: "ChatGPT Plus/Pro (OAuth)",
     keyUrl: "https://chatgpt.com/pricing",
-    keyPlaceholder: "تسجيل الدخول عبر OAuth",
+    keyPlaceholder: "OAuth Token",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["gpt-5.5","gpt-5.4","gpt-5-codex"]
   },
 
   github_copilot: {
+    paid: true,
     name: "GitHub Copilot",
     keyUrl: "https://github.com/features/copilot/plans",
-    keyPlaceholder: "تسجيل الدخول عبر الجهاز",
+    keyPlaceholder: "Device OAuth Token",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["gpt-5","claude-sonnet-4-5"]
   },
 
   gitlab_duo: {
+    paid: true,
     name: "GitLab Duo",
     keyUrl: "https://gitlab.com/-/user_settings/personal_access_tokens",
     keyPlaceholder: "glpat-...",
+    apiBase: "",
+    authStyle: "bearer",
     models: ["duo-chat-haiku-4-5","duo-chat-sonnet-4-5","duo-chat-opus-4-5"]
   },
 
   custom: {
+    paid: false,
     name: "🔧 موفر مخصص / سيرفر خاص",
     keyUrl: "",
     keyPlaceholder: "مفتاح API (إن وجد)",
+    apiBase: "",
+    authStyle: "bearer",
     models: []
   }
 };
@@ -798,14 +967,16 @@ const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
-const saveSettings = document.getElementById('saveSettings');
+const saveSettingsBtn = document.getElementById('saveSettings');
 const statusLine = document.getElementById('statusLine');
 
 const providerSelect = document.getElementById('providerSelect');
 const providerSearch = document.getElementById('providerSearch');
 const providerKeyInput = document.getElementById('providerKeyInput');
 const providerKeyLen = document.getElementById('providerKeyLen');
+const keyToggleEye = document.getElementById('keyToggleEye');
 const getKeyBtn = document.getElementById('getKeyBtn');
+const paidBadge = document.getElementById('paidBadge');
 const providerModelSelect = document.getElementById('providerModelSelect');
 const tempRange = document.getElementById('tempRange');
 const tempVal = document.getElementById('tempVal');
@@ -817,14 +988,15 @@ const customBaseUrl = document.getElementById('customBaseUrl');
 const customModelsList = document.getElementById('customModelsList');
 const addCustomModelBtn = document.getElementById('addCustomModelBtn');
 
-/* ========================= State (persisted) ========================= */
+/* ========================= State ========================= */
 let activeProviderId = localStorage.getItem('md1_active_provider') || 'opencode_zen';
-let providerKeys = JSON.parse(localStorage.getItem('md1_provider_keys') || '{}');       // { providerId: key }
-let providerModels = JSON.parse(localStorage.getItem('md1_provider_models') || '{}');   // { providerId: selectedModel }
+let providerKeys = JSON.parse(localStorage.getItem('md1_provider_keys') || '{}');
+let providerModels = JSON.parse(localStorage.getItem('md1_provider_models') || '{}');
 let temperature = parseFloat(localStorage.getItem('md1_temperature') || '0.7');
 let customProviderData = JSON.parse(localStorage.getItem('md1_custom_provider') || '{"name":"","baseUrl":"","models":[]}');
+let chatHistory = [];
 
-/* ========================= Populate provider select ========================= */
+/* ========================= Provider / model selects ========================= */
 function populateProviderSelect(filter) {
   const q = (filter || '').trim().toLowerCase();
   providerSelect.innerHTML = '';
@@ -836,7 +1008,6 @@ function populateProviderSelect(filter) {
     opt.textContent = p.name;
     providerSelect.appendChild(opt);
   });
-  // ensure active provider still selectable even if filtered out
   if (![...providerSelect.options].some(o => o.value === activeProviderId)) {
     const p = PROVIDERS_DB[activeProviderId];
     if (p) {
@@ -851,12 +1022,7 @@ function populateProviderSelect(filter) {
 
 function populateModelSelect(providerId) {
   providerModelSelect.innerHTML = '';
-  let models = [];
-  if (providerId === 'custom') {
-    models = customProviderData.models || [];
-  } else {
-    models = (PROVIDERS_DB[providerId] && PROVIDERS_DB[providerId].models) || [];
-  }
+  let models = providerId === 'custom' ? (customProviderData.models || []) : ((PROVIDERS_DB[providerId] && PROVIDERS_DB[providerId].models) || []);
   if (models.length === 0) {
     const opt = document.createElement('option');
     opt.value = '';
@@ -878,8 +1044,11 @@ function updateKeyFieldsForProvider(providerId) {
   const p = PROVIDERS_DB[providerId];
   if (!p) return;
   providerKeyInput.value = providerKeys[providerId] || '';
+  providerKeyInput.type = 'password';
+  keyToggleEye.textContent = '👁';
   providerKeyInput.placeholder = p.keyPlaceholder || '...';
   updateKeyLen();
+  paidBadge.classList.toggle('hidden', !p.paid);
 
   if (providerId === 'custom') {
     getKeyBtn.classList.add('disabled');
@@ -892,7 +1061,7 @@ function updateKeyFieldsForProvider(providerId) {
     customProviderFields.classList.remove('show');
     if (p.keyUrl) {
       getKeyBtn.classList.remove('disabled');
-      getKeyBtn.href = p.keyUrl;
+      getKeyBtn.setAttribute('href', p.keyUrl);
     } else {
       getKeyBtn.classList.add('disabled');
       getKeyBtn.removeAttribute('href');
@@ -918,9 +1087,7 @@ function renderCustomModelsList() {
     input.value = m;
     input.style.direction = 'ltr';
     input.style.textAlign = 'left';
-    input.addEventListener('input', () => {
-      customProviderData.models[idx] = input.value.trim();
-    });
+    input.addEventListener('input', () => { customProviderData.models[idx] = input.value.trim(); });
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.textContent = '✕';
@@ -941,6 +1108,13 @@ addCustomModelBtn.addEventListener('click', () => {
   renderCustomModelsList();
 });
 
+/* ========================= Eye toggle (fixed) ========================= */
+keyToggleEye.addEventListener('click', () => {
+  const isHidden = providerKeyInput.type === 'password';
+  providerKeyInput.type = isHidden ? 'text' : 'password';
+  keyToggleEye.textContent = isHidden ? '🙈' : '👁';
+});
+
 /* ========================= Events ========================= */
 providerSearch.addEventListener('input', () => populateProviderSelect(providerSearch.value));
 
@@ -952,25 +1126,14 @@ providerSelect.addEventListener('change', () => {
 
 providerKeyInput.addEventListener('input', updateKeyLen);
 
-document.querySelectorAll('.key-toggle-eye').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = document.getElementById(btn.dataset.target);
-    target.type = target.type === 'password' ? 'text' : 'password';
-    btn.textContent = target.type === 'password' ? '👁' : '🙈';
-  });
-});
-
 tempRange.addEventListener('input', () => {
   tempVal.textContent = tempRange.value;
   tempLabel.textContent = tempRange.value;
 });
 
-settingsBtn.addEventListener('click', () => {
-  settingsPanel.classList.toggle('open');
-});
+settingsBtn.addEventListener('click', () => settingsPanel.classList.toggle('open'));
 
-saveSettings.addEventListener('click', () => {
-  // persist current provider's key + model
+saveSettingsBtn.addEventListener('click', () => {
   providerKeys[activeProviderId] = providerKeyInput.value.trim();
   providerModels[activeProviderId] = providerModelSelect.value;
   temperature = parseFloat(tempRange.value);
@@ -993,16 +1156,8 @@ saveSettings.addEventListener('click', () => {
 });
 
 function updateStatusLine() {
-  const p = activeProviderId === 'custom'
-    ? (customProviderData.name || 'موفّر مخصص')
-    : (PROVIDERS_DB[activeProviderId] ? PROVIDERS_DB[activeProviderId].name : activeProviderId);
-  const key = providerKeys[activeProviderId];
-  const model = providerModels[activeProviderId] || '';
-  if (key) {
-    statusLine.textContent = `متصل — ${p}${model ? ' · ' + model : ''}`;
-  } else {
-    statusLine.textContent = 'مش متصل — افتح الإعدادات وحط الـ API key';
-  }
+  const hasKey = !!(providerKeys[activeProviderId] && providerKeys[activeProviderId].trim());
+  statusLine.textContent = hasKey ? 'جاهز — المفتاح محفوظ' : 'مش متصل — افتح الإعدادات وحط الـ API key';
 }
 
 /* ========================= Init ========================= */
@@ -1014,7 +1169,7 @@ tempVal.textContent = temperature;
 tempLabel.textContent = temperature;
 updateStatusLine();
 
-/* ========================= Music button ========================= */
+/* ========================= Music ========================= */
 const musicBtn = document.getElementById('musicBtn');
 const bgMusic = document.getElementById('bg-music');
 musicBtn.addEventListener('click', () => {
@@ -1029,7 +1184,20 @@ musicBtn.addEventListener('click', () => {
   }
 });
 
-/* ========================= Chat send (placeholder wiring) ========================= */
+/* ========================= Floating menu ========================= */
+const mdm1mBtn = document.getElementById('mdm1m-btn');
+const mdm1mPanel = document.getElementById('mdm1m-panel');
+mdm1mBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  mdm1mPanel.classList.toggle('is-open');
+});
+document.addEventListener('click', (e) => {
+  if (!mdm1mPanel.contains(e.target) && e.target !== mdm1mBtn) {
+    mdm1mPanel.classList.remove('is-open');
+  }
+});
+
+/* ========================= Chat rendering ========================= */
 function appendMsg(text, cls) {
   const wrap = document.createElement('div');
   wrap.className = `msg-wrap ${cls}`;
@@ -1039,27 +1207,106 @@ function appendMsg(text, cls) {
   wrap.appendChild(bubble);
   chatWindow.appendChild(wrap);
   chatWindow.scrollTop = chatWindow.scrollHeight;
+  return bubble;
 }
 
-sendBtn.addEventListener('click', () => {
+/* ========================= Real API call ========================= */
+async function callProvider(providerId, apiKey, model, messages, temp) {
+  const p = providerId === 'custom'
+    ? { apiBase: customProviderData.baseUrl, authStyle: 'bearer', name: customProviderData.name || 'Custom' }
+    : PROVIDERS_DB[providerId];
+
+  if (!p || !p.apiBase) {
+    throw new Error('لا يوجد Base URL معروف لهذا الموفّر — أضفه في إعدادات الموفّر المخصص لو محتاج توصيل يدوي.');
+  }
+
+  const headers = { 'Content-Type': 'application/json' };
+
+  if (p.authStyle === 'anthropic') {
+    headers['x-api-key'] = apiKey;
+    headers['anthropic-version'] = '2023-06-01';
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model,
+        max_tokens: 2048,
+        temperature: temp,
+        messages: messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }))
+      })
+    });
+    if (!res.ok) throw new Error('خطأ من Anthropic: ' + res.status + ' ' + (await res.text()).slice(0, 300));
+    const data = await res.json();
+    const textBlock = (data.content || []).find(b => b.type === 'text');
+    return textBlock ? textBlock.text : '(لا يوجد رد نصي)';
+  }
+
+  if (p.authStyle === 'apikey-header') {
+    headers['api-key'] = apiKey;
+  } else if (p.authStyle === 'bearer') {
+    headers['Authorization'] = 'Bearer ' + apiKey;
+  }
+
+  const url = p.apiBase.replace(/\/+$/, '') + '/chat/completions';
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ model, temperature: temp, messages })
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`خطأ ${res.status} من ${p.name}: ${body.slice(0, 300)}`);
+  }
+
+  const data = await res.json();
+  const choice = data.choices && data.choices[0];
+  return (choice && choice.message && choice.message.content) || '(لا يوجد رد نصي)';
+}
+
+/* ========================= Send flow ========================= */
+async function handleSend() {
   const text = userInput.value.trim();
   if (!text) return;
-  appendMsg(text, 'user');
-  userInput.value = '';
 
-  const key = providerKeys[activeProviderId];
-  if (!key) {
-    appendMsg('من فضلك افتح الإعدادات وحط الـ API key الخاص بالموفّر المختار أولاً.', 'error');
+  const apiKey = (providerKeys[activeProviderId] || '').trim();
+  const model = providerModels[activeProviderId] || providerModelSelect.value;
+  const requiresKey = PROVIDERS_DB[activeProviderId] ? PROVIDERS_DB[activeProviderId].authStyle !== 'none' : true;
+
+  if (!apiKey && requiresKey) {
+    appendMsg('حط الـ API key الخاص بالموفّر ده في الإعدادات الأول.', 'error');
     return;
   }
-  appendMsg('...جاري التفكير', 'loading');
-  // NOTE: actual API call wiring per-provider (base URL / headers) goes here.
-});
+  if (!model) {
+    appendMsg('اختر نموذج من الإعدادات الأول.', 'error');
+    return;
+  }
 
+  appendMsg(text, 'user');
+  userInput.value = '';
+  chatHistory.push({ role: 'user', content: text });
+
+  sendBtn.disabled = true;
+  const loadingBubble = appendMsg('...جاري الاتصال', 'loading');
+
+  try {
+    const reply = await callProvider(activeProviderId, apiKey, model, chatHistory, temperature);
+    loadingBubble.parentElement.remove();
+    appendMsg(reply, 'bot');
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch (err) {
+    loadingBubble.parentElement.remove();
+    appendMsg((err && err.message) || 'حصل خطأ غير متوقع.', 'error');
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener('click', handleSend);
 userInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    sendBtn.click();
+    handleSend();
   }
 });
 </script>
