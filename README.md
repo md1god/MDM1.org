@@ -59,3 +59,7 @@ mdm1.org/
 ```
 index → join → whitepaper → tokenomics → sharia → hub → community
 ```
+
+## MDM1 Hub Services
+
+`pages/hub-services.html` is a standalone public page for the open-core service marketplace. It presents free listings and lawful revenue paths such as implementation, hosting, customization, sponsorship, and featured placements. See `docs/MDM1-HUB-GRANTS-MARKETING.md` for the launch and grants draft.
