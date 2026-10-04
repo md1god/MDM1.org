@@ -63,3 +63,14 @@ index → join → whitepaper → tokenomics → sharia → hub → community
 ## MDM1 Hub Services
 
 `pages/hub-services.html` is a standalone public page for the open-core service marketplace. It presents free listings and lawful revenue paths such as implementation, hosting, customization, sponsorship, and featured placements. See `docs/MDM1-HUB-GRANTS-MARKETING.md` for the launch and grants draft.
+
+## روابط رسمية واكتشاف المشروع
+
+- الموقع الرسمي: https://mdm1.org/
+- MD1USD: https://md1usd.com/
+- الورقة البيضاء: https://mdm1.org/whitepaper.html
+- خارطة الطريق: https://mdm1.org/pages/roadmap.html
+- خريطة الموقع: https://mdm1.org/sitemap.xml
+
+### كلمات مفتاحية
+MDM1، MD1USD، عملة مستقرة، stablecoin، blockchain، DeFi، Arabic crypto, open source.
