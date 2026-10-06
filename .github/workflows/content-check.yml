@@ -1,0 +1,26 @@
+name: Daily Content and Site Check
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify source content
+        run: |
+          set -e
+          for f in index.html robots.txt sitemap.xml llms.txt feed.xml; do
+            test -s "$f" || { echo "Missing or empty: $f"; exit 1; }
+          done
+          test "$(find pages -maxdepth 1 -name '*.html' | wc -l)" -ge 10
+      - name: Check live pages
+        run: |
+          set -e
+          for url in https://mdm1.org/ https://mdm1.org/whitepaper.html https://mdm1.org/feed.xml; do
+            code=$(curl -ksS -L -o /dev/null -w '%{http_code}' --max-time 20 "$url")
+            test "$code" = 200 || { echo "$url returned $code"; exit 1; }
+          done
