@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حاسبة زكاة المال والذهب والفضة 2026 — مجانية ودقيقة | MDM1</title>
+<meta name="description" content="احسب زكاة مالك وذهبك وفضتك وعروض التجارة في ثوانٍ: النصاب، الديون، ومقدار الزكاة 2.5%. أداة مجانية تعمل في متصفحك بدون تسجيل.">
+<link rel="canonical" href="https://mdm1.org/tools/zakat-calculator.html">
+<meta property="og:title" content="حاسبة الزكاة — مجانية ودقيقة">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/tools/zakat-calculator.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"حاسبة الزكاة","url":"https://mdm1.org/tools/zakat-calculator.html","applicationCategory":"FinanceApplication","operatingSystem":"Any","inLanguage":"ar","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"ما هو نصاب الزكاة؟","acceptedAnswer":{"@type":"Answer","text":"نصاب الذهب 85 جرامًا ونصاب الفضة 595 جرامًا، وتجب الزكاة بمقدار 2.5% إذا بلغ صافي المال النصاب وحال عليه الحول."}},
+{"@type":"Question","name":"هل تُخصم الديون من الزكاة؟","acceptedAnswer":{"@type":"Answer","text":"يرى كثير من أهل العلم خصم الديون الحالّة المستحقة قبل حساب الزكاة، ويختلف العلماء في تفاصيلها، فاستشر جهة الفتوى المعتمدة عندك."}}]}]}
+</script>
+<style>
+:root{--bg:#0b1020;--card:#121a33;--gold:#c9a84c;--tx:#eee;--mut:#9aa3bd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.8 system-ui,"Segoe UI",Tahoma,sans-serif}
+main{max-width:640px;margin:0 auto;padding:1.2rem}h1{color:var(--gold);font-size:1.6rem}
+label{display:block;margin:.8rem 0 .2rem;color:var(--mut);font-size:.9rem}
+input,select{width:100%;padding:.7rem;border-radius:8px;border:1px solid #2b3556;background:var(--card);color:var(--tx);font-size:1rem}
+button{margin-top:1.2rem;width:100%;padding:.9rem;border:0;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#8b6914);font-weight:700;font-size:1.05rem;cursor:pointer}
+#out{margin-top:1.2rem;padding:1rem;border-radius:10px;background:var(--card);border:1px solid #2b3556;display:none}
+.big{font-size:1.8rem;color:var(--gold);font-weight:700}small,footer{color:var(--mut)}a{color:var(--gold)}footer{margin-top:2rem;font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+<h1>حاسبة زكاة المال</h1>
+<p>أدخل أرقامك بعملتك. كل الحساب يتم داخل متصفحك ولا يُرسل أي شيء لأي خادم.</p>
+<label>سعر جرام الذهب (عيار 24) بعملتك</label><input id="gp" type="number" min="0" step="any" inputmode="decimal">
+<label>سعر جرام الفضة بعملتك</label><input id="sp" type="number" min="0" step="any" inputmode="decimal">
+<label>النصاب المعتمد</label>
+<select id="nis"><option value="gold">نصاب الذهب (85 جرام) — الأشهر حاليًا</option><option value="silver">نصاب الفضة (595 جرام) — الأحوط للفقراء</option></select>
+<label>النقد والأرصدة البنكية</label><input id="cash" type="number" min="0" step="any" inputmode="decimal" value="0">
+<label>وزن الذهب المدّخر (جرام 24 أو ما يعادله)</label><input id="gg" type="number" min="0" step="any" inputmode="decimal" value="0">
+<label>وزن الفضة المدّخرة (جرام)</label><input id="sg" type="number" min="0" step="any" inputmode="decimal" value="0">
+<label>قيمة عروض التجارة والبضائع</label><input id="trade" type="number" min="0" step="any" inputmode="decimal" value="0">
+<label>ديون مرجوّة السداد لك</label><input id="rec" type="number" min="0" step="any" inputmode="decimal" value="0">
+<label>ديون حالّة عليك</label><input id="debt" type="number" min="0" step="any" inputmode="decimal" value="0">
+<button id="go" type="button">احسب الزكاة</button>
+<section id="out" aria-live="polite"></section>
+<h2>أسئلة شائعة</h2>
+<p><b>ما نصاب الزكاة؟</b> 85 جرام ذهب أو 595 جرام فضة، والمقدار الواجب 2.5% بشرط مرور سنة هجرية على المال.</p>
+<p><b>هل تُخصم الديون؟</b> يرى كثير من أهل العلم خصم الديون الحالّة، وفي التفاصيل خلاف. هذه الأداة تعين على الحساب ولا تغني عن سؤال جهة الفتوى المعتمدة عندك.</p>
+<footer><a href="../index.html">MDM1</a> · <a href="./">كل الأدوات</a></footer>
+</main>
+<script>
+function zakat(v){
+  const n=k=>Math.max(0,parseFloat(v[k])||0);
+  const net=n('cash')+n('gg')*n('gp')+n('sg')*n('sp')+n('trade')+n('rec')-n('debt');
+  const nisab=v.nis==='gold'?85*n('gp'):595*n('sp');
+  return {net,nisab,due:nisab>0&&net>=nisab?net*0.025:0,ok:nisab>0};
+}
+document.getElementById('go').onclick=()=>{
+  const ids=['gp','sp','nis','cash','gg','sg','trade','rec','debt'],v={};
+  ids.forEach(i=>v[i]=document.getElementById(i).value);
+  const r=zakat(v),o=document.getElementById('out'),f=x=>x.toLocaleString('ar-EG',{maximumFractionDigits:2});
+  o.style.display='block';
+  o.innerHTML=!r.ok?'أدخل سعر الجرام للمعدن الذي اخترته نصابًا.':
+   `صافي المال: <b>${f(r.net)}</b><br>النصاب: <b>${f(r.nisab)}</b><br>`+
+   (r.due>0?`الزكاة الواجبة (2.5%):<div class="big">${f(r.due)}</div><small>بشرط مرور الحول الهجري.</small>`:
+   `<b>لم يبلغ مالك النصاب، فلا زكاة عليك الآن.</b>`);
+};
+</script>
+</body>
+</html>
