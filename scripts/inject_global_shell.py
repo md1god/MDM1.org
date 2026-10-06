@@ -7,40 +7,23 @@ Run `python3 scripts/inject_global_shell.py --write` immediately before upload-p
 from __future__ import annotations
 
 import argparse
+import posixpath
+import zlib
 import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
 SITE_ROOT = Path(__file__).resolve().parents[1]
-MENU_LINKS = [
-    ("/index.html", "🏠 الرئيسية", "🏠 Home"),
-    ("/hub.html", "⛩️ المنصة", "⛩️ Platform"),
-    ("/whitepaper.html", "📃 الورقة البيضاء", "📃 White paper"),
-    ("/pages/tokenomics.html", "💠 الاقتصاد", "💠 Tokenomics"),
-    ("/pages/sharia.html", "☪️ التوافق الشرعي", "☪️ Sharia"),
-    ("/pages/roadmap.html", "🗺️ خارطة الطريق", "🗺️ Roadmap"),
-    None,
-    ("/pages/join.html", "✨ انضم إلينا", "✨ Join"),
-    ("/pages/community.html", "🤝 المجتمع", "🤝 Community"),
-    ("/pages/blog.html", "📰 المدونة", "📰 Blog"),
-    ("/pages/faq.html", "❓ الأسئلة الشائعة", "❓ FAQ"),
-    ("/pages/team.html", "👥 الفريق", "👥 Team"),
-    ("/pages/dashboard.html", "📊 لوحة البيانات", "📊 Dashboard"),
-    None,
-    ("/games.html", "🎮 الألعاب", "🎮 Games"),
-    ("/pages/game.html", "⚔️ لعبة رع وأنوبيس", "⚔️ Ra & Anubis"),
-    ("/pages/quiz.html", "🧭 اختبار الجانب", "🧭 Quiz"),
-    ("/fight.html", "🥊 القتال", "🥊 Fight"),
-    None,
-    ("/tools/", "🧰 كل الأدوات", "🧰 All tools"),
-    ("/tools/seo/", "🔎 أدوات SEO", "🔎 SEO tools"),
-    ("/pages/hub-services.html", "🛒 خدمات المنصة", "🛒 Hub services"),
-    ("/pages/md1usd.html", "💵 MD1USD", "💵 MD1USD"),
-    ("/pages/security.html", "🛡️ الأمان", "🛡️ Security"),
-    ("/pages/index.html", "📚 كل الصفحات", "📚 All pages"),
-    ("/pages/about.html", "ℹ️ من نحن", "ℹ️ About"),
-]
+# English labels for the owner's original menu (used only on lang="en" pages; Arabic pages keep the owner's own text).
+EN_LABELS = {
+    "/index.html": "🏠 Home", "/whitepaper.html": "📃 White paper", "/pages/ideas.html": "💡 Ideas",
+    "/pages/quiz.html": "🧩 Quiz", "/pages/join.html": "🔑 Join", "/pages/community.html": "🤝 Community",
+    "/pages/faq.html": "❓ FAQ", "/pages/sharia.html": "☪️ Sharia compliance", "/pages/roadmap.html": "🗺️ Roadmap",
+    "/pages/blog.html": "📰 Blog", "/pages/tokenomics.html": "💰 Tokenomics", "/pages/game.html": "🎮 Pharaohs gate",
+    "/games.html": "●Games 🎮 Portal", "/pages/ATM.html": "ATM 🏧", "/pages/md1usd.html": "💲 MD1$ digital dollar",
+    "/hub.html": "⛩️ Platform (Hub)", "/pages/dashboard.html": "📊 Dashboard", "/pages/about.html": "ℹ️ About",
+}
 
 
 class MarkupScan(HTMLParser):
@@ -94,27 +77,66 @@ def _find_close(text: str, tag: str, start: int) -> int:
     return start + match.end()
 
 
-def _menu_markup(is_ar: bool) -> tuple[str, str]:
-    button = '<button type="button" id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الموقع" aria-controls="mdm1m-panel" aria-expanded="false">🏛️</button>' if is_ar else '<button type="button" id="mdm1m-btn" title="Menu" aria-label="Open site menu" aria-controls="mdm1m-panel" aria-expanded="false">🏛️</button>'
-    links = []
-    for item in MENU_LINKS:
-        if item is None:
-            links.append('<div class="mdm1m-sep" role="separator"></div>')
-            continue
-        href, ar, en = item
-        links.append(f'<a href="{href}">{ar if is_ar else en}</a>')
+def _abs_href(href: str, page_rel: str) -> str:
+    """Resolve a page-relative href to a root-absolute one so a menu works from any folder."""
+    if re.match(r"^(?:[a-z][a-z0-9+.-]*:|/|#|\?)", href, re.I):
+        return href
+    base = posixpath.dirname("/" + page_rel)
+    return posixpath.normpath(posixpath.join(base, href))
+
+
+def _normalize_panel_inner(inner: str, page_rel: str, is_ar: bool) -> str:
+    def fix(match):
+        href = _abs_href(match.group(2), page_rel)
+        return f'{match.group(1)}{href}{match.group(3)}'
+    inner = re.sub(r'(<a\b[^>]*?\bhref=")([^"]*)(")', fix, inner, flags=re.I)
+    if not is_ar:
+        def label(match):
+            href = re.search(r'href="([^"]*)"', match.group(1), re.I)
+            en = EN_LABELS.get(href.group(1)) if href else None
+            return match.group(1) + (en if en else match.group(2)) + "</a>"
+        inner = re.sub(r"(<a\b[^>]*>)(.*?)</a>", label, inner, flags=re.I | re.S)
+    return inner
+
+
+_CANON_CACHE: dict[str, str] = {}
+
+
+def _canonical_inner(root: Path) -> str:
+    """The owner's own long menu: taken from the source index.html, never invented here."""
+    key = str(root)
+    if key not in _CANON_CACHE:
+        src = (root / "index.html").read_text(encoding="utf-8")
+        m = re.search(r'<nav\b[^>]*id=["\']mdm1m-panel["\'][^>]*>(.*?)</nav>', src, re.I | re.S)
+        if not m:
+            raise ValueError("index.html has no #mdm1m-panel to use as the site menu")
+        _CANON_CACHE[key] = m.group(1)
+    return _CANON_CACHE[key]
+
+
+def _menu_markup(is_ar: bool, inner: str, injected: bool) -> tuple[str, str]:
+    flag = " data-md1-injected" if injected else ""
+    button = (f'<button type="button" id="mdm1m-btn"{flag} title="{"القائمة" if is_ar else "Menu"}" '
+              f'aria-label="{"فتح قائمة الموقع" if is_ar else "Open site menu"}" aria-controls="mdm1m-panel" aria-expanded="false">🏛️</button>')
     label = "قائمة الموقع" if is_ar else "Site navigation"
-    panel = f'<div id="mdm1m-panel" role="navigation" aria-label="{label}" aria-hidden="true">' + "".join(links) + "</div>"
+    panel = f'<div id="mdm1m-panel"{flag} role="navigation" aria-label="{label}" aria-hidden="true">{inner}</div>'
     return button, panel
 
 
-def _music_markup(button_id: str, audio_id: str, is_ar: bool) -> tuple[str, str]:
+def _music_track(rel: str, root: Path) -> str:
+    """Pages that have no music of their own get one of the site's existing tracks, spread by page path."""
+    tracks = sorted(p.name for p in (root / "audio").glob("*.mp3") if p.stem not in ("mdm1-theme",))
+    if not tracks:
+        return "mdm1-theme.mp3"
+    return tracks[zlib.crc32(rel.encode()) % len(tracks)]
+
+
+def _music_markup(rel: str, root: Path, is_ar: bool) -> tuple[str, str]:
     label = "تشغيل الموسيقى الخلفية" if is_ar else "Play background music"
-    button = f'<button type="button" id="{button_id}" data-md1-audio-id="{audio_id}" title="{label}" aria-label="{label}" aria-pressed="false">♪</button>'
-    audio = (f'<audio id="{audio_id}" loop preload="none">'
-             '<source src="/audio/mdm1-theme.ogg" type="audio/ogg">'
-             '<source src="/audio/mdm1-theme.mp3" type="audio/mpeg">'
-             '</audio>')
+    button = (f'<button type="button" id="music-btn" data-md1-injected data-md1-audio-id="site-music" title="{label}" '
+              f'aria-label="{label}" aria-pressed="false">♪</button>')
+    audio = (f'<audio id="site-music" loop preload="none">'
+             f'<source src="/audio/{_music_track(rel, root)}" type="audio/mpeg"></audio>')
     return button, audio
 
 
@@ -196,38 +218,39 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
             by_id.setdefault(str(element_id), []).append(tag)
 
     edits: list[tuple[int, int, str]] = []
-    menu_button, menu_panel = _menu_markup(is_ar)
+    rel = path.relative_to(root).as_posix()
     existing_menu_buttons = by_id.get("mdm1m-btn", [])
     existing_panels = list(by_id.get("mdm1m-panel", []))
     if len(existing_menu_buttons) > 1 or len(existing_panels) > 1:
         raise ValueError("Duplicate global menu IDs")
-    if existing_menu_buttons:
+    own_button_html = ""
+    if existing_menu_buttons and existing_panels:
+        # The page already has the owner's menu: keep its button + links exactly, only re-mount them as direct
+        # <body> children (a transformed/sticky ancestor such as a page-level <nav> breaks position:fixed).
         t = existing_menu_buttons[0]
         end = _find_close(text, "button", t["start"] + len(t["raw"]))
-        edits.append((t["start"], end, ""))  # re-added as a direct child of <body> (avoids transformed/hidden ancestors)
-    if existing_panels:
+        own_button_html = text[t["start"]:end]
+        edits.append((t["start"], end, ""))
         t = existing_panels[0]
         end = _find_close(text, t["tag"], t["start"] + len(t["raw"]))
+        inner = text[t["start"] + len(t["raw"]):end - len(f"</{t['tag']}>")]
+        inner = _normalize_panel_inner(inner, rel, is_ar)
+        menu_button, menu_panel = _menu_markup(is_ar, inner, injected=False)
+        menu_button = own_button_html
         edits.append((t["start"], end, ""))
+    else:
+        for t in existing_menu_buttons:
+            edits.append((t["start"], _find_close(text, "button", t["start"] + len(t["raw"])), ""))
+        for t in existing_panels:
+            edits.append((t["start"], _find_close(text, t["tag"], t["start"] + len(t["raw"])), ""))
+        inner = _normalize_panel_inner(_canonical_inner(root), rel, is_ar)
+        menu_button, menu_panel = _menu_markup(is_ar, inner, injected=True)
 
-    music_button_ids = [key for key in ("music-btn", "musicBtn") if by_id.get(key)]
-    button_id = music_button_ids[0] if music_button_ids else "music-btn"
-    if len(music_button_ids) > 1:
-        raise ValueError("More than one music control ID on a page")
-    music_audios = [t for t in scan.tags if t["tag"] == "audio" and t["attrs"].get("id") in ("bg-music", "site-music")]
-    # games.html has a game-specific bg-music track and a site-wide music player.
-    preferred_audio = next((t for t in music_audios if t["attrs"].get("id") == "site-music"), None)
-    if preferred_audio is None:
-        preferred_audio = next((t for t in music_audios if t["attrs"].get("id") == "bg-music"), None)
-    audio_id = str(preferred_audio["attrs"].get("id")) if preferred_audio else "bg-music"
-    music_button, music_audio = _music_markup(button_id, audio_id, is_ar)
-    if music_button_ids:
-        t = by_id[button_id][0]
-        end = _find_close(text, "button", t["start"] + len(t["raw"]))
-        edits.append((t["start"], end, music_button))
-    if preferred_audio:
-        end = _find_close(text, "audio", preferred_audio["start"] + len(preferred_audio["raw"]))
-        edits.append((preferred_audio["start"], end, music_audio))
+    # Music: a page that already has its own track + button is left completely alone.
+    has_own_music = bool(by_id.get("music-btn") or by_id.get("musicBtn")) and any(t["tag"] == "audio" for t in scan.tags)
+    music_button = music_audio = ""
+    if not has_own_music:
+        music_button, music_audio = _music_markup(rel, root, is_ar)
 
     image_count = 0
     lazy_image_changes = 0
@@ -266,13 +289,9 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
         text = text[:start] + replacement + text[end:]
 
     # Elements that were not already present are added once, before </body>.
-    additions: list[str] = []
-    additions.append(menu_button)
-    additions.append(menu_panel)
-    if not music_button_ids:
-        additions.append(music_button)
-    if not preferred_audio:
-        additions.append(music_audio)
+    additions: list[str] = [menu_button, menu_panel]
+    if not has_own_music:
+        additions.extend([music_button, music_audio])
     if additions:
         text = _insert_before_body_end(text, "\n".join(additions))
 
@@ -283,7 +302,7 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
     metadata_added = text != original
     stats = {
         "menu": bool(existing_menu_buttons or existing_panels),
-        "music": True,
+        "music": not has_own_music,
         "lazy_images": lazy_image_changes,
         "lazy_videos": video_changes,
         "changed": metadata_added,

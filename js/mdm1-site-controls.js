@@ -48,7 +48,8 @@
   const musicButton = document.getElementById('music-btn') || document.getElementById('musicBtn');
   const audioId = musicButton?.dataset.md1AudioId || 'bg-music';
   const music = document.getElementById(audioId);
-  if (musicButton && music) {
+  // Only the build-injected music player is managed here; a page's own player keeps its own logic.
+  if (musicButton && music && musicButton.hasAttribute('data-md1-injected')) {
     musicButton.type = 'button';
     musicButton.setAttribute('aria-pressed', 'false');
     music.preload = 'none';
