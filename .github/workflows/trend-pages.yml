@@ -1,0 +1,39 @@
+name: Trend tool pages
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: 'dry run (no new tool, only rebuild lists)'
+        type: boolean
+        default: false
+permissions:
+  contents: write
+  models: read
+  actions: write
+concurrency:
+  group: trend-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY: ${{ inputs.dry && '1' || '' }}
+        run: python3 scripts/trend_pages.py
+      - name: Commit, deploy, notify search engines
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add tools data sitemap-tools.xml pages/index.html pages-registry.json ./*.txt
+          if git diff --cached --quiet; then echo "nothing to publish"; exit 0; fi
+          git config user.name "MD1 Bot"; git config user.email "action@github.com"
+          git commit -m "Trend tools: $(date -u +%F)"
+          git pull --rebase origin main && git push
+          gh workflow run deploy.yml
+          sleep 150
+          python3 scripts/trend_pages.py --indexnow
