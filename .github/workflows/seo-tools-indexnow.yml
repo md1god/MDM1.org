@@ -1,0 +1,72 @@
+name: Notify IndexNow for SEO tools
+
+on:
+  workflow_run:
+    workflows: ["🚀 Deploy to GitHub Pages"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout deployed main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Validate live pages and notify IndexNow
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, re, time, urllib.error, urllib.request, xml.etree.ElementTree as ET
+
+          site = "https://mdm1.org"
+          sitemap_path = pathlib.Path("sitemap-seo.xml")
+          if not sitemap_path.is_file():
+              raise SystemExit("sitemap-seo.xml is missing")
+          root = ET.parse(sitemap_path).getroot()
+          ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          urls = [n.text.strip() for n in root.findall("sm:url/sm:loc", ns) if n.text]
+          if not urls or any(not u.startswith(site + "/tools/seo/") for u in urls):
+              raise SystemExit("Sitemap contains no URLs or an out-of-scope URL")
+
+          key_file = next((p for p in pathlib.Path(".").glob("*.txt")
+                           if re.fullmatch(r"[a-fA-F0-9]{32}", p.stem)
+                           and p.read_text(encoding="utf-8").strip() == p.stem), None)
+          if key_file is None:
+              raise SystemExit("Could not find the existing IndexNow key file")
+          key = key_file.stem
+          key_location = f"{site}/{key_file.name}"
+
+          def get(url):
+              req = urllib.request.Request(url, headers={"User-Agent": "MDM1-IndexNow/1.0"})
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  return response.status, response.read(4096).decode("utf-8", "replace")
+
+          status, text = get(key_location)
+          if status != 200 or key not in text:
+              raise SystemExit("IndexNow key file is not live; refusing to notify")
+          for url in urls:
+              status, _ = get(url)
+              if status != 200:
+                  raise SystemExit(f"New page is not live ({status}): {url}")
+
+          payload = json.dumps({"host": "mdm1.org", "key": key, "keyLocation": key_location, "urlList": urls}).encode()
+          request = urllib.request.Request("https://api.indexnow.org/indexnow", data=payload,
+              headers={"Content-Type": "application/json; charset=utf-8", "User-Agent": "MDM1-IndexNow/1.0"}, method="POST")
+          for attempt in range(3):
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      if response.status not in (200, 202):
+                          raise SystemExit(f"IndexNow returned HTTP {response.status}")
+                      print(f"IndexNow accepted {len(urls)} SEO-tool URLs (HTTP {response.status})")
+                      break
+              except urllib.error.HTTPError as error:
+                  if attempt == 2 or error.code < 500:
+                      raise
+                  time.sleep(2 ** attempt)
+          PY
