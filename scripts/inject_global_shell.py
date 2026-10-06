@@ -17,12 +17,27 @@ MENU_LINKS = [
     ("/index.html", "🏠 الرئيسية", "🏠 Home"),
     ("/hub.html", "⛩️ المنصة", "⛩️ Platform"),
     ("/whitepaper.html", "📃 الورقة البيضاء", "📃 White paper"),
-    ("/tools/seo/", "🔎 أدوات SEO", "🔎 SEO tools"),
-    ("/tools/", "🧰 كل الأدوات", "🧰 All tools"),
-    ("/pages/community.html", "🤝 المجتمع", "🤝 Community"),
+    ("/pages/tokenomics.html", "💠 الاقتصاد", "💠 Tokenomics"),
+    ("/pages/sharia.html", "☪️ التوافق الشرعي", "☪️ Sharia"),
     ("/pages/roadmap.html", "🗺️ خارطة الطريق", "🗺️ Roadmap"),
+    None,
+    ("/pages/join.html", "✨ انضم إلينا", "✨ Join"),
+    ("/pages/community.html", "🤝 المجتمع", "🤝 Community"),
+    ("/pages/blog.html", "📰 المدونة", "📰 Blog"),
     ("/pages/faq.html", "❓ الأسئلة الشائعة", "❓ FAQ"),
+    ("/pages/team.html", "👥 الفريق", "👥 Team"),
+    ("/pages/dashboard.html", "📊 لوحة البيانات", "📊 Dashboard"),
+    None,
     ("/games.html", "🎮 الألعاب", "🎮 Games"),
+    ("/pages/game.html", "⚔️ لعبة رع وأنوبيس", "⚔️ Ra & Anubis"),
+    ("/pages/quiz.html", "🧭 اختبار الجانب", "🧭 Quiz"),
+    ("/fight.html", "🥊 القتال", "🥊 Fight"),
+    None,
+    ("/tools/", "🧰 كل الأدوات", "🧰 All tools"),
+    ("/tools/seo/", "🔎 أدوات SEO", "🔎 SEO tools"),
+    ("/pages/hub-services.html", "🛒 خدمات المنصة", "🛒 Hub services"),
+    ("/pages/md1usd.html", "💵 MD1USD", "💵 MD1USD"),
+    ("/pages/security.html", "🛡️ الأمان", "🛡️ Security"),
     ("/pages/index.html", "📚 كل الصفحات", "📚 All pages"),
     ("/pages/about.html", "ℹ️ من نحن", "ℹ️ About"),
 ]
@@ -82,12 +97,14 @@ def _find_close(text: str, tag: str, start: int) -> int:
 def _menu_markup(is_ar: bool) -> tuple[str, str]:
     button = '<button type="button" id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الموقع" aria-controls="mdm1m-panel" aria-expanded="false">🏛️</button>' if is_ar else '<button type="button" id="mdm1m-btn" title="Menu" aria-label="Open site menu" aria-controls="mdm1m-panel" aria-expanded="false">🏛️</button>'
     links = []
-    for index, (href, ar, en) in enumerate(MENU_LINKS):
-        if index == 3 or index == 5:
+    for item in MENU_LINKS:
+        if item is None:
             links.append('<div class="mdm1m-sep" role="separator"></div>')
+            continue
+        href, ar, en = item
         links.append(f'<a href="{href}">{ar if is_ar else en}</a>')
     label = "قائمة الموقع" if is_ar else "Site navigation"
-    panel = f'<nav id="mdm1m-panel" aria-label="{label}" aria-hidden="true">' + "".join(links) + "</nav>"
+    panel = f'<div id="mdm1m-panel" role="navigation" aria-label="{label}" aria-hidden="true">' + "".join(links) + "</div>"
     return button, panel
 
 
@@ -130,20 +147,26 @@ def _ensure_head(text: str, root: Path) -> str:
     apple = root / "images/apple-touch-icon.png"
     if apple.is_file() and "/images/apple-touch-icon.png" not in head:
         additions.append('<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">')
-    if not re.search(r'<meta\b[^>]*property=["\']og:image["\']', head, re.I):
-        additions.extend([
-            '<meta property="og:image" content="https://mdm1.org/images/android-chrome-512x512.png">',
-            '<meta property="og:image:alt" content="MDM1 Horus falcon emblem">',
-            '<meta property="og:image:width" content="512">',
-            '<meta property="og:image:height" content="512">',
-        ])
+    # One consistent share card on every page (replaces any older og/twitter image tags).
+    for pat in (r'<meta\b[^>]*property=["\']og:image(?::[a-z]+)?["\'][^>]*>\s*', r'<meta\b[^>]*name=["\']twitter:image(?::alt)?["\'][^>]*>\s*'):
+        text = re.sub(pat, "", text, flags=re.I)
+        head = re.sub(pat, "", head, flags=re.I)
+    additions.extend([
+        '<meta property="og:image" content="https://mdm1.org/images/og-card.jpg">',
+        '<meta property="og:image:type" content="image/jpeg">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta property="og:image:alt" content="MDM1.org - Eye of Horus hooded emblem">',
+        '<meta name="twitter:image" content="https://mdm1.org/images/og-card.jpg">',
+    ])
+    if not re.search(r'<meta\b[^>]*property=["\']og:site_name["\']', head, re.I):
+        additions.append('<meta property="og:site_name" content="MDM1.org">')
     if not re.search(r'<meta\b[^>]*name=["\']twitter:card["\']', head, re.I):
         additions.append('<meta name="twitter:card" content="summary_large_image">')
-    if not re.search(r'<meta\b[^>]*name=["\']twitter:image["\']', head, re.I):
-        additions.append('<meta name="twitter:image" content="https://mdm1.org/images/android-chrome-512x512.png">')
     if not additions:
         return text
-    return text[:head_match.start()] + "\n    " + "\n    ".join(additions) + "\n" + text[head_match.start():]
+    head_end = re.search(r"</\s*head\s*>", text, re.I).start()
+    return text[:head_end] + "\n    " + "\n    ".join(additions) + "\n" + text[head_end:]
 
 
 def transform_page(path: Path, root: Path) -> tuple[str, dict]:
@@ -175,7 +198,7 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
     edits: list[tuple[int, int, str]] = []
     menu_button, menu_panel = _menu_markup(is_ar)
     existing_menu_buttons = by_id.get("mdm1m-btn", [])
-    existing_panels = [t for t in by_id.get("mdm1m-panel", []) if t["tag"] == "nav"]
+    existing_panels = list(by_id.get("mdm1m-panel", []))
     if len(existing_menu_buttons) > 1 or len(existing_panels) > 1:
         raise ValueError("Duplicate global menu IDs")
     if existing_menu_buttons:
@@ -184,7 +207,7 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
         edits.append((t["start"], end, ""))  # re-added as a direct child of <body> (avoids transformed/hidden ancestors)
     if existing_panels:
         t = existing_panels[0]
-        end = _find_close(text, "nav", t["start"] + len(t["raw"]))
+        end = _find_close(text, t["tag"], t["start"] + len(t["raw"]))
         edits.append((t["start"], end, ""))
 
     music_button_ids = [key for key in ("music-btn", "musicBtn") if by_id.get(key)]
