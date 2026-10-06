@@ -23,6 +23,7 @@ MENU_LINKS = [
     ("/pages/roadmap.html", "🗺️ خارطة الطريق", "🗺️ Roadmap"),
     ("/pages/faq.html", "❓ الأسئلة الشائعة", "❓ FAQ"),
     ("/games.html", "🎮 الألعاب", "🎮 Games"),
+    ("/pages/index.html", "📚 كل الصفحات", "📚 All pages"),
     ("/pages/about.html", "ℹ️ من نحن", "ℹ️ About"),
 ]
 
@@ -147,7 +148,12 @@ def _ensure_head(text: str, root: Path) -> str:
 
 def transform_page(path: Path, root: Path) -> tuple[str, dict]:
     original = path.read_text(encoding="utf-8")
-    text = _ensure_head(original, root)
+    # Deploy-copy repair: a bare, never-closed <nav> directly before another <nav> swallows the whole page
+    # (and the floating menu button with it). Source files stay untouched.
+    original_fixed = original
+    if len(re.findall(r"<nav\b", original, re.I)) > len(re.findall(r"</nav>", original, re.I)):
+        original_fixed = re.sub(r"<nav>\s*(?=<nav\b)", "", original, count=1, flags=re.I)
+    text = _ensure_head(original_fixed, root)
     if path.relative_to(root).as_posix() == "tools/index.html" and 'mdm1-seo-card' not in text:
         seo_card = ('<div class="card mdm1-seo-card"><span class="card-icon">🔎</span>'
                     '<div class="card-title"><a href="/tools/seo/" class="glow-gold">أدوات SEO والنمو المجانية</a></div>'
@@ -175,11 +181,11 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
     if existing_menu_buttons:
         t = existing_menu_buttons[0]
         end = _find_close(text, "button", t["start"] + len(t["raw"]))
-        edits.append((t["start"], end, menu_button))
+        edits.append((t["start"], end, ""))  # re-added as a direct child of <body> (avoids transformed/hidden ancestors)
     if existing_panels:
         t = existing_panels[0]
         end = _find_close(text, "nav", t["start"] + len(t["raw"]))
-        edits.append((t["start"], end, menu_panel))
+        edits.append((t["start"], end, ""))
 
     music_button_ids = [key for key in ("music-btn", "musicBtn") if by_id.get(key)]
     button_id = music_button_ids[0] if music_button_ids else "music-btn"
@@ -238,10 +244,8 @@ def transform_page(path: Path, root: Path) -> tuple[str, dict]:
 
     # Elements that were not already present are added once, before </body>.
     additions: list[str] = []
-    if not existing_menu_buttons:
-        additions.append(menu_button)
-    if not existing_panels:
-        additions.append(menu_panel)
+    additions.append(menu_button)
+    additions.append(menu_panel)
     if not music_button_ids:
         additions.append(music_button)
     if not preferred_audio:
