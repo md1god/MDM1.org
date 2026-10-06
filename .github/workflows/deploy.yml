@@ -24,6 +24,12 @@ jobs:
       - name: ✅ Checkout Repository
         uses: actions/checkout@v4
 
+      - name: 🧱 Generate SEO catalog and shared site shell
+        run: |
+          python3 scripts/generate_seo_catalog.py --write
+          python3 scripts/generate_seo_catalog.py --check
+          python3 scripts/inject_global_shell.py --write
+
       - name: 📦 Prepare Pages
         uses: actions/upload-pages-artifact@v3
         with:
