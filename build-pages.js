@@ -21,7 +21,18 @@ function pickDailyQuote(pageNumber, quotes) {
   return quotes[(pageNumber - 1) % quotes.length];
 }
 
-function generatePageHTML(pageNumber, title, description, quote, imagePath) {
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function bodyHtml(text) {
+  return String(text || '').split(/\n+/).filter(Boolean)
+    .map(line => `<p>${escapeHtml(line)}</p>`).join('\n');
+}
+
+function generatePageHTML(pageNumber, title, description, quote, imagePath, customBody = '') {
   const today = new Date().toLocaleDateString('ar-EG', {
     weekday: 'long',
     year: 'numeric',
@@ -32,12 +43,15 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
   // ملاحظة: المسارات هنا نسبية لأن الملف هيتحط جوا مجلد pages/
   // الكلاسات دي هي الكلاسات الحقيقية المعرّفة في css/pages.css (navbar, page-hero,
   // page-content, media-block, page-footer...) — مطابقة تمامًا لباقي صفحات الموقع
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  const safeQuote = escapeHtml(quote);
   const template = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} - MDM1</title>
+  <title>${safeTitle} - MDM1</title>
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
   <style>
@@ -58,8 +72,8 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
 
   <header class="page-hero reveal">
     <div class="page-label">MDM1 · صفحة يومية</div>
-    <h1 class="page-title">${title}</h1>
-    <p class="page-sub">${description}</p>
+    <h1 class="page-title">${safeTitle}</h1>
+    <p class="page-sub">${safeDescription}</p>
   </header>
 
   <main class="page-content">
@@ -69,8 +83,9 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath) {
            data-exts="png,jpeg,webp"
            onerror="mdm1TryNextExt(this)">
       <div class="media-empty-icon">✦</div>
-      <div class="media-caption">${quote}</div>
+      <div class="media-caption">${safeQuote}</div>
     </div>
+    ${customBody ? `<section class="page-content reveal scout-plan">${bodyHtml(customBody)}</section>` : ''}
   </main>
   <script>
     // يجرب امتدادات الصورة اليومية بالترتيب (jpg ثم png ثم jpeg ثم webp) قبل ما يستسلم
@@ -159,14 +174,17 @@ if (!fs.existsSync('pages')) fs.mkdirSync('pages', { recursive: true });
 // رقم الصفحة الجديدة يزيد باستمرار (بدون إعادة تدوير) عشان الترقيم يفضل ثابت ومنطقي
 const pageNumber = state.pageCount + 1;
 
-const title = randomFrom(data.contentWords.titles);
-const description = randomFrom(data.contentWords.descriptions);
-const quote = pickDailyQuote(pageNumber, data.wisdomQuotes);
+const customTitle = process.env.SCOUT_TITLE?.trim();
+const customDescription = process.env.SCOUT_DESCRIPTION?.trim();
+const customBody = process.env.SCOUT_BODY?.trim();
+const title = customTitle || randomFrom(data.contentWords.titles);
+const description = customDescription || randomFrom(data.contentWords.descriptions);
+const quote = customBody ? 'خطة أصلية مبنية على احتياج حقيقي وتُراجع قبل التنفيذ.' : pickDailyQuote(pageNumber, data.wisdomQuotes);
 const imagePath = `../${data.config.imageBasePath}/${pageNumber}`;
 
 const pageSlug = `${pageNumber}`;
 const pagePath = path.join('pages', `${pageSlug}.html`);
-const html = generatePageHTML(pageNumber, title, description, quote, imagePath);
+const html = generatePageHTML(pageNumber, title, description, quote, imagePath, customBody);
 
 fs.writeFileSync(pagePath, html, 'utf8');
 
