@@ -138,7 +138,7 @@ function i18nBlocks(title, description, customBody, quote, translations) {
   return { bar, script };
 }
 
-function generatePageHTML(pageNumber, title, description, quote, imagePath, customBody = '', translations = {}) {
+function generatePageHTML(pageNumber, title, description, quote, customBody = '', translations = {}) {
   const today = new Date().toLocaleDateString('ar-EG', {
     weekday: 'long',
     year: 'numeric',
@@ -148,7 +148,7 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath, cust
 
   // ملاحظة: المسارات هنا نسبية لأن الملف هيتحط جوا مجلد pages/
   // الكلاسات دي هي الكلاسات الحقيقية المعرّفة في css/pages.css (navbar, page-hero,
-  // page-content, media-block, page-footer...) — مطابقة تمامًا لباقي صفحات الموقع
+  // page-content, page-footer...) — مطابقة تمامًا لباقي صفحات الموقع
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
   const safeQuote = escapeHtml(quote);
@@ -163,11 +163,8 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath, cust
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
   <style>
-    /* حالة الصورة الفاضية (لسه ما اتضافتش) — نفس روح مربعات الجاليري الفاضية */
-    .media-block { min-height: 220px; }
-    .media-block .media-empty-icon { display: none; font-size: 2.5rem; opacity: 0.35; }
-    .media-block.media-empty { flex-direction: column; gap: 1rem; background: rgba(201,168,76,0.03); }
-    .media-block.media-empty .media-empty-icon { display: block; }
+    .page-quote { margin: 0 0 1.5rem; padding: .8rem 1rem; border-inline-start: 3px solid rgba(201,168,76,.6);
+      background: rgba(201,168,76,.05); font-style: italic; opacity: .9; }
     .lang-picker { display: inline-flex; align-items: center; gap: .4rem; margin-inline-start: auto; }
     .lang-picker select { background: rgba(0,0,0,.35); color: inherit; border: 1px solid rgba(201,168,76,.45);
       border-radius: 8px; padding: .3rem .5rem; font: inherit; cursor: pointer; }
@@ -190,32 +187,9 @@ function generatePageHTML(pageNumber, title, description, quote, imagePath, cust
   </header>
 
   <main class="page-content">
-    <div class="media-block reveal" id="daily-media">
-      <img src="${imagePath}.jpg" alt="رسالة اليوم"
-           data-base="${imagePath}"
-           data-exts="png,jpeg,webp"
-           onerror="mdm1TryNextExt(this)">
-      <div class="media-empty-icon">✦</div>
-      <div class="media-caption" id="pg-quote">${safeQuote}</div>
-    </div>
+    <blockquote class="page-quote reveal" id="pg-quote">${safeQuote}</blockquote>
     ${customBody ? `<section class="page-content reveal scout-plan" id="pg-body">${bodyHtml(customBody)}</section>` : ''}
   </main>
-  <script>
-    // يجرب امتدادات الصورة اليومية بالترتيب (jpg ثم png ثم jpeg ثم webp) قبل ما يستسلم
-    function mdm1TryNextExt(img){
-      const exts = img.dataset.exts.split(',');
-      const next = exts.shift();
-      img.dataset.exts = exts.join(',');
-      if(next){
-        img.onerror = function(){ mdm1TryNextExt(img); };
-        img.src = img.dataset.base + '.' + next;
-      } else {
-        img.style.display = 'none';
-        document.getElementById('daily-media').classList.add('media-empty');
-      }
-    }
-  </script>
-
   <footer class="page-footer">
     ✦ MDM1 · <span id="pg-footer-label">صفحة</span> #${pageNumber} · ${today} ✦
   </footer>
@@ -308,11 +282,10 @@ if (scoutId) {
 const title = customTitle || randomFrom(data.contentWords.titles);
 const description = customDescription || randomFrom(data.contentWords.descriptions);
 const quote = customBody ? 'خطة أصلية مبنية على احتياج حقيقي وتُراجع قبل التنفيذ.' : pickDailyQuote(pageNumber, data.wisdomQuotes);
-const imagePath = `../${data.config.imageBasePath}/${pageNumber}`;
 
 const pageSlug = `${pageNumber}`;
 const pagePath = path.join('pages', `${pageSlug}.html`);
-const html = generatePageHTML(pageNumber, title, description, quote, imagePath, customBody, translations);
+const html = generatePageHTML(pageNumber, title, description, quote, customBody, translations);
 
 fs.writeFileSync(pagePath, html, 'utf8');
 
@@ -340,4 +313,3 @@ fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), 'utf8');
 console.log(`✅ تم إنشاء صفحة جديدة: pages/${pageSlug}.html`);
 if (customBody) console.log(`🌍 اللغات: ${['ar', ...Object.keys(translations)].join(', ')}`);
 console.log(`📋 تم تحديث الفهرس: pages/index.html (${registry.length} صفحة)`);
-console.log(`🖼️  الصورة المتوقعة: ${data.config.imageBasePath}/${pageNumber} بأي امتداد من: jpg, png, jpeg, webp (ارفعها بنفس الرقم فقط)`);
