@@ -15,6 +15,18 @@ on:
         description: 'نص الخطة العربية المجهّل'
         required: false
         type: string
+      scout_id:
+        description: 'معرّف الفرصة المجهّل (يمنع نشر نفس الفرصة مرتين)'
+        required: false
+        type: string
+      scout_translations:
+        description: 'JSON: ترجمات الصفحة {en:{title,description,body},...}'
+        required: false
+        type: string
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 jobs:
   generate-pages:
     runs-on: ubuntu-latest
@@ -40,6 +52,8 @@ jobs:
           SCOUT_TITLE: ${{ inputs.scout_title }}
           SCOUT_DESCRIPTION: ${{ inputs.scout_description }}
           SCOUT_BODY: ${{ inputs.scout_body }}
+          SCOUT_ID: ${{ inputs.scout_id }}
+          SCOUT_TRANSLATIONS: ${{ inputs.scout_translations }}
         run: node build-pages.js
 
       - name: 📊 Check if Pages Changed
@@ -56,11 +70,19 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "MD1 Bot"
           git add -A
-          git commit -m "🆕 إضافة صفحة جديدة - $(date +%Y-%m-%d\ %H:%M:%S)" || echo "No changes to commit"
-          git push || echo "Nothing to push"
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🆕 إضافة صفحة جديدة - $(date +%Y-%m-%d\ %H:%M:%S)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       # هنا السر: النشر بيحصل داخل نفس التشغيلة، بعد التأكد إن الـ push خلص فعليًا،
       # فمفيش سباق بين توليد الصفحة والنشر — النشر دايمًا بياخد آخر نسخة فيها الصفحة الجديدة
+      - name: 🧭 Add menu button and share card (deployed copy only, same as deploy.yml)
+        run: python3 scripts/inject_menu_and_card.py --write
+
       - name: 📦 Prepare Pages
         uses: actions/upload-pages-artifact@v3
         with:
@@ -74,4 +96,4 @@ jobs:
         run: |
           echo "✅ Workflow completed at $(date +%Y-%m-%d\ %H:%M:%S)"
           echo "📁 Pages directory: $(ls pages/ | wc -l) files"
-          echo "📄 Last page: $(cat build-state.json | grep lastPageSlug)"
+          echo "📄 Last page: $(grep lastPageSlug build-state.json)"
