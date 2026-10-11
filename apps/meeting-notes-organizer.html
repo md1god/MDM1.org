@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محضر الاجتماع: تحويل ملاحظات الاجتماع إلى محضر منظّم فورياً | MDM1</title>
+<meta name="description" content="أداة في المتصفح لتدوين ملاحظات الاجتماع بموقّت زمني، واستخراج المهام والمواعيد والمسؤولين تلقائياً، مع بحث فوري وتصدير المحضر وحفظ محلي بلا حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/meeting-notes-organizer.html">
+<meta property="og:title" content="محضر الاجتماع: تحويل ملاحظات الاجتماع إلى محضر منظّم فورياً">
+<meta property="og:description" content="أداة في المتصفح لتدوين ملاحظات الاجتماع بموقّت زمني، واستخراج المهام والمواعيد والمسؤولين تلقائياً، مع بحث فوري وتصدير المحضر وحفظ محلي بلا حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/meeting-notes-organizer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:block;color:var(--light);line-height:1.7}
+.app-intro{max-width:70ch;margin:0 0 16px}
+.app h2{font-size:1.05rem;margin:0 0 10px;color:var(--gold-bright)}
+.app .card{margin-bottom:14px}
+.app-field{display:flex;flex-direction:column;gap:6px;flex:1 1 220px}
+.app .row{flex-wrap:wrap;gap:10px}
+.app-timer-row{align-items:center}
+.app .big{font-variant-numeric:tabular-nums;letter-spacing:1px;color:var(--gold-bright)}
+.app-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.app-between{justify-content:space-between;align-items:center}
+.app-search{flex:1 1 200px;max-width:320px}
+.app-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.app-note,.app-action{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid var(--gold-dim);border-radius:8px;padding:8px 10px}
+.app-note-text,.app-action-text{flex:1}
+.app-action-body{flex:1;display:flex;flex-direction:column;gap:4px}
+.app-meta{display:flex;flex-wrap:wrap;gap:6px}
+.app-badge-pri{font-weight:700}
+.app-badge-pri.high{color:#ffb4b4}
+.app-badge-pri.mid{color:var(--gold-bright)}
+.app-mini{padding:2px 8px;font-size:.8rem}
+.app-chips{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.app-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,.12);border:1px solid var(--gold-dim);border-radius:999px;padding:3px 10px}
+.app-chip-x{border:0;background:transparent;color:var(--gold);cursor:pointer;font-size:1rem;line-height:1}
+.app-empty{opacity:.65;margin:6px 0 0}
+.app-hint{font-size:.85rem;opacity:.75}
+.app-print{white-space:pre-wrap;direction:rtl;text-align:right;max-height:340px;overflow:auto}
+@media(max-width:760px){.app-grid{grid-template-columns:1fr}}
+@media print{.app-intro,.app-head,.app-grid,.app-toolbar,.app-hint{display:none!important}.app-print{max-height:none;overflow:visible;border:0}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محضر الاجتماع الذكي: من الملاحظات إلى بنود عمل منظّمة", "url": "https://mdm1.org/apps/meeting-notes-organizer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، التطبيق يعمل بالكامل داخل المتصفح ولا يحتاج إلى تسجيل حساب أو اتصال بالإنترنت. تُحفظ الملاحظات والمحضر في التخزين المحلي للجهاز، فتجد بياناتك كما تركتها عند إعادة الفتح."}}, {"@type": "Question", "name": "كيف يستخرج التطبيق بنود العمل والمسؤولين؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد على قواعد نصية بسيطة: أي مداخلة تحتوي كلمة «مهمة» أو «سيتولى» أو «بحلول» أو رمز @ تُعدّ بند عمل. يُستخرج المسؤول من @الاسم أو بعد كلمة «المسؤول»، ويُستخرج الموعد من التواريخ والأيام والتعبيرات مثل «خلال ثلاثة أيام» أو «الأحد»، وتُحدَّد الأولوية من كلمات مثل «عاجل» أو «مهم»."}}, {"@type": "Question", "name": "هل يمكنني تصدير المحضر ومشاركته؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اضغط «توليد المحضر» لإنشاء النسخة المنظّمة، ثم «نسخ المحضر» لوضعه في الحافظة ولصقه في أي تطبيق، أو «طباعة المحضر» لإخراجه ورقيًا أو حفظه كملف PDF من نافذة الطباعة."}}, {"@type": "Question", "name": "أين تُحفظ البيانات وكيف أحذفها؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ كل البيانات محليًا في متصفحك عبر localStorage، ولا تُرسل إلى أي خادم. زر «حذف كل البيانات» يمسح الملاحظات والحاضرين وجدول الأعمال والمحضر نهائيًا بعد تأكيدك."}}, {"@type": "Question", "name": "ماذا يحدث إذا كتبت ملاحظة بدون أي كلمات مفتاحية؟", "acceptedAnswer": {"@type": "Answer", "text": "تظل الملاحظة محفوظة في سجل الملاحظات بطابعها الزمني ويمكن البحث فيها، لكنها لن تُدرج ضمن بنود العمل المستخرجة إلا إذا احتوت علامة مثل @ أو كلمة تدل على مهمة أو موعد."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محضر الاجتماع الذكي: من الملاحظات إلى بنود عمل منظّمة</h1>
+  <p class="page-sub">أداة في المتصفح لتدوين ملاحظات الاجتماع بموقّت زمني، واستخراج المهام والمواعيد والمسؤولين تلقائياً، مع بحث فوري وتصدير المحضر وحفظ محلي بلا حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><section class="app" dir="rtl">
+  <p class="app-intro">نعم — يمكنك تحويل ملاحظات اجتماعك إلى محضر منظّم بالكامل داخل المتصفح، بلا حساب وبلا إنترنت. ابدأ بتشغيل الموقّت، ثم دوّن كل مداخلة كما تحدث ليأخذها التطبيق طابعاً زمنياً تلقائياً. وبقواعد نصية بسيطة يستخرج المحضر بنود العمل والمواعيد والمسؤولين وأولوية كل مهمة من ملاحظاتك مباشرة. يوفّر التطبيق قوالب جاهزة لجدول الأعمال وقائمة للحاضرين، وبحثاً فورياً بين كل الملاحظات أثناء الاجتماع. وعند الانتهاء يمكنك توليد المحضر كنص منظّم، ثم نسخه أو طباعته أو حفظه. كل البيانات تبقى محفوظة محلياً على جهازك، ويمكنك حذفها في أي وقت بضغطة واحدة.</p>
+
+  <div class="card app-head">
+    <div class="row">
+      <div class="app-field">
+        <label for="appTitle">عنوان الاجتماع</label>
+        <input id="appTitle" class="input" type="text" placeholder="مثال: اجتماع فريق التطوير" />
+      </div>
+      <div class="app-field">
+        <label for="appDate">تاريخ الاجتماع</label>
+        <input id="appDate" class="input" type="text" placeholder="مثال: 2026-10-11" />
+      </div>
+    </div>
+    <div class="row app-timer-row">
+      <span class="badge">الموقّت</span>
+      <span id="appTimer" class="big">00:00:00</span>
+      <button id="appStart" class="button" type="button">تشغيل الموقّت</button>
+      <button id="appPause" class="button sec" type="button">إيقاف مؤقت</button>
+      <button id="appReset" class="button sec" type="button">تصفير الموقّت</button>
+    </div>
+  </div>
+
+  <div class="app-grid">
+    <div>
+      <div class="card">
+        <h2>تدوين الملاحظات</h2>
+        <label for="appNoteInput">نص المداخلة</label>
+        <textarea id="appNoteInput" class="textarea" rows="3" placeholder="اكتب المداخلة ثم أضفها. مثال: مهمة: تجهيز التقرير @سارة بحلول الأحد"></textarea>
+        <div class="row">
+          <button id="appAddNote" class="button" type="button">إضافة المداخلة</button>
+          <button id="appStamp" class="button sec" type="button">إدراج الطابع الزمني في النص</button>
+          <span id="appNoteHint" class="app-hint">اختصار: Ctrl+Enter لإضافة المداخلة.</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row app-between">
+          <h2>سجل الملاحظات (<span id="appNotesCount">0</span>)</h2>
+          <input id="appSearch" class="input app-search" type="search" placeholder="بحث فوري في كل الملاحظات" />
+        </div>
+        <ul id="appNotesList" class="app-list"></ul>
+        <p id="appNotesEmpty" class="app-empty">لا توجد ملاحظات بعد. شغّل الموقّت ثم أضف مداخلة.</p>
+      </div>
+
+      <div class="card">
+        <h2>بنود العمل المستخرجة</h2>
+        <ul id="appActionsList" class="app-list"></ul>
+        <p id="appActionsEmpty" class="app-empty">لم يتم استخراج بنود بعد. اكتب مهمة تحتوي كلمة «مهمة» أو رمز @ أو «بحلول» مع موعد.</p>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card">
+        <h2>جدول الأعمال</h2>
+        <label for="appTemplate">قالب جدول الأعمال</label>
+        <select id="appTemplate" class="select">
+          <option value="">اختر قالباً…</option>
+          <option value="team">اجتماع فريق أسبوعي</option>
+          <option value="project">مراجعة مشروع</option>
+          <option value="general">اجتماع عام</option>
+        </select>
+        <div class="row">
+          <button id="appApplyTemplate" class="button sec" type="button">تعبئة القالب في الجدول</button>
+        </div>
+        <label for="appAgenda">نص جدول الأعمال</label>
+        <textarea id="appAgenda" class="textarea" rows="5" placeholder="اكتب بنود جدول الأعمال، بند في كل سطر"></textarea>
+      </div>
+
+      <div class="card">
+        <h2>الحاضرون</h2>
+        <div class="row">
+          <input id="appAttendeeInput" class="input" type="text" placeholder="اسم الحاضر" />
+          <button id="appAddAttendee" class="button" type="button">إضافة الحاضر</button>
+        </div>
+        <ul id="appAttendeesList" class="app-chips"></ul>
+        <p id="appAttendeesEmpty" class="app-empty">لم يُضف حاضرون بعد.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="card app-output-card">
+    <h2>المحضر النهائي</h2>
+    <div class="row app-toolbar">
+      <button id="appExport" class="button" type="button">توليد المحضر</button>
+      <button id="appCopy" class="button sec" type="button">نسخ المحضر</button>
+      <button id="appPrint" class="button sec" type="button">طباعة المحضر</button>
+      <button id="appClear" class="button sec" type="button">حذف كل البيانات</button>
+    </div>
+    <div id="appOutput" class="out app-print">لم يُولَّد المحضر بعد. اضغط «توليد المحضر».</div>
+    <p id="appStatus" class="app-hint">جاهز للعمل دون اتصال بالإنترنت.</p>
+  </div>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت أو حساب؟</h3><p>نعم، التطبيق يعمل بالكامل داخل المتصفح ولا يحتاج إلى تسجيل حساب أو اتصال بالإنترنت. تُحفظ الملاحظات والمحضر في التخزين المحلي للجهاز، فتجد بياناتك كما تركتها عند إعادة الفتح.</p><h3>كيف يستخرج التطبيق بنود العمل والمسؤولين؟</h3><p>يعتمد على قواعد نصية بسيطة: أي مداخلة تحتوي كلمة «مهمة» أو «سيتولى» أو «بحلول» أو رمز @ تُعدّ بند عمل. يُستخرج المسؤول من @الاسم أو بعد كلمة «المسؤول»، ويُستخرج الموعد من التواريخ والأيام والتعبيرات مثل «خلال ثلاثة أيام» أو «الأحد»، وتُحدَّد الأولوية من كلمات مثل «عاجل» أو «مهم».</p><h3>هل يمكنني تصدير المحضر ومشاركته؟</h3><p>نعم، اضغط «توليد المحضر» لإنشاء النسخة المنظّمة، ثم «نسخ المحضر» لوضعه في الحافظة ولصقه في أي تطبيق، أو «طباعة المحضر» لإخراجه ورقيًا أو حفظه كملف PDF من نافذة الطباعة.</p><h3>أين تُحفظ البيانات وكيف أحذفها؟</h3><p>تُحفظ كل البيانات محليًا في متصفحك عبر localStorage، ولا تُرسل إلى أي خادم. زر «حذف كل البيانات» يمسح الملاحظات والحاضرين وجدول الأعمال والمحضر نهائيًا بعد تأكيدك.</p><h3>ماذا يحدث إذا كتبت ملاحظة بدون أي كلمات مفتاحية؟</h3><p>تظل الملاحظة محفوظة في سجل الملاحظات بطابعها الزمني ويمكن البحث فيها، لكنها لن تُدرج ضمن بنود العمل المستخرجة إلا إذا احتوت علامة مثل @ أو كلمة تدل على مهمة أو موعد.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  var KEY='app_meeting_minutes_v1';
+  var PLACEHOLDER='لم يُولَّد المحضر بعد. اضغط «توليد المحضر».';
+  var TEMPLATES={
+    team:'1. مراجعة مهام الاجتماع السابق\n2. مستجدات الأسبوع\n3. العوائق والتحديات\n4. خطة الأسبوع القادم\n5. القرارات وبنود العمل',
+    project:'1. نطاق المشروع والجدول الزمني\n2. نسبة الإنجاز\n3. المخاطر والاعتمادات\n4. الميزانية\n5. الخطوات التالية',
+    general:'1. الافتتاح والتعارف\n2. عرض الموضوع\n3. مناقشة مفتوحة\n4. الخلاصة والقرارات'
+  };
+  var ACTION_MARKERS=['مهمة','مهمّه','سيتولى','يتولى','المسؤول','مسؤول','التزام','بحلول','متابعة','تنفيذ','إنجاز','تجهيز','إعداد','مراجعة','إرسال','تواصل'];
+  var HIGH=['عاجل','طارئ','فوري','حرج'];
+  var MID=['مهم','ضروري','أولوية'];
+
+  var state={title:'',date:'',agenda:'',attendees:[],notes:[],actions:{},elapsed:0,running:false};
+  var startTs=0,timerId=null,outEl=null;
+
+  function $(id){return document.getElementById(id);}
+  function pad(n){return (n<10?'0':'')+n;}
+  function fmt(ms){var s=Math.max(0,Math.floor(ms/1000));return pad(Math.floor(s/3600))+':'+pad(Math.floor((s%3600)/60))+':'+pad(s%60);}
+  function status(m){var el=$('appStatus');if(el)el.textContent=m;}
+  function safeId(s){return String(s).replace(/[^A-Za-z0-9_-]/g,'_');}
+
+  function save(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify({title:state.title,date:state.date,agenda:state.agenda,attendees:state.attendees,notes:state.notes,elapsed:state.elapsed,actions:state.actions}));
+    }catch(e){}
+  }
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(!raw)return;
+      var d=JSON.parse(raw);
+      if(!d||typeof d!=='object')return;
+      state.title=d.title||'';
+      state.date=d.date||'';
+      state.agenda=d.agenda||'';
+      state.attendees=Array.isArray(d.attendees)?d.attendees:[];
+      state.notes=Array.isArray(d.notes)?d.notes:[];
+      state.actions=(d.actions&&typeof d.actions==='object')?d.actions:{};
+      state.elapsed=(typeof d.elapsed==='number')?d.elapsed:0;
+    }catch(e){}
+  }
+
+  function renderTimer(){var el=$('appTimer');if(el)el.textContent=fmt(state.elapsed);}
+  function startTimer(){
+    if(state.running)return;
+    state.running=true;
+    startTs=Date.now()-state.elapsed;
+    timerId=setInterval(function(){state.elapsed=Date.now()-startTs;renderTimer();},500);
+    status('الموقّت يعمل.');
+  }
+  function pauseTimer(){
+    if(!state.running)return;
+    state.running=false;
+    if(timerId){clearInterval(timerId);timerId=null;}
+    state.elapsed=Date.now()-startTs;
+    renderTimer();save();
+    status('تم إيقاف الموقّت مؤقتاً.');
+  }
+  function resetTimer(){
+    state.running=false;
+    if(timerId){clearInterval(timerId);timerId=null;}
+    state.elapsed=0;renderTimer();save();
+    status('تم تصفير الموقّت.');
+  }
+
+  function insertStamp(){
+    var ta=$('appNoteInput');
+    var stamp='['+fmt(state.elapsed)+'] ';
+    var s=ta.selectionStart,e=ta.selectionEnd,v=ta.value;
+    ta.value=v.slice(0,s)+stamp+v.slice(e);
+    ta.focus();
+    ta.selectionStart=ta.selectionEnd=s+stamp.length;
+  }
+
+  function addNote(){
+    var t=$('appNoteInput').value.trim();
+    if(!t){status('لا يمكن إضافة مداخلة فارغة.');return;}
+    state.notes.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,7),time:state.elapsed,text:t});
+    $('appNoteInput').value='';
+    save();renderNotes();extract();
+    status('تمت إضافة المداخلة.');
+  }
+  function deleteNote(id){
+    state.notes=state.notes.filter(function(n){return n.id!==id;});
+    save();renderNotes();extract();
+    status('تم حذف المداخلة.');
+  }
+  function renderNotes(){
+    var list=$('appNotesList');
+    list.innerHTML='';
+    var q=$('appSearch').value.trim().toLowerCase();
+    var items=state.notes.filter(function(n){return !q||n.text.toLowerCase().indexOf(q)>-1;});
+    $('appNotesCount').textContent=state.notes.length;
+    $('appNotesEmpty').style.display=items.length?'none':'block';
+    if(!items.length&&state.notes.length){
+      $('appNotesEmpty').textContent='لا نتائج مطابقة للبحث.';
+      $('appNotesEmpty').style.display='block';
+    }else if(items.length){
+      $('appNotesEmpty').style.display='none';
+    }else{
+      $('appNotesEmpty').textContent='لا توجد ملاحظات بعد. شغّل الموقّت ثم أضف مداخلة.';
+      $('appNotesEmpty').style.display='block';
+    }
+    items.forEach(function(n){
+      var li=document.createElement('li');li.className='app-note';
+      var b=document.createElement('span');b.className='badge';b.textContent=fmt(n.time);
+      var sp=document.createElement('span');sp.className='app-note-text';sp.textContent=n.text;
+      var del=document.createElement('button');del.type='button';del.className='button sec app-mini';del.id='appDel-'+safeId(n.id);del.textContent='حذف';
+      del.addEventListener('click',function(){deleteNote(n.id);});
+      li.appendChild(b);li.appendChild(sp);li.appendChild(del);
+      list.appendChild(li);
+    });
+  }
+
+  function splitSentences(t){return t.split(/[\n\.\!\?؟؛;]+/).map(function(s){return s.trim();}).filter(Boolean);}
+  function isAction(s){
+    if(s.indexOf('@')>-1)return true;
+    for(var i=0;i<ACTION_MARKERS.length;i++){if(s.indexOf(ACTION_MARKERS[i])>-1)return true;}
+    return false;
+  }
+  function findAssignee(s){
+    var m=s.match(/@([^\s@،,\.]+)/);
+    if(m)return m[1];
+    m=s.match(/(?:المسؤول|مسؤول|سيتولى|يتولى)\s*:?\s*([^\s،,\.]{2,20})/);
+    if(m)return m[1];
+    for(var i=0;i<state.attendees.length;i++){
+      var name=String(state.attendees[i]).trim();
+      if(name&&s.indexOf(name)>-1)return name;
+    }
+    return '';
+  }
+  function findDue(s){
+    var m=s.match(/\d{1,4}[\/\-]\d{1,2}(?:[\/\-]\d{1,4})?/);
+    if(m)return m[0];
+    m=s.match(/\d{1,2}\s*(?:يناير|فبراير|مارس|أبريل|مايو|يونيو|يوليو|أغسطس|سبتمبر|أكتوبر|نوفمبر|ديسمبر)/);
+    if(m)return m[0];
+    m=s.match(/خلال\s+(?:يومين|أسبوعين|شهرين|\d+\s*(?:يوم|أيام|أسبوع|أسابيع|شهر|أشهر))/);
+    if(m)return m[0];
+    var words=['غداً','غدا','بعد غد','الأسبوع القادم','الأسبوع المقبل','نهاية الأسبوع','نهاية الشهر','الشهر القادم','اليوم'];
+    for(var i=0;i<words.length;i++){if(s.indexOf(words[i])>-1)return words[i];}
+    m=s.match(/(?:يوم\s+)?(?:الأحد|الاثنين|الثلاثاء|الأربعاء|الخميس|الجمعة|السبت)/);
+    if(m)return m[0];
+    return '';
+  }
+  function findPriority(s){
+    for(var i=0;i<HIGH.length;i++){if(s.indexOf(HIGH[i])>-1)return 'عالية';}
+    for(var j=0;j<MID.length;j++){if(s.indexOf(MID[j])>-1)return 'متوسطة';}
+    return '';
+  }
+  function computeActions(){
+    var res=[];
+    state.notes.forEach(function(n){
+      splitSentences(n.text).forEach(function(s){
+        if(!isAction(s))return;
+        res.push({id:n.id+':'+res.length,text:s,time:n.time,assignee:findAssignee(s),due:findDue(s),priority:findPriority(s)});
+      });
+    });
+    return res;
+  }
+  function makeBadge(txt){var b=document.createElement('span');b.className='badge';b.textContent=txt;return b;}
+  function renderActions(items){
+    var list=$('appActionsList');
+    list.innerHTML='';
+    $('appActionsEmpty').style.display=items.length?'none':'block';
+    items.forEach(function(a){
+      var li=document.createElement('li');li.className='app-action';
+      var cb=document.createElement('input');cb.type='checkbox';cb.id='appAct-'+safeId(a.id);cb.checked=!!state.actions[a.id];
+      cb.title='تحديد البند كمنجز';
+      cb.addEventListener('change',function(){state.actions[a.id]=cb.checked;save();});
+      var body=document.createElement('div');body.className='app-action-body';
+      var t=document.createElement('div');t.className='app-action-text';t.textContent=a.text;
+      var meta=document.createElement('div');meta.className='app-meta';
+      meta.appendChild(makeBadge('الوقت: '+fmt(a.time)));
+      if(a.assignee)meta.appendChild(makeBadge('المسؤول: '+a.assignee));
+      if(a.due)meta.appendChild(makeBadge('الموعد: '+a.due));
+      if(a.priority){var pb=makeBadge('الأولوية: '+a.priority);pb.className='badge app-badge-pri '+(a.priority==='عالية'?'high':'mid');meta.appendChild(pb);}
+      body.appendChild(t);body.appendChild(meta);
+      li.appendChild(cb);li.appendChild(body);
+      list.appendChild(li);
+    });
+  }
+  function extract(){renderActions(computeActions());}
+
+  function applyTemplate(){
+    var v=$('appTemplate').value;
+    if(!v||!TEMPLATES[v]){status('اختر قالباً أولاً.');return;}
+    $('appAgenda').value=TEMPLATES[v];
+    state.agenda=TEMPLATES[v];
+    save();
+    status('تمت تعبئة جدول الأعمال من القالب.');
+  }
+
+  function addAttendee(){
+    var v=$('appAttendeeInput').value.trim();
+    if(!v){status('اكتب اسم الحاضر أولاً.');return;}
+    if(state.attendees.indexOf(v)>-1){status('هذا الاسم مضاف مسبقاً.');return;}
+    state.attendees.push(v);
+    $('appAttendeeInput').value='';
+    save();renderAttendees();extract();
+    status('تمت إضافة الحاضر.');
+  }
+  function renderAttendees(){
+    var list=$('appAttendeesList');
+    list.innerHTML='';
+    $('appAttendeesEmpty').style.display=state.attendees.length?'none':'block';
+    state.attendees.forEach(function(name,idx){
+      var li=document.createElement('li');li.className='app-chip';
+      var s=document.createElement('span');s.textContent=name;
+      var rm=document.createElement('button');rm.type='button';rm.className='app-chip-x';rm.id='appRmAtt-'+idx;rm.textContent='×';rm.title='حذف الحاضر';
+      rm.addEventListener('click',function(){
+        state.attendees.splice(idx,1);
+        save();renderAttendees();extract();
+        status('تم حذف الحاضر.');
+      });
+      li.appendChild(s);li.appendChild(rm);
+      list.appendChild(li);
+    });
+  }
+
+  function buildReport(){
+    var L=[];
+    L.push('محضر اجتماع');
+    L.push('العنوان: '+(state.title||'—'));
+    L.push('التاريخ: '+(state.date||'—'));
+    L.push('المدة: '+fmt(state.elapsed));
+    L.push('الحاضرون: '+(state.attendees.length?state.attendees.join('، '):'—'));
+    L.push('');
+    L.push('جدول الأعمال:');
+    L.push(state.agenda.trim()?state.agenda.trim():'—');
+    L.push('');
+    L.push('سجل الملاحظات:');
+    if(state.notes.length){state.notes.forEach(function(n){L.push('['+fmt(n.time)+'] '+n.text);});}
+    else{L.push('—');}
+    L.push('');
+    L.push('بنود العمل:');
+    var acts=computeActions();
+    if(acts.length){
+      acts.forEach(function(a){
+        var line=(state.actions[a.id]?'[منجزة] ':'[ ] ')+a.text;
+        if(a.assignee)line+=' — المسؤول: '+a.assignee;
+        if(a.due)line+=' — الموعد: '+a.due;
+        if(a.priority)line+=' — الأولوية: '+a.priority;
+        L.push('- '+line);
+      });
+    }else{L.push('—');}
+    return L.join('\n');
+  }
+  function exportOut(){
+    outEl.textContent=buildReport();
+    status('تم توليد المحضر. يمكنك نسخه أو طباعته.');
+  }
+  function fallbackCopy(text){
+    try{
+      var ta=document.createElement('textarea');
+      ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.focus();ta.select();
+      var ok=document.execCommand('copy');
+      document.body.removeChild(ta);
+      status(ok?'تم نسخ المحضر إلى الحافظة.':'تعذّر النسخ تلقائياً، حدّد النص يدوياً.');
+    }catch(e){status('تعذّر النسخ تلقائياً، حدّد النص يدوياً.');}
+  }
+  function copyOut(){
+    var text=outEl.textContent;
+    if(!text||text===PLACEHOLDER){status('ولّد المحضر أولاً ثم انسخه.');return;}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){status('تم نسخ المحضر إلى الحافظة.');},function(){fallbackCopy(text);});
+    }else{fallbackCopy(text);}
+  }
+  function printOut(){
+    if(outEl.textContent===PLACEHOLDER)exportOut();
+    status('جارٍ تجهيز الطباعة…');
+    try{window.print();}catch(e){status('تعذّر فتح نافذة الطباعة.');}
+  }
+  function clearAll(){
+    if(!window.confirm('سيتم حذف كل الملاحظات والحاضرين والمحضر. هل أنت متأكد؟'))return;
+    state={title:'',date:'',agenda:'',attendees:[],notes:[],actions:{},elapsed:0,running:false};
+    if(timerId){clearInterval(timerId);timerId=null;}
+    try{localStorage.removeItem(KEY);}catch(e){}
+    $('appTitle').value='';$('appDate').value='';$('appAgenda').value='';
+    $('appNoteInput').value='';$('appSearch').value='';$('appTemplate').value='';
+    renderTimer();renderNotes();renderAttendees();extract();
+    outEl.textContent=PLACEHOLDER;
+    status('تم حذف كل البيانات.');
+  }
+
+  function init(){
+    outEl=$('appOutput');
+    load();
+    $('appTitle').value=state.title;
+    $('appDate').value=state.date||new Date().toISOString().slice(0,10);
+    state.date=$('appDate').value;
+    $('appAgenda').value=state.agenda;
+    renderTimer();renderNotes();renderAttendees();extract();
+    if(state.notes.length||state.title)status('تم استرجاع بياناتك المحفوظة من التخزين المحلي.');
+
+    $('appStart').addEventListener('click',startTimer);
+    $('appPause').addEventListener('click',pauseTimer);
+    $('appReset').addEventListener('click',resetTimer);
+    $('appAddNote').addEventListener('click',addNote);
+    $('appStamp').addEventListener('click',insertStamp);
+    $('appSearch').addEventListener('input',renderNotes);
+    $('appApplyTemplate').addEventListener('click',applyTemplate);
+    $('appAddAttendee').addEventListener('click',addAttendee);
+    $('appAttendeeInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addAttendee();}});
+    $('appExport').addEventListener('click',exportOut);
+    $('appCopy').addEventListener('click',copyOut);
+    $('appPrint').addEventListener('click',printOut);
+    $('appClear').addEventListener('click',clearAll);
+    $('appTitle').addEventListener('input',function(){state.title=this.value;save();});
+    $('appDate').addEventListener('input',function(){state.date=this.value;save();});
+    $('appAgenda').addEventListener('input',function(){state.agenda=this.value;save();});
+    $('appNoteInput').addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();addNote();}});
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+</body>
+</html>
