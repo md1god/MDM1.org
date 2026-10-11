@@ -228,7 +228,23 @@ def main():
     if not any(t["slug"] == "zakat-calculator" for t in d["tools"]):
         d["tools"].append({k: ZAKAT[k] for k in ("slug", "title", "h1", "description", "date", "source", "source_url")})
     if "--indexnow" in sys.argv: return indexnow(d)
-    if d["enabled"] and not os.environ.get("DRY"):
+    if d["enabled"] and os.environ.get("TOOL_JSON", "").strip():
+        # Tool generated elsewhere (Scout) and handed over as data: validate with the same gates, then publish.
+        try: r = json.loads(os.environ["TOOL_JSON"])
+        except ValueError: r = None
+        c = None
+        if isinstance(r, dict) and isinstance(r.get("slug"), str):
+            pool = [{"id": "evergreen:" + r["slug"], "name": r["slug"], "desc": "", "url": None}]
+            r["pick"] = pool[0]["id"]
+            c = validate(r, pool, d)
+        if c:
+            t = {k: r[k] for k in ("slug", "title", "h1", "description", "body_html", "script_js", "faq")}
+            t.update(date=D, source=None, source_url=None)
+            wr(f"tools/{t['slug']}.html", tool_page(t))
+            d["tools"].append({k: t[k] for k in ("slug", "title", "h1", "description", "date", "source", "source_url")})
+            print("PUBLISHED tools/%s.html from handed-over spec" % t["slug"])
+        else: print("handed-over tool rejected:", LAST_REASON or "invalid json")
+    elif d["enabled"] and not os.environ.get("DRY"):
         cands = candidates(set(d["seen"]))
         d["seen"] = (d["seen"] + [c["id"] for c in cands])[-2000:]
         made = {t["slug"] for t in d["tools"]}
