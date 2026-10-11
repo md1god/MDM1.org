@@ -47,7 +47,7 @@ CSS = """.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
 .tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
 .tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}"""
 
-def shell(title, desc, canon, h1, label, main, script="", ld=None, foot=""):
+def shell(title, desc, canon, h1, label, main, script="", ld=None, foot="", extra_css="", back=("https://mdm1.org/tools/", "كل الأدوات")):
     ldj = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
     return f'''<!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -63,7 +63,7 @@ def shell(title, desc, canon, h1, label, main, script="", ld=None, foot=""):
 <meta property="og:url" content="{canon}">
 <link rel="stylesheet" href="../css/global.css">
 <link rel="stylesheet" href="../css/pages.css">
-<style>{CSS}</style>
+<style>{CSS}{extra_css}</style>
 {ldj}
 <meta name="google-adsense-account" content="ca-pub-8270783733461099">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
@@ -72,7 +72,7 @@ def shell(title, desc, canon, h1, label, main, script="", ld=None, foot=""):
 <div id="particles"></div>
 <nav class="navbar">
   <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
-  <a href="https://mdm1.org/tools/" class="nav-back">كل الأدوات</a>
+  <a href="{back[0]}" class="nav-back">{back[1]}</a>
 </nav>
 <header class="page-hero reveal">
   <div class="page-label">{label}</div>
@@ -275,4 +275,5 @@ def main():
     publish_files(d)
     wr(DATA, json.dumps(d, ensure_ascii=False, indent=1))
 
-main()
+if __name__ == "__main__":
+    main()
