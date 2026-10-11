@@ -65,6 +65,8 @@ def shell(title, desc, canon, h1, label, main, script="", ld=None, foot=""):
 <link rel="stylesheet" href="../css/pages.css">
 <style>{CSS}</style>
 {ldj}
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="particles"></div>
@@ -147,6 +149,30 @@ def candidates(seen):
     except Exception as e: print("::warning::hn fetch failed:", e)
     return [c for c in out if c["id"] not in seen][:14]
 
+EVERGREEN = [
+ ("hijri-gregorian-converter", "محول التاريخ الهجري والميلادي بدقة (يوم/شهر/سنة في الاتجاهين) باستخدام Intl.DateTimeFormat مع التقويم islamic-umalqura"),
+ ("inheritance-calculator", "حاسبة المواريث الشرعية المبسطة: زوج/زوجة، أب، أم، أبناء، بنات، مع شرح كل نصيب وتنبيه بمراجعة جهة الفتوى"),
+ ("bmi-calculator", "حاسبة مؤشر كتلة الجسم والوزن المثالي والسعرات اليومية التقريبية بالعربية"),
+ ("end-of-service-calculator", "حاسبة مكافأة نهاية الخدمة حسب سنوات العمل والراتب الأخير (نظام عمل عام مبسّط مع تنبيه)"),
+ ("loan-installment-calculator", "حاسبة القسط الشهري للقرض والفائدة الإجمالية وجدول السداد"),
+ ("age-calculator", "حاسبة العمر بالسنوات والشهور والأيام والتاريخ الهجري المقابل واليوم القادم لعيد الميلاد"),
+ ("discount-calculator", "حاسبة الخصم والضريبة وسعر البيع بعد الخصم ونسبة التوفير"),
+ ("percentage-calculator", "حاسبة النسبة المئوية بكل صورها: كم يساوي ٪ من رقم، نسبة التغيير، الرقم الأصلي"),
+ ("pregnancy-due-date-calculator", "حاسبة موعد الولادة المتوقع وعمر الحمل بالأسابيع من أول يوم لآخر دورة"),
+ ("prayer-fasting-days-planner", "حاسبة قضاء الصيام والصلوات الفائتة وخطة سداد يومية"),
+ ("arabic-text-counter", "عداد كلمات وحروف النص العربي ووقت القراءة وإزالة التشكيل والمسافات الزائدة"),
+ ("currency-profit-margin-calculator", "حاسبة هامش الربح وسعر البيع والتكلفة للتجار والمتاجر الإلكترونية"),
+ ("gold-price-calculator", "حاسبة قيمة الذهب حسب الوزن والعيار (24/22/21/18) وسعر الجرام يدخله المستخدم مع المصنعية"),
+ ("date-difference-calculator", "حاسبة الفرق بين تاريخين بالأيام والأسابيع والشهور وأيام العمل"),
+ ("random-name-and-password-generator", "مولّد كلمات مرور قوية وأرقام سرية عشوائية مع مقياس القوة، كله داخل المتصفح"),
+ ("qr-text-plan-split-bill", "حاسبة تقسيم الفاتورة بين الأصدقاء مع البقشيش والضريبة"),
+ ("fuel-cost-calculator", "حاسبة تكلفة الرحلة والبنزين حسب المسافة واستهلاك السيارة وسعر اللتر"),
+ ("unit-converter-arabic", "محول وحدات عربي: الطول والوزن والحرارة والمساحة والحجم بواجهة بسيطة"),
+ ("salary-net-calculator", "حاسبة صافي الراتب بعد الخصومات والتأمينات والضريبة بنسب يدخلها المستخدم"),
+ ("study-time-planner", "مخطط مذاكرة يوزّع المواد على الأيام المتبقية للامتحان حسب الصعوبة وساعات اليوم"),
+]
+LAST_REASON = ""
+
 PROMPT = """You are building ONE original, genuinely useful, single-page Arabic web tool for mdm1.org, inspired by the IDEA behind one trending project below.
 Pick the one candidate that can be built as a fully working CLIENT-SIDE tool (HTML form + vanilla JS, no server, no network, no external libs). If none fits, answer {"pick":null}.
 Rules: write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; the tool must really work.
@@ -155,12 +181,14 @@ Return ONLY JSON: {"pick":"<candidate id>","slug":"ascii-kebab-3-40","title":"Ar
 "script_js":"vanilla JS wiring the ids above","faq":[{"q":"..","a":".."}  (3-5 items)]}
 Candidates:\\n"""
 
-def ask(cands):
+def ask(cands, must=False, feedback=""):
     if os.environ.get("TREND_MOCK_LLM"): return json.load(open(os.environ["TREND_MOCK_LLM"], encoding="utf-8"))
-    msg = PROMPT + "\n".join(f"- {c['id']} | {c['name']} | {c['desc'][:160]}" for c in cands)
+    msg = PROMPT + "\n".join(f"- {c['id']} | {c['name']} | {c['desc'][:260]}" for c in cands)
+    if must: msg += "\nYou MUST pick the candidate above and build it (never return null)."
+    if feedback: msg += "\nYour previous answer was rejected because: " + feedback + ". Fix exactly that and return the full JSON again."
     for m in MODELS:
         try:
-            body = json.dumps({"model": m, "temperature": 0.4, "max_tokens": 3800, "response_format": {"type": "json_object"}, "messages": [{"role": "user", "content": msg}]}).encode()
+            body = json.dumps({"model": m, "temperature": 0.4, "max_tokens": 6500, "response_format": {"type": "json_object"}, "messages": [{"role": "user", "content": msg}]}).encode()
             r = urllib.request.Request("https://models.github.ai/inference/chat/completions", body, {"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"], "Content-Type": "application/json"})
             return json.loads(json.load(urllib.request.urlopen(r, timeout=180))["choices"][0]["message"]["content"])
         except urllib.error.HTTPError as e: print(f"::warning::{m}: HTTP {e.code} {e.read()[:200]}")
@@ -169,7 +197,9 @@ def ask(cands):
 
 def validate(r, cands, d):
     c = next((x for x in cands if x["id"] == r.get("pick")), None)
-    bad = lambda why: print("rejected:", why) or None
+    def bad(why):
+        global LAST_REASON
+        LAST_REASON = why; print("rejected:", why); return None
     if not c: return bad("pick not in candidates")
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){0,5}", r.get("slug", "")) or len(r["slug"]) > 40 or any(t["slug"] == r["slug"] for t in d["tools"]) or r["slug"] in ("index",): return bad("slug")
     for k in ("title", "h1", "description", "body_html", "script_js"):
@@ -179,7 +209,7 @@ def validate(r, cands, d):
     if not re.search(r"[\u0600-\u06FF]", r["title"] + r["body_html"]): return bad("not Arabic")
     if re.search(r"<script|<iframe|<link|<style|\son\w+\s*=|(src|href|action)\s*=\s*[\"']?(https?:)?//", r["body_html"], re.I): return bad("unsafe html")
     if re.search(r"fetch\s*\(|XMLHttpRequest|WebSocket|import\s*\(|eval\s*\(|new Function|document\.cookie|https?://|</script", r["script_js"], re.I): return bad("unsafe js")
-    names = {c["name"].split("/")[-1].lower()} - {""}
+    names = set() if c["id"].startswith("evergreen:") else {c["name"].split("/")[-1].lower()} - {""}
     if any(n in (r["title"] + r["slug"]).lower() for n in names if len(n) > 3): return bad("contains source name")
     with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as f: f.write(r["script_js"])
     if subprocess.run(["node", "--check", f.name], capture_output=True).returncode not in (0, 127): return bad("js syntax")
@@ -200,12 +230,28 @@ def main():
     if "--indexnow" in sys.argv: return indexnow(d)
     if d["enabled"] and not os.environ.get("DRY"):
         cands = candidates(set(d["seen"]))
-        r = ask(cands) if cands else None
         d["seen"] = (d["seen"] + [c["id"] for c in cands])[-2000:]
-        c = validate(r, cands, d) if r and r.get("pick") else None
+        made = {t["slug"] for t in d["tools"]}
+        ever = [{"id": "evergreen:" + sl, "name": sl, "desc": idea, "url": None, "slug": sl}
+                for sl, idea in EVERGREEN if sl not in made and "evergreen:" + sl not in d["seen"]]
+        plans = []
+        if cands: plans.append((cands, False))
+        if ever: plans.append((ever[:1], True))        # guaranteed daily attempt from the evergreen list
+        c = r = None
+        for pool, must in plans:
+            feedback = ""
+            for attempt in range(3):
+                r = ask(pool, must, feedback)
+                if must and r: r["pick"] = pool[0]["id"]; r["slug"] = r.get("slug") or pool[0]["slug"]
+                c = validate(r, pool, d) if r and r.get("pick") else None
+                if c or not r or not r.get("pick"): break
+                feedback = LAST_REASON
+            if c: break
+        if ever and (c or r) and (c or {}).get("id", ever[0]["id"]) == ever[0]["id"]: d["seen"].append(ever[0]["id"])
         if c:
             t = {k: r[k] for k in ("slug", "title", "h1", "description", "body_html", "script_js", "faq")}
-            t.update(date=D, source=c["name"], source_url=c["url"])
+            t.update(date=D, source=None if c["id"].startswith("evergreen:") else c["name"],
+                     source_url=None if c["id"].startswith("evergreen:") else c["url"])
             wr(f"tools/{t['slug']}.html", tool_page(t))
             d["tools"].append({k: t[k] for k in ("slug", "title", "h1", "description", "date", "source", "source_url")})
             print("PUBLISHED tools/%s.html from %s" % (t["slug"], c["id"]))
