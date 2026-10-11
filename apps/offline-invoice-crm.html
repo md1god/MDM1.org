@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدير العملاء والفواتير والمخزون لأصحاب الأنشطة الصغيرة والمستقلين | MDM1</title>
+<meta name="description" content="أدِر عملاءك ومورديك وفواتيرك وعروض أسعارك بالضريبة والإجماليات ومتابعة الدفع والمتأخرات والمخزون، مع إحصاءات شهرية وطباعة PDF وحفظ محلي دون إنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-invoice-crm.html">
+<meta property="og:title" content="مدير العملاء والفواتير والمخزون لأصحاب الأنشطة الصغيرة والمستقلين">
+<meta property="og:description" content="أدِر عملاءك ومورديك وفواتيرك وعروض أسعارك بالضريبة والإجماليات ومتابعة الدفع والمتأخرات والمخزون، مع إحصاءات شهرية وطباعة PDF وحفظ محلي دون إنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-invoice-crm.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:1100px;margin:0 auto;color:var(--light)}
+.app-intro{line-height:1.9;margin:0 0 16px}
+.app-tabs{flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.app-tab.is-active{background:var(--gold);color:var(--dark)}
+.app-view{display:none}
+.app-view.is-active{display:block}
+.app-h2{color:var(--gold-bright);font-size:1.05rem;margin:0 0 10px}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.app-table-wrap{overflow-x:auto;margin-top:10px}
+.app-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.app-table th,.app-table td{padding:8px;border-bottom:1px solid var(--gold-dim);text-align:right;white-space:nowrap}
+.app-table th{color:var(--gold-bright)}
+.app-empty{color:var(--gold-dim);padding:12px 0;text-align:center}
+.app-line{gap:8px;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap}
+.app-line>div{flex:1 1 140px}
+.app-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.78rem;border:1px solid}
+.app-badge.is-paid{color:#7ee787;border-color:#7ee787}
+.app-badge.is-due{color:#ffd166;border-color:#ffd166}
+.app-badge.is-over{color:#ff7b72;border-color:#ff7b72}
+.app-badge.is-quote{color:#79c0ff;border-color:#79c0ff}
+.app-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.app-actions .input{width:100px}
+.app-total{font-size:1.05rem}
+.app-print-area{display:none}
+.app-warn{color:#ff7b72}
+.app-ok{color:#7ee787}
+@media print{
+body *{visibility:hidden!important}
+.app-print-area,.app-print-area *{visibility:visible!important}
+.app-print-area{display:block!important;position:absolute;top:0;right:0;left:0;padding:24px;color:#000;background:#fff}
+.app-print-area table{width:100%;border-collapse:collapse}
+.app-print-area th,.app-print-area td{border:1px solid #999;padding:6px;text-align:right}
+.app-skip-print,.app-skip-print *{display:none!important;visibility:hidden!important}
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق إدارة العملاء والفواتير والمخزون", "url": "https://mdm1.org/apps/offline-invoice-crm.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، التطبيق يعمل بالكامل داخل المتصفح دون إنترنت، لأن كل العمليات الحسابية والتخزين تتم محليًا على جهازك دون أي إرسال للبيانات."}}, {"@type": "Question", "name": "أين تُحفظ بياناتي وهل تبقى بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ البيانات تلقائيًا في التخزين المحلي للمتصفح (localStorage)، وتبقى متاحة عند إعادة فتح الصفحة على نفس الجهاز والمتصفح."}}, {"@type": "Question", "name": "كيف تُحسب الضريبة والخصم والإجمالي؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحسب الإجمالي الفرعي من حاصل ضرب الكمية في السعر لكل بند، ثم يُطرح الخصم، وتُطبَّق نسبة الضريبة على الناتج، ويظهر الإجمالي النهائي فورًا أثناء الكتابة."}}, {"@type": "Question", "name": "كيف أطبع الفاتورة أو أحفظها بصيغة PDF؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر «طباعة / PDF» بجانب الفاتورة، فتفتح نافذة الطباعة ويمكنك اختيار الطابعة أو خيار الحفظ كملف PDF."}}, {"@type": "Question", "name": "كيف يتابع التطبيق المدفوعات المتأخرة؟", "acceptedAnswer": {"@type": "Answer", "text": "عند تسجيل الدفعات تُقارن القيمة بتاريخ الاستحقاق، فتُعلَّم الفاتورة تلقائيًا كـ«مدفوعة» أو «مدفوعة جزئيًا» أو «متأخرة»، مع عرض عدد المتأخرات في لوحة الإحصاءات."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق إدارة العملاء والفواتير والمخزون</h1>
+  <p class="page-sub">أدِر عملاءك ومورديك وفواتيرك وعروض أسعارك بالضريبة والإجماليات ومتابعة الدفع والمتأخرات والمخزون، مع إحصاءات شهرية وطباعة PDF وحفظ محلي دون إنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">نعم، يمكنك إدارة عملائك ومورديك وفواتيرك ومخزونك بالكامل داخل المتصفح دون إنترنت ودون إنشاء أي حساب. يوفّر هذا التطبيق العربي المصمّم لأصحاب الأنشطة الصغيرة والمستقلين سجلًّا منظّمًا للعملاء والموردين، وأداة لإنشاء الفواتير وعروض الأسعار مع حساب الضريبة والخصم والإجماليات تلقائيًا، ومتابعة حالة الدفع والمبالغ المتأخرة، وإدارة مبسّطة للمخزون. كما يعرض لوحة إحصاءات شهرية تلخّص المبيعات والمحصّل والمتبقي، ويتيح طباعة أي فاتورة أو حفظها بصيغة PDF من نافذة الطباعة. تُحفظ جميع البيانات محليًا على جهازك، فتبقى تحت سيطرتك الكاملة ويمكنك متابعتها في أي وقت.</p>
+<div class="app" id="app-root">
+  <div class="row app-tabs">
+    <button class="button sec app-tab is-active" id="tab-parties" type="button">العملاء والموردون</button>
+    <button class="button sec app-tab" id="tab-invoices" type="button">الفواتير والعروض</button>
+    <button class="button sec app-tab" id="tab-stock" type="button">المخزون</button>
+    <button class="button sec app-tab" id="tab-stats" type="button">الإحصاءات الشهرية</button>
+  </div>
+
+  <section class="app-view is-active" id="view-parties">
+    <div class="card">
+      <h2 class="app-h2">إضافة عميل أو مورد</h2>
+      <div class="app-grid">
+        <div><label class="label" for="party-name">الاسم</label><input class="input" id="party-name" type="text" placeholder="اسم العميل أو المورد"></div>
+        <div><label class="label" for="party-type">النوع</label><select class="select" id="party-type"><option value="عميل">عميل</option><option value="مورد">مورد</option></select></div>
+        <div><label class="label" for="party-phone">رقم الهاتف</label><input class="input" id="party-phone" type="text" placeholder="اختياري"></div>
+      </div>
+      <div class="row"><button class="button" id="btn-add-party" type="button">إضافة إلى القائمة</button><span class="out" id="party-msg"></span></div>
+    </div>
+    <div class="card">
+      <h2 class="app-h2">قائمة العملاء والموردين</h2>
+      <div class="row"><label class="label" for="party-search">بحث بالاسم</label><input class="input" id="party-search" type="text" placeholder="اكتب حرفًا للتصفية"></div>
+      <div class="app-table-wrap">
+        <table class="app-table">
+          <thead><tr><th>الاسم</th><th>النوع</th><th>الهاتف</th><th>عدد المستندات</th><th>إجراءات</th></tr></thead>
+          <tbody id="party-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-invoices">
+    <div class="card">
+      <h2 class="app-h2">إنشاء فاتورة أو عرض سعر</h2>
+      <div class="app-grid">
+        <div><label class="label" for="inv-type">نوع المستند</label><select class="select" id="inv-type"><option value="فاتورة">فاتورة</option><option value="عرض سعر">عرض سعر</option></select></div>
+        <div><label class="label" for="inv-number">رقم المستند</label><input class="input" id="inv-number" type="text"></div>
+        <div><label class="label" for="inv-party">العميل أو المورد</label><select class="select" id="inv-party"></select></div>
+        <div><label class="label" for="inv-date">التاريخ</label><input class="input" id="inv-date" type="date"></div>
+        <div><label class="label" for="inv-due">تاريخ الاستحقاق</label><input class="input" id="inv-due" type="date"></div>
+      </div>
+      <div class="divider"></div>
+      <h3 class="app-h2">بنود المستند</h3>
+      <div id="inv-items"></div>
+      <div class="row"><button class="button sec" id="btn-add-line" type="button">إضافة بند جديد</button></div>
+      <div class="app-grid">
+        <div><label class="label" for="inv-tax">نسبة الضريبة %</label><input class="input" id="inv-tax" type="number" min="0" step="0.01" value="15"></div>
+        <div><label class="label" for="inv-discount">قيمة الخصم</label><input class="input" id="inv-discount" type="number" min="0" step="0.01" value="0"></div>
+      </div>
+      <div class="out">
+        <div class="row"><span>الإجمالي الفرعي:</span><span class="app-total" id="inv-sub">0.00 ر.س</span></div>
+        <div class="row"><span>قيمة الضريبة:</span><span class="app-total" id="inv-taxval">0.00 ر.س</span></div>
+        <div class="row"><span>الإجمالي النهائي:</span><span class="big app-total" id="inv-total">0.00 ر.س</span></div>
+      </div>
+      <div class="row"><button class="button" id="btn-save-invoice" type="button">حفظ المستند</button><span class="out" id="inv-msg"></span></div>
+    </div>
+    <div class="card">
+      <h2 class="app-h2">سجل الفواتير والعروض</h2>
+      <div class="app-table-wrap">
+        <table class="app-table">
+          <thead><tr><th>الرقم</th><th>النوع</th><th>الطرف</th><th>التاريخ</th><th>الاستحقاق</th><th>الإجمالي</th><th>المدفوع</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+          <tbody id="inv-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-stock">
+    <div class="card">
+      <h2 class="app-h2">إضافة صنف للمخزون</h2>
+      <div class="app-grid">
+        <div><label class="label" for="item-name">اسم الصنف</label><input class="input" id="item-name" type="text" placeholder="مثال: كابل شبكة"></div>
+        <div><label class="label" for="item-qty">الكمية</label><input class="input" id="item-qty" type="number" min="0" step="1" value="1"></div>
+        <div><label class="label" for="item-price">سعر الوحدة</label><input class="input" id="item-price" type="number" min="0" step="0.01" value="0"></div>
+        <div><label class="label" for="item-reorder">حد إعادة الطلب</label><input class="input" id="item-reorder" type="number" min="0" step="1" value="0"></div>
+      </div>
+      <div class="row"><button class="button" id="btn-add-item" type="button">إضافة الصنف</button><span class="out" id="item-msg"></span></div>
+    </div>
+    <div class="card">
+      <h2 class="app-h2">الأصناف المتوفرة</h2>
+      <div class="app-table-wrap">
+        <table class="app-table">
+          <thead><tr><th>الصنف</th><th>الكمية</th><th>سعر الوحدة</th><th>القيمة الإجمالية</th><th>التنبيه</th><th>إجراءات</th></tr></thead>
+          <tbody id="stock-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-stats">
+    <div class="card">
+      <h2 class="app-h2">لوحة الإحصاءات الشهرية</h2>
+      <div class="row"><label class="label" for="stat-month">اختر الشهر</label><input class="input" id="stat-month" type="month"></div>
+      <div class="app-grid">
+        <div class="out"><span>إجمالي المبيعات</span><div class="big" id="stat-sales">0.00 ر.س</div></div>
+        <div class="out"><span>المبلغ المحصّل</span><div class="big" id="stat-paid">0.00 ر.س</div></div>
+        <div class="out"><span>المبلغ المتبقي</span><div class="big" id="stat-remain">0.00 ر.س</div></div>
+        <div class="out"><span>عدد الفواتير</span><div class="big" id="stat-count">0</div></div>
+        <div class="out"><span>فواتير متأخرة</span><div class="big" id="stat-overdue">0</div></div>
+        <div class="out"><span>قيمة المخزون</span><div class="big" id="stat-stock">0.00 ر.س</div></div>
+        <div class="out"><span>أصناف تحتاج تزويدًا</span><div class="big" id="stat-low">0</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="app-skip-print" id="print-area-host"><div class="app-print-area" id="print-area"></div></div>
+  </section>
+</div>
+<div class="app-print-area" id="print-area-fallback"></div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، التطبيق يعمل بالكامل داخل المتصفح دون إنترنت، لأن كل العمليات الحسابية والتخزين تتم محليًا على جهازك دون أي إرسال للبيانات.</p><h3>أين تُحفظ بياناتي وهل تبقى بعد إغلاق الصفحة؟</h3><p>تُحفظ البيانات تلقائيًا في التخزين المحلي للمتصفح (localStorage)، وتبقى متاحة عند إعادة فتح الصفحة على نفس الجهاز والمتصفح.</p><h3>كيف تُحسب الضريبة والخصم والإجمالي؟</h3><p>يُحسب الإجمالي الفرعي من حاصل ضرب الكمية في السعر لكل بند، ثم يُطرح الخصم، وتُطبَّق نسبة الضريبة على الناتج، ويظهر الإجمالي النهائي فورًا أثناء الكتابة.</p><h3>كيف أطبع الفاتورة أو أحفظها بصيغة PDF؟</h3><p>اضغط زر «طباعة / PDF» بجانب الفاتورة، فتفتح نافذة الطباعة ويمكنك اختيار الطابعة أو خيار الحفظ كملف PDF.</p><h3>كيف يتابع التطبيق المدفوعات المتأخرة؟</h3><p>عند تسجيل الدفعات تُقارن القيمة بتاريخ الاستحقاق، فتُعلَّم الفاتورة تلقائيًا كـ«مدفوعة» أو «مدفوعة جزئيًا» أو «متأخرة»، مع عرض عدد المتأخرات في لوحة الإحصاءات.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+var KEY='sbiz_manager_v1', CUR='ر.س';
+var state={parties:[],invoices:[],items:[]};
+var draftLines=[], counter=0;
+
+function el(id){return document.getElementById(id);}
+function uid(p){counter++;return p+'_'+Date.now().toString(36)+'_'+counter;}
+function money(n){n=Number(n)||0;return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' '+CUR;}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function msg(id,text,kind){var e=el(id);if(!e)return;e.textContent=text;e.className='out '+(kind==='ok'?'app-ok':(kind==='warn'?'app-warn':''));}
+
+function load(){try{var raw=localStorage.getItem(KEY);if(!raw)return;var d=JSON.parse(raw);if(d&&typeof d==='object'){if(Array.isArray(d.parties))state.parties=d.parties;if(Array.isArray(d.invoices))state.invoices=d.invoices;if(Array.isArray(d.items))state.items=d.items;}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+function partyById(id){for(var i=0;i<state.parties.length;i++){if(state.parties[i].id===id)return state.parties[i];}return null;}
+function totals(inv){var sub=(inv.items||[]).reduce(function(a,l){return a+(Number(l.qty)||0)*(Number(l.price)||0);},0);var disc=Number(inv.discount)||0;var taxable=Math.max(0,sub-disc);var tax=taxable*(Number(inv.taxRate)||0)/100;return{sub:sub,disc:disc,tax:tax,total:taxable+tax};}
+function invStatus(inv){var t=totals(inv).total;if(inv.type==='عرض سعر')return(inv.paid>0)?'عرض سعر (دفعة)':'عرض سعر';if(inv.paid>=t-0.001)return'مدفوعة';var due=inv.due?new Date(inv.due+'T00:00:00'):null;var now=new Date();now.setHours(0,0,0,0);if(due&&due<now)return(inv.paid>0)?'متأخرة جزئيًا':'متأخرة';return(inv.paid>0)?'مدفوعة جزئيًا':'غير مدفوعة';}
+function badgeClass(st){if(st==='مدفوعة')return'is-paid';if(st.indexOf('متأخرة')===0)return'is-over';if(st.indexOf('عرض سعر')===0)return'is-quote';return'is-due';}
+function nextNumber(type){var prefix=(type==='عرض سعر')?'Q-':'F-';var max=0;state.invoices.forEach(function(v){var s=String(v.number||'');if(s.indexOf(prefix)===0){var n=parseInt(s.slice(prefix.length),10);if(!isNaN(n)&&n>max)max=n;}});return prefix+String(max+1).padStart(4,'0');}
+function td(t){var c=document.createElement('td');c.textContent=t;return c;}
+function tdNode(n){var c=document.createElement('td');c.appendChild(n);return c;}
+
+/* ---------- parties ---------- */
+function renderParties(){
+  var tb=el('party-body');tb.innerHTML='';
+  var q=(el('party-search').value||'').trim();
+  var list=state.parties.filter(function(p){return!q||p.name.indexOf(q)>-1;});
+  if(!list.length){tb.innerHTML='<tr><td colspan="5" class="app-empty">لا توجد نتائج. أضف عميلًا أو موردًا من النموذج أعلاه.</td></tr>';return;}
+  list.forEach(function(p){
+    var tr=document.createElement('tr');
+    tr.appendChild(td(p.name));
+    tr.appendChild(td(p.type));
+    tr.appendChild(td(p.phone||'—'));
+    var cnt=state.invoices.filter(function(v){return v.partyId===p.id;}).length;
+    tr.appendChild(td(String(cnt)));
+    var b=document.createElement('button');b.type='button';b.className='button sec';b.id='del-party-'+p.id;b.textContent='حذف';
+    b.addEventListener('click',function(){if(confirmDelete()){state.parties=state.parties.filter(function(x){return x.id!==p.id;});save();renderParties();renderPartyOptions();renderStats();}});
+    tr.appendChild(tdNode(b));
+    tb.appendChild(tr);
+  });
+}
+function confirmDelete(){try{return window.confirm('تأكيد الحذف؟ لا يمكن التراجع.');}catch(e){return true;}}
+function addParty(){
+  var name=(el('party-name').value||'').trim();
+  if(!name){msg('party-msg','يرجى إدخال الاسم أولًا.','warn');return;}
+  state.parties.push({id:uid('p'),name:name,type:el('party-type').value,phone:(el('party-phone').value||'').trim()});
+  save();el('party-name').value='';el('party-phone').value='';msg('party-msg','تمت الإضافة بنجاح.','ok');
+  renderParties();renderPartyOptions();renderStats();
+}
+function renderPartyOptions(){
+  var sel=el('inv-party');var cur=sel.value;sel.innerHTML='';
+  var o=document.createElement('option');o.value='';o.textContent='— اختر العميل أو المورد —';sel.appendChild(o);
+  state.parties.forEach(function(p){var op=document.createElement('option');op.value=p.id;op.textContent=p.name+' ('+p.type+')';sel.appendChild(op);});
+  if(partyById(cur))sel.value=cur;
+}
+
+/* ---------- invoice form ---------- */
+function renderLines(){
+  var box=el('inv-items');box.innerHTML='';
+  if(!draftLines.length){addLine();return;}
+  draftLines.forEach(function(l){
+    var row=document.createElement('div');row.className='row app-line';
+    var d1=document.createElement('div');var la=document.createElement('label');la.className='label';la.textContent='الوصف';la.setAttribute('for','line-desc-'+l.id);var ia=document.createElement('input');ia.className='input';ia.id='line-desc-'+l.id;ia.type='text';ia.placeholder='وصف البند';ia.value=l.desc;ia.addEventListener('input',function(){l.desc=ia.value;});
+    d1.appendChild(la);d1.appendChild(ia);
+    var d2=document.createElement('div');var lb=document.createElement('label');lb.className='label';lb.textContent='الكمية';lb.setAttribute('for','line-qty-'+l.id);var ib=document.createElement('input');ib.className='input';ib.id='line-qty-'+l.id;ib.type='number';ib.min='0';ib.step='1';ib.value=l.qty;ib.addEventListener('input',function(){l.qty=ib.value;recalc();});
+    d2.appendChild(lb);d2.appendChild(ib);
+    var d3=document.createElement('div');var lc=document.createElement('label');lc.className='label';lc.textContent='سعر الوحدة';lc.setAttribute('for','line-price-'+l.id);var ic=document.createElement('input');ic.className='input';ic.id='line-price-'+l.id;ic.type='number';ic.min='0';ic.step='0.01';ic.value=l.price;ic.addEventListener('input',function(){l.price=ic.value;recalc();});
+    d3.appendChild(lc);d3.appendChild(ic);
+    var d4=document.createElement('div');var rb=document.createElement('button');rb.type='button';rb.className='button sec';rb.id='line-del-'+l.id;rb.textContent='حذف البند';rb.addEventListener('click',function(){draftLines=draftLines.filter(function(x){return x.id!==l.id;});renderLines();recalc();});
+    d4.appendChild(rb);
+    row.appendChild(d1);row.appendChild(d2);row.appendChild(d3);row.appendChild(d4);box.appendChild(row);
+  });
+}
+function addLine(){draftLines.push({id:uid('ln'),desc:'',qty:1,price:0});renderLines();recalc();}
+function recalc(){
+  var sub=draftLines.reduce(function(a,l){return a+(Number(l.qty)||0)*(Number(l.price)||0);},0);
+  var disc=Number(el('inv-discount').value)||0;
+  var rate=Number(el('inv-tax').value)||0;
+  var taxable=Math.max(0,sub-disc);
+  var tax=taxable*rate/100;
+  el('inv-sub').textContent=money(sub);
+  el('inv-taxval').textContent=money(tax);
+  el('inv-total').textContent=money(taxable+tax);
+}
+function resetInvoiceForm(){
+  el('inv-type').value='فاتورة';el('inv-number').value=nextNumber('فاتورة');
+  el('inv-party').value='';el('inv-date').value=today();el('inv-due').value='';
+  el('inv-tax').value='15';el('inv-discount').value='0';draftLines=[];renderLines();recalc();
+}
+function saveInvoice(){
+  var partyId=el('inv-party').value;
+  if(!partyId){msg('inv-msg','اختر العميل أو المورد قبل الحفظ.','warn');return;}
+  var lines=draftLines.filter(function(l){return l.desc.trim()&&Number(l.qty)>0;});
+  if(!lines.length){msg('inv-msg','أضف بندًا واحدًا على الأقل مع وصف وكمية صحيحة.','warn');return;}
+  var type=el('inv-type').value;
+  var inv={id:uid('inv'),number:(el('inv-number').value||'').trim()||nextNumber(type),partyId:partyId,type:type,date:el('inv-date').value||today(),due:el('inv-due').value||'',items:lines.map(function(l){return{desc:l.desc.trim(),qty:Number(l.qty),price:Number(l.price)};}),taxRate:Number(el('inv-tax').value)||0,discount:Number(el('inv-discount').value)||0,paid:0};
+  state.invoices.push(inv);save();
+  resetInvoiceForm();renderInvoices();renderStats();renderParties();
+  msg('inv-msg','تم حفظ '+type+' برقم '+inv.number+'.','ok');
+}
+
+/* ---------- invoice list ---------- */
+function renderInvoices(){
+  var tb=el('inv-body');tb.innerHTML='';
+  if(!state.invoices.length){tb.innerHTML='<tr><td colspan="9" class="app-empty">لا توجد فواتير بعد. أنشئ أول مستند من النموذج أعلاه.</td></tr>';return;}
+  var list=state.invoices.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
+  list.forEach(function(inv){
+    var p=partyById(inv.partyId),t=totals(inv),st=invStatus(inv);
+    var tr=document.createElement('tr');
+    tr.appendChild(td(inv.number));
+    var bt=document.createElement('span');bt.className='app-badge '+(inv.type==='عرض سعر'?'is-quote':'is-due');bt.textContent=inv.type;tr.appendChild(tdNode(bt));
+    tr.appendChild(td(p?p.name:'محذوف'));
+    tr.appendChild(td(inv.date||'—'));
+    tr.appendChild(td(inv.due||'—'));
+    tr.appendChild(td(money(t.total)));
+    tr.appendChild(td(money(inv.paid||0)));
+    var bs=document.createElement('span');bs.className='app-badge '+badgeClass(st);bs.textContent=st;tr.appendChild(tdNode(bs));
+    var act=document.createElement('div');act.className='app-actions';
+    var pay=document.createElement('input');pay.type='number';pay.min='0';pay.step='0.01';pay.className='input';pay.id='pay-'+inv.id;pay.placeholder='مبلغ الدفعة';
+    var pb=document.createElement('button');pb.type='button';pb.className='button sec';pb.id='paybtn-'+inv.id;pb.textContent='تسجيل دفعة';pb.addEventListener('click',function(){recordPayment(inv.id);});
+    var ab=document.createElement('button');ab.type='button';ab.className='button sec';ab.id='payfull-'+inv.id;ab.textContent='دفع كامل';ab.addEventListener('click',function(){fullPayment(inv.id);});
+    var pr=document.createElement('button');pr.type='button';pr.className='button';pr.id='prt-'+inv.id;pr.textContent='طباعة / PDF';pr.addEventListener('click',function(){printInvoice(inv.id);});
+    var dl=document.createElement('button');dl.type='button';dl.className='button sec';dl.id='dlt-'+inv.id;dl.textContent='حذف';dl.addEventListener('click',function(){if(confirmDelete()){state.invoices=state.invoices.filter(function(x){return x.id!==inv.id;});save();renderInvoices();renderStats();renderParties();}});
+    act.appendChild(pay);act.appendChild(pb);act.appendChild(ab);act.appendChild(pr);act.appendChild(dl);
+    tr.appendChild(tdNode(act));tb.appendChild(tr);
+  });
+}
+function findInvoice(id){for(var i=0;i<state.invoices.length;i++){if(state.invoices[i].id===id)return state.invoices[i];}return null;}
+function recordPayment(id){var inv=findInvoice(id);if(!inv)return;var v=Number(el('pay-'+id).value);if(!v||v<=0){msg('inv-msg','أدخل مبلغ دفعة صحيحًا.','warn');return;}var t=totals(inv).total;inv.paid=Math.min(t,(Number(inv.paid)||0)+v);save();renderInvoices();renderStats();msg('inv-msg','تم تسجيل الدفعة.','ok');}
+function fullPayment(id){var inv=findInvoice(id);if(!inv)return;inv.paid=totals(inv).total;save();renderInvoices();renderStats();msg('inv-msg','تم تعليم المستند كمدفوع بالكامل.','ok');}
+function printInvoice(id){
+  var inv=findInvoice(id);if(!inv)return;var p=partyById(inv.partyId),t=totals(inv);
+  var rows=inv.items.map(function(it){return'<tr><td>'+esc(it.desc)+'</td><td>'+esc(it.qty)+'</td><td>'+esc(money(it.price))+'</td><td>'+esc(money(it.qty*it.price))+'</td></tr>';}).join('');
+  var html='<h1>'+esc(inv.type)+' '+esc(inv.number)+'</h1>'+
+    '<p>الطرف: '+esc(p?p.name:'—')+' &nbsp;|&nbsp; التاريخ: '+esc(inv.date||'—')+' &nbsp;|&nbsp; الاستحقاق: '+esc(inv.due||'—')+'</p>'+
+    '<table><thead><tr><th>الوصف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<p>الإجمالي الفرعي: '+esc(money(t.sub))+'<br>الخصم: '+esc(money(t.disc))+'<br>الضريبة: '+esc(money(t.tax))+'<br><strong>الإجمالي النهائي: '+esc(money(t.total))+'</strong><br>المدفوع: '+esc(money(inv.paid||0))+'<br>المتبقي: '+esc(money(Math.max(0,t.total-(inv.paid||0))))+'</p>';
+  el('print-area').innerHTML=html;
+  var fb=el('print-area-fallback');if(fb)fb.innerHTML=html;
+  try{window.print();}catch(e){}
+}
+
+/* ---------- stock ---------- */
+function renderStock(){
+  var tb=el('stock-body');tb.innerHTML='';
+  if(!state.items.length){tb.innerHTML='<tr><td colspan="6" class="app-empty">لا توجد أصناف بعد. أضف أول صنف من النموذج أعلاه.</td></tr>';return;}
+  state.items.forEach(function(it){
+    var tr=document.createElement('tr');
+    tr.appendChild(td(it.name));
+    tr.appendChild(td(String(it.qty)));
+    tr.appendChild(td(money(it.price)));
+    tr.appendChild(td(money((Number(it.qty)||0)*(Number(it.price)||0))));
+    var low=Number(it.qty)<=Number(it.reorder);
+    var bs=document.createElement('span');bs.className='app-badge '+(low?'is-over':'is-paid');bs.textContent=low?'يحتاج تزويدًا':'متوفر';tr.appendChild(tdNode(bs));
+    var b=document.createElement('button');b.type='button';b.className='button sec';b.id='del-item-'+it.id;b.textContent='حذف';b.addEventListener('click',function(){if(confirmDelete()){state.items=state.items.filter(function(x){return x.id!==it.id;});save();renderStock();renderStats();}});
+    tr.appendChild(tdNode(b));tb.appendChild(tr);
+  });
+}
+function addItem(){
+  var name=(el('item-name').value||'').trim();
+  if(!name){msg('item-msg','يرجى إدخال اسم الصنف.','warn');return;}
+  state.items.push({id:uid('it'),name:name,qty:Number(el('item-qty').value)||0,price:Number(el('item-price').value)||0,reorder:Number(el('item-reorder').value)||0});
+  save();el('item-name').value='';el('item-qty').value='1';el('item-price').value='0';el('item-reorder').value='0';
+  msg('item-msg','تمت إضافة الصنف.','ok');renderStock();renderStats();
+}
+
+/* ---------- stats ---------- */
+function renderStats(){
+  var m=el('stat-month').value||today().slice(0,7);
+  var invs=state.invoices.filter(function(v){return String(v.date||'').slice(0,7)===m;});
+  var sales=0,paid=0,count=0;
+  invs.forEach(function(v){if(v.type==='عرض سعر')return;var t=totals(v).total;sales+=t;paid+=Number(v.paid)||0;count++;});
+  el('stat-sales').textContent=money(sales);
+  el('stat-paid').textContent=money(paid);
+  el('stat-remain').textContent=money(Math.max(0,sales-paid));
+  el('stat-count').textContent=String(count);
+  var over=state.invoices.filter(function(v){var s=invStatus(v);return s==='متأخرة'||s==='متأخرة جزئيًا';}).length;
+  el('stat-overdue').textContent=String(over);
+  el('stat-stock').textContent=money(state.items.reduce(function(a,i){return a+(Number(i.qty)||0)*(Number(i.price)||0);},0));
+  el('stat-low').textContent=String(state.items.filter(function(i){return Number(i.qty)<=Number(i.reorder);}).length);
+}
+
+/* ---------- boot ---------- */
+function boot(){
+  load();
+  var views={parties:el('view-parties'),invoices:el('view-invoices'),stock:el('view-stock'),stats:el('view-stats')};
+  var tabs={parties:el('tab-parties'),invoices:el('tab-invoices'),stock:el('tab-stock'),stats:el('tab-stats')};
+  function show(k){Object.keys(views).forEach(function(x){views[x].classList.toggle('is-active',x===k);tabs[x].classList.toggle('is-active',x===k);});if(k==='stats')renderStats();if(k==='invoices')renderPartyOptions();}
+  Object.keys(tabs).forEach(function(k){tabs[k].addEventListener('click',function(){show(k);});});
+
+  el('btn-add-party').addEventListener('click',addParty);
+  el('party-search').addEventListener('input',renderParties);
+  el('party-name').addEventListener('keydown',function(e){if(e.key==='Enter')addParty();});
+
+  el('btn-add-line').addEventListener('click',addLine);
+  el('inv-tax').addEventListener('input',recalc);
+  el('inv-discount').addEventListener('input',recalc);
+  el('btn-save-invoice').addEventListener('click',saveInvoice);
+  el('inv-type').addEventListener('change',function(){el('inv-number').value=nextNumber(el('inv-type').value);});
+
+  el('btn-add-item').addEventListener('click',addItem);
+  el('item-name').addEventListener('keydown',function(e){if(e.key==='Enter')addItem();});
+
+  el('stat-month').addEventListener('change',renderStats);
+
+  el('stat-month').value=today().slice(0,7);
+  renderPartyOptions();
+  resetInvoiceForm();
+  renderParties();renderInvoices();renderStock();renderStats();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+</body>
+</html>
