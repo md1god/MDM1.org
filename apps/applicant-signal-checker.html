@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فاحص أصالة السير الذاتية وكشف التكرار والتناقضات | MDM1</title>
+<meta name="description" content="الصق سيرة المتقدم أو ملاحظات المقابلة للحصول فورًا على تقرير يكشف العبارات النمطية والتناقضات والتكرار، مع مقارنة المتقدمين وحفظ محلي دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/applicant-signal-checker.html">
+<meta property="og:title" content="فاحص أصالة السير الذاتية وكشف التكرار والتناقضات">
+<meta property="og:description" content="الصق سيرة المتقدم أو ملاحظات المقابلة للحصول فورًا على تقرير يكشف العبارات النمطية والتناقضات والتكرار، مع مقارنة المتقدمين وحفظ محلي دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/applicant-signal-checker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-wrap{display:block}
+.app-intro{line-height:1.95;margin:0 0 18px;color:var(--light)}
+.app-card{margin-bottom:16px}
+.app-card h2{color:var(--gold-bright)}
+.app-field{display:flex;flex-direction:column;gap:6px;flex:1 1 220px;min-width:180px;margin-bottom:8px}
+.app-field label{font-size:.9rem;color:var(--gold-bright)}
+.app-wrap .row{flex-wrap:wrap;gap:10px;align-items:flex-end}
+.app-wrap .input,.app-wrap .select,.app-wrap .textarea{width:100%;background:var(--dark);color:var(--light);border:1px solid var(--gold-dim);border-radius:8px;padding:9px 11px;font:inherit;box-sizing:border-box}
+.app-wrap .textarea{min-height:150px;resize:vertical;line-height:1.85}
+.app-wrap .button{cursor:pointer}
+.app-wrap .button.sec{background:transparent;color:var(--gold-bright);border:1px solid var(--gold-dim)}
+.app-msg{min-height:22px;margin:10px 0 0;font-size:.9rem;color:var(--gold-bright)}
+.app-msg.err{color:#ff8f8f}
+.app-score{font-size:2.1rem;font-weight:700;color:var(--gold-bright);line-height:1.2}
+.app-sec{margin:14px 0}
+.app-sec h3{margin:0 0 6px;font-size:1rem;color:var(--gold-bright)}
+.app-meter{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin:4px 0 12px}
+.app-meter span{display:block;height:100%;background:var(--gold-bright)}
+.app-list{list-style:none;padding:0;margin:8px 0}
+.app-list li{padding:8px 11px;border-right:3px solid var(--gold-dim);margin-bottom:8px;background:rgba(255,255,255,.03);border-radius:6px;line-height:1.7}
+.app-list li.hi{border-right-color:#ff8f8f}
+.app-list li.mid{border-right-color:var(--gold-bright)}
+.app-empty{color:var(--gold-dim);margin:6px 0}
+.app-hist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.app-hist .item{border:1px solid var(--gold-dim);border-radius:8px;padding:10px}
+.app-hist .item h4{margin:0 0 4px;color:var(--light)}
+.app-hist .item small{color:var(--gold-dim);display:block;margin-bottom:8px;line-height:1.6}
+.app-hist .item .button{margin:2px 4px 2px 0;padding:6px 10px;font-size:.85rem}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "فاحص أصالة السير الذاتية وكشف التكرار", "url": "https://mdm1.org/apps/applicant-signal-checker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل السيرة الذاتية أو بيانات المتقدمين إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل التحليل يجري داخل متصفحك بالكامل دون اتصال بالإنترنت، ولا يوجد أي حساب أو خادم. ما تحفظه يبقى في التخزين المحلي لمتصفحك فقط."}}, {"@type": "Question", "name": "كيف تكشف الأداة التناقضات في التواريخ والمسار الوظيفي؟", "acceptedAnswer": {"@type": "Answer", "text": "تستخرج السنوات والمدى الزمني لفترات العمل، ثم تنبّه إلى السنوات المستقبلية غير المنطقية، والفترات المعكوسة، وتداخل فترات العمل، والتعارض بين عدد سنوات الخبرة المذكورة وما توحي به التواريخ."}}, {"@type": "Question", "name": "كيف تعمل المقارنة بين المتقدمين وكشف تطابق السير؟", "acceptedAnswer": {"@type": "Answer", "text": "بعد حفظ كل متقدم محليًا، تقارن الأداة مجموعات الكلمات والعبارات بين النصوص وتحسب نسبة تشابه، فترتفع النسبة عند تكرار السيرة أو تطابق الهوية أو استخدام القالب نفسه."}}, {"@type": "Question", "name": "هل يمكن تصدير التقرير ومشاركته؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك نسخ نص التقرير الكامل إلى الحافظة بضغطة واحدة، أو تحديده من مربع نص التصدير ونسخه أو حفظه يدويًا في أي ملف لديك."}}, {"@type": "Question", "name": "ما دقة النتائج وهل تُعد قرارًا نهائيًا؟", "acceptedAnswer": {"@type": "Answer", "text": "الأداة مؤشر مساعد يكشف الأنماط والتكرار والتناقضات المحتملة، لكنها لا تحل محل التحقق اليدوي من المستندات والمقابلة الشخصية عند اتخاذ قرار التوظيف."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">فاحص أصالة السير الذاتية وكشف التكرار</h1>
+  <p class="page-sub">الصق سيرة المتقدم أو ملاحظات المقابلة للحصول فورًا على تقرير يكشف العبارات النمطية والتناقضات والتكرار، مع مقارنة المتقدمين وحفظ محلي دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app-wrap" dir="rtl">
+<p class="app-intro">الإجابة السريعة: هذه الأداة تحلّل نص السيرة الذاتية أو إجابات المتقدم أو ملاحظات المقابلة داخل متصفحك مباشرة، وتُصدر فورًا تقريرًا عن مخاطر الأصالة والتكرار دون أي حساب أو خادم أو اتصال بالإنترنت. تكشف الأداة العبارات النمطية المتكررة التي تدل على صياغة آلية أو قوالب جاهزة، وترصد التناقضات في التواريخ والمسارات الوظيفية مثل الفترات المتداخلة أو السنوات المستحيلة، وتقارن السيرة مع السير المحفوظة سابقًا لديك لقياس نسبة التشابه واحتمال تطابق الهويات. كل التحليل يجري محليًا، ويُخزَّن ما تحفظه في متصفحك فقط، ويمكنك نسخ التقرير ومقارنة عدة متقدمين جنبًا إلى جنب قبل اتخاذ قرار التوظيف.</p>
+
+<section class="card app-card">
+<h2>بيانات المتقدم</h2>
+<div class="row">
+<div class="app-field">
+<label for="appName">اسم المتقدم (اختياري)</label>
+<input class="input" id="appName" type="text" placeholder="مثال: أحمد محمد">
+</div>
+<div class="app-field">
+<label for="appRole">الوظيفة المستهدفة (اختياري)</label>
+<input class="input" id="appRole" type="text" placeholder="مثال: محاسب">
+</div>
+</div>
+<div class="app-field">
+<label for="appText">نص السيرة الذاتية أو إجابات المتقدم أو ملاحظات المقابلة</label>
+<textarea class="textarea" id="appText" rows="10" placeholder="الصق هنا نص السيرة أو الملاحظات، ثم اضغط زر تحليل النص."></textarea>
+</div>
+<div class="row">
+<button class="button" id="appAnalyze" type="button">تحليل النص</button>
+<button class="button sec" id="appSave" type="button">حفظ المتقدم محليًا</button>
+<button class="button sec" id="appCopy" type="button">نسخ التقرير</button>
+<button class="button sec" id="appClear" type="button">تفريغ النموذج</button>
+</div>
+<p class="app-msg" id="appMsg" role="status" aria-live="polite"></p>
+</section>
+
+<section class="card app-card">
+<h2>تقرير المخاطر</h2>
+<div class="out" id="appOut"><p class="app-empty">لا يوجد تقرير بعد. الصق النص ثم اضغط زر تحليل النص.</p></div>
+<div class="divider"></div>
+<label for="appReportText">نص التقرير للتصدير (يمكنك تحديده ونسخه أو حفظه يدويًا)</label>
+<textarea class="textarea" id="appReportText" rows="8" readonly placeholder="سيظهر نص التقرير هنا بعد التحليل"></textarea>
+</section>
+
+<section class="card app-card">
+<h2>المتقدمون المحفوظون محليًا</h2>
+<div class="out" id="appHistory"><p class="app-empty">لا يوجد متقدمون محفوظون بعد.</p></div>
+<div class="row">
+<button class="button sec" id="appClearAll" type="button">حذف كل المتقدمين المحفوظين</button>
+</div>
+<div class="divider"></div>
+<h3>مقارنة متقدمين</h3>
+<div class="row">
+<div class="app-field">
+<label for="appCompareA">المتقدم الأول</label>
+<select class="select" id="appCompareA"></select>
+</div>
+<div class="app-field">
+<label for="appCompareB">المتقدم الثاني</label>
+<select class="select" id="appCompareB"></select>
+</div>
+<button class="button" id="appCompare" type="button">مقارنة المتقدمين المحددين</button>
+</div>
+<div class="out" id="appCompareOut"><p class="app-empty">اختر متقدمين محفوظين ثم اضغط زر المقارنة.</p></div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل السيرة الذاتية أو بيانات المتقدمين إلى أي خادم؟</h3><p>لا. كل التحليل يجري داخل متصفحك بالكامل دون اتصال بالإنترنت، ولا يوجد أي حساب أو خادم. ما تحفظه يبقى في التخزين المحلي لمتصفحك فقط.</p><h3>كيف تكشف الأداة التناقضات في التواريخ والمسار الوظيفي؟</h3><p>تستخرج السنوات والمدى الزمني لفترات العمل، ثم تنبّه إلى السنوات المستقبلية غير المنطقية، والفترات المعكوسة، وتداخل فترات العمل، والتعارض بين عدد سنوات الخبرة المذكورة وما توحي به التواريخ.</p><h3>كيف تعمل المقارنة بين المتقدمين وكشف تطابق السير؟</h3><p>بعد حفظ كل متقدم محليًا، تقارن الأداة مجموعات الكلمات والعبارات بين النصوص وتحسب نسبة تشابه، فترتفع النسبة عند تكرار السيرة أو تطابق الهوية أو استخدام القالب نفسه.</p><h3>هل يمكن تصدير التقرير ومشاركته؟</h3><p>نعم، يمكنك نسخ نص التقرير الكامل إلى الحافظة بضغطة واحدة، أو تحديده من مربع نص التصدير ونسخه أو حفظه يدويًا في أي ملف لديك.</p><h3>ما دقة النتائج وهل تُعد قرارًا نهائيًا؟</h3><p>الأداة مؤشر مساعد يكشف الأنماط والتكرار والتناقضات المحتملة، لكنها لا تحل محل التحقق اليدوي من المستندات والمقابلة الشخصية عند اتخاذ قرار التوظيف.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var KEY="auth_risk_saved_v1";
+function $(id){return document.getElementById(id);}
+var el={
+name:$("appName"),role:$("appRole"),text:$("appText"),
+analyze:$("appAnalyze"),save:$("appSave"),copy:$("appCopy"),
+clear:$("appClear"),clearAll:$("appClearAll"),msg:$("appMsg"),
+out:$("appOut"),hist:$("appHistory"),
+cmpA:$("appCompareA"),cmpB:$("appCompareB"),
+cmp:$("appCompare"),cmpOut:$("appCompareOut"),report:$("appReportText")
+};
+var NOW=new Date().getFullYear();
+var savedList=[],lastResult=null,lastPlain="";
+var CLI=["العمل تحت الضغط","روح الفريق","العمل الجماعي","العمل بروح الفريق","فريق العمل","مهارات التواصل","التواصل الفعال","سريع التعلم","قدرة على التعلم","التفكير خارج الصندوق","تحقيق الأهداف","أهداف الشركة","خبرة واسعة","خبرة كبيرة","بيئة عمل محفزة","الإبداع والابتكار","إدارة الوقت","حل المشكلات","خدمة العملاء","الالتزام بالمواعيد","القدرة على التكيف","تحمل المسؤولية","مهارات قيادية","قيادة فريق","دقيق ومنظم","منظمة ودقيقة","شغوف","طموح","مثابر","جدير بالثقة","مفكر استراتيجي","تعدد المهام"];
+var STOP={"في":1,"من":1,"على":1,"إلى":1,"الى":1,"عن":1,"مع":1,"هذا":1,"هذه":1,"ذلك":1,"التي":1,"الذي":1,"الذين":1,"و":1,"أو":1,"او":1,"ثم":1,"قد":1,"كل":1,"بعض":1,"ما":1,"لا":1,"لم":1,"لن":1,"إن":1,"ان":1,"أن":1,"كان":1,"كانت":1,"يكون":1,"هو":1,"هي":1,"هم":1,"أنا":1,"انا":1,"نحن":1,"بين":1,"حتى":1,"عند":1,"عندما":1,"بعد":1,"قبل":1,"خلال":1,"حول":1,"دون":1,"لكن":1,"كما":1,"أي":1,"اي":1,"أيضا":1,"ايضا":1,"جدا":1,"ذات":1,"ذو":1,"غير":1};
+function clamp(n){return Math.max(0,Math.min(100,Math.round(n)));}
+function latinDigits(s){return String(s||"").replace(/[\u0660-\u0669]/g,function(d){return String(d.charCodeAt(0)-1632);}).replace(/[\u06F0-\u06F9]/g,function(d){return String(d.charCodeAt(0)-1776);});}
+function norm(s){return String(s||"").replace(/[\u064B-\u0652\u0640\u0670]/g,"").replace(/[\u0623\u0625\u0622\u0671]/g,"\u0627").replace(/\u0649/g,"\u064A").replace(/\u0629/g,"\u0647").replace(/[^\u0621-\u064A0-9a-zA-Z\s]/g," ").replace(/\s+/g," ").toLowerCase().trim();}
+function tokenize(s){var n=norm(s);return n?n.split(" "):[];}
+function ngrams(t,n){var o=[];for(var i=0;i+n<=t.length;i++){o.push(t.slice(i,i+n).join(" "));}return o;}
+function countMap(a){var m={};for(var i=0;i<a.length;i++){m[a[i]]=(m[a[i]]||0)+1;}return m;}
+function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function meaningful(p){var a=p.split(" ");for(var i=0;i<a.length;i++){if(!STOP[a[i]]&&a[i].length>1&&!/^\d+$/.test(a[i]))return true;}return false;}
+function tokenSet(text){var t=tokenize(text),s={};for(var i=0;i<t.length;i++){var w=t[i];if(!STOP[w]&&w.length>1&&!/^\d+$/.test(w))s[w]=1;}return s;}
+function bigramSet(t){var g=ngrams(tokenize(t),2),s={};for(var i=0;i<g.length;i++){if(meaningful(g[i]))s[g[i]]=1;}return s;}
+function jac(a,b){var ka=Object.keys(a),kb=Object.keys(b);if(!ka.length||!kb.length)return 0;var inter=0;for(var i=0;i<ka.length;i++){if(b[ka[i]])inter++;}var uni=ka.length;for(var j=0;j<kb.length;j++){if(!a[kb[j]])uni++;}return uni?inter/uni:0;}
+function similarity(a,b){var j=jac(tokenSet(a),tokenSet(b));var jb=jac(bigramSet(a),bigramSet(b));return clamp(Math.max(j,jb*0.9)*100);}
+function levelInfo(v){if(v>=70)return{t:"مرتفع",c:"hi"};if(v>=40)return{t:"متوسط",c:"mid"};return{t:"منخفض",c:"ok"};}
+function findById(id){for(var i=0;i<savedList.length;i++){if(savedList[i].id===id)return savedList[i];}return null;}
+function loadSaved(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):[];}catch(e){return [];}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(savedList));return true;}catch(e){return false;}}
+function setMsg(t,err){el.msg.textContent=t||"";el.msg.className="app-msg"+(err?" err":"");}
+function fmtDate(iso){try{return new Date(iso).toLocaleDateString()+" "+new Date(iso).toLocaleTimeString().slice(0,5);}catch(e){return "";}}
+
+function analyze(text){
+var raw=latinDigits(text);
+var words=tokenize(raw),n=words.length,normalized=norm(raw);
+var cliches=[],i,idx,cnt,c;
+for(i=0;i<CLI.length;i++){c=norm(CLI[i]);if(!c)continue;idx=0;cnt=0;while((idx=normalized.indexOf(c,idx))!==-1){cnt++;idx+=c.length;}if(cnt>0)cliches.push({phrase:CLI[i],count:cnt});}
+cliches.sort(function(a,b){return b.count-a.count;});
+if(cliches.length>8)cliches=cliches.slice(0,8);
+var repeated=[],bm=countMap(ngrams(words,2)),tm=countMap(ngrams(words,3));
+function pushRep(map,min){for(var k in map){if(map.hasOwnProperty(k)&&map[k]>=min&&meaningful(k))repeated.push({phrase:k,count:map[k]});}}
+pushRep(bm,3);pushRep(tm,3);
+var wm=countMap(words),repWords=[];
+for(var k in wm){if(wm.hasOwnProperty(k)&&wm[k]>=6&&meaningful(k))repWords.push({phrase:k,count:wm[k]});}
+repeated.sort(function(a,b){return b.count-a.count;});
+repWords.sort(function(a,b){return b.count-a.count;});
+if(repeated.length>8)repeated=repeated.slice(0,8);
+if(repWords.length>6)repWords=repWords.slice(0,6);
+var years=(normalized.match(/\b(19|20)\d{2}\b/g)||[]).map(Number);
+var ranges=[],m;
+var reRange=/(19\d{2}|20\d{2})\s*(?:-|–|—|إلى|الي|حتي|حتى|لغاية|لحد|until|to|through|\/)\s*(?:(19\d{2}|20\d{2})|الآن|الان|الحالي|الحاضر|حاليا|present|now|current)/g;
+while((m=reRange.exec(raw))!==null){var st=+m[1],en=m[2]?+m[2]:NOW;ranges.push({start:st,end:en,open:!m[2]});}
+var issues=[],y,fut=[];
+for(y=0;y<years.length;y++){if(years[y]>NOW+1)fut.push(years[y]);}
+if(fut.length)issues.push({level:"high",label:"تاريخ مستقبلي",text:"سنة مستقبلية غير منطقية: "+fut.join("، ")});
+for(var r=0;r<ranges.length;r++){if(ranges[r].start>ranges[r].end)issues.push({level:"high",label:"فترة معكوسة",text:"الفترة "+ranges[r].start+" إلى "+ranges[r].end+" تبدأ بعد نهايتها."});}
+var rs=ranges.slice().sort(function(a,b){return a.start-b.start;});
+for(var q=1;q<rs.length;q++){if(rs[q].start<rs[q-1].end&&rs[q].start!==rs[q-1].start)issues.push({level:"mid",label:"تداخل فترات",text:"تداخل محتمل بين "+rs[q-1].start+"–"+rs[q-1].end+" و"+rs[q].start+"–"+rs[q].end+"."});}
+var stated=null,sm=raw.match(/(?:خبرة|خبره)\s*(?:تزيد عن|أكثر من|اكثر من|حوالي|لا تقل عن|قارب)?\s*(\d{1,2})\s*(?:سنة|سنوات|عام|أعوام|اعوام|سنين)/);
+if(sm)stated=+sm[1];
+var span=null;
+if(ranges.length){var mn=Math.min.apply(null,ranges.map(function(x){return x.start;})),mx=Math.max.apply(null,ranges.map(function(x){return x.end;}));span=mx-mn;}
+if(stated!=null&&span!=null&&Math.abs(stated-span)>6)issues.push({level:"mid",label:"خبرة غير متسقة",text:"ذُكرت خبرة نحو "+stated+" سنة بينما توحي الفترات الزمنية بـ "+span+" سنة."});
+if(/(بدون خبرة|حديث التخرج|لا املك خبره|لا أملك خبرة)/.test(raw)&&span!=null&&span>=4)issues.push({level:"high",label:"تناقض مسار",text:"النص يذكر قلة الخبرة مع فترات عمل تمتد "+span+" سنة."});
+var jobHints=(raw.match(/(?:عملت|شغلت|توليت|مسؤول|مدير|مهندس|محاسب|مطوّر|مطور|بائع|معلم|أخصائي|اخصائي|منسق|مشرف)/g)||[]).length;
+if(stated!=null&&stated<=1&&jobHints>=6)issues.push({level:"mid",label:"مسار مزدحم",text:"خبرة محدودة مع ذكر أدوار متعددة قد يشير إلى تضخيم."});
+var clicheCount=0;
+for(i=0;i<cliches.length;i++)clicheCount+=cliches[i].count;
+var density=clicheCount/Math.max(1,n/100);
+var authenticity=clamp(density*24);
+var repScore=0;
+for(i=0;i<repeated.length;i++)repScore+=(repeated[i].count-2)*7;
+for(i=0;i<repWords.length;i++)repScore+=(repWords[i].count-5)*3;
+var repetition=clamp(repScore);
+var hi=0,mi=0;
+for(i=0;i<issues.length;i++){if(issues[i].level==="high")hi++;else mi++;}
+var contradictions=clamp(hi*28+mi*10);
+var sims=[];
+for(i=0;i<savedList.length;i++){var it=savedList[i];var sc=similarity(raw,it.text);if(sc>0)sims.push({id:it.id,name:it.name||"بدون اسم",score:sc});}
+sims.sort(function(a,b){return b.score-a.score;});
+var maxSim=sims.length?sims[0].score:0;
+sims=sims.slice(0,5);
+var overall=clamp(0.34*authenticity+0.24*repetition+0.20*contradictions+0.22*maxSim);
+return{words:n,clicheCount:clicheCount,cliches:cliches,repeated:repeated,repWords:repWords,years:years,ranges:ranges,issues:issues,authenticity:authenticity,repetition:repetition,contradictions:contradictions,similar:sims,maxSim:maxSim,overall:overall};
+}
+
+function meter(label,v){var L=levelInfo(v);return '<div class="app-sec"><h3>'+label+': '+L.t+' <span class="badge">'+v+'%</span></h3><div class="app-meter"><span style="width:'+v+'%"></span></div></div>';}
+
+function renderResult(res){
+var html="",L=levelInfo(res.overall),i;
+html+='<div class="app-sec"><h3>مؤشر خطر الأصالة والتكرار</h3><div class="big app-score">'+res.overall+'%</div><span class="badge">التصنيف: '+L.t+'</span></div>';
+html+='<p class="app-empty">'+res.words+' كلمة • '+res.clicheCount+' عبارة نمطية • '+res.issues.length+' ملاحظة تناقض • أعلى نسبة تشابه '+res.maxSim+'%</p>';
+html+=meter("خطر الأصالة (صياغة نمطية)",res.authenticity);
+html+=meter("خطر التكرار الداخلي",res.repetition);
+html+=meter("خطر التناقضات",res.contradictions);
+html+='<div class="divider"></div><div class="app-sec"><h3>التشابه مع المتقدمين المحفوظين</h3>';
+if(res.similar.length){html+='<ul class="app-list">';for(i=0;i<res.similar.length;i++){var s=res.similar[i];var cls=s.score>=85?"hi":(s.score>=55?"mid":"");html+='<li class="'+cls+'">«'+escapeHtml(s.name)+'» — تشابه '+s.score+'%'+(s.score>=85?" (احتمال تطابق هوية أو سيرة منسوخة)":"")+'</li>';}html+='</ul>';}
+else html+='<p class="app-empty">لا يوجد متقدمون محفوظون للمقارنة بعد.</p>';
+html+='</div>';
+html+='<div class="app-sec"><h3>عبارات نمطية دالة على صياغة آلية</h3>';
+if(res.cliches.length){html+='<ul class="app-list">';for(i=0;i<res.cliches.length;i++){var c=res.cliches[i];html+='<li class="'+(c.count>=2?"mid":"")+'">«'+escapeHtml(c.phrase)+'» — تكررت '+c.count+' مرة</li>';}html+='</ul>';}
+else html+='<p class="app-empty">لم تُرصد عبارات نمطية شائعة.</p>';
+html+='</div>';
+html+='<div class="app-sec"><h3>تكرار داخلي (جمل وكلمات متكررة)</h3>';
+if(res.repeated.length||res.repWords.length){html+='<ul class="app-list">';for(i=0;i<res.repeated.length;i++)html+='<li class="mid">تكرار عبارة: «'+escapeHtml(res.repeated[i].phrase)+'» ×'+res.repeated[i].count+'</li>';for(i=0;i<res.repWords.length;i++)html+='<li>تكرار كلمة: «'+escapeHtml(res.repWords[i].phrase)+'» ×'+res.repWords[i].count+'</li>';html+='</ul>';}
+else html+='<p class="app-empty">لا تكرار ملحوظ.</p>';
+html+='</div>';
+html+='<div class="app-sec"><h3>تناقضات التواريخ والمسار الوظيفي</h3>';
+if(res.issues.length){html+='<ul class="app-list">';for(i=0;i<res.issues.length;i++){var it=res.issues[i];html+='<li class="'+(it.level==="high"?"hi":"mid")+'"><strong>'+escapeHtml(it.label)+':</strong> '+escapeHtml(it.text)+'</li>';}html+='</ul>';}
+else html+='<p class="app-empty">لا تناقضات واضحة في التواريخ أو المسار.</p>';
+html+='</div>';
+if(res.years.length)html+='<div class="app-sec"><h3>السنوات المستخرجة</h3><p class="app-empty">'+res.years.join("، ")+'</p></div>';
+el.out.innerHTML=html;
+}
+
+function buildPlain(res){
+var l=[],i;
+l.push("تقرير مخاطر الأصالة والتكرار");
+l.push("المتقدم: "+(el.name.value.trim()||"بدون اسم"));
+l.push("التاريخ: "+new Date().toLocaleString());
+l.push("");
+l.push("المؤشر العام: "+res.overall+"% ("+levelInfo(res.overall).t+")");
+l.push("الأصالة: "+res.authenticity+"% | التكرار: "+res.repetition+"% | التناقضات: "+res.contradictions+"%");
+l.push("عدد الكلمات: "+res.words);
+l.push("");
+l.push("العبارات النمطية:");
+if(res.cliches.length)for(i=0;i<res.cliches.length;i++)l.push("• "+res.cliches[i].phrase+" (×"+res.cliches[i].count+")");else l.push("لا يوجد");
+l.push("");
+l.push("التكرار الداخلي:");
+if(res.repeated.length||res.repWords.length){for(i=0;i<res.repeated.length;i++)l.push("• عبارة: "+res.repeated[i].phrase+" (×"+res.repeated[i].count+")");for(i=0;i<res.repWords.length;i++)l.push("• كلمة: "+res.repWords[i].phrase+" (×"+res.repWords[i].count+")");}else l.push("لا يوجد");
+l.push("");
+l.push("التناقضات:");
+if(res.issues.length)for(i=0;i<res.issues.length;i++)l.push("• "+res.issues[i].label+": "+res.issues[i].text);else l.push("لا يوجد");
+l.push("");
+l.push("التشابه مع المحفوظين:");
+if(res.similar.length)for(i=0;i<res.similar.length;i++)l.push("• "+res.similar[i].name+": "+res.similar[i].score+"%");else l.push("لا يوجد");
+return l.join("\n");
+}
+
+function doAnalyze(){
+var text=el.text.value;
+if(!norm(text)||tokenize(text).length<10){setMsg("النص فارغ أو قصير جدًا. الصق نصًا لا يقل عن 10 كلمات.",true);el.out.innerHTML='<p class="app-empty">لا يوجد تقرير بعد.</p>';lastResult=null;lastPlain="";el.report.value="";return;}
+var res=analyze(text);
+lastResult=res;renderResult(res);lastPlain=buildPlain(res);el.report.value=lastPlain;
+setMsg("تم تحليل "+res.words+" كلمة. راجع التقرير أدناه.",false);
+}
+
+function renderHistory(){
+if(!savedList.length){el.hist.innerHTML='<p class="app-empty">لا يوجد متقدمون محفوظون بعد. حلّل نصًا ثم اضغط زر الحفظ.</p>';}
+else{
+var html='<div class="app-hist">',i;
+for(i=0;i<savedList.length;i++){var it=savedList[i];
+html+='<div class="item"><h4>'+escapeHtml(it.name||"بدون اسم")+'</h4>';
+html+='<small>'+escapeHtml(it.role||"وظيفة غير محددة")+' • '+it.words+' كلمة • '+escapeHtml(fmtDate(it.at))+'</small>';
+html+='<button class="button sec" id="appLoad-'+it.id+'" type="button">تحميل في النموذج</button>';
+html+='<button class="button sec" id="appDel-'+it.id+'" type="button">حذف</button></div>';
+}
+html+='</div>';
+el.hist.innerHTML=html;
+for(i=0;i<savedList.length;i++){(function(it){
+var lb=$("appLoad-"+it.id),db=$("appDel-"+it.id);
+if(lb)lb.addEventListener("click",function(){el.name.value=it.name||"";el.role.value=it.role||"";el.text.value=it.text||"";el.text.focus();setMsg("تم تحميل بيانات «"+(it.name||"بدون اسم")+"» في النموذج.",false);});
+if(db)db.addEventListener("click",function(){savedList=savedList.filter(function(x){return x.id!==it.id;});persist();renderHistory();el.cmpOut.innerHTML='<p class="app-empty">تم تحديث القائمة. اختر متقدمين من جديد.</p>';setMsg("تم حذف «"+(it.name||"بدون اسم")+"».",false);});
+})(savedList[i]);}
+}
+fillSelects();
+}
+
+function fillSelects(){
+var a=el.cmpA.value,b=el.cmpB.value,opts='<option value="">— اختر متقدمًا —</option>',i;
+for(i=0;i<savedList.length;i++){var it=savedList[i];opts+='<option value="'+it.id+'">'+escapeHtml(it.name||"بدون اسم")+'</option>';}
+el.cmpA.innerHTML=opts;el.cmpB.innerHTML=opts;
+if(a&&el.cmpA.querySelector('option[value="'+a+'"]'))el.cmpA.value=a;
+if(b&&el.cmpB.querySelector('option[value="'+b+'"]'))el.cmpB.value=b;
+}
+
+function doSave(){
+if(!el.text.value.trim()){setMsg("لا يوجد نص لحفظه.",true);return;}
+if(!lastResult){doAnalyze();if(!lastResult)return;}
+var name=el.name.value.trim();
+if(!name)name="متقدم "+(savedList.length+1);
+savedList.push({id:"m"+Date.now()+"_"+Math.floor(Math.random()*100000),name:name,role:el.role.value.trim(),text:el.text.value,words:lastResult.words,at:new Date().toISOString()});
+if(persist()){renderHistory();setMsg("تم حفظ «"+name+"» محليًا في متصفحك.",false);}
+else setMsg("تعذّر الحفظ، قد تكون مساحة التخزين ممتلئة أو محظورة.",true);
+}
+
+function doCompare(){
+var a=findById(el.cmpA.value),b=findById(el.cmpB.value);
+if(!a||!b){el.cmpOut.innerHTML='<p class="app-empty">اختر متقدمين محفوظين اثنين للمقارنة.</p>';return;}
+if(a.id===b.id){el.cmpOut.innerHTML='<p class="app-empty">اختر متقدمين مختلفين.</p>';return;}
+var score=similarity(a.text,b.text);
+var ra=analyze(a.text),rb=analyze(b.text),i;
+var mapA={},sharedCli=[];
+for(i=0;i<ra.cliches.length;i++)mapA[norm(ra.cliches[i].phrase)]=ra.cliches[i].phrase;
+for(i=0;i<rb.cliches.length;i++){var nk=norm(rb.cliches[i].phrase);if(mapA[nk])sharedCli.push(rb.cliches[i].phrase);}
+var sA=tokenSet(a.text),sB=tokenSet(b.text),common=[];
+for(var kk in sA){if(sB[kk])common.push(kk);}
+common=common.slice(0,14);
+var verdict=score>=85?"تشابه مرتفع جدًا: يُرجّح تكرار السيرة أو تطابق الهوية.":(score>=55?"تشابه ملحوظ: قد تشترك السير في قوالب أو صياغة مشتركة.":"تشابه منخفض: يبدو النصان مستقلين.");
+var html='<div class="app-sec"><h3>نسبة التشابه بين «'+escapeHtml(a.name)+'» و«'+escapeHtml(b.name)+'»</h3><div class="big app-score">'+score+'%</div><span class="badge">'+(score>=85?"مطابقة محتملة":(score>=55?"تشابه ملحوظ":"مستقل"))+'</span></div><p>'+verdict+'</p>';
+if(sharedCli.length)html+='<div class="app-sec"><h3>عبارات نمطية مشتركة</h3><p class="app-empty">'+sharedCli.map(escapeHtml).join("، ")+'</p></div>';
+if(common.length)html+='<div class="app-sec"><h3>كلمات مشتركة بارزة</h3><p class="app-empty">'+common.map(escapeHtml).join("، ")+'</p></div>';
+html+='<div class="app-sec"><h3>المؤشرات لكل متقدم</h3><ul class="app-list"><li>'+escapeHtml(a.name)+': العام '+ra.overall+'% | الأصالة '+ra.authenticity+'% | التناقضات '+ra.issues.length+'</li><li>'+escapeHtml(b.name)+': العام '+rb.overall+'% | الأصالة '+rb.authenticity+'% | التناقضات '+rb.issues.length+'</li></ul></div>';
+el.cmpOut.innerHTML=html;
+}
+
+function fallbackCopy(txt){
+var ta=document.createElement("textarea");ta.value=txt;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.top="-1000px";
+document.body.appendChild(ta);ta.select();
+try{document.execCommand("copy");}catch(e){}
+document.body.removeChild(ta);
+}
+
+function doCopy(){
+if(!lastPlain){setMsg("لا يوجد تقرير لنسخه. حلّل النص أولًا.",true);return;}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lastPlain).then(function(){setMsg("تم نسخ التقرير إلى الحافظة.",false);},function(){fallbackCopy(lastPlain);setMsg("تم نسخ التقرير.",false);});}
+else{fallbackCopy(lastPlain);setMsg("تم نسخ التقرير.",false);}
+}
+
+function doClear(){
+el.name.value="";el.role.value="";el.text.value="";el.report.value="";
+lastResult=null;lastPlain="";
+el.out.innerHTML='<p class="app-empty">لا يوجد تقرير بعد. الصق النص ثم اضغط زر تحليل النص.</p>';
+setMsg("تم تفريغ النموذج.",false);
+}
+
+function doClearAll(){
+if(!savedList.length){setMsg("لا يوجد متقدمون محفوظون.",true);return;}
+savedList=[];persist();renderHistory();
+el.cmpOut.innerHTML='<p class="app-empty">تم حذف كل المتقدمين. اختر متقدمين من جديد.</p>';
+setMsg("تم حذف كل المتقدمين المحفوظين.",false);
+}
+
+el.analyze.addEventListener("click",doAnalyze);
+el.save.addEventListener("click",doSave);
+el.copy.addEventListener("click",doCopy);
+el.clear.addEventListener("click",doClear);
+el.clearAll.addEventListener("click",doClearAll);
+el.cmp.addEventListener("click",doCompare);
+
+savedList=loadSaved();
+if(!Array.isArray(savedList))savedList=[];
+renderHistory();
+setMsg("جاهز للعمل دون إنترنت. الصق النص وابدأ التحليل.",false);
+})();
+</script>
+</body>
+</html>
