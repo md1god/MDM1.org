@@ -267,9 +267,62 @@
     });
   }
 
+  /* ---------------- MUSIC FOR AUTO-GENERATED PAGES (pages/NN.html) ----------------
+     الصفحات المولّدة تلقائيًا (pages/99.html ...) مفيهاش <audio> ولا زر.
+     بدل ما نلمس الكود اللي بيولّدها، الزر والموسيقى بيتضافوا من هنا (ملف مشترك). */
+  function initGeneratedPageMusic(){
+    try {
+      if(document.getElementById('bg-music') || document.getElementById('music-btn')) return;
+      const m = window.location.pathname.match(/\/pages\/(\d+)\.html$/);
+      if(!m) return;
+      const file = (m[1] === '18' || m[1] === '19') ? m[1] : 'index';
+
+      const audio = document.createElement('audio');
+      audio.id = 'bg-music'; audio.loop = true; audio.preload = 'none';
+      audio.src = '../audio/' + file + '.mp3';
+      const btn = document.createElement('button');
+      btn.id = 'music-btn'; btn.type = 'button';
+      btn.textContent = '🎧';
+      btn.title = 'تشغيل / إيقاف الموسيقى';
+      btn.setAttribute('aria-label', 'تشغيل / إيقاف الموسيقى');
+      btn.style.opacity = '.65';
+      document.body.append(audio, btn);
+
+      const KEY = 'mdm1_music_choice';
+      const get = () => { try { return sessionStorage.getItem(KEY); } catch(e){ return null; } };
+      const set = v => { try { sessionStorage.setItem(KEY, v); } catch(e){} };
+      let timer;
+      function fade(to, ms, done){
+        clearInterval(timer);
+        const from = audio.volume, steps = 25, d = (to - from) / steps; let i = 0;
+        timer = setInterval(() => {
+          i++; audio.volume = Math.max(0, Math.min(1, from + d * i));
+          if(i >= steps){ clearInterval(timer); if(done) done(); }
+        }, ms / steps);
+      }
+      function on(){ btn.classList.add('playing'); btn.style.opacity = '1'; }
+      function off(){ btn.classList.remove('playing'); btn.style.opacity = '.65'; }
+      function play(ms){
+        audio.volume = 0;
+        const p = audio.play();
+        if(p && p.then) p.then(() => { on(); fade(0.45, ms); }).catch(() => { off(); });
+      }
+      btn.addEventListener('click', () => {
+        if(audio.paused){ set('yes'); play(1200); }
+        else { set('no'); fade(0, 700, () => audio.pause()); off(); }
+      });
+      const saveData = navigator.connection && navigator.connection.saveData;
+      if(get() !== 'no' && !saveData) setTimeout(() => play(2200), 400);
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'visible' && get() === 'yes' && audio.paused) play(1200);
+      });
+    } catch(e){ /* الموسيقى اختيارية — لا تكسر الصفحة */ }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
     initMusic();
+    initGeneratedPageMusic();
     initLiveElements();
     initPsychology();
     initCursor();
