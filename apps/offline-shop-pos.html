@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>آلة كاشير محمولة لبناء كتالوج المنتجات وإنشاء سلة وطباعة إيصال | MDM1</title>
+<meta name="description" content="تطبيق كاشير يعمل داخل المتصفح لبناء كتالوج منتجاتك بأسعارها وفئاتها، وإنشاء سلة وحساب الإجمالي مع الخصم والضريبة، وطباعة إيصال للعميل مع حفظ محلي آمن.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-shop-pos.html">
+<meta property="og:title" content="آلة كاشير محمولة لبناء كتالوج المنتجات وإنشاء سلة وطباعة إيصال">
+<meta property="og:description" content="تطبيق كاشير يعمل داخل المتصفح لبناء كتالوج منتجاتك بأسعارها وفئاتها، وإنشاء سلة وحساب الإجمالي مع الخصم والضريبة، وطباعة إيصال للعميل مع حفظ محلي آمن.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-shop-pos.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:980px;margin:0 auto;display:grid;gap:14px}
+.app h2{margin:0 0 8px;font-size:1.05rem;color:var(--gold-bright)}
+.app .row{flex-wrap:wrap;gap:8px;align-items:center}
+.app label{font-size:.85rem;opacity:.85;color:var(--light)}
+.app input,.app select,.app textarea{max-width:100%}
+.app .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
+.app .prod{border:1px solid var(--gold-dim);border-radius:10px;padding:10px;display:grid;gap:6px;background:rgba(255,255,255,.02)}
+.app .prod h3{margin:0;font-size:.95rem;color:var(--gold-bright)}
+.app .prod .price{color:var(--gold);font-weight:700}
+.app .cart-item{display:grid;grid-template-columns:2fr auto 1fr auto;gap:8px;align-items:center;border-bottom:1px solid var(--gold-dim);padding:7px 0}
+.app .qty{display:flex;gap:4px;align-items:center}
+.app .qty button{min-width:34px;padding:2px 6px}
+.app .qty span{min-width:22px;text-align:center}
+.app .totals{display:grid;gap:6px;margin:10px 0}
+.app .totals .line{display:flex;justify-content:space-between;align-items:baseline}
+.app .receipt{white-space:pre-wrap;font-family:monospace;direction:rtl;text-align:right;line-height:1.7}
+.app .empty{opacity:.7;font-style:italic}
+.app .order{border:1px solid var(--gold-dim);border-radius:8px;padding:8px;margin-top:8px}
+.app .order .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.app .scroll{max-height:340px;overflow:auto}
+.app .muted{font-size:.8rem;opacity:.7}
+.app .right{margin-inline-start:auto}
+@media(max-width:560px){.app .cart-item{grid-template-columns:1fr 1fr;row-gap:4px}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "آلة كاشير لبناء كتالوج المنتجات وإنشاء السلة وطباعة الإيصال", "url": "https://mdm1.org/apps/offline-shop-pos.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج إلى إنترنت لاستخدام التطبيق؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل التطبيق كاملًا داخل المتصفح ويحفظ بياناتك محليًا، لكن احرص على عدم مسح بيانات المتصفح حتى لا تفقد منتجاتك وطلباتك."}}, {"@type": "Question", "name": "أين تُحفظ المنتجات والطلبات؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في ذاكرة المتصفح (localStorage) على جهازك نفسه، ولا تُرسل إلى أي خادم خارجي إطلاقًا."}}, {"@type": "Question", "name": "كيف أحسب الخصم والضريبة؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل قيمة الخصم واختر نوعه نسبةً مئوية أو مبلغًا ثابتًا، ثم حدّد نسبة الضريبة، وسيُحدَّث الإجمالي تلقائيًا في الحال."}}, {"@type": "Question", "name": "كيف أطبع إيصالًا للعميل؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف المنتجات إلى السلة ثم اضغط «إتمام البيع»، وبعد ظهور الإيصال اضغط «طباعة الإيصال» لطباعته."}}, {"@type": "Question", "name": "هل يمكنني تعديل منتج أو حذفه؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم زر «تعديل» لتحديث بيانات المنتج أو زر «حذف» لإزالته من الكتالوج في أي وقت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">آلة كاشير لبناء كتالوج المنتجات وإنشاء السلة وطباعة الإيصال</h1>
+  <p class="page-sub">تطبيق كاشير يعمل داخل المتصفح لبناء كتالوج منتجاتك بأسعارها وفئاتها، وإنشاء سلة وحساب الإجمالي مع الخصم والضريبة، وطباعة إيصال للعميل مع حفظ محلي آمن.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك إدارة متجرك الصغير بالكامل من داخل المتصفح دون إنترنت أو حساب. يمنحك هذا التطبيق كتالوجًا مرنًا لإضافة منتجاتك بأسعارها وفئاتها، ثم تكوين سلة مشتريات وحساب الإجمالي مع الخصم والضريبة، وطباعة إيصال واضح للعميل. تُحفظ المنتجات والطلبات تلقائيًا في ذاكرة المتصفح (localStorage) فتبقى متاحة بعد إغلاق الصفحة. وهو مناسب للبقالات الصغيرة، والبازارات، والبائعين المنزليين، وأكشاك الأسواق. كل العمليات تجري محليًا على جهازك، فلا تُرسل أي بيانات إلى أي خادم، ما يجعل التطبيق سريعًا وآمنًا وخفيفًا على الهاتف والحاسوب على حد سواء. ابدأ بإضافة منتج ثم اضغط «إضافة للسلة» لبناء الفاتورة.</p>
+<div class="app" id="catalogApp">
+  <section class="card">
+    <h2>إضافة منتج إلى الكتالوج</h2>
+    <div class="row">
+      <label for="pName">اسم المنتج</label>
+      <input id="pName" type="text" placeholder="مثال: أرز بسمتي ١ كغ" />
+      <label for="pPrice">السعر</label>
+      <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+    </div>
+    <div class="row">
+      <label for="pCat">الفئة</label>
+      <input id="pCat" type="text" list="catList" placeholder="مثال: مواد غذائية" />
+      <datalist id="catList"></datalist>
+      <label for="pStock">الكمية بالمخزون (اختياري)</label>
+      <input id="pStock" type="number" min="0" step="1" placeholder="10" />
+      <button id="addProductBtn">إضافة المنتج</button>
+      <button id="cancelEditBtn" class="sec" hidden>إلغاء التعديل</button>
+    </div>
+    <p class="badge" id="productMsg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>الكتالوج</h2>
+    <div class="row">
+      <label for="searchProd">بحث بالاسم</label>
+      <input id="searchProd" type="text" placeholder="اكتب للبحث..." />
+      <label for="filterCat">تصفية بالفئة</label>
+      <select id="filterCat"><option value="">كل الفئات</option></select>
+      <span class="badge" id="catalogCount">0 منتج</span>
+    </div>
+    <div class="divider"></div>
+    <div class="products" id="productList"></div>
+  </section>
+
+  <section class="card">
+    <h2>سلة المشتريات</h2>
+    <div class="scroll" id="cartList"></div>
+    <div class="divider"></div>
+    <div class="row">
+      <label for="discountType">نوع الخصم</label>
+      <select id="discountType">
+        <option value="percent">نسبة مئوية %</option>
+        <option value="fixed">مبلغ ثابت</option>
+      </select>
+      <label for="discount">قيمة الخصم</label>
+      <input id="discount" type="number" min="0" step="0.01" value="0" />
+      <label for="taxRate">الضريبة %</label>
+      <input id="taxRate" type="number" min="0" step="0.01" value="0" />
+      <label for="currency">العملة</label>
+      <select id="currency">
+        <option value="ر.س">ر.س</option>
+        <option value="ج.م">ج.م</option>
+        <option value="د.إ">د.إ</option>
+        <option value="د.ك">د.ك</option>
+        <option value="د.أ">د.أ</option>
+      </select>
+    </div>
+    <div class="totals">
+      <div class="line"><span>المجموع الفرعي</span><span id="subtotal">0.00</span></div>
+      <div class="line"><span>الخصم</span><span id="discountOut">0.00</span></div>
+      <div class="line"><span>الضريبة</span><span id="taxOut">0.00</span></div>
+      <div class="line"><span>الإجمالي</span><span class="big" id="total">0.00</span></div>
+    </div>
+    <div class="row">
+      <button id="checkoutBtn">إتمام البيع</button>
+      <button id="printReceiptBtn" class="sec">طباعة الإيصال</button>
+      <button id="clearCartBtn" class="sec">إفراغ السلة</button>
+    </div>
+    <p class="badge" id="checkoutMsg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>إيصال آخر عملية</h2>
+    <div class="out receipt" id="receipt">لم تُنشأ أي فاتورة بعد. أضف منتجات ثم اضغط «إتمام البيع».</div>
+  </section>
+
+  <section class="card">
+    <h2>الطلبات المحفوظة <span class="badge" id="ordersCount">0</span></h2>
+    <div class="row">
+      <button id="clearOrdersBtn" class="sec">مسح سجل الطلبات</button>
+    </div>
+    <div class="orders" id="ordersList"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل أحتاج إلى إنترنت لاستخدام التطبيق؟</h3><p>لا، يعمل التطبيق كاملًا داخل المتصفح ويحفظ بياناتك محليًا، لكن احرص على عدم مسح بيانات المتصفح حتى لا تفقد منتجاتك وطلباتك.</p><h3>أين تُحفظ المنتجات والطلبات؟</h3><p>تُحفظ في ذاكرة المتصفح (localStorage) على جهازك نفسه، ولا تُرسل إلى أي خادم خارجي إطلاقًا.</p><h3>كيف أحسب الخصم والضريبة؟</h3><p>أدخل قيمة الخصم واختر نوعه نسبةً مئوية أو مبلغًا ثابتًا، ثم حدّد نسبة الضريبة، وسيُحدَّث الإجمالي تلقائيًا في الحال.</p><h3>كيف أطبع إيصالًا للعميل؟</h3><p>أضف المنتجات إلى السلة ثم اضغط «إتمام البيع»، وبعد ظهور الإيصال اضغط «طباعة الإيصال» لطباعته.</p><h3>هل يمكنني تعديل منتج أو حذفه؟</h3><p>نعم، استخدم زر «تعديل» لتحديث بيانات المنتج أو زر «حذف» لإزالته من الكتالوج في أي وقت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var LS_P="md1_catalog_products_v1",LS_C="md1_catalog_cart_v1",LS_O="md1_catalog_orders_v1",LS_S="md1_catalog_settings_v1";
+  var products=[],cart=[],orders=[],editingId=null,invoiceSeq=1;
+  var currency="ر.س",discountTypeVal="percent";
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  function read(k,d){try{var r=localStorage.getItem(k);return r?JSON.parse(r):d;}catch(e){return d;}}
+  function money(n){return (Math.round(n*100)/100).toFixed(2)+" "+currency;}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function msg(t){$("productMsg").textContent=t;}
+  function load(){
+    products=read(LS_P,[]);cart=read(LS_C,[]);orders=read(LS_O,[]);
+    var s=read(LS_S,{});
+    currency=s.currency||"ر.س";discountTypeVal=s.discountType||"percent";invoiceSeq=s.invoiceSeq||1;
+  }
+  function saveAll(){
+    store(LS_P,products);store(LS_C,cart);store(LS_O,orders);
+    store(LS_S,{currency:currency,discountType:discountTypeVal,invoiceSeq:invoiceSeq});
+  }
+  function categories(){
+    var set={};products.forEach(function(p){if(p.cat)set[p.cat]=1;});
+    return Object.keys(set).sort();
+  }
+  function renderCategories(){
+    var cats=categories(),dl="",sel=$("filterCat"),cur=sel.value;
+    cats.forEach(function(c){dl+='<option value="'+esc(c)+'"></option>';});
+    $("catList").innerHTML=dl;
+    sel.innerHTML='<option value="">كل الفئات</option>';
+    cats.forEach(function(c){sel.innerHTML+='<option value="'+esc(c)+'">'+esc(c)+'</option>';});
+    sel.value=cur||"";
+    if(sel.value!==cur)sel.value="";
+  }
+  function renderCatalog(){
+    var q=$("searchProd").value.trim().toLowerCase(),fc=$("filterCat").value,box=$("productList");
+    var list=products.filter(function(p){
+      var okq=!q||p.name.toLowerCase().indexOf(q)>-1;
+      var okc=!fc||p.cat===fc;
+      return okq&&okc;
+    });
+    $("catalogCount").textContent=list.length+" منتج";
+    if(!products.length){box.innerHTML='<p class="empty">لا توجد منتجات بعد. أضف أول منتج من النموذج بالأعلى.</p>';return;}
+    if(!list.length){box.innerHTML='<p class="empty">لا توجد نتائج مطابقة للبحث أو الفئة المحددة.</p>';return;}
+    box.innerHTML=list.map(function(p){
+      var i=products.indexOf(p);
+      var st=(p.stock===null||p.stock===""||isNaN(p.stock))?"":" · متوفر: "+p.stock;
+      return '<div class="prod">'
+        +'<h3>'+esc(p.name)+'</h3>'
+        +'<span class="price">'+money(p.price)+'</span>'
+        +'<span class="muted">'+esc(p.cat||"بدون فئة")+st+'</span>'
+        +'<div class="row">'
+          +'<button id="addToCart'+i+'" data-act="cart" data-i="'+i+'">إضافة للسلة</button>'
+          +'<button id="editProd'+i+'" class="sec" data-act="edit" data-i="'+i+'">تعديل</button>'
+          +'<button id="delProd'+i+'" class="sec" data-act="del" data-i="'+i+'">حذف</button>'
+        +'</div></div>';
+    }).join("");
+  }
+  function recalc(){
+    var sub=cart.reduce(function(a,i){return a+i.price*i.qty;},0);
+    var dval=parseFloat($("discount").value)||0;if(dval<0)dval=0;
+    var disc=discountTypeVal==="percent"?sub*dval/100:dval;
+    if(disc>sub)disc=sub;
+    var rate=parseFloat($("taxRate").value)||0;if(rate<0)rate=0;
+    var after=sub-disc,tax=after*rate/100,total=after+tax;
+    $("subtotal").textContent=money(sub);
+    $("discountOut").textContent="− "+money(disc);
+    $("taxOut").textContent=money(tax);
+    $("total").textContent=money(total);
+    return {subtotal:sub,discount:disc,tax:tax,total:total};
+  }
+  function renderCart(){
+    var box=$("cartList");
+    if(!cart.length){box.innerHTML='<p class="empty">السلة فارغة. اضغط «إضافة للسلة» على أي منتج.</p>';recalc();return;}
+    box.innerHTML=cart.map(function(it,i){
+      return '<div class="cart-item">'
+        +'<span>'+esc(it.name)+' <span class="muted">('+money(it.price)+')</span></span>'
+        +'<span class="qty">'
+          +'<button id="dec'+i+'" class="sec" data-act="dec" data-i="'+i+'">−</button>'
+          +'<span id="qtyv'+i+'">'+it.qty+'</span>'
+          +'<button id="inc'+i+'" class="sec" data-act="inc" data-i="'+i+'">+</button>'
+        +'</span>'
+        +'<span id="line'+i+'">'+money(it.price*it.qty)+'</span>'
+        +'<button id="rm'+i+'" class="sec" data-act="rm" data-i="'+i+'">إزالة</button>'
+      +'</div>';
+    }).join("");
+    recalc();
+  }
+  function receiptText(o){
+    var L=[];
+    L.push("إيصال بيع — متجر محلي");
+    L.push("رقم الفاتورة: INV-"+String(o.no).padStart(4,"0"));
+    L.push("التاريخ: "+o.dateText);
+    L.push("--------------------------------");
+    o.items.forEach(function(it){L.push(it.qty+" × "+it.name+" = "+(it.price*it.qty).toFixed(2)+" "+o.currency);});
+    L.push("--------------------------------");
+    L.push("المجموع الفرعي: "+o.subtotal.toFixed(2)+" "+o.currency);
+    L.push("الخصم: -"+o.discount.toFixed(2)+" "+o.currency);
+    L.push("الضريبة: "+o.tax.toFixed(2)+" "+o.currency);
+    L.push("الإجمالي المستحق: "+o.total.toFixed(2)+" "+o.currency);
+    L.push("شكرًا لتعاملكم معنا.");
+    return L.join("\n");
+  }
+  function showReceipt(o){$("receipt").textContent=receiptText(o);}
+  function renderOrders(){
+    var box=$("ordersList");
+    $("ordersCount").textContent=orders.length;
+    if(!orders.length){box.innerHTML='<p class="empty">لا توجد طلبات محفوظة بعد.</p>';return;}
+    box.innerHTML=orders.map(function(o,i){
+      return '<div class="order">'
+        +'<div class="meta"><strong>INV-'+String(o.no).padStart(4,"0")+'</strong><span class="muted">'+esc(o.dateText)+'</span></div>'
+        +'<div class="muted">'+o.items.length+' صنف — الإجمالي: '+o.total.toFixed(2)+' '+o.currency+'</div>'
+        +'<div class="row"><button id="viewOrder'+i+'" class="sec" data-act="view" data-i="'+i+'">عرض الإيصال</button>'
+        +'<button id="delOrder'+i+'" class="sec" data-act="delorder" data-i="'+i+'">حذف الطلب</button></div>'
+      +'</div>';
+    }).join("");
+  }
+  function addProduct(){
+    var name=$("pName").value.trim(),price=parseFloat($("pPrice").value);
+    var cat=$("pCat").value.trim(),stockRaw=$("pStock").value.trim();
+    var stock=stockRaw===""?null:parseInt(stockRaw,10);
+    if(!name){msg("يرجى إدخال اسم المنتج.");return;}
+    if(isNaN(price)||price<0){msg("يرجى إدخال سعر صحيح غير سالب.");return;}
+    if(stock!==null&&(isNaN(stock)||stock<0))stock=null;
+    if(editingId){
+      var found=null;for(var i=0;i<products.length;i++){if(products[i].id===editingId)found=products[i];}
+      if(found){found.name=name;found.price=price;found.cat=cat;found.stock=stock;}
+      editingId=null;$("addProductBtn").textContent="إضافة المنتج";$("cancelEditBtn").hidden=true;
+      msg("تم تحديث بيانات المنتج.");
+    }else{
+      products.push({id:uid(),name:name,price:price,cat:cat,stock:stock});
+      msg("تمت إضافة المنتج إلى الكتالوج.");
+    }
+    $("pName").value="";$("pPrice").value="";$("pStock").value="";
+    saveAll();renderCategories();renderCatalog();
+  }
+  function startEdit(i){
+    var p=products[i];if(!p)return;
+    editingId=p.id;
+    $("pName").value=p.name;$("pPrice").value=p.price;$("pCat").value=p.cat||"";$("pStock").value=(p.stock===null?"":p.stock);
+    $("addProductBtn").textContent="حفظ التعديل";$("cancelEditBtn").hidden=false;
+    msg("وضع التعديل مفعّل للمنتج: "+p.name);
+  }
+  function addToCart(i){
+    var p=products[i];if(!p)return;
+    var ex=null;for(var k=0;k<cart.length;k++){if(cart[k].id===p.id)ex=cart[k];}
+    if(ex){ex.qty++;}else{cart.push({id:p.id,name:p.name,price:p.price,qty:1});}
+    $("checkoutMsg").textContent="";saveAll();renderCart();
+  }
+  function checkout(){
+    if(!cart.length){$("checkoutMsg").textContent="تعذّر إتمام البيع: السلة فارغة.";return;}
+    var t=recalc(),now=new Date();
+    var order={
+      no:invoiceSeq++,dateText:now.toLocaleString("ar-EG"),
+      items:cart.map(function(i){return {name:i.name,price:i.price,qty:i.qty};}),
+      subtotal:t.subtotal,discount:t.discount,tax:t.tax,total:t.total,currency:currency
+    };
+    orders.unshift(order);
+    if(orders.length>50)orders=orders.slice(0,50);
+    cart=[];
+    saveAll();renderCart();renderOrders();renderCatalog();showReceipt(order);
+    $("checkoutMsg").textContent="تم إتمام البيع وحفظ الطلب بنجاح.";
+  }
+  function bind(){
+    $("addProductBtn").addEventListener("click",addProduct);
+    $("cancelEditBtn").addEventListener("click",function(){
+      editingId=null;$("addProductBtn").textContent="إضافة المنتج";$("cancelEditBtn").hidden=true;
+      $("pName").value="";$("pPrice").value="";$("pStock").value="";msg("تم إلغاء التعديل.");
+    });
+    $("searchProd").addEventListener("input",renderCatalog);
+    $("filterCat").addEventListener("change",renderCatalog);
+    $("productList").addEventListener("click",function(e){
+      var b=e.target.closest("button");if(!b||!b.dataset.act)return;
+      var i=parseInt(b.dataset.i,10),act=b.dataset.act;
+      if(act==="cart")addToCart(i);
+      else if(act==="edit")startEdit(i);
+      else if(act==="del"){
+        if(confirm("حذف المنتج «"+products[i].name+"» من الكتالوج؟")){
+          products.splice(i,1);saveAll();renderCategories();renderCatalog();msg("تم حذف المنتج.");
+        }
+      }
+    });
+    $("cartList").addEventListener("click",function(e){
+      var b=e.target.closest("button");if(!b||!b.dataset.act)return;
+      var i=parseInt(b.dataset.i,10),act=b.dataset.act;
+      if(act==="inc")cart[i].qty++;
+      else if(act==="dec"){cart[i].qty--;if(cart[i].qty<=0)cart.splice(i,1);}
+      else if(act==="rm")cart.splice(i,1);
+      saveAll();renderCart();
+    });
+    $("discount").addEventListener("input",recalc);
+    $("taxRate").addEventListener("input",recalc);
+    $("discountType").addEventListener("change",function(){discountTypeVal=this.value;saveAll();recalc();});
+    $("currency").addEventListener("change",function(){currency=this.value;saveAll();renderCart();renderOrders();});
+    $("checkoutBtn").addEventListener("click",checkout);
+    $("clearCartBtn").addEventListener("click",function(){
+      if(!cart.length){$("checkoutMsg").textContent="السلة فارغة أصلًا.";return;}
+      if(confirm("إفراغ السلة دون إنشاء فاتورة؟")){cart=[];saveAll();renderCart();$("checkoutMsg").textContent="تم إفراغ السلة.";}
+    });
+    $("printReceiptBtn").addEventListener("click",function(){
+      if(!$("receipt").textContent||$("receipt").textContent.indexOf("لم تُنشأ")===0){$("checkoutMsg").textContent="لا يوجد إيصال للطباعة بعد.";return;}
+      window.print();
+    });
+    $("ordersList").addEventListener("click",function(e){
+      var b=e.target.closest("button");if(!b||!b.dataset.act)return;
+      var i=parseInt(b.dataset.i,10),act=b.dataset.act;
+      if(act==="view")showReceipt(orders[i]);
+      else if(act==="delorder"){orders.splice(i,1);saveAll();renderOrders();}
+    });
+    $("clearOrdersBtn").addEventListener("click",function(){
+      if(!orders.length)return;
+      if(confirm("مسح كل سجل الطلبات المحفوظة؟")){orders=[];saveAll();renderOrders();}
+    });
+  }
+  load();
+  $("discountType").value=discountTypeVal;
+  $("currency").value=currency;
+  bind();
+  renderCategories();
+  renderCatalog();
+  renderCart();
+  renderOrders();
+  recalc();
+})();
+</script>
+</body>
+</html>
