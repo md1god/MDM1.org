@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسجّل الاجتماعات: تحويل الصوت نصيًا واستخراج المهام محليًا | MDM1</title>
+<meta name="description" content="سجّل صوت اجتماعك وحوّله نصيًا في المتصفح، أو الصق نصًا جاهزًا، ثم استخرج بنود العمل والمواعيد تلقائيًا واحفظ الملاحظات محليًا مع بحث فوري وتصدير نصي كامل.">
+<link rel="canonical" href="https://mdm1.org/apps/local-meeting-notes.html">
+<meta property="og:title" content="مسجّل الاجتماعات: تحويل الصوت نصيًا واستخراج المهام محليًا">
+<meta property="og:description" content="سجّل صوت اجتماعك وحوّله نصيًا في المتصفح، أو الصق نصًا جاهزًا، ثم استخرج بنود العمل والمواعيد تلقائيًا واحفظ الملاحظات محليًا مع بحث فوري وتصدير نصي كامل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-meeting-notes.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:960px;margin:0 auto;color:var(--light);line-height:1.9}
+.app *{box-sizing:border-box}
+.app-intro{background:var(--dark);border:1px solid var(--gold-dim);border-radius:12px;padding:14px 16px;margin:0 0 18px}
+.app-sec{margin-bottom:16px}
+.app-sec h2{color:var(--gold);font-size:1.12rem;margin:0 0 10px}
+.app-sec h3{color:var(--gold-bright);font-size:1rem;margin:14px 0 6px;display:flex;align-items:center;gap:8px}
+.app .row{margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.app label{display:block;margin:10px 0 4px;color:var(--gold-bright);font-size:.92rem}
+.app textarea,.app input{width:100%}
+.app-ta{min-height:120px;resize:vertical;font-family:inherit;line-height:1.7}
+.app-list{list-style:none;padding:0;margin:0}
+.app-list li{background:var(--dark);border:1px solid var(--gold-dim);border-inline-start:3px solid var(--gold);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.app-moment{color:var(--gold-bright);font-size:.8rem;display:block;margin-bottom:2px}
+.app-notes{display:grid;gap:10px;margin-top:12px}
+.app-note{background:var(--dark);border:1px solid var(--gold-dim);border-radius:10px;padding:12px}
+.app-note h4{margin:0 0 4px;color:var(--gold)}
+.app-note p{margin:6px 0;font-size:.9rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.app-meta{font-size:.76rem;color:var(--gold-dim)}
+.app-ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.app-empty{opacity:.7;font-style:italic;margin:6px 0}
+.app-hint{font-size:.85rem;opacity:.85}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مسجّل الاجتماعات مع تحويل الصوت إلى نص واستخراج بنود العمل والمواعيد", "url": "https://mdm1.org/apps/local-meeting-notes.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم إرسال صوتي أو ملاحظاتي إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل بالكامل داخل المتصفح. يُجرى التعرف على الكلام محليًا عبر ميزة المتصفح المدمجة، وتُحفظ الملاحظات في localStorage فقط، دون خادم أو حساب أو اتصال شبكي."}}, {"@type": "Question", "name": "كيف يستخرج التطبيق بنود العمل والمواعيد؟", "acceptedAnswer": {"@type": "Answer", "text": "يقسّم النص إلى جمل، ثم يفحص كل جملة بحثًا عن كلمات دالة مثل «سأقوم» و«المهمة» لبنود العمل، وكلمات مثل «الموعد» و«غدًا» أو أنماط التاريخ والوقت لتصنيفها كمواعيد."}}, {"@type": "Question", "name": "النسخ إلى الحافظة لم يعمل، ماذا أفعل؟", "acceptedAnswer": {"@type": "Answer", "text": "إذا منع المتصفح الكتابة في الحافظة، ينتقل التطبيق تلقائيًا إلى طريقة بديلة، وعند فشلها يضع النص في مربع «الصق النص هنا» مع تحديده لتنسخه يدويًا بالضغط على Ctrl+C."}}, {"@type": "Question", "name": "ماذا يحدث إذا حفظت ملاحظة جديدة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُضاف الملاحظة مع النص وبنود العمل والمواعيد واللحظات المهمة، وتظهر فورًا في قائمة الملاحظات، وتبقى محفوظة حتى لو أغلقت الصفحة أو أعدت تحميلها."}}, {"@type": "Question", "name": "هل يمكنني تعليم لحظة مهمة دون تسجيل مباشر؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر «تعليم لحظة مهمة الآن» يعمل دائمًا، ويسجّل الوقت المنقضي أثناء التسجيل إن كان جاريًا، وإلا يضيف لحظة يدوية مع آخر جزء من النص الحالي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مسجّل الاجتماعات مع تحويل الصوت إلى نص واستخراج بنود العمل والمواعيد</h1>
+  <p class="page-sub">سجّل صوت اجتماعك وحوّله نصيًا في المتصفح، أو الصق نصًا جاهزًا، ثم استخرج بنود العمل والمواعيد تلقائيًا واحفظ الملاحظات محليًا مع بحث فوري وتصدير نصي كامل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot">
+  <p class="app-intro">يعمل هذا التطبيق بالكامل داخل متصفحك دون خادم أو حساب أو اتصال شبكي، إذ يسجّل صوت الاجتماع ويحوّله نصيًا مباشرةً عبر ميزة التعرف على الكلام المدمجة في المتصفح. كما يمكنك لصق نص جاهز أو رفع ملف نصي لتحليله فورًا. يستخرج التطبيق بنود العمل والمواعيد تلقائيًا بقواعد نصية تعتمد على كلمات مثل «سأقوم» و«المهمة» و«الموعد»، ويتيح لك تعليم اللحظات المهمة أثناء التسجيل بضغطة واحدة. تُحفظ جميع الملاحظات محليًا في متصفحك عبر localStorage لتبقى متاحة عند العودة، مع بحث فوري وتصدير نصي كامل، فلا يغادر أي جزء من بياناتك جهازك أبدًا.</p>
+
+  <section class="card app-sec">
+    <h2>١. تسجيل الصوت وتحويله نصيًا</h2>
+    <p class="app-hint">يعتمد التسجيل على ميزة التعرف على الكلام المدمجة في المتصفح، ولا تُرسل أي بيانات إلى الخارج.</p>
+    <div class="row">
+      <button id="recStart">بدء التسجيل الصوتي</button>
+      <button class="sec" id="recStop">إيقاف التسجيل الصوتي</button>
+      <button class="sec" id="markMoment">تعليم لحظة مهمة الآن</button>
+    </div>
+    <p class="badge" id="recStatus">الحالة: غير مسجّل</p>
+    <label for="transcriptInput">النص المستخرج والقابل للتحرير</label>
+    <textarea id="transcriptInput" class="app-ta" placeholder="سيظهر النص هنا أثناء التسجيل، ويمكنك تعديله يدويًا..."></textarea>
+    <div class="row">
+      <button class="sec" id="copyTranscript">نسخ النص إلى الحافظة</button>
+      <button class="sec" id="clearTranscript">مسح النص من المحرر</button>
+    </div>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٢. لصق نص جاهز أو رفع ملف نصي</h2>
+    <div class="row">
+      <input type="file" id="fileInput" accept=".txt,text/plain">
+      <button class="sec" id="loadFileBtn">تحديد ملف نصي ورفعه</button>
+      <button class="sec" id="appendPaste">نقل النص الملصوق إلى المحرر</button>
+    </div>
+    <label for="pasteArea">الصق النص هنا</label>
+    <textarea id="pasteArea" class="app-ta" placeholder="الصق محضر الاجتماع أو أي نص جاهز هنا..."></textarea>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٣. استخراج بنود العمل والمواعيد</h2>
+    <div class="row">
+      <button id="analyzeBtn">تحليل النص واستخراج العناصر</button>
+    </div>
+    <div class="out" id="analyzeOut">لم يتم التحليل بعد. انقر زر التحليل بعد إدخال النص.</div>
+    <h3>بنود العمل <span class="badge" id="tasksCount">٠</span></h3>
+    <ul class="app-list" id="tasksList"></ul>
+    <h3>المواعيد <span class="badge" id="datesCount">٠</span></h3>
+    <ul class="app-list" id="datesList"></ul>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٤. اللحظات المهمة أثناء التسجيل</h2>
+    <ul class="app-list" id="momentsList"></ul>
+    <p class="badge" id="momentsCount">اللحظات: ٠</p>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٥. حفظ الملاحظات والبحث والتصدير</h2>
+    <label for="noteTitle">عنوان الملاحظة</label>
+    <input id="noteTitle" placeholder="مثال: اجتماع فريق التطوير">
+    <div class="row">
+      <button id="saveNoteBtn">حفظ الملاحظة محليًا</button>
+      <button class="sec" id="exportAllBtn">تصدير كل الملاحظات نصيًا</button>
+      <button class="sec" id="clearAllBtn">حذف كل الملاحظات</button>
+    </div>
+    <div class="divider"></div>
+    <label for="searchInput">بحث فوري في الملاحظات</label>
+    <input id="searchInput" placeholder="اكتب كلمة للبحث في العناوين والنصوص...">
+    <div id="notesList" class="app-notes"></div>
+  </section>
+
+  <div class="out" id="msgOut" role="status" aria-live="polite"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم إرسال صوتي أو ملاحظاتي إلى أي خادم؟</h3><p>لا، التطبيق يعمل بالكامل داخل المتصفح. يُجرى التعرف على الكلام محليًا عبر ميزة المتصفح المدمجة، وتُحفظ الملاحظات في localStorage فقط، دون خادم أو حساب أو اتصال شبكي.</p><h3>كيف يستخرج التطبيق بنود العمل والمواعيد؟</h3><p>يقسّم النص إلى جمل، ثم يفحص كل جملة بحثًا عن كلمات دالة مثل «سأقوم» و«المهمة» لبنود العمل، وكلمات مثل «الموعد» و«غدًا» أو أنماط التاريخ والوقت لتصنيفها كمواعيد.</p><h3>النسخ إلى الحافظة لم يعمل، ماذا أفعل؟</h3><p>إذا منع المتصفح الكتابة في الحافظة، ينتقل التطبيق تلقائيًا إلى طريقة بديلة، وعند فشلها يضع النص في مربع «الصق النص هنا» مع تحديده لتنسخه يدويًا بالضغط على Ctrl+C.</p><h3>ماذا يحدث إذا حفظت ملاحظة جديدة؟</h3><p>تُضاف الملاحظة مع النص وبنود العمل والمواعيد واللحظات المهمة، وتظهر فورًا في قائمة الملاحظات، وتبقى محفوظة حتى لو أغلقت الصفحة أو أعدت تحميلها.</p><h3>هل يمكنني تعليم لحظة مهمة دون تسجيل مباشر؟</h3><p>نعم، زر «تعليم لحظة مهمة الآن» يعمل دائمًا، ويسجّل الوقت المنقضي أثناء التسجيل إن كان جاريًا، وإلا يضيف لحظة يدوية مع آخر جزء من النص الحالي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var STORE_KEY = "md_meeting_notes_v1";
+
+  var ACTION_RE = /(سأقوم|سوف أقوم|سوف|سأ|ساقوم|يجب|لازم|الزم|نحتاج|نحتاج إلى|يتوجب|المهمة|مهمة|مهام|أنجز|إنجاز|تنفيذ|متابعة|أرسل|إرسال|راجع|مراجعة|تواصل|تحديد|تجهيز|إعداد|تسليم|معالجة|مطلوب)/;
+  var DATE_RE = /(الموعد|موعد|غداً|غدا|بكرا|بكرة|اليوم|الأسبوع|أسبوع|اسبوع|الشهر|شهر|الساعة|ساعة|تاريخ|يوم|الاثنين|الإثنين|الثلاثاء|الأربعاء|الخميس|الجمعة|السبت|الأحد|يناير|فبراير|مارس|أبريل|مايو|يونيو|يوليو|أغسطس|سبتمبر|أكتوبر|نوفمبر|ديسمبر|بعد غد|نهاية|بداية|صباح|مساء|ظهر)/;
+  var TIME_RE = /(\d{1,2}[:.]\d{2})|(\d{1,2}\s*(ص|م|صباحًا|مساءً))/;
+  var NUM_DATE_RE = /\d{1,4}[\/\-.]\d{1,2}([\/\-.]\d{1,4})?/;
+
+  var notes = [], moments = [], currentTasks = [], currentDates = [];
+  var rec = null, recognizing = false, finalTranscript = "", recStartTime = 0;
+
+  function msg(text, isError){
+    var el = $("msgOut");
+    if(!el){ return; }
+    el.textContent = text;
+    el.style.color = isError ? "var(--gold-bright)" : "var(--gold)";
+  }
+  function fmtDate(ts){ try { return new Date(ts).toLocaleString("ar"); } catch(e){ return String(ts); } }
+
+  function safeCopy(text, okMsg){
+    if(!text){ msg("لا يوجد نص لنسخه.", true); return; }
+    var done = function(){ msg(okMsg, false); };
+    var fallback = function(){ legacyCopy(text, okMsg); };
+    try {
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+      } else { fallback(); }
+    } catch(e){ fallback(); }
+  }
+  function legacyCopy(text, okMsg){
+    var ok = false, ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.top = "0"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    if(ok){ msg(okMsg, false); }
+    else {
+      var pa = $("pasteArea");
+      if(pa){ pa.value = text; pa.focus(); pa.select(); }
+      msg("تعذّر النسخ التلقائي، فوضعنا النص في مربع «الصق النص هنا» لتحديده ونسخه يدويًا.", true);
+    }
+  }
+
+  function loadNotes(){
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch(e){ return []; }
+  }
+  function persist(){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(notes)); return true; }
+    catch(e){ return false; }
+  }
+
+  function splitSentences(text){
+    return String(text).split(/[.\n؟!؛;]+/)
+      .map(function(s){ return s.trim(); })
+      .filter(function(s){ return s.length > 2; });
+  }
+  function dedupe(arr){
+    var seen = {}, out = [];
+    arr.forEach(function(s){ if(!seen[s]){ seen[s] = 1; out.push(s); } });
+    return out;
+  }
+  function getFullText(){ return ($("transcriptInput").value || "") + "\n" + ($("pasteArea").value || ""); }
+
+  function renderTasks(list){
+    var box = $("tasksList"); box.innerHTML = "";
+    $("tasksCount").textContent = String(list.length);
+    if(!list.length){
+      var p = document.createElement("p"); p.className = "app-empty";
+      p.textContent = "لا توجد بنود عمل مستخرجة."; box.appendChild(p); return;
+    }
+    list.forEach(function(s){
+      var li = document.createElement("li"); li.textContent = s; box.appendChild(li);
+    });
+  }
+  function renderDates(list){
+    var box = $("datesList"); box.innerHTML = "";
+    $("datesCount").textContent = String(list.length);
+    if(!list.length){
+      var p = document.createElement("p"); p.className = "app-empty";
+      p.textContent = "لا توجد مواعيد مستخرجة."; box.appendChild(p); return;
+    }
+    list.forEach(function(s){
+      var li = document.createElement("li"); li.textContent = s; box.appendChild(li);
+    });
+  }
+  function renderMoments(){
+    var box = $("momentsList"); box.innerHTML = "";
+    $("momentsCount").textContent = "اللحظات: " + moments.length;
+    if(!moments.length){
+      var p = document.createElement("p"); p.className = "app-empty";
+      p.textContent = "لم تُعلَّم أي لحظة مهمة بعد."; box.appendChild(p); return;
+    }
+    moments.forEach(function(m, i){
+      var li = document.createElement("li");
+      var t = document.createElement("span"); t.className = "app-moment";
+      t.textContent = "لحظة " + (i + 1) + " — " + m.time;
+      li.appendChild(t);
+      if(m.note){ li.appendChild(document.createTextNode(m.note)); }
+      box.appendChild(li);
+    });
+  }
+
+  function buildExport(list){
+    var out = ["ملاحظات الاجتماعات — تصدير نصي", "عدد الملاحظات: " + list.length, "===================================="];
+    list.forEach(function(n, i){
+      out.push((i + 1) + ") " + n.title + "  (" + fmtDate(n.ts) + ")");
+      if(n.text){ out.push("النص:\n" + n.text); }
+      if(n.tasks && n.tasks.length){ out.push("بنود العمل:\n- " + n.tasks.join("\n- ")); }
+      if(n.dates && n.dates.length){ out.push("المواعيد:\n- " + n.dates.join("\n- ")); }
+      if(n.moments && n.moments.length){
+        out.push("اللحظات المهمة:\n- " + n.moments.map(function(m){
+          return m.time + (m.note ? " — " + m.note : "");
+        }).join("\n- "));
+      }
+      out.push("------------------------------------");
+    });
+    return out.join("\n\n");
+  }
+
+  function renderNotes(filter){
+    var box = $("notesList"); box.innerHTML = "";
+    var list = notes;
+    if(filter && filter.trim()){
+      var f = filter.trim().toLowerCase();
+      list = notes.filter(function(n){
+        var blob = (n.title + " " + (n.text || "") + " " + (n.tasks || []).join(" ") + " " + (n.dates || []).join(" ")).toLowerCase();
+        return blob.indexOf(f) >= 0;
+      });
+    }
+    if(!list.length){
+      var p = document.createElement("p"); p.className = "app-empty";
+      p.textContent = notes.length ? "لا توجد نتائج مطابقة للبحث." : "لا توجد ملاحظات محفوظة بعد.";
+      box.appendChild(p); return;
+    }
+    list.forEach(function(n){
+      var card = document.createElement("div"); card.className = "app-note";
+      var h = document.createElement("h4"); h.textContent = n.title; card.appendChild(h);
+      var meta = document.createElement("div"); meta.className = "app-meta";
+      meta.textContent = fmtDate(n.ts) + " • بنود: " + ((n.tasks || []).length) +
+        " • مواعيد: " + ((n.dates || []).length) + " • لحظات: " + ((n.moments || []).length);
+      card.appendChild(meta);
+      var body = document.createElement("p");
+      body.textContent = (n.text || "لا يوجد نص محفوظ.").slice(0, 240); card.appendChild(body);
+      var ctl = document.createElement("div"); ctl.className = "app-ctl";
+      var cp = document.createElement("button"); cp.className = "sec";
+      cp.id = "noteCopy_" + n.id; cp.textContent = "نسخ هذه الملاحظة نصيًا";
+      cp.onclick = function(){ safeCopy(buildExport([n]), "تم نسخ الملاحظة إلى الحافظة."); };
+      ctl.appendChild(cp);
+      var del = document.createElement("button"); del.className = "sec";
+      del.id = "noteDel_" + n.id; del.textContent = "حذف هذه الملاحظة";
+      del.onclick = function(){ deleteNote(n.id); };
+      ctl.appendChild(del);
+      card.appendChild(ctl);
+      box.appendChild(card);
+    });
+  }
+
+  function deleteNote(id){
+    notes = notes.filter(function(n){ return n.id !== id; });
+    persist(); renderNotes($("searchInput").value); msg("تم حذف الملاحظة.", false);
+  }
+
+  function analyze(){
+    var text = getFullText();
+    if(!text.trim()){ msg("أدخل نصًا أولًا للتحليل.", true); return; }
+    var sents = splitSentences(text), tasks = [], dates = [];
+    sents.forEach(function(s){
+      if(ACTION_RE.test(s)){ tasks.push(s); }
+      if(DATE_RE.test(s) || TIME_RE.test(s) || NUM_DATE_RE.test(s)){ dates.push(s); }
+    });
+    currentTasks = dedupe(tasks); currentDates = dedupe(dates);
+    renderTasks(currentTasks); renderDates(currentDates);
+    $("analyzeOut").textContent = "تم تحليل " + sents.length + " جملة، واستُخرج " +
+      currentTasks.length + " بند عمل و " + currentDates.length + " موعد.";
+    msg("اكتمل تحليل النص.", false);
+  }
+
+  function initRecognition(){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){
+      $("recStatus").textContent = "الحالة: التعرف على الكلام غير مدعوم في هذا المتصفح، ويمكنك لصق النص يدويًا.";
+      $("recStart").disabled = true;
+      return;
+    }
+    rec = new SR();
+    rec.lang = "ar-SA"; rec.continuous = true; rec.interimResults = true;
+    rec.onresult = function(ev){
+      var interim = "";
+      for(var i = ev.resultIndex; i < ev.results.length; i++){
+        var t = ev.results[i][0].transcript;
+        if(ev.results[i].isFinal){ finalTranscript += t + " "; }
+        else { interim += t; }
+      }
+      $("transcriptInput").value = finalTranscript + interim;
+    };
+    rec.onerror = function(ev){
+      var code = (ev && ev.error) ? ev.error : "unknown";
+      if(code === "not-allowed" || code === "service-not-allowed" || code === "audio-capture"){
+        recognizing = false; $("recStatus").textContent = "الحالة: متوقف (تعذّر الوصول للميكروفون).";
+      }
+      msg("تنبيه التعرف على الكلام: " + code, true);
+    };
+    rec.onend = function(){
+      if(recognizing){
+        try { rec.start(); } catch(e){ recognizing = false; $("recStatus").textContent = "الحالة: متوقف"; }
+      } else { $("recStatus").textContent = "الحالة: متوقف"; }
+    };
+  }
+
+  function wire(){
+    $("recStart").onclick = function(){
+      if(!rec){ msg("التعرف على الكلام غير متاح في هذا المتصفح.", true); return; }
+      if(recognizing){ msg("التسجيل جارٍ بالفعل.", true); return; }
+      finalTranscript = $("transcriptInput").value ? $("transcriptInput").value.trim() + " " : "";
+      recognizing = true; recStartTime = Date.now();
+      try { rec.start(); $("recStatus").textContent = "الحالة: جارٍ التسجيل..."; msg("بدأ التسجيل الصوتي.", false); }
+      catch(e){ recognizing = false; msg("تعذّر بدء التسجيل: " + e.message, true); }
+    };
+    $("recStop").onclick = function(){
+      if(!rec || !recognizing){ msg("لا يوجد تسجيل جارٍ.", true); return; }
+      recognizing = false;
+      try { rec.stop(); } catch(e){}
+      $("recStatus").textContent = "الحالة: متوقف";
+    };
+    $("markMoment").onclick = function(){
+      var label = "لحظة يدوية", snippet = ($("transcriptInput").value || "").trim();
+      if(recognizing && recStartTime){
+        var s = Math.round((Date.now() - recStartTime) / 1000);
+        label = "الدقيقة " + Math.floor(s / 60) + " والثانية " + (s % 60);
+      }
+      if(snippet.length > 90){ snippet = snippet.slice(-90); }
+      moments.push({ time: label, note: snippet, ts: Date.now() });
+      renderMoments(); msg("تم تعليم لحظة مهمة.", false);
+    };
+    $("copyTranscript").onclick = function(){ safeCopy($("transcriptInput").value, "تم نسخ النص إلى الحافظة."); };
+    $("clearTranscript").onclick = function(){
+      if(!$("transcriptInput").value){ msg("المحرر فارغ أصلًا.", true); return; }
+      if(!confirm("هل تريد مسح النص من المحرر؟")){ return; }
+      $("transcriptInput").value = ""; finalTranscript = ""; msg("تم مسح المحرر.", false);
+    };
+    $("loadFileBtn").onclick = function(){ $("fileInput").click(); };
+    $("fileInput").onchange = function(ev){
+      var f = ev.target.files && ev.target.files[0];
+      if(!f){ return; }
+      if(f.size > 2000000){ msg("الملف كبير جدًا (الحد الأقصى 2 ميغابايت).", true); return; }
+      var r = new FileReader();
+      r.onload = function(){ $("pasteArea").value = String(r.result || ""); msg("تم تحميل الملف النصي بنجاح.", false); };
+      r.onerror = function(){ msg("تعذّر قراءة الملف.", true); };
+      try { r.readAsText(f, "utf-8"); } catch(e){ msg("تعذّر قراءة الملف.", true); }
+    };
+    $("appendPaste").onclick = function(){
+      var v = $("pasteArea").value;
+      if(!v.trim()){ msg("مربع اللصق فارغ.", true); return; }
+      var ta = $("transcriptInput");
+      ta.value = ta.value.trim() ? (ta.value.trim() + "\n" + v) : v;
+      finalTranscript = ta.value + " ";
+      msg("تم نقل النص إلى المحرر.", false);
+    };
+    $("analyzeBtn").onclick = analyze;
+    $("saveNoteBtn").onclick = function(){
+      var title = ($("noteTitle").value || "").trim() || ("ملاحظة " + (notes.length + 1));
+      var text = getFullText().trim();
+      if(!text && !moments.length && !currentTasks.length && !currentDates.length){
+        msg("لا يوجد محتوى للحفظ.", true); return;
+      }
+      notes.unshift({
+        id: "n" + Date.now() + Math.floor(Math.random() * 1000),
+        title: title, text: text,
+        tasks: currentTasks.slice(), dates: currentDates.slice(),
+        moments: moments.slice(), ts: Date.now()
+      });
+      if(persist()){
+        $("noteTitle").value = "";
+        renderNotes($("searchInput").value);
+        msg("تم حفظ الملاحظة محليًا.", false);
+      } else { msg("تعذّر الحفظ في التخزين المحلي.", true); }
+    };
+    $("exportAllBtn").onclick = function(){
+      if(!notes.length){ msg("لا توجد ملاحظات للتصدير.", true); return; }
+      safeCopy(buildExport(notes), "تم نسخ كل الملاحظات نصيًا إلى الحافظة.");
+    };
+    $("clearAllBtn").onclick = function(){
+      if(!notes.length){ msg("لا توجد ملاحظات لحذفها.", true); return; }
+      if(!confirm("هل تريد حذف كل الملاحظات المحفوظة؟ لا يمكن التراجع.")){ return; }
+      notes = []; persist(); renderNotes(""); msg("تم حذف كل الملاحظات.", false);
+    };
+    $("searchInput").oninput = function(){ renderNotes(this.value); };
+  }
+
+  function init(){
+    notes = loadNotes();
+    initRecognition();
+    renderMoments(); renderTasks([]); renderDates([]);
+    renderNotes("");
+    wire();
+    msg("التطبيق جاهز. ابدأ التسجيل أو الصق نصًا.", false);
+  }
+
+  if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", init); }
+  else { init(); }
+})();
+</script>
+</body>
+</html>
