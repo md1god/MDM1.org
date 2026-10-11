@@ -8,6 +8,10 @@ on:
         description: 'dry run (no new tool, only rebuild lists)'
         type: boolean
         default: false
+      tool_json:
+        description: 'optional ready tool spec (JSON) handed over by Scout'
+        required: false
+        default: ''
 permissions:
   contents: write
   models: read
@@ -24,6 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY: ${{ inputs.dry && '1' || '' }}
+          TOOL_JSON: ${{ inputs.tool_json }}
         run: python3 scripts/trend_pages.py
       - name: Commit, deploy, notify search engines
         env:
