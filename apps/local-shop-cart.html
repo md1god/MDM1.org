@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر إلكتروني مصغّر: منتجات وسلة ودفع وفاتورة محلية | MDM1</title>
+<meta name="description" content="تطبيق متجر إلكتروني مصغّر يعمل داخل المتصفح: أضف المنتجات بالصور والأسعار والأقسام، تصفّح الكتالوج، أدر سلة التسوق، وأتمم الشراء مع فاتورة قابلة للطباعة محفوظة محليًا.">
+<link rel="canonical" href="https://mdm1.org/apps/local-shop-cart.html">
+<meta property="og:title" content="متجر إلكتروني مصغّر: منتجات وسلة ودفع وفاتورة محلية">
+<meta property="og:description" content="تطبيق متجر إلكتروني مصغّر يعمل داخل المتصفح: أضف المنتجات بالصور والأسعار والأقسام، تصفّح الكتالوج، أدر سلة التسوق، وأتمم الشراء مع فاتورة قابلة للطباعة محفوظة محليًا.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-shop-cart.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl;text-align:right;max-width:1100px;margin:0 auto}
+.app-intro{line-height:1.9}
+.app-tabs{gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+.app-tabs .on{outline:2px solid var(--gold-bright);outline-offset:1px}
+.app-panel{display:none}
+.app-panel.on{display:block}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.app-prod{border:1px solid var(--gold-dim);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03);display:flex;flex-direction:column}
+.app-prod img{width:100%;height:150px;object-fit:cover}
+.app-prod .app-pbody{padding:.7rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
+.app-ph{height:150px;display:flex;align-items:center;justify-content:center;color:var(--gold-dim);background:rgba(0,0,0,.25)}
+.app-item .app-ph,.app-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;font-size:.7rem}
+.app-price{font-weight:700;color:var(--gold-bright)}
+.app-old{text-decoration:line-through;opacity:.6;font-size:.85rem}
+.app-item{display:flex;gap:.75rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);padding:.55rem 0}
+.app-grow{flex:1;line-height:1.7}
+.app-qty{display:flex;gap:.35rem;align-items:center}
+.app-sum{display:flex;justify-content:space-between;gap:1rem;padding:.25rem 0}
+.app-total{font-size:1.15rem;font-weight:700}
+.app-msg{min-height:1.3rem;color:var(--gold-bright);font-size:.92rem;margin:.4rem 0}
+.app-msg.err{color:#ff8a8a}
+.app-preview img{width:90px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--gold-dim);margin-top:1rem}
+.app-hidden{display:none}
+.app-invoice{border:1px solid var(--gold-dim);border-radius:14px;padding:1rem;background:rgba(0,0,0,.3);margin-top:1rem}
+.app-invoice table{width:100%;border-collapse:collapse;margin:.8rem 0}
+.app-invoice th,.app-invoice td{border-bottom:1px solid rgba(255,255,255,.14);padding:.45rem;text-align:right;font-size:.9rem}
+@media print{.app *{visibility:hidden}.app-invoice,.app-invoice *{visibility:visible}.app-invoice{position:absolute;top:0;right:0;left:0;border:none}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "متجر إلكتروني مصغّر يعمل بالكامل داخل المتصفح", "url": "https://mdm1.org/apps/local-shop-cart.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "أين تُحفظ المنتجات والطلبات والسلة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ جميعها داخل متصفحك عبر localStorage، فلا تُرسل إلى أي خادم ولا تحتاج اتصالًا بالإنترنت، وتبقى متاحة عند إعادة فتح الصفحة على الجهاز نفسه."}}, {"@type": "Question", "name": "كيف أضيف منتجًا بصورة؟", "acceptedAnswer": {"@type": "Answer", "text": "انتقل إلى تبويب «إدارة المنتجات»، ثم أدخل الاسم والسعر والقسم والمخزون ونسبة الخصم، واختر صورة فيتم تصغيرها ومعالجتها داخل المتصفح قبل حفظها مع المنتج."}}, {"@type": "Question", "name": "ما أكواد الخصم المتاحة وكيف تعمل؟", "acceptedAnswer": {"@type": "Answer", "text": "عند إتمام الشراء أدخل الكود SAVE10 لخصم 10% أو GOLD20 لخصم 20%؛ يُطبّق الخصم على المجموع بعد خصومات المنتجات، ويُضاف الشحن 25 ر.س تلقائيًا ويتحول إلى مجاني عند تجاوز 500 ر.س."}}, {"@type": "Question", "name": "هل ينقص المخزون بعد البيع؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، عند تأكيد الطلب تُخصم كميات المنتجات من المخزون مباشرة، ويمنع التطبيق إضافة كمية أكبر من المتاح ويُظهر تنبيهًا واضحًا عند نقص المخزون."}}, {"@type": "Question", "name": "كيف أطبع الفاتورة؟", "acceptedAnswer": {"@type": "Answer", "text": "افتح تبويب «الطلبات»، اضغط «عرض الفاتورة» لأي طلب، ثم اضغط «طباعة الفاتورة المعروضة»؛ تُطبع الفاتورة وحدها دون بقية عناصر الصفحة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">متجر إلكتروني مصغّر يعمل بالكامل داخل المتصفح</h1>
+  <p class="page-sub">تطبيق متجر إلكتروني مصغّر يعمل داخل المتصفح: أضف المنتجات بالصور والأسعار والأقسام، تصفّح الكتالوج، أدر سلة التسوق، وأتمم الشراء مع فاتورة قابلة للطباعة محفوظة محليًا.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="app" dir="rtl">
+<p class="app-intro">هذا التطبيق متجر إلكتروني مصغّر يعمل بالكامل داخل المتصفح دون أي خادم أو اتصال بالإنترنت. يتيح لصاحب المتجر إضافة المنتجات مع صورها وأسعارها وأقسامها وكميات المخزون ونسب الخصم، ويمنح الزبون واجهة تصفّح للكتالوج مع بحث وتصفية حسب القسم وإضافة المنتجات إلى سلة التسوق. تُحفظ المنتجات والطلبات والسلة محليًا عبر localStorage داخل جهازك، وتُخصم الكميات من المخزون تلقائيًا بعد كل عملية شراء ناجحة. كما يوفّر التطبيق صفحة إتمام شراء تحسب المجموع الفرعي والخصومات وكود الخصم ورسوم الشحن، ثم تولّد فاتورة عربية قابلة للطباعة مع أرشيف لكل الطلبات السابقة وحالات المخزون المنخفض.</p>
+
+<div class="row app-tabs">
+<button id="tab-store" class="button on">تصفّح المتجر</button>
+<button id="tab-cart" class="button sec">السلة والدفع <span id="cart-badge" class="badge">0</span></button>
+<button id="tab-admin" class="button sec">إدارة المنتجات</button>
+<button id="tab-orders" class="button sec">الطلبات</button>
+</div>
+
+<section class="app-panel on" id="panel-store">
+<h2>الكتالوج</h2>
+<div class="row">
+<div><label for="cat-filter">تصفية حسب القسم</label><select id="cat-filter" class="select"><option value="">كل الأقسام</option></select></div>
+<div><label for="cat-search">بحث باسم المنتج</label><input id="cat-search" class="input" type="text" placeholder="اكتب اسم المنتج..."></div>
+</div>
+<p class="app-msg" id="shop-msg"></p>
+<div class="app-grid" id="catalog"></div>
+</section>
+
+<section class="app-panel" id="panel-cart">
+<h2>سلة التسوق وإتمام الشراء</h2>
+<div id="cart-list"></div>
+<p class="app-msg" id="cart-msg"></p>
+<div class="row">
+<div><label for="coupon-input">كود الخصم</label><input id="coupon-input" class="input" type="text" placeholder="SAVE10 أو GOLD20"></div>
+<div><label for="coupon-apply">تطبيق الكود</label><button id="coupon-apply" class="button sec">تطبيق كود الخصم</button></div>
+</div>
+<div class="out">
+<div class="app-sum"><span>المجموع الفرعي</span><b id="cart-sub">0.00 ر.س</b></div>
+<div class="app-sum"><span>خصم المنتجات</span><b id="cart-proddisc">0.00 ر.س</b></div>
+<div class="app-sum"><span>خصم الكود</span><b id="cart-coupon">0.00 ر.س</b></div>
+<div class="app-sum"><span>رسوم الشحن</span><b id="cart-ship">0.00 ر.س</b></div>
+<div class="divider"></div>
+<div class="app-sum app-total"><span>الإجمالي المستحق</span><b class="big" id="cart-total">0.00 ر.س</b></div>
+</div>
+<h3>بيانات العميل</h3>
+<div class="row">
+<div><label for="co-name">الاسم الكامل</label><input id="co-name" class="input" type="text" placeholder="مثال: سارة العلي"></div>
+<div><label for="co-phone">رقم الهاتف</label><input id="co-phone" class="input" type="text" placeholder="05xxxxxxxx"></div>
+</div>
+<div class="row">
+<div><label for="co-address">عنوان التوصيل</label><input id="co-address" class="input" type="text" placeholder="المدينة، الحي، الشارع"></div>
+<div><label for="co-pay">طريقة الدفع</label><select id="co-pay" class="select"><option>الدفع عند الاستلام</option><option>تحويل بنكي</option><option>بطاقة مدى</option></select></div>
+</div>
+<div><label for="co-notes">ملاحظات إضافية</label><textarea id="co-notes" class="textarea" placeholder="أي تعليمات للتوصيل (اختياري)"></textarea></div>
+<div class="row">
+<button id="co-submit" class="button">تأكيد الطلب وتوليد الفاتورة</button>
+<button id="cart-clear" class="button sec">تفريغ السلة</button>
+</div>
+<p class="app-msg" id="co-msg"></p>
+</section>
+
+<section class="app-panel" id="panel-admin">
+<h2>إضافة منتج جديد</h2>
+<div class="row">
+<div><label for="pf-name">اسم المنتج</label><input id="pf-name" class="input" type="text" placeholder="مثال: حقيبة جلدية"></div>
+<div><label for="pf-price">السعر (ر.س)</label><input id="pf-price" class="input" type="number" min="0" step="0.01" placeholder="0.00"></div>
+</div>
+<div class="row">
+<div><label for="pf-cat">القسم</label><input id="pf-cat" class="input" type="text" placeholder="مثال: إلكترونيات"></div>
+<div><label for="pf-stock">كمية المخزون</label><input id="pf-stock" class="input" type="number" min="0" step="1" placeholder="0"></div>
+<div><label for="pf-disc">نسبة الخصم %</label><input id="pf-disc" class="input" type="number" min="0" max="90" step="1" placeholder="0"></div>
+</div>
+<div class="row">
+<div><label for="pf-img">صورة المنتج</label><input id="pf-img" class="input" type="file" accept="image/*"></div>
+<div id="pf-img-preview" class="app-preview"></div>
+</div>
+<div class="row">
+<button id="pf-add" class="button">إضافة المنتج</button>
+<button id="pf-cancel" class="button sec app-hidden">إلغاء التعديل</button>
+</div>
+<p class="app-msg" id="pf-msg"></p>
+<div class="divider"></div>
+<h2>منتجات المتجر</h2>
+<div class="row">
+<button id="seed-btn" class="button sec">تعبئة بيانات تجريبية</button>
+<button id="wipe-btn" class="button sec">حذف كل المنتجات</button>
+</div>
+<div id="products-list"></div>
+</section>
+
+<section class="app-panel" id="panel-orders">
+<h2>أرشيف الطلبات</h2>
+<div class="row">
+<button id="orders-clear" class="button sec">حذف كل الطلبات</button>
+</div>
+<p class="app-msg" id="orders-msg"></p>
+<div id="orders-list"></div>
+<div class="divider"></div>
+<div class="row">
+<button id="invoice-print" class="button">طباعة الفاتورة المعروضة</button>
+</div>
+<div id="invoice-box"></div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>أين تُحفظ المنتجات والطلبات والسلة؟</h3><p>تُحفظ جميعها داخل متصفحك عبر localStorage، فلا تُرسل إلى أي خادم ولا تحتاج اتصالًا بالإنترنت، وتبقى متاحة عند إعادة فتح الصفحة على الجهاز نفسه.</p><h3>كيف أضيف منتجًا بصورة؟</h3><p>انتقل إلى تبويب «إدارة المنتجات»، ثم أدخل الاسم والسعر والقسم والمخزون ونسبة الخصم، واختر صورة فيتم تصغيرها ومعالجتها داخل المتصفح قبل حفظها مع المنتج.</p><h3>ما أكواد الخصم المتاحة وكيف تعمل؟</h3><p>عند إتمام الشراء أدخل الكود SAVE10 لخصم 10% أو GOLD20 لخصم 20%؛ يُطبّق الخصم على المجموع بعد خصومات المنتجات، ويُضاف الشحن 25 ر.س تلقائيًا ويتحول إلى مجاني عند تجاوز 500 ر.س.</p><h3>هل ينقص المخزون بعد البيع؟</h3><p>نعم، عند تأكيد الطلب تُخصم كميات المنتجات من المخزون مباشرة، ويمنع التطبيق إضافة كمية أكبر من المتاح ويُظهر تنبيهًا واضحًا عند نقص المخزون.</p><h3>كيف أطبع الفاتورة؟</h3><p>افتح تبويب «الطلبات»، اضغط «عرض الفاتورة» لأي طلب، ثم اضغط «طباعة الفاتورة المعروضة»؛ تُطبع الفاتورة وحدها دون بقية عناصر الصفحة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var LS={P:"mini_store_products_v1",O:"mini_store_orders_v1",C:"mini_store_cart_v1"};
+var COUPONS={SAVE10:0.10,GOLD20:0.20};
+var products=[],orders=[],cart=[],coupon=0,couponCode="",editId=null,pendingImage="";
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function saveProducts(){return store(LS.P,products);}
+function saveOrders(){return store(LS.O,orders);}
+function saveCart(){return store(LS.C,cart);}
+function find(id){for(var i=0;i<products.length;i++){if(products[i].id===id){return products[i];}}return null;}
+function findOrder(id){for(var i=0;i<orders.length;i++){if(orders[i].id===id){return orders[i];}}return null;}
+function money(n){n=Math.round((n||0)*100)/100;return n.toFixed(2)+" ر.س";}
+function msg(id,t,err){var el=$(id);if(!el){return;}el.textContent=t;el.className="app-msg"+(err?" err":"");}
+function switchTab(n){
+["store","cart","admin","orders"].forEach(function(k){
+$("panel-"+k).className="app-panel"+(k===n?" on":"");
+$("tab-"+k).className="button"+(k===n?" on":" sec");
+});
+}
+
+function resizeImage(file,max,cb){
+if(!file){cb(null,"لم يتم اختيار صورة.");return;}
+if(file.type.indexOf("image/")!==0){cb(null,"صيغة الملف غير مدعومة، اختر صورة.");return;}
+var r=new FileReader();
+r.onerror=function(){cb(null,"تعذّر قراءة ملف الصورة.");};
+r.onload=function(){
+var im=new Image();
+im.onerror=function(){cb(null,"تعذّر تحميل الصورة المختارة.");};
+im.onload=function(){
+var w=im.width,h=im.height,s=Math.min(1,max/Math.max(w||1,h||1));
+var c=document.createElement("canvas");
+c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));
+var x=c.getContext("2d");x.drawImage(im,0,0,c.width,c.height);
+try{cb(c.toDataURL("image/jpeg",0.72));}catch(e){cb(null,"تعذّر معالجة الصورة.");}
+};
+im.src=r.result;
+};
+r.readAsDataURL(file);
+}
+
+function totals(){
+var sub=0,pd=0,items=0;
+cart.forEach(function(l){
+var p=find(l.id);if(!p){return;}
+sub+=p.price*l.qty;
+pd+=p.price*l.qty*(p.disc||0)/100;
+items+=l.qty;
+});
+var after=sub-pd;
+var cv=after*coupon;
+var afterCoupon=after-cv;
+var ship=afterCoupon>0?(afterCoupon>=500?0:25):0;
+return {sub:sub,pd:pd,cv:cv,ship:ship,items:items,total:afterCoupon+ship};
+}
+
+function addToCart(id){
+var p=find(id);if(!p){return;}
+if(p.stock<=0){msg("shop-msg","هذا المنتج نفد من المخزون حاليًا.",1);return;}
+var line=null;
+for(var i=0;i<cart.length;i++){if(cart[i].id===id){line=cart[i];}}
+if(!line){line={id:id,qty:0};cart.push(line);}
+if(line.qty+1>p.stock){msg("shop-msg","الكمية المتاحة من «"+p.name+"» هي "+p.stock+" فقط.",1);return;}
+line.qty++;
+saveCart();renderCatalog();renderCart();
+msg("shop-msg","تمت إضافة «"+p.name+"» إلى السلة.");
+}
+
+function renderCatalog(){
+var sel=$("cat-filter"),cur=sel.value,q=($("cat-search").value||"").trim().toLowerCase();
+var cats=[];
+products.forEach(function(p){if(cats.indexOf(p.cat)<0){cats.push(p.cat);}});
+sel.innerHTML='<option value="">كل الأقسام</option>'+cats.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join("");
+sel.value=cats.indexOf(cur)>=0?cur:"";
+var list=products.filter(function(p){
+return (!sel.value||p.cat===sel.value)&&(!q||p.name.toLowerCase().indexOf(q)>=0);
+});
+var box=$("catalog");
+if(!list.length){
+box.innerHTML='<p class="app-msg">لا توجد منتجات مطابقة حاليًا. أضف منتجات من تبويب «إدارة المنتجات» أو استخدم زر «تعبئة بيانات تجريبية».</p>';
+return;
+}
+box.innerHTML=list.map(function(p){
+var net=p.price*(1-(p.disc||0)/100);
+var img=p.img?'<img src="'+p.img+'" alt="'+esc(p.name)+'">':'<div class="app-ph">لا توجد صورة</div>';
+var priceHtml=p.disc>0?'<div class="app-price">'+money(net)+' <span class="app-old">'+money(p.price)+'</span> <span class="badge">-'+p.disc+'%</span></div>':'<div class="app-price">'+money(p.price)+'</div>';
+var stockHtml=p.stock<=0?'<span class="badge">نفد المخزون</span>':(p.stock<=3?'<span class="badge">آخر '+p.stock+' قطع</span>':'<span class="badge">متوفر: '+p.stock+'</span>');
+var btn=p.stock<=0?'<button class="button" id="add-'+p.id+'" data-add="'+p.id+'" disabled>نفد المخزون</button>':'<button class="button" id="add-'+p.id+'" data-add="'+p.id+'">أضف إلى السلة</button>';
+return '<div class="app-prod">'+img+'<div class="app-pbody"><div><b>'+esc(p.name)+'</b></div><div><span class="badge">'+esc(p.cat)+'</span></div>'+priceHtml+stockHtml+btn+'</div></div>';
+}).join("");
+}
+
+function renderAdmin(){
+var box=$("products-list");
+if(!products.length){box.innerHTML='<p class="app-msg">لا توجد منتجات بعد. أضف أول منتج من النموذج أعلاه.</p>';return;}
+box.innerHTML=products.map(function(p){
+var net=p.price*(1-(p.disc||0)/100);
+var img=p.img?'<img src="'+p.img+'" alt="'+esc(p.name)+'">':'<div class="app-ph">-</div>';
+var low=p.stock<=3?' <span class="badge">مخزون منخفض</span>':"";
+return '<div class="app-item">'+img+'<div class="app-grow"><div><b>'+esc(p.name)+'</b> <span class="badge">'+esc(p.cat)+'</span></div>'+
+'<div>السعر: '+money(p.price)+' • بعد الخصم: '+money(net)+(p.disc>0?" ("+p.disc+"%)":"")+'</div>'+
+'<div>المخزون: '+p.stock+low+'</div></div>'+
+'<button class="button sec" id="edit-'+p.id+'" data-edit="'+p.id+'">تعديل</button>'+
+'<button class="button sec" id="del-'+p.id+'" data-del="'+p.id+'">حذف</button></div>';
+}).join("");
+}
+
+function renderCart(){
+var box=$("cart-list"),t=totals();
+if(!cart.length){
+box.innerHTML='<p class="app-msg">سلتك فارغة حاليًا. انتقل إلى تبويب «تصفّح المتجر» وأضف منتجات.</p>';
+}else{
+box.innerHTML=cart.map(function(l){
+var p=find(l.id);if(!p){return "";}
+var line=p.price*l.qty*(1-(p.disc||0)/100);
+var img=p.img?'<img src="'+p.img+'" alt="'+esc(p.name)+'">':'<div class="app-ph">-</div>';
+return '<div class="app-item">'+img+'<div class="app-grow"><div><b>'+esc(p.name)+'</b></div><div class="app-price">'+money(line)+'</div><div>الكمية المتاحة: '+p.stock+'</div></div>'+
+'<div class="app-qty"><button class="button sec" id="dec-'+l.id+'" data-dec="'+l.id+'">−</button><span>'+l.qty+'</span><button class="button sec" id="inc-'+l.id+'" data-inc="'+l.id+'">+</button></div>'+
+'<button class="button sec" id="rem-'+l.id+'" data-rem="'+l.id+'">حذف</button></div>';
+}).join("");
+}
+$("cart-sub").textContent=money(t.sub);
+$("cart-proddisc").textContent=money(t.pd);
+$("cart-coupon").textContent=money(t.cv)+(couponCode?" ("+couponCode+")":"");
+$("cart-ship").textContent=money(t.ship);
+$("cart-total").textContent=money(t.total);
+$("cart-badge").textContent=t.items;
+}
+
+function renderOrders(){
+var box=$("orders-list");
+if(!orders.length){box.innerHTML='<p class="app-msg">لا توجد طلبات محفوظة حتى الآن. أتمم عملية شراء ليظهر الطلب هنا.</p>';return;}
+box.innerHTML=orders.map(function(o){
+var qty=o.items.reduce(function(s,i){return s+i.qty;},0);
+return '<div class="app-item"><div class="app-grow"><div><b>'+esc(o.id)+'</b> <span class="badge">مكتمل</span></div>'+
+'<div>'+esc(o.date)+' — العميل: '+esc(o.customer.name)+'</div>'+
+'<div>عدد القطع: '+qty+' • الإجمالي: '+money(o.total)+' • الدفع: '+esc(o.customer.pay)+'</div></div>'+
+'<button class="button sec" id="inv-'+esc(o.id)+'" data-inv="'+esc(o.id)+'">عرض الفاتورة</button></div>';
+}).join("");
+}
+
+function renderInvoice(o){
+if(!o){return;}
+var rows=o.items.map(function(it){
+return '<tr><td>'+esc(it.name)+'</td><td>'+it.qty+'</td><td>'+money(it.price)+'</td><td>'+money(it.line)+'</td></tr>';
+}).join("");
+$("invoice-box").innerHTML='<div class="app-invoice" id="invoice-doc">'+
+'<h3>فاتورة رقم '+esc(o.id)+'</h3>'+
+'<p>التاريخ: '+esc(o.date)+'</p>'+
+'<p>العميل: '+esc(o.customer.name)+' — الهاتف: '+esc(o.customer.phone)+'</p>'+
+'<p>عنوان التوصيل: '+esc(o.customer.address)+'</p>'+
+'<p>طريقة الدفع: '+esc(o.customer.pay)+(o.customer.notes?' — ملاحظات: '+esc(o.customer.notes):"")+'</p>'+
+'<table><thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+'<div class="app-sum"><span>المجموع الفرعي</span><b>'+money(o.sub)+'</b></div>'+
+'<div class="app-sum"><span>خصم المنتجات</span><b>'+money(o.disc)+'</b></div>'+
+'<div class="app-sum"><span>خصم الكود</span><b>'+money(o.coupon)+(o.couponCode?" ("+esc(o.couponCode)+")":"")+'</b></div>'+
+'<div class="app-sum"><span>رسوم الشحن</span><b>'+money(o.shipping)+'</b></div>'+
+'<div class="divider"></div>'+
+'<div class="app-sum app-total"><span>الإجمالي المستحق</span><b>'+money(o.total)+'</b></div>'+
+'<p>شكرًا لتسوقكم معنا، يمكنك طباعة هذه الفاتورة للاحتفاظ بها.</p>'+
+'</div>';
+}
+
+function resetForm(){
+editId=null;pendingImage="";
+$("pf-name").value="";$("pf-price").value="";$("pf-cat").value="";$("pf-stock").value="";$("pf-disc").value="";$("pf-img").value="";
+$("pf-img-preview").innerHTML="";
+$("pf-add").textContent="إضافة المنتج";
+$("pf-cancel").className="button sec app-hidden";
+}
+
+$("tab-store").addEventListener("click",function(){switchTab("store");});
+$("tab-cart").addEventListener("click",function(){switchTab("cart");});
+$("tab-admin").addEventListener("click",function(){switchTab("admin");});
+$("tab-orders").addEventListener("click",function(){switchTab("orders");});
+
+$("cat-filter").addEventListener("change",renderCatalog);
+$("cat-search").addEventListener("input",renderCatalog);
+
+$("catalog").addEventListener("click",function(e){
+var b=e.target.closest("[data-add]");
+if(b&&!b.disabled){addToCart(b.getAttribute("data-add"));}
+});
+
+$("cart-list").addEventListener("click",function(e){
+var el=e.target.closest("button");if(!el){return;}
+var id=el.getAttribute("data-inc")||el.getAttribute("data-dec")||el.getAttribute("data-rem");
+if(!id){return;}
+var p=find(id),line=null,i;
+for(i=0;i<cart.length;i++){if(cart[i].id===id){line=cart[i];}}
+if(el.getAttribute("data-inc")){
+if(!p){return;}
+if(line.qty+1>p.stock){msg("cart-msg","الكمية المتاحة من «"+p.name+"» هي "+p.stock+" فقط.",1);return;}
+line.qty++;
+msg("cart-msg","تمت زيادة الكمية.");
+}else if(el.getAttribute("data-dec")){
+if(line.qty>1){line.qty--;}else{cart=cart.filter(function(l){return l.id!==id;});}
+msg("cart-msg","تم تحديث الكمية.");
+}else{
+cart=cart.filter(function(l){return l.id!==id;});
+msg("cart-msg","تم حذف المنتج من السلة.");
+}
+saveCart();renderCart();renderCatalog();
+});
+
+$("coupon-apply").addEventListener("click",function(){
+var c=($("coupon-input").value||"").trim().toUpperCase();
+if(!c){coupon=0;couponCode="";renderCart();msg("cart-msg","تم إلغاء كود الخصم.");return;}
+if(COUPONS[c]){coupon=COUPONS[c];couponCode=c;msg("cart-msg","تم تطبيق خصم "+Math.round(coupon*100)+"% على المجموع.");}
+else{coupon=0;couponCode="";msg("cart-msg","كود الخصم غير صالح. الأكواد المتاحة: SAVE10 و GOLD20.",1);}
+renderCart();
+});
+
+$("cart-clear").addEventListener("click",function(){
+cart=[];coupon=0;couponCode="";$("coupon-input").value="";
+saveCart();renderCart();renderCatalog();
+msg("cart-msg","تم تفريغ السلة بالكامل.");
+});
+
+$("co-submit").addEventListener("click",function(){
+var t=totals();
+if(!cart.length){msg("co-msg","السلة فارغة، أضف منتجات قبل تأكيد الطلب.",1);return;}
+var name=$("co-name").value.trim(),phone=$("co-phone").value.trim(),addr=$("co-address").value.trim();
+if(name.length<2){msg("co-msg","يرجى إدخال اسم العميل (حرفان على الأقل).",1);return;}
+if(!/^[0-9+\-\s]{6,}$/.test(phone)){msg("co-msg","يرجى إدخال رقم هاتف صالح يحتوي أرقامًا فقط.",1);return;}
+if(addr.length<5){msg("co-msg","يرجى إدخال عنوان توصيل واضح.",1);return;}
+for(var i=0;i<cart.length;i++){
+var p=find(cart[i].id);
+if(!p||p.stock<cart[i].qty){msg("co-msg","الكمية غير كافية للمنتج: "+(p?p.name:"منتج محذوف"),1);return;}
+}
+var items=cart.map(function(l){
+var p=find(l.id);
+return {id:p.id,name:p.name,qty:l.qty,price:p.price,disc:p.disc||0,line:p.price*l.qty*(1-(p.disc||0)/100)};
+});
+var o={
+id:"INV-"+Date.now().toString().slice(-6),
+date:new Date().toLocaleString("ar-EG"),
+customer:{name:name,phone:phone,address:addr,pay:$("co-pay").value,notes:$("co-notes").value.trim()},
+items:items,sub:t.sub,disc:t.pd,coupon:t.cv,couponCode:couponCode,shipping:t.ship,total:t.total
+};
+cart.forEach(function(l){var p=find(l.id);if(p){p.stock-=l.qty;}});
+orders.unshift(o);
+cart=[];coupon=0;couponCode="";$("coupon-input").value="";
+var ok=saveProducts()&&saveOrders()&&saveCart();
+$("co-name").value="";$("co-phone").value="";$("co-address").value="";$("co-notes").value="";
+renderCatalog();renderAdmin();renderCart();renderOrders();renderInvoice(o);
+msg("co-msg",ok?"تم تأكيد الطلب وتوليد الفاتورة بنجاح، وتم خصم الكميات من المخزون.":"تم تأكيد الطلب لكن تعذّر حفظ كل البيانات محليًا (مساحة التخزين ممتلئة).",!ok);
+switchTab("orders");
+});
+
+$("pf-add").addEventListener("click",function(){
+var name=$("pf-name").value.trim();
+var price=parseFloat($("pf-price").value);
+var cat=$("pf-cat").value.trim()||"عام";
+var stock=parseInt($("pf-stock").value,10);
+var disc=parseFloat($("pf-disc").value);
+if(name.length<2){msg("pf-msg","يرجى إدخال اسم منتج واضح (حرفان على الأقل).",1);return;}
+if(isNaN(price)||price<0){msg("pf-msg","يرجى إدخال سعر صالح أكبر من أو يساوي صفر.",1);return;}
+if(isNaN(stock)||stock<0){stock=0;}
+if(isNaN(disc)||disc<0){disc=0;}
+if(disc>90){disc=90;}
+var ok;
+if(editId){
+var p=find(editId);
+if(p){p.name=name;p.price=price;p.cat=cat;p.stock=stock;p.disc=disc;if(pendingImage){p.img=pendingImage;}}
+ok=saveProducts();
+msg("pf-msg",ok?"تم تحديث بيانات المنتج بنجاح.":"تم التحديث محليًا فقط، تعذّر الحفظ الدائم.",!ok);
+}else{
+products.push({id:"p"+Date.now().toString(36)+Math.floor(Math.random()*1000),name:name,price:price,cat:cat,stock:stock,disc:disc,img:pendingImage||""});
+ok=saveProducts();
+msg("pf-msg",ok?"تمت إضافة المنتج إلى الكتالوج بنجاح.":"تعذّر الحفظ محليًا، قد تكون الصورة كبيرة أو المساحة ممتلئة.",!ok);
+}
+resetForm();renderAdmin();renderCatalog();
+});
+
+$("pf-cancel").addEventListener("click",function(){resetForm();msg("pf-msg","تم إلغاء وضع التعديل.");});
+
+$("pf-img").addEventListener("change",function(){
+var f=this.files&&this.files[0];
+if(!f){return;}
+msg("pf-msg","جارٍ معالجة الصورة وتصغير حجمها...");
+resizeImage(f,320,function(url,err){
+if(err||!url){msg("pf-msg",err||"تعذّر تجهيز الصورة.",1);return;}
+pendingImage=url;
+$("pf-img-preview").innerHTML='<img src="'+url+'" alt="معاينة صورة المنتج">';
+msg("pf-msg","تم تجهيز الصورة بنجاح، أكمل بيانات المنتج ثم اضغط حفظ.");
+});
+});
+
+$("products-list").addEventListener("click",function(e){
+var el=e.target.closest("button");if(!el){return;}
+var d=el.getAttribute("data-del");
+if(d){
+if(!window.confirm("هل تريد حذف هذا المنتج؟")){return;}
+products=products.filter(function(p){return p.id!==d;});
+saveProducts();renderAdmin();renderCatalog();
+msg("pf-msg","تم حذف المنتج.");
+return;
+}
+var ed=el.getAttribute("data-edit");
+if(ed){
+var p=find(ed);if(!p){return;}
+editId=ed;pendingImage="";
+$("pf-name").value=p.name;$("pf-price").value=p.price;$("pf-cat").value=p.cat;$("pf-stock").value=p.stock;$("pf-disc").value=p.disc||0;
+$("pf-img-preview").innerHTML=p.img?'<img src="'+p.img+'" alt="الصورة الحالية للمنتج">':"";
+$("pf-add").textContent="حفظ التعديلات";
+$("pf-cancel").className="button sec";
+switchTab("admin");
+msg("pf-msg","وضع التعديل مفعّل للمنتج: "+p.name);
+}
+});
+
+$("seed-btn").addEventListener("click",function(){
+if(products.length&&!window.confirm("سيتم إضافة منتجات تجريبية إلى القائمة الحالية، هل تريد المتابعة؟")){return;}
+var demo=[
+{name:"ساعة يد كلاسيكية",price:349,cat:"إكسسوارات",stock:8,disc:10},
+{name:"سماعات لاسلكية",price:199,cat:"إلكترونيات",stock:15,disc:0},
+{name:"حقيبة جلدية",price:259,cat:"حقائب",stock:5,disc:15},
+{name:"مصباح مكتبي",price:89,cat:"المنزل",stock:20,disc:0}
+];
+demo.forEach(function(d,i){
+products.push({id:"p"+Date.now().toString(36)+i+d.name.length,name:d.name,price:d.price,cat:d.cat,stock:d.stock,disc:d.disc,img:""});
+});
+var ok=saveProducts();
+renderAdmin();renderCatalog();
+msg("pf-msg",ok?"تمت إضافة منتجات تجريبية لتجربة التطبيق.":"تعذّر حفظ البيانات التجريبية محليًا.",!ok);
+});
+
+$("wipe-btn").addEventListener("click",function(){
+if(!products.length){msg("pf-msg","لا توجد منتجات لحذفها.",1);return;}
+if(!window.confirm("سيتم حذف كل المنتجات نهائيًا. هل تريد المتابعة؟")){return;}
+products=[];saveProducts();renderAdmin();renderCatalog();
+msg("pf-msg","تم حذف جميع المنتجات.");
+});
+
+$("orders-list").addEventListener("click",function(e){
+var el=e.target.closest("[data-inv]");
+if(!el){return;}
+var o=findOrder(el.getAttribute("data-inv"));
+if(!o){msg("orders-msg","تعذّر العثور على الطلب.",1);return;}
+renderInvoice(o);
+msg("orders-msg","تم عرض الفاتورة، يمكنك طباعتها الآن.");
+});
+
+$("orders-clear").addEventListener("click",function(){
+if(!orders.length){msg("orders-msg","لا توجد طلبات لحذفها.",1);return;}
+if(!window.confirm("سيتم حذف كل الطلبات المعروضة. هل تريد المتابعة؟")){return;}
+orders=[];
+var ok=saveOrders();
+$("invoice-box").innerHTML="";
+renderOrders();
+msg("orders-msg",ok?"تم حذف كل الطلبات.":"تعذّر تحديث البيانات المحلية.",!ok);
+});
+
+$("invoice-print").addEventListener("click",function(){
+if(!$("invoice-box").innerHTML){msg("orders-msg","اعرض فاتورة أولًا من قائمة الطلبات ثم اضغط طباعة.",1);return;}
+try{window.print();}catch(e){msg("orders-msg","تعذّر فتح نافذة الطباعة في هذا المتصفح.",1);}
+});
+
+products=load(LS.P,[]);orders=load(LS.O,[]);cart=load(LS.C,[]);
+if(!products.length){
+msg("shop-msg","لا توجد منتجات بعد. أضفها من تبويب «إدارة المنتجات» أو استخدم البيانات التجريبية.");
+}
+renderAdmin();renderCatalog();renderCart();renderOrders();
+})();
+</script>
+</body>
+</html>
