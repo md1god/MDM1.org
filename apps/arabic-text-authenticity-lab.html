@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحليل النصوص العربية - كشف الذكاء الاصطناعي وإثبات التأليف | MDM1</title>
+<meta name="description" content="أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية، وإنشاء شهادات إثبات تأليف مشفرة بتجزئة SHA-256.">
+<link rel="canonical" href="https://mdm1.org/apps/arabic-text-authenticity-lab.html">
+<meta property="og:title" content="أداة تحليل النصوص العربية - كشف الذكاء الاصطناعي وإثبات التأليف">
+<meta property="og:description" content="أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية، وإنشاء شهادات إثبات تأليف مشفرة بتجزئة SHA-256.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/arabic-text-authenticity-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{font-family:inherit}
+.app textarea{width:100%;box-sizing:border-box;padding:12px;background:var(--dark);border:1px solid var(--gold-dim);color:var(--light);border-radius:6px;resize:vertical}
+.app textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-dim)}
+.app .out{padding:16px;background:rgba(212,175,55,0.05);border:1px solid var(--gold-dim);border-radius:6px}
+.app .big{font-size:2.5rem;font-weight:700;color:var(--gold);line-height:1}
+.app mark.ai{background:rgba(212,175,55,0.3);border-bottom:2px solid var(--gold);padding:0 2px;border-radius:2px;cursor:help}
+.app mark.ai:hover{background:rgba(212,175,55,0.5)}
+.app .suggestion{background:var(--dark);border:1px solid var(--gold-dim);border-radius:6px;padding:12px;margin:8px 0}
+.app .suggestion .orig{color:var(--gold-dim);font-size:13px}
+.app .suggestion .alt{color:var(--gold);font-weight:600;margin-top:4px}
+.app .cert-line{margin:4px 0}
+.app .cert-label{color:var(--gold-dim);display:inline-block;width:140px;text-align:right}
+.app .cert-value{color:var(--light);font-family:monospace;word-break:break-all}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تحليل النصوص العربية: كشف المحتوى الآلي وإثبات الملكية", "url": "https://mdm1.org/apps/arabic-text-authenticity-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل ترسل الأداة النص إلى خوادم خارجية؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل التحليل والتشفير يتم محلياً في متصفحك، ولا تغادر أي بيانات جهازك."}}, {"@type": "Question", "name": "كيف تحسب \"الدرجة البشرية\"؟", "acceptedAnswer": {"@type": "Answer", "text": "تجمع بين ثلاثة مؤشرات: تنوع المفردات (40%)، تباين أطوال الجمل (30%)، وخلو النص من العبارات الركيكة الشائعة (30%)."}}, {"@type": "Question", "name": "ماذا تعني العبارات المظللة باللون الذهبي؟", "acceptedAnswer": {"@type": "Answer", "text": "تشير إلى عبارات ركيكة أو قوالب لغوية شائعة في النصوص المولدة آلياً، مع اقتراح بدائل طبيعية عند تمرير المؤشر."}}, {"@type": "Question", "name": "كيف تعمل شهادة إثبات التأليف؟", "acceptedAnswer": {"@type": "Answer", "text": "تنشئ تجزئة SHA-256 فريدة للنص مع الطابع الزمني، وتحفظ محلياً في متصفحك كدليل على أسبقية الكتابة ومحتواها."}}, {"@type": "Question", "name": "هل يمكن مقارنة نسخ مختلفة من النص؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل شهادة تحتفظ ببصمة فريدة، ويمكنك حفظ شهادات متعددة لنفس النص في أوقات مختلفة للمقارنة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تحليل النصوص العربية: كشف المحتوى الآلي وإثبات الملكية</h1>
+  <p class="page-sub">أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية، وإنشاء شهادات إثبات تأليف مشفرة بتجزئة SHA-256.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>تقدم هذه الأداة تحليلاً إحصائياً شاملاً للنصوص العربية داخل متصفحك دون إرسال أي بيانات لخارج الجهاز، حيث تحسب مؤشرات تنوع المفردات وتباين أطوال الجمل وتكرار العبارات الركيكة الشائعة لتمنح النص درجة «بشرية» دقيقة مع تظليل المواضع التي تظهر نمطاً آلياً واقتراح صياغات بديلة طبيعية لكل مقطع مشبوه. كما تتيح إنشاء شهادة إثبات تأليف محلية تحتوي على بصمة تجزئة SHA-256 للنص مع الطابع الزمني تُحفظ في تخزين المتصفح، مما يمكّن الكاتب من إثبات أسبقية كتابته ومقارنة نسخه المختلفة عبر الزمن بكل خصوصية وأمان.</p>
+<div class="app card" style="direction:rtl">
+  <div class="row">
+    <label for="app-text">النص المراد تحليله</label>
+  </div>
+  <textarea id="app-text" rows="10" placeholder="أدخل النص العربي هنا..."></textarea>
+  <div class="row" style="margin-top:12px;gap:8px;flex-wrap:wrap">
+    <button id="app-analyze" class="button">تحليل النص</button>
+    <button id="app-clear" class="button sec">مسح</button>
+    <button id="app-cert" class="button sec" disabled>إنشاء شهادة</button>
+  </div>
+  <div class="divider" style="margin:16px 0"></div>
+  <div class="row" style="gap:16px;flex-wrap:wrap;align-items:center">
+    <div class="out" style="flex:1;min-width:200px;text-align:center">
+      <div class="big" id="app-score">—</div>
+      <div style="font-size:14px;color:var(--gold-dim)">درجة بشرية</div>
+    </div>
+    <div class="out" style="flex:1;min-width:200px;text-align:center">
+      <div class="big" id="app-vocab">—</div>
+      <div style="font-size:14px;color:var(--gold-dim)">تنوع المفردات</div>
+    </div>
+    <div class="out" style="flex:1;min-width:200px;text-align:center">
+      <div class="big" id="app-sentence">—</div>
+      <div style="font-size:14px;color:var(--gold-dim)">تباين الجمل</div>
+    </div>
+    <div class="out" style="flex:1;min-width:200px;text-align:center">
+      <div class="big" id="app-weak">—</div>
+      <div style="font-size:14px;color:var(--gold-dim)">عبارات ركيكة</div>
+    </div>
+  </div>
+  <div class="divider" style="margin:16px 0"></div>
+  <div id="app-highlighted" class="out" style="min-height:120px;white-space:pre-wrap;direction:rtl;text-align:right;line-height:1.8"></div>
+  <div class="divider" style="margin:16px 0"></div>
+  <div id="app-suggestions" class="out" style="display:none">
+    <h4 style="margin:0 0 12px;color:var(--gold)">اقتراحات إعادة صياغة</h4>
+    <div id="app-sug-list"></div>
+  </div>
+  <div class="divider" style="margin:16px 0"></div>
+  <div id="app-cert-box" class="out" style="display:none;text-align:center">
+    <h4 style="margin:0 0 12px;color:var(--gold)">شهادة إثبات التأليف</h4>
+    <div id="app-cert-content" style="font-family:monospace;font-size:13px;line-height:1.6"></div>
+    <button id="app-save-cert" class="button" style="margin-top:12px">حفظ في المتصفح</button>
+    <div id="app-cert-status" style="margin-top:8px;font-size:13px"></div>
+  </div>
+  <div id="app-error" class="out" style="display:none;color:var(--gold-bright);background:rgba(212,175,55,0.1);border:1px solid var(--gold-dim)"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل ترسل الأداة النص إلى خوادم خارجية؟</h3><p>لا، كل التحليل والتشفير يتم محلياً في متصفحك، ولا تغادر أي بيانات جهازك.</p><h3>كيف تحسب &quot;الدرجة البشرية&quot;؟</h3><p>تجمع بين ثلاثة مؤشرات: تنوع المفردات (40%)، تباين أطوال الجمل (30%)، وخلو النص من العبارات الركيكة الشائعة (30%).</p><h3>ماذا تعني العبارات المظللة باللون الذهبي؟</h3><p>تشير إلى عبارات ركيكة أو قوالب لغوية شائعة في النصوص المولدة آلياً، مع اقتراح بدائل طبيعية عند تمرير المؤشر.</p><h3>كيف تعمل شهادة إثبات التأليف؟</h3><p>تنشئ تجزئة SHA-256 فريدة للنص مع الطابع الزمني، وتحفظ محلياً في متصفحك كدليل على أسبقية الكتابة ومحتواها.</p><h3>هل يمكن مقارنة نسخ مختلفة من النص؟</h3><p>نعم، كل شهادة تحتفظ ببصمة فريدة، ويمكنك حفظ شهادات متعددة لنفس النص في أوقات مختلفة للمقارنة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const textEl = $('app-text');
+  const analyzeBtn = $('app-analyze');
+  const clearBtn = $('app-clear');
+  const certBtn = $('app-cert');
+  const scoreEl = $('app-score');
+  const vocabEl = $('app-vocab');
+  const sentenceEl = $('app-sentence');
+  const weakEl = $('app-weak');
+  const highlightedEl = $('app-highlighted');
+  const suggestionsEl = $('app-suggestions');
+  const sugListEl = $('app-sug-list');
+  const certBoxEl = $('app-cert-box');
+  const certContentEl = $('app-cert-content');
+  const saveCertBtn = $('app-save-cert');
+  const certStatusEl = $('app-cert-status');
+  const errorEl = $('app-error');
+
+  const WEAK_PHRASES = [
+    'في الختام', 'باختصار', 'من المهم أن نلاحظ', 'يجب أن نذكر', 'تجدر الإشارة',
+    'من الجدير بالذكر', 'خلاصة القول', 'في نهاية المطاف', 'على العموم', 'بشكل عام',
+    'كما هو معروف', 'من البديهي', 'لا شك أن', 'من الواضح أن', 'يتبين مما سبق'
+  ];
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.style.display = 'block';
+    setTimeout(() => errorEl.style.display = 'none', 5000);
+  }
+
+  function sha256(str) {
+    const msg = new TextEncoder().encode(str);
+    return crypto.subtle.digest('SHA-256', msg).then(buf => 
+      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+    );
+  }
+
+  function analyzeText(text) {
+    if (!text.trim()) return null;
+    
+    const sentences = text.split(/[.!?।؟]+/).filter(s => s.trim().length > 0);
+    const words = text.match(/[\u0600-\u06FF]+/g) || [];
+    const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+    
+    const vocabDiversity = words.length > 0 ? (uniqueWords.size / words.length) * 100 : 0;
+    
+    const sentLengths = sentences.map(s => (s.match(/[\u0600-\u06FF]+/g) || []).length);
+    const avgLen = sentLengths.reduce((a, b) => a + b, 0) / (sentLengths.length || 1);
+    const variance = sentLengths.reduce((a, b) => a + Math.pow(b - avgLen, 2), 0) / (sentLengths.length || 1);
+    const sentenceVariance = Math.min(100, Math.sqrt(variance) * 10);
+    
+    let weakCount = 0;
+    const foundWeak = [];
+    const lowerText = text.toLowerCase();
+    WEAK_PHRASES.forEach(phrase => {
+      const regex = new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        weakCount++;
+        foundWeak.push({ phrase: match[0], index: match.index, length: match[0].length });
+      }
+    });
+    const weakScore = Math.max(0, 100 - weakCount * 15);
+    
+    const humanScore = Math.round((vocabDiversity * 0.4 + sentenceVariance * 0.3 + weakScore * 0.3));
+    
+    return {
+      humanScore: Math.max(0, Math.min(100, humanScore)),
+      vocabDiversity: Math.round(vocabDiversity * 10) / 10,
+      sentenceVariance: Math.round(sentenceVariance * 10) / 10,
+      weakCount,
+      foundWeak,
+      sentences,
+      words: words.length,
+      uniqueWords: uniqueWords.size
+    };
+  }
+
+  function highlightText(text, foundWeak) {
+    let result = text;
+    const sorted = [...foundWeak].sort((a, b) => b.index - a.index);
+    sorted.forEach(item => {
+      const before = result.slice(0, item.index);
+      const match = result.slice(item.index, item.index + item.length);
+      const after = result.slice(item.index + item.length);
+      result = before + '<mark class="ai" title="عبارة ركيكة شائعة - قد تبدو آلية">' + match + '</mark>' + after;
+    });
+    return result;
+  }
+
+  function generateSuggestions(foundWeak) {
+    const alternatives = {
+      'في الختام': ['أخيراً', 'ختاماً', 'في النهاية'],
+      'باختصار': ['باختصار شديد', 'بإيجاز', 'بالمختصر'],
+      'من المهم أن نلاحظ': ['يلاحظ أن', 'يجب ملاحظة أن', 'جدير بالذكر'],
+      'يجب أن نذكر': ['نذكر أن', 'يجدر ذكر أن', 'من الواجب ذكر'],
+      'تجدر الإشارة': ['يشار إلى أن', 'نلفت الانتباه إلى', 'يجدر التنويه'],
+      'من الجدير بالذكر': ['جدير بالذكر', 'يستحق الذكر', '值得注意的是'],
+      'خلاصة القول': ['الخلاصة', 'بالمجمل', 'في المحصلة'],
+      'في نهاية المطاف': ['أخيراً', 'في المحصلة النهائية', 'آخر الأمر'],
+      'على العموم': ['عموماً', 'بشكل عام', 'إجمالاً'],
+      'بشكل عام': ['عموماً', 'إجمالاً', 'على وجه العموم'],
+      'كما هو معروف': ['كما عرف', 'معلوم أن', 'معروف أن'],
+      'من البديهي': ['بديهي أن', 'من المسلم به', 'طبيعي أن'],
+      'لا شك أن': ['لا ريب أن', 'بلا شك', 'يقيناً'],
+      'من الواضح أن': ['واضح أن', 'يظهر أن', 'يتضح أن'],
+      'يتبين مما سبق': ['مما سبق يتضح', 'بناءً على ما سبق', 'استناداً إلى ما تقدم']
+    };
+    
+    return foundWeak.map(item => {
+      const alt = alternatives[item.phrase] || ['صياغة أكثر طبيعية', 'إعادة صياغة الجملة'];
+      return { original: item.phrase, alternatives: alt.slice(0, 3) };
+    });
+  }
+
+  function renderSuggestions(suggestions) {
+    sugListEl.innerHTML = suggestions.map(s => `
+      <div class="suggestion">
+        <div class="orig">العبارة: "${s.original}"</div>
+        <div class="alt">بدائل: ${s.alternatives.join(' | ')}</div>
+      </div>
+    `).join('');
+    suggestionsEl.style.display = 'block';
+  }
+
+  async function createCertificate(text, analysis) {
+    const hash = await sha256(text);
+    const now = new Date();
+    const timestamp = now.toISOString().replace('T', ' ').slice(0, 19);
+    const cert = {
+      hash,
+      timestamp,
+      humanScore: analysis.humanScore,
+      wordCount: analysis.words,
+      uniqueWords: analysis.uniqueWords,
+      version: 1
+    };
+    return cert;
+  }
+
+  function renderCertificate(cert) {
+    certContentEl.innerHTML = `
+      <div class="cert-line"><span class="cert-label">بصمة SHA-256:</span><span class="cert-value">${cert.hash}</span></div>
+      <div class="cert-line"><span class="cert-label">التاريخ والوقت:</span><span class="cert-value">${cert.timestamp}</span></div>
+      <div class="cert-line"><span class="cert-label">الدرجة البشرية:</span><span class="cert-value">${cert.humanScore}%</span></div>
+      <div class="cert-line"><span class="cert-label">عدد الكلمات:</span><span class="cert-value">${cert.wordCount}</span></div>
+      <div class="cert-line"><span class="cert-label">مفردات فريدة:</span><span class="cert-value">${cert.uniqueWords}</span></div>
+      <div class="cert-line"><span class="cert-label">إصدار الشهادة:</span><span class="cert-value">v${cert.version}</span></div>
+    `;
+    certBoxEl.style.display = 'block';
+    certBtn.disabled = false;
+    return cert;
+  }
+
+  async function saveCertificate(cert) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('app_certificates') || '[]');
+      stored.push(cert);
+      localStorage.setItem('app_certificates', JSON.stringify(stored));
+      certStatusEl.textContent = '✓ تم الحفظ بنجاح في تخزين المتصفح';
+      certStatusEl.style.color = 'var(--gold)';
+    } catch (e) {
+      certStatusEl.textContent = '✗ تعذر الحفظ: ' + e.message;
+      certStatusEl.style.color = 'var(--gold-bright)';
+    }
+  }
+
+  analyzeBtn.addEventListener('click', () => {
+    const text = textEl.value.trim();
+    if (!text) {
+      showError('الرجاء إدخال نص للتحليل');
+      return;
+    }
+    if (text.length < 50) {
+      showError('النص قصير جداً، يلزم 50 حرفاً على الأقل لتحليل موثوق');
+      return;
+    }
+    
+    const analysis = analyzeText(text);
+    if (!analysis) return;
+    
+    scoreEl.textContent = analysis.humanScore + '%';
+    vocabEl.textContent = analysis.vocabDiversity + '%';
+    sentenceEl.textContent = analysis.sentenceVariance + '%';
+    weakEl.textContent = analysis.weakCount;
+    
+    highlightedEl.innerHTML = highlightText(text, analysis.foundWeak);
+    
+    if (analysis.foundWeak.length > 0) {
+      renderSuggestions(generateSuggestions(analysis.foundWeak));
+    } else {
+      suggestionsEl.style.display = 'none';
+    }
+    
+    certBtn.disabled = false;
+    certBtn.dataset.text = text;
+    certBtn.dataset.analysis = JSON.stringify(analysis);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    textEl.value = '';
+    scoreEl.textContent = '—';
+    vocabEl.textContent = '—';
+    sentenceEl.textContent = '—';
+    weakEl.textContent = '—';
+    highlightedEl.innerHTML = '';
+    suggestionsEl.style.display = 'none';
+    certBoxEl.style.display = 'none';
+    certBtn.disabled = true;
+    certStatusEl.textContent = '';
+  });
+
+  certBtn.addEventListener('click', async () => {
+    const text = certBtn.dataset.text;
+    const analysis = JSON.parse(certBtn.dataset.analysis || '{}');
+    if (!text || !analysis.humanScore) {
+      showError('لا توجد بيانات شهادة، حلل النص أولاً');
+      return;
+    }
+    const cert = await createCertificate(text, analysis);
+    renderCertificate(cert);
+  });
+
+  saveCertBtn.addEventListener('click', async () => {
+    const text = certBtn.dataset.text;
+    const analysis = JSON.parse(certBtn.dataset.analysis || '{}');
+    if (!text || !analysis.humanScore) return;
+    const cert = await createCertificate(text, analysis);
+    saveCertificate(cert);
+  });
+})();
+</script>
+</body>
+</html>
