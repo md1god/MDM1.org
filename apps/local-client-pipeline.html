@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق CRM عربي لإدارة العملاء والصفقات محلياً | MDM1</title>
+<meta name="description" content="تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث فوري وتصدير JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/local-client-pipeline.html">
+<meta property="og:title" content="تطبيق CRM عربي لإدارة العملاء والصفقات محلياً">
+<meta property="og:description" content="تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث فوري وتصدير JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-client-pipeline.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; font-family: inherit; }
+.app .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.app .card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.app .badge { background: var(--gold); color: var(--dark); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
+.app .divider { border-top: 1px solid var(--gold-dim); margin: 16px 0; }
+.app .kanban-column { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; min-height: 400px; }
+.app .kanban-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--gold-dim); color: var(--gold); font-weight: bold; }
+.app .kanban-dropzone { min-height: 300px; flex: 1; }
+.app .deal-card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 12px; margin-bottom: 8px; cursor: grab; transition: transform 0.2s, box-shadow 0.2s; }
+.app .deal-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.app .deal-card.dragging { opacity: 0.5; cursor: grabbing; }
+.app .deal-card .deal-name { font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+.app .deal-card .deal-meta { font-size: 0.85rem; color: var(--light); opacity: 0.8; }
+.app .deal-card .deal-value { color: var(--gold-bright); font-weight: bold; }
+.app .contact-card, .company-card, .note-card, .reminder-card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 12px; margin-bottom: 8px; }
+.app .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.app .card-title { font-weight: bold; color: var(--gold); }
+.app .card-actions button { margin-right: 4px; }
+.app .empty-state { text-align: center; padding: 40px 20px; color: var(--gold-dim); }
+.app .empty-state .big { display: block; font-size: 3rem; margin-bottom: 8px; }
+.app label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.app input, .app select, .app textarea { background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); padding: 8px; border-radius: 4px; }
+.app input:focus, .app select:focus, .app textarea:focus { outline: none; border-color: var(--gold); }
+.app button { background: var(--gold); color: var(--dark); border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.app button:hover { background: var(--gold-bright); }
+.app button.sec { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+.app button.sec:hover { background: var(--gold-dim); }
+.app button.active { background: var(--gold-bright); }
+.app #global-search { flex: 1; min-width: 200px; }
+.app .out { display: flex; flex-direction: column; gap: 8px; }
+.app .overdue { border-color: #ff4444 !important; }
+.app .due-soon { border-color: var(--gold) !important; }
+.app .completed { opacity: 0.6; text-decoration: line-through; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "نظام إدارة علاقات العملاء للمستقلّين", "url": "https://mdm1.org/apps/local-client-pipeline.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، التطبيق يعمل بالكامل أوفلاين ويحفظ جميع البيانات في localStorage بالمتصفح، ولا يحتاج لأي اتصال خارجي."}}, {"@type": "Question", "name": "كيف يتم حفظ البيانات واستعادتها؟", "acceptedAnswer": {"@type": "Answer", "text": "البيانات تُحفظ تلقائياً في localStorage. يمكن تصدير نسخة احتياطية JSON عبر زر \"تصدير JSON\" واستعادتها لاحقاً بزر \"استيراد JSON\"."}}, {"@type": "Question", "name": "هل يمكن نقل الصفقات بين مراحل الكانبان؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اسحب بطاقة الصفقة وأفلتها في العمود المطلوب لتغيير مرحلتها فوراً مع حفظ تلقائي."}}, {"@type": "Question", "name": "كيف تعمل التذكيرات والتنبيهات؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف تذكيرات بتواريخ وأوقات محددة، وسيظهر تنبيه متصفح عند حلول الموعد. تدعم التكرار اليومي/الأسبوعي/الشهري."}}, {"@type": "Question", "name": "هل يدعم البحث والفلترة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، صندوق البحث العلوي يفلتر فورياً جميع الأقسام، وقائمة الفلترة تسمح بعرض الصفقات حسب مرحلتها."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">نظام إدارة علاقات العملاء للمستقلّين</h1>
+  <p class="page-sub">تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث فوري وتصدير JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا تطبيق CRM عربي متكامل يعمل بالكامل داخل المتصفح دون حاجة لحساب أو اتصال بالإنترنت، حيث تُحفظ جميع بيانات العملاء والشركات والصفقات والملاحظات والتذكيرات في ذاكرة المتصفح المحلية (localStorage) مع إمكانية تصدير واستيراد نسخة احتياطية بصيغة JSON في أي وقت. يوفر التطبيق واجهة RTL كاملة مع بحث وفلترة فورية، ولوحة صفقات بنظام كانبان بمراحل قابلة للسحب والإفلات، وبطاقات لجهات الاتصال والشركات، ونظام تذكيرات بمواعيد قادمة، كل ذلك بألوان الموقع الذهبية والداكنة.</p>
+
+<div class="app">
+  <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <button id="tab-contacts" class="active">جهات الاتصال</button>
+    <button id="tab-companies" class="sec">الشركات</button>
+    <button id="tab-deals" class="sec">الصفقات (كانبان)</button>
+    <button id="tab-notes" class="sec">ملاحظات ومتابعات</button>
+    <button id="tab-reminders" class="sec">التذكيرات</button>
+  </div>
+
+  <div class="row" style="gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <input type="search" id="global-search" placeholder="بحث فوري في كل الأقسام..." style="flex:1;min-width:200px;">
+    <select id="filter-status" style="min-width:160px;">
+      <option value="">كل الحالات</option>
+      <option value="active">نشط</option>
+      <option value="inactive">غير نشط</option>
+      <option value="won">مكسب</option>
+      <option value="lost">مفقود</option>
+    </select>
+    <button id="btn-export" class="sec">تصدير JSON</button>
+    <button id="btn-import" class="sec">استيراد JSON</button>
+    <input type="file" id="import-file" accept=".json" style="display:none;">
+  </div>
+
+  <!-- Contacts View -->
+  <section id="view-contacts" class="card" style="display:block;">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px;">
+      <h3 style="margin:0;">جهات الاتصال</h3>
+      <button id="btn-add-contact">إضافة جهة اتصال</button>
+    </div>
+    <div id="contacts-list" class="out"></div>
+  </section>
+
+  <!-- Companies View -->
+  <section id="view-companies" class="card" style="display:none;">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px;">
+      <h3 style="margin:0;">الشركات</h3>
+      <button id="btn-add-company">إضافة شركة</button>
+    </div>
+    <div id="companies-list" class="out"></div>
+  </section>
+
+  <!-- Deals Kanban View -->
+  <section id="view-deals" class="card" style="display:none;">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px;">
+      <h3 style="margin:0;">لوحة الصفقات</h3>
+      <button id="btn-add-deal">إضافة صفقة</button>
+    </div>
+    <div id="kanban-board" class="row" style="gap:16px;overflow-x:auto;padding-bottom:16px;">
+      <div class="kanban-column" data-stage="lead" style="min-width:280px;flex:1;">
+        <div class="kanban-header">عملاء محتملون <span class="badge" id="count-lead">0</span></div>
+        <div class="kanban-dropzone" id="drop-lead"></div>
+      </div>
+      <div class="kanban-column" data-stage="qualified" style="min-width:280px;flex:1;">
+        <div class="kanban-header">مؤهلون <span class="badge" id="count-qualified">0</span></div>
+        <div class="kanban-dropzone" id="drop-qualified"></div>
+      </div>
+      <div class="kanban-column" data-stage="proposal" style="min-width:280px;flex:1;">
+        <div class="kanban-header">عرض مقدم <span class="badge" id="count-proposal">0</span></div>
+        <div class="kanban-dropzone" id="drop-proposal"></div>
+      </div>
+      <div class="kanban-column" data-stage="negotiation" style="min-width:280px;flex:1;">
+        <div class="kanban-header">تفاوض <span class="badge" id="count-negotiation">0</span></div>
+        <div class="kanban-dropzone" id="drop-negotiation"></div>
+      </div>
+      <div class="kanban-column" data-stage="won" style="min-width:280px;flex:1;">
+        <div class="kanban-header">مكسب <span class="badge" id="count-won">0</span></div>
+        <div class="kanban-dropzone" id="drop-won"></div>
+      </div>
+      <div class="kanban-column" data-stage="lost" style="min-width:280px;flex:1;">
+        <div class="kanban-header">مفقود <span class="badge" id="count-lost">0</span></div>
+        <div class="kanban-dropzone" id="drop-lost"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notes View -->
+  <section id="view-notes" class="card" style="display:none;">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px;">
+      <h3 style="margin:0;">الملاحظات والمتابعات</h3>
+      <button id="btn-add-note">إضافة ملاحظة</button>
+    </div>
+    <div id="notes-list" class="out"></div>
+  </section>
+
+  <!-- Reminders View -->
+  <section id="view-reminders" class="card" style="display:none;">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px;">
+      <h3 style="margin:0;">التذكيرات والمواعيد</h3>
+      <button id="btn-add-reminder">إضافة تذكير</button>
+    </div>
+    <div id="reminders-list" class="out"></div>
+  </section>
+</div>
+
+<!-- Contact Modal -->
+<div id="modal-contact" class="card" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;min-width:400px;max-width:90vw;max-height:90vh;overflow:auto;">
+  <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+    <h3 id="modal-contact-title">إضافة جهة اتصال</h3>
+    <button id="close-contact-modal" class="sec">إغلاق</button>
+  </div>
+  <input type="hidden" id="contact-id">
+  <div class="row" style="flex-direction:column;gap:12px;">
+    <label>الاسم الكامل <input type="text" id="contact-name" required></label>
+    <label>البريد الإلكتروني <input type="email" id="contact-email"></label>
+    <label>الهاتف <input type="tel" id="contact-phone"></label>
+    <label>الشركة
+      <select id="contact-company"><option value="">-- اختر شركة --</option></select>
+    </label>
+    <label>المنصب <input type="text" id="contact-position"></label>
+    <label>الحالة
+      <select id="contact-status">
+        <option value="active">نشط</option>
+        <option value="inactive">غير نشط</option>
+      </select>
+    </label>
+    <label>ملاحظات <textarea id="contact-notes" rows="3"></textarea></label>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:16px;gap:8px;">
+    <button id="cancel-contact" class="sec">إلغاء</button>
+    <button id="save-contact">حفظ</button>
+  </div>
+</div>
+
+<!-- Company Modal -->
+<div id="modal-company" class="card" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;min-width:400px;max-width:90vw;max-height:90vh;overflow:auto;">
+  <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+    <h3 id="modal-company-title">إضافة شركة</h3>
+    <button id="close-company-modal" class="sec">إغلاق</button>
+  </div>
+  <input type="hidden" id="company-id">
+  <div class="row" style="flex-direction:column;gap:12px;">
+    <label>اسم الشركة <input type="text" id="company-name" required></label>
+    <label>الموقع الإلكتروني <input type="url" id="company-website"></label>
+    <label>الهاتف <input type="tel" id="company-phone"></label>
+    <label>البريد الإلكتروني <input type="email" id="company-email"></label>
+    <label>العنوان <textarea id="company-address" rows="2"></textarea></label>
+    <label>الحالة
+      <select id="company-status">
+        <option value="active">نشط</option>
+        <option value="inactive">غير نشط</option>
+      </select>
+    </label>
+    <label>ملاحظات <textarea id="company-notes" rows="3"></textarea></label>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:16px;gap:8px;">
+    <button id="cancel-company" class="sec">إلغاء</button>
+    <button id="save-company">حفظ</button>
+  </div>
+</div>
+
+<!-- Deal Modal -->
+<div id="modal-deal" class="card" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;min-width:400px;max-width:90vw;max-height:90vh;overflow:auto;">
+  <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+    <h3 id="modal-deal-title">إضافة صفقة</h3>
+    <button id="close-deal-modal" class="sec">إغلاق</button>
+  </div>
+  <input type="hidden" id="deal-id">
+  <div class="row" style="flex-direction:column;gap:12px;">
+    <label>اسم الصفقة <input type="text" id="deal-name" required></label>
+    <label>جهة الاتصال
+      <select id="deal-contact"><option value="">-- اختر جهة اتصال --</option></select>
+    </label>
+    <label>الشركة
+      <select id="deal-company"><option value="">-- اختر شركة --</option></select>
+    </label>
+    <label>القيمة <input type="number" id="deal-value" step="0.01" min="0"></label>
+    <label>المرحلة
+      <select id="deal-stage">
+        <option value="lead">عملاء محتملون</option>
+        <option value="qualified">مؤهلون</option>
+        <option value="proposal">عرض مقدم</option>
+        <option value="negotiation">تفاوض</option>
+        <option value="won">مكسب</option>
+        <option value="lost">مفقود</option>
+      </select>
+    </label>
+    <label>تاريخ الإغلاق المتوقع <input type="date" id="deal-expected-close"></label>
+    <label>احتمالية الإغلاق (%) <input type="number" id="deal-probability" min="0" max="100" value="50"></label>
+    <label>ملاحظات <textarea id="deal-notes" rows="3"></textarea></label>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:16px;gap:8px;">
+    <button id="cancel-deal" class="sec">إلغاء</button>
+    <button id="save-deal">حفظ</button>
+  </div>
+</div>
+
+<!-- Note Modal -->
+<div id="modal-note" class="card" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;min-width:400px;max-width:90vw;max-height:90vh;overflow:auto;">
+  <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+    <h3 id="modal-note-title">إضافة ملاحظة</h3>
+    <button id="close-note-modal" class="sec">إغلاق</button>
+  </div>
+  <input type="hidden" id="note-id">
+  <div class="row" style="flex-direction:column;gap:12px;">
+    <label>العنوان <input type="text" id="note-title" required></label>
+    <label>مرتبطة بجهة اتصال
+      <select id="note-contact"><option value="">-- لا شيء --</option></select>
+    </label>
+    <label>مرتبطة بشركة
+      <select id="note-company"><option value="">-- لا شيء --</option></select>
+    </label>
+    <label>مرتبطة بصفقة
+      <select id="note-deal"><option value="">-- لا شيء --</option></select>
+    </label>
+    <label>النوع
+      <select id="note-type">
+        <option value="note">ملاحظة عامة</option>
+        <option value="call">مكالمة</option>
+        <option value="meeting">اجتماع</option>
+        <option value="email">بريد إلكتروني</option>
+        <option value="task">مهمة</option>
+      </select>
+    </label>
+    <label>المحتوى <textarea id="note-content" rows="4" required></textarea></label>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:16px;gap:8px;">
+    <button id="cancel-note" class="sec">إلغاء</button>
+    <button id="save-note">حفظ</button>
+  </div>
+</div>
+
+<!-- Reminder Modal -->
+<div id="modal-reminder" class="card" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;min-width:400px;max-width:90vw;max-height:90vh;overflow:auto;">
+  <div class="row" style="justify-content:space-between;margin-bottom:16px;">
+    <h3 id="modal-reminder-title">إضافة تذكير</h3>
+    <button id="close-reminder-modal" class="sec">إغلاق</button>
+  </div>
+  <input type="hidden" id="reminder-id">
+  <div class="row" style="flex-direction:column;gap:12px;">
+    <label>العنوان <input type="text" id="reminder-title" required></label>
+    <label>الوصف <textarea id="reminder-desc" rows="3"></textarea></label>
+    <label>التاريخ والوقت <input type="datetime-local" id="reminder-datetime" required></label>
+    <label>مرتبطة بجهة اتصال
+      <select id="reminder-contact"><option value="">-- لا شيء --</option></select>
+    </label>
+    <label>مرتبطة بصفقة
+      <select id="reminder-deal"><option value="">-- لا شيء --</option></select>
+    </label>
+    <label>التكرار
+      <select id="reminder-repeat">
+        <option value="none">لا يتكرر</option>
+        <option value="daily">يومي</option>
+        <option value="weekly">أسبوعي</option>
+        <option value="monthly">شهري</option>
+      </select>
+    </label>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:16px;gap:8px;">
+    <button id="cancel-reminder" class="sec">إلغاء</button>
+    <button id="save-reminder">حفظ</button>
+  </div>
+</div>
+
+<!-- Overlay for modals -->
+<div id="modal-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;"></div>
+
+<!-- Toast Notification -->
+<div id="toast" style="display:none;position:fixed;bottom:20px;right:20px;z-index:2000;padding:12px 20px;border-radius:4px;background:var(--gold);color:var(--dark);font-weight:bold;"></div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، التطبيق يعمل بالكامل أوفلاين ويحفظ جميع البيانات في localStorage بالمتصفح، ولا يحتاج لأي اتصال خارجي.</p><h3>كيف يتم حفظ البيانات واستعادتها؟</h3><p>البيانات تُحفظ تلقائياً في localStorage. يمكن تصدير نسخة احتياطية JSON عبر زر &quot;تصدير JSON&quot; واستعادتها لاحقاً بزر &quot;استيراد JSON&quot;.</p><h3>هل يمكن نقل الصفقات بين مراحل الكانبان؟</h3><p>نعم، اسحب بطاقة الصفقة وأفلتها في العمود المطلوب لتغيير مرحلتها فوراً مع حفظ تلقائي.</p><h3>كيف تعمل التذكيرات والتنبيهات؟</h3><p>أضف تذكيرات بتواريخ وأوقات محددة، وسيظهر تنبيه متصفح عند حلول الموعد. تدعم التكرار اليومي/الأسبوعي/الشهري.</p><h3>هل يدعم البحث والفلترة؟</h3><p>نعم، صندوق البحث العلوي يفلتر فورياً جميع الأقسام، وقائمة الفلترة تسمح بعرض الصفقات حسب مرحلتها.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'crm_data_v1';
+  const STAGES = ['lead', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
+  const STAGE_LABELS = {
+    lead: 'عملاء محتملون',
+    qualified: 'مؤهلون',
+    proposal: 'عرض مقدم',
+    negotiation: 'تفاوض',
+    won: 'مكسب',
+    lost: 'مفقود'
+  };
+
+  let data = {
+    contacts: [],
+    companies: [],
+    deals: [],
+    notes: [],
+    reminders: []
+  };
+  let currentContactId = null;
+  let currentCompanyId = null;
+  let currentDealId = null;
+  let currentNoteId = null;
+  let currentReminderId = null;
+  let draggedDealId = null;
+
+  function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+
+  function loadData() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        data = { ...data, ...parsed };
+        data.contacts = parsed.contacts || [];
+        data.companies = parsed.companies || [];
+        data.deals = parsed.deals || [];
+        data.notes = parsed.notes || [];
+        data.reminders = parsed.reminders || [];
+      }
+    } catch (e) { console.error('Load error:', e); }
+  }
+
+  function saveData() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    catch (e) { console.error('Save error:', e); showToast('خطأ في الحفظ'); }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  function showModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+  }
+
+  function hideModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
+    clearModal(modalId);
+  }
+
+  function clearModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.querySelectorAll('input, select, textarea').forEach(el => {
+      if (el.type === 'hidden') return;
+      el.value = '';
+    });
+    modal.querySelectorAll('input[type="hidden"]').forEach(el => el.value = '');
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function formatDateTime(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function getCompanyName(id) {
+    const c = data.companies.find(x => x.id === id);
+    return c ? c.name : '—';
+  }
+
+  function getContactName(id) {
+    const c = data.contacts.find(x => x.id === id);
+    return c ? c.name : '—';
+  }
+
+  function getDealName(id) {
+    const d = data.deals.find(x => x.id === id);
+    return d ? d.name : '—';
+  }
+
+  function populateCompanySelects(selectedId = '') {
+    const html = data.companies.map(c => `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+    ['contact-company', 'deal-company', 'note-company', 'reminder-company'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<option value="">-- اختر شركة --</option>` + html;
+    });
+  }
+
+  function populateContactSelects(selectedId = '') {
+    const html = data.contacts.map(c => `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+    ['deal-contact', 'note-contact', 'reminder-contact'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<option value="">-- اختر جهة اتصال --</option>` + html;
+    });
+  }
+
+  function populateDealSelects(selectedId = '') {
+    const html = data.deals.map(d => `<option value="${d.id}" ${d.id === selectedId ? 'selected' : ''}>${escapeHtml(d.name)}</option>`).join('');
+    ['note-deal', 'reminder-deal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<option value="">-- اختر صفقة --</option>` + html;
+    });
+  }
+
+  function renderContacts() {
+    const list = document.getElementById('contacts-list');
+    const search = document.getElementById('global-search').value.toLowerCase();
+    const filter = document.getElementById('filter-status').value;
+    let filtered = data.contacts.filter(c => {
+      const matchesSearch = c.name.toLowerCase().includes(search) ||
+                           (c.email && c.email.toLowerCase().includes(search)) ||
+                           (c.phone && c.phone.includes(search)) ||
+                           (c.position && c.position.toLowerCase().includes(search));
+      const matchesFilter = !filter || c.status === filter;
+      return matchesSearch && matchesFilter;
+    });
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><span class="big">👥</span>لا توجد جهات اتصال. اضغط "إضافة جهة اتصال" للبدء.</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(c => `
+      <div class="contact-card">
+        <div class="card-header">
+          <div class="card-title">${escapeHtml(c.name)}</div>
+          <div class="card-actions">
+            <button class="sec" onclick="editContact('${c.id}')">تعديل</button>
+            <button class="sec" onclick="deleteContact('${c.id}')">حذف</button>
+          </div>
+        </div>
+        <div class="card-meta">
+          ${c.email ? `<div>📧 ${escapeHtml(c.email)}</div>` : ''}
+          ${c.phone ? `<div>📞 ${escapeHtml(c.phone)}</div>` : ''}
+          ${c.company ? `<div>🏢 ${escapeHtml(getCompanyName(c.company))}</div>` : ''}
+          ${c.position ? `<div>💼 ${escapeHtml(c.position)}</div>` : ''}
+          <div><span class="badge" style="background:${c.status==='active'?'var(--gold)':'#666'}">${c.status==='active'?'نشط':'غير نشط'}</span></div>
+          ${c.notes ? `<div class="divider"></div><div>${escapeHtml(c.notes)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderCompanies() {
+    const list = document.getElementById('companies-list');
+    const search = document.getElementById('global-search').value.toLowerCase();
+    const filter = document.getElementById('filter-status').value;
+    let filtered = data.companies.filter(c => {
+      const matchesSearch = c.name.toLowerCase().includes(search) ||
+                           (c.website && c.website.toLowerCase().includes(search)) ||
+                           (c.email && c.email.toLowerCase().includes(search)) ||
+                           (c.phone && c.phone.includes(search));
+      const matchesFilter = !filter || c.status === filter;
+      return matchesSearch && matchesFilter;
+    });
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><span class="big">🏢</span>لا توجد شركات. اضغط "إضافة شركة" للبدء.</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(c => `
+      <div class="company-card">
+        <div class="card-header">
+          <div class="card-title">${escapeHtml(c.name)}</div>
+          <div class="card-actions">
+            <button class="sec" onclick="editCompany('${c.id}')">تعديل</button>
+            <button class="sec" onclick="deleteCompany('${c.id}')">حذف</button>
+          </div>
+        </div>
+        <div class="card-meta">
+          ${c.website ? `<div>🌐 ${escapeHtml(c.website)}</div>` : ''}
+          ${c.phone ? `<div>📞 ${escapeHtml(c.phone)}</div>` : ''}
+          ${c.email ? `<div>📧 ${escapeHtml(c.email)}</div>` : ''}
+          ${c.address ? `<div>📍 ${escapeHtml(c.address)}</div>` : ''}
+          <div><span class="badge" style="background:${c.status==='active'?'var(--gold)':'#666'}">${c.status==='active'?'نشط':'غير نشط'}</span></div>
+          ${c.notes ? `<div class="divider"></div><div>${escapeHtml(c.notes)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderDeals() {
+    STAGES.forEach(stage => {
+      const dropzone = document.getElementById(`drop-${stage}`);
+      const countEl = document.getElementById(`count-${stage}`);
+      const deals = data.deals.filter(d => d.stage === stage);
+      countEl.textContent = deals.length;
+      const search = document.getElementById('global-search').value.toLowerCase();
+      const filter = document.getElementById('filter-status').value;
+      let filtered = deals.filter(d => {
+        const matchesSearch = d.name.toLowerCase().includes(search) ||
+                             (d.contact && getContactName(d.contact).toLowerCase().includes(search)) ||
+                             (d.company && getCompanyName(d.company).toLowerCase().includes(search));
+        const matchesFilter = !filter || d.stage === filter;
+        return matchesSearch && matchesFilter;
+      });
+      dropzone.innerHTML = filtered.map(d => `
+        <div class="deal-card" draggable="true" data-id="${d.id}" ondragstart="dragStart(event)">
+          <div class="deal-name">${escapeHtml(d.name)}</div>
+          <div class="deal-meta">
+            ${d.contact ? `👤 ${escapeHtml(getContactName(d.contact))}` : ''}
+            ${d.company ? ` | 🏢 ${escapeHtml(getCompanyName(d.company))}` : ''}
+          </div>
+          <div class="deal-meta deal-value">${d.value ? Number(d.value).toLocaleString('ar-SA') + ' ر.س' : '—'}</div>
+          ${d.expectedClose ? `<div class="deal-meta">📅 ${formatDate(d.expectedClose)}</div>` : ''}
+          <div class="deal-meta">🎯 ${d.probability || 0}%</div>
+        </div>
+      `).join('');
+      if (!filtered.length && deals.length) {
+        dropzone.innerHTML = '<div class="empty-state" style="padding:20px;font-size:0.85rem;">لا نتائج للبحث</div>';
+      } else if (!deals.length) {
+        dropzone.innerHTML = '<div class="empty-state" style="padding:20px;font-size:0.85rem;">اسحب الصفقات إلى هنا</div>';
+      }
+    });
+    document.querySelectorAll('.deal-card').forEach(card => {
+      card.addEventListener('dragend', dragEnd);
+    });
+    document.querySelectorAll('.kanban-dropzone').forEach(zone => {
+      zone.addEventListener('dragover', dragOver);
+      zone.addEventListener('drop', drop);
+      zone.addEventListener('dragleave', dragLeave);
+    });
+  }
+
+  function renderNotes() {
+    const list = document.getElementById('notes-list');
+    const search = document.getElementById('global-search').value.toLowerCase();
+    let filtered = data.notes.filter(n => {
+      return n.title.toLowerCase().includes(search) ||
+             n.content.toLowerCase().includes(search) ||
+             (n.contact && getContactName(n.contact).toLowerCase().includes(search)) ||
+             (n.company && getCompanyName(n.company).toLowerCase().includes(search)) ||
+             (n.deal && getDealName(n.deal).toLowerCase().includes(search));
+    });
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><span class="big">📝</span>لا توجد ملاحظات. اضغط "إضافة ملاحظة" للبدء.</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(n => `
+      <div class="note-card">
+        <div class="card-header">
+          <div class="card-title">${escapeHtml(n.title)}</div>
+          <div class="card-actions">
+            <button class="sec" onclick="editNote('${n.id}')">تعديل</button>
+            <button class="sec" onclick="deleteNote('${n.id}')">حذف</button>
+          </div>
+        </div>
+        <div class="card-meta">
+          <div><span class="badge">${n.type === 'note' ? 'ملاحظة' : n.type === 'call' ? 'مكالمة' : n.type === 'meeting' ? 'اجتماع' : n.type === 'email' ? 'بريد' : 'مهمة'}</span></div>
+          ${n.contact ? `<div>👤 ${escapeHtml(getContactName(n.contact))}</div>` : ''}
+          ${n.company ? `<div>🏢 ${escapeHtml(getCompanyName(n.company))}</div>` : ''}
+          ${n.deal ? `<div>💼 ${escapeHtml(getDealName(n.deal))}</div>` : ''}
+          <div class="divider"></div>
+          <div>${escapeHtml(n.content)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderReminders() {
+    const list = document.getElementById('reminders-list');
+    const search = document.getElementById('global-search').value.toLowerCase();
+    let filtered = data.reminders.filter(r => {
+      return r.title.toLowerCase().includes(search) ||
+             (r.desc && r.desc.toLowerCase().includes(search)) ||
+             (r.contact && getContactName(r.contact).toLowerCase().includes(search)) ||
+             (r.deal && getDealName(r.deal).toLowerCase().includes(search));
+    });
+    filtered.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    const now = new Date();
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty-state"><span class="big">⏰</span>لا توجد تذكيرات. اضغط "إضافة تذكير" للبدء.</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(r => {
+      const dt = new Date(r.datetime);
+      const isOverdue = dt < now && !r.completed;
+      const isDueSoon = dt < new Date(now.getTime() + 24*60*60*1000) && dt > now && !r.completed;
+      const cls = r.completed ? 'completed' : (isOverdue ? 'overdue' : (isDueSoon ? 'due-soon' : ''));
+      return `
+        <div class="reminder-card ${cls}">
+          <div class="card-header">
+            <div class="card-title">${escapeHtml(r.title)} ${r.completed ? '✅' : ''}</div>
+            <div class="card-actions">
+              <button class="sec" onclick="toggleReminder('${r.id}')">${r.completed ? 'إلغاء الإنجاز' : 'تم'}</button>
+              <button class="sec" onclick="editReminder('${r.id}')">تعديل</button>
+              <button class="sec" onclick="deleteReminder('${r.id}')">حذف</button>
+            </div>
+          </div>
+          <div class="card-meta">
+            <div>📅 ${formatDateTime(r.datetime)}</div>
+            ${r.repeat !== 'none' ? `<div>🔁 ${r.repeat === 'daily' ? 'يومي' : r.repeat === 'weekly' ? 'أسبوعي' : 'شهري'}</div>` : ''}
+            ${r.contact ? `<div>👤 ${escapeHtml(getContactName(r.contact))}</div>` : ''}
+            ${r.deal ? `<div>💼 ${escapeHtml(getDealName(r.deal))}</div>` : ''}
+            ${r.desc ? `<div class="divider"></div><div>${escapeHtml(r.desc)}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderAll() {
+    renderContacts();
+    renderCompanies();
+    renderDeals();
+    renderNotes();
+    renderReminders();
+    populateCompanySelects();
+    populateContactSelects();
+    populateDealSelects();
+  }
+
+  window.editContact = function(id) {
+    const c = data.contacts.find(x => x.id === id);
+    if (!c) return;
+    currentContactId = id;
+    document.getElementById('modal-contact-title').textContent = 'تعديل جهة اتصال';
+    document.getElementById('contact-id').value = id;
+    document.getElementById('contact-name').value = c.name;
+    document.getElementById('contact-email').value = c.email || '';
+    document.getElementById('contact-phone').value = c.phone || '';
+    document.getElementById('contact-company').value = c.company || '';
+    document.getElementById('contact-position').value = c.position || '';
+    document.getElementById('contact-status').value = c.status;
+    document.getElementById('contact-notes').value = c.notes || '';
+    populateCompanySelects(c.company);
+    showModal('modal-contact');
+  };
+
+  window.deleteContact = function(id) {
+    if (!confirm('حذف جهة الاتصال؟')) return;
+    data.contacts = data.contacts.filter(c => c.id !== id);
+    data.deals.filter(d => d.contact === id).forEach(d => d.contact = '');
+    data.notes.filter(n => n.contact === id).forEach(n => n.contact = '');
+    data.reminders.filter(r => r.contact === id).forEach(r => r.contact = '');
+    saveData();
+    renderAll();
+    showToast('تم الحذف');
+  };
+
+  window.editCompany = function(id) {
+    const c = data.companies.find(x => x.id === id);
+    if (!c) return;
+    currentCompanyId = id;
+    document.getElementById('modal-company-title').textContent = 'تعديل شركة';
+    document.getElementById('company-id').value = id;
+    document.getElementById('company-name').value = c.name;
+    document.getElementById('company-website').value = c.website || '';
+    document.getElementById('company-phone').value = c.phone || '';
+    document.getElementById('company-email').value = c.email || '';
+    document.getElementById('company-address').value = c.address || '';
+    document.getElementById('company-status').value = c.status;
+    document.getElementById('company-notes').value = c.notes || '';
+    showModal('modal-company');
+  };
+
+  window.deleteCompany = function(id) {
+    if (!confirm('حذف الشركة؟')) return;
+    data.companies = data.companies.filter(c => c.id !== id);
+    data.contacts.filter(c => c.company === id).forEach(c => c.company = '');
+    data.deals.filter(d => d.company === id).forEach(d => d.company = '');
+    data.notes.filter(n => n.company === id).forEach(n => n.company = '');
+    saveData();
+    renderAll();
+    showToast('تم الحذف');
+  };
+
+  window.editDeal = function(id) {
+    const d = data.deals.find(x => x.id === id);
+    if (!d) return;
+    currentDealId = id;
+    document.getElementById('modal-deal-title').textContent = 'تعديل صفقة';
+    document.getElementById('deal-id').value = id;
+    document.getElementById('deal-name').value = d.name;
+    document.getElementById('deal-contact').value = d.contact || '';
+    document.getElementById('deal-company').value = d.company || '';
+    document.getElementById('deal-value').value = d.value || '';
+    document.getElementById('deal-stage').value = d.stage;
+    document.getElementById('deal-expected-close').value = d.expectedClose || '';
+    document.getElementById('deal-probability').value = d.probability || 50;
+    document.getElementById('deal-notes').value = d.notes || '';
+    populateContactSelects(d.contact);
+    populateCompanySelects(d.company);
+    showModal('modal-deal');
+  };
+
+  window.deleteDeal = function(id) {
+    if (!confirm('حذف الصفقة؟')) return;
+    data.deals = data.deals.filter(d => d.id !== id);
+    data.notes.filter(n => n.deal === id).forEach(n => n.deal = '');
+    data.reminders.filter(r => r.deal === id).forEach(r => r.deal = '');
+    saveData();
+    renderAll();
+    showToast('تم الحذف');
+  };
+
+  window.editNote = function(id) {
+    const n = data.notes.find(x => x.id === id);
+    if (!n) return;
+    currentNoteId = id;
+    document.getElementById('modal-note-title').textContent = 'تعديل ملاحظة';
+    document.getElementById('note-id').value = id;
+    document.getElementById('note-title').value = n.title;
+    document.getElementById('note-contact').value = n.contact || '';
+    document.getElementById('note-company').value = n.company || '';
+    document.getElementById('note-deal').value = n.deal || '';
+    document.getElementById('note-type').value = n.type;
+    document.getElementById('note-content').value = n.content;
+    populateContactSelects(n.contact);
+    populateCompanySelects(n.company);
+    populateDealSelects(n.deal);
+    showModal('modal-note');
+  };
+
+  window.deleteNote = function(id) {
+    if (!confirm('حذف الملاحظة؟')) return;
+    data.notes = data.notes.filter(n => n.id !== id);
+    saveData();
+    renderAll();
+    showToast('تم الحذف');
+  };
+
+  window.editReminder = function(id) {
+    const r = data.reminders.find(x => x.id === id);
+    if (!r) return;
+    currentReminderId = id;
+    document.getElementById('modal-reminder-title').textContent = 'تعديل تذكير';
+    document.getElementById('reminder-id').value = id;
+    document.getElementById('reminder-title').value = r.title;
+    document.getElementById('reminder-desc').value = r.desc || '';
+    document.getElementById('reminder-datetime').value = r.datetime.replace(' ', 'T');
+    document.getElementById('reminder-contact').value = r.contact || '';
+    document.getElementById('reminder-deal').value = r.deal || '';
+    document.getElementById('reminder-repeat').value = r.repeat || 'none';
+    populateContactSelects(r.contact);
+    populateDealSelects(r.deal);
+    showModal('modal-reminder');
+  };
+
+  window.deleteReminder = function(id) {
+    if (!confirm('حذف التذكير؟')) return;
+    data.reminders = data.reminders.filter(r => r.id !== id);
+    saveData();
+    renderAll();
+    showToast('تم الحذف');
+  };
+
+  window.toggleReminder = function(id) {
+    const r = data.reminders.find(x => x.id === id);
+    if (!r) return;
+    r.completed = !r.completed;
+    saveData();
+    renderReminders();
+    showToast(r.completed ? 'تم تحديده كمكتمل' : 'تم إلغاء الإنجاز');
+  };
+
+  function dragStart(e) {
+    draggedDealId = e.target.dataset.id;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function dragEnd(e) {
+    e.target.classList.remove('dragging');
+    draggedDealId = null;
+    document.querySelectorAll('.kanban-dropzone').forEach(z => z.classList.remove('drag-over'));
+  }
+
+  function dragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+  }
+
+  function dragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+  }
+
+  function drop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const stage = e.currentTarget.id.replace('drop-', '');
+    if (draggedDealId && STAGES.includes(stage)) {
+      const deal = data.deals.find(d => d.id === draggedDealId);
+      if (deal) {
+        deal.stage = stage;
+        saveData();
+        renderDeals();
+        showToast(`تم نقل الصفقة إلى "${STAGE_LABELS[stage]}"`);
+      }
+    }
+  }
+
+  function checkReminders() {
+    const now = new Date();
+    data.reminders.filter(r => !r.completed && new Date(r.datetime) <= now).forEach(r => {
+      const notified = r._notified;
+      if (!notified) {
+        r._notified = true;
+        alert(`تذكير: ${r.title}\n${r.desc || ''}\nالوقت: ${formatDateTime(r.datetime)}`);
+      }
+    });
+  }
+
+  setInterval(checkReminders, 30000);
+
+  document.getElementById('tab-contacts').addEventListener('click', () => switchTab('contacts'));
+  document.getElementById('tab-companies').addEventListener('click', () => switchTab('companies'));
+  document.getElementById('tab-deals').addEventListener('click', () => switchTab('deals'));
+  document.getElementById('tab-notes').addEventListener('click', () => switchTab('notes'));
+  document.getElementById('tab-reminders').addEventListener('click', () => switchTab('reminders'));
+
+  function switchTab(tab) {
+    ['contacts','companies','deals','notes','reminders'].forEach(t => {
+      document.getElementById(`view-${t}`).style.display = t === tab ? 'block' : 'none';
+      document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    });
+    renderAll();
+  }
+
+  document.getElementById('global-search').addEventListener('input', renderAll);
+  document.getElementById('filter-status').addEventListener('change', renderAll);
+
+  document.getElementById('btn-add-contact').addEventListener('click', () => {
+    currentContactId = null;
+    document.getElementById('modal-contact-title').textContent = 'إضافة جهة اتصال';
+    populateCompanySelects();
+    showModal('modal-contact');
+  });
+  document.getElementById('btn-add-company').addEventListener('click', () => {
+    currentCompanyId = null;
+    document.getElementById('modal-company-title').textContent = 'إضافة شركة';
+    showModal('modal-company');
+  });
+  document.getElementById('btn-add-deal').addEventListener('click', () => {
+    currentDealId = null;
+    document.getElementById('modal-deal-title').textContent = 'إضافة صفقة';
+    populateContactSelects();
+    populateCompanySelects();
+    showModal('modal-deal');
+  });
+  document.getElementById('btn-add-note').addEventListener('click', () => {
+    currentNoteId = null;
+    document.getElementById('modal-note-title').textContent = 'إضافة ملاحظة';
+    populateContactSelects();
+    populateCompanySelects();
+    populateDealSelects();
+    showModal('modal-note');
+  });
+  document.getElementById('btn-add-reminder').addEventListener('click', () => {
+    currentReminderId = null;
+    document.getElementById('modal-reminder-title').textContent = 'إضافة تذكير';
+    document.getElementById('reminder-datetime').value = new Date(Date.now() + 3600000).toISOString().slice(0,16);
+    populateContactSelects();
+    populateDealSelects();
+    showModal('modal-reminder');
+  });
+
+  ['contact','company','deal','note','reminder'].forEach(type => {
+    document.getElementById(`close-${type}-modal`).addEventListener('click', () => hideModal(`modal-${type}`));
+    document.getElementById(`cancel-${type}`).addEventListener('click', () => hideModal(`modal-${type}`));
+  });
+
+  document.getElementById('modal-overlay').addEventListener('click', () => {
+    ['contact','company','deal','note','reminder'].forEach(type => hideModal(`modal-${type}`));
+  });
+
+  document.getElementById('save-contact').addEventListener('click', () => {
+    const name = document.getElementById('contact-name').value.trim();
+    if (!name) { showToast('الاسم مطلوب'); return; }
+    const contact = {
+      id: currentContactId || generateId(),
+      name,
+      email: document.getElementById('contact-email').value.trim(),
+      phone: document.getElementById('contact-phone').value.trim(),
+      company: document.getElementById('contact-company').value || null,
+      position: document.getElementById('contact-position').value.trim(),
+      status: document.getElementById('contact-status').value,
+      notes: document.getElementById('contact-notes').value.trim()
+    };
+    if (currentContactId) {
+      const idx = data.contacts.findIndex(c => c.id === currentContactId);
+      if (idx >= 0) data.contacts[idx] = contact;
+    } else data.contacts.push(contact);
+    saveData();
+    hideModal('modal-contact');
+    renderAll();
+    showToast(currentContactId ? 'تم التحديث' : 'تم الإضافة');
+  });
+
+  document.getElementById('save-company').addEventListener('click', () => {
+    const name = document.getElementById('company-name').value.trim();
+    if (!name) { showToast('اسم الشركة مطلوب'); return; }
+    const company = {
+      id: currentCompanyId || generateId(),
+      name,
+      website: document.getElementById('company-website').value.trim(),
+      phone: document.getElementById('company-phone').value.trim(),
+      email: document.getElementById('company-email').value.trim(),
+      address: document.getElementById('company-address').value.trim(),
+      status: document.getElementById('company-status').value,
+      notes: document.getElementById('company-notes').value.trim()
+    };
+    if (currentCompanyId) {
+      const idx = data.companies.findIndex(c => c.id === currentCompanyId);
+      if (idx >= 0) data.companies[idx] = company;
+    } else data.companies.push(company);
+    saveData();
+    hideModal('modal-company');
+    renderAll();
+    showToast(currentCompanyId ? 'تم التحديث' : 'تم الإضافة');
+  });
+
+  document.getElementById('save-deal').addEventListener('click', () => {
+    const name = document.getElementById('deal-name').value.trim();
+    if (!name) { showToast('اسم الصفقة مطلوب'); return; }
+    const deal = {
+      id: currentDealId || generateId(),
+      name,
+      contact: document.getElementById('deal-contact').value || null,
+      company: document.getElementById('deal-company').value || null,
+      value: parseFloat(document.getElementById('deal-value').value) || 0,
+      stage: document.getElementById('deal-stage').value,
+      expectedClose: document.getElementById('deal-expected-close').value || null,
+      probability: parseInt(document.getElementById('deal-probability').value) || 50,
+      notes: document.getElementById('deal-notes').value.trim()
+    };
+    if (currentDealId) {
+      const idx = data.deals.findIndex(d => d.id === currentDealId);
+      if (idx >= 0) data.deals[idx] = deal;
+    } else data.deals.push(deal);
+    saveData();
+    hideModal('modal-deal');
+    renderAll();
+    showToast(currentDealId ? 'تم التحديث' : 'تم الإضافة');
+  });
+
+  document.getElementById('save-note').addEventListener('click', () => {
+    const title = document.getElementById('note-title').value.trim();
+    const content = document.getElementById('note-content').value.trim();
+    if (!title || !content) { showToast('العنوان والمحتوى مطلوبان'); return; }
+    const note = {
+      id: currentNoteId || generateId(),
+      title,
+      contact: document.getElementById('note-contact').value || null,
+      company: document.getElementById('note-company').value || null,
+      deal: document.getElementById('note-deal').value || null,
+      type: document.getElementById('note-type').value,
+      content,
+      createdAt: currentNoteId ? data.notes.find(n => n.id === currentNoteId)?.createdAt : new Date().toISOString()
+    };
+    if (currentNoteId) {
+      const idx = data.notes.findIndex(n => n.id === currentNoteId);
+      if (idx >= 0) data.notes[idx] = note;
+    } else data.notes.push(note);
+    saveData();
+    hideModal('modal-note');
+    renderAll();
+    showToast(currentNoteId ? 'تم التحديث' : 'تم الإضافة');
+  });
+
+  document.getElementById('save-reminder').addEventListener('click', () => {
+    const title = document.getElementById('reminder-title').value.trim();
+    const datetime = document.getElementById('reminder-datetime').value;
+    if (!title || !datetime) { showToast('العنوان والوقت مطلوبان'); return; }
+    const reminder = {
+      id: currentReminderId || generateId(),
+      title,
+      desc: document.getElementById('reminder-desc').value.trim(),
+      datetime: datetime.replace('T', ' '),
+      contact: document.getElementById('reminder-contact').value || null,
+      deal: document.getElementById('reminder-deal').value || null,
+      repeat: document.getElementById('reminder-repeat').value,
+      completed: currentReminderId ? data.reminders.find(r => r.id === currentReminderId)?.completed : false,
+      _notified: false
+    };
+    if (currentReminderId) {
+      const idx = data.reminders.findIndex(r => r.id === currentReminderId);
+      if (idx >= 0) data.reminders[idx] = reminder;
+    } else data.reminders.push(reminder);
+    saveData();
+    hideModal('modal-reminder');
+    renderAll();
+    showToast(currentReminderId ? 'تم التحديث' : 'تم الإضافة');
+  });
+
+  document.getElementById('btn-export').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `crm-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('تم التصدير');
+  });
+
+  document.getElementById('btn-import').addEventListener('click', () => {
+    document.getElementById('import-file').click();
+  });
+
+  document.getElementById('import-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (imported.contacts && imported.companies && imported.deals && imported.notes && imported.reminders) {
+          data = imported;
+          saveData();
+          renderAll();
+          showToast('تم الاستيراد بنجاح');
+        } else throw new Error('صيغة غير صالحة');
+      } catch (err) {
+        showToast('خطأ في ملف الاستيراد');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  loadData();
+  renderAll();
+  checkReminders();
+})();
+</script>
+</body>
+</html>
