@@ -1,0 +1,32 @@
+name: Add app (from Scout)
+on:
+  workflow_dispatch:
+    inputs:
+      app_json:
+        description: 'ready app spec (JSON) handed over by Scout'
+        required: true
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: add-app
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and write the app
+        env:
+          APP_JSON: ${{ inputs.app_json }}
+        run: python3 scripts/add_app.py
+      - name: Commit, deploy, notify search engines
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add apps data sitemap-apps.xml robots.txt
+          if git diff --cached --quiet; then echo "nothing to publish"; exit 1; fi
+          git config user.name "MD1 Bot"; git config user.email "action@github.com"
+          git commit -m "App from Scout: $(date -u +%F)"
+          git pull --rebase origin main && git push
+          gh workflow run deploy.yml
