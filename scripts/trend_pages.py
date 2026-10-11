@@ -65,6 +65,8 @@ def shell(title, desc, canon, h1, label, main, script="", ld=None, foot=""):
 <link rel="stylesheet" href="../css/pages.css">
 <style>{CSS}</style>
 {ldj}
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="particles"></div>

@@ -170,6 +170,8 @@ function generatePageHTML(pageNumber, title, description, quote, customBody = ''
       border-radius: 8px; padding: .3rem .5rem; font: inherit; cursor: pointer; }
     .scout-plan p { line-height: 1.9; margin: 0 0 .9rem; }
   </style>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
 </head>
 <body>
   <div id="particles"></div>
@@ -227,6 +229,8 @@ function generateIndexHTML(pages) {
   <title>كل الصفحات - MDM1</title>
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
 </head>
 <body>
   <div id="particles"></div>
