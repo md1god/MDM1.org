@@ -20,6 +20,11 @@ jobs:
         env:
           APP_JSON: ${{ inputs.app_json }}
         run: python3 scripts/add_app.py
+      - name: Smoke test in a real browser (must load and click through without errors)
+        run: |
+          APP=$(ls -t apps/*.html | grep -v index.html | head -1)
+          cd /tmp && npm init -y >/dev/null && npm i playwright@1.49.1 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+          cd "$GITHUB_WORKSPACE" && NODE_PATH=/tmp/node_modules node scripts/smoke_app.js "$APP"
       - name: Commit, deploy, notify search engines
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
