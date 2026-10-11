@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منشئ مكوّنات الواجهات العربية — بناء وتخصيص وتصدير HTML/CSS | MDM1</title>
+<meta name="description" content="أنشئ مكوّنات واجهات عربية بالسحب والإفلات مع معاينة حيّة تدعم RTL، وخصّص الألوان والخطوط والزوايا، ثم صدّر كود HTML وCSS نظيفاً واحفظ مشاريعك في المتصفح.">
+<link rel="canonical" href="https://mdm1.org/apps/arabic-rtl-ui-builder.html">
+<meta property="og:title" content="منشئ مكوّنات الواجهات العربية — بناء وتخصيص وتصدير HTML/CSS">
+<meta property="og:description" content="أنشئ مكوّنات واجهات عربية بالسحب والإفلات مع معاينة حيّة تدعم RTL، وخصّص الألوان والخطوط والزوايا، ثم صدّر كود HTML وCSS نظيفاً واحفظ مشاريعك في المتصفح.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/arabic-rtl-ui-builder.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:14px;margin-top:16px}
+.app-intro{line-height:1.9;color:var(--light);margin:12px 0}
+.app-title{font-size:1.05rem;color:var(--gold-bright);margin:0 0 8px}
+.app-subtitle{font-size:.95rem;color:var(--gold);margin:12px 0 6px}
+.app-hint{color:var(--gold-dim);font-size:.85rem;margin:4px 0 10px}
+.app-lib{list-style:none;padding:0;margin:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.app-lib-item{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px dashed var(--gold-dim);border-radius:10px;padding:8px 10px;cursor:grab;background:rgba(255,255,255,.02)}
+.app-lib-item:active{cursor:grabbing}
+.app-canvas{min-height:200px;border:1px dashed var(--gold-dim);border-radius:12px;padding:12px;background:#0e0e0e;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,background .15s}
+.app-canvas.is-over{border-color:var(--gold-bright);background:#141207}
+.app-empty{color:var(--gold-dim);text-align:center;margin:auto;font-size:.9rem}
+.app-stage{display:flex;flex-direction:column;gap:2px;width:100%}
+.app-el{box-sizing:border-box;position:relative;cursor:pointer;outline:2px solid transparent}
+.app-el.is-selected{outline:2px dashed var(--gold-bright)}
+.app-el-head{margin:0 0 6px}
+.app-el-input{width:100%;box-sizing:border-box;background:#0b0b0b;color:var(--light);border:1px solid var(--gold-dim);border-radius:6px;padding:6px 8px;margin-top:4px}
+.app-el-link{display:inline-block;margin-inline-end:14px;color:inherit;text-decoration:none}
+.app-el-field{display:block;margin:6px 0}
+.app-el-btn{background:var(--gold);color:#141414;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;margin-top:6px}
+.app-inspector{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.app-inspector label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--light)}
+.app-inspector .app-wide{grid-column:1/-1}
+.app-range-val{color:var(--gold-bright)}
+.app-projects{list-style:none;padding:0;margin:6px 0;display:grid;gap:6px}
+.app-project{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--gold-dim);border-radius:10px;padding:6px 10px}
+.app-project span{color:var(--light);font-size:.9rem}
+#appCount{display:inline-block;min-width:2ch;text-align:center}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منشئ مكوّنات الواجهات العربية بالسحب والإفلات", "url": "https://mdm1.org/apps/arabic-rtl-ui-builder.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أضيف مكوّناً إلى لوحة المعاينة؟", "acceptedAnswer": {"@type": "Answer", "text": "اسحب العنصر من مكتبة المكوّنات وأفلته داخل اللوحة، أو اضغط زر «إضافة» المقابل له ليُدرج في نهاية اللوحة مباشرة."}}, {"@type": "Question", "name": "هل يدعم التطبيق الاتجاه من اليمين إلى اليسار؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اللوحة مضبوطة على RTL افتراضياً، ويمكنك تبديل الاتجاه إلى LTR من زر «تبديل الاتجاه» ثم تصدير الكود بالاتجاه المختار."}}, {"@type": "Question", "name": "أين تُحفظ مشاريعي؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ المشاريع في التخزين المحلي لمتصفحك على جهازك فقط ولا تُرسل إلى أي خادم، ويمكنك تحميلها أو حذفها في أي وقت."}}, {"@type": "Question", "name": "ما شكل الكود المُصدَّر؟", "acceptedAnswer": {"@type": "Answer", "text": "تحصل على كود HTML دلالي مع قواعد CSS نظيفة لكل مكوّن، جاهز للنسخ واللصق في صفحتك دون أي مكتبات خارجية."}}, {"@type": "Question", "name": "لماذا قد لا يظهر الخط العربي الذي اخترته؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد الخط على توفره في نظام الزائر؛ يوصى بتحميله في صفحتك أو الاعتماد على احتياطي النظام، ويبقى الكود صالحاً في كل الحالات."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منشئ مكوّنات الواجهات العربية بالسحب والإفلات</h1>
+  <p class="page-sub">أنشئ مكوّنات واجهات عربية بالسحب والإفلات مع معاينة حيّة تدعم RTL، وخصّص الألوان والخطوط والزوايا، ثم صدّر كود HTML وCSS نظيفاً واحفظ مشاريعك في المتصفح.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">يتيح لك هذا التطبيق بناء مكوّنات واجهات عربية جاهزة داخل متصفحك مباشرة، دون أي إعداد أو تسجيل، عبر السحب والإفلات مع معاينة حيّة تدعم الاتجاه من اليمين إلى اليسار. اختر مكوّناً من المكتبة مثل الزر أو البطاقة أو حقل الإدخال أو قائمة التنقّل أو النموذج، ثم أفلته في لوحة المعاينة وعدّل ألوانه وخطه العربي ومسافاته وزواياه من لوحة الخصائص. عند الانتهاء صدّر كود HTML وCSS نظيفاً جاهزاً للنسخ، واحفظ مشروعك محلياً في المتصفح لتعود إليه لاحقاً بسهولة تامة، بواجهة عربية بسيطة وسريعة تعمل على الحاسوب والهاتف.</p>
+<div class="app" id="appRoot">
+  <section class="card app-lib-card">
+    <h2 class="app-title">١. مكتبة المكوّنات</h2>
+    <p class="app-hint">اسحب أي مكوّن إلى لوحة المعاينة، أو اضغط زر «إضافة» المقابل له لإدراجه في نهاية اللوحة.</p>
+    <ul class="app-lib" id="appLibrary">
+      <li class="app-lib-item" id="libButton" draggable="true" data-app-type="button"><span>زر</span><button type="button" class="sec" id="addButtonBtn">إضافة زر</button></li>
+      <li class="app-lib-item" id="libCard" draggable="true" data-app-type="card"><span>بطاقة</span><button type="button" class="sec" id="addCardBtn">إضافة بطاقة</button></li>
+      <li class="app-lib-item" id="libInput" draggable="true" data-app-type="input"><span>حقل إدخال</span><button type="button" class="sec" id="addInputBtn">إضافة حقل إدخال</button></li>
+      <li class="app-lib-item" id="libNav" draggable="true" data-app-type="nav"><span>قائمة تنقّل</span><button type="button" class="sec" id="addNavBtn">إضافة قائمة تنقّل</button></li>
+      <li class="app-lib-item" id="libForm" draggable="true" data-app-type="form"><span>نموذج</span><button type="button" class="sec" id="addFormBtn">إضافة نموذج</button></li>
+    </ul>
+  </section>
+
+  <section class="card app-canvas-card">
+    <div class="row">
+      <h2 class="app-title">٢. المعاينة الحيّة</h2>
+      <button type="button" class="sec" id="appDirBtn">تبديل الاتجاه: RTL</button>
+      <button type="button" class="sec" id="appClearBtn">مسح اللوحة</button>
+      <span class="badge" id="appCountBadge">٠ عناصر</span>
+    </div>
+    <div class="row">
+      <span class="label">عدد المكوّنات في اللوحة</span>
+      <span class="big" id="appCount">٠</span>
+    </div>
+    <div class="app-canvas" id="appCanvas" dir="rtl">
+      <p class="app-empty" id="appEmpty">لا توجد مكوّنات بعد. اسحب مكوّناً من المكتبة وأفلته هنا لإضافته.</p>
+      <div class="app-stage" id="appStage"></div>
+    </div>
+  </section>
+
+  <section class="card app-inspector-card">
+    <h2 class="app-title">٣. خصائص العنصر المحدّد</h2>
+    <p class="app-hint" id="appInspectorHint">اختر عنصراً من لوحة المعاينة لتعديل نصه وألوانه وخطه ومسافاته وزواياه.</p>
+    <div class="app-inspector" id="appInspector" hidden>
+      <label class="app-wide" for="inspText">نص العنصر
+        <input class="input" id="inspText" type="text" />
+      </label>
+      <label for="inspBg">لون الخلفية
+        <input class="input" id="inspBg" type="color" />
+      </label>
+      <label for="inspColor">لون النص
+        <input class="input" id="inspColor" type="color" />
+      </label>
+      <label for="inspFont">الخط العربي
+        <select class="select" id="inspFont">
+          <option value="'Tajawal','Cairo',sans-serif">Tajawal</option>
+          <option value="'Cairo','Tajawal',sans-serif">Cairo</option>
+          <option value="'Almarai','Cairo',sans-serif">Almarai</option>
+          <option value="'Segoe UI',Tahoma,sans-serif">خط النظام</option>
+          <option value="serif">خط مذيّل (Serif)</option>
+        </select>
+      </label>
+      <label for="inspSize">حجم الخط (<span class="app-range-val" id="inspSizeVal">16</span>px)
+        <input id="inspSize" type="range" min="12" max="40" value="16" />
+      </label>
+      <label for="inspPad">الحشوة الداخلية (<span class="app-range-val" id="inspPadVal">12</span>px)
+        <input id="inspPad" type="range" min="0" max="48" value="12" />
+      </label>
+      <label for="inspMargin">الهامش الخارجي (<span class="app-range-val" id="inspMarginVal">8</span>px)
+        <input id="inspMargin" type="range" min="0" max="40" value="8" />
+      </label>
+      <label for="inspRadius">استدارة الزوايا (<span class="app-range-val" id="inspRadiusVal">10</span>px)
+        <input id="inspRadius" type="range" min="0" max="40" value="10" />
+      </label>
+      <div class="row app-wide">
+        <button type="button" id="inspDup">تكرار العنصر</button>
+        <button type="button" class="sec" id="inspDelete">حذف العنصر</button>
+        <button type="button" class="sec" id="inspDeselect">إلغاء التحديد</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card app-export-card">
+    <h2 class="app-title">٤. التصدير وحفظ المشاريع</h2>
+    <div class="row">
+      <label class="label" for="appProjectName">اسم المشروع</label>
+      <input class="input" id="appProjectName" type="text" placeholder="مثال: واجهة متجر" />
+      <button type="button" id="appSaveBtn">حفظ المشروع</button>
+      <button type="button" class="sec" id="appExportBtn">توليد الكود</button>
+      <button type="button" class="sec" id="appCopyBtn">نسخ الكود</button>
+    </div>
+    <div class="divider"></div>
+    <h3 class="app-subtitle">المشاريع المحفوظة في هذا المتصفح</h3>
+    <p class="app-hint" id="appProjectsEmpty">لا توجد مشاريع محفوظة بعد. اكتب اسماً ثم اضغط «حفظ المشروع».</p>
+    <ul class="app-projects" id="appProjects"></ul>
+    <div class="divider"></div>
+    <label class="label" for="appOutput">الكود المولّد (HTML ثم CSS)</label>
+    <textarea class="textarea out" id="appOutput" rows="12" readonly placeholder="اضغط «توليد الكود» لعرض HTML وCSS جاهزين للنسخ."></textarea>
+    <p class="badge" id="appStatus" role="status">جاهز</p>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أضيف مكوّناً إلى لوحة المعاينة؟</h3><p>اسحب العنصر من مكتبة المكوّنات وأفلته داخل اللوحة، أو اضغط زر «إضافة» المقابل له ليُدرج في نهاية اللوحة مباشرة.</p><h3>هل يدعم التطبيق الاتجاه من اليمين إلى اليسار؟</h3><p>نعم، اللوحة مضبوطة على RTL افتراضياً، ويمكنك تبديل الاتجاه إلى LTR من زر «تبديل الاتجاه» ثم تصدير الكود بالاتجاه المختار.</p><h3>أين تُحفظ مشاريعي؟</h3><p>تُحفظ المشاريع في التخزين المحلي لمتصفحك على جهازك فقط ولا تُرسل إلى أي خادم، ويمكنك تحميلها أو حذفها في أي وقت.</p><h3>ما شكل الكود المُصدَّر؟</h3><p>تحصل على كود HTML دلالي مع قواعد CSS نظيفة لكل مكوّن، جاهز للنسخ واللصق في صفحتك دون أي مكتبات خارجية.</p><h3>لماذا قد لا يظهر الخط العربي الذي اخترته؟</h3><p>يعتمد الخط على توفره في نظام الزائر؛ يوصى بتحميله في صفحتك أو الاعتماد على احتياطي النظام، ويبقى الكود صالحاً في كل الحالات.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var STORE_KEY="arabic_ui_builder_v1";
+  var defaults={
+    button:{text:"زر جديد", bg:"#c9a227", color:"#141414", font:"'Tajawal','Cairo',sans-serif", size:16, pad:12, margin:8, radius:10},
+    card:{text:"عنوان البطاقة", desc:"نص توضيحي قصير يشرح محتوى البطاقة.", bg:"#1c1c1c", color:"#f5f5f5", font:"'Cairo','Tajawal',sans-serif", size:15, pad:16, margin:10, radius:14},
+    input:{text:"الاسم الكامل", placeholder:"اكتب هنا…", bg:"#121212", color:"#f5f5f5", font:"'Almarai','Cairo',sans-serif", size:15, pad:10, margin:8, radius:8},
+    nav:{text:"الرئيسية", bg:"#181818", color:"#f5f5f5", font:"'Tajawal','Cairo',sans-serif", size:15, pad:12, margin:10, radius:12},
+    form:{text:"نموذج التواصل", bg:"#1c1c1c", color:"#f5f5f5", font:"'Cairo','Tajawal',sans-serif", size:15, pad:16, margin:10, radius:14}
+  };
+  var labels={button:"زر", card:"بطاقة", input:"حقل إدخال", nav:"قائمة تنقّل", form:"نموذج"};
+  var items=[], selected=null, counter=0, dir="rtl";
+
+  var canvas=document.getElementById("appCanvas");
+  var stage=document.getElementById("appStage");
+  var empty=document.getElementById("appEmpty");
+  var library=document.getElementById("appLibrary");
+  var inspector=document.getElementById("appInspector");
+  var inspectorHint=document.getElementById("appInspectorHint");
+  var countEl=document.getElementById("appCount");
+  var badge=document.getElementById("appCountBadge");
+  var statusEl=document.getElementById("appStatus");
+  var output=document.getElementById("appOutput");
+  var projectsEl=document.getElementById("appProjects");
+  var projectsEmpty=document.getElementById("appProjectsEmpty");
+  var projectName=document.getElementById("appProjectName");
+  var dirBtn=document.getElementById("appDirBtn");
+
+  var inspText=document.getElementById("inspText");
+  var inspBg=document.getElementById("inspBg");
+  var inspColor=document.getElementById("inspColor");
+  var inspFont=document.getElementById("inspFont");
+  var inspSize=document.getElementById("inspSize");
+  var inspPad=document.getElementById("inspPad");
+  var inspMargin=document.getElementById("inspMargin");
+  var inspRadius=document.getElementById("inspRadius");
+  var inspSizeVal=document.getElementById("inspSizeVal");
+  var inspPadVal=document.getElementById("inspPadVal");
+  var inspMarginVal=document.getElementById("inspMarginVal");
+  var inspRadiusVal=document.getElementById("inspRadiusVal");
+
+  function toArabic(n){ return String(n).replace(/[0-9]/g,function(d){ return "٠١٢٣٤٥٦٧٨٩".charAt(Number(d)); }); }
+  function find(id){ for(var i=0;i<items.length;i++){ if(items[i].id===id){ return items[i]; } } return null; }
+  function setStatus(m){ statusEl.textContent=m; }
+  function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  function buildEl(item){
+    var node;
+    function common(el){
+      el.className="app-el";
+      el.id="preview-"+item.id;
+      el.setAttribute("data-app-id",item.id);
+      el.style.background=item.bg;
+      el.style.color=item.color;
+      el.style.fontFamily=item.font;
+      el.style.fontSize=item.size+"px";
+      el.style.padding=item.pad+"px";
+      el.style.margin=item.margin+"px";
+      el.style.borderRadius=item.radius+"px";
+    }
+    if(item.type==="button"){
+      node=document.createElement("button");
+      node.type="button";
+      node.textContent=item.text;
+      common(node);
+    } else if(item.type==="card"){
+      node=document.createElement("article");
+      var h=document.createElement("h3"); h.className="app-el-head"; h.textContent=item.text;
+      var p=document.createElement("p"); p.style.margin="0"; p.textContent=item.desc||"";
+      node.appendChild(h); node.appendChild(p); common(node);
+    } else if(item.type==="input"){
+      node=document.createElement("label");
+      var sp=document.createElement("span"); sp.textContent=item.text;
+      var inp=document.createElement("input"); inp.type="text"; inp.className="app-el-input"; inp.placeholder=item.placeholder||"";
+      node.appendChild(sp); node.appendChild(inp); common(node);
+    } else if(item.type==="nav"){
+      node=document.createElement("nav");
+      [item.text,"المتجر","من نحن","تواصل"].forEach(function(t){
+        var s=document.createElement("span"); s.className="app-el-link"; s.textContent=t; node.appendChild(s);
+      });
+      common(node);
+    } else {
+      node=document.createElement("form");
+      node.addEventListener("submit",function(e){ e.preventDefault(); });
+      var t=document.createElement("h3"); t.className="app-el-head"; t.textContent=item.text; node.appendChild(t);
+      ["الاسم","البريد الإلكتروني"].forEach(function(lb){
+        var l=document.createElement("label"); l.className="app-el-field";
+        var s=document.createElement("span"); s.textContent=lb;
+        var i2=document.createElement("input"); i2.type="text"; i2.className="app-el-input";
+        l.appendChild(s); l.appendChild(i2); node.appendChild(l);
+      });
+      var b=document.createElement("button"); b.type="button"; b.className="app-el-btn"; b.textContent="إرسال";
+      node.appendChild(b); common(node);
+    }
+    return node;
+  }
+
+  function render(){
+    stage.innerHTML="";
+    empty.hidden=items.length>0;
+    items.forEach(function(item){
+      var el=buildEl(item);
+      if(selected===item.id){ el.classList.add("is-selected"); }
+      stage.appendChild(el);
+    });
+    countEl.textContent=toArabic(items.length);
+    badge.textContent=(items.length===1)?"عنصر واحد":(items.length+" عناصر");
+  }
+
+  function deselect(){
+    selected=null;
+    inspector.hidden=true;
+    inspectorHint.hidden=false;
+    Array.prototype.forEach.call(stage.children,function(c){ c.classList.remove("is-selected"); });
+  }
+
+  function select(id){
+    var item=find(id);
+    if(!item){ deselect(); return; }
+    selected=id;
+    inspector.hidden=false;
+    inspectorHint.hidden=true;
+    inspText.value=item.text||"";
+    inspBg.value=item.bg;
+    inspColor.value=item.color;
+    inspFont.value=item.font;
+    inspSize.value=item.size; inspSizeVal.textContent=toArabic(item.size);
+    inspPad.value=item.pad; inspPadVal.textContent=toArabic(item.pad);
+    inspMargin.value=item.margin; inspMarginVal.textContent=toArabic(item.margin);
+    inspRadius.value=item.radius; inspRadiusVal.textContent=toArabic(item.radius);
+    Array.prototype.forEach.call(stage.children,function(c){
+      c.classList.toggle("is-selected",c.getAttribute("data-app-id")===id);
+    });
+  }
+
+  function apply(key,value){
+    var item=find(selected);
+    if(!item){ return; }
+    item[key]=value;
+    render();
+  }
+
+  function addItem(type,data){
+    var base=defaults[type]||defaults.button;
+    var item={}, k;
+    for(k in base){ if(Object.prototype.hasOwnProperty.call(base,k)){ item[k]=base[k]; } }
+    if(data){ for(k in data){ if(Object.prototype.hasOwnProperty.call(data,k)){ item[k]=data[k]; } } }
+    item.type=type;
+    counter++;
+    item.id="el"+counter;
+    items.push(item);
+    render();
+    select(item.id);
+    setStatus("أُضيف عنصر: "+labels[type]+" في نهاية اللوحة.");
+  }
+
+  library.addEventListener("dragstart",function(e){
+    var li=e.target.closest?e.target.closest("[data-app-type]"):null;
+    if(!li){ return; }
+    e.dataTransfer.setData("text/plain",li.getAttribute("data-app-type"));
+    e.dataTransfer.effectAllowed="copy";
+  });
+  canvas.addEventListener("dragover",function(e){ e.preventDefault(); e.dataTransfer.dropEffect="copy"; canvas.classList.add("is-over"); });
+  canvas.addEventListener("dragleave",function(){ canvas.classList.remove("is-over"); });
+  canvas.addEventListener("drop",function(e){
+    e.preventDefault();
+    canvas.classList.remove("is-over");
+    var type=e.dataTransfer.getData("text/plain");
+    if(defaults[type]){ addItem(type); }
+  });
+
+  canvas.addEventListener("click",function(e){
+    var el=e.target.closest?e.target.closest("[data-app-id]"):null;
+    if(el){ select(el.getAttribute("data-app-id")); }
+    else { deselect(); }
+  });
+
+  [["addButtonBtn","button"],["addCardBtn","card"],["addInputBtn","input"],["addNavBtn","nav"],["addFormBtn","form"]].forEach(function(pair){
+    var btn=document.getElementById(pair[0]);
+    btn.addEventListener("click",function(){ addItem(pair[1]); });
+  });
+
+  inspText.addEventListener("input",function(){ apply("text",inspText.value); });
+  inspBg.addEventListener("input",function(){ apply("bg",inspBg.value); });
+  inspColor.addEventListener("input",function(){ apply("color",inspColor.value); });
+  inspFont.addEventListener("change",function(){ apply("font",inspFont.value); });
+  inspSize.addEventListener("input",function(){ inspSizeVal.textContent=toArabic(inspSize.value); apply("size",Number(inspSize.value)); });
+  inspPad.addEventListener("input",function(){ inspPadVal.textContent=toArabic(inspPad.value); apply("pad",Number(inspPad.value)); });
+  inspMargin.addEventListener("input",function(){ inspMarginVal.textContent=toArabic(inspMargin.value); apply("margin",Number(inspMargin.value)); });
+  inspRadius.addEventListener("input",function(){ inspRadiusVal.textContent=toArabic(inspRadius.value); apply("radius",Number(inspRadius.value)); });
+
+  document.getElementById("inspDelete").addEventListener("click",function(){
+    if(!selected){ setStatus("لا يوجد عنصر محدّد للحذف."); return; }
+    var i=-1,j;
+    for(j=0;j<items.length;j++){ if(items[j].id===selected){ i=j; break; } }
+    if(i>-1){ items.splice(i,1); deselect(); render(); setStatus("تم حذف العنصر المحدّد."); }
+  });
+
+  document.getElementById("inspDup").addEventListener("click",function(){
+    var item=find(selected);
+    if(!item){ setStatus("اختر عنصراً أولاً لتكراره."); return; }
+    var copy={},k;
+    for(k in item){ if(Object.prototype.hasOwnProperty.call(item,k)){ copy[k]=item[k]; } }
+    counter++;
+    copy.id="el"+counter;
+    var i=-1,j;
+    for(j=0;j<items.length;j++){ if(items[j].id===item.id){ i=j; break; } }
+    items.splice(i+1,0,copy);
+    render();
+    select(copy.id);
+    setStatus("تم تكرار العنصر المحدّد.");
+  });
+
+  document.getElementById("inspDeselect").addEventListener("click",function(){ deselect(); setStatus("تم إلغاء التحديد."); });
+
+  dirBtn.addEventListener("click",function(){
+    dir=(dir==="rtl")?"ltr":"rtl";
+    canvas.setAttribute("dir",dir);
+    dirBtn.textContent="تبديل الاتجاه: "+(dir==="rtl"?"RTL":"LTR");
+    setStatus("اتجاه المعاينة الآن: "+(dir==="rtl"?"من اليمين إلى اليسار":"من اليسار إلى اليمين"));
+  });
+
+  document.getElementById("appClearBtn").addEventListener("click",function(){
+    if(items.length===0){ setStatus("اللوحة فارغة بالفعل."); return; }
+    items=[]; counter=0; deselect(); render(); setStatus("تم مسح كل عناصر اللوحة.");
+  });
+
+  function partHtml(item,cls){
+    var t=esc(item.text);
+    if(item.type==="button"){ return '<button type="button" class="md-el '+cls+'">'+t+'</button>'; }
+    if(item.type==="card"){ return '<article class="md-el '+cls+'"><h3>'+t+'</h3><p>'+esc(item.desc||"")+'</p></article>'; }
+    if(item.type==="input"){ return '<label class="md-el '+cls+'"><span>'+t+'</span><input type="text" placeholder="'+esc(item.placeholder||"")+'"></label>'; }
+    if(item.type==="nav"){
+      return '<nav class="md-el '+cls+'">'+[item.text,"المتجر","من نحن","تواصل"].map(function(x){ return '<span class="md-link">'+esc(x)+'</span>'; }).join("")+'</nav>';
+    }
+    return '<form class="md-el '+cls+'"><h3>'+t+'</h3><label><span>الاسم</span><input type="text"></label><label><span>البريد الإلكتروني</span><input type="text"></label><button type="button">إرسال</button></form>';
+  }
+
+  function buildCode(){
+    var html='<div class="md-canvas" dir="'+dir+'">';
+    var css=".md-canvas{display:flex;flex-direction:column;gap:6px;padding:16px;background:#0e0e0e;color:#f5f5f5}\n";
+    css+=".md-el{box-sizing:border-box}\n.md-link{margin-inline-end:14px;text-decoration:none;color:inherit}\n";
+    items.forEach(function(item){
+      var cls="md-"+item.id;
+      html+="\n  "+partHtml(item,cls);
+      css+="."+cls+"{background:"+item.bg+";color:"+item.color+";font-family:"+item.font+";font-size:"+item.size+"px;padding:"+item.pad+"px;margin:"+item.margin+"px;border-radius:"+item.radius+"px}\n";
+    });
+    html+="\n</div>";
+    return {html:html, css:css};
+  }
+
+  document.getElementById("appExportBtn").addEventListener("click",function(){
+    if(items.length===0){ setStatus("أضف مكوّناً واحداً على الأقل قبل التصدير."); return; }
+    var code=buildCode();
+    output.value="<!-- HTML -->\n"+code.html+"\n\n<!-- CSS -->\n"+code.css;
+    setStatus("تم توليد الكود لـ "+toArabic(items.length)+" عنصر، جاهز للنسخ.");
+  });
+
+  document.getElementById("appCopyBtn").addEventListener("click",function(){
+    if(!output.value){ setStatus("ولّد الكود أولاً بزر «توليد الكود»."); return; }
+    function ok(){ setStatus("تم نسخ الكود إلى الحافظة."); }
+    function fallback(){
+      output.focus(); output.select();
+      try{ if(document.execCommand("copy")){ ok(); } else { setStatus("تعذّر النسخ تلقائياً، انسخ الكود يدوياً."); } }
+      catch(err){ setStatus("تعذّر النسخ تلقائياً، انسخ الكود يدوياً."); }
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(output.value).then(ok,fallback);
+    } else { fallback(); }
+  });
+
+  function loadStore(){
+    try{
+      var raw=localStorage.getItem(STORE_KEY);
+      if(!raw){ return []; }
+      var data=JSON.parse(raw);
+      return Array.isArray(data)?data:[];
+    }catch(err){ return []; }
+  }
+  function saveStore(list){
+    try{ localStorage.setItem(STORE_KEY,JSON.stringify(list)); return true; }
+    catch(err){ return false; }
+  }
+
+  document.getElementById("appSaveBtn").addEventListener("click",function(){
+    var name=(projectName.value||"").trim();
+    if(!name){ setStatus("اكتب اسم المشروع أولاً."); projectName.focus(); return; }
+    if(items.length===0){ setStatus("أضف مكوّناً واحداً على الأقل قبل الحفظ."); return; }
+    var list=loadStore(), i, idx=-1;
+    for(i=0;i<list.length;i++){ if(list[i].name===name){ idx=i; break; } }
+    var entry={ sid:"p"+Date.now(), name:name, dir:dir, items:items, savedAt:new Date().toISOString() };
+    if(idx>-1){ list[idx]=entry; } else { list.push(entry); }
+    if(saveStore(list)){ setStatus("تم حفظ المشروع: "+name); renderProjects(); }
+    else { setStatus("تعذّر الحفظ في هذا المتصفح."); }
+  });
+
+  function loadProject(entry){
+    items=(entry.items||[]).map(function(x){ var o={},k; for(k in x){ if(Object.prototype.hasOwnProperty.call(x,k)){ o[k]=x[k]; } } return o; });
+    counter=0;
+    items.forEach(function(x){ var n=parseInt(String(x.id||"").replace("el",""),10); if(!isNaN(n)&&n>counter){ counter=n; } });
+    dir=(entry.dir==="ltr")?"ltr":"rtl";
+    canvas.setAttribute("dir",dir);
+    dirBtn.textContent="تبديل الاتجاه: "+(dir==="rtl"?"RTL":"LTR");
+    deselect();
+    render();
+    projectName.value=entry.name||"";
+    setStatus("تم تحميل المشروع: "+(entry.name||""));
+  }
+
+  function deleteProject(sid){
+    var list=loadStore().filter(function(p){ return p.sid!==sid; });
+    if(saveStore(list)){ setStatus("تم حذف المشروع المحدّد."); renderProjects(); }
+    else { setStatus("تعذّر تحديث المشاريع في هذا المتصفح."); }
+  }
+
+  function renderProjects(){
+    var list=loadStore();
+    projectsEl.innerHTML="";
+    projectsEmpty.hidden=list.length>0;
+    list.forEach(function(p){
+      var li=document.createElement("li");
+      li.className="app-project";
+      var span=document.createElement("span");
+      span.textContent=(p.name||"مشروع")+" — "+toArabic((p.items||[]).length)+" مكوّن";
+      var load=document.createElement("button");
+      load.type="button"; load.className="sec"; load.id="appLoad_"+p.sid; load.textContent="تحميل";
+      var del=document.createElement("button");
+      del.type="button"; del.className="sec"; del.id="appDel_"+p.sid; del.textContent="حذف";
+      load.addEventListener("click",function(){ loadProject(p); });
+      del.addEventListener("click",function(){ deleteProject(p.sid); });
+      li.appendChild(span); li.appendChild(load); li.appendChild(del);
+      projectsEl.appendChild(li);
+    });
+  }
+
+  deselect();
+  render();
+  renderProjects();
+})();
+</script>
+</body>
+</html>
