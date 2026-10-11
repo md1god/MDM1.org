@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقسيم الفيديو والصوت عند الصمت وإعادة التأطير وتصدير مقاطع جاهزة | MDM1</title>
+<meta name="description" content="أداة عربية تعمل داخل المتصفح لتقسيم الفيديو والصوت عند فترات الصمت، وإعادة التأطير إلى 9:16 أو مربّع، مع لوحة ترجمة عربية وتصدير المقاطع محليًا دون رفع ملفاتك.">
+<link rel="canonical" href="https://mdm1.org/apps/browser-clip-studio.html">
+<meta property="og:title" content="تقسيم الفيديو والصوت عند الصمت وإعادة التأطير وتصدير مقاطع جاهزة">
+<meta property="og:description" content="أداة عربية تعمل داخل المتصفح لتقسيم الفيديو والصوت عند فترات الصمت، وإعادة التأطير إلى 9:16 أو مربّع، مع لوحة ترجمة عربية وتصدير المقاطع محليًا دون رفع ملفاتك.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/browser-clip-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.app-intro{line-height:1.95;color:var(--light)}
+.app-h2{color:var(--gold);font-size:1.05rem;margin:0 0 10px}
+.app .row{flex-wrap:wrap;gap:10px;align-items:flex-end}
+.app .row>div{display:flex;flex-direction:column;gap:4px}
+.app-media{position:absolute;width:1px;height:1px;opacity:.01;pointer-events:none;left:-10px}
+.app-wave{width:100%;height:180px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--gold-dim);cursor:crosshair;display:block}
+.app-preview{width:auto;max-width:100%;max-height:420px;display:block;margin:10px auto;border-radius:12px;border:1px solid var(--gold-dim);background:#000}
+.app-clips,.app-cues,.app-results{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.app-clip,.app-result{background:rgba(255,255,255,.03);border:1px solid var(--gold-dim);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.app-cue{background:rgba(255,255,255,.03);border:1px solid var(--gold-dim);border-radius:10px;padding:8px 10px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+.app-cuetext{flex:1;min-width:160px;color:var(--light)}
+.app-result video{width:100%;max-width:360px;border-radius:8px;background:#000}
+.app-note{font-size:.85rem;color:var(--gold-bright)}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مُقسِّم المقاطع الصامتة: حوّل التسجيلات الطويلة إلى مقاطع عمودية ومربّعة", "url": "https://mdm1.org/apps/browser-clip-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع ملفاتي إلى أي خادم أو تحتاج إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل العمليات تتم داخل المتصفح باستخدام Web Audio API وMediaRecorder، ولا يوجد أي اتصال بالشبكة. ملفك يبقى على جهازك من البداية إلى النهاية."}}, {"@type": "Question", "name": "لماذا لا يعمل كشف الصمت مع بعض ملفات الفيديو؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد الكشف على فك ترميز المسار الصوتي عبر decodeAudioData، وبعض حاويات الفيديو لا تدعمها المتصفحات. عندها تظل المعاينة وإعادة التأطير والتصدير متاحة، ويُفضّل استخدام MP4 بترميز مدعوم أو استخراج الصوت إلى WAV أو MP3."}}, {"@type": "Question", "name": "ما الصيغة التي تُنتجها عملية التصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "يُنتج فيديو بتقنية WebM (عند دعم المتصفح لها) يحتوي على صورة مؤطرة بإحدى النسب المحددة مع المسار الصوتي والترجمة المحروقة. إن دعم المتصفح MP4 فسيُستخدم تلقائيًا."}}, {"@type": "Question", "name": "هل يمكن إنتاج النِّسب الثلاث دفعة واحدة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر «تصدير كل المقاطع بكل النِّسب» يعيد تسجيل كل مقطع بالنسب 9:16 و1:1 و16:9 بالتتابع، ويمكنك إلغاء العملية في أي وقت."}}, {"@type": "Question", "name": "كيف أضبط توقيت الترجمة بدقة؟", "acceptedAnswer": {"@type": "Answer", "text": "شغّل المعاينة حتى اللحظة المطلوبة ثم اضغط «التقاط وقت البداية"}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مُقسِّم المقاطع الصامتة: حوّل التسجيلات الطويلة إلى مقاطع عمودية ومربّعة</h1>
+  <p class="page-sub">أداة عربية تعمل داخل المتصفح لتقسيم الفيديو والصوت عند فترات الصمت، وإعادة التأطير إلى 9:16 أو مربّع، مع لوحة ترجمة عربية وتصدير المقاطع محليًا دون رفع ملفاتك.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">
+<p class="app-intro">نعم، يمكنك تقطيع أي ملف فيديو أو صوت طويل إلى مقاطع قصيرة جاهزة للنشر دون رفع ملفك إلى أي خادم ودون الحاجة إلى إنترنت أو إنشاء حساب. يعمل هذا التطبيق بالكامل داخل متصفحك: يقرأ الملف محليًا، يفكّ ترميز موجته الصوتية، ثم يكشف فترات الصمت ويقسّم التسجيل تلقائيًا عندها إلى مقاطع منفصلة. بعد ذلك يعيد تأطير المحتوى إلى النسبة العمودية 9:16 المناسبة لريلز وتيك توك وشورتس أو إلى الشكل المربّع، ويضيف لوحة ترجمة عربية بخط أنيق وتوقيت يدوي دقيق. وأخيرًا يصدّر النسخ الجاهزة بصيغة فيديو عبر MediaRecorder مباشرة على جهازك، مع إمكانية إنتاج النِّسب الثلاث معًا. كل العمليات تُجرى في الذاكرة المحلية ولا تغادر بياناتك جهازك أبدًا.</p>
+
+<video id="mediaEl" class="app-media" playsinline></video>
+
+<div class="card">
+  <h2 class="app-h2">1) تحميل الوسائط</h2>
+  <label for="fileInput">اختر ملف فيديو أو صوت طويل (MP4 أو WAV أو MP3 أو M4A)</label>
+  <input id="fileInput" type="file" accept="video/*,audio/*">
+  <div class="row">
+    <button id="loadBtn" class="sec">تحميل الملف المحدد</button>
+    <button id="demoBtn" class="sec">توليد ملف صوتي تجريبي</button>
+    <button id="resetBtn" class="sec">إعادة ضبط التطبيق</button>
+  </div>
+  <div class="out" id="fileInfo">لم يتم تحميل أي وسائط بعد. يُفضّل MP4 أو WAV لضمان أفضل توافق في المتصفح.</div>
+</div>
+
+<div class="card">
+  <h2 class="app-h2">2) كشف الصمت وتحليل الموجة</h2>
+  <div class="row">
+    <div><label for="thrDb">عتبة الصمت (ديسيبل)</label><input id="thrDb" type="number" value="-35" min="-80" max="0" step="1"></div>
+    <div><label for="minSil">أقل مدة صمت (ثانية)</label><input id="minSil" type="number" value="0.5" min="0.1" max="10" step="0.1"></div>
+    <div><label for="minClip">أقل مدة مقطع (ثانية)</label><input id="minClip" type="number" value="1" min="0.2" max="60" step="0.1"></div>
+  </div>
+  <div class="row"><button id="analyzeBtn">تحليل الموجة وتقسيم المقاطع</button></div>
+  <canvas id="waveCanvas" class="app-wave" width="1000" height="180"></canvas>
+  <div class="out" id="analyzeInfo">لم يُجرَ التحليل بعد. اضغط الزر أعلاه بعد تحميل ملف.</div>
+</div>
+
+<div class="card">
+  <h2 class="app-h2">3) المقاطع الناتجة</h2>
+  <div id="clipsList" class="app-clips"></div>
+</div>
+
+<div class="card">
+  <h2 class="app-h2">4) إعادة التأطير إلى العمودي والمربّع</h2>
+  <div class="row">
+    <div><label for="aspectSel">نسبة الأبعاد</label><select id="aspectSel"><option value="9:16">عمودي 9:16 (ريلز وتيك توك وشورتس)</option><option value="1:1">مربّع 1:1</option><option value="16:9">أفقي 16:9</option></select></div>
+    <div><label for="fitSel">طريقة الملء</label><select id="fitSel"><option value="cover">تغطية كاملة مع قص الحدود</option><option value="contain">احتفاظ كامل مع أشرطة خلفية</option></select></div>
+    <div><label for="bgColor">لون الخلفية</label><input id="bgColor" type="color" value="#000000"></div>
+    <div><label for="fpsInp">الإطارات في الثانية</label><input id="fpsInp" type="number" value="30" min="15" max="60" step="1"></div>
+  </div>
+  <canvas id="previewCanvas" class="app-preview" width="720" height="1280"></canvas>
+  <div class="row">
+    <button id="playPauseBtn">تشغيل أو إيقاف المعاينة</button>
+    <button id="stopBtn" class="sec">إيقاف وإرجاع البداية</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="app-h2">5) لوحة الترجمة العربية والتوقيت اليدوي</h2>
+  <textarea id="cueText" rows="3" placeholder="اكتب نص الترجمة بالعربية هنا..."></textarea>
+  <div class="row">
+    <div><label for="cueStart">زمن البداية (ثانية)</label><input id="cueStart" type="number" step="0.01" value="0"></div>
+    <div><label for="cueEnd">زمن النهاية (ثانية)</label><input id="cueEnd" type="number" step="0.01" value="0"></div>
+    <div><label for="subSize">حجم خط الترجمة</label><input id="subSize" type="number" value="48" min="16" max="140" step="1"></div>
+  </div>
+  <div class="row">
+    <button id="markStartBtn" class="sec">التقاط وقت البداية من التشغيل</button>
+    <button id="markEndBtn" class="sec">التقاط وقت النهاية من التشغيل</button>
+    <button id="addCueBtn">إضافة ترجمة</button>
+  </div>
+  <div class="out" id="cueInfo"></div>
+  <div id="cueList" class="app-cues"></div>
+</div>
+
+<div class="card">
+  <h2 class="app-h2">6) تصدير النسخ الجاهزة عبر MediaRecorder</h2>
+  <div class="row">
+    <div><label for="qualitySel">جودة التصدير</label><select id="qualitySel"><option value="2000000">منخفضة (2 ميجابت)</option><option value="4000000" selected>متوسطة (4 ميجابت)</option><option value="8000000">عالية (8 ميجابت)</option></select></div>
+  </div>
+  <div class="row">
+    <button id="exportAllBtn">تصدير كل المقاطع بالنسبة الحالية</button>
+    <button id="exportRatiosBtn" class="sec">تصدير كل المقاطع بكل النِّسب (9:16 و1:1 و16:9)</button>
+    <button id="cancelExportBtn" class="sec">إلغاء التصدير</button>
+  </div>
+  <div class="out" id="exportStatus">لم يبدأ التصدير.</div>
+  <div id="resultsList" class="app-results"></div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع ملفاتي إلى أي خادم أو تحتاج إنترنت؟</h3><p>لا. كل العمليات تتم داخل المتصفح باستخدام Web Audio API وMediaRecorder، ولا يوجد أي اتصال بالشبكة. ملفك يبقى على جهازك من البداية إلى النهاية.</p><h3>لماذا لا يعمل كشف الصمت مع بعض ملفات الفيديو؟</h3><p>يعتمد الكشف على فك ترميز المسار الصوتي عبر decodeAudioData، وبعض حاويات الفيديو لا تدعمها المتصفحات. عندها تظل المعاينة وإعادة التأطير والتصدير متاحة، ويُفضّل استخدام MP4 بترميز مدعوم أو استخراج الصوت إلى WAV أو MP3.</p><h3>ما الصيغة التي تُنتجها عملية التصدير؟</h3><p>يُنتج فيديو بتقنية WebM (عند دعم المتصفح لها) يحتوي على صورة مؤطرة بإحدى النسب المحددة مع المسار الصوتي والترجمة المحروقة. إن دعم المتصفح MP4 فسيُستخدم تلقائيًا.</p><h3>هل يمكن إنتاج النِّسب الثلاث دفعة واحدة؟</h3><p>نعم، زر «تصدير كل المقاطع بكل النِّسب» يعيد تسجيل كل مقطع بالنسب 9:16 و1:1 و16:9 بالتتابع، ويمكنك إلغاء العملية في أي وقت.</p><h3>كيف أضبط توقيت الترجمة بدقة؟</h3><p>شغّل المعاينة حتى اللحظة المطلوبة ثم اضغط «التقاط وقت البداية</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-11 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var fileInput=$('fileInput'),fileInfo=$('fileInfo'),loadBtn=$('loadBtn'),demoBtn=$('demoBtn'),resetBtn=$('resetBtn');
+var thrDb=$('thrDb'),minSil=$('minSil'),minClip=$('minClip'),analyzeBtn=$('analyzeBtn'),waveCanvas=$('waveCanvas'),analyzeInfo=$('analyzeInfo');
+var clipsList=$('clipsList'),aspectSel=$('aspectSel'),fitSel=$('fitSel'),bgColor=$('bgColor'),fpsInp=$('fpsInp');
+var canvas=$('previewCanvas'),playPauseBtn=$('playPauseBtn'),stopBtn=$('stopBtn');
+var cueText=$('cueText'),cueStart=$('cueStart'),cueEnd=$('cueEnd'),subSize=$('subSize');
+var markStartBtn=$('markStartBtn'),markEndBtn=$('markEndBtn'),addCueBtn=$('addCueBtn'),cueList=$('cueList'),cueInfo=$('cueInfo');
+var qualitySel=$('qualitySel'),exportAllBtn=$('exportAllBtn'),exportRatiosBtn=$('exportRatiosBtn'),cancelExportBtn=$('cancelExportBtn'),exportStatus=$('exportStatus'),resultsList=$('resultsList');
+var mediaEl=$('mediaEl'),ctx=canvas.getContext('2d');
+var state={audioBuffer:null,envelope:null,duration:0,silences:[],clips:[],cues:[],isVideo:false,objectUrl:null,stopAt:null,exportRec:null,exportAspect:null,exporting:false,cancelExport:false,editingCue:-1,results:0};
+var playCtx=null,mediaSource=null,mediaDest=null,tick=0;
+
+function fmt(s){s=Math.max(0,s||0);var m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+(s%60).toFixed(1).padStart(4,'0')}
+function aspectDims(a){if(a==='1:1')return{w:900,h:900};if(a==='16:9')return{w:1280,h:720};return{w:720,h:1280}}
+
+function computeEnvelope(buf,buckets){
+  var data=buf.getChannelData(0),n=buckets,step=Math.max(1,Math.floor(data.length/n)),env=new Float32Array(n),max=0,i,j,off,p,v;
+  for(i=0;i<n;i++){off=i*step;p=0;for(j=0;j<step&&off+j<data.length;j++){v=Math.abs(data[off+j]);if(v>p)p=v}env[i]=p;if(p>max)max=p}
+  if(max>0)for(i=0;i<n;i++)env[i]/=max;
+  return env;
+}
+
+function detectSilence(buf,thresholdDb,minSilenceSec,minClipSec){
+  var sr=buf.sampleRate,chs=buf.numberOfChannels,len=buf.length,win=Math.max(1,Math.round(sr*0.02)),n=Math.floor(len/win),thr=Math.pow(10,thresholdDb/20);
+  var chans=[],c,i,j,off,peak;for(c=0;c<chs;c++)chans.push(buf.getChannelData(c));
+  var silent=new Uint8Array(n);
+  for(i=0;i<n;i++){off=i*win;peak=0;for(c=0;c<chs;c++){var d=chans[c];for(j=0;j<win;j++){var v=Math.abs(d[off+j]);if(v>peak)peak=v}}silent[i]=peak<thr?1:0}
+  var silences=[],s=-1;
+  for(i=0;i<=n;i++){var is=i<n&&silent[i]===1;if(is&&s<0)s=i;else if(!is&&s>=0){var st=s*win/sr,en=i*win/sr;if(en-st>=minSilenceSec)silences.push({start:st,end:en});s=-1}}
+  var cuts=[0],k;for(k=0;k<silences.length;k++)cuts.push((silences[k].start+silences[k].end)/2);cuts.push(len/sr);
+  var clips=[];for(i=0;i<cuts.length-1;i++){var a=cuts[i],b=cuts[i+1];if(b-a>=minClipSec)clips.push({start:a,end:b})}
+  return {clips:clips,silences:silences};
+}
+
+function sizeWave(){var w=waveCanvas.clientWidth||800;if(waveCanvas.width!==w)waveCanvas.width=w}
+function drawWaveform(){
+  var W=waveCanvas.width,H=waveCanvas.height,dur=state.duration,env=state.envelope;
+  ctx.save();ctx.clearRect(0,0,W,H);ctx.fillStyle='rgba(255,255,255,0.04)';ctx.fillRect(0,0,W,H);
+  if(!env||!dur){ctx.fillStyle='#d4af37';ctx.font='16px sans-serif';ctx.textAlign='center';ctx.fillText('لا توجد موجة بعد',W/2,H/2);ctx.restore();return}
+  var i,k,mid=H/2,amp=H*0.42,x0,x1;
+  for(k=0;k<state.silences.length;k++){x0=state.silences[k].start/dur*W;x1=state.silences[k].end/dur*W;ctx.fillStyle='rgba(220,80,80,0.16)';ctx.fillRect(x0,0,Math.max(1,x1-x0),H)}
+  ctx.fillStyle='#d4af37';for(i=0;i<W;i++){var v=env[Math.floor(i/W*env.length)]||0,bh=Math.max(1,v*amp);ctx.fillRect(i,mid-bh,1,bh*2)}
+  ctx.fillStyle='#ffe9a3';for(k=0;k<state.clips.length;k++){ctx.fillRect(state.clips[k].start/dur*W,0,2,H)}
+  var px=(mediaEl.currentTime||0)/dur*W;ctx.fillStyle='#ffffff';ctx.fillRect(Math.min(W-2,px),0,2,H);ctx.restore();
+}
+function waveClick(e){
+  if(!state.duration)return;var r=waveCanvas.getBoundingClientRect(),ratio=(e.clientX-r.left)/r.width;
+  mediaEl.currentTime=Math.max(0,Math.min(state.duration,ratio*state.duration));drawWaveform();
+}
+
+function drawAudioWave(W,H,t){
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,0,W,H);
+  var env=state.envelope,dur=state.duration;
+  if(!env||!dur){ctx.fillStyle='#d4af37';ctx.font='24px sans-serif';ctx.textAlign='center';ctx.fillText('لا توجد بيانات صوتية',W/2,H/2);return}
+  var mid=H/2,amp=H*0.36,n=env.length,barW=Math.max(1,W/n),i,x;
+  for(x=0;x<W;x++){var v=env[Math.floor(x/W*n)]||0,bh=Math.max(1,v*amp),active=(t/dur)>=(x/W);ctx.fillStyle=active?'#ffe9a3':'#8a7430';ctx.fillRect(x,mid-bh,barW,bh*2)}
+  var px=t/dur*W;ctx.fillStyle='#ffffff';ctx.fillRect(Math.min(W-2,px),0,2,H);
+}
+
+function wrapText(text,maxW){var words=text.split(/\s+/),lines=[],line='',i;for(i=0;i<words.length;i++){var test=line?line+' '+words[i]:words[i];if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=words[i]}else line=test}if(line)lines.push(line);return lines}
+function drawSubtitle(W,H,t){
+  var cue=null,i;for(i=0;i<state.cues.length;i++){var c=state.cues[i];if(t>=c.start&&t<=c.end){cue=c;break}}
+  if(!cue||!cue.text)return;
+  var size=Math.round((parseFloat(subSize.value)||48)*H/1280);
+  ctx.save();
+  ctx.font='bold '+size+'px "Amiri","Scheherazade New","Traditional Arabic",serif';
+  ctx.direction='rtl';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  var lines=wrapText(cue.text,W*0.86),lh=size*1.35,total=lh*lines.length,bottom=H*0.9,top=bottom-total,maxLineW=0;
+  for(i=0;i<lines.length;i++)maxLineW=Math.max(maxLineW,ctx.measureText(lines[i]).width);
+  ctx.fillStyle='rgba(0,0,0,0.55)';ctx.fillRect(W/2-maxLineW/2-20,top-10,maxLineW+40,total+20);
+  ctx.fillStyle='#ffffff';ctx.strokeStyle='rgba(0,0,0,0.9)';ctx.lineWidth=Math.max(2,size/14);
+  for(i=0;i<lines.length;i++){var y=top+lh*(i+1)-lh*0.3;ctx.strokeText(lines[i],W/2,y);ctx.fillText(lines[i],W/2,y)}
+  ctx.restore();
+}
+
+function drawFrame(){
+  var a=state.exportAspect||aspectSel.value,d=aspectDims(a);
+  if(canvas.width!==d.w||canvas.height!==d.h){canvas.width=d.w;canvas.height=d.h}
+  var W=canvas.width,H=canvas.height,t=mediaEl.currentTime||0;
+  ctx.fillStyle=bgColor.value||'#000000';ctx.fillRect(0,0,W,H);
+  if(state.isVideo&&mediaEl.videoWidth){var vw=mediaEl.videoWidth,vh=mediaEl.videoHeight,cover=fitSel.value==='cover',s=cover?Math.max(W/vw,H/vh):Math.min(W/vw,H/vh),dw=vw*s,dh=vh*s;ctx.drawImage(mediaEl,(W-dw)/2,(H-dh)/2,dw,dh)}
+  else drawAudioWave(W,H,t);
+  drawSubtitle(W,H,t);
+}
+
+function renderClips(){
+  clipsList.innerHTML='';
+  if(!state.clips.length){var p=document.createElement('p');p.className='label';p.textContent='لا توجد مقاطع. حمّل ملفًا ثم اضغط تحليل الموجة وتقسيم المقاطع.';clipsList.appendChild(p);return}
+  state.clips.forEach(function(c,i){
+    var row=document.createElement('div');row.className='app-clip';row.id='clipRow'+i;
+    var head=document.createElement('div');head.className='row';
+    var b=document.createElement('span');b.className='badge';b.textContent='مقطع '+(i+1);head.appendChild(b);
+    var info=document.createElement('span');info.className='app-note';info.textContent=fmt(c.start)+' ← '+fmt(c.end)+' ('+(c.end-c.start).toFixed(1)+' ثانية)';head.appendChild(info);row.appendChild(head);
+    var btns=document.createElement('div');btns.className='row';
+    var pb=document.createElement('button');pb.id='clipPlay'+i;pb.textContent='تشغيل هذا المقطع';pb.addEventListener('click',function(){playRange(c.start,c.end)});btns.appendChild(pb);
+    var eb=document.createElement('button');eb.id='clipExport'+i;eb.className='sec';eb.textContent='تصدير هذا المقطع';eb.addEventListener('click',function(){exportClips([aspectSel.value],[c])});btns.appendChild(eb);
+    row.appendChild(btns);clipsList.appendChild(row);
+  });
+}
+
+function renderCues(){
+  cueList.innerHTML='';
+  if(!state.cues.length){var p=document.createElement('p');p.className='label';p.textContent='لا توجد نصوص ترجمة بعد.';cueList.appendChild(p);return}
+  state.cues.forEach(function(c,i){
+    var row=document.createElement('div');row.className='app-cue';row.id='cueRow'+i;
+    var b=document.createElement('span');b.className='badge';b.textContent=fmt(c.start)+' ← '+fmt(c.end);row.appendChild(b);
+    var tx=document.createElement('span');tx.className='app-cuetext';tx.textContent=c.text;row.appendChild(tx);
+    var ed=document.createElement('button');ed.id='cueEdit'+i;ed.className='sec';ed.textContent='تعديل';ed.addEventListener('click',function(){editCue(i)});row.appendChild(ed);
+    var dl=document.createElement('button');dl.id='cueDel'+i;dl.className='sec';dl.textContent='حذف';dl.addEventListener('click',function(){state.cues.splice(i,1);if(state.editingCue===i)resetCueForm();renderCues()});row.appendChild(dl);
+    cueList.appendChild(row);
+  });
+}
+function resetCueForm(){cueText.value='';state.editingCue=-1;addCueBtn.textContent='إضافة ترجمة'}
+function editCue(i){var c=state.cues[i];cueText.value=c.text;cueStart.value=c.start;cueEnd.value=c.end;state.editingCue=i;addCueBtn.textContent='تحديث الترجمة';cueInfo.textContent='وضع التعديل: عدّل الحقول ثم اضغط تحديث الترجمة.'}
+function addOrUpdateCue(){
+  var txt=cueText.value.trim(),st=parseFloat(cueStart.value),en=parseFloat(cueEnd.value);
+  if(!txt){cueInfo.textContent='اكتب نص الترجمة أولًا.';return}
+  if(isNaN(st)||isNaN(en)){cueInfo.textContent='أدخل زمن بداية ونهاية صحيحين بالثواني.';return}
+  if(en<=st){cueInfo.textContent='يجب أن يكون زمن النهاية أكبر من زمن البداية.';return}
+  if(state.editingCue>=0){state.cues[state.editingCue]={start:st,end:en,text:txt};cueInfo.textContent='تم تحديث الترجمة.'}
+  else{state.cues.push({start:st,end:en,text:txt});state.cues.sort(function(a,b){return a.start-b.start});cueInfo.textContent='تمت إضافة ترجمة جديدة.'}
+  resetCueForm();renderCues();
+}
+
+function ensureAudioGraph(){
+  if(!playCtx){
+    var AC=window.AudioContext||window.webkitAudioContext;playCtx=new AC();
+    mediaSource=playCtx.createMediaElementSource(mediaEl);
+    mediaDest=playCtx.createMediaStreamDestination();
+    mediaSource.connect(playCtx.destination);mediaSource.connect(mediaDest);
+  }
+  if(playCtx.state==='suspended')return playCtx.resume().catch(function(){});
+  return Promise.resolve();
+}
+function playRange(a,b){if(!state.objectUrl)return;ensureAudioGraph().then(function(){mediaEl.currentTime=a;state.stopAt=b;var p=mediaEl.play();if(p&&p.catch)p.catch(function(){})})}
+function togglePreview(){if(!state.objectUrl){fileInfo.textContent='حمّل ملفًا أو ولّد نموذجًا تجريبيًا أولًا.';return}if(mediaEl.paused){ensureAudioGraph().then(function(){state.stopAt=null;var p=mediaEl.play();if(p&&p.catch)p.catch(function(){})})}else mediaEl.pause()}
+function stopPreview(){mediaEl.pause();mediaEl.currentTime=0;state.stopAt=null;if(state.exportRec){var r=state.exportRec;state.exportRec=null;try{r.stop()}catch(e){}}}
+
+function disposeMedia(){try{mediaEl.pause()}catch(e){}if(state.objectUrl){try{URL.revokeObjectURL(state.objectUrl)}catch(e){}state.objectUrl=null}state.stopAt=null}
+function setupMediaElement(){mediaEl.pause();mediaEl.removeAttribute('src');mediaEl.src=state.objectUrl;mediaEl.load();mediaEl.onloadedmetadata=function(){if(!state.duration)state.duration=mediaEl.duration||0;drawWaveform()}}
+
+async function loadFile(file){
+  disposeMedia();
+  state.isVideo=(file.type||'').startsWith('video');state.audioBuffer=null;state.envelope=null;state.duration=0;state.clips=[];state.silences=[];
+  state.objectUrl=URL.createObjectURL(file);
+  fileInfo.textContent='جارٍ قراءة الملف وفك ترميز الصوت محليًا...';analyzeInfo.textContent='جارٍ التحليل...';
+  var decodeError=null;
+  try{var ab=await file.arrayBuffer(),ac=new(window.AudioContext||window.webkitAudioContext)(),buf=await ac.decodeAudioData(ab);await ac.close();state.audioBuffer=buf;state.duration=buf.duration;state.envelope=computeEnvelope(buf,1600)}
+  catch(e){decodeError=e}
+  setupMediaElement();
+  var msg='تم تحميل: '+file.name+' — المدة: '+fmt(state.duration)+' — النوع: '+(state.isVideo?'فيديو':'صوت');
+  if(decodeError)msg+=' — تعذّر فك ترميز الموجة تلقائيًا، لذا قد لا يعمل كشف الصمت (المعاينة والتصدير متاحان).';
+  fileInfo.textContent=msg;renderClips();drawWaveform();
+}
+async function loadSelected(){var f=fileInput.files&&fileInput.files[0];if(!f){fileInfo.textContent='الرجاء اختيار ملف أولًا.';return}await loadFile(f)}
+
+function encodeWav(buf){
+  var ch=buf.numberOfChannels,len=buf.length,sr=buf.sampleRate,bytes=44+len*ch*2,ab=new ArrayBuffer(bytes),view=new DataView(ab),o=0,i,c;
+  function ws(s){for(var k=0;k<s.length;k++)view.setUint8(o++,s.charCodeAt(k))}
+  function u32(v){view.setUint32(o,v,true);o+=4}
+  function u16(v){view.setUint16(o,v,true);o+=2}
+  ws('RIFF');u32(bytes-8);ws('WAVE');ws('fmt ');u32(16);u16(1);u16(ch);u32(sr);u32(sr*ch*2);u16(ch*2);u16(16);ws('data');u32(len*ch*2);
+  var chans=[];for(c=0;c<ch;c++)chans.push(buf.getChannelData(c));
+  for(i=0;i<len;i++){for(c=0;c<ch;c++){var v=Math.max(-1,Math.min(1,chans[c][i]));view.setInt16(o,v<0?v*0x8000:v*0x7fff,true);o+=2}}
+  return new Blob([ab],{type:'audio/wav'});
+}
+function makeDemoWav(){
+  var sr=44100,dur=24,ac=new(window.AudioContext||window.webkitAudioContext)(),buf=ac.createBuffer(2,Math.floor(sr*dur),sr),c0=buf.getChannelData(0),c1=buf.getChannelData(1);
+  var plan=[[0,4,1],[4,6,0],[6,10,1],[10,12,0],[12,17,1],[17,20,0],[20,24,1]],p,i,s0,s1,t;
+  for(p=0;p<plan.length;p++){s0=Math.floor(plan[p][0]*sr);s1=Math.floor(plan[p][1]*sr);for(i=s0;i<s1;i++){if(plan[p][2]){t=i/sr;var mod=0.5+0.5*Math.sin(2*Math.PI*3*t);c0[i]=0.35*Math.sin(2*Math.PI*440*t)*mod;c1[i]=c0[i]*0.9}else{c0[i]=0;c1[i]=0}}}
+  ac.close();return {buf:buf,wavBlob:encodeWav(buf)};
+}
+function loadDemo(){
+  disposeMedia();var d=makeDemoWav();state.isVideo=false;state.audioBuffer=d.buf;state.duration=d.buf.duration;state.envelope=computeEnvelope(d.buf,1600);state.clips=[];state.silences=[];state.objectUrl=URL.createObjectURL(d.wavBlob);
+  setupMediaElement();fileInfo.textContent='تم توليد نموذج صوتي تجريبي مدته '+fmt(state.duration)+' يتضمن فترات صمت واضحة. اضغط تحليل الموجة.';renderClips();drawWaveform();
+}
+
+function analyze(){
+  if(!state.audioBuffer){analyzeInfo.textContent='لا تتوفر بيانات صوتية لهذا الملف. جرّب صيغة WAV أو MP3 أو MP4 أو M4A.';return}
+  var th=parseFloat(thrDb.value),ms=parseFloat(minSil.value),mc=parseFloat(minClip.value),r=detectSilence(state.audioBuffer,isNaN(th)?-35:th,isNaN(ms)?0.5:ms,isNaN(mc)?1:mc);
+  state.clips=r.clips;state.silences=r.silences;
+  analyzeInfo.textContent='تم العثور على '+r.silences.length+' فترة صمت و '+r.clips.length+' مقطعًا. اضبط الإعدادات وأعد التحليل عند الحاجة.';
+  renderClips();drawWaveform();
+}
+
+function pickMime(){if(typeof MediaRecorder==='undefined')return '';var list=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm;codecs=h264,opus','video/webm','video/mp4'],i;for(i=0;i<list.length;i++){try{if(MediaRecorder.isTypeSupported(list[i]))return list[i]}catch(e){}}return ''}
+function recordClip(clip,aspect){
+  return new Promise(function(resolve){
+    state.exportAspect=aspect;
+    var d=aspectDims(aspect);canvas.width=d.w;canvas.height=d.h;
+    var fps=parseInt(fpsInp.value,10)||30,vTrack=canvas.captureStream(fps).getVideoTracks()[0],at=mediaDest.stream.getAudioTracks()[0];
+    var stream=new MediaStream(at?[vTrack,at]:[vTrack]),mime=pickMime(),bits=parseInt(qualitySel.value,10)||4000000,rec;
+    try{rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:bits}:{videoBitsPerSecond:bits})}catch(e){resolve(null);return}
+    var chunks=[],finished=false,finish=function(){if(finished)return;finished=true;resolve(new Blob(chunks,{type:mime||'video/webm'}))};
+    rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
+    rec.onstop=finish;rec.onerror=finish;
+    state.exportRec=rec;rec.start(200);
+    mediaEl.pause();mediaEl.currentTime=clip.start;state.stopAt=clip.end;
+    var started=false,startPlay=function(){if(started)return;started=true;var p=mediaEl.play();if(p&&p.catch)p.catch(function(){})};
+    mediaEl.addEventListener('seeked',startPlay,{once:true});setTimeout(startPlay,160);
+    setTimeout(function(){if(state.exportRec===rec){try{mediaEl.pause()}catch(e){}state.exportRec=null;state.stopAt=null;try{rec.stop()}catch(e){}}},Math.max(4000,(clip.end-clip.start+3)*1000));
+  });
+}
+function addResult(blob,job){
+  var idx=state.results++,url=URL.createObjectURL(blob),row=document.createElement('div');row.className='app-result';row.id='resRow'+idx;
+  var label=document.createElement('span');label.className='badge';label.textContent=job.aspect+' — مقطع '+(job.ci+1)+' — '+fmt(job.clip.end-job.clip.start);row.appendChild(label);
+  var v=document.createElement('video');v.id='resVid'+idx;v.controls=true;v.playsInline=true;v.src=url;row.appendChild(v);
+  var dl=document.createElement('button');dl.id='resDl'+idx;dl.textContent='تنزيل الملف';dl.addEventListener('click',function(){var a=document.createElement('a');a.id='dlAnchor'+idx;a.href=url;a.download='clip_'+(job.ci+1)+'_'+job.aspect.replace(':','x')+'.webm';document.body.appendChild(a);a.click();a.remove()});row.appendChild(dl);
+  resultsList.appendChild(row);
+}
+async function exportClips(aspects,subset){
+  var list=subset||state.clips;
+  if(!list.length){exportStatus.textContent='لا توجد مقاطع للتصدير. حلّل الملف أولًا.';return}
+  if(state.exporting){exportStatus.textContent='التصدير قيد التنفيذ بالفعل.';return}
+  if(!state.objectUrl){exportStatus.textContent='حمّل ملفًا أولًا.';return}
+  if(typeof MediaRecorder==='undefined'||!canvas.captureStream){exportStatus.textContent='متصفحك لا يدعم التسجيل عبر MediaRecorder.';return}
+  await ensureAudioGraph();
+  var jobs=[],k,a;list.forEach(function(clip,ci){ci=list.indexOf(clip);aspects.forEach(function(asp){jobs.push({clip:clip,ci:ci,aspect:asp})})});
+  for(k=0;k<list.length;k++){for(a=0;a<aspects.length;a++){jobs.push({clip:list[k],ci:k,aspect:aspects[a]})}}
+  state.exporting=true;state.cancelExport=false;var ok=0,i;
+  for(i=0;i<jobs.length;i++){
+    if(state.cancelExport){exportStatus.textContent='تم إلغاء التصدير بعد '+ok+' ملف.';break}
+    var job=jobs[i];exportStatus.textContent='جارٍ التصدير '+(i+1)+' من '+jobs.length+' (نسبة '+job.aspect+')...';
+    try{var blob=await recordClip(job.clip,job.aspect);if(state.cancelExport)break;if(blob&&blob.size){addResult(blob,job);ok++}}catch(e){}
+  }
+  state.exporting=false;state.exportAspect=null;
+  if(!state.cancelExport)exportStatus.textContent='اكتمل التصدير: '+ok+' ملف جاهز للتنزيل.';
+}
+function cancelExport(){if(!state.exporting){exportStatus.textContent='لا يوجد تصدير جارٍ.';return}state.cancelExport=true;try{mediaEl.pause()}catch(e){}state.stopAt=null;if(state.exportRec){var r=state.exportRec;state.exportRec=null;try{r.stop()}catch(e){}}exportStatus.textContent='جارٍ إلغاء التصدير...'}
+
+function saveSettings(){try{localStorage.setItem('mdSplitCfg',JSON.stringify({thrDb:thrDb.value,minSil:minSil.value,minClip:minClip.value,aspect:aspectSel.value,fit:fitSel.value,bg:bgColor.value,size:subSize.value,fps:fpsInp.value}))}catch(e){}}
+function loadSettings(){try{var raw=localStorage.getItem('mdSplitCfg');if(!raw)return;var c=JSON.parse(raw);if(c.thrDb)thrDb.value=c.thrDb;if(c.minSil)minSil.value=c.minSil;if(c.minClip)minClip.value=c.minClip;if(c.aspect)aspectSel.value=c.aspect;if(c.fit)fitSel.value=c.fit;if(c.bg)bgColor.value=c.bg;if(c.size)subSize.value=c.size;if(c.fps)fpsInp.value=c.fps}catch(e){}}
+
+function resetAll(){
+  disposeMedia();mediaEl.removeAttribute('src');mediaEl.load();
+  state.audioBuffer=null;state.envelope=null;state.duration=0;state.clips=[];state.silences=[];state.cues=[];state.isVideo=false;state.results=0;
+  fileInput.value='';fileInfo.textContent='تم إعادة الضبط. اختر ملفًا جديدًا أو ولّد نموذجًا تجريبيًا.';analyzeInfo.textContent='لم يُجرَ التحليل بعد.';exportStatus.textContent='لم يبدأ التصدير.';cueInfo.textContent='';resultsList.innerHTML='';
+  resetCueForm();renderClips();renderCues();drawWaveform();
+}
+
+function loop(){
+  requestAnimationFrame(loop);
+  drawFrame();
+  if(state.stopAt!=null&&mediaEl.currentTime>=state.stopAt-0.02){mediaEl.pause();state.stopAt=null;if(state.exportRec){var r=state.exportRec;state.exportRec=null;try{r.stop()}catch(e){}}}
+  tick++;if(tick%8===0)drawWaveform();
+}
+
+function init(){
+  loadSettings();sizeWave();renderClips();renderCues();drawWaveform();
+  loadBtn.addEventListener('click',loadSelected);fileInput.addEventListener('change',loadSelected);
+  demoBtn.addEventListener('click',loadDemo);resetBtn.addEventListener('click',resetAll);analyzeBtn.addEventListener('click',analyze);
+  playPauseBtn.addEventListener('click',togglePreview);stopBtn.addEventListener('click',stopPreview);
+  markStartBtn.addEventListener('click',function(){cueStart.value=(mediaEl.currentTime||0).toFixed(2)});
+  markEndBtn.addEventListener('click',function(){cueEnd.value=(mediaEl.currentTime||0).toFixed(2)});
+  addCueBtn.addEventListener('click',addOrUpdateCue);
+  exportAllBtn.addEventListener('click',function(){exportClips([aspectSel.value])});
+  exportRatiosBtn.addEventListener('click',function(){exportClips(['9:16','1:1','16:9'])});
+  cancelExportBtn.addEventListener('click',cancelExport);
+  waveCanvas.addEventListener('click',waveClick);
+  [thrDb,minSil,minClip,aspectSel,fitSel,bgColor,fpsInp,subSize].forEach(function(el){el.addEventListener('change',saveSettings)});
+  window.addEventListener('resize',function(){sizeWave();drawWaveform()});
+  requestAnimationFrame(loop);
+}
+init();
+})();
+</script>
+</body>
+</html>
