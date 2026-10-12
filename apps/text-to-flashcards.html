@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بطاقات مراجعة واختبارات تلقائية من أي نص عربي | MDM1</title>
+<meta name="description" content="الصق أي نص عربي لتحصل فوراً على بطاقات مراجعة وأسئلة اختيار من متعدد وتمارين ملء فراغ، مع حفظ محلي ونظام تكرار متباعد وتصدير للبطاقات دون إنترنت أو حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/text-to-flashcards.html">
+<meta property="og:title" content="بطاقات مراجعة واختبارات تلقائية من أي نص عربي">
+<meta property="og:description" content="الصق أي نص عربي لتحصل فوراً على بطاقات مراجعة وأسئلة اختيار من متعدد وتمارين ملء فراغ، مع حفظ محلي ونظام تكرار متباعد وتصدير للبطاقات دون إنترنت أو حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/text-to-flashcards.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:18px;direction:rtl}
+.app *{box-sizing:border-box}
+.app [hidden]{display:none !important}
+.app-panel{display:flex;flex-direction:column;gap:10px}
+.app-panel h2{margin:0;color:var(--gold-bright)}
+.app-textarea{width:100%;min-height:150px;resize:vertical;line-height:1.9;font-family:inherit}
+.app-field{display:flex;flex-direction:column;gap:4px;min-width:170px}
+.app-msg{min-height:1.4em;color:var(--gold-bright)}
+.app-stats{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+.app-stat{display:flex;align-items:baseline;gap:8px;flex:1 1 150px}
+.app-review{display:flex;flex-direction:column;gap:12px}
+.app-q{line-height:2;font-size:1.1rem}
+.app-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.app-opt{text-align:right;padding:10px 12px;border:1px solid var(--gold-dim);border-radius:8px;background:transparent;color:var(--light);cursor:pointer;font-family:inherit;font-size:1rem}
+.app-opt:hover:not(:disabled){border-color:var(--gold-bright);color:var(--gold-bright)}
+.app-opt.is-ok{border-color:var(--gold-bright);color:var(--gold-bright);background:rgba(212,175,55,.12)}
+.app-opt.is-bad{border-color:#e07a5f;color:#e07a5f}
+.app-answer{color:var(--gold-bright);font-weight:700;line-height:1.9}
+.app-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto}
+.app-item{border:1px solid var(--gold-dim);border-radius:8px;padding:10px 12px;background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:6px}
+.app-empty{color:var(--gold-dim)}
+.app-left{margin:0;color:var(--light)}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "حوّل أي نص إلى بطاقات مراجعة واختبارات قصيرة", "url": "https://mdm1.org/apps/text-to-flashcards.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل المعالجة تتم داخل متصفحك مباشرة دون أي اتصال بالشبكة ودون تسجيل دخول، وتبقى بطاقاتك محفوظة محلياً حتى بعد إغلاق الصفحة."}}, {"@type": "Question", "name": "أين تُحفظ البطاقات التي أُنشئها؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في ذاكرة المتصفح المحلية (localStorage) على جهازك نفسه، ولا تُرسل إلى أي خادم. حذف بيانات المتصفح قد يزيلها، لذا يمكنك تصديرها كنسخة احتياطية."}}, {"@type": "Question", "name": "كيف يعمل نظام التكرار المتباعد؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد التطبيق على خوارزمية مبسّطة تشبه SM-2؛ فكل تقييم تجيب به يحدّد الفاصل الزمني القادم ومعامل السهولة، فتظهر البطاقات الصعبة قريباً والسهلة بعد فترة أطول حتى تثبت في ذاكرتك."}}, {"@type": "Question", "name": "هل يمكنني اختيار عدد البطاقات أو نوع الأسئلة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تحديد عدد البطاقات المطلوبة واختيار بين ملء الفراغ، أو الاختيار من متعدد، أو الدمج بينهما قبل الضغط على زر التوليد."}}, {"@type": "Question", "name": "كيف أصدّر بطاقاتي؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر الصيغة المناسبة (نص أو CSV أو JSON) ثم اضغط «أنشئ صيغة التصدير» ثم «انسخ إلى الحافظة» لنسخها واستخدامها في أي مكان."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">حوّل أي نص إلى بطاقات مراجعة واختبارات قصيرة</h1>
+  <p class="page-sub">الصق أي نص عربي لتحصل فوراً على بطاقات مراجعة وأسئلة اختيار من متعدد وتمارين ملء فراغ، مع حفظ محلي ونظام تكرار متباعد وتصدير للبطاقات دون إنترنت أو حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>يحوّل هذا التطبيق أي نص عربي تلصقه من محاضرة أو ملف PDF أو ملاحظات إلى بطاقات مراجعة وأسئلة اختيار من متعدد وتمارين ملء الفراغ في ثوانٍ، ويعمل بالكامل داخل متصفحك دون إنترنت ودون إنشاء حساب. كل ما عليك فعله هو لصق النص ثم الضغط على زر التوليد، فيستخرج التطبيق الجمل والكلمات المفتاحية تلقائياً ويبني منها بطاقات قابلة للحفظ والمراجعة. تُخزَّن بطاقاتك في ذاكرة المتصفح المحلية فتبقى متاحة عند عودتك، ويتابع التطبيق جدولاً مبسّطاً للتكرار المتباعد يذكّرك بمراجعة كل بطاقة في الوقت المناسب، مع عدّاد تقدّم يوضح عدد البطاقات المستحقة والمتقنة، وإمكانية نسخ بطاقاتك أو تصديرها بصيغة نصية أو جدولية بسهولة.</p>
+<div class="app" dir="rtl">
+  <section class="card app-panel">
+    <h2>1) الصق النص وولّد البطاقات</h2>
+    <label for="appInput">النص المصدر (محاضرة، ملاحظات، أو نص منسوخ من ملف)</label>
+    <textarea id="appInput" class="app-textarea" placeholder="الصق هنا فقرة أو أكثر بالعربية..."></textarea>
+    <div class="row">
+      <div class="app-field">
+        <label for="appCount">عدد البطاقات المطلوبة</label>
+        <select id="appCount">
+          <option value="5">5 بطاقات</option>
+          <option value="10" selected>10 بطاقات</option>
+          <option value="15">15 بطاقة</option>
+          <option value="20">20 بطاقة</option>
+        </select>
+      </div>
+      <div class="app-field">
+        <label for="appType">نوع الأسئلة</label>
+        <select id="appType">
+          <option value="all" selected>ملء الفراغ واختيار من متعدد</option>
+          <option value="blank">ملء الفراغ فقط</option>
+          <option value="mcq">اختيار من متعدد فقط</option>
+        </select>
+      </div>
+      <button id="appGenerate">توليد البطاقات</button>
+      <button id="appClear" class="sec">مسح حقل النص</button>
+    </div>
+    <div id="appMsg" class="out app-msg" role="status" aria-live="polite"></div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>2) المراجعة بالتكرار المتباعد</h2>
+    <div class="app-stats">
+      <div class="app-stat"><span class="big" id="appTotal">0</span><span class="badge">إجمالي البطاقات</span></div>
+      <div class="app-stat"><span class="big" id="appDue">0</span><span class="badge">مستحقة الآن</span></div>
+      <div class="app-stat"><span class="big" id="appLearned">0</span><span class="badge">بطاقات متقنة</span></div>
+      <div class="app-stat"><span class="big" id="appSession">0</span><span class="badge">راجعتها هذه الجلسة</span></div>
+    </div>
+    <div class="row">
+      <button id="appStart">ابدأ المراجعة</button>
+      <button id="appReset" class="sec">حذف كل البطاقات المحفوظة</button>
+    </div>
+    <div id="appReviewStatus" class="out app-msg" role="status" aria-live="polite"></div>
+    <div id="appReviewBox" class="out app-review" hidden>
+      <p class="app-left">بطاقات متبقية: <span class="big" id="appRemaining">0</span></p>
+      <div id="appQ" class="app-q"></div>
+      <div id="appOptions" class="app-options"></div>
+      <button id="appShow">أظهر الجواب</button>
+      <div id="appAnswer" class="app-answer"></div>
+      <div id="appRate" class="row" hidden>
+        <button id="appRate0" class="sec">لم أتذكر</button>
+        <button id="appRate1" class="sec">صعب</button>
+        <button id="appRate2">جيد</button>
+        <button id="appRate3" class="sec">سهل</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>3) بطاقاتك المحفوظة</h2>
+    <div id="appList" class="app-list out"></div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>4) تصدير البطاقات</h2>
+    <div class="row">
+      <div class="app-field">
+        <label for="appExportFmt">صيغة التصدير</label>
+        <select id="appExportFmt">
+          <option value="txt" selected>نص عادي</option>
+          <option value="csv">جدول CSV</option>
+          <option value="json">بيانات JSON</option>
+        </select>
+      </div>
+      <button id="appExport">أنشئ صيغة التصدير</button>
+      <button id="appCopy" class="sec">انسخ إلى الحافظة</button>
+    </div>
+    <textarea id="appExportOut" class="app-textarea" readonly placeholder="ستظهر البطاقات هنا بصيغة التصدير المختارة..." aria-label="نص التصدير"></textarea>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت أو حساب؟</h3><p>نعم، كل المعالجة تتم داخل متصفحك مباشرة دون أي اتصال بالشبكة ودون تسجيل دخول، وتبقى بطاقاتك محفوظة محلياً حتى بعد إغلاق الصفحة.</p><h3>أين تُحفظ البطاقات التي أُنشئها؟</h3><p>تُحفظ في ذاكرة المتصفح المحلية (localStorage) على جهازك نفسه، ولا تُرسل إلى أي خادم. حذف بيانات المتصفح قد يزيلها، لذا يمكنك تصديرها كنسخة احتياطية.</p><h3>كيف يعمل نظام التكرار المتباعد؟</h3><p>يعتمد التطبيق على خوارزمية مبسّطة تشبه SM-2؛ فكل تقييم تجيب به يحدّد الفاصل الزمني القادم ومعامل السهولة، فتظهر البطاقات الصعبة قريباً والسهلة بعد فترة أطول حتى تثبت في ذاكرتك.</p><h3>هل يمكنني اختيار عدد البطاقات أو نوع الأسئلة؟</h3><p>نعم، يمكنك تحديد عدد البطاقات المطلوبة واختيار بين ملء الفراغ، أو الاختيار من متعدد، أو الدمج بينهما قبل الضغط على زر التوليد.</p><h3>كيف أصدّر بطاقاتي؟</h3><p>اختر الصيغة المناسبة (نص أو CSV أو JSON) ثم اضغط «أنشئ صيغة التصدير» ثم «انسخ إلى الحافظة» لنسخها واستخدامها في أي مكان.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  var KEY='md_cards_v1';
+  var STOP={};
+  ('من في الى إلى عن أن إن كان كانت يكون هذا هذه ذلك تلك التي الذي مع أو ثم قد كل ما لا لم لن هو هي هم نحن أنت أنا بين عند بعد قبل حتى إذا كما لكن غير سوف هل يا أي عليه عليها إليه منها منه بها به لها له ولا وما فهو وهي هما كذلك حول خلال ضمن عبر نحو لدى منذ أيضا').split(' ').forEach(function(w){if(w){STOP[w]=1;}});
+  var $=function(id){return document.getElementById(id);};
+  var cards=load();
+  var queue=[], current=null, answered=false, sessionCount=0;
+
+  function uid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):[];}catch(e){return [];}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(cards));}catch(e){}}
+  function setMsg(t,isErr){var m=$('appMsg');m.textContent=t;m.style.color=isErr?'#e07a5f':'var(--gold-bright)';}
+  function setStatus(t){$('appReviewStatus').textContent=t||'';}
+
+  function splitSentences(text){
+    return text.replace(/\r/g,'\n').split(/[.!?؟…\n؛;]+/).map(function(s){return s.replace(/\s+/g,' ').trim();}).filter(function(s){return s.length>0;});
+  }
+  function topKeywords(text,limit){
+    var counts={}, words=text.replace(/[^\u0621-\u064A\s]/g,' ').split(/\s+/);
+    for(var i=0;i<words.length;i++){
+      var w=words[i];
+      if(w.length<3||STOP[w]){continue;}
+      counts[w]=(counts[w]||0)+1;
+    }
+    return Object.keys(counts).sort(function(a,b){return (counts[b]-counts[a])||(b.length-a.length);}).slice(0,limit);
+  }
+  function blank(s,k){var i=s.indexOf(k);if(i<0){return null;}return s.slice(0,i)+' ______ '+s.slice(i+k.length);}
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function makeOptions(correct,kws){
+    var others=[];
+    for(var i=0;i<kws.length;i++){if(kws[i]!==correct&&others.indexOf(kws[i])<0){others.push(kws[i]);}}
+    shuffle(others);
+    return shuffle([correct].concat(others.slice(0,3)));
+  }
+  function newCard(type,q,a,options){
+    return {id:uid(),type:type,q:q,a:a,options:options||null,ease:2.5,reps:0,interval:0,due:Date.now(),seen:0,correct:0};
+  }
+  function buildCards(text,count,type){
+    var sentences=splitSentences(text).filter(function(s){return s.length>=30;});
+    var kws=topKeywords(text,40);
+    if(kws.length<1){return {error:'لم أستخرج كلمات مفتاحية كافية. أضف نصاً أطول أو أوضح.'};}
+    var types=type==='all'?['blank','mcq']:[type];
+    var out=[], used={}, guard=0, sIdx=0, kIdx=0, maxGuess=count*10+60;
+    while(out.length<count&&guard<maxGuess){
+      guard++;
+      var s=sentences.length?sentences[sIdx%sentences.length]:text.replace(/\s+/g,' ').trim();
+      sIdx++;
+      var k=null, j;
+      for(j=0;j<kws.length;j++){
+        var cand=kws[(kIdx+j)%kws.length];
+        if(s.indexOf(cand)>=0){k=cand;kIdx=(kIdx+j+1)%kws.length;break;}
+      }
+      if(!k){continue;}
+      var blanked=blank(s,k);
+      if(!blanked){continue;}
+      var t=types[out.length%types.length];
+      var key=t+blanked;
+      if(used[key]){continue;}
+      used[key]=1;
+      if(t==='blank'){out.push(newCard('blank',blanked,k));}
+      else{
+        var opts=makeOptions(k,kws);
+        if(opts.length<2){used[key]=0;continue;}
+        out.push(newCard('mcq',blanked,k,opts));
+      }
+    }
+    if(!out.length){return {error:'لم أستطع بناء بطاقات من هذا النص. جرّب نصاً أطول يحتوي جملاً كاملة.'};}
+    return {cards:out};
+  }
+
+  function human(ms){
+    if(ms<60000){return 'دقيقة';}
+    var m=Math.round(ms/60000);
+    if(m<60){return m+' دقيقة';}
+    var h=Math.round(m/60);
+    if(h<24){return h+' ساعة';}
+    return Math.round(h/24)+' يوم';
+  }
+  function sm2(c,q){
+    if(q<3){
+      c.reps=0;c.interval=1;c.ease=Math.max(1.3,(c.ease||2.5)-0.2);c.due=Date.now()+600000;return;
+    }
+    var ease=c.ease||2.5;
+    if(!c.reps||c.reps<1){c.interval=1;}
+    else if(c.reps===1){c.interval=3;}
+    else{c.interval=Math.max(1,Math.round((c.interval||1)*ease));}
+    c.reps=(c.reps||0)+1;
+    ease=ease+(0.1-(5-q)*(0.08+(5-q)*0.02));
+    c.ease=Math.max(1.3,ease);
+    c.due=Date.now()+c.interval*86400000;
+  }
+
+  function renderStats(){
+    var now=Date.now();
+    var due=cards.filter(function(c){return (c.due||0)<=now;}).length;
+    var learned=cards.filter(function(c){return (c.reps||0)>=2;}).length;
+    $('appTotal').textContent=cards.length;
+    $('appDue').textContent=due;
+    $('appLearned').textContent=learned;
+    $('appSession').textContent=sessionCount;
+    updateProgress();
+  }
+  function updateProgress(){$('appRemaining').textContent=queue.length;}
+  function renderList(){
+    var box=$('appList');
+    box.innerHTML='';
+    if(!cards.length){box.innerHTML='<div class="app-empty">لا توجد بطاقات بعد. الصق نصاً ثم اضغط «توليد البطاقات».</div>';return;}
+    cards.forEach(function(c,i){
+      var d=document.createElement('div');d.className='app-item';
+      var t=document.createElement('span');t.className='badge';t.textContent=(c.type==='mcq'?'اختيار من متعدد':'ملء فراغ');
+      var q=document.createElement('div');q.className='app-q';q.textContent=(i+1)+'. '+c.q;
+      var a=document.createElement('div');a.className='app-answer';a.textContent='← '+c.a;
+      d.appendChild(t);d.appendChild(q);d.appendChild(a);
+      box.appendChild(d);
+    });
+  }
+
+  function renderQuestion(c){
+    $('appReviewBox').hidden=false;
+    $('appQ').textContent=c.q+(c.type==='mcq'?'  (اختر الإجابة الصحيحة من الخيارات)':'');
+    $('appOptions').innerHTML='';
+    $('appAnswer').textContent='الإجابة: '+c.a;
+    $('appAnswer').hidden=true;
+    $('appRate').hidden=true;
+    $('appShow').hidden=(c.type==='mcq');
+    answered=false;
+    if(c.type==='mcq'){
+      for(var i=0;i<c.options.length;i++){
+        (function(idx){
+          var b=document.createElement('button');
+          b.type='button';b.id='appOpt'+idx;b.className='app-opt';b.textContent=c.options[idx];
+          b.addEventListener('click',function(){selectOption(idx);});
+          $('appOptions').appendChild(b);
+        })(i);
+      }
+    }
+    updateProgress();
+  }
+  function selectOption(idx){
+    if(answered||!current||current.type!=='mcq'){return;}
+    answered=true;
+    var correctIdx=current.options.indexOf(current.a);
+    var btns=$('appOptions').querySelectorAll('button');
+    for(var i=0;i<btns.length;i++){btns[i].disabled=true;if(i===correctIdx){btns[i].classList.add('is-ok');}}
+    if(idx!==correctIdx&&btns[idx]){btns[idx].classList.add('is-bad');}
+    $('appAnswer').hidden=false;
+    $('appRate').hidden=false;
+    setStatus(idx===correctIdx?'إجابة صحيحة.':'إجابة غير صحيحة. الإجابة الصحيحة: '+current.a);
+  }
+  function startReview(){
+    var now=Date.now();
+    queue=cards.filter(function(c){return (c.due||0)<=now;}).sort(function(a,b){return (a.due||0)-(b.due||0);});
+    if(!cards.length){setStatus('لا توجد بطاقات محفوظة. ولّد بطاقات أولاً.');$('appReviewBox').hidden=true;return;}
+    if(!queue.length){
+      var nx=Math.min.apply(null,cards.map(function(c){return c.due||now;}));
+      setStatus('لا توجد بطاقات مستحقة الآن. المراجعة القادمة بعد '+human(nx-now)+'.');
+      $('appReviewBox').hidden=true;return;
+    }
+    sessionCount=0;
+    setStatus('بدأت المراجعة. عدد البطاقات المستحقة: '+queue.length);
+    nextCard();
+  }
+  function nextCard(){
+    if(!queue.length){current=null;$('appReviewBox').hidden=true;setStatus('أتممت مراجعة كل البطاقات المستحقة اليوم. عمل رائع!');updateProgress();renderStats();return;}
+    current=queue.shift();
+    renderQuestion(current);
+  }
+  function rate(q){
+    if(!current){return;}
+    sm2(current,q);
+    current.seen=(current.seen||0)+1;
+    if(q>=3){current.correct=(current.correct||0)+1;}
+    save();
+    sessionCount++;
+    renderStats();
+    nextCard();
+  }
+
+  function onGenerate(){
+    var text=$('appInput').value.trim();
+    if(text.length<40){setMsg('النص قصير جداً. الصق فقرة أو أكثر (40 حرفاً على الأقل).',true);return;}
+    var count=parseInt($('appCount').value,10)||10;
+    var res=buildCards(text,count,$('appType').value);
+    if(res.error||!res.cards||!res.cards.length){setMsg(res.error||'لم أستخرج بطاقات. جرّب نصاً أطول.',true);return;}
+    var existing={};
+    cards.forEach(function(c){existing[c.q]=1;});
+    var added=0;
+    res.cards.forEach(function(c){if(!existing[c.q]){existing[c.q]=1;cards.push(c);added++;}});
+    save();renderStats();renderList();
+    setMsg('تم توليد '+res.cards.length+' بطاقة، وأُضيف '+added+' جديدة إلى مجموعتك.');
+  }
+  function onClear(){$('appInput').value='';setMsg('تم مسح حقل النص. البطاقات المحفوظة لم تتأثر.');}
+  function onReset(){
+    if(!cards.length){setMsg('لا توجد بطاقات محفوظة لحذفها.',false);return;}
+    if(!window.confirm('هل تريد حذف كل البطاقات المحفوظة؟')){return;}
+    cards=[];save();queue=[];current=null;$('appReviewBox').hidden=true;
+    renderStats();renderList();setStatus('تم حذف جميع البطاقات المحفوظة.');
+  }
+  function csvCell(v){v=String(v==null?'':v).replace(/"/g,'""');return '"'+v+'"';}
+  function onExport(){
+    var fmt=$('appExportFmt').value, out;
+    if(!cards.length){$('appExportOut').value='لا توجد بطاقات للتصدير.';return;}
+    if(fmt==='json'){
+      out=JSON.stringify(cards.map(function(c){return {type:c.type,question:c.q,answer:c.a,options:c.options,interval:c.interval,ease:c.ease};}),null,2);
+    }else if(fmt==='csv'){
+      out='النوع,السؤال,الجواب\n'+cards.map(function(c){return [c.type,c.q,c.a].map(csvCell).join(',');}).join('\n');
+    }else{
+      out=cards.map(function(c,i){return (i+1)+') '+c.q+'\n   الإجابة: '+c.a;}).join('\n\n');
+    }
+    $('appExportOut').value=out;
+  }
+  function fallbackCopy(ta){
+    try{ta.removeAttribute('readonly');ta.select();document.execCommand('copy');ta.setAttribute('readonly','readonly');setMsg('تم نسخ البطاقات إلى الحافظة.');}
+    catch(e){setMsg('تعذّر النسخ التلقائي. انسخ النص يدوياً.',true);}
+  }
+  function onCopy(){
+    var ta=$('appExportOut');
+    if(!ta.value||ta.value==='لا توجد بطاقات للتصدير.'){onExport();}
+    if(!ta.value||ta.value==='لا توجد بطاقات للتصدير.'){setMsg('لا يوجد ما يمكن نسخه.',true);return;}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(function(){setMsg('تم نسخ البطاقات إلى الحافظة.');},function(){fallbackCopy(ta);});
+    }else{fallbackCopy(ta);}
+  }
+
+  function init(){
+    $('appGenerate').addEventListener('click',onGenerate);
+    $('appClear').addEventListener('click',onClear);
+    $('appReset').addEventListener('click',onReset);
+    $('appStart').addEventListener('click',startReview);
+    $('appShow').addEventListener('click',function(){
+      if(!current){return;}
+      answered=true;$('appShow').hidden=true;$('appAnswer').hidden=false;$('appRate').hidden=false;
+    });
+    $('appRate0').addEventListener('click',function(){rate(1);});
+    $('appRate1').addEventListener('click',function(){rate(3);});
+    $('appRate2').addEventListener('click',function(){rate(4);});
+    $('appRate3').addEventListener('click',function(){rate(5);});
+    $('appExport').addEventListener('click',onExport);
+    $('appCopy').addEventListener('click',onCopy);
+    renderStats();renderList();updateProgress();
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+</body>
+</html>
