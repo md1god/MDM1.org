@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدرّب اختصارات المتصفح: نوافذ وتحديات تفاعلية | MDM1</title>
+<meta name="description" content="تطبيق تفاعلي يحاكي نافذة متصفح داخل الصفحة للتدرّب على اختصارات لوحة المفاتيح عبر تحديات متدرجة وتصحيح فوري، مع مخطط مفاتيح قابل للتعديل وحفظ محلي للتقدّم.">
+<link rel="canonical" href="https://mdm1.org/apps/keyboard-nav-trainer.html">
+<meta property="og:title" content="مدرّب اختصارات المتصفح: نوافذ وتحديات تفاعلية">
+<meta property="og:description" content="تطبيق تفاعلي يحاكي نافذة متصفح داخل الصفحة للتدرّب على اختصارات لوحة المفاتيح عبر تحديات متدرجة وتصحيح فوري، مع مخطط مفاتيح قابل للتعديل وحفظ محلي للتقدّم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/keyboard-nav-trainer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:920px}
+.app h2{color:var(--gold-bright);font-size:1.05rem;margin:.2rem 0 .5rem}
+.app p{line-height:1.9}
+.app-toolbar{flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
+.app-challenge,.app-browser,.app-keys{margin:.7rem 0}
+.app-browser{border:1px solid var(--gold-dim);border-radius:10px;overflow:hidden;outline:none}
+.app-browser:focus{border-color:var(--gold)}
+.app-tabs{display:flex;flex-wrap:wrap;gap:3px;padding:6px 6px 0;background:rgba(0,0,0,.35)}
+.app-tab{font:inherit;font-size:.82rem;padding:6px 12px;cursor:pointer;color:var(--light);background:rgba(255,255,255,.06);border:1px solid var(--gold-dim);border-radius:8px 8px 0 0}
+.app-tab[aria-selected="true"]{background:var(--gold);color:var(--dark);border-color:var(--gold-bright);font-weight:700}
+.app-bar{display:flex;gap:6px;align-items:center;padding:6px;background:rgba(255,255,255,.04);border-bottom:1px solid var(--gold-dim)}
+.app-bar .input{flex:1}
+.app-findrow{display:flex;gap:6px;align-items:center;padding:6px;background:rgba(255,255,255,.04);border-bottom:1px solid var(--gold-dim)}
+.app-findrow[hidden]{display:none}
+.app-findrow .input{flex:1}
+.app-view{height:320px;overflow:auto;padding:14px;background:rgba(0,0,0,.28)}
+.app-view h3{color:var(--gold-bright);margin:.3rem 0}
+.app-view p{margin:.5rem 0}
+.app-link{color:var(--gold-bright);text-decoration:underline;cursor:pointer}
+.app-link:focus{outline:2px solid var(--gold);border-radius:3px;background:rgba(255,215,0,.12)}
+.app-keyrow{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:3px 0}
+.app-keyrow .input{max-width:210px;text-align:center;direction:ltr}
+.app-grid{display:grid;gap:2px}
+.app .app-ok{color:var(--gold-bright);font-weight:700}
+.app .app-err{color:#ff9d9d}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تدرّب على اختصارات المتصفح داخل نافذة تفاعلية", "url": "https://mdm1.org/apps/keyboard-nav-trainer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى إنترنت أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "لا؛ يعمل بالكامل داخل الصفحة، ويحفظ التقدّم والإعدادات محليًا في متصفحك دون أي اتصال أو تسجيل دخول."}}, {"@type": "Question", "name": "لماذا لا تعمل الاختصارات مباشرة عند فتح الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "يجب النقر داخل نافذة المتصفح أولًا لتفعيل التركيز، فالاختصارات تُلتقط فقط عندما تكون النافذة هي العنصر النشط."}}, {"@type": "Question", "name": "هل يمكنني تغيير ربط المفاتيح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم؛ من مخطط الاختصارات أسفل التطبيق انقر على الخانة ثم اضغط المفاتيح الجديدة، ثم اضغط زر حفظ مخطط الاختصارات."}}, {"@type": "Question", "name": "كيف أعيد ضبط التقدّم أو استعادة الاختصارات الافتراضية؟", "acceptedAnswer": {"@type": "Answer", "text": "زر إعادة ضبط التقدّم يصفّر التحديات والنقاط، وزر استعادة الاختصارات الافتراضية يعيد المفاتيح الأصلية."}}, {"@type": "Question", "name": "هل يؤثر التدريب على الموقع الحقيقي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا؛ النافذة محاكاة معزولة، والتمرير والروابط والبحث تعمل داخلها فقط دون أي تأثير خارجي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تدرّب على اختصارات المتصفح داخل نافذة تفاعلية</h1>
+  <p class="page-sub">تطبيق تفاعلي يحاكي نافذة متصفح داخل الصفحة للتدرّب على اختصارات لوحة المفاتيح عبر تحديات متدرجة وتصحيح فوري، مع مخطط مفاتيح قابل للتعديل وحفظ محلي للتقدّم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا تطبيق تفاعلي يحاكي نافذة متصفح كاملة داخل الصفحة، ويتيح لك التدرّب على اختصارات لوحة المفاتيح خطوة بخطوة دون مغادرة الموقع أو تثبيت أي شيء. تبدو النافذة وكأنها متصفح حقيقي فيه تبويبات متعددة وشريط عنوان وصفحة قابلة للتمرير وروابط وبحث فوري داخل الصفحة. يقدّم التطبيق تحديات متدرجة تبدأ بالتنقل بين التبويبات ثم فتح تبويب جديد وإغلاقه، فالوصول إلى شريط العنوان والبحث داخل الصفحة والتمرير وفتح الروابط والرجوع للخلف، مع تصحيح فوري يوضّح هل أنجزت المهمة أم لا. كل اختصار قابل للتخصيص عبر مخطط مفاتيح تعدّله كما تشاء، ويُحفظ تقدّمك وإعداداتك محليًا في متصفحك، فلا حاجة إلى حساب ولا إلى اتصال بالإنترنت.</p>
+<div class="app" id="kbtApp">
+  <div class="row app-toolbar">
+    <span class="badge" id="kbtChBadge">التحدي 1 من 8</span>
+    <span class="badge" id="kbtProgBadge">مكتمل 0%</span>
+    <span class="badge" id="kbtScoreBadge">النقاط 0</span>
+  </div>
+  <div class="card app-challenge">
+    <h2 id="kbtChTitle">التحدي</h2>
+    <p id="kbtChDesc">جارٍ التحميل...</p>
+    <div class="out" id="kbtFeedback">بانتظار تنفيذ المهمة...</div>
+    <div class="row">
+      <button id="kbtBtnHint">أظهر تلميحًا</button>
+      <button class="sec" id="kbtBtnSkip">تخطي التحدي</button>
+      <button class="sec" id="kbtBtnReset">إعادة ضبط التقدّم</button>
+    </div>
+  </div>
+  <div class="card app-browser" id="kbtBrowser" tabindex="0">
+    <div class="app-tabs" id="kbtTabs"></div>
+    <div class="app-bar">
+      <button class="sec" id="kbtBtnBack">رجوع</button>
+      <input class="input" id="kbtAddress" type="text" placeholder="اكتب اسم صفحة ثم Enter" aria-label="شريط العنوان" />
+    </div>
+    <div class="app-findrow" id="kbtFindRow" hidden>
+      <input class="input" id="kbtFindInput" type="text" placeholder="ابحث داخل الصفحة" aria-label="بحث داخل الصفحة" />
+      <span class="badge" id="kbtFindInfo">اكتب كلمة للبحث</span>
+      <button class="sec" id="kbtBtnFindClose">إغلاق البحث</button>
+    </div>
+    <div class="app-view" id="kbtView" tabindex="0"></div>
+  </div>
+  <div class="card app-keys">
+    <h2>مخطط الاختصارات القابل للتعديل</h2>
+    <p>انقر على أي خانة ثم اضغط المفاتيح التي تريدها، ثم اضغط زر الحفظ. تُحفظ التعديلات محليًا في متصفحك.</p>
+    <div id="kbtKeyList" class="app-grid"></div>
+    <div class="row">
+      <button id="kbtBtnSaveKeys">حفظ مخطط الاختصارات</button>
+      <button class="sec" id="kbtBtnDefaultKeys">استعادة الاختصارات الافتراضية</button>
+    </div>
+    <div class="out" id="kbtKeysOut">لم تُجرَ أي تعديلات بعد.</div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى إنترنت أو حساب؟</h3><p>لا؛ يعمل بالكامل داخل الصفحة، ويحفظ التقدّم والإعدادات محليًا في متصفحك دون أي اتصال أو تسجيل دخول.</p><h3>لماذا لا تعمل الاختصارات مباشرة عند فتح الصفحة؟</h3><p>يجب النقر داخل نافذة المتصفح أولًا لتفعيل التركيز، فالاختصارات تُلتقط فقط عندما تكون النافذة هي العنصر النشط.</p><h3>هل يمكنني تغيير ربط المفاتيح؟</h3><p>نعم؛ من مخطط الاختصارات أسفل التطبيق انقر على الخانة ثم اضغط المفاتيح الجديدة، ثم اضغط زر حفظ مخطط الاختصارات.</p><h3>كيف أعيد ضبط التقدّم أو استعادة الاختصارات الافتراضية؟</h3><p>زر إعادة ضبط التقدّم يصفّر التحديات والنقاط، وزر استعادة الاختصارات الافتراضية يعيد المفاتيح الأصلية.</p><h3>هل يؤثر التدريب على الموقع الحقيقي؟</h3><p>لا؛ النافذة محاكاة معزولة، والتمرير والروابط والبحث تعمل داخلها فقط دون أي تأثير خارجي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var el = {};
+  var lookup = {};
+  var snap = {};
+  var draftKeys = {};
+
+  var P = {
+    home:{title:'الرئيسية',html:
+      '<h3>الصفحة الرئيسية</h3>'+
+      '<p>مرحبًا بك في النافذة التدريبية. هذه مساحة آمنة لتجربة اختصارات لوحة المفاتيح دون أي تأثير على الموقع الحقيقي. ابدأ بالنقر داخل النافذة لتفعيلها، ثم جرّب التنقل بين التبويبات.</p>'+
+      '<p>تذكّر أن تُبقي التركيز داخل النافذة أثناء التمرين، لأن الاختصارات تُلتقط فقط عندما تكون النافذة هي العنصر النشط.</p>'+
+      '<p>يمكنك البحث داخل هذه الصفحة عن كلمة «التبويبات» لترى عدد النتائج وموضعها، ثم جرّب التمرير لأسفل وفتح الروابط بالكيبورد.</p>'+
+      '<p>انتقل إلى <span class="app-link" role="link" tabindex="0" data-nav="docs">صفحة التوثيق</span> أو زر <span class="app-link" role="link" tabindex="0" data-nav="about">صفحة عن التطبيق</span> لمتابعة التدريب.</p>'+
+      '<p>التمرير يعمل داخل منطقة العرض فقط، لذا لن تتحرك صفحة الموقع الأصلية ولن تفقد مكانك أثناء التمرين.</p>'+
+      '<p>كل إجراء تقوم به يظهر في صندوق النتيجة، مع تصحيح فوري يخبرك إن كنت قد أنجزت المهمة المطلوبة أم لا.</p>'},
+    docs:{title:'التوثيق',html:
+      '<h3>صفحة التوثيق</h3>'+
+      '<p>هنا تتدرب على التمرير والبحث والتنقل بين الروابط. كلمة التبويبات مذكورة هنا ليجدها البحث بسهولة.</p>'+
+      '<p>استخدم اختصار البحث ثم اكتب كلمة تريدها؛ يُظهر العدّاد عدد المطابقات وينتقل بك إلى أول نتيجة داخل الصفحة.</p>'+
+      '<p>بعد البحث جرّب التمرير لأسفل باستخدام المفتاح المخصص، ولاحظ أن شريط التمرير يتحرك داخل النافذة فقط.</p>'+
+      '<p>للانتقال إلى صفحة أخرى بالكيبورد، اضغط مفتاح الجدولة حتى يصل التركيز إلى الرابط ثم اضغط Enter. جرّب الوصول إلى <span class="app-link" role="link" tabindex="0" data-nav="api">واجهة البرمجة</span>.</p>'+
+      '<p>يمكنك أيضًا العودة لاحقًا إلى الصفحة السابقة عبر اختصار الرجوع بعد أن تفتح رابطًا جديدًا.</p>'+
+      '<p>التبويبات المتعددة تسمح بمقارنة الصفحات، ويمكنك فتح تبويب جديد وإغلاقه في أي وقت.</p>'},
+    api:{title:'واجهة البرمجة',html:
+      '<h3>واجهة البرمجة</h3>'+
+      '<p>صفحة تجريبية لعرض محتوى إضافي وروابط قابلة للتنقل. لا تحتوي على أي اتصال خارجي أو طلبات شبكة.</p>'+
+      '<p>هنا يمكنك تجربة الرجوع للخلف بعد الوصول إليها من صفحة التوثيق، ثم متابعة التحديات.</p>'+
+      '<p>تذكّر أن جميع الاختصارات قابلة للتعديل من المخطط أسفل التطبيق، وأن تعديلاتك تُحفظ في متصفحك.</p>'+
+      '<p>رابط للعودة إلى <span class="app-link" role="link" tabindex="0" data-nav="home">الرئيسية</span>.</p>'},
+    about:{title:'عن التطبيق',html:
+      '<h3>عن التطبيق</h3>'+
+      '<p>تطبيق تدريبي خفيف يعمل بالكامل داخل الصفحة دون حساب أو إنترنت، ويهدف إلى إتقان اختصارات التصفح الشائعة.</p>'+
+      '<p>يُحفظ تقدّمك ونقاطك ومخطط مفاتيحك محليًا، ويمكنك إعادة الضبط في أي وقت من زر إعادة ضبط التقدّم.</p>'+
+      '<p>رابط إلى <span class="app-link" role="link" tabindex="0" data-nav="docs">التوثيق</span>.</p>'},
+    start:{title:'تبويب جديد',html:
+      '<h3>تبويب جديد</h3>'+
+      '<p>هذه صفحة بداية. اكتب في شريط العنوان أحد الأسماء: home أو docs أو api أو about ثم اضغط Enter.</p>'+
+      '<p>روابط سريعة: <span class="app-link" role="link" tabindex="0" data-nav="home">الرئيسية</span> و <span class="app-link" role="link" tabindex="0" data-nav="docs">التوثيق</span>.</p>'}
+  };
+
+  var DEFAULTS = {
+    newTab:'ctrl+t', closeTab:'ctrl+w', nextTab:'ctrl+pagedown', prevTab:'ctrl+pageup',
+    focusAddress:'ctrl+l', find:'ctrl+f', scrollDown:'space', scrollUp:'shift+space', back:'alt+arrowleft'
+  };
+  var KEY_ACTIONS = {
+    newTab:'فتح تبويب جديد', closeTab:'إغلاق التبويب', nextTab:'التبويب التالي', prevTab:'التبويب السابق',
+    focusAddress:'التركيز على شريط العنوان', find:'البحث داخل الصفحة', scrollDown:'التمرير لأسفل',
+    scrollUp:'التمرير لأعلى', back:'الرجوع للخلف'
+  };
+  var ALL_LABELS = {newTab:KEY_ACTIONS.newTab,closeTab:KEY_ACTIONS.closeTab,nextTab:KEY_ACTIONS.nextTab,prevTab:KEY_ACTIONS.prevTab,focusAddress:KEY_ACTIONS.focusAddress,find:KEY_ACTIONS.find,scrollDown:KEY_ACTIONS.scrollDown,scrollUp:KEY_ACTIONS.scrollUp,back:KEY_ACTIONS.back,link:'فتح الرابط بالكيبورد'};
+
+  var state = {
+    tabs:[{title:'الرئيسية',page:'home',history:['home']},{title:'التوثيق',page:'docs',history:['docs']}],
+    tabIndex:0, findOpen:false, findMatches:0, lastAction:'', navByLink:false,
+    completed:[], score:0, ch:0, pending:false, finished:false, keymap:objCopy(DEFAULTS)
+  };
+
+  function objCopy(o){ var r={},k; for(k in o){ if(Object.prototype.hasOwnProperty.call(o,k)) r[k]=o[k]; } return r; }
+  function cur(){ return state.tabs[state.tabIndex]; }
+  function STORE(){ return 'kbtTrainer.v1'; }
+
+  function loadStore(){
+    try{ var raw=window.localStorage.getItem(STORE()); return raw?JSON.parse(raw):null; }catch(e){ return null; }
+  }
+  function saveStore(){
+    try{ window.localStorage.setItem(STORE(),JSON.stringify({completed:state.completed,score:state.score,keymap:state.keymap})); }catch(e){}
+  }
+  function buildLookup(){ lookup={}; var k; for(k in state.keymap){ if(state.keymap[k]) lookup[state.keymap[k]]=k; } }
+
+  function comboFromEvent(e){
+    var key=e.key;
+    if(key===' '||key==='Spacebar') key='space';
+    else if(key.length===1) key=key.toLowerCase();
+    else {
+      var m={ArrowLeft:'arrowleft',ArrowRight:'arrowright',ArrowUp:'arrowup',ArrowDown:'arrowdown',Escape:'escape',Enter:'enter',Tab:'tab',PageDown:'pagedown',PageUp:'pageup',Backspace:'backspace',Home:'home',End:'end',Delete:'delete'};
+      key=m[key]||key.toLowerCase();
+    }
+    var parts=[];
+    if(e.ctrlKey) parts.push('ctrl');
+    if(e.altKey) parts.push('alt');
+    if(e.shiftKey) parts.push('shift');
+    if(e.metaKey) parts.push('meta');
+    if(['shift','control','alt','meta'].indexOf(key)>=0) return '';
+    parts.push(key);
+    return parts.join('+');
+  }
+
+  var CHALLENGES = [
+    {id:'tabs',title:'١. التنقل بين التبويبات',desc:'انقر داخل نافذة المتصفح، ثم بدّل إلى التبويب الثاني «التوثيق» باستخدام اختصار التبويب التالي.',hint:'الاختصار الافتراضي هو Ctrl مع PageDown، ويمكنك تغييره من مخطط الاختصارات.',done:'وصلت إلى التبويب الثاني.',verify:function(){ return state.tabIndex===1; }},
+    {id:'newtab',title:'٢. فتح تبويب جديد',desc:'افتح تبويبًا جديدًا من داخل النافذة.',hint:'الاختصار الافتراضي هو Ctrl مع حرف T.',done:'تم فتح تبويب جديد.',verify:function(){ return state.tabs.length>=snap.tabs+1; }},
+    {id:'close',title:'٣. إغلاق التبويب النشط',desc:'أغلق التبويب النشط حاليًا.',hint:'الاختصار الافتراضي هو Ctrl مع حرف W.',done:'تم إغلاق التبويب النشط.',verify:function(){ return state.tabs.length<=snap.tabs-1; }},
+    {id:'addr',title:'٤. التركيز على شريط العنوان',desc:'انقل التركيز إلى شريط العنوان باستخدام اختصار التركيز.',hint:'الاختصار الافتراضي هو Ctrl مع حرف L.',done:'تم نقل التركيز إلى شريط العنوان.',verify:function(){ return document.activeElement===el.kbtAddress; }},
+    {id:'find',title:'٥. البحث داخل الصفحة',desc:'افتح مربع البحث داخل الصفحة وابحث عن كلمة «التبويبات».',hint:'الاختصار الافتراضي هو Ctrl مع حرف F.',done:'ظهرت نتائج البحث داخل الصفحة.',verify:function(){ return state.findOpen && state.findMatches>0; }},
+    {id:'scroll',title:'٦. التمرير داخل الصفحة',desc:'مرّر محتوى الصفحة إلى الأسفل دون تحريك صفحة الموقع.',hint:'الاختصار الافتراضي هو مفتاح المسافة.',done:'تم التمرير إلى الأسفل.',verify:function(){ return el.kbtView.scrollTop>=snap.scroll+20; }},
+    {id:'link',title:'٧. فتح رابط بالكيبورد',desc:'انقل التركيز إلى أحد الروابط داخل الصفحة بمفتاح الجدولة ثم افتحه بمفتاح Enter.',hint:'اضغط Tab للوصول إلى الرابط ثم Enter.',done:'تم فتح الرابط باستخدام لوحة المفاتيح.',verify:function(){ return state.navByLink===true; }},
+    {id:'back',title:'٨. الرجوع للخلف',desc:'ارجع إلى الصفحة السابقة في سجل التصفح.',hint:'الاختصار الافتراضي هو Alt مع السهم الأيسر.',done:'تم الرجوع إلى الصفحة السابقة.',verify:function(){ return state.lastAction==='back' && snap.page!==cur().page; }}
+  ];
+
+  function setFeedback(msg,cls){ el.kbtFeedback.textContent=msg; el.kbtFeedback.className='out '+(cls==='ok'?'app-ok':cls==='err'?'app-err':''); }
+  function setKeysOut(msg,cls){ el.kbtKeysOut.textContent=msg; el.kbtKeysOut.className='out '+(cls==='ok'?'app-ok':cls==='err'?'app-err':''); }
+
+  function updateBadges(){
+    el.kbtChBadge.textContent='التحدي '+Math.min(state.ch+1,CHALLENGES.length)+' من '+CHALLENGES.length;
+    var pct=Math.round(state.completed.length/CHALLENGES.length*100);
+    el.kbtProgBadge.textContent='مكتمل '+pct+'%';
+    el.kbtScoreBadge.textContent='النقاط '+state.score;
+  }
+
+  function renderTabs(){
+    el.kbtTabs.innerHTML='';
+    state.tabs.forEach(function(t,i){
+      var b=document.createElement('button');
+      b.type='button'; b.className='app-tab'; b.id='kbtTab'+i; b.textContent=t.title;
+      b.setAttribute('aria-selected', i===state.tabIndex?'true':'false');
+      b.addEventListener('click',function(){ state.tabIndex=i; renderTabs(); renderPage(); updateAddress(); });
+      el.kbtTabs.appendChild(b);
+    });
+  }
+
+  function renderPage(){
+    el.kbtView.innerHTML=P[cur().page].html;
+    var links=el.kbtView.querySelectorAll('.app-link'), i;
+    for(i=0;i<links.length;i++){ links[i].id='kbtLink'+i; }
+    el.kbtView.scrollTop=0;
+    if(state.findOpen){ doFind(); }
+  }
+
+  function updateAddress(){ el.kbtAddress.value=P[cur().page].title; }
+
+  function navigate(key){
+    if(!P[key]) return;
+    var t=cur();
+    t.page=key; t.title=P[key].title; t.history.push(key);
+    renderPage(); renderTabs(); updateAddress();
+  }
+
+  function resolvePage(v){
+    var s=(v||'').trim();
+    if(!s) return null;
+    if(P[s.toLowerCase()]) return s.toLowerCase();
+    var aliases={'الرئيسية':'home','التوثيق':'docs','واجهة البرمجة':'api','البرمجة':'api','عن التطبيق':'about','حول':'about','بداية':'start'};
+    if(aliases[s]) return aliases[s];
+    var k; for(k in P){ if(P[k].title===s) return k; }
+    return null;
+  }
+
+  function cycleTab(d){
+    state.tabIndex=(state.tabIndex+d+state.tabs.length)%state.tabs.length;
+    renderTabs(); renderPage(); updateAddress();
+  }
+  function openTab(){
+    state.tabs.push({title:'تبويب جديد',page:'start',history:['start']});
+    state.tabIndex=state.tabs.length-1;
+    renderTabs(); renderPage(); updateAddress();
+  }
+  function closeActive(){
+    if(state.tabs.length<=1){ setFeedback('لا يمكن إغلاق آخر تبويب. افتح تبويبًا جديدًا أولًا.','err'); return; }
+    state.tabs.splice(state.tabIndex,1);
+    if(state.tabIndex>=state.tabs.length) state.tabIndex=state.tabs.length-1;
+    renderTabs(); renderPage(); updateAddress();
+  }
+  function focusAddress(){ el.kbtAddress.focus(); el.kbtAddress.select(); }
+  function scrollView(d){ el.kbtView.scrollTop += d*140; }
+  function goBack(){
+    var t=cur();
+    if(t.history.length>1){ t.history.pop(); t.page=t.history[t.history.length-1]; renderPage(); renderTabs(); updateAddress(); setFeedback('تم الرجوع إلى صفحة: '+P[t.page].title,'ok'); }
+    else { setFeedback('لا يوجد سجل سابق للرجوع إليه في هذا التبويب.','err'); }
+  }
+
+  function openFind(){ state.findOpen=true; el.kbtFindRow.hidden=false; el.kbtFindInput.focus(); el.kbtFindInput.select(); doFind(); }
+  function closeFind(){ state.findOpen=false; el.kbtFindRow.hidden=true; el.kbtFindInput.value=''; state.findMatches=0; el.kbtFindInfo.textContent='اكتب كلمة للبحث'; }
+
+  function countMatches(q){
+    var walker=document.createTreeWalker(el.kbtView,NodeFilter.SHOW_TEXT,null);
+    var lower=q.toLowerCase(), n, count=0, first=null;
+    while((n=walker.nextNode())){
+      var t=(n.nodeValue||'').toLowerCase(), i=t.indexOf(lower);
+      if(i>=0){
+        if(!first){ var r=document.createRange(); r.setStart(n,i); r.setEnd(n,i+lower.length); first=r; }
+        var pos=i; while(pos>=0){ count++; pos=t.indexOf(lower,pos+lower.length); }
+      }
+    }
+    return {count:count,first:first};
+  }
+  function scrollToRange(r){
+    var rect=r.getBoundingClientRect(), vrect=el.kbtView.getBoundingClientRect();
+    el.kbtView.scrollTop += (rect.top-vrect.top)-40;
+  }
+  function doFind(){
+    var q=el.kbtFindInput.value.trim();
+    if(!q){ state.findMatches=0; el.kbtFindInfo.textContent='اكتب كلمة للبحث'; return; }
+    var res=countMatches(q);
+    state.findMatches=res.count;
+    el.kbtFindInfo.textContent = res.count>0 ? (res.count+' نتيجة') : 'لا نتائج';
+    if(res.count>0 && res.first){ scrollToRange(res.first); }
+    state.findOpen=true; state.lastAction='find';
+    tryComplete('find');
+  }
+
+  function loadChallenge(){
+    var c=CHALLENGES[state.ch];
+    snap={tabs:state.tabs.length,page:cur().page,scroll:el.kbtView.scrollTop};
+    state.navByLink=false; state.pending=false;
+    el.kbtChTitle.textContent=c.title;
+    el.kbtChDesc.textContent=c.desc;
+    setFeedback('بانتظار تنفيذ المهمة...','');
+    updateBadges();
+  }
+
+  function tryComplete(name){
+    if(state.finished||state.pending) return;
+    var c=CHALLENGES[state.ch];
+    if(state.completed.indexOf(c.id)>=0) return;
+    if(c.verify(name)){
+      state.completed.push(c.id);
+      state.score+=10;
+      state.pending=true;
+      updateBadges(); saveStore();
+      setFeedback('أحسنت! '+c.done,'ok');
+      window.setTimeout(function(){ advance(); },1100);
+    }
+  }
+
+  function advance(){
+    state.pending=false;
+    if(state.ch<CHALLENGES.length-1){ state.ch++; loadChallenge(); }
+    else { state.finished=true; updateBadges(); setFeedback('أكملت جميع التحديات! مجموع نقاطك '+state.score+'. يمكنك إعادة الضبط للتكرار.','ok'); }
+  }
+
+  function performAction(name){
+    switch(name){
+      case 'newTab': openTab(); break;
+      case 'closeTab': closeActive(); break;
+      case 'nextTab': cycleTab(1); break;
+      case 'prevTab': cycleTab(-1); break;
+      case 'focusAddress': focusAddress(); break;
+      case 'find': openFind(); break;
+      case 'scrollDown': scrollView(1); break;
+      case 'scrollUp': scrollView(-1); break;
+      case 'back': goBack(); break;
+      default: break;
+    }
+    state.lastAction=name;
+    if(!state.pending){ setFeedback('تم رصد الإجراء: '+(ALL_LABELS[name]||name)+'.',''); }
+    tryComplete(name);
+  }
+
+  function onKey(e){
+    if(e.key==='Escape'){ if(state.findOpen){ closeFind(); e.preventDefault(); } return; }
+    var combo=comboFromEvent(e);
+    if(!combo) return;
+    var action=lookup[combo];
+    if(!action) return;
+    var typing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target&&e.target.tagName||'');
+    if(typing && !e.ctrlKey && !e.altKey && !e.metaKey) return;
+    e.preventDefault();
+    performAction(action);
+  }
+
+  function renderKeys(){
+    el.kbtKeyList.innerHTML='';
+    Object.keys(KEY_ACTIONS).forEach(function(a){
+      var row=document.createElement('div'); row.className='app-keyrow';
+      var lab=document.createElement('label'); lab.className='label'; lab.textContent=KEY_ACTIONS[a]; lab.setAttribute('for','key-'+a);
+      var inp=document.createElement('input'); inp.type='text'; inp.className='input'; inp.id='key-'+a; inp.readOnly=true; inp.value=draftKeys[a]||'';
+      inp.addEventListener('keydown',function(e){
+        e.preventDefault();
+        var c=comboFromEvent(e);
+        if(!c) return;
+        draftKeys[a]=c; inp.value=c;
+      });
+      row.appendChild(lab); row.appendChild(inp);
+      el.kbtKeyList.appendChild(row);
+    });
+  }
+
+  function saveKeys(){
+    var seen={}, a;
+    for(a in draftKeys){
+      if(!draftKeys[a]){ setKeysOut('تعذّر الحفظ: بعض الخانات فارغة. اضغط على الخانة وسجّل مفاتيح.','err'); return; }
+      if(seen[draftKeys[a]]!==undefined){ setKeysOut('تعذّر الحفظ: الاختصار «'+draftKeys[a]+'» مستخدم لأكثر من إجراء.','err'); return; }
+      seen[draftKeys[a]]=a;
+    }
+    state.keymap=objCopy(draftKeys);
+    buildLookup(); saveStore();
+    setKeysOut('تم حفظ مخطط الاختصارات بنجاح.','ok');
+  }
+  function defaultKeys(){
+    draftKeys=objCopy(DEFAULTS);
+    state.keymap=objCopy(DEFAULTS);
+    buildLookup(); renderKeys(); saveStore();
+    setKeysOut('تمت استعادة الاختصارات الافتراضية.','ok');
+  }
+  function resetProgress(){
+    state.completed=[]; state.score=0; state.ch=0; state.finished=false; state.pending=false;
+    saveStore(); renderKeys(); updateBadges(); loadChallenge();
+    setFeedback('تمت إعادة ضبط التقدّم. ابدأ من جديد.','ok');
+  }
+
+  function init(){
+    var ids=['kbtChBadge','kbtProgBadge','kbtScoreBadge','kbtChTitle','kbtChDesc','kbtFeedback','kbtBtnHint','kbtBtnSkip','kbtBtnReset','kbtBrowser','kbtTabs','kbtAddress','kbtBtnBack','kbtFindRow','kbtFindInput','kbtFindInfo','kbtBtnFindClose','kbtView','kbtKeyList','kbtBtnSaveKeys','kbtBtnDefaultKeys','kbtKeysOut'], i;
+    for(i=0;i<ids.length;i++){ el[ids[i]]=$(''+ids[i]); }
+    if(!el.kbtBrowser) return;
+
+    var saved=loadStore();
+    if(saved){
+      if(saved.completed && saved.completed.length) state.completed=saved.completed;
+      if(typeof saved.score==='number') state.score=saved.score;
+      if(saved.keymap){ var k; for(k in DEFAULTS){ if(saved.keymap[k]) state.keymap[k]=saved.keymap[k]; } }
+    }
+    draftKeys=objCopy(state.keymap);
+    buildLookup();
+
+    var first=0;
+    while(first<CHALLENGES.length && state.completed.indexOf(CHALLENGES[first].id)>=0) first++;
+    if(first>=CHALLENGES.length){ state.ch=CHALLENGES.length-1; state.finished=true; }
+    else { state.ch=first; }
+
+    renderTabs(); renderPage(); updateAddress(); renderKeys(); updateBadges();
+
+    el.kbtBrowser.addEventListener('keydown',onKey);
+    el.kbtView.addEventListener('keydown',function(e){
+      var t=e.target;
+      if((e.key==='Enter'||e.key===' ') && t && t.classList && t.classList.contains('app-link')){
+        e.preventDefault();
+        var dest=t.getAttribute('data-nav');
+        if(dest && P[dest]){ navigate(dest); state.navByLink=true; performAction('link'); }
+      }
+    });
+    el.kbtView.addEventListener('click',function(e){
+      var t=e.target;
+      while(t && t!==el.kbtView && !(t.classList && t.classList.contains('app-link'))){ t=t.parentNode; }
+      if(t && t.classList && t.classList.contains('app-link')){
+        var d=t.getAttribute('data-nav');
+        if(d && P[d]) navigate(d);
+      }
+    });
+    el.kbtAddress.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){
+        e.preventDefault();
+        var v=el.kbtAddress.value, key=resolvePage(v);
+        if(!key){ setFeedback('صفحة غير معروفة: «'+v+'». جرّب: home أو docs أو api أو about.','err'); return; }
+        navigate(key);
+        setFeedback('انتقلت إلى صفحة: '+P[key].title,'ok');
+      }
+    });
+    el.kbtFindInput.addEventListener('input',doFind);
+    el.kbtBtnFindClose.addEventListener('click',closeFind);
+    el.kbtBtnBack.addEventListener('click',function(){ performAction('back'); });
+    el.kbtBtnHint.addEventListener('click',function(){ setFeedback('تلميح: '+CHALLENGES[state.ch].hint,''); });
+    el.kbtBtnSkip.addEventListener('click',function(){
+      state.pending=false;
+      if(state.ch<CHALLENGES.length-1){ state.ch++; loadChallenge(); setFeedback('تم تخطي التحدي الحالي مؤقتًا.',''); }
+      else { setFeedback('هذا آخر تحدٍ في القائمة.',''); }
+    });
+    el.kbtBtnReset.addEventListener('click',resetProgress);
+    el.kbtBtnSaveKeys.addEventListener('click',saveKeys);
+    el.kbtBtnDefaultKeys.addEventListener('click',defaultKeys);
+
+    if(state.finished){ setFeedback('أكملت جميع التحديات سابقًا! مجموع نقاطك '+state.score+'. اضغط إعادة ضبط التقدّم للتكرار.','ok'); }
+    else { loadChallenge(); }
+  }
+
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',init); }
+  else { init(); }
+})();
+</script>
+</body>
+</html>
