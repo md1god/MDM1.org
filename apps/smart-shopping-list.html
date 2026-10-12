@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار | MDM1</title>
+<meta name="description" content="أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم مشترياتك حسب الأقسام واحفظ قوائمك محليًا للطباعة لاحقًا.">
+<link rel="canonical" href="https://mdm1.org/apps/smart-shopping-list.html">
+<meta property="og:title" content="قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار">
+<meta property="og:description" content="أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم مشترياتك حسب الأقسام واحفظ قوائمك محليًا للطباعة لاحقًا.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/smart-shopping-list.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:16px}
+.app h2{color:var(--gold-bright);margin:0 0 8px;font-size:1.15rem}
+.app-panel{padding:16px}
+.app .row{flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px}
+.app .label{color:var(--gold);font-size:.9rem}
+.app .input,.app .select{max-width:220px}
+.app-hint{color:var(--gold-dim,var(--gold));font-size:.85rem;margin:4px 0;min-height:1.2em}
+.app-msg{margin:6px 0 0;font-size:.9rem;min-height:1.2em}
+.app-msg.ok{color:var(--gold-bright)}
+.app-msg.warn{color:#ff9a9a}
+.app-list{display:grid;gap:8px;margin:8px 0}
+.app-item{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--gold-dim);border-radius:10px}
+.app-item-info{flex:1 1 220px}
+.app-item-name{color:var(--light);font-weight:700}
+.app-item-sub{color:var(--gold);font-size:.82rem}
+.app-item-price{color:var(--gold-bright);font-weight:700;min-width:80px}
+.app-item button{padding:4px 10px;font-size:.8rem}
+.app-cat{color:var(--gold-bright);margin:12px 0 4px;font-size:1rem;border-bottom:1px solid var(--gold-dim);padding-bottom:4px}
+.app-empty{color:var(--gold-dim);padding:10px;font-size:.9rem}
+.app-total-line{display:flex;justify-content:space-between;gap:8px;padding:3px 0;align-items:baseline}
+.app-total-line .big{font-size:1.9rem;color:var(--gold-bright);font-weight:800}
+.app-cmp-result{margin-top:6px;line-height:1.9}
+.app-cmp-winner{color:var(--gold-bright);font-weight:700}
+@media print{.app.app-print-mode .app-panel:not(.app-printable){display:none!important}.app.app-print-mode .app-no-print{display:none!important}.app.app-print-mode{border:0}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "قائمة تسوق ذكية: أضف منتجاتك، احسب الإجمالي، راقب ميزانيتك، واختر العرض الأوفر", "url": "https://mdm1.org/apps/smart-shopping-list.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى إنترنت أو حساب لتشغيله؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل بالكامل داخل المتصفح دون اتصال ودون تسجيل، وتُحفظ بياناتك محليًا في جهازك فقط."}}, {"@type": "Question", "name": "كيف يُحسب الإجمالي وتنبيه تجاوز الميزانية؟", "acceptedAnswer": {"@type": "Answer", "text": "يجمع التطبيق أسعار المنتجات تلقائيًا مع كل إضافة أو حذف، ويقارن الإجمالي بالميزانية التي عيّنتها ليظهر تحذير بالفرق عند التجاوز."}}, {"@type": "Question", "name": "كيف تساعدني مقارنة سعر الوحدة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُدخل سعر وحجم أو وزن عرضين لنفس المنتج، فيحسب التطبيق سعر الوحدة لكل عرض ويخبرك بالأوفر وبفرق السعر لكل وحدة."}}, {"@type": "Question", "name": "هل تُحفظ القوائم عند إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُخزَّن القوائم في التخزين المحلي في المتصفح، ويمكنك استعادتها أو حذفها لاحقًا في أي وقت."}}, {"@type": "Question", "name": "هل يمكنني طباعة القائمة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر طباعة القائمة الحالية يُظهر المنتجات والإجمالي فقط في نافذة الطباعة مع إخفاء أدوات الإدخال."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">قائمة تسوق ذكية: أضف منتجاتك، احسب الإجمالي، راقب ميزانيتك، واختر العرض الأوفر</h1>
+  <p class="page-sub">أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم مشترياتك حسب الأقسام واحفظ قوائمك محليًا للطباعة لاحقًا.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="app" dir="rtl">
+<p>هل تريد قائمة تسوق تحسب لك الإجمالي وتراقب ميزانيتك تلقائيًا؟ هذا التطبيق العربي يعمل بالكامل داخل متصفحك دون إنشاء حساب ودون اتصال بالإنترنت، ويحفظ بياناتك في جهازك وحده. أضف اسم المنتج وسعره وكميته والقسم الذي ينتمي إليه، وسيظهر لك الإجمالي مباشرةً مع تنبيه واضح عند تجاوز الميزانية التي حددتها. كما يمكنك مقارنة سعر الوحدة بين عدة عروض لتعرف الأوفر فعليًا، وترتيب المنتجات حسب الأقسام، وحفظ القوائم وإعادة فتحها وطباعتها في أي وقت. كل شيء يبقى على جهازك ولا تُرسل أي بيانات إلى أي خادم، لذا يعمل حتى بدون اتصال بالإنترنت.</p>
+
+<section class="card app-panel">
+<h2>إعداد الميزانية</h2>
+<div class="row">
+<label class="label" for="budgetInput">الميزانية بالريال</label>
+<input class="input" id="budgetInput" type="number" min="0" step="0.01" placeholder="مثال: 300">
+<button class="button" id="saveBudgetBtn" type="button">تعيين الميزانية</button>
+</div>
+<p class="app-hint" id="budgetStatus">لم تُحدد ميزانية بعد.</p>
+</section>
+
+<section class="card app-panel">
+<h2>إضافة منتج</h2>
+<div class="row">
+<label class="label" for="nameInput">اسم المنتج</label>
+<input class="input" id="nameInput" type="text" placeholder="مثال: أرز بسمتي">
+</div>
+<div class="row">
+<label class="label" for="priceInput">السعر الإجمالي للصنف</label>
+<input class="input" id="priceInput" type="number" min="0" step="0.01" placeholder="0.00">
+<label class="label" for="qtyInput">الكمية</label>
+<input class="input" id="qtyInput" type="number" min="1" step="1" value="1">
+<label class="label" for="unitInput">وحدة القياس</label>
+<select class="select" id="unitInput">
+<option value="قطعة">قطعة</option>
+<option value="كجم">كجم</option>
+<option value="جم">جم</option>
+<option value="لتر">لتر</option>
+<option value="علبة">علبة</option>
+<option value="كيس">كيس</option>
+</select>
+<label class="label" for="catInput">القسم</label>
+<select class="select" id="catInput"></select>
+<button class="button" id="addBtn" type="button">إضافة المنتج إلى القائمة</button>
+</div>
+<p class="app-msg" id="formMsg"></p>
+</section>
+
+<section class="card app-panel app-printable">
+<h2>منتجات القائمة</h2>
+<div class="row app-no-print">
+<label class="label" for="filterCat">تصفية حسب القسم</label>
+<select class="select" id="filterCat"><option value="">كل الأقسام</option></select>
+<button class="button sec" id="clearAllBtn" type="button">حذف كل المنتجات</button>
+</div>
+<div id="productsWrap"></div>
+<div class="divider"></div>
+<div class="out">
+<div class="app-total-line"><span>عدد المنتجات</span><span id="countOut">0</span></div>
+<div class="app-total-line"><span>الإجمالي الكلي</span><span class="big" id="totalOut">0.00</span></div>
+<div id="budgetOut" class="app-msg"></div>
+</div>
+</section>
+
+<section class="card app-panel app-no-print">
+<h2>مقارنة سعر الوحدة</h2>
+<p class="app-hint">أدخل عرضين لنفس المنتج بحجمين مختلفين لمعرفة الأوفر سعرًا لكل وحدة.</p>
+<div class="row">
+<label class="label" for="cmpName">اسم المنتج</label>
+<input class="input" id="cmpName" type="text" placeholder="مثال: زيت زيتون">
+</div>
+<div class="row">
+<label class="label" for="cmpPriceA">سعر العرض الأول</label>
+<input class="input" id="cmpPriceA" type="number" min="0" step="0.01" placeholder="0.00">
+<label class="label" for="cmpSizeA">حجم أو وزن العرض الأول</label>
+<input class="input" id="cmpSizeA" type="number" min="0" step="0.01" placeholder="0.00">
+</div>
+<div class="row">
+<label class="label" for="cmpPriceB">سعر العرض الثاني</label>
+<input class="input" id="cmpPriceB" type="number" min="0" step="0.01" placeholder="0.00">
+<label class="label" for="cmpSizeB">حجم أو وزن العرض الثاني</label>
+<input class="input" id="cmpSizeB" type="number" min="0" step="0.01" placeholder="0.00">
+</div>
+<div class="row">
+<button class="button" id="compareBtn" type="button">احسب العرض الأوفر</button>
+</div>
+<div class="out" id="cmpOut">أدخل بيانات العرضين ثم اضغط زر الحساب.</div>
+</section>
+
+<section class="card app-panel app-no-print">
+<h2>حفظ القوائم واستعادتها والطباعة</h2>
+<div class="row">
+<label class="label" for="listNameInput">اسم القائمة</label>
+<input class="input" id="listNameInput" type="text" placeholder="مثال: تسوق الأسبوع">
+<button class="button" id="saveListBtn" type="button">حفظ القائمة الحالية</button>
+</div>
+<div class="row">
+<label class="label" for="savedLists">القوائم المحفوظة</label>
+<select class="select" id="savedLists"></select>
+<button class="button sec" id="loadListBtn" type="button">استعادة القائمة المحددة</button>
+<button class="button sec" id="deleteListBtn" type="button">حذف القائمة المحددة</button>
+<button class="button sec" id="printBtn" type="button">طباعة القائمة الحالية</button>
+</div>
+<p class="app-msg" id="listMsg"></p>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى إنترنت أو حساب لتشغيله؟</h3><p>لا، يعمل بالكامل داخل المتصفح دون اتصال ودون تسجيل، وتُحفظ بياناتك محليًا في جهازك فقط.</p><h3>كيف يُحسب الإجمالي وتنبيه تجاوز الميزانية؟</h3><p>يجمع التطبيق أسعار المنتجات تلقائيًا مع كل إضافة أو حذف، ويقارن الإجمالي بالميزانية التي عيّنتها ليظهر تحذير بالفرق عند التجاوز.</p><h3>كيف تساعدني مقارنة سعر الوحدة؟</h3><p>تُدخل سعر وحجم أو وزن عرضين لنفس المنتج، فيحسب التطبيق سعر الوحدة لكل عرض ويخبرك بالأوفر وبفرق السعر لكل وحدة.</p><h3>هل تُحفظ القوائم عند إغلاق المتصفح؟</h3><p>نعم، تُخزَّن القوائم في التخزين المحلي في المتصفح، ويمكنك استعادتها أو حذفها لاحقًا في أي وقت.</p><h3>هل يمكنني طباعة القائمة؟</h3><p>نعم، زر طباعة القائمة الحالية يُظهر المنتجات والإجمالي فقط في نافذة الطباعة مع إخفاء أدوات الإدخال.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var LS_P="arabShopCart_products_v1", LS_B="arabShopCart_budget_v1", LS_L="arabShopCart_lists_v1";
+var CATS=["خضار وفواكه","ألبان وأجبان","لحوم ودواجن","مخبوزات","بقالة","مشروبات","منظفات","أخرى"];
+var products=[], budget=null, lists={};
+
+function el(id){ return document.getElementById(id); }
+function money(n){ return (Math.round((Number(n)||0)*100)/100).toFixed(2); }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function safeGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function safeSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function loadState(){
+  try{ products=JSON.parse(safeGet(LS_P)||"[]")||[]; }catch(e){ products=[]; }
+  if(!Array.isArray(products)) products=[];
+  var b=safeGet(LS_B);
+  budget=(b===null||b==="")?null:parseFloat(b);
+  if(isNaN(budget)) budget=null;
+  try{ lists=JSON.parse(safeGet(LS_L)||"{}")||{}; }catch(e){ lists={}; }
+  if(typeof lists!=="object"||lists===null) lists={};
+}
+function persistProducts(){ safeSet(LS_P,JSON.stringify(products)); }
+
+function render(){
+  var wrap=el("productsWrap");
+  var filter=el("filterCat").value;
+  var visible=products.filter(function(p){ return !filter||p.cat===filter; });
+  if(!visible.length){
+    wrap.innerHTML='<p class="app-empty">لا توجد منتجات'+(filter?' في هذا القسم':' بعد')+'. أضف منتجك الأول من الأعلى.</p>';
+  } else {
+    var html="";
+    CATS.forEach(function(c){
+      var items=visible.filter(function(p){ return p.cat===c; });
+      if(!items.length) return;
+      html+='<h3 class="app-cat">'+esc(c)+'</h3><div class="app-list">';
+      items.forEach(function(p){
+        var up=(Number(p.qty)>0)?(Number(p.price)/Number(p.qty)):Number(p.price);
+        html+='<div class="app-item">'
+          +'<div class="app-item-info"><div class="app-item-name">'+esc(p.name)+'</div>'
+          +'<div class="app-item-sub">'+esc(p.qty)+' '+esc(p.unit)+' · سعر الوحدة: '+money(up)+' ريال</div></div>'
+          +'<div class="app-item-price">'+money(p.price)+' ريال</div>'
+          +'<button class="button sec" type="button" id="del-'+esc(p.id)+'" data-del="'+esc(p.id)+'">حذف</button>'
+          +'</div>';
+      });
+      html+='</div>';
+    });
+    wrap.innerHTML=html;
+  }
+  updateTotals();
+}
+
+function updateTotals(){
+  var total=0;
+  products.forEach(function(p){ total+=Number(p.price)||0; });
+  el("countOut").textContent=String(products.length);
+  el("totalOut").textContent=money(total);
+  var bo=el("budgetOut");
+  if(budget===null){
+    bo.className="app-msg";
+    bo.textContent="لم تُحدد ميزانية بعد — عيّنها بالأعلى لمراقبة تجاوز الحد.";
+  } else if(total>budget){
+    bo.className="app-msg warn";
+    bo.textContent="تحذير: تجاوزت الميزانية بمقدار "+money(total-budget)+" ريال.";
+  } else {
+    bo.className="app-msg ok";
+    bo.textContent="المبلغ المتبقي من الميزانية: "+money(budget-total)+" ريال.";
+  }
+}
+
+function addProduct(){
+  var msg=el("formMsg");
+  var name=el("nameInput").value.trim();
+  var price=parseFloat(el("priceInput").value);
+  var qty=parseInt(el("qtyInput").value,10);
+  var unit=el("unitInput").value;
+  var cat=el("catInput").value||CATS[CATS.length-1];
+  if(!name){ msg.className="app-msg warn"; msg.textContent="يرجى كتابة اسم المنتج."; return; }
+  if(isNaN(price)||price<0){ msg.className="app-msg warn"; msg.textContent="يرجى إدخال سعر صحيح (صفر أو أكثر)."; return; }
+  if(isNaN(qty)||qty<1){ msg.className="app-msg warn"; msg.textContent="يجب أن تكون الكمية 1 على الأقل."; return; }
+  products.push({ id:"p"+Date.now()+Math.floor(Math.random()*1000), name:name, price:price, qty:qty, unit:unit, cat:cat });
+  persistProducts();
+  el("nameInput").value="";
+  el("priceInput").value="";
+  el("qtyInput").value="1";
+  msg.className="app-msg ok";
+  msg.textContent='تمت إضافة "'+name+'" إلى قائمة التسوق.';
+  render();
+}
+
+function saveBudget(){
+  var msg=el("budgetStatus");
+  var raw=el("budgetInput").value;
+  var v=parseFloat(raw);
+  if(raw===""||isNaN(v)||v<0){
+    budget=null; safeSet(LS_B,"");
+    msg.className="app-hint";
+    msg.textContent="تم إلغاء تحديد الميزانية.";
+  } else {
+    budget=v; safeSet(LS_B,String(v));
+    msg.className="app-hint";
+    msg.textContent="تم تعيين الميزانية: "+money(budget)+" ريال.";
+  }
+  updateTotals();
+}
+
+function clearAll(){
+  var msg=el("formMsg");
+  if(!products.length){ msg.className="app-msg warn"; msg.textContent="القائمة فارغة أصلاً."; return; }
+  products=[];
+  persistProducts();
+  render();
+  msg.className="app-msg ok";
+  msg.textContent="تم حذف جميع المنتجات من القائمة.";
+}
+
+function compareOffers(){
+  var out=el("cmpOut");
+  var name=el("cmpName").value.trim()||"المنتج";
+  var pa=parseFloat(el("cmpPriceA").value), sa=parseFloat(el("cmpSizeA").value);
+  var pb=parseFloat(el("cmpPriceB").value), sb=parseFloat(el("cmpSizeB").value);
+  var vals=[pa,sa,pb,sb];
+  if(vals.some(function(v){ return isNaN(v)||v<=0; })){
+    out.innerHTML='<span class="app-msg warn">يرجى إدخال سعر وحجم أو وزن صحيحين أكبر من صفر لكلا العرضين.</span>';
+    return;
+  }
+  var ua=pa/sa, ub=pb/sb, diff=Math.abs(ua-ub);
+  if(diff<1e-9){
+    out.innerHTML='<div class="app-cmp-result">سعر الوحدة متساوٍ في العرضين: <strong>'+money(ua)+'</strong> ريال للوحدة.</div>';
+    return;
+  }
+  var winner=(ua<ub)?"العرض الأول":"العرض الثاني";
+  out.innerHTML='<div class="app-cmp-result">'
+    +'<div>سعر وحدة العرض الأول: <strong>'+money(ua)+'</strong> ريال</div>'
+    +'<div>سعر وحدة العرض الثاني: <strong>'+money(ub)+'</strong> ريال</div>'
+    +'<div class="app-cmp-winner">الأوفر لـ «'+esc(name)+'» هو '+winner+'، بفارق '+money(diff)+' ريال لكل وحدة.</div>'
+    +'</div>';
+}
+
+function refreshSavedSelect(){
+  var sel=el("savedLists");
+  var names=Object.keys(lists);
+  sel.innerHTML="";
+  if(!names.length){
+    var o=document.createElement("option");
+    o.value=""; o.textContent="لا توجد قوائم محفوظة";
+    sel.appendChild(o);
+    return;
+  }
+  names.forEach(function(n){
+    var opt=document.createElement("option");
+    opt.value=n; opt.textContent=n+" ("+lists[n].length+")";
+    sel.appendChild(opt);
+  });
+}
+
+function saveCurrentList(){
+  var msg=el("listMsg");
+  var name=el("listNameInput").value.trim();
+  if(!name){ msg.className="app-msg warn"; msg.textContent="يرجى إدخال اسم للقائمة قبل الحفظ."; return; }
+  if(!products.length){ msg.className="app-msg warn"; msg.textContent="لا توجد منتجات في القائمة الحالية لحفظها."; return; }
+  lists[name]=products.map(function(p){ return Object.assign({},p); });
+  safeSet(LS_L,JSON.stringify(lists));
+  refreshSavedSelect();
+  el("savedLists").value=name;
+  msg.className="app-msg ok";
+  msg.textContent="تم حفظ القائمة «"+name+"» ("+products.length+" منتجات).";
+}
+
+function loadSelectedList(){
+  var msg=el("listMsg");
+  var name=el("savedLists").value;
+  if(!name){ msg.className="app-msg warn"; msg.textContent="لا توجد قائمة محفوظة لاستعادتها."; return; }
+  products=(lists[name]||[]).map(function(p){ return Object.assign({},p); });
+  persistProducts();
+  el("filterCat").value="";
+  render();
+  msg.className="app-msg ok";
+  msg.textContent="تمت استعادة القائمة «"+name+"».";
+}
+
+function deleteSelectedList(){
+  var msg=el("listMsg");
+  var name=el("savedLists").value;
+  if(!name){ msg.className="app-msg warn"; msg.textContent="يرجى تحديد قائمة محفوظة لحذفها."; return; }
+  delete lists[name];
+  safeSet(LS_L,JSON.stringify(lists));
+  refreshSavedSelect();
+  msg.className="app-msg ok";
+  msg.textContent="تم حذف القائمة «"+name+"» من الحفظ.";
+}
+
+function printList(){
+  var app=el("app");
+  if(!products.length){
+    el("listMsg").className="app-msg warn";
+    el("listMsg").textContent="لا توجد منتجات لطباعتها.";
+    return;
+  }
+  app.classList.add("app-print-mode");
+  window.print();
+  setTimeout(function(){ app.classList.remove("app-print-mode"); }, 800);
+}
+
+function init(){
+  loadState();
+  CATS.forEach(function(c){
+    var o1=document.createElement("option"); o1.value=c; o1.textContent=c; el("catInput").appendChild(o1);
+    var o2=document.createElement("option"); o2.value=c; o2.textContent=c; el("filterCat").appendChild(o2);
+  });
+  if(budget!==null){
+    el("budgetInput").value=String(budget);
+    el("budgetStatus").textContent="الميزانية الحالية: "+money(budget)+" ريال.";
+  }
+  refreshSavedSelect();
+
+  el("addBtn").addEventListener("click",addProduct);
+  el("saveBudgetBtn").addEventListener("click",saveBudget);
+  el("filterCat").addEventListener("change",render);
+  el("clearAllBtn").addEventListener("click",clearAll);
+  el("compareBtn").addEventListener("click",compareOffers);
+  el("saveListBtn").addEventListener("click",saveCurrentList);
+  el("loadListBtn").addEventListener("click",loadSelectedList);
+  el("deleteListBtn").addEventListener("click",deleteSelectedList);
+  el("printBtn").addEventListener("click",printList);
+  el("productsWrap").addEventListener("click",function(e){
+    var btn=e.target.closest?e.target.closest("[data-del]"):null;
+    if(!btn) return;
+    var id=btn.getAttribute("data-del");
+    products=products.filter(function(p){ return p.id!==id; });
+    persistProducts();
+    render();
+  });
+
+  render();
+}
+
+if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded",init); } else { init(); }
+})();
+</script>
+</body>
+</html>
