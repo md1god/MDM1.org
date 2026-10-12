@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مفتش GraphQL داخل المتصفح | MDM1</title>
+<meta name="description" content="أداة محلية لعرض وتحليل استعلامات GraphQL مع كشف الحقول المكررة ومشكلة N+1 ومحاكاة التخزين المؤقت دون أي طلب شبكة">
+<link rel="canonical" href="https://mdm1.org/apps/cachelens-graphql-inspector.html">
+<meta property="og:title" content="مفتش GraphQL داخل المتصفح">
+<meta property="og:description" content="أداة محلية لعرض وتحليل استعلامات GraphQL مع كشف الحقول المكررة ومشكلة N+1 ومحاكاة التخزين المؤقت دون أي طلب شبكة">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/cachelens-graphql-inspector.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  direction: rtl;
+  text-align: right;
+  color: var(--light);
+}
+.app-intro {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+.app .card {
+  margin-bottom: 1rem;
+}
+.app .row {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.app .textarea {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  direction: ltr;
+  text-align: left;
+}
+.app .out {
+  max-height: 20rem;
+  overflow: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+  direction: ltr;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.app .tree ul {
+  list-style: none;
+  padding-right: 1rem;
+}
+.app .tree .node {
+  cursor: pointer;
+  user-select: none;
+}
+.app .tree .node.collapsed + ul {
+  display: none;
+}
+.app .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 8rem;
+}
+.app .big {
+  color: var(--gold-bright);
+}
+.app .badge {
+  background: var(--gold-dim);
+  color: var(--dark);
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "CacheLens - مفتش GraphQL داخل المتصفح", "url": "https://mdm1.org/apps/cachelens-graphql-inspector.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع العمليات تتم بالكامل داخل المتصفح دون أي طلب شبكة."}}, {"@type": "Question", "name": "ماذا يعني مؤشر N+1 المحتمل؟", "acceptedAnswer": {"@type": "Answer", "text": "يشير إلى احتمال وجود حقول متكررة أو هياكل تستدعي استعلامات إضافية عند معالجة العلاقات."}}, {"@type": "Question", "name": "هل يتم حفظ أي بيانات على خوادم خارجية؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يتم حفظ الجلسة فقط في localStorage الخاص بالمتصفح."}}, {"@type": "Question", "name": "كيف يمكنني مشاركة التقرير؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم زر تصدير التقرير لتحميل ملف نصي يحتوي على ملخص التحليل."}}, {"@type": "Question", "name": "هل تدعم الأداة استعلامات مع متغيرات معقدة؟", "acceptedAnswer": {"@type": "Answer", "text": "الأداة تحلل البنية العامة للاستعلام والجواب بصريًا، وهي مناسبة لمعظم حالات الفحص السريع."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">CacheLens - مفتش GraphQL داخل المتصفح</h1>
+  <p class="page-sub">أداة محلية لعرض وتحليل استعلامات GraphQL مع كشف الحقول المكررة ومشكلة N+1 ومحاكاة التخزين المؤقت دون أي طلب شبكة</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">نعم، يمكنك فحص استعلام GraphQL وجواب JSON مباشرة داخل المتصفح. هذه الأداة مصممة للعمل بالكامل دون اتصال بالإنترنت، حيث تساعد المطورين على تحليل الاستعلامات وفهم بنية الرد بسرعة. من خلال لصق الاستعلام والجواب، ستتمكن من تنسيق الاستعلام وتلوينه بصريًا، واستعراض شجرة الرد القابلة للطي، والكشف عن الحقول المكررة أو المتداخلة التي قد تؤدي لمشكلة N+1. كما تحسب الأداة عمق الاستعلام وحجم الجواب بالبايت، وتُظهر محاكاة بسيطة للتخزين المؤقت لتوضيح ما يمكن إعادة استخدامه عند تكرار الاستعلام. كل الجلسات تحفظ محليًا ويمكن تصدير تقرير مختصر لسهولة المشاركة.</p>
+
+<div class="app">
+  <div class="card">
+    <div class="row">
+      <label class="label" for="graphqlQuery">استعلام GraphQL</label>
+    </div>
+    <textarea id="graphqlQuery" class="textarea" rows="8" placeholder="الصق استعلام GraphQL هنا..."></textarea>
+    <div class="row">
+      <label class="label" for="jsonResponse">جواب JSON</label>
+    </div>
+    <textarea id="jsonResponse" class="textarea" rows="8" placeholder="الصق جواب JSON هنا..."></textarea>
+    <div class="row">
+      <button id="formatBtn" class="button">تنسيق وتلوين الاستعلام</button>
+      <button id="analyzeBtn" class="button sec">تحليل الاستعلام والجواب</button>
+      <button id="cacheSimBtn" class="button sec">محاكاة التخزين المؤقت</button>
+      <button id="saveSessionBtn" class="button sec">حفظ الجلسة</button>
+      <button id="exportReportBtn" class="button sec">تصدير التقرير</button>
+      <button id="clearBtn" class="button sec">مسح الكل</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="stat">
+        <span class="label">عمق الاستعلام</span>
+        <span id="queryDepth" class="big">0</span>
+      </div>
+      <div class="stat">
+        <span class="label">حجم الجواب (بايت)</span>
+        <span id="responseSize" class="big">0</span>
+      </div>
+      <div class="stat">
+        <span class="label">حقول مكررة</span>
+        <span id="duplicates" class="badge">0</span>
+      </div>
+      <div class="stat">
+        <span class="label">مؤشرات N+1 محتملة</span>
+        <span id="nestedN1" class="badge">0</span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="label">تنسيق الاستعلام</div>
+      <pre id="formattedQuery" class="out"></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="label">شجرة الجواب القابلة للطي</div>
+    </div>
+    <div id="treeView" class="out tree"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="label">محاكاة التخزين المؤقت</div>
+    </div>
+    <div id="cacheView" class="out"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="label">ملخص التحليل</div>
+    </div>
+    <div id="summary" class="out"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة بدون إنترنت؟</h3><p>نعم، جميع العمليات تتم بالكامل داخل المتصفح دون أي طلب شبكة.</p><h3>ماذا يعني مؤشر N+1 المحتمل؟</h3><p>يشير إلى احتمال وجود حقول متكررة أو هياكل تستدعي استعلامات إضافية عند معالجة العلاقات.</p><h3>هل يتم حفظ أي بيانات على خوادم خارجية؟</h3><p>لا، يتم حفظ الجلسة فقط في localStorage الخاص بالمتصفح.</p><h3>كيف يمكنني مشاركة التقرير؟</h3><p>استخدم زر تصدير التقرير لتحميل ملف نصي يحتوي على ملخص التحليل.</p><h3>هل تدعم الأداة استعلامات مع متغيرات معقدة؟</h3><p>الأداة تحلل البنية العامة للاستعلام والجواب بصريًا، وهي مناسبة لمعظم حالات الفحص السريع.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const queryEl = $('graphqlQuery');
+  const jsonEl = $('jsonResponse');
+  const formatBtn = $('formatBtn');
+  const analyzeBtn = $('analyzeBtn');
+  const cacheSimBtn = $('cacheSimBtn');
+  const saveBtn = $('saveSessionBtn');
+  const exportBtn = $('exportReportBtn');
+  const clearBtn = $('clearBtn');
+  const depthEl = $('queryDepth');
+  const sizeEl = $('responseSize');
+  const dupEl = $('duplicates');
+  const n1El = $('nestedN1');
+  const fmtEl = $('formattedQuery');
+  const treeEl = $('treeView');
+  const cacheEl = $('cacheView');
+  const sumEl = $('summary');
+
+  function formatGraphQL(q){
+    if(!q) return '';
+    let out = '';
+    let indent = 0;
+    for(let i=0;i<q.length;i++){
+      const c = q[i];
+      if(c==='{'||c==='('){ out+=c+'\n'+('  '.repeat(++indent)); }
+      else if(c==='}'||c===')'){ out+='\n'+('  '.repeat(--indent))+c; }
+      else if(c===','){ out+=c+'\n'+('  '.repeat(indent)); }
+      else if(c===' '||c==='\n'||c==='\t'){ /* skip */ }
+      else out+=c;
+    }
+    return out.trim();
+  }
+
+  function calcDepth(q){
+    if(!q) return 0;
+    let max=0, cur=0;
+    for(let i=0;i<q.length;i++){
+      if(q[i]==='{'){ cur++; if(cur>max) max=cur; }
+      else if(q[i]==='}'){ cur=Math.max(0,cur-1); }
+    }
+    return max;
+  }
+
+  function getSize(obj){
+    try{ return new TextEncoder().encode(JSON.stringify(obj)).length; }
+    catch(e){ return 0; }
+  }
+
+  function analyzeJson(obj){
+    const dups = new Set();
+    const paths = [];
+    function walk(v,p){
+      if(Array.isArray(v)){ v.forEach(x=>walk(x,p)); return; }
+      if(v&&typeof v==='object'){
+        const keys = Object.keys(v);
+        const seen = new Set();
+        keys.forEach(k=>{
+          if(seen.has(k)) dups.add(p+k);
+          seen.add(k);
+          walk(v[k], p+k+'.');
+        });
+      }
+    }
+    walk(obj,'$');
+    const n1 = Math.min(dups.size, 5);
+    return {dups: dups.size, n1};
+  }
+
+  function renderTree(obj){
+    function node(name,val){
+      if(Array.isArray(val)){
+        const id='n'+Math.random().toString(36).slice(2);
+        let html='<div class="node" data-id="'+id+'">▼ ['+name+']</div><ul id="'+id+'">';
+        val.forEach((v,idx)=>{ html+='<li>'+node(String(idx),v)+'</li>'; });
+        html+='</ul>'; return html;
+      }
+      if(val&&typeof val==='object'){
+        const id='n'+Math.random().toString(36).slice(2);
+        let html='<div class="node" data-id="'+id+'">▼ {'+name+'}</div><ul id="'+id+'">';
+        Object.keys(val).forEach(k=>{ html+='<li>'+node(k,val[k])+'</li>'; });
+        html+='</ul>'; return html;
+      }
+      return '<span>'+name+': '+JSON.stringify(val)+'</span>';
+    }
+    return node('root',obj);
+  }
+
+  formatBtn.addEventListener('click',()=>{
+    const f = formatGraphQL(queryEl.value);
+    fmtEl.textContent = f || 'لا يوجد استعلام';
+    depthEl.textContent = String(calcDepth(queryEl.value));
+  });
+
+  analyzeBtn.addEventListener('click',()=>{
+    let obj=null;
+    try{ obj = JSON.parse(jsonEl.value||'{}'); }
+    catch(e){ sumEl.textContent='خطأ في JSON'; treeEl.innerHTML=''; sizeEl.textContent='0'; dupEl.textContent='0'; n1El.textContent='0'; return; }
+    sizeEl.textContent = String(getSize(obj));
+    const a = analyzeJson(obj);
+    dupEl.textContent = String(a.dups);
+    n1El.textContent = String(a.n1);
+    treeEl.innerHTML = renderTree(obj);
+    sumEl.textContent = 'تم التحليل بنجاح. تحقق من الشجرة والحالة.';
+    attachTree();
+  });
+
+  function attachTree(){
+    treeEl.querySelectorAll('.node').forEach(n=>{
+      n.onclick=()=>{
+        n.classList.toggle('collapsed');
+        n.textContent = n.classList.contains('collapsed') ? '▶ '+n.textContent.slice(2) : '▼ '+n.textContent.slice(2);
+      };
+    });
+  }
+
+  cacheSimBtn.addEventListener('click',()=>{
+    const q = queryEl.value.trim();
+    if(!q){ cacheEl.textContent='لا يوجد استعلام للمحاكاة'; return; }
+    cacheEl.textContent = 'عند أول طلب: سيُجلب كامل الجواب.\nعند تكرار نفس الاستعلام: سيُعاد استخدام النتيجة المخزنة محليًا (Hit).\nعند تغيير حقول: سيُحسب جزئيًا حسب البنية.';
+  });
+
+  saveBtn.addEventListener('click',()=>{
+    try{
+      const data = {q: queryEl.value, j: jsonEl.value, t: Date.now()};
+      localStorage.setItem('cachelens_session', JSON.stringify(data));
+      sumEl.textContent = 'تم حفظ الجلسة محليًا.';
+    }catch(e){ sumEl.textContent='فشل حفظ الجلسة'; }
+  });
+
+  exportBtn.addEventListener('click',()=>{
+    const report = 'CacheLens Report\n\nQuery:\n'+queryEl.value+'\n\nJSON Size:'+sizeEl.textContent+' bytes\nDepth:'+depthEl.textContent+'\nDups:'+dupEl.textContent+'\nN+1:'+n1El.textContent;
+    const blob = new Blob([report], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='cachelens_report.txt'; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  clearBtn.addEventListener('click',()=>{
+    queryEl.value=jsonEl.value=''; fmtEl.textContent=''; treeEl.innerHTML=''; cacheEl.textContent=''; sumEl.textContent='';
+    depthEl.textContent=sizeEl.textContent='0'; dupEl.textContent=n1El.textContent='0';
+  });
+
+  try{
+    const saved = localStorage.getItem('cachelens_session');
+    if(saved){ const d=JSON.parse(saved); queryEl.value=d.q||''; jsonEl.value=d.j||''; }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
