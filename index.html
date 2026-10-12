@@ -445,7 +445,7 @@
 </div>
 
 <!-- ══ AUDIO — ضع ملف الموسيقى في مجلد audio/ ══ -->
-<audio id="bg-music" loop preload="auto">
+<audio id="bg-music" loop preload="none">
   <source src="audio/index.mp3" type="audio/mpeg">
   <source src="audio/index.ogg" type="audio/ogg">
 </audio>
@@ -524,10 +524,10 @@
     </p>
 
     <!-- ✦ الفيديو بدلاً من hoodie-eye-horus.png ✦ -->
-    <video
+    <video data-lazy preload="none"
       class="ch-vid-portrait"
-      autoplay loop muted playsinline
-      poster="images/hoodie-eye-horus.png">
+      loop muted playsinline
+      data-poster="images/hoodie-eye-horus.png">
       <source src="images/hoodie-eye-horus.webm" type="video/webm">
     </video>
 
@@ -567,10 +567,10 @@
     <div style="font-size:5rem; margin: 1rem 0;" class="anim-flicker">☠️</div>
 
     <!-- ✦ الفيديو بدلاً من dark-creature.png ✦ -->
-    <video
+    <video data-lazy preload="none"
       class="ch-vid-portrait"
-      autoplay loop muted playsinline
-      poster="images/dark-creature.png">
+      loop muted playsinline
+      data-poster="images/dark-creature.png">
       <source src="images/dark-creature.webm" type="video/webm">
     </video>
 
@@ -613,10 +613,10 @@
     <div style="font-size:4rem; margin: 1.5rem 0; text-align:center;" class="anim-float">💛</div>
 
     <!-- ✦ الفيديو بدلاً من portal-cloaked.png ✦ -->
-    <video
+    <video data-lazy preload="none"
       class="ch-vid-portrait"
-      autoplay loop muted playsinline
-      poster="images/portal-cloaked.png">
+      loop muted playsinline
+      data-poster="images/portal-cloaked.png">
       <source src="images/portal-cloaked.webm" type="video/webm">
     </video>
 
@@ -649,10 +649,10 @@
 
     <!-- ✦ فيديوهان جانبيان بدلاً من الصورتين ✦ -->
     <div class="ch-vid-pair">
-      <video autoplay loop muted playsinline poster="images/magic-book-cave.png">
+      <video data-lazy preload="none" loop muted playsinline data-poster="images/magic-book-cave.png">
         <source src="images/magic-book-cave.webm" type="video/webm">
       </video>
-      <video autoplay loop muted playsinline poster="images/white-owl.png">
+      <video data-lazy preload="none" loop muted playsinline data-poster="images/white-owl.png">
         <source src="images/white-owl.webm" type="video/webm">
       </video>
     </div>
@@ -688,10 +688,10 @@
     </p>
 
     <!-- ✦ الفيديو بدلاً من inner-light-poster.png ✦ -->
-    <video
+    <video data-lazy preload="none"
       class="ch-vid-portrait"
-      autoplay loop muted playsinline
-      poster="images/inner-light-poster.png">
+      loop muted playsinline
+      data-poster="images/inner-light-poster.png">
       <source src="images/inner-light-poster.webm" type="video/webm">
     </video>
 
@@ -735,18 +735,18 @@
     <div class="verse"> إنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ </div>
 
     <!-- ✦ الفيديو الدائري بدلاً من gold-coin-mdm.png ✦ -->
-    <video
+    <video data-lazy preload="none"
       class="ch-vid-circle"
-      autoplay loop muted playsinline
-      poster="images/gold-coin-mdm.png">
+      loop muted playsinline
+      data-poster="images/gold-coin-mdm.png">
       <source src="images/gold-coin-mdm.webm" type="video/webm">
     </video>
 
     <!-- ✦ الفيديو العريض بدلاً من md111-token.png ✦ -->
-    <video
+    <video data-lazy preload="none"
       class="ch-vid-wide"
-      autoplay loop muted playsinline
-      poster="images/md111-token.png">
+      loop muted playsinline
+      data-poster="images/md111-token.png">
       <source src="images/md111-token.webm" type="video/webm">
     </video>
 
@@ -1050,5 +1050,24 @@ document.getElementById('wp-btn').addEventListener('click', (e) => {
 })();
 </script>
 
+<script>
+/* تحميل كسول للفيديوهات: الفيديو وصورته بيتحمّلوا لما يقربوا من الشاشة (نفس الشكل، تحميل أخف) */
+(function(){
+  var vids = document.querySelectorAll('video[data-lazy]');
+  if(!vids.length) return;
+  function load(v){
+    if(v.dataset.ready) return; v.dataset.ready = '1';
+    if(v.dataset.poster) v.setAttribute('poster', v.dataset.poster);
+    v.preload = 'auto'; v.load();
+  }
+  if(!('IntersectionObserver' in window)){ vids.forEach(function(v){ load(v); v.play().catch(function(){}); }); return; }
+  var near = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ load(e.target); near.unobserve(e.target); } }); }, { rootMargin: '900px 0px' });
+  var vis = new IntersectionObserver(function(es){ es.forEach(function(e){
+    var v = e.target; if(!v.dataset.ready) return;
+    if(e.isIntersecting){ var p = v.play(); if(p && p.catch) p.catch(function(){}); } else { v.pause(); }
+  }); }, { threshold: 0.05 });
+  vids.forEach(function(v){ near.observe(v); vis.observe(v); });
+})();
+</script>
 </body>
 </html>
