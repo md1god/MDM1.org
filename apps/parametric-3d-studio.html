@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر مجسمات ثلاثية الأبعاد بارامترية عربي مع تصدير STL | MDM1</title>
+<meta name="description" content="صمّم مجسمات ثلاثية الأبعاد بارامترية في المتصفح عبر منزلقات وحقول رقمية، مع معاينة تفاعلية، عمليات دمج وطرح، وحفظ محلي وتصدير STL.">
+<link rel="canonical" href="https://mdm1.org/apps/parametric-3d-studio.html">
+<meta property="og:title" content="محرر مجسمات ثلاثية الأبعاد بارامترية عربي مع تصدير STL">
+<meta property="og:description" content="صمّم مجسمات ثلاثية الأبعاد بارامترية في المتصفح عبر منزلقات وحقول رقمية، مع معاينة تفاعلية، عمليات دمج وطرح، وحفظ محلي وتصدير STL.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/parametric-3d-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:block}
+.app-intro{margin:0 0 14px;line-height:1.9;color:var(--light,#e8e2d4)}
+.app-layout{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+.app-stage{padding:12px;display:flex;flex-direction:column;gap:10px}
+.app-canvas{width:100%;height:auto;display:block;border-radius:10px;background:#141118;border:1px solid var(--gold-dim,#4a3c1c);cursor:grab;touch-action:none}
+.app-view-row{flex-wrap:wrap;gap:12px;align-items:center}
+.app-view-row label{display:flex;align-items:center;gap:6px;font-size:13px}
+.app-view-row input[type=range]{width:110px}
+.app-panel{padding:14px;display:flex;flex-direction:column;gap:10px}
+.app-group{display:flex;flex-direction:column;gap:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px}
+.app-group h3{margin:0;font-size:13px;color:var(--gold,#d4af37)}
+.app-lib{display:flex;flex-wrap:wrap;gap:8px}
+.app-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.app-field{display:flex;align-items:center;gap:8px}
+.app-field label{flex:0 0 96px;font-size:13px}
+.app-field input[type=range]{flex:1;min-width:80px}
+.app-field input[type=number]{width:76px}
+.app-out-card{margin-top:16px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.app-stats{display:flex;flex-wrap:wrap;gap:20px}
+.app-stat{min-width:110px;font-size:13px;color:var(--light,#e8e2d4)}
+.app-msg{margin:0;font-size:13px;color:var(--gold-bright,#f2cf5b)}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}}
+@media(max-width:560px){.app-field label{flex-basis:80px}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مصمم مجسمات ثلاثية الأبعاد بارامترية في المتصفح", "url": "https://mdm1.org/apps/parametric-3d-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى تثبيت برنامج أو إنشاء حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل التطبيق بالكامل داخل المتصفح دون خادم أو حساب، ولا يرسل أي بيانات إلى الإنترنت. كل العمليات الحسابية تُنفَّذ على جهازك مباشرة."}}, {"@type": "Question", "name": "كيف أضيف ثقبًا داخل مجسم موجود؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف شكلًا من نوع \"ثقب أسطواني\" من المكتبة، فسيكون نوع عمليته الطرح افتراضيًا، ثم اضبط نصف قطره وارتفاعه وموضعه ليتفاعل مع الشكل الآخر ويُفرّغ المادة."}}, {"@type": "Question", "name": "ما معنى دقة الشبكة البارامترية وكيف أختارها؟", "acceptedAnswer": {"@type": "Answer", "text": "هي عدد الخلايا التي يُقسَّم إليها الفضاء لبناء المجسم؛ القيم الأعلى تعطي تفاصيل أدق وحوافًا أنعم لكنها أبطأ قليلًا، والقيم الأقل أسرع ومناسبة للمعاينة السريعة."}}, {"@type": "Question", "name": "هل يمكنني حفظ مشاريعي والعودة إليها لاحقًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اكتب اسم المشروع ثم اضغط \"حفظ المشروع محليًا\" ليُخزَّن في متصفحك، ويمكنك لاحقًا تحميله أو حذفه من قائمة المشاريع المحفوظة دون أي اتصال بالشبكة."}}, {"@type": "Question", "name": "هل الملف المصدَّر جاهز للطباعة ثلاثية الأبعاد؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر \"تصدير ملف STL\" يُنتج ملفًا بصيغة STL بالمليمتر مع مُثلَّثات موحدة الاتجاه، ويُوضع النموذج على القاعدة ومتمركزًا أفقيًا ليكون جاهزًا لبرامج التقطيع والطباعة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مصمم مجسمات ثلاثية الأبعاد بارامترية في المتصفح</h1>
+  <p class="page-sub">صمّم مجسمات ثلاثية الأبعاد بارامترية في المتصفح عبر منزلقات وحقول رقمية، مع معاينة تفاعلية، عمليات دمج وطرح، وحفظ محلي وتصدير STL.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">
+  <p class="app-intro">هذا التطبيق يتيح لك تصميم مجسمات ثلاثية الأبعاد بارامترية مباشرة داخل المتصفح دون تثبيت أي برنامج ودون إنشاء حساب: أضف أشكالًا جاهزة مثل الصناديق والأسطوانات والدعامات والثقوب، ثم اضبط الأبعاد والمواضع عبر منزلقات وحقول رقمية فيُعاد بناء المجسم فورًا. تعرض المعاينة التفاعلية الشكل من أي زاوية عبر السحب للتدوير وعجلة الفأرة للتكبير، بينما تتيح عمليات الدمج والطرح والمحاذاة بناء أشكال مركبة بدقة. تُنفَّذ جميع الحسابات محليًا على جهازك، ويمكنك حفظ مشاريعك داخل المتصفح والعودة إليها لاحقًا، ثم تصدير النموذج بصيغة STL جاهزة للطباعة ثلاثية الأبعاد. الواجهة عربية بالكامل وتستخدم وحدات القياس المترية بالمليمتر.</p>
+  <div class="app-layout">
+    <section class="card app-stage">
+      <canvas id="app-view" width="820" height="560" class="app-canvas"></canvas>
+      <div class="row app-view-row">
+        <label>دوران أفقي <input type="range" id="app-yaw-range" min="0" max="360" step="1" value="52"></label>
+        <label>دوران عمودي <input type="range" id="app-pitch-range" min="-80" max="80" step="1" value="28"></label>
+        <label>تكبير <input type="range" id="app-zoom-range" min="0.4" max="2.5" step="0.05" value="1"></label>
+        <button class="sec" id="app-view-reset">إعادة ضبط العرض</button>
+      </div>
+    </section>
+    <section class="card app-panel">
+      <div class="app-group">
+        <h3>مكتبة الأشكال الجاهزة</h3>
+        <div class="app-lib">
+          <button id="app-add-box">إضافة صندوق</button>
+          <button id="app-add-cyl">إضافة أسطوانة</button>
+          <button id="app-add-support">إضافة دعامة</button>
+          <button id="app-add-hole">إضافة ثقب أسطواني</button>
+        </div>
+      </div>
+      <div class="app-group">
+        <h3>الشكل المحدد</h3>
+        <div class="app-field"><label for="app-object-list">الأشكال</label><select id="app-object-list"></select></div>
+        <div class="app-field"><label for="app-op">العملية</label><select id="app-op"><option value="union">دمج (إضافة مادة)</option><option value="subtract">طرح (تفريغ مادة)</option></select></div>
+        <div class="app-actions">
+          <button class="sec" id="app-align-xy">توسيط أفقيًا</button>
+          <button class="sec" id="app-align-base">إنزال إلى القاعدة</button>
+          <button class="sec" id="app-align-center">توسيط كامل على القاعدة</button>
+          <button class="sec" id="app-del">حذف الشكل المحدد</button>
+          <button class="sec" id="app-clear">مسح كل الأشكال</button>
+        </div>
+      </div>
+      <div class="app-group" id="app-group-box">
+        <h3>أبعاد الصندوق (مم)</h3>
+        <div class="app-field"><label for="app-x-num">الطول س</label><input type="range" id="app-x-range" min="1" max="120" step="0.5" value="20"><input type="number" id="app-x-num" min="1" max="120" step="0.5" value="20"></div>
+        <div class="app-field"><label for="app-y-num">العرض ص</label><input type="range" id="app-y-range" min="1" max="120" step="0.5" value="20"><input type="number" id="app-y-num" min="1" max="120" step="0.5" value="20"></div>
+        <div class="app-field"><label for="app-z-num">الارتفاع ع</label><input type="range" id="app-z-range" min="1" max="120" step="0.5" value="20"><input type="number" id="app-z-num" min="1" max="120" step="0.5" value="20"></div>
+      </div>
+      <div class="app-group" id="app-group-cyl">
+        <h3>أبعاد الأسطوانة أو الثقب (مم)</h3>
+        <div class="app-field"><label for="app-r-num">نصف القطر</label><input type="range" id="app-r-range" min="0.5" max="60" step="0.5" value="8"><input type="number" id="app-r-num" min="0.5" max="60" step="0.5" value="8"></div>
+        <div class="app-field"><label for="app-h-num">الارتفاع</label><input type="range" id="app-h-range" min="1" max="120" step="0.5" value="20"><input type="number" id="app-h-num" min="1" max="120" step="0.5" value="20"></div>
+      </div>
+      <div class="app-group" id="app-group-sup">
+        <h3>أبعاد الدعامة (مم)</h3>
+        <div class="app-field"><label for="app-w-num">عرض المقطع</label><input type="range" id="app-w-range" min="4" max="80" step="0.5" value="16"><input type="number" id="app-w-num" min="4" max="80" step="0.5" value="16"></div>
+        <div class="app-field"><label for="app-h2-num">الارتفاع</label><input type="range" id="app-h-range" min="1" max="120" step="0.5" value="24"><input type="number" id="app-h-num" min="1" max="120" step="0.5" value="24"></div>
+      </div>
+      <div class="app-group">
+        <h3>الموضع في الفضاء (مم)</h3>
+        <div class="app-field"><label for="app-px-num">الموضع س</label><input type="range" id="app-px-range" min="-60" max="60" step="1" value="0"><input type="number" id="app-px-num" min="-60" max="60" step="1" value="0"></div>
+        <div class="app-field"><label for="app-py-num">الموضع ص</label><input type="range" id="app-py-range" min="-60" max="60" step="1" value="0"><input type="number" id="app-py-num" min="-60" max="60" step="1" value="0"></div>
+        <div class="app-field"><label for="app-pz-num">الموضع ع</label><input type="range" id="app-pz-range" min="-60" max="60" step="1" value="10"><input type="number" id="app-pz-num" min="-60" max="60" step="1" value="10"></div>
+      </div>
+      <div class="app-group">
+        <h3>دقة الشبكة البارامترية</h3>
+        <div class="app-field"><label for="app-res-num">عدد الخلايا</label><input type="range" id="app-res-range" min="16" max="56" step="1" value="34"><input type="number" id="app-res-num" min="16" max="56" step="1" value="34"></div>
+      </div>
+    </section>
+  </div>
+  <section class="card app-out-card">
+    <div class="out"><div class="big" id="app-big">0</div><div>عدد المثلثات في شبكة المجسم</div></div>
+    <div class="app-stats">
+      <div class="app-stat">عدد الأشكال: <span id="app-stat-obj">0</span></div>
+      <div class="app-stat">المثلثات: <span id="app-stat-tri">0</span></div>
+      <div class="app-stat">الحجم: <span id="app-stat-vol">0</span> سم³</div>
+      <div class="app-stat">الأبعاد: <span id="app-stat-size">—</span></div>
+    </div>
+    <div class="row app-actions">
+      <button id="app-export">تصدير ملف STL</button>
+      <input type="text" id="app-proj-name" placeholder="اسم المشروع" aria-label="اسم المشروع">
+      <button class="sec" id="app-save">حفظ المشروع محليًا</button>
+    </div>
+    <div class="row app-actions">
+      <select id="app-load-select" aria-label="المشاريع المحفوظة"></select>
+      <button class="sec" id="app-load">تحميل المشروع المحدد</button>
+      <button class="sec" id="app-del-proj">حذف المشروع المحدد</button>
+      <button class="sec" id="app-new">بدء مشروع جديد</button>
+    </div>
+    <div class="app-msg" id="app-msg"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى تثبيت برنامج أو إنشاء حساب؟</h3><p>لا، يعمل التطبيق بالكامل داخل المتصفح دون خادم أو حساب، ولا يرسل أي بيانات إلى الإنترنت. كل العمليات الحسابية تُنفَّذ على جهازك مباشرة.</p><h3>كيف أضيف ثقبًا داخل مجسم موجود؟</h3><p>أضف شكلًا من نوع &quot;ثقب أسطواني&quot; من المكتبة، فسيكون نوع عمليته الطرح افتراضيًا، ثم اضبط نصف قطره وارتفاعه وموضعه ليتفاعل مع الشكل الآخر ويُفرّغ المادة.</p><h3>ما معنى دقة الشبكة البارامترية وكيف أختارها؟</h3><p>هي عدد الخلايا التي يُقسَّم إليها الفضاء لبناء المجسم؛ القيم الأعلى تعطي تفاصيل أدق وحوافًا أنعم لكنها أبطأ قليلًا، والقيم الأقل أسرع ومناسبة للمعاينة السريعة.</p><h3>هل يمكنني حفظ مشاريعي والعودة إليها لاحقًا؟</h3><p>نعم، اكتب اسم المشروع ثم اضغط &quot;حفظ المشروع محليًا&quot; ليُخزَّن في متصفحك، ويمكنك لاحقًا تحميله أو حذفه من قائمة المشاريع المحفوظة دون أي اتصال بالشبكة.</p><h3>هل الملف المصدَّر جاهز للطباعة ثلاثية الأبعاد؟</h3><p>نعم، زر &quot;تصدير ملف STL&quot; يُنتج ملفًا بصيغة STL بالمليمتر مع مُثلَّثات موحدة الاتجاه، ويُوضع النموذج على القاعدة ومتمركزًا أفقيًا ليكون جاهزًا لبرامج التقطيع والطباعة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+var byId=function(id){return document.getElementById(id);};
+var canvas=byId('app-view'),ctx=canvas.getContext('2d');
+var W=canvas.width,H=canvas.height;
+var state={objects:[],nextId:1,selected:null,res:34,yaw:52,pitch:28,zoom:1};
+var verts=[],faces=[],stats={tris:0,vol:0,filled:0,min:null,max:null};
+var projKey='mujassam_projects_v1';
+function msg(t){byId('app-msg').textContent=t||'';}
+function typeName(t){return t==='box'?'صندوق':t==='cylinder'?'أسطوانة':t==='support'?'دعامة':'ثقب أسطواني';}
+function halfH(o){return o.type==='box'?o.sz/2:o.h/2;}
+function extent(o){var hx,hy,hz;
+ if(o.type==='box'){hx=o.sx/2;hy=o.sy/2;hz=o.sz/2;}
+ else if(o.type==='support'){hx=o.w/2;hy=o.w/2;hz=o.h/2;}
+ else{hx=o.r;hy=o.r;hz=o.h/2;}
+ return {min:[o.x-hx,o.y-hy,o.z-hz],max:[o.x+hx,o.y+hy,o.z+hz]};}
+function inside(o,cx,cy,cz){var dx=cx-o.x,dy=cy-o.y,dz=cz-o.z;
+ if(o.type==='box')return Math.abs(dx)<=o.sx/2&&Math.abs(dy)<=o.sy/2&&Math.abs(dz)<=o.sz/2;
+ if(o.type==='support'){if(Math.abs(dz)>o.h/2)return false;var t=Math.max(1.2,o.w*0.35);
+  return (Math.abs(dx)<=o.w/2&&Math.abs(dy)<=t/2)||(Math.abs(dx)<=t/2&&Math.abs(dy)<=o.w/2);}
+ if(Math.abs(dz)>o.h/2)return false;return dx*dx+dy*dy<=o.r*o.r;}
+function build(){
+ var objs=state.objects;
+ var tmn=[1e9,1e9,1e9],tmx=[-1e9,-1e9,-1e9];
+ objs.forEach(function(o){var e=extent(o);for(var a=0;a<3;a++){if(e.min[a]<tmn[a])tmn[a]=e.min[a];if(e.max[a]>tmx[a])tmx[a]=e.max[a];}});
+ if(!objs.length){faces=[];verts=[];stats={tris:0,vol:0,filled:0,min:null,max:null};return;}
+ var m=2,mn=[tmn[0]-m,tmn[1]-m,tmn[2]-m],mx=[tmx[0]+m,tmx[1]+m,tmx[2]+m];
+ var dims=[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]];
+ var s=Math.max(dims[0],dims[1],dims[2])/state.res;
+ var nx=Math.max(1,Math.round(dims[0]/s)),ny=Math.max(1,Math.round(dims[1]/s)),nz=Math.max(1,Math.round(dims[2]/s));
+ var grid=new Uint8Array(nx*ny*nz);
+ function gidx(i,j,k){return (i*ny+j)*nz+k;}
+ objs.forEach(function(o){var e=extent(o),v=o.op==='subtract'?0:1;
+  var i0=Math.max(0,Math.floor((e.min[0]-mn[0])/s)),i1=Math.min(nx-1,Math.floor((e.max[0]-mn[0])/s));
+  var j0=Math.max(0,Math.floor((e.min[1]-mn[1])/s)),j1=Math.min(ny-1,Math.floor((e.max[1]-mn[1])/s));
+  var k0=Math.max(0,Math.floor((e.min[2]-mn[2])/s)),k1=Math.min(nz-1,Math.floor((e.max[2]-mn[2])/s));
+  for(var i=i0;i<=i1;i++){var cx=mn[0]+(i+0.5)*s;
+   for(var j=j0;j<=j1;j++){var cy=mn[1]+(j+0.5)*s;
+    for(var k=k0;k<=k1;k++){var cz=mn[2]+(k+0.5)*s;
+     if(inside(o,cx,cy,cz))grid[gidx(i,j,k)]=v;}}}});
+ var filled=0;for(var t=0;t<grid.length;t++)if(grid[t])filled++;
+ verts=[];faces=[];
+ if(filled===0){stats={tris:0,vol:0,filled:0,min:tmn,max:tmx};return;}
+ var vmap=new Map();
+ function V(i,j,k){var key=(i*(ny+1)+j)*(nz+1)+k,idx=vmap.get(key);
+  if(idx===undefined){idx=verts.length;vmap.set(key,idx);verts.push([mn[0]+i*s,mn[1]+j*s,mn[2]+k*s]);}return idx;}
+ function F(a,b,c,d,n){faces.push({a:a,b:b,c:c,d:d,n:n});}
+ for(var i=0;i<nx;i++)for(var j=0;j<ny;j++)for(var k=0;k<nz;k++){
+  if(!grid[gidx(i,j,k)])continue;
+  if(i+1>=nx||!grid[gidx(i+1,j,k)])F(V(i+1,j,k),V(i+1,j+1,k),V(i+1,j+1,k+1),V(i+1,j,k+1),[1,0,0]);
+  if(i-1<0||!grid[gidx(i-1,j,k)])F(V(i,j,k),V(i,j,k+1),V(i,j+1,k+1),V(i,j+1,k),[-1,0,0]);
+  if(j+1>=ny||!grid[gidx(i,j+1,k)])F(V(i,j+1,k),V(i,j+1,k+1),V(i+1,j+1,k+1),V(i+1,j+1,k),[0,1,0]);
+  if(j-1<0||!grid[gidx(i,j-1,k)])F(V(i,j,k),V(i+1,j,k),V(i+1,j,k+1),V(i,j,k+1),[0,-1,0]);
+  if(k+1>=nz||!grid[gidx(i,j,k+1)])F(V(i,j,k+1),V(i+1,j,k+1),V(i+1,j+1,k+1),V(i,j+1,k+1),[0,0,1]);
+  if(k-1<0||!grid[gidx(i,j,k-1)])F(V(i,j,k),V(i,j+1,k),V(i+1,j+1,k),V(i+1,j,k),[0,0,-1]);}
+ stats={tris:faces.length*2,vol:filled*s*s*s,filled:filled,min:tmn,max:tmx};}
+function render(){
+ ctx.clearRect(0,0,W,H);ctx.fillStyle='#141118';ctx.fillRect(0,0,W,H);
+ if(!faces.length||!verts.length){ctx.fillStyle='#8f8470';ctx.font='16px system-ui,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('لا يوجد مجسم لعرضه — أضف شكلًا من المكتبة لبدء التصميم.',W/2,H/2);return;}
+ var yaw=state.yaw*Math.PI/180,pit=state.pitch*Math.PI/180;
+ var ca=Math.cos(yaw),sa=Math.sin(yaw),cb=Math.cos(pit),sb=Math.sin(pit);
+ var n=verts.length,i;
+ var px=new Float32Array(n),py=new Float32Array(n),pd=new Float32Array(n);
+ var mnx=1e9,mny=1e9,mxx=-1e9,mxy=-1e9;
+ for(i=0;i<n;i++){var v=verts[i];
+  var x1=v[0]*ca-v[1]*sa,y1=v[0]*sa+v[1]*ca,z1=v[2];
+  var y2=y1*cb-z1*sb,z2=y1*sb+z1*cb;
+  px[i]=x1;py[i]=-z2;pd[i]=y2;
+  if(x1<mnx)mnx=x1;if(x1>mxx)mxx=x1;if(py[i]<mny)mny=py[i];if(py[i]>mxy)mxy=py[i];}
+ var cw=(mxx-mnx)||1,ch=(mxy-mny)||1;
+ var scale=Math.min(W/cw,H/ch)*0.82*state.zoom;
+ var ox=W/2-((mnx+mxx)/2)*scale,oy=H/2+((mny+mxy)/2)*scale;
+ var sX=new Float32Array(n),sY=new Float32Array(n);
+ for(i=0;i<n;i++){sX[i]=ox+px[i]*scale;sY[i]=oy-py[i]*scale;}
+ var L=[-0.35,-0.55,0.76],order=[];
+ for(i=0;i<faces.length;i++){var f=faces[i],nn=f.n;
+  var nx1=nn[0]*ca-nn[1]*sa,ny1=nn[0]*sa+nn[1]*ca,nz1=nn[2];
+  var ny2=ny1*cb-nz1*sb,nz2=ny1*sb+nz1*cb;
+  if(ny2>=0)continue;
+  var d=(pd[f.a]+pd[f.b]+pd[f.c]+pd[f.d])*0.25;
+  order.push({i:i,d:d,nx:nx1,ny:ny2,nz:nz2});}
+ order.sort(function(a,b){return b.d-a.d;});
+ for(i=0;i<order.length;i++){var o=order[i],ff=faces[o.i];
+  var dot=o.nx*L[0]+o.ny*L[1]+o.nz*L[2];if(dot<0)dot=0;
+  var sh=0.30+0.70*dot;
+  var col='rgb('+Math.round(214*sh)+','+Math.round(178*sh)+','+Math.round(66*sh)+')';
+  ctx.beginPath();ctx.moveTo(sX[ff.a],sY[ff.a]);ctx.lineTo(sX[ff.b],sY[ff.b]);
+  ctx.lineTo(sX[ff.c],sY[ff.c]);ctx.lineTo(sX[ff.d],sY[ff.d]);ctx.closePath();
+  ctx.fillStyle=col;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=0.7;ctx.stroke();}}
+function updateStats(){
+ byId('app-stat-obj').textContent=state.objects.length;
+ byId('app-stat-tri').textContent=stats.tris;
+ byId('app-stat-vol').textContent=(stats.vol/1000).toFixed(2);
+ byId('app-big').textContent=stats.tris;
+ if(state.objects.length&&stats.min){var d=[stats.max[0]-stats.min[0],stats.max[1]-stats.min[1],stats.max[2]-stats.min[2]];
+  byId('app-stat-size').textContent=d[0].toFixed(1)+' × '+d[1].toFixed(1)+' × '+d[2].toFixed(1)+' مم';}
+ else byId('app-stat-size').textContent='—';}
+function updateList(){var sel=byId('app-object-list');sel.innerHTML='';
+ if(!state.objects.length){var o0=document.createElement('option');o0.value='';o0.textContent='لا توجد أشكال بعد';sel.appendChild(o0);return;}
+ state.objects.forEach(function(o,i){var op=document.createElement('option');op.value=o.id;
+  op.textContent=(i+1)+' - '+typeName(o.type);sel.appendChild(op);});
+ sel.value=state.selected;}
+function getSelected(){for(var i=0;i<state.objects.length;i++)if(state.objects[i].id===state.selected)return state.objects[i];return null;}
+function setPair(base,v){byId(base+'-range').value=v;byId(base+'-num').value=v;}
+function setControls(){var o=getSelected();
+ byId('app-group-box').style.display='none';byId('app-group-cyl').style.display='none';byId('app-group-sup').style.display='none';
+ byId('app-op').disabled=!o;if(!o)return;
+ if(o.type==='box'){byId('app-group-box').style.display='';setPair('app-x',o.sx);setPair('app-y',o.sy);setPair('app-z',o.sz);}
+ else if(o.type==='support'){byId('app-group-sup').style.display='';setPair('app-w',o.w);setPair('app-h',o.h);}
+ else{byId('app-group-cyl').style.display='';setPair('app-r',o.r);setPair('app-h',o.h);}
+ setPair('app-px',o.x);setPair('app-py',o.y);setPair('app-pz',o.z);
+ byId('app-op').value=o.op;}
+var timer=null;
+function schedule(){if(timer)clearTimeout(timer);timer=setTimeout(function(){timer=null;build();render();updateStats();},50);}
+function refreshAll(){build();render();updateStats();updateList();setControls();}
+function addObject(type){var o={id:state.nextId++,type:type,op:type==='hole'?'subtract':'union'};
+ if(type==='box'){o.sx=20;o.sy=20;o.sz=20;}
+ else if(type==='support'){o.w=16;o.h=24;}
+ else{o.r=8;o.h=20;}
+ o.x=0;o.y=0;o.z=o.type==='box'?o.sz/2:o.h/2;
+ state.objects.push(o);state.selected=o.id;refreshAll();
+ msg('تمت إضافة '+typeName(type)+'. اضبط أبعاده من الحقول بالأعلى.');}
+function readProjects(){try{var r=localStorage.getItem(projKey);return r?JSON.parse(r):{};}catch(e){return {};}}
+function writeProjects(p){try{localStorage.setItem(projKey,JSON.stringify(p));return true;}catch(e){return false;}}
+function loadProjectList(){var sel=byId('app-load-select');sel.innerHTML='';
+ var p=readProjects(),names=Object.keys(p);
+ if(!names.length){var o=document.createElement('option');o.value='';o.textContent='لا توجد مشاريع محفوظة';sel.appendChild(o);return;}
+ names.forEach(function(nm){var o=document.createElement('option');o.value=nm;o.textContent=nm;sel.appendChild(o);});}
+function saveProject(){var name=(byId('app-proj-name').value||'').trim();
+ if(!name){msg('اكتب اسمًا للمشروع أولًا قبل الحفظ.');return;}
+ var p=readProjects();p[name]={objects:state.objects,res:state.res};
+ if(!writeProjects(p)){msg('تعذّر الحفظ محليًا في هذا المتصفح.');return;}
+ loadProjectList();byId('app-load-select').value=name;
+ msg('تم حفظ المشروع "'+name+'" داخل هذا المتصفح.');}
+function loadProject(){var name=byId('app-load-select').value,p=readProjects();
+ if(!name||!p[name]){msg('لا يوجد مشروع محفوظ مطابق للاختيار.');return;}
+ state.objects=Array.isArray(p[name].objects)?p[name].objects:[];
+ state.res=p[name].res||34;
+ var maxId=0;state.objects.forEach(function(o){if(o.id>maxId)maxId=o.id;});
+ state.nextId=maxId+1;state.selected=state.objects.length?state.objects[0].id:null;
+ byId('app-res-range').value=state.res;byId('app-res-num').value=state.res;
+ refreshAll();msg('تم تحميل المشروع "'+name+'".');}
+function delProject(){var name=byId('app-load-select').value,p=readProjects();
+ if(!name||!p[name]){msg('لا يوجد مشروع محفوظ مطابق للاختيار.');return;}
+ delete p[name];writeProjects(p);loadProjectList();msg('تم حذف المشروع "'+name+'".');}
+function newProject(){state.objects=[];state.nextId=1;state.selected=null;
+ addObject('box');msg('تم بدء مشروع جديد بصندوق افتراضي.');}
+function exportSTL(){if(!faces.length){msg('لا توجد مجسمات صالحة لتصديرها، أضف شكلًا أولًا.');return;}
+ var n=faces.length*2,buf=new ArrayBuffer(84+n*50),dv=new DataView(buf);
+ dv.setUint32(80,n,true);var off=84;
+ var cx=(stats.min[0]+stats.max[0])/2,cy=(stats.min[1]+stats.max[1])/2,z0=stats.min[2];
+ function tri(ia,ib,ic,nx,ny,nz){
+  dv.setFloat32(off,nx,true);dv.setFloat32(off+4,ny,true);dv.setFloat32(off+8,nz,true);off+=12;
+  var a=verts[ia],b=verts[ib],c=verts[ic];
+  dv.setFloat32(off,a[0]-cx,true);dv.setFloat32(off+4,a[1]-cy,true);dv.setFloat32(off+8,a[2]-z0,true);off+=12;
+  dv.setFloat32(off,b[0]-cx,true);dv.setFloat32(off+4,b[1]-cy,true);dv.setFloat32(off+8,b[2]-z0,true);off+=12;
+  dv.setFloat32(off,c[0]-cx,true);dv.setFloat32(off+4,c[1]-cy,true);dv.setFloat32(off+8,c[2]-z0,true);off+=12;
+  dv.setUint16(off,0,true);off+=2;}
+ for(var i=0;i<faces.length;i++){var f=faces[i],nn=f.n;tri(f.a,f.b,f.c,nn[0],nn[1],nn[2]);tri(f.a,f.c,f.d,nn[0],nn[1],nn[2]);}
+ var blob=new Blob([buf],{type:'model/stl'}),url=URL.createObjectURL(blob);
+ var a2=document.createElement('a');a2.href=url;a2.download='mujassam.stl';
+ document.body.appendChild(a2);a2.click();a2.remove();
+ setTimeout(function(){URL.revokeObjectURL(url);},2000);
+ msg('تم تجهيز ملف STL يحتوي '+n+' مثلثًا وبدأ تنزيله.');}
+[['app-x','sx'],['app-y','sy'],['app-z','sz'],['app-r','r'],['app-h','h'],['app-w','w'],['app-px','x'],['app-py','y'],['app-pz','z']].forEach(function(p){
+ var r=byId(p[0]+'-range'),nm=byId(p[0]+'-num');
+ function apply(v){var o=getSelected();if(!o)return;o[p[1]]=v;r.value=v;nm.value=v;schedule();}
+ r.addEventListener('input',function(){apply(parseFloat(r.value));});
+ nm.addEventListener('input',function(){var v=parseFloat(nm.value);if(isNaN(v))return;
+  v=Math.min(parseFloat(nm.max),Math.max(parseFloat(nm.min),v));apply(v);});});
+(function(){var rr=byId('app-res-range'),rn=byId('app-res-num');
+ rr.addEventListener('input',function(){rn.value=rr.value;state.res=parseInt(rr.value,10);schedule();});
+ rn.addEventListener('input',function(){var v=parseInt(rn.value,10);if(isNaN(v))return;
+  v=Math.min(56,Math.max(16,v));state.res=v;rr.value=v;schedule();});})();
+byId('app-yaw-range').addEventListener('input',function(e){state.yaw=parseFloat(e.target.value);render();});
+byId('app-pitch-range').addEventListener('input',function(e){state.pitch=parseFloat(e.target.value);render();});
+byId('app-zoom-range').addEventListener('input',function(e){state.zoom=parseFloat(e.target.value);render();});
+function syncView(){byId('app-yaw-range').value=Math.round(state.yaw);
+ byId('app-pitch-range').value=Math.round(state.pitch);byId('app-zoom-range').value=state.zoom.toFixed(2);}
+byId('app-view-reset').addEventListener('click',function(){state.yaw=52;state.pitch=28;state.zoom=1;syncView();render();});
+byId('app-add-box').addEventListener('click',function(){addObject('box');});
+byId('app-add-cyl').addEventListener('click',function(){addObject('cylinder');});
+byId('app-add-support').addEventListener('click',function(){addObject('support');});
+byId('app-add-hole').addEventListener('click',function(){addObject('hole');});
+byId('app-object-list').addEventListener('change',function(e){state.selected=parseInt(e.target.value,10)||null;setControls();});
+byId('app-op').addEventListener('change',function(e){var o=getSelected();if(!o)return;o.op=e.target.value;schedule();});
+byId('app-del').addEventListener('click',function(){var o=getSelected();
+ if(!o){msg('اختر شكلًا لحذفه أولًا.');return;}
+ state.objects=state.objects.filter(function(x){return x.id!==o.id;});
+ state.selected=state.objects.length?state.objects[state.objects.length-1].id:null;
+ refreshAll();msg('تم حذف الشكل المحدد.');});
+byId('app-clear').addEventListener('click',function(){state.objects=[];state.selected=null;refreshAll();msg('تم مسح كل الأشكال.');});
+function align(kind){var o=getSelected();if(!o){msg('اختر شكلًا لمحاذاته أولًا.');return;}
+ if(kind==='xy'){o.x=0;o.y=0;}
+ else if(kind==='base'){o.z=halfH(o);}
+ else{o.x=0;o.y=0;o.z=halfH(o);}
+ refreshAll();msg('تمت محاذاة الشكل المحدد.');}
+byId('app-align-xy').addEventListener('click',function(){align('xy');});
+byId('app-align-base').addEventListener('click',function(){align('base');});
+byId('app-align-center').addEventListener('click',function(){align('center');});
+byId('app-export').addEventListener('click',exportSTL);
+byId('app-save').addEventListener('click',saveProject);
+byId('app-load').addEventListener('click',loadProject);
+byId('app-del-proj').addEventListener('click',delProject);
+byId('app-new').addEventListener('click',newProject);
+var dragging=false,lastX=0,lastY=0;
+canvas.addEventListener('pointerdown',function(e){dragging=true;lastX=e.clientX;lastY=e.clientY;
+ if(canvas.setPointerCapture)canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',function(e){if(!dragging)return;
+ var dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+ state.yaw=(state.yaw+dx*0.5)%360;if(state.yaw<0)state.yaw+=360;
+ state.pitch=Math.max(-80,Math.min(80,state.pitch+dy*0.5));syncView();render();});
+canvas.addEventListener('pointerup',function(){dragging=false;});
+canvas.addEventListener('pointercancel',function(){dragging=false;});
+canvas.addEventListener('wheel',function(e){e.preventDefault();
+ state.zoom=Math.max(0.4,Math.min(2.5,state.zoom*(e.deltaY>0?0.92:1.08)));syncView();render();},{passive:false});
+loadProjectList();addObject('box');msg('مرحبًا بك، عدّل أبعاد الصندوق أو أضف أشكالًا جديدة من المكتبة.');
+})();
+</script>
+</body>
+</html>
