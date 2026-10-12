@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قارئ هادئ: حوّل أي نص إلى واجهة قراءة نظيفة بدون إعلانات | MDM1</title>
+<meta name="description" content="الصق أي نص أو محتوى صفحة وحوّله فوراً إلى واجهة قراءة نظيفة خالية من الإعلانات، مع ضبط الخط والتباعد والثيمات وشريط تقدّم ووقت متبقٍ ومكتبة محلية تعمل دون اتصال.">
+<link rel="canonical" href="https://mdm1.org/apps/quiet-reader-view.html">
+<meta property="og:title" content="قارئ هادئ: حوّل أي نص إلى واجهة قراءة نظيفة بدون إعلانات">
+<meta property="og:description" content="الصق أي نص أو محتوى صفحة وحوّله فوراً إلى واجهة قراءة نظيفة خالية من الإعلانات، مع ضبط الخط والتباعد والثيمات وشريط تقدّم ووقت متبقٍ ومكتبة محلية تعمل دون اتصال.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/quiet-reader-view.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:block}
+.app h2{font-size:1.05rem;margin:.2rem 0 .7rem}
+.app .row{flex-wrap:wrap;align-items:center;gap:10px;margin:6px 0}
+.app label{font-size:.85rem;color:var(--gold-bright)}
+.app input[type=range]{width:130px}
+.app input[type=text]{min-width:200px}
+.app textarea{width:100%;min-height:120px;box-sizing:border-box}
+.app .badge{white-space:nowrap}
+.app .app-msg{min-height:1.2em;margin:4px 0}
+.app-reader{max-width:70%;margin:12px auto;background:var(--dark);color:var(--light);border:1px solid var(--gold-dim);border-radius:12px;padding:22px 26px;font-size:20px;line-height:1.9;max-height:64vh;overflow:auto;outline:none}
+.app-reader p{margin:0 0 1em}
+.app-reader .app-empty{color:var(--gold-dim);text-align:center}
+.app-reader[data-theme=light]{background:#faf7ef;color:#2a2620;border-color:#d8cbb0}
+.app-reader[data-theme=sepia]{background:#f4ecd8;color:#4a3f2a;border-color:#c9b78e}
+.app-hl{border-radius:3px;padding:0 2px}
+.app-hl-yellow{background:rgba(235,195,60,.45)}
+.app-hl-green{background:rgba(80,200,120,.4)}
+.app-hl-pink{background:rgba(230,110,150,.4)}
+.app-hl-underline{background:none;box-shadow:inset 0 -2px 0 var(--gold-bright)}
+.app-bar{height:10px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden;margin-top:8px}
+.app-bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));transition:width .15s}
+.app-reader.app-fixed{position:fixed;inset:2vh 3vw;max-width:none;max-height:none;z-index:9999;padding:5vh 6vw;box-shadow:0 0 0 100vmax rgba(0,0,0,.85);border-radius:12px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "قارئ هادئ — وضع قراءة نظيف لأي نص أو صفحة", "url": "https://mdm1.org/apps/quiet-reader-view.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل «قارئ هادئ» بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، التطبيق يعمل بالكامل داخل المتصفح دون أي اتصال. لا يرسل بياناتك إلى أي خادم، وتبقى المقالات المحفوظة والإعدادات على جهازك عبر الذخيرة المحلية فقط."}}, {"@type": "Question", "name": "كيف أحوّل محتوى صفحة كاملة إلى وضع القراءة؟", "acceptedAnswer": {"@type": "Answer", "text": "انسخ النص أو الصفحة ثم الصقه في الحقل واضغط «تحويل إلى وضع القراءة». ينظّف التطبيق الوسوم والسكربتات تلقائياً ويحوّل المحتوى إلى فقرات مرتبة قابلة للقراءة."}}, {"@type": "Question", "name": "هل يمكنني حفظ المقالات والعودة إليها لاحقاً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. اكتب عنواناً واضغط «حفظ في المكتبة»، ثم افتح أي مقال من القائمة في أي وقت. يمكنك حذف مقال واحد أو كل المقالات، ويبقى كل شيء على جهازك."}}, {"@type": "Question", "name": "ما فائدة الأصوات التخيّلية وكيف تعمل؟", "acceptedAnswer": {"@type": "Answer", "text": "هي أصوات هادئة للأجواء والتركيز مثل المطر والأمواج والضجيج الأبيض. تُولَّد داخل المتصفح بالكامل دون تحميل ملفات خارجية، ويمكنك ضبط مستوى الصوت أو إيقافه في أي لحظة."}}, {"@type": "Question", "name": "كيف يعمل شريط التقدّم ووقت القراءة المتبقي؟", "acceptedAnswer": {"@type": "Answer", "text": "يحسب التطبيق عدد الكلمات ويقدّر زمن القراءة بمعدل مئتي كلمة في الدقيقة. عند التمرير داخل منطقة القراءة يتحدّث شريط التقدّم والنسبة والوقت المتبقي مباشرةً."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">قارئ هادئ — وضع قراءة نظيف لأي نص أو صفحة</h1>
+  <p class="page-sub">الصق أي نص أو محتوى صفحة وحوّله فوراً إلى واجهة قراءة نظيفة خالية من الإعلانات، مع ضبط الخط والتباعد والثيمات وشريط تقدّم ووقت متبقٍ ومكتبة محلية تعمل دون اتصال.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هل تريد قراءة مقال طويل دون تشتيت؟ يمنحك «قارئ هادئ» واجهة قراءة نظيفة فوراً: الصق أي نص أو محتوى صفحة، فيحوّله إلى تنسيق مريح للعين خالٍ من الإعلانات والأشرطة الجانبية. يمكنك ضبط حجم الخط والتباعد وعرض العمود، والتبديل بين ثيم فاتح وداكن وسيبيا، مع شريط تقدّم يوضّح موضعك ووقت القراءة المتبقي بالدقائق. أضِف تمييزاً للجُمل المهمة بألوان مختلفة، واحفظ المقالات في مكتبتك المحلية للعودة إليها لاحقاً حتى عند انقطاع الإنترنت. يتضمّن أيضاً وضع قراءة متتابعة للمقالات المحفوظة، وأصوات تركيز تخيّلية مولّدة داخل المتصفح دون أي تحميل خارجي. كل شيء يعمل دون اتصال ودون حساب أو تسجيل، وتبقى بياناتك على جهازك فقط.</p>
+<div id="app" class="app">
+  <section class="card">
+    <label for="src">الصق النص أو محتوى صفحة كامل</label>
+    <textarea id="src" rows="6" placeholder="الصق هنا أي نص عربي أو HTML من صفحة..."></textarea>
+    <div class="row">
+      <button id="convert" type="button">تحويل إلى وضع القراءة</button>
+      <button id="sampleBtn" class="sec" type="button">إدراج نص تجريبي</button>
+      <button id="clearSrc" class="sec" type="button">تفريغ الحقل</button>
+    </div>
+    <p id="srcMsg" class="badge app-msg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>إعدادات القراءة</h2>
+    <div class="row">
+      <label for="fs">حجم الخط</label>
+      <input id="fs" type="range" min="14" max="34" value="20">
+      <span id="fsVal" class="badge">20px</span>
+      <label for="lh">تباعد الأسطر</label>
+      <input id="lh" type="range" min="14" max="26" value="19">
+      <span id="lhVal" class="badge">1.9</span>
+      <label for="cw">عرض العمود</label>
+      <input id="cw" type="range" min="40" max="100" value="70">
+      <span id="cwVal" class="badge">70٪</span>
+      <label for="theme">الثيم</label>
+      <select id="theme">
+        <option value="dark">داكن</option>
+        <option value="light">فاتح</option>
+        <option value="sepia">سيبيا</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <span class="badge">التقدّم: <b id="pct">0٪</b></span>
+      <span class="badge">الوقت المتبقي: <b id="remain">0</b> دقيقة</span>
+      <span class="badge">كلمات: <b id="words">0</b></span>
+      <span class="badge">الدقائق الكلية: <b id="totalMin">0</b></span>
+    </div>
+    <div class="app-bar"><div id="bar" class="app-bar-fill"></div></div>
+  </section>
+
+  <section class="card">
+    <h2>التمييز وأدوات التنقّل</h2>
+    <div class="row">
+      <label for="hlColor">لون التمييز</label>
+      <select id="hlColor">
+        <option value="yellow">أصفر</option>
+        <option value="green">أخضر</option>
+        <option value="pink">وردي</option>
+        <option value="underline">تسطير فقط</option>
+      </select>
+      <button id="hlSel" type="button">تمييز النص المحدَّد</button>
+      <button id="hlClear" class="sec" type="button">إزالة كل التمييز</button>
+      <button id="focusMode" class="sec" type="button">وضع التركيز</button>
+    </div>
+    <article id="reader" class="app-reader" tabindex="0" data-theme="dark">
+      <p class="app-empty">لم يتم تحويل أي نص بعد. الصق المحتوى في الأعلى ثم اضغط «تحويل إلى وضع القراءة».</p>
+    </article>
+    <div class="divider"></div>
+    <div class="row">
+      <button id="topBtn" class="sec" type="button">الانتقال إلى أعلى المقال</button>
+      <button id="bottomBtn" class="sec" type="button">الانتقال إلى أسفل المقال</button>
+    </div>
+    <p id="hlMsg" class="badge app-msg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>المكتبة المحلية</h2>
+    <div class="row">
+      <label for="title">عنوان المقال</label>
+      <input id="title" type="text" placeholder="اكتب عنواناً للحفظ">
+      <button id="save" type="button">حفظ في المكتبة</button>
+    </div>
+    <div class="row">
+      <label for="libSel">المقالات المحفوظة</label>
+      <select id="libSel"><option value="">— لا توجد مقالات —</option></select>
+      <button id="load" class="sec" type="button">فتح المقال</button>
+      <button id="del" class="sec" type="button">حذف المقال</button>
+      <button id="delAll" class="sec" type="button">حذف كل المقالات</button>
+    </div>
+    <p id="libMsg" class="badge app-msg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>وضع القراءة المتتابعة</h2>
+    <div class="row">
+      <label for="seq">تشغيل الوضع</label>
+      <select id="seq">
+        <option value="off">متوقف</option>
+        <option value="on">يعمل</option>
+      </select>
+      <button id="seqPrev" class="sec" type="button">المقال السابق</button>
+      <button id="seqNext" type="button">المقال التالي</button>
+    </div>
+    <p id="seqMsg" class="badge app-msg" role="status"></p>
+  </section>
+
+  <section class="card">
+    <h2>أصوات التركيز التخيّلية</h2>
+    <div class="row">
+      <label for="sound">نوع الصوت</label>
+      <select id="sound">
+        <option value="none">بلا صوت</option>
+        <option value="rain">مطر هادئ</option>
+        <option value="ocean">أمواج بعيدة</option>
+        <option value="white">ضجيج أبيض</option>
+        <option value="brown">ضجيج بنّي</option>
+        <option value="hum">طنين ناعم</option>
+      </select>
+      <button id="soundToggle" type="button">تشغيل الصوت</button>
+      <label for="vol">مستوى الصوت</label>
+      <input id="vol" type="range" min="0" max="100" value="40">
+      <span id="volVal" class="badge">40٪</span>
+    </div>
+    <p id="soundMsg" class="badge app-msg" role="status"></p>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل «قارئ هادئ» بدون اتصال بالإنترنت؟</h3><p>نعم، التطبيق يعمل بالكامل داخل المتصفح دون أي اتصال. لا يرسل بياناتك إلى أي خادم، وتبقى المقالات المحفوظة والإعدادات على جهازك عبر الذخيرة المحلية فقط.</p><h3>كيف أحوّل محتوى صفحة كاملة إلى وضع القراءة؟</h3><p>انسخ النص أو الصفحة ثم الصقه في الحقل واضغط «تحويل إلى وضع القراءة». ينظّف التطبيق الوسوم والسكربتات تلقائياً ويحوّل المحتوى إلى فقرات مرتبة قابلة للقراءة.</p><h3>هل يمكنني حفظ المقالات والعودة إليها لاحقاً؟</h3><p>نعم. اكتب عنواناً واضغط «حفظ في المكتبة»، ثم افتح أي مقال من القائمة في أي وقت. يمكنك حذف مقال واحد أو كل المقالات، ويبقى كل شيء على جهازك.</p><h3>ما فائدة الأصوات التخيّلية وكيف تعمل؟</h3><p>هي أصوات هادئة للأجواء والتركيز مثل المطر والأمواج والضجيج الأبيض. تُولَّد داخل المتصفح بالكامل دون تحميل ملفات خارجية، ويمكنك ضبط مستوى الصوت أو إيقافه في أي لحظة.</p><h3>كيف يعمل شريط التقدّم ووقت القراءة المتبقي؟</h3><p>يحسب التطبيق عدد الكلمات ويقدّر زمن القراءة بمعدل مئتي كلمة في الدقيقة. عند التمرير داخل منطقة القراءة يتحدّث شريط التقدّم والنسبة والوقت المتبقي مباشرةً.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  var src=$('src'),reader=$('reader'),title=$('title'),libSel=$('libSel');
+  var fs=$('fs'),lh=$('lh'),cw=$('cw'),theme=$('theme');
+  var pct=$('pct'),remain=$('remain'),wordsEl=$('words'),totalEl=$('totalMin'),bar=$('bar');
+  var soundSel=$('sound'),soundToggle=$('soundToggle'),vol=$('vol'),volVal=$('volVal');
+  var KEY='qari_lib_v1';
+  var hasContent=false,lastTotal=0,curId='',focusOn=false,playing=false;
+  var actx=null,master=null,nodes=[];
+
+  function applySettings(){
+    var v=+fs.value;reader.style.fontSize=v+'px';$('fsVal').textContent=v+'px';
+    var l=(+lh.value)/10;reader.style.lineHeight=l.toFixed(1);$('lhVal').textContent=l.toFixed(1);
+    var w=+cw.value;reader.style.maxWidth=w+'%';$('cwVal').textContent=w+'٪';
+    reader.setAttribute('data-theme',theme.value);
+  }
+  [fs,lh,cw].forEach(function(el){el.addEventListener('input',applySettings);});
+  theme.addEventListener('change',applySettings);
+
+  function cleanInput(raw){
+    if(!/<[a-z!/][\s\S]*>/i.test(raw))return raw;
+    var s=raw
+      .replace(/<\s*(script|style|noscript|iframe|svg|head)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,' ')
+      .replace(/<\s*(br|\/(p|div|li|h[1-6]|tr|section|article|blockquote|header|footer))\s*>/gi,'\n')
+      .replace(/<[^>]*>/g,' ');
+    var ta=document.createElement('textarea');ta.innerHTML=s;
+    return ta.value.replace(/&nbsp;/g,' ');
+  }
+  function toParagraphs(raw){
+    var clean=raw.replace(/\r/g,'').replace(/[ \t]+\n/g,'\n');
+    var blocks=clean.split(/\n\s*\n+/).map(function(s){return s.trim();}).filter(Boolean);
+    if(blocks.length<=1){
+      var text=clean.trim();
+      if(!text)return [];
+      if(text.length>400){
+        var sents=text.match(/[^.!?؟\n]+[.!?؟]*/g)||[text];
+        var out=[],buf=[];
+        for(var i=0;i<sents.length;i++){
+          buf.push(sents[i].trim());
+          if(buf.length>=3){out.push(buf.join(' '));buf=[];}
+        }
+        if(buf.length)out.push(buf.join(' '));
+        return out.map(function(s){return s.trim();}).filter(Boolean);
+      }
+      return [text];
+    }
+    var res=[];
+    blocks.forEach(function(b){b.split(/\n/).forEach(function(l){l=l.trim();if(l)res.push(l);});});
+    return res;
+  }
+  function render(paras){
+    reader.innerHTML='';
+    if(!paras||!paras.length){
+      reader.innerHTML='<p class="app-empty">لا يوجد نص لعرضه. الصق محتوى ثم اضغط «تحويل إلى وضع القراءة».</p>';
+      hasContent=false;updateStats();return;
+    }
+    paras.forEach(function(p){var el=document.createElement('p');el.textContent=p;reader.appendChild(el);});
+    hasContent=true;updateStats();
+  }
+  function updateStats(){
+    var text=hasContent?(reader.innerText||reader.textContent):'';
+    var words=(text.match(/[\u0600-\u06FF\u0750-\u077F\w]+/g)||[]).length;
+    var total=words?Math.max(1,Math.ceil(words/200)):0;
+    wordsEl.textContent=words;totalEl.textContent=total;lastTotal=total;
+    updateProgress();
+  }
+  function updateProgress(){
+    var max=reader.scrollHeight-reader.clientHeight;
+    var p=(hasContent&&max>0)?reader.scrollTop/max:0;
+    p=Math.max(0,Math.min(1,p));
+    pct.textContent=Math.round(p*100)+'٪';
+    bar.style.width=(p*100)+'%';
+    remain.textContent=Math.max(0,Math.round(lastTotal*(1-p)));
+  }
+  reader.addEventListener('scroll',updateProgress);
+
+  $('convert').addEventListener('click',function(){
+    var raw=src.value;
+    if(!raw||!raw.trim()){$('srcMsg').textContent='الحقل فارغ. الصق نصاً أولاً.';return;}
+    var paras=toParagraphs(cleanInput(raw));
+    render(paras);
+    $('srcMsg').textContent='تم التحويل بنجاح: '+paras.length+' فقرة جاهزة للقراءة.';
+    if(!title.value.trim()){
+      title.value=paras[0]?paras[0].split(/\s+/).slice(0,6).join(' '):'مقال';
+    }
+  });
+  $('sampleBtn').addEventListener('click',function(){
+    src.value='القراءة العميقة مهارة تُبنى بالتكرار. ابدأ بتهيئة مكان هادئ وإضاءة مناسبة، ثم ضع هاتفك بعيداً عن متناول يدك.\n\nقسّم النص الطويل إلى أجزاء صغيرة، وامنح كل جزء انتباهك الكامل قبل الانتقال إلى الذي يليه.\n\nبعد كل صفحة، لخّص الفكرة الأساسية بكلماتك، فهذا الترسيخ يقوّي الفهم ويجعل المعلومة تدوم أطول.';
+    $('srcMsg').textContent='تم إدراج نص تجريبي. اضغط «تحويل إلى وضع القراءة».';
+  });
+  $('clearSrc').addEventListener('click',function(){src.value='';$('srcMsg').textContent='تم تفريغ الحقل.';});
+
+  $('hlSel').addEventListener('click',function(){
+    var sel=window.getSelection();
+    if(!hasContent||!sel||sel.rangeCount===0||sel.isCollapsed){$('hlMsg').textContent='حدّد جزءاً من نص المقال أولاً.';return;}
+    var range=sel.getRangeAt(0);
+    if(!reader.contains(range.commonAncestorContainer)){$('hlMsg').textContent='التحديد خارج منطقة القراءة.';return;}
+    var span=document.createElement('span');span.className='app-hl app-hl-'+$('hlColor').value;
+    try{range.surroundContents(span);}
+    catch(e){var frag=range.extractContents();span.appendChild(frag);range.insertNode(span);}
+    sel.removeAllRanges();
+    $('hlMsg').textContent='تم تمييز المقطع المحدَّد.';
+  });
+  $('hlClear').addEventListener('click',function(){
+    reader.querySelectorAll('.app-hl').forEach(function(el){
+      var t=document.createTextNode(el.textContent);el.parentNode.replaceChild(t,el);
+    });
+    $('hlMsg').textContent='تمت إزالة كل التمييز.';
+  });
+  $('focusMode').addEventListener('click',function(){
+    focusOn=!focusOn;reader.classList.toggle('app-fixed',focusOn);
+    this.textContent=focusOn?'إغلاق وضع التركيز':'وضع التركيز';
+    updateProgress();
+  });
+  $('topBtn').addEventListener('click',function(){reader.scrollTop=0;updateProgress();});
+  $('bottomBtn').addEventListener('click',function(){reader.scrollTop=reader.scrollHeight;updateProgress();});
+
+  function lib(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}}
+  function saveLib(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){$('libMsg').textContent='تعذّر الحفظ: الذاكرة ممتلئة.';}}
+  function findItem(id){var a=lib();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null;}
+  function refreshLib(){
+    var arr=lib();libSel.innerHTML='';
+    if(!arr.length){var o=document.createElement('option');o.value='';o.textContent='— لا توجد مقالات —';libSel.appendChild(o);return;}
+    arr.forEach(function(it){var o=document.createElement('option');o.value=it.id;o.textContent=it.title;libSel.appendChild(o);});
+  }
+  function loadItem(it){
+    reader.innerHTML=it.html;hasContent=true;title.value=it.title;curId=it.id;
+    updateStats();reader.scrollTop=0;updateProgress();
+  }
+  $('save').addEventListener('click',function(){
+    if(!hasContent){$('libMsg').textContent='لا يوجد مقال محوَّل لحفظه.';return;}
+    var t=title.value.trim()||('مقال '+(lib().length+1));
+    var arr=lib();arr.push({id:'a'+Date.now(),title:t,html:reader.innerHTML});
+    saveLib(arr);refreshLib();libSel.value=arr[arr.length-1].id;
+    $('libMsg').textContent='تم حفظ «'+t+'» في المكتبة.';
+  });
+  $('load').addEventListener('click',function(){
+    var id=libSel.value;if(!id){$('libMsg').textContent='اختر مقالاً من القائمة أولاً.';return;}
+    var it=findItem(id);if(!it){$('libMsg').textContent='لم يُعثر على المقال.';return;}
+    loadItem(it);$('libMsg').textContent='تم فتح «'+it.title+'».';
+    if($('seq').value==='on')seqInfo(id);
+  });
+  $('del').addEventListener('click',function(){
+    var id=libSel.value;if(!id){$('libMsg').textContent='اختر مقالاً لحذفه.';return;}
+    var arr=lib().filter(function(x){return x.id!==id;});
+    saveLib(arr);refreshLib();$('libMsg').textContent='تم حذف المقال.';
+  });
+  $('delAll').addEventListener('click',function(){
+    saveLib([]);refreshLib();curId='';$('libMsg').textContent='تم حذف كل المقالات.';
+  });
+
+  function seqInfo(id){
+    var arr=lib();for(var i=0;i<arr.length;i++){if(arr[i].id===id){$('seqMsg').textContent='القراءة المتتابعة: المقال '+(i+1)+' من '+arr.length+'.';return;}}
+    $('seqMsg').textContent='';
+  }
+  function seqStep(dir){
+    var arr=lib();
+    if(!arr.length){$('seqMsg').textContent='المكتبة فارغة. احفظ مقالات أولاً.';return;}
+    var idx=-1;for(var i=0;i<arr.length;i++){if(arr[i].id===curId){idx=i;break;}}
+    if(idx<0)idx=dir>0?-1:arr.length;
+    var n=(idx+dir+arr.length)%arr.length;
+    loadItem(arr[n]);$('seqMsg').textContent='القراءة المتتابعة: المقال '+(n+1)+' من '+arr.length+' — '+arr[n].title;
+  }
+  $('seq').addEventListener('change',function(){
+    $('seqMsg').textContent=this.value==='on'?'تم تشغيل وضع القراءة المتتابعة.':'تم إيقاف وضع القراءة المتتابعة.';
+  });
+  $('seqPrev').addEventListener('click',function(){seqStep(-1);});
+  $('seqNext').addEventListener('click',function(){seqStep(1);});
+
+  function ensureCtx(){
+    if(!actx){
+      var AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC){$('soundMsg').textContent='متصفحك لا يدعم الأصوات.';return null;}
+      actx=new AC();master=actx.createGain();
+      master.gain.value=(+vol.value/100)*0.5;master.connect(actx.destination);
+    }
+    return actx;
+  }
+  function noiseBuf(kind){
+    var len=actx.sampleRate*2,b=actx.createBuffer(1,len,actx.sampleRate),d=b.getChannelData(0),last=0,i;
+    if(kind==='brown'){for(i=0;i<len;i++){var w=Math.random()*2-1;last=(last+0.02*w)/1.02;d[i]=last*3.5;}}
+    else{for(i=0;i<len;i++)d[i]=Math.random()*2-1;}
+    return b;
+  }
+  function stopNodes(){nodes.forEach(function(n){try{if(n.stop)n.stop();n.disconnect();}catch(e){}});nodes=[];}
+  function startSound(type){
+    if(!ensureCtx())return;
+    if(actx.state==='suspended')actx.resume();
+    stopNodes();
+    if(type==='none')return;
+    var out=actx.createGain();out.gain.value=1;out.connect(master);nodes.push(out);
+    var srcI,filter,lfo,lfoG,amp,o1,o2,g2,hg;
+    if(type==='white'||type==='rain'||type==='brown'){
+      srcI=actx.createBufferSource();srcI.buffer=noiseBuf(type==='brown'?'brown':'white');srcI.loop=true;
+      if(type==='rain'){filter=actx.createBiquadFilter();filter.type='highpass';filter.frequency.value=800;srcI.connect(filter);filter.connect(out);}
+      else if(type==='brown'){filter=actx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=900;srcI.connect(filter);filter.connect(out);}
+      else srcI.connect(out);
+      srcI.start();nodes.push(srcI);
+    }else if(type==='ocean'){
+      srcI=actx.createBufferSource();srcI.buffer=noiseBuf('brown');srcI.loop=true;
+      filter=actx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=600;
+      amp=actx.createGain();amp.gain.value=0.6;
+      lfo=actx.createOscillator();lfo.frequency.value=0.12;lfoG=actx.createGain();lfoG.gain.value=0.5;
+      lfo.connect(lfoG);lfoG.connect(amp.gain);
+      srcI.connect(filter);filter.connect(amp);amp.connect(out);
+      srcI.start();lfo.start();nodes.push(srcI,lfo);
+    }else if(type==='hum'){
+      o1=actx.createOscillator();o1.type='sine';o1.frequency.value=110;
+      o2=actx.createOscillator();o2.type='sine';o2.frequency.value=55;
+      g2=actx.createGain();g2.gain.value=0.5;hg=actx.createGain();hg.gain.value=0.25;
+      o1.connect(hg);o2.connect(g2);g2.connect(hg);hg.connect(out);
+      o1.start();o2.start();nodes.push(o1,o2);
+    }
+  }
+  $('soundToggle').addEventListener('click',function(){
+    if(playing){startSound('none');playing=false;this.textContent='تشغيل الصوت';$('soundMsg').textContent='الصوت متوقف.';return;}
+    var t=soundSel.value;
+    if(t==='none'){$('soundMsg').textContent='اختر نوع صوت أولاً.';return;}
+    startSound(t);playing=true;this.textContent='إيقاف الصوت';
+    $('soundMsg').textContent='يعمل الآن: '+soundSel.options[soundSel.selectedIndex].text;
+  });
+  soundSel.addEventListener('change',function(){
+    if(!playing)return;
+    var t=this.value;
+    if(t==='none'){startSound('none');playing=false;soundToggle.textContent='تشغيل الصوت';$('soundMsg').textContent='الصوت متوقف.';return;}
+    startSound(t);$('soundMsg').textContent='يعمل الآن: '+this.options[this.selectedIndex].text;
+  });
+  vol.addEventListener('input',function(){
+    volVal.textContent=this.value+'٪';
+    if(master)master.gain.value=(+this.value/100)*0.5;
+  });
+
+  applySettings();refreshLib();updateStats();
+})();
+</script>
+</body>
+</html>
