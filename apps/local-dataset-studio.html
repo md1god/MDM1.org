@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو معالجة بيانات داخل المتصفح | MDM1</title>
+<meta name="description" content="يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ للمشاريع دون اتصال بالإنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/local-dataset-studio.html">
+<meta property="og:title" content="استوديو معالجة بيانات داخل المتصفح">
+<meta property="og:description" content="يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ للمشاريع دون اتصال بالإنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-dataset-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  direction: rtl;
+}
+.app .card {
+  padding: 16px;
+}
+.app .row {
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.app .out {
+  background: var(--dark);
+  border: 1px solid var(--gold-dim);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--light);
+}
+.app .big {
+  font-size: 22px;
+  color: var(--gold-bright);
+}
+.app .badge {
+  background: var(--dark);
+  color: var(--light);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.app table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.app th, .app td {
+  border: 1px solid var(--gold-dim);
+  padding: 6px;
+  text-align: right;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app th {
+  background: var(--dark);
+  color: var(--gold-bright);
+}
+.app #simpleChart {
+  width: 100%;
+  max-width: 420px;
+  height: 120px;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو معالجة بيانات محلي", "url": "https://mdm1.org/apps/local-dataset-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم معالجة جميع الملفات ومعاينتها وتنظيفها وحفظها بالكامل داخل متصفحك، دون إرسال أي بيانات إلى أي خادم."}}, {"@type": "Question", "name": "ما أنواع الملفات المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم التطبيق ملفات CSV وJSON وJSONL مع ترميز UTF-8، ويمكنك رفعها مباشرة من جهازك."}}, {"@type": "Question", "name": "هل يتم حفظ المشاريع تلقائيًا؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يجب الضغط على زر \"حفظ المشروع محليًا\" لحفظه في ذاكرة التخزين المحلية، ويمكنك تحميله لاحقًا من نفس المتصفح."}}, {"@type": "Question", "name": "هل يمكن تقسيم البيانات بشكل عشوائي؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تحديد نسبة التدريب بين 1% و99%، وسيتم خلط الصفوف وتقسيمها إلى مجموعتي تدريب واختبار."}}, {"@type": "Question", "name": "كيف يتم تقييم جودة البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "يقيم التطبيق نسبة الخلايا غير الفارغة، ومتوسط طول القيم النصية، ونسبة القيم التي تحتوي على حروف عربية، والتوازن بين الفئات إن وُجد عمود تصنيف."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو معالجة بيانات محلي</h1>
+  <p class="page-sub">يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ للمشاريع دون اتصال بالإنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p dir="rtl">الجواب السريع هو: هذا التطبيق يعالج بياناتك بالكامل داخل المتصفح دون رفع أي ملف إلى الشبكة. يمكنك سحب ملفات CSV أو JSON أو JSONL من جهازك مباشرة، لعرض ملخص الإحصاءات، ورسمًا توضيحيًا مبسطًا، ومعاينة للصفوف مع إمكانية البحث والتصفية للنصوص العربية، ثم تنظيف القيم الفارغة وإزالة التكرار وتقسيم البيانات إلى تدريب واختبار، ومراجعة جودة البيانات من حيث الأطوال والترميز والتوازن بين الفئات، وأخيرًا تصديرها بصيغة نظيفة مع حفظ المشروع محليًا على جهازك فقط. كل ما تفعله يظل محصورًا على متصفحك الخاص، مما يضمن خصوصية بياناتك وأمانها.</p>
+
+<div class="app" dir="rtl" id="appRoot">
+  <section class="card" id="sectionUpload">
+    <label class="label" for="fileInput">رفع ملف بيانات</label>
+    <div class="row">
+      <input id="fileInput" class="input" type="file" accept=".csv,.json,.jsonl,text/csv,application/json,application/x-ndjson,text/plain" aria-label="رفع ملف بيانات CSV أو JSON أو JSONL" />
+      <button id="btnClearAll" class="button sec" type="button">مسح البيانات</button>
+      <button id="btnLoadProject" class="button sec" type="button">تحميل مشروع محفوظ</button>
+      <button id="btnSaveProject" class="button" type="button">حفظ المشروع محليًا</button>
+    </div>
+    <div class="row">
+      <span id="fileStatus" class="badge" aria-live="polite">لا يوجد ملف مرفوع</span>
+      <span id="rowCount" class="badge" aria-live="polite">عدد الصفوف: 0</span>
+      <span id="colCount" class="badge" aria-live="polite">عدد الأعمدة: 0</span>
+    </div>
+    <div id="uploadError" class="out" aria-live="polite" style="display:none;"></div>
+  </section>
+
+  <section class="card" id="sectionSummary">
+    <h3>ملخص عام</h3>
+    <div class="row">
+      <div class="out">
+        <div>إجمالي الصفوف</div>
+        <div id="sumRows" class="big">0</div>
+      </div>
+      <div class="out">
+        <div>إجمالي الأعمدة</div>
+        <div id="sumCols" class="big">0</div>
+      </div>
+      <div class="out">
+        <div>نسبة القيم غير الفارغة</div>
+        <div id="sumNonEmpty" class="big">0%</div>
+      </div>
+    </div>
+    <div id="chartBox" class="out" aria-label="رسم توضيحي مبسط لأكثر الأعمدة تكرارًا">
+      <canvas id="simpleChart" width="320" height="120" aria-hidden="true"></canvas>
+      <div id="chartEmpty">لا توجد بيانات لعرض الرسم التوضيحي</div>
+    </div>
+  </section>
+
+  <section class="card" id="sectionPreview">
+    <h3>معاينة وبحث وتصفية</h3>
+    <div class="row">
+      <label class="label" for="searchText">بحث في جميع الحقول</label>
+      <input id="searchText" class="input" type="text" placeholder="اكتب نصًا عربيًا للبحث..." aria-label="بحث في جميع أعمدة البيانات" />
+      <label class="label" for="colFilter">تصفية حسب العمود</label>
+      <select id="colFilter" class="select" aria-label="اختيار عمود للتصفية">
+        <option value="">الكل</option>
+      </select>
+      <input id="colFilterText" class="input" type="text" placeholder="قيمة التصفية..." aria-label="قيمة التصفية للعمود المحدد" />
+      <button id="btnApplyFilter" class="button" type="button">تطبيق التصفية</button>
+      <button id="btnResetFilter" class="button sec" type="button">إلغاء التصفية</button>
+    </div>
+    <div class="out" id="previewWrap" style="overflow:auto; max-height:280px;">
+      <table id="previewTable" aria-label="جدول معاينة البيانات"></table>
+    </div>
+    <div id="previewEmpty" class="out">لا توجد بيانات للمعاينة</div>
+  </section>
+
+  <section class="card" id="sectionClean">
+    <h3>تنظيف البيانات</h3>
+    <div class="row">
+      <button id="btnRemoveEmpty" class="button" type="button">إزالة الصفوف ذات القيم الفارغة الكلية</button>
+      <button id="btnRemoveDuplicates" class="button" type="button">إزالة التكرار</button>
+      <span id="cleanStatus" class="badge" aria-live="polite">لم يتم التنظيف بعد</span>
+    </div>
+    <div id="cleanEmpty" class="out">لا توجد بيانات للتنظيف</div>
+  </section>
+
+  <section class="card" id="sectionSplit">
+    <h3>تقسيم البيانات إلى تدريب واختبار</h3>
+    <div class="row">
+      <label class="label" for="splitRatio">نسبة التدريب (%)</label>
+      <input id="splitRatio" class="input" type="number" min="1" max="99" value="80" aria-label="نسبة بيانات التدريب من إجمالي البيانات" />
+      <button id="btnSplit" class="button" type="button">تقسيم عشوائي</button>
+      <span id="splitStatus" class="badge" aria-live="polite">غير مقسم</span>
+    </div>
+    <div class="row">
+      <div class="out">
+        <div>تدريب</div>
+        <div id="countTrain" class="big">0</div>
+      </div>
+      <div class="out">
+        <div>اختبار</div>
+        <div id="countTest" class="big">0</div>
+      </div>
+    </div>
+    <div id="splitEmpty" class="out">لا توجد بيانات للتقسيم</div>
+  </section>
+
+  <section class="card" id="sectionQuality">
+    <h3>تقييم جودة البيانات</h3>
+    <div class="row">
+      <button id="btnRunQuality" class="button" type="button">تشغيل التقييم</button>
+      <span id="qualityStatus" class="badge" aria-live="polite">غير مقيَّم</span>
+    </div>
+    <div id="qualityOutput" class="out" aria-live="polite"></div>
+    <div id="qualityEmpty" class="out">لا توجد بيانات للتقييم</div>
+  </section>
+
+  <section class="card" id="sectionExport">
+    <h3>تصدير البيانات</h3>
+    <div class="row">
+      <button id="btnExportCsv" class="button" type="button">تصدير كـ CSV نظيف</button>
+      <button id="btnExportJson" class="button sec" type="button">تصدير كـ JSON نظيف</button>
+      <button id="btnExportJsonl" class="button sec" type="button">تصدير كـ JSONL نظيف</button>
+      <a id="exportLink" class="button sec" style="display:none;" role="button" aria-label="تنزيل الملف المُصدَّر">تنزيل الملف</a>
+    </div>
+    <div id="exportEmpty" class="out">لا توجد بيانات للتصدير</div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يتم معالجة جميع الملفات ومعاينتها وتنظيفها وحفظها بالكامل داخل متصفحك، دون إرسال أي بيانات إلى أي خادم.</p><h3>ما أنواع الملفات المدعومة؟</h3><p>يدعم التطبيق ملفات CSV وJSON وJSONL مع ترميز UTF-8، ويمكنك رفعها مباشرة من جهازك.</p><h3>هل يتم حفظ المشاريع تلقائيًا؟</h3><p>لا، يجب الضغط على زر &quot;حفظ المشروع محليًا&quot; لحفظه في ذاكرة التخزين المحلية، ويمكنك تحميله لاحقًا من نفس المتصفح.</p><h3>هل يمكن تقسيم البيانات بشكل عشوائي؟</h3><p>نعم، يمكنك تحديد نسبة التدريب بين 1% و99%، وسيتم خلط الصفوف وتقسيمها إلى مجموعتي تدريب واختبار.</p><h3>كيف يتم تقييم جودة البيانات؟</h3><p>يقيم التطبيق نسبة الخلايا غير الفارغة، ومتوسط طول القيم النصية، ونسبة القيم التي تحتوي على حروف عربية، والتوازن بين الفئات إن وُجد عمود تصنيف.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-12 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const els = {
+    appRoot: document.getElementById('appRoot'),
+    fileInput: document.getElementById('fileInput'),
+    fileStatus: document.getElementById('fileStatus'),
+    rowCount: document.getElementById('rowCount'),
+    colCount: document.getElementById('colCount'),
+    uploadError: document.getElementById('uploadError'),
+    btnClearAll: document.getElementById('btnClearAll'),
+    btnLoadProject: document.getElementById('btnLoadProject'),
+    btnSaveProject: document.getElementById('btnSaveProject'),
+    sumRows: document.getElementById('sumRows'),
+    sumCols: document.getElementById('sumCols'),
+    sumNonEmpty: document.getElementById('sumNonEmpty'),
+    simpleChart: document.getElementById('simpleChart'),
+    chartEmpty: document.getElementById('chartEmpty'),
+    searchText: document.getElementById('searchText'),
+    colFilter: document.getElementById('colFilter'),
+    colFilterText: document.getElementById('colFilterText'),
+    btnApplyFilter: document.getElementById('btnApplyFilter'),
+    btnResetFilter: document.getElementById('btnResetFilter'),
+    previewTable: document.getElementById('previewTable'),
+    previewEmpty: document.getElementById('previewEmpty'),
+    btnRemoveEmpty: document.getElementById('btnRemoveEmpty'),
+    btnRemoveDuplicates: document.getElementById('btnRemoveDuplicates'),
+    cleanStatus: document.getElementById('cleanStatus'),
+    cleanEmpty: document.getElementById('cleanEmpty'),
+    splitRatio: document.getElementById('splitRatio'),
+    btnSplit: document.getElementById('btnSplit'),
+    splitStatus: document.getElementById('splitStatus'),
+    countTrain: document.getElementById('countTrain'),
+    countTest: document.getElementById('countTest'),
+    splitEmpty: document.getElementById('splitEmpty'),
+    btnRunQuality: document.getElementById('btnRunQuality'),
+    qualityStatus: document.getElementById('qualityStatus'),
+    qualityOutput: document.getElementById('qualityOutput'),
+    qualityEmpty: document.getElementById('qualityEmpty'),
+    btnExportCsv: document.getElementById('btnExportCsv'),
+    btnExportJson: document.getElementById('btnExportJson'),
+    btnExportJsonl: document.getElementById('btnExportJsonl'),
+    exportLink: document.getElementById('exportLink'),
+    exportEmpty: document.getElementById('exportEmpty')
+  };
+
+  let allRows = []; // array of objects
+  let filteredRows = []; // current view
+  let split = { train: [], test: [] };
+
+  function setError(id, msg){
+    const el = els[id];
+    if(!el) return;
+    el.textContent = msg || '';
+    el.style.display = msg ? 'block' : 'none';
+  }
+
+  function parseCSV(text){
+    const rows = [];
+    let current = '';
+    let inQuotes = false;
+    const chars = text.split('');
+    let i = 0;
+    while(i < chars.length){
+      const c = chars[i];
+      if(c === '"'){
+        if(inQuotes && chars[i+1] === '"'){
+          current += '"';
+          i += 2;
+          continue;
+        }
+        inQuotes = !inQuotes;
+        i++;
+        continue;
+      }
+      if(c === ',' && !inQuotes){
+        current += '\u0001';
+        i++;
+        continue;
+      }
+      if((c === '\n' || c === '\r') && !inQuotes){
+        if(c === '\r' && chars[i+1] === '\n') i++;
+        current += '\u0002';
+        i++;
+        continue;
+      }
+      current += c;
+      i++;
+    }
+    const rawLines = current.split('\u0002').filter(x=>x.length>0 || text.includes('\n'));
+    if(rawLines.length === 0) return rows;
+    const headers = rawLines[0].split('\u0001').map(h=>h.trim());
+    for(let l=1; l<rawLines.length; l++){
+      const line = rawLines[l];
+      if(line.trim() === '') continue;
+      const parts = line.split('\u0001');
+      const obj = {};
+      for(let h=0; h<headers.length; h++){
+        const val = (parts[h] || '').trim();
+        obj[headers[h]] = val;
+      }
+      rows.push(obj);
+    }
+    return rows;
+  }
+
+  function parseJSON(text){
+    try {
+      const data = JSON.parse(text);
+      if(Array.isArray(data)){
+        return data.filter(x=>x && typeof x === 'object').map(x=>Object.fromEntries(Object.entries(x).map(([k,v])=>[String(k), v==null?'':String(v)])));
+      }
+      return [Object.fromEntries(Object.entries(data).map(([k,v])=>[String(k), v==null?'':String(v)]))];
+    } catch(e){
+      throw new Error('خطأ في تحليل JSON');
+    }
+  }
+
+  function parseJSONL(text){
+    const lines = text.replace(/\r\n/g,'\n').split('\n');
+    const out = [];
+    for(let s=0; s<lines.length; s++){
+      const t = lines[s].trim();
+      if(t === '') continue;
+      try {
+        const o = JSON.parse(t);
+        if(o && typeof o === 'object'){
+          out.push(Object.fromEntries(Object.entries(o).map(([k,v])=>[String(k), v==null?'':String(v)])));
+        }
+      } catch(e){}
+    }
+    return out;
+  }
+
+  function getColumns(rows){
+    const set = new Set();
+    rows.forEach(r=>Object.keys(r||{}).forEach(k=>set.add(k)));
+    return Array.from(set);
+  }
+
+  function updateColumns(){
+    const cols = getColumns(filteredRows.length? filteredRows : allRows);
+    els.colFilter.innerHTML = '<option value="">الكل</option>' + cols.map(c=>'<option value="'+escapeHtml(c)+'">'+escapeHtml(c)+'</option>').join('');
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];
+    });
+  }
+
+  function renderPreview(){
+    if(!filteredRows.length){
+      els.previewTable.innerHTML = '';
+      els.previewEmpty.style.display = 'block';
+      return;
+    }
+    els.previewEmpty.style.display = 'none';
+    const cols = getColumns(filteredRows);
+    let html = '<thead><tr>' + cols.map(c=>'<th>'+escapeHtml(c)+'</th>').join('') + '</tr></thead><tbody>';
+    filteredRows.slice(0,200).forEach(r=>{
+      html += '<tr>' + cols.map(c=>'<td>'+escapeHtml(r[c])+'</td>').join('') + '</tr>';
+    });
+    html += '</tbody>';
+    els.previewTable.innerHTML = html;
+  }
+
+  function drawChart(){
+    const canvas = els.simpleChart;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(!allRows.length){
+      els.chartEmpty.style.display = 'block';
+      return;
+    }
+    els.chartEmpty.style.display = 'none';
+    const cols = getColumns(allRows).slice(0,4);
+    let max = 1;
+    const data = cols.map(c=>{
+      let count = 0;
+      allRows.forEach(r=>{
+        const v = r[c];
+        if(v !== undefined && v !== null && String(v).trim() !== '') count++;
+      });
+      if(count>max) max=count;
+      return count;
+    });
+    const barW = 60;
+    const gap = 20;
+    const startX = 30;
+    const bottom = 100;
+    cols.forEach((c,idx)=>{
+      const h = Math.max(4, (data[idx]/max)*(bottom-20));
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold-bright') || '#d9b54c';
+      ctx.fillRect(startX + idx*(barW+gap), bottom-h, barW, h);
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--light') || '#f2f0ea';
+      ctx.font = '10px sans-serif';
+      ctx.fillText(String(data[idx]), startX + idx*(barW+gap), bottom-h-4);
+      ctx.save();
+      ctx.translate(startX + idx*(barW+gap)+20, bottom+12);
+      ctx.rotate(-Math.PI/4);
+      ctx.fillText(c.length>10? c.slice(0,10)+'…':c, 0,0);
+      ctx.restore();
+    });
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold-dim') || '#8c7a3a';
+    ctx.beginPath();
+    ctx.moveTo(20,bottom);
+    ctx.lineTo(startX + cols.length*(barW+gap), bottom);
+    ctx.stroke();
+  }
+
+  function updateSummary(){
+    const rows = allRows.length;
+    const cols = getColumns(allRows).length;
+    els.sumRows.textContent = rows;
+    els.sumCols.textContent = cols;
+    if(rows===0){
+      els.sumNonEmpty.textContent = '0%';
+    } else {
+      let filled = 0;
+      allRows.forEach(r=>{
+        Object.values(r||{}).forEach(v=>{
+          if(v !== undefined && v !== null && String(v).trim() !== '') filled++;
+        });
+      });
+      const total = rows * Math.max(1, cols);
+      els.sumNonEmpty.textContent = Math.round((filled/total)*100) + '%';
+    }
+    updateColumns();
+    filteredRows = allRows.slice();
+    renderPreview();
+    drawChart();
+    updateCounts();
+  }
+
+  function updateCounts(){
+    els.rowCount.textContent = 'عدد الصفوف: ' + allRows.length;
+    els.colCount.textContent = 'عدد الأعمدة: ' + getColumns(allRows).length;
+  }
+
+  els.fileInput.addEventListener('change', function(){
+    setError('uploadError', '');
+    const file = this.files[0];
+    if(!file){
+      els.fileStatus.textContent = 'لا يوجد ملف مرفوع';
+      return;
+    }
+    els.fileStatus.textContent = 'جاري القراءة: ' + file.name;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      try {
+        const text = e.target.result;
+        let rows = [];
+        const name = file.name.toLowerCase();
+        if(name.endsWith('.json')){
+          rows = parseJSON(text);
+        } else if(name.endsWith('.jsonl') || name.endsWith('.ndjson')){
+          rows = parseJSONL(text);
+        } else {
+          rows = parseCSV(text);
+        }
+        if(!rows.length) throw new Error('الملف فارغ أو غير صالح');
+        allRows = rows;
+        els.fileStatus.textContent = 'تم رفع: ' + file.name;
+        split = { train: [], test: [] };
+        els.splitStatus.textContent = 'غير مقسم';
+        els.cleanStatus.textContent = 'لم يتم التنظيف بعد';
+        els.qualityStatus.textContent = 'غير مقيَّم';
+        updateSummary();
+        setError('uploadError', '');
+      } catch(err){
+        setError('uploadError', err.message || 'حدث خطأ أثناء معالجة الملف');
+        els.fileStatus.textContent = 'فشل رفع الملف';
+      }
+    };
+    reader.onerror = function(){
+      setError('uploadError', 'تعذر قراءة الملف');
+      els.fileStatus.textContent = 'فشل رفع الملف';
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+
+  els.btnClearAll.addEventListener('click', function(){
+    allRows = [];
+    filteredRows = [];
+    split = { train: [], test: [] };
+    els.fileInput.value = '';
+    els.fileStatus.textContent = 'لا يوجد ملف مرفوع';
+    els.splitStatus.textContent = 'غير مقسم';
+    els.cleanStatus.textContent = 'لم يتم التنظيف بعد';
+    els.qualityStatus.textContent = 'غير مقيَّم';
+    els.previewTable.innerHTML = '';
+    els.exportLink.style.display = 'none';
+    updateSummary();
+    setError('uploadError', '');
+    els.qualityOutput.textContent = '';
+  });
+
+  els.btnSaveProject.addEventListener('click', function(){
+    try {
+      const payload = {
+        version: 1,
+        allRows: allRows,
+        filteredRows: filteredRows,
+        split: split,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem('dataStudioProject', JSON.stringify(payload));
+      els.cleanStatus.textContent = 'تم حفظ المشروع محليًا';
+    } catch(e){
+      setError('uploadError', 'تعذر حفظ المشروع في التخزين المحلي');
+    }
+  });
+
+  els.btnLoadProject.addEventListener('click', function(){
+    try {
+      const raw = localStorage.getItem('dataStudioProject');
+      if(!raw) throw new Error('لا يوجد مشروع محفوظ');
+      const payload = JSON.parse(raw);
+      allRows = Array.isArray(payload.allRows)? payload.allRows : [];
+      filteredRows = Array.isArray(payload.filteredRows)? payload.filteredRows : allRows.slice();
+      split = payload.split && payload.split.train ? payload.split : { train: [], test: [] };
+      els.splitStatus.textContent = split.train.length||split.test.length? 'مقسَّم' : 'غير مقسم';
+      els.cleanStatus.textContent = 'تم تحميل مشروع محفوظ';
+      els.qualityStatus.textContent = 'غير مقيَّم';
+      updateSummary();
+      renderPreview();
+      setError('uploadError', '');
+    } catch(e){
+      setError('uploadError', e.message || 'تعذر تحميل المشروع');
+    }
+  });
+
+  els.btnApplyFilter.addEventListener('click', function(){
+    const text = els.searchText.value.trim().toLowerCase();
+    const col = els.colFilter.value;
+    const ctext = els.colFilterText.value.trim().toLowerCase();
+    filteredRows = allRows.filter(r=>{
+      let ok = true;
+      if(text){
+        ok = false;
+        Object.values(r||{}).forEach(v=>{
+          if(String(v).toLowerCase().includes(text)) ok = true;
+        });
+      }
+      if(ok && col && ctext){
+        const v = r[col];
+        if(v === undefined || v === null || String(v).toLowerCase().indexOf(ctext) === -1) ok = false;
+      }
+      return ok;
+    });
+    renderPreview();
+  });
+
+  els.btnResetFilter.addEventListener('click', function(){
+    els.searchText.value = '';
+    els.colFilterText.value = '';
+    filteredRows = allRows.slice();
+    renderPreview();
+  });
+
+  els.btnRemoveEmpty.addEventListener('click', function(){
+    if(!allRows.length){
+      els.cleanEmpty.style.display = 'block';
+      return;
+    }
+    els.cleanEmpty.style.display = 'none';
+    const before = allRows.length;
+    allRows = allRows.filter(r=>{
+      let has = false;
+      Object.values(r||{}).forEach(v=>{
+        if(v !== undefined && v !== null && String(v).trim() !== '') has = true;
+      });
+      return has;
+    });
+    const after = allRows.length;
+    els.cleanStatus.textContent = 'تم إزالة الصفوف الفارغة الكلية: ' + (before-after);
+    updateSummary();
+  });
+
+  els.btnRemoveDuplicates.addEventListener('click', function(){
+    if(!allRows.length){
+      els.cleanEmpty.style.display = 'block';
+      return;
+    }
+    els.cleanEmpty.style.display = 'none';
+    const before = allRows.length;
+    const seen = new Set();
+    allRows = allRows.filter(r=>{
+      const key = JSON.stringify(r);
+      if(seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    const after = allRows.length;
+    els.cleanStatus.textContent = 'تم إزالة التكرار: ' + (before-after);
+    updateSummary();
+  });
+
+  els.btnSplit.addEventListener('click', function(){
+    if(!allRows.length){
+      els.splitEmpty.style.display = 'block';
+      return;
+    }
+    els.splitEmpty.style.display = 'none';
+    let ratio = parseInt(els.splitRatio.value, 10);
+    if(isNaN(ratio) || ratio < 1) ratio = 1;
+    if(ratio > 99) ratio = 99;
+    const arr = allRows.slice();
+    for(let i=arr.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      const tmp = arr[i]; arr[i]=arr[j]; arr[j]=tmp;
+    }
+    const cut = Math.floor(arr.length * ratio / 100);
+    split.train = arr.slice(0, cut);
+    split.test = arr.slice(cut);
+    els.countTrain.textContent = split.train.length;
+    els.countTest.textContent = split.test.length;
+    els.splitStatus.textContent = 'مقسَّم بنسبة ' + ratio + '%';
+  });
+
+  els.btnRunQuality.addEventListener('click', function(){
+    if(!allRows.length){
+      els.qualityEmpty.style.display = 'block';
+      return;
+    }
+    els.qualityEmpty.style.display = 'none';
+    const rows = allRows;
+    const cols = getColumns(rows);
+    let nonEmpty = 0;
+    let totalCells = rows * cols;
+    const lengths = [];
+    let arabicCount = 0;
+    let totalText = 0;
+    rows.forEach(r=>{
+      cols.forEach(c=>{
+        const v = r[c];
+        if(v !== undefined && v !== null && String(v).trim() !== ''){
+          nonEmpty++;
+          const s = String(v);
+          lengths.push(s.length);
+          totalText++;
+          if(/[ء-ي]/.test(s)) arabicCount++;
+        }
+      });
+    });
+    const nonEmptyPct = totalCells? Math.round((nonEmpty/totalCells)*100) : 0;
+    const avgLen = lengths.length? Math.round(lengths.reduce((a,b)=>a+b,0)/lengths.length) : 0;
+    const arabicPct = totalText? Math.round((arabicCount/totalText)*100) : 0;
+    const classCol = cols.find(c=>c.toLowerCase().includes('class') || c.toLowerCase().includes('category') || c.toLowerCase().includes('label') || c.toLowerCase().includes('فئة') || c.toLowerCase().includes('تصنيف'));
+    let balance = 'غير محدد';
+    if(classCol){
+      const counts = {};
+      rows.forEach(r=>{
+        const v = r[classCol];
+        const key = (v===undefined||v===null)? '' : String(v).trim();
+        if(key==='') return;
+        counts[key] = (counts[key]||0)+1;
+      });
+      const vals = Object.values(counts);
+      if(vals.length>=2){
+        const min = Math.min.apply(null, vals);
+        const max = Math.max.apply(null, vals);
+        balance = max===0? 'غير متوازن' : Math.round((min/max)*100) + '% أدنى/أعلى';
+      } else {
+        balance = 'فئة واحدة';
+      }
+    }
+    els.qualityOutput.innerHTML = '<div>نسبة الخلايا غير الفارغة: '+nonEmptyPct+'%</div>' +
+      '<div>متوسط طول القيم النصية: '+avgLen+' حرف</div>' +
+      '<div>نسبة القيم التي تحتوي على حروف عربية: '+arabicPct+'%</div>' +
+      '<div>التوازن بين الفئات ('+(classCol||'غير موجود')+'): '+balance+'</div>';
+    els.qualityStatus.textContent = 'تم التقييم';
+  });
+
+  function toCSV(rows, cols){
+    const esc = function(s){
+      if(s===undefined||s===null) return '';
+      s = String(s);
+      if(s.indexOf(',')>=0 || s.indexOf('"')>=0 || s.indexOf('\n')>=0 || s.indexOf('\r')>=0){
+        return '"' + s.replace(/"/g,'""') + '"';
+      }
+      return s;
+    };
+    let out = cols.map(esc).join(',');
+    rows.forEach(r=>{
+      out += '\n' + cols.map(c=>esc(r[c])).join(',');
+    });
+    return out;
+  }
+
+  els.btnExportCsv.addEventListener('click', function(){
+    if(!allRows.length){
+      els.exportEmpty.style.display = 'block';
+      return;
+    }
+    els.exportEmpty.style.display = 'none';
+    const cols = getColumns(allRows);
+    const blob = new Blob([toCSV(allRows, cols)], {type: 'text/csv;charset=utf-8'});
+    const url = window.URL.createObjectURL(blob);
+    els.exportLink.href = url;
+    els.exportLink.download = 'cleaned_data.csv';
+    els.exportLink.style.display = 'inline-block';
+  });
+
+  els.btnExportJson.addEventListener('click', function(){
+    if(!allRows.length){
+      els.exportEmpty.style.display = 'block';
+      return;
+    }
+    els.exportEmpty.style.display = 'none';
+    const blob = new Blob([JSON.stringify(allRows, null, 2)], {type: 'application/json;charset=utf-8'});
+    const url = window.URL.createObjectURL(blob);
+    els.exportLink.href = url;
+    els.exportLink.download = 'cleaned_data.json';
+    els.exportLink.style.display = 'inline-block';
+  });
+
+  els.btnExportJsonl.addEventListener('click', function(){
+    if(!allRows.length){
+      els.exportEmpty.style.display = 'block';
+      return;
+    }
+    els.exportEmpty.style.display = 'none';
+    const lines = allRows.map(r=>JSON.stringify(r)).join('\n');
+    const blob = new Blob([lines], {type: 'application/x-ndjson;charset=utf-8'});
+    const url = window.URL.createObjectURL(blob);
+    els.exportLink.href = url;
+    els.exportLink.download = 'cleaned_data.jsonl';
+    els.exportLink.style.display = 'inline-block';
+  });
+
+  els.exportLink.addEventListener('click', function(){
+    setTimeout(function(){
+      els.exportLink.style.display = 'none';
+      try { window.URL.revokeObjectURL(els.exportLink.href); } catch(e){}
+    }, 10000);
+  });
+
+  updateSummary();
+})();
+</script>
+</body>
+</html>
