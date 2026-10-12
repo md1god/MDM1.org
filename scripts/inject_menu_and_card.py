@@ -80,6 +80,9 @@ def transform(text: str, menu: dict[str, str]) -> str:
         role = ' role="navigation"' if tag == "div" else ""
         block = (menu["button"] + "\n" + f'<{tag} id="mdm1m-panel"{role}>' + absolutize(menu["panel_inner"]) + f"</{tag}>\n" + menu["script"] + "\n")
         text = text[:body_pos] + block + text[body_pos:]
+    if "js/lang.js" not in text and 'id="lang-select"' not in text:      # site-wide language button
+        pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
+        text = text[:pos] + '<script src="/js/lang.js" defer></script>\n' + text[pos:]
     head_pos = list(re.finditer(r"</\s*head\s*>", text, re.I))[0].start()
     return text[:head_pos] + "\n    " + "\n    ".join(head_add) + "\n" + text[head_pos:]
 

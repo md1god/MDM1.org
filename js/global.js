@@ -244,7 +244,7 @@
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' }   /* threshold 0: long lists (85+ items) never reach 15% visible and stayed invisible */);
 
     items.forEach(el => io.observe(el));
   }
