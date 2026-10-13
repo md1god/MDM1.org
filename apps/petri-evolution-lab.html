@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مختبر تطوّر الكائنات الدقيقة: محاكاة تفاعلية للأحياء المجهرية | MDM1</title>
+<meta name="description" content="صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق بتري مع رسوم بيانية حيّة وحفظ للتجارب ومقارنتها.">
+<link rel="canonical" href="https://mdm1.org/apps/petri-evolution-lab.html">
+<meta property="og:title" content="مختبر تطوّر الكائنات الدقيقة: محاكاة تفاعلية للأحياء المجهرية">
+<meta property="og:description" content="صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق بتري مع رسوم بيانية حيّة وحفظ للتجارب ومقارنتها.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/petri-evolution-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:960px;margin:0 auto;color:var(--light)}
+.app .intro{line-height:1.9;margin-bottom:16px}
+.app h2{color:var(--gold-bright);font-size:1.05rem;margin:4px 0 12px}
+.app canvas{width:100%;height:auto;display:block;border-radius:10px;background:rgba(0,0,0,.35);margin-bottom:12px}
+.app .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 22px}
+.app .row{gap:10px;flex-wrap:wrap;align-items:center}
+.app .sliderRow{display:grid;grid-template-columns:110px 1fr 46px;align-items:center;gap:8px;margin:6px 0}
+.app .sliderRow label{font-size:.9rem}
+.app input[type=range]{width:100%;accent-color:var(--gold)}
+.app .val{color:var(--gold-bright);font-weight:700;text-align:center;display:inline-block}
+.app .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.app .stat{text-align:center}
+.app .stat span{display:block;font-size:.78rem;opacity:.8;line-height:1.4}
+.app .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;margin:6px 0}
+.app .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-inline-end:5px}
+.app .toggles{display:flex;flex-wrap:wrap;gap:14px;font-size:.86rem;margin-bottom:10px}
+.app .chip{display:inline-flex;align-items:center;gap:6px}
+.app table{width:100%;border-collapse:collapse;font-size:.84rem}
+.app th,.app td{border-bottom:1px solid var(--gold-dim);padding:7px 4px;text-align:center}
+.app th{color:var(--gold-bright)}
+.app .empty{opacity:.7;padding:10px;text-align:center;margin:0}
+.app .saveItem{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--gold-dim);padding:7px 0;font-size:.88rem}
+.app .saveItem button{padding:3px 10px;font-size:.8rem}
+.app #cmpWrap{margin-top:12px;overflow-x:auto}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "صمّم كائناً وحيد الخلية وراقب تطوّره عبر الأجيال في طبق بتري", "url": "https://mdm1.org/apps/petri-evolution-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف تعمل هذه المحاكاة بالضبط؟", "acceptedAnswer": {"@type": "Answer", "text": "كل كائن يحمل أربع صفات وراثية ويستهلك طاقة من الضوء والغذاء والافتراس حسب مطابقتها للبيئة، وعندما تتجاوز طاقته حدّاً معيناً ينقسم إلى فردين يرثان صفاته مع طفرة عشوائية. تؤدي الحرارة والضوء والغذاء والمفترسات إلى بقاء الأفضل تكيّفاً وتكاثره أكثر، فتتغيّر متوسطات الصفات تدريجياً عبر الأجيال."}}, {"@type": "Question", "name": "هل تُحفظ تجاربي بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يُخزّن زر «حفظ التجربة الحالية» النتائج داخل مساحة التخزين المحلية للمتصفح، فتبقى ظاهرة في قائمة المقارنة حتى عند إعادة فتح الصفحة، ما لم تحذفها أنت أو تمسح بيانات المتصفح."}}, {"@type": "Question", "name": "لماذا تختفي بعض الصفات بعد عدة أجيال؟", "acceptedAnswer": {"@type": "Answer", "text": "لأن الصفات غير الملائمة للبيئة تستهلك طاقة دون مردود كافٍ، فيموت أصحابها قبل التكاثر، بينما تنتشر الصفات المفيدة. مثلاً في بيئة مظلمة وضعيفة الغذاء يضمحل التمثيل الضوئي، وفي بيئة مليئة بالمفترسات تبقى الأفراد الأسرع."}}, {"@type": "Question", "name": "ما وظيفة مؤشر المفترسات؟", "acceptedAnswer": {"@type": "Answer", "text": "يحدّد نسبة الكائنات التي تلتهمها المفترسات الخارجية في كل خطوة، وتقل فرص النجاة كلما زاد. تستطيع الكائنات الأسرع والأكبر الإفلات بنسبة أعلى، لذلك يُشكّل هذا المؤشر ضغطاً انتقائياً قوياً يغيّر مسار التطور."}}, {"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الحسابات والرسوم والمحاكاة تُنفّذ محلياً داخل متصفحك دون أي طلب شبكة، ويمكنك تشغيله والتفاعل معه وحفظ نتائجك حتى مع انقطاع الاتصال."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">صمّم كائناً وحيد الخلية وراقب تطوّره عبر الأجيال في طبق بتري</h1>
+  <p class="page-sub">صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق بتري مع رسوم بيانية حيّة وحفظ للتجارب ومقارنتها.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app intro">مختبر تطوّر الكائنات الدقيقة محاكاة تفاعلية كاملة تعمل داخل متصفحك دون أي خادم، تتيح لك تصميم كائن وحيد الخلية وتحديد صفاته الوراثية الأربع: الحجم، والسرعة، والتمثيل الضوئي، والافتراس، ثم زرعه في طبق بتري حيّ تراقب فيه تنافس المجموعات وتكاثرها وتحوّراتها جيلاً بعد جيل. تضبط من المؤشرات ضغوط البيئة من غذاء وضوء وحرارة ومفترسات، وعندما تتغيّر هذه الضغوط تبدأ الصفات المرشّحة طبيعياً بالانتشار بين الأفراد بينما تندثر الصفات غير الملائمة. يعرض المختبر رسوماً بيانية حيّة لتطوّر الصفات وعدد الأجيال والناجين، ويحفظ تجاربك محلياً في المتصفح لتقارنها لاحقاً بواجهة عربية كاملة.</p>
+<div class="app">
+  <div class="card">
+    <h2>١. تصميم الكائن</h2>
+    <div class="grid">
+      <div class="sliderRow"><label for="s-size">الحجم</label><input id="s-size" type="range" min="1" max="10" step="0.5" value="5"><span class="val" id="v-size">5</span></div>
+      <div class="sliderRow"><label for="s-speed">السرعة</label><input id="s-speed" type="range" min="1" max="10" step="0.5" value="5"><span class="val" id="v-speed">5</span></div>
+      <div class="sliderRow"><label for="s-photo">التمثيل الضوئي</label><input id="s-photo" type="range" min="1" max="10" step="0.5" value="5"><span class="val" id="v-photo">5</span></div>
+      <div class="sliderRow"><label for="s-pred">الافتراس</label><input id="s-pred" type="range" min="1" max="10" step="0.5" value="5"><span class="val" id="v-pred">5</span></div>
+    </div>
+    <div class="row">
+      <button id="btnSeed">زرع الكائن في طبق بتري</button>
+      <span class="badge" id="seedInfo">حجم 5 · سرعة 5 · ضوئي 5 · افتراس 5</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>٢. ضغوط البيئة</h2>
+    <div class="grid">
+      <div class="sliderRow"><label for="e-food">الغذاء</label><input id="e-food" type="range" min="0" max="100" step="1" value="55"><span class="val" id="ve-food">55</span></div>
+      <div class="sliderRow"><label for="e-light">الضوء</label><input id="e-light" type="range" min="0" max="100" step="1" value="55"><span class="val" id="ve-light">55</span></div>
+      <div class="sliderRow"><label for="e-temp">الحرارة (مئوية)</label><input id="e-temp" type="range" min="0" max="45" step="1" value="25"><span class="val" id="ve-temp">25</span></div>
+      <div class="sliderRow"><label for="e-pred">المفترسات</label><input id="e-pred" type="range" min="0" max="10" step="0.5" value="2"><span class="val" id="ve-pred">2</span></div>
+      <div class="sliderRow"><label for="e-mut">معدل الطفرة</label><input id="e-mut" type="range" min="0" max="1" step="0.1" value="0.5"><span class="val" id="ve-mut">0.5</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>٣. طبق بتري</h2>
+    <canvas id="petri" width="600" height="400"></canvas>
+    <div class="row">
+      <button id="btnPlay">تشغيل المحاكاة</button>
+      <button class="sec" id="btnStep">خطوة واحدة</button>
+      <button class="sec" id="btnReset">إعادة ضبط الطبق</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><span>الكائنات الحية</span><div class="big" id="statAlive">0</div></div>
+      <div class="stat"><span>عدد الأجيال</span><div class="big" id="statGen">0</div></div>
+      <div class="stat"><span>الناجون (بلغوا التكاثر)</span><div class="big" id="statSurv">0</div></div>
+      <div class="stat"><span>مرات التكاثر</span><div class="big" id="statRep">0</div></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:#4cd97b"></i>ضوئي</span>
+      <span><i style="background:#e4572e"></i>مفترس</span>
+      <span><i style="background:#f2c14e"></i>سريع</span>
+      <span><i style="background:#5aa9e6"></i>ضخم</span>
+    </div>
+    <p class="empty" id="petriNote">لا توجد كائنات بعد. اضبط الصفات ثم اضغط «زرع الكائن في طبق بتري».</p>
+  </div>
+
+  <div class="card">
+    <h2>٤. الرسوم البيانية</h2>
+    <div class="toggles">
+      <label class="chip"><input type="checkbox" id="cSize" checked> الحجم</label>
+      <label class="chip"><input type="checkbox" id="cSpeed" checked> السرعة</label>
+      <label class="chip"><input type="checkbox" id="cPhoto" checked> التمثيل الضوئي</label>
+      <label class="chip"><input type="checkbox" id="cPred" checked> الافتراس</label>
+      <label class="chip"><input type="checkbox" id="cPop"> العدد</label>
+      <label class="chip"><input type="checkbox" id="cGen"> الأجيال</label>
+    </div>
+    <canvas id="chart" width="600" height="260"></canvas>
+    <p class="empty" id="chartNote">لا توجد بيانات كافية بعد. شغّل المحاكاة لتظهر منحنيات التطوّر.</p>
+  </div>
+
+  <div class="card">
+    <h2>٥. حفظ التجارب ومقارنتها</h2>
+    <div class="row">
+      <input id="expName" class="input" placeholder="اسم التجربة" maxlength="40">
+      <button id="btnSave">حفظ التجربة الحالية</button>
+      <button class="sec" id="btnClear">حذف كل التجارب</button>
+    </div>
+    <div class="out" id="expList"></div>
+    <div class="divider"></div>
+    <div id="cmpWrap"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف تعمل هذه المحاكاة بالضبط؟</h3><p>كل كائن يحمل أربع صفات وراثية ويستهلك طاقة من الضوء والغذاء والافتراس حسب مطابقتها للبيئة، وعندما تتجاوز طاقته حدّاً معيناً ينقسم إلى فردين يرثان صفاته مع طفرة عشوائية. تؤدي الحرارة والضوء والغذاء والمفترسات إلى بقاء الأفضل تكيّفاً وتكاثره أكثر، فتتغيّر متوسطات الصفات تدريجياً عبر الأجيال.</p><h3>هل تُحفظ تجاربي بعد إغلاق المتصفح؟</h3><p>نعم، يُخزّن زر «حفظ التجربة الحالية» النتائج داخل مساحة التخزين المحلية للمتصفح، فتبقى ظاهرة في قائمة المقارنة حتى عند إعادة فتح الصفحة، ما لم تحذفها أنت أو تمسح بيانات المتصفح.</p><h3>لماذا تختفي بعض الصفات بعد عدة أجيال؟</h3><p>لأن الصفات غير الملائمة للبيئة تستهلك طاقة دون مردود كافٍ، فيموت أصحابها قبل التكاثر، بينما تنتشر الصفات المفيدة. مثلاً في بيئة مظلمة وضعيفة الغذاء يضمحل التمثيل الضوئي، وفي بيئة مليئة بالمفترسات تبقى الأفراد الأسرع.</p><h3>ما وظيفة مؤشر المفترسات؟</h3><p>يحدّد نسبة الكائنات التي تلتهمها المفترسات الخارجية في كل خطوة، وتقل فرص النجاة كلما زاد. تستطيع الكائنات الأسرع والأكبر الإفلات بنسبة أعلى، لذلك يُشكّل هذا المؤشر ضغطاً انتقائياً قوياً يغيّر مسار التطور.</p><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، كل الحسابات والرسوم والمحاكاة تُنفّذ محلياً داخل متصفحك دون أي طلب شبكة، ويمكنك تشغيله والتفاعل معه وحفظ نتائجك حتى مع انقطاع الاتصال.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-13 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var clamp=function(v,a,b){return v<a?a:(v>b?b:v);};
+  var rnd=function(a,b){return a+Math.random()*(b-a);};
+  var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});};
+  var f1=function(v){return (v||0).toFixed(1);};
+
+  var KEY="md_evo_lab_v1";
+  var MAXPOP=340,MATURITY=8,MAXAGE=120;
+  var COL={size:"#5aa9e6",speed:"#f2c14e",photo:"#4cd97b",pred:"#e4572e",pop:"#d9a441",gen:"#b07cff"};
+
+  var S={
+    running:false,started:false,orgs:[],tick:0,gen:0,reproduced:0,history:[],
+    seed:{size:5,speed:5,photo:5,pred:5},
+    env:{food:55,light:55,temp:25,pred:2,mut:0.5}
+  };
+
+  function rp(){var x,y,n=0;do{x=rnd(-0.85,0.85);y=rnd(-0.85,0.85);n++;}while(x*x+y*y>0.8&&n<60);return [x,y];}
+  function newOrg(g,x,y){return {g:{size:g.size,speed:g.speed,photo:g.photo,pred:g.pred},x:x,y:y,ang:rnd(0,6.283),E:1,age:0,gen:0,dead:false};}
+  function mutate(g,rate){
+    var k=0.5+rate*1.5;
+    var m=function(v){return clamp(v+(Math.random()+Math.random()-1)*k,1,10);};
+    return {size:m(g.size),speed:m(g.speed),photo:m(g.photo),pred:m(g.pred)};
+  }
+
+  function step(){
+    if(!S.started)return;
+    S.tick++;
+    var e=S.env;
+    var tempF=Math.exp(-Math.pow(e.temp-25,2)/(2*11*11));
+    var newborns=[],i,o,g;
+    for(i=0;i<S.orgs.length;i++){
+      o=S.orgs[i]; if(o.dead)continue; g=o.g;
+      o.E-=(0.015+0.004*g.size+0.004*g.speed);
+      var gain=(g.photo/10)*(e.light/100)*0.16
+             +(g.speed/10)*(e.food/100)*0.16
+             +(g.pred/10)*(e.food/100)*0.09*(g.size/10);
+      o.E+=gain*tempF;
+      o.age++;
+      if(o.E>=2&&S.orgs.length+newborns.length<MAXPOP){
+        o.E=1;
+        var ch=newOrg(mutate(g,e.mut),o.x,o.y);
+        ch.gen=o.gen+1; S.reproduced++; newborns.push(ch);
+      }
+      if(o.E<=0||o.age>MAXAGE)o.dead=true;
+    }
+    if(e.pred>0){
+      var base=0.012*e.pred;
+      for(i=0;i<S.orgs.length;i++){
+        o=S.orgs[i]; if(o.dead)continue;
+        var escp=(o.g.speed/10)*0.7+(o.g.size/10)*0.15;
+        if(Math.random()<base*(1-escp))o.dead=true;
+      }
+    }
+    var next=[],mx=0;
+    for(i=0;i<S.orgs.length;i++){
+      o=S.orgs[i]; if(o.dead)continue;
+      o.ang+=(Math.random()-0.5)*0.6;
+      var d=(o.g.speed/10)*0.035;
+      o.x+=Math.cos(o.ang)*d; o.y+=Math.sin(o.ang)*d;
+      var r=Math.sqrt(o.x*o.x+o.y*o.y);
+      if(r>0.95){o.x*=0.95/r;o.y*=0.95/r;o.ang=Math.atan2(-o.y,-o.x)+(Math.random()-0.5);}
+      if(o.gen>mx)mx=o.gen;
+      next.push(o);
+    }
+    for(i=0;i<newborns.length;i++)next.push(newborns[i]);
+    S.orgs=next;
+    if(mx>S.gen)S.gen=mx;
+    if(S.tick%5===0)record();
+    if(S.orgs.length===0){S.running=false;updatePlayBtn();}
+    updateStats(); renderPetri(); drawChart();
+  }
+
+  function record(){
+    var n=S.orgs.length,a={size:0,speed:0,photo:0,pred:0},i;
+    for(i=0;i<n;i++){a.size+=S.orgs[i].g.size;a.speed+=S.orgs[i].g.speed;a.photo+=S.orgs[i].g.photo;a.pred+=S.orgs[i].g.pred;}
+    if(n){a.size/=n;a.speed/=n;a.photo/=n;a.pred/=n;}
+    S.history.push({t:S.tick,pop:n,gen:S.gen,size:a.size,speed:a.speed,photo:a.photo,pred:a.pred});
+    if(S.history.length>400)S.history.shift();
+  }
+
+  function traitColor(g){
+    var a=[["photo",g.photo],["pred",g.pred],["speed",g.speed],["size",g.size]];
+    a.sort(function(p,q){return q[1]-p[1];});
+    return COL[a[0][0]];
+  }
+
+  function renderPetri(){
+    var c=$("petri"); if(!c)return;
+    var ctx=c.getContext("2d"),w=c.width,h=c.height;
+    ctx.clearRect(0,0,w,h);
+    var cx=w/2,cy=h/2,R=Math.min(w,h)*0.47;
+    var grd=ctx.createRadialGradient(cx,cy,R*0.05,cx,cy,R);
+    grd.addColorStop(0,"rgba(217,164,65,.12)");grd.addColorStop(1,"rgba(255,255,255,.02)");
+    ctx.beginPath();ctx.arc(cx,cy,R,0,6.2832);ctx.fillStyle=grd;ctx.fill();
+    ctx.lineWidth=3;ctx.strokeStyle="#d9a441";ctx.stroke();
+    for(var i=0;i<S.orgs.length;i++){
+      var o=S.orgs[i],px=cx+o.x*R,py=cy+o.y*R,rad=2+o.g.size*0.9;
+      ctx.beginPath();ctx.arc(px,py,rad,0,6.2832);
+      ctx.fillStyle=traitColor(o.g);
+      ctx.globalAlpha=clamp(0.4+o.E*0.35,0.4,0.95);
+      ctx.fill();ctx.globalAlpha=1;
+    }
+  }
+
+  function drawChart(){
+    var c=$("chart"); if(!c)return;
+    var ctx=c.getContext("2d"),w=c.width,h=c.height,pad=30,i;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle="rgba(255,255,255,.10)";ctx.fillStyle="rgba(255,255,255,.5)";
+    ctx.font="11px sans-serif";ctx.textAlign="left";
+    for(i=0;i<=4;i++){
+      var y=pad+(h-2*pad)*i/4;
+      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
+      ctx.fillText((10-i*2.5).toFixed(1),4,y+3);
+    }
+    var H=S.history,note=$("chartNote");
+    if(H.length<2){if(note)note.style.display="block";return;}
+    if(note)note.style.display="none";
+    var maxPop=10,maxGen=1;
+    for(i=0;i<H.length;i++){if(H[i].pop>maxPop)maxPop=H[i].pop;if(H[i].gen>maxGen)maxGen=H[i].gen;}
+    var ser=[];
+    if($("cSize").checked)ser.push(["size",COL.size,10]);
+    if($("cSpeed").checked)ser.push(["speed",COL.speed,10]);
+    if($("cPhoto").checked)ser.push(["photo",COL.photo,10]);
+    if($("cPred").checked)ser.push(["pred",COL.pred,10]);
+    if($("cPop").checked)ser.push(["pop",COL.pop,maxPop]);
+    if($("cGen").checked)ser.push(["gen",COL.gen,maxGen]);
+    var n=H.length;
+    var X=function(idx){return pad+(w-2*pad)*idx/(n-1);};
+    var Y=function(val){return pad+(h-2*pad)*(1-clamp(val,0,10)/10);};
+    for(var s=0;s<ser.length;s++){
+      var key=ser[s][0],scale=ser[s][2];
+      ctx.strokeStyle=ser[s][1];ctx.lineWidth=2;ctx.beginPath();
+      for(i=0;i<n;i++){
+        var v=(H[i][key]/scale)*10,x=X(i),yy=Y(v);
+        if(i===0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);
+      }
+      ctx.stroke();
+    }
+  }
+
+  function updateStats(){
+    $("statAlive").textContent=S.orgs.length;
+    $("statGen").textContent=S.gen;
+    var mature=0;
+    for(var i=0;i<S.orgs.length;i++){if(S.orgs[i].age>=MATURITY)mature++;}
+    $("statSurv").textContent=mature;
+    $("statRep").textContent=S.reproduced;
+  }
+  function updatePlayBtn(){
+    $("btnPlay").textContent=S.running?"إيقاف مؤقت":"تشغيل المحاكاة";
+  }
+  function clearSim(){
+    S.orgs=[];S.tick=0;S.gen=0;S.reproduced=0;S.history=[];S.running=false;S.started=false;
+    $("petriNote").style.display="block";
+    updateStats();updatePlayBtn();renderPetri();drawChart();
+  }
+  function seed(){
+    clearSim();
+    for(var i=0;i<12;i++){var p=rp();S.orgs.push(newOrg(S.seed,p[0],p[1]));}
+    S.started=true;
+    $("petriNote").style.display="none";
+    updateStats();renderPetri();drawChart();
+  }
+
+  function readSeed(){
+    S.seed.size=+$("s-size").value;S.seed.speed=+$("s-speed").value;
+    S.seed.photo=+$("s-photo").value;S.seed.pred=+$("s-pred").value;
+    $("v-size").textContent=S.seed.size;$("v-speed").textContent=S.seed.speed;
+    $("v-photo").textContent=S.seed.photo;$("v-pred").textContent=S.seed.pred;
+    $("seedInfo").textContent="حجم "+S.seed.size+" · سرعة "+S.seed.speed+" · ضوئي "+S.seed.photo+" · افتراس "+S.seed.pred;
+  }
+  function readEnv(){
+    S.env.food=+$("e-food").value;S.env.light=+$("e-light").value;
+    S.env.temp=+$("e-temp").value;S.env.pred=+$("e-pred").value;S.env.mut=+$("e-mut").value;
+    $("ve-food").textContent=S.env.food;$("ve-light").textContent=S.env.light;
+    $("ve-temp").textContent=S.env.temp;$("ve-pred").textContent=S.env.pred;$("ve-mut").textContent=S.env.mut;
+  }
+
+  function loadSaves(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}}
+  function saveSaves(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+
+  function renderCompare(arr){
+    var w=$("cmpWrap");
+    if(!arr||!arr.length){w.innerHTML="";return;}
+    var rows="";
+    for(var i=0;i<arr.length;i++){
+      var e=arr[i];
+      rows+="<tr><td>"+esc(e.name)+"</td><td>"+e.gen+"</td><td>"+e.pop+"</td><td>"+f1(e.avg.size)+"</td><td>"+f1(e.avg.speed)+"</td><td>"+f1(e.avg.photo)+"</td><td>"+f1(e.avg.pred)+"</td></tr>";
+    }
+    w.innerHTML="<table><thead><tr><th>التجربة</th><th>الأجيال</th><th>العدد</th><th>حجم</th><th>سرعة</th><th>ضوئي</th><th>افتراس</th></tr></thead><tbody>"+rows+"</tbody></table>";
+  }
+  function renderSaves(){
+    var arr=loadSaves(),list=$("expList");
+    if(!arr.length){list.innerHTML='<p class="empty">لا توجد تجارب محفوظة بعد.</p>';renderCompare(arr);return;}
+    var html="";
+    for(var i=0;i<arr.length;i++){
+      var e=arr[i];
+      html+='<div class="saveItem"><span>'+esc(e.name)+" — جيل "+e.gen+" · عدد "+e.pop+" · "+esc(e.date)+'</span><button class="sec" id="del'+i+'">حذف</button></div>';
+    }
+    list.innerHTML=html;
+    for(var j=0;j<arr.length;j++){
+      (function(idx){
+        var b=$("del"+idx);
+        if(b)b.addEventListener("click",function(){
+          var a=loadSaves();a.splice(idx,1);saveSaves(a);renderSaves();
+        });
+      })(j);
+    }
+    renderCompare(arr);
+  }
+  function snapshot(name){
+    var n=S.orgs.length,a={size:0,speed:0,photo:0,pred:0},i;
+    for(i=0;i<n;i++){a.size+=S.orgs[i].g.size;a.speed+=S.orgs[i].g.speed;a.photo+=S.orgs[i].g.photo;a.pred+=S.orgs[i].g.pred;}
+    if(n){a.size/=n;a.speed/=n;a.photo/=n;a.pred/=n;}
+    return {name:name,date:new Date().toLocaleString("ar"),gen:S.gen,pop:n,rep:S.reproduced,
+      seed:{size:S.seed.size,speed:S.seed.speed,photo:S.seed.photo,pred:S.seed.pred},
+      env:{food:S.env.food,light:S.env.light,temp:S.env.temp,pred:S.env.pred},
+      avg:a};
+  }
+
+  var last=0,acc=0;
+  function loop(ts){
+    requestAnimationFrame(loop);
+    if(!S.running){last=ts;return;}
+    if(!last)last=ts;
+    acc+=ts-last;last=ts;
+    if(acc>=110){acc=0;step();}
+  }
+
+  function init(){
+    readSeed();readEnv();
+    ["s-size","s-speed","s-photo","s-pred"].forEach(function(id){$(id).addEventListener("input",readSeed);});
+    ["e-food","e-light","e-temp","e-pred","e-mut"].forEach(function(id){$(id).addEventListener("input",readEnv);});
+    ["cSize","cSpeed","cPhoto","cPred","cPop","cGen"].forEach(function(id){$(id).addEventListener("change",drawChart);});
+
+    $("btnSeed").addEventListener("click",seed);
+    $("btnReset").addEventListener("click",function(){clearSim();});
+    $("btnPlay").addEventListener("click",function(){
+      if(!S.started)seed();
+      S.running=!S.running;last=0;acc=0;updatePlayBtn();
+    });
+    $("btnStep").addEventListener("click",function(){
+      if(!S.started)seed();
+      S.running=false;updatePlayBtn();step();
+    });
+    $("btnSave").addEventListener("click",function(){
+      if(!S.started){$("expList").innerHTML='<p class="empty">ابدأ المحاكاة أولاً ثم احفظ التجربة.</p>';return;}
+      var name=$("expName").value.trim()||"تجربة بدون اسم";
+      var arr=loadSaves();arr.push(snapshot(name));saveSaves(arr);$("expName").value="";renderSaves();
+    });
+    $("btnClear").addEventListener("click",function(){
+      saveSaves([]);renderSaves();
+    });
+
+    clearSim();renderSaves();requestAnimationFrame(loop);
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+</body>
+</html>
