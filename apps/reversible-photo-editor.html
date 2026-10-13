@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر صور بطبقات غير متلفة داخل المتصفح | MDM1</title>
+<meta name="description" content="حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد وتراجع وإعادة وحفظ محلي، ثم تصدير PNG أو JPEG.">
+<link rel="canonical" href="https://mdm1.org/apps/reversible-photo-editor.html">
+<meta property="og:title" content="محرر صور بطبقات غير متلفة داخل المتصفح">
+<meta property="og:description" content="حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد وتراجع وإعادة وحفظ محلي، ثم تصدير PNG أو JPEG.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/reversible-photo-editor.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-intro{line-height:1.9}
+.app-stage{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.app-pane{flex:1 1 280px;min-width:220px}
+.app-pane .label{color:var(--gold-bright);font-size:.9rem;margin-bottom:4px}
+.app-pane canvas{width:100%;height:auto;display:block;background:#000;border:1px solid var(--gold-dim);border-radius:10px}
+.app-layers{margin:12px 0}
+.app-layer{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(255,255,255,.02)}
+.app-layer.app-sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.app-layer.app-off{opacity:.55}
+.app-layer .app-lname{flex:1;color:var(--light);font-weight:600}
+.app-layer button{padding:4px 8px;font-size:.85rem}
+.app-editor{margin-top:12px;padding:12px;border:1px dashed var(--gold-dim);border-radius:10px}
+.app-editor input[type=range]{flex:1;min-width:140px}
+.app-cropnum{width:82px}
+.app-hidden{display:none!important}
+.app.big{font-size:1.8rem}
+@media (max-width:600px){.app-layer{flex-wrap:wrap}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر الصور غير المتلف بطبقات قابلة للتعطيل والحذف وإعادة الترتيب", "url": "https://mdm1.org/apps/reversible-photo-editor.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع صوري إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا؛ تتم كل المعالجة محليًا داخل متصفحك عبر واجهة Canvas، ولا تُرسل أي صورة أو بيانات إلى أي خادم، فتبقى خصوصيتك محفوظة."}}, {"@type": "Question", "name": "كيف أعود إلى الصورة الأصلية؟", "acceptedAnswer": {"@type": "Answer", "text": "الأصل محفوظ دائمًا ولا يتغير. يمكنك تعطيل الطبقات أو حذفها أو استخدام زر «إزالة كل الطبقات»، وستظل النتيجة مطابقة للأصل."}}, {"@type": "Question", "name": "هل يمكنني حفظ المشروع وفتحه لاحقًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر «حفظ مشروع محليًا» يخزّن الصورة والطبقات في متصفحك، وزر «فتح مشروع محفوظ» يستعيدها. الحفظ مرتبط بالمتصفح والجهاز نفسه."}}, {"@type": "Question", "name": "هل يمكن إعادة ترتيب الطبقات وتعطيلها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، لكل طبقة أزرار تحريك لأعلى وأسفل، ومربع تعطيل، وزر حذف، وزر تعديل يفتح قيمتها في المحرر."}}, {"@type": "Question", "name": "بأي صيغة يمكنني التصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "بصيغة PNG دون فقدان الجودة، أو JPEG مع شريط لتحديد الجودة. اختر الصيغة ثم اضغط زر التصدير لتنزيل الناتج."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر الصور غير المتلف بطبقات قابلة للتعطيل والحذف وإعادة الترتيب</h1>
+  <p class="page-sub">حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد وتراجع وإعادة وحفظ محلي، ثم تصدير PNG أو JPEG.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">الجواب السريع: هذا محرر صور غير متلف يجعل كل تعديل طبقة مستقلة يمكن تعطيلها أو حذفها أو إعادة ترتيبها في أي وقت، فتبقى صورتك الأصلية سليمة تمامًا. يعمل بالكامل داخل متصفحك دون رفع أي صورة إلى خادم، لذا تبقى خصوصيتك محفوظة. أضف طبقات السطوع والتباين والتشبع والحدة والضبابية والفلاتر والقص والدوران، ثم عاين النتيجة قبل التصدير. استخدم معاينة قبل/بعد، والتراجع والإعادة، واحفظ مشروعك محليًا لتفتحه لاحقًا، ثم صدّر النتيجة بصيغة PNG أو JPEG بجودة تحددها بنفسك. لا حاجة إلى تثبيت أي برنامج، وكل شيء يعمل فورًا داخل الصفحة.</p>
+<div class="app card" id="appRoot">
+  <div class="row">
+    <label for="appFile">اختر صورة من جهازك</label>
+    <input type="file" id="appFile" accept="image/*">
+    <span class="badge" id="appFileName">لم يتم اختيار صورة</span>
+  </div>
+  <div class="app-stage">
+    <div class="app-pane">
+      <div class="label">الصورة الأصلية</div>
+      <canvas id="appCanvasBefore" width="300" height="200"></canvas>
+    </div>
+    <div class="app-pane">
+      <div class="label">النتيجة المعالجة</div>
+      <canvas id="appCanvasAfter" width="300" height="200"></canvas>
+    </div>
+  </div>
+  <div class="out" id="appStatus">لم يتم تحميل أي صورة بعد. ابدأ باختيار صورة من جهازك ثم أضف الطبقات.</div>
+  <div class="divider"></div>
+  <div class="row">
+    <button id="appAddBrightness">إضافة طبقة سطوع</button>
+    <button id="appAddContrast">إضافة طبقة تباين</button>
+    <button id="appAddSaturation">إضافة طبقة تشبع</button>
+    <button id="appAddSharpen">إضافة طبقة حدة</button>
+    <button id="appAddBlur" class="sec">إضافة طبقة ضبابية</button>
+    <button id="appAddFilter" class="sec">إضافة طبقة فلتر</button>
+    <button id="appAddCrop" class="sec">إضافة طبقة قص</button>
+    <button id="appAddRotate" class="sec">إضافة طبقة دوران</button>
+  </div>
+  <div class="divider"></div>
+  <div class="app-layers">
+    <div class="label">الطبقات (تُطبَّق من الأعلى إلى الأسفل، الأول أسفل المكدس)</div>
+    <div id="appLayerList"></div>
+  </div>
+  <div class="app-editor" id="appEditor">
+    <div class="out" id="appEditEmpty">اختر طبقة من القائمة بزر «تعديل» لتغيير قيمتها.</div>
+    <div class="row app-hidden" id="appAmtRow">
+      <label for="appAmt">قيمة الطبقة</label>
+      <input type="range" id="appAmt" min="-100" max="100" step="1" value="0">
+      <span class="badge" id="appAmtVal">0</span>
+    </div>
+    <div class="row app-hidden" id="appFilterRow">
+      <label for="appFilterSel">نوع الفلتر</label>
+      <select id="appFilterSel">
+        <option value="grayscale">أبيض وأسود</option>
+        <option value="sepia">بني دافئ (سيبيا)</option>
+        <option value="invert">عكس الألوان</option>
+        <option value="warm">دفء الألوان</option>
+        <option value="cool">برودة الألوان</option>
+        <option value="vintage">قديم (فينتاج)</option>
+        <option value="dramatic">تباين درامي</option>
+      </select>
+    </div>
+    <div class="row app-hidden" id="appCropRow">
+      <label for="appCropX">القص من اليسار %</label>
+      <input type="number" class="app-cropnum" id="appCropX" min="0" max="100" value="0">
+      <label for="appCropY">من الأعلى %</label>
+      <input type="number" class="app-cropnum" id="appCropY" min="0" max="100" value="0">
+      <label for="appCropW">العرض %</label>
+      <input type="number" class="app-cropnum" id="appCropW" min="1" max="100" value="100">
+      <label for="appCropH">الارتفاع %</label>
+      <input type="number" class="app-cropnum" id="appCropH" min="1" max="100" value="100">
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <button id="appUndo" class="sec">تراجع</button>
+    <button id="appRedo" class="sec">إعادة</button>
+    <button id="appReset" class="sec">إزالة كل الطبقات</button>
+  </div>
+  <div class="row">
+    <button id="appSave">حفظ مشروع محليًا</button>
+    <button id="appLoad" class="sec">فتح مشروع محفوظ</button>
+  </div>
+  <div class="row">
+    <label for="appQuality">جودة JPEG</label>
+    <input type="range" id="appQuality" min="10" max="100" step="1" value="92">
+    <span class="badge" id="appQualityVal">92%</span>
+  </div>
+  <div class="row">
+    <button id="appExportPNG">تصدير بصيغة PNG</button>
+    <button id="appExportJPG" class="sec">تصدير بصيغة JPEG</button>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع صوري إلى أي خادم؟</h3><p>لا؛ تتم كل المعالجة محليًا داخل متصفحك عبر واجهة Canvas، ولا تُرسل أي صورة أو بيانات إلى أي خادم، فتبقى خصوصيتك محفوظة.</p><h3>كيف أعود إلى الصورة الأصلية؟</h3><p>الأصل محفوظ دائمًا ولا يتغير. يمكنك تعطيل الطبقات أو حذفها أو استخدام زر «إزالة كل الطبقات»، وستظل النتيجة مطابقة للأصل.</p><h3>هل يمكنني حفظ المشروع وفتحه لاحقًا؟</h3><p>نعم، زر «حفظ مشروع محليًا» يخزّن الصورة والطبقات في متصفحك، وزر «فتح مشروع محفوظ» يستعيدها. الحفظ مرتبط بالمتصفح والجهاز نفسه.</p><h3>هل يمكن إعادة ترتيب الطبقات وتعطيلها؟</h3><p>نعم، لكل طبقة أزرار تحريك لأعلى وأسفل، ومربع تعطيل، وزر حذف، وزر تعديل يفتح قيمتها في المحرر.</p><h3>بأي صيغة يمكنني التصدير؟</h3><p>بصيغة PNG دون فقدان الجودة، أو JPEG مع شريط لتحديد الجودة. اختر الصيغة ثم اضغط زر التصدير لتنزيل الناتج.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-13 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var FILTERS={grayscale:"grayscale(1)",sepia:"sepia(1)",invert:"invert(1)",warm:"sepia(0.4) saturate(1.3)",cool:"saturate(1.15) hue-rotate(25deg) brightness(1.02)",vintage:"sepia(0.55) contrast(1.12) brightness(1.06)",dramatic:"contrast(1.35) saturate(1.2) brightness(0.95)"};
+  var original=null,originalName="",layers=[],selId=null,nextId=1,history=[],histIndex=-1,maxDim=1400;
+  function $(id){return document.getElementById(id);}
+  function setStatus(m){$("appStatus").textContent=m;}
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+  function nc(w,h){var c=document.createElement("canvas");c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c;}
+  function fi(id){for(var i=0;i<layers.length;i++){if(layers[i].id===id)return i;}return -1;}
+  function setReady(b){["appSave","appExportPNG","appExportJPG"].forEach(function(id){$(id).disabled=!b;});}
+  function computeNext(){var m=0;layers.forEach(function(L){if(L.id>=m)m=L.id+1;});return m;}
+
+  function buildFilter(L){
+    var p=L.params;
+    if(L.type==="brightness")return "brightness("+Math.max(0,1+p.amount/100).toFixed(3)+")";
+    if(L.type==="contrast")return "contrast("+Math.max(0,1+p.amount/100).toFixed(3)+")";
+    if(L.type==="saturation")return "saturate("+Math.max(0,1+p.amount/100).toFixed(3)+")";
+    if(L.type==="blur")return "blur("+p.amount+"px)";
+    if(L.type==="filter")return FILTERS[p.preset]||"none";
+    return "";
+  }
+  function sharpen(cv,amt){
+    if(amt<=0)return cv;
+    var ctx=cv.getContext("2d"),img=ctx.getImageData(0,0,cv.width,cv.height),d=img.data,w=cv.width,h=cv.height,src=new Uint8ClampedArray(d),k=amt/100,center=1+4*k;
+    for(var y=1;y<h-1;y++){for(var x=1;x<w-1;x++){var i=(y*w+x)*4;for(var ch=0;ch<3;ch++){d[i+ch]=center*src[i+ch]-k*(src[i-4+ch]+src[i+4+ch]+src[i-w*4+ch]+src[i+w*4+ch]);}}}
+    ctx.putImageData(img,0,0);return cv;
+  }
+  function applyLayer(cv,L){
+    var p=L.params;
+    if(L.type==="sharpen")return sharpen(cv,p.amount);
+    if(L.type==="rotate"){
+      var rad=p.angle*Math.PI/180,co=Math.abs(Math.cos(rad)),si=Math.abs(Math.sin(rad));
+      var nw=Math.round(cv.width*co+cv.height*si),nh=Math.round(cv.width*si+cv.height*co),n2=nc(nw,nh),c2=n2.getContext("2d");
+      c2.translate(nw/2,nh/2);c2.rotate(rad);c2.drawImage(cv,-cv.width/2,-cv.height/2);return n2;
+    }
+    if(L.type==="crop"){
+      var x=cv.width*p.x/100,y=cv.height*p.y/100,w=Math.max(1,cv.width*p.w/100),h=Math.max(1,cv.height*p.h/100),n3=nc(w,h);
+      n3.getContext("2d").drawImage(cv,x,y,w,h,0,0,w,h);return n3;
+    }
+    var f=buildFilter(L);
+    if(!f||f==="none")return cv;
+    var n4=nc(cv.width,cv.height),c4=n4.getContext("2d");c4.filter=f;c4.drawImage(cv,0,0);return n4;
+  }
+  function paint(id,src){var c=$(id);c.width=src.width;c.height=src.height;c.getContext("2d").drawImage(src,0,0);}
+  function render(){
+    if(!original)return;
+    var cv=nc(original.width,original.height);
+    cv.getContext("2d").drawImage(original,0,0);
+    for(var i=0;i<layers.length;i++){if(layers[i].enabled)cv=applyLayer(cv,layers[i]);}
+    paint("appCanvasAfter",cv);
+  }
+  function loadOriginal(img,name){
+    var s=1;if(img.width>maxDim||img.height>maxDim)s=Math.min(maxDim/img.width,maxDim/img.height);
+    var c=nc(img.width*s,img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    original=c;originalName=name||"";
+    $("appFileName").textContent=name||"صورة محمّلة";
+    paint("appCanvasBefore",original);paint("appCanvasAfter",original);
+    setReady(true);
+  }
+  function makeLayer(type){
+    var L={id:nextId++,type:type,enabled:true,params:{}};
+    if(type==="brightness"){L.name="سطوع";L.params.amount=0;}
+    else if(type==="contrast"){L.name="تباين";L.params.amount=0;}
+    else if(type==="saturation"){L.name="تشبع";L.params.amount=0;}
+    else if(type==="sharpen"){L.name="حدة";L.params.amount=40;}
+    else if(type==="blur"){L.name="ضبابية";L.params.amount=0;}
+    else if(type==="filter"){L.name="فلتر";L.params.preset="grayscale";}
+    else if(type==="rotate"){L.name="دوران";L.params.angle=0;}
+    else if(type==="crop"){L.name="قص";L.params={x:0,y:0,w:100,h:100};}
+    return L;
+  }
+  function commit(){
+    history=history.slice(0,histIndex+1);
+    history.push(JSON.stringify(layers));
+    if(history.length>50)history.shift();
+    histIndex=history.length-1;
+    updateUndoRedo();
+  }
+  function restore(s){layers=JSON.parse(s);selId=null;nextId=computeNext();renderAll();}
+  function updateUndoRedo(){$("appUndo").disabled=histIndex<=0;$("appRedo").disabled=histIndex>=history.length-1;}
+
+  function buildList(){
+    var box=$("appLayerList");box.innerHTML="";
+    if(!layers.length){box.appendChild(el("div","out","لا توجد طبقات بعد. أضف طبقة سطوع أو تباين أو فلتر للبدء، وتبقى الصورة الأصلية كما هي دائمًا."));return;}
+    layers.forEach(function(L){
+      var row=el("div","row app-layer"+(L.enabled?"":" app-off")+(L.id===selId?" app-sel":""));
+      var cb=el("input");cb.type="checkbox";cb.checked=L.enabled;cb.id="ly"+L.id+"_on";cb.setAttribute("data-id",L.id);cb.setAttribute("data-act","toggle");
+      var nm=el("span","app-lname",L.name+(L.enabled?"":" (معطّلة)"));
+      var sb=el("button","","تعديل");sb.id="ly"+L.id+"_sel";sb.setAttribute("data-id",L.id);sb.setAttribute("data-act","select");
+      var ub=el("button","sec","▲");ub.id="ly"+L.id+"_up";ub.title="تحريك لأعلى";ub.setAttribute("data-id",L.id);ub.setAttribute("data-act","up");
+      var db=el("button","sec","▼");db.id="ly"+L.id+"_dn";db.title="تحريك لأسفل";db.setAttribute("data-id",L.id);db.setAttribute("data-act","down");
+      var xb=el("button","sec","حذف");xb.id="ly"+L.id+"_del";xb.setAttribute("data-id",L.id);xb.setAttribute("data-act","delete");
+      row.appendChild(cb);row.appendChild(nm);row.appendChild(sb);row.appendChild(ub);row.appendChild(db);row.appendChild(xb);
+      box.appendChild(row);
+    });
+  }
+  function updateEditor(){
+    var idx=selId==null?-1:fi(selId),L=idx>=0?layers[idx]:null;
+    $("appAmtRow").classList.add("app-hidden");$("appFilterRow").classList.add("app-hidden");$("appCropRow").classList.add("app-hidden");$("appEditEmpty").classList.add("app-hidden");
+    if(!L){$("appEditEmpty").classList.remove("app-hidden");return;}
+    if(L.type==="crop"){
+      $("appCropRow").classList.remove("app-hidden");
+      $("appCropX").value=L.params.x;$("appCropY").value=L.params.y;$("appCropW").value=L.params.w;$("appCropH").value=L.params.h;
+    }else if(L.type==="filter"){
+      $("appFilterRow").classList.remove("app-hidden");$("appFilterSel").value=L.params.preset;
+    }else{
+      $("appAmtRow").classList.remove("app-hidden");
+      var a=$("appAmt");
+      if(L.type==="rotate"){a.min=-180;a.max=180;a.value=L.params.angle;}
+      else if(L.type==="blur"){a.min=0;a.max=20;a.value=L.params.amount;}
+      else if(L.type==="sharpen"){a.min=0;a.max=100;a.value=L.params.amount;}
+      else{a.min=-100;a.max=100;a.value=L.params.amount;}
+      $("appAmtVal").textContent=a.value;
+    }
+  }
+  function renderAll(){render();buildList();updateEditor();updateUndoRedo();}
+
+  $("appFile").addEventListener("change",function(e){
+    var f=e.target.files&&e.target.files[0];
+    if(!f){setStatus("لم يتم اختيار ملف.");return;}
+    if(!/^image\//.test(f.type)){setStatus("الملف المختار ليس صورة صالحة.");return;}
+    var r=new FileReader();
+    r.onload=function(){
+      var im=new Image();
+      im.onload=function(){layers=[];selId=null;nextId=1;history=[];histIndex=-1;loadOriginal(im,f.name);commit();renderAll();setStatus("تم تحميل الصورة. أضف طبقات التعديل من الأزرار أعلاه.");};
+      im.onerror=function(){setStatus("تعذّر قراءة الصورة.");};
+      im.src=r.result;
+    };
+    r.onerror=function(){setStatus("تعذّر قراءة الملف.");};
+    r.readAsDataURL(f);
+  });
+
+  [["appAddBrightness","brightness"],["appAddContrast","contrast"],["appAddSaturation","saturation"],["appAddSharpen","sharpen"],["appAddBlur","blur"],["appAddFilter","filter"],["appAddCrop","crop"],["appAddRotate","rotate"]].forEach(function(p){
+    $(p[0]).addEventListener("click",function(){
+      if(!original){setStatus("حمّل صورة أولًا قبل إضافة الطبقات.");return;}
+      var L=makeLayer(p[1]);layers.push(L);selId=L.id;commit();renderAll();
+      setStatus("أُضيفت طبقة «"+L.name+"». عدّل قيمتها من المحرر أسفل القائمة.");
+    });
+  });
+
+  $("appLayerList").addEventListener("click",function(e){
+    var t=e.target,act=t.getAttribute&&t.getAttribute("data-act");
+    if(!act)return;
+    var id=parseInt(t.getAttribute("data-id"),10),idx=fi(id);
+    if(idx<0)return;
+    if(act==="select"){selId=id;renderAll();}
+    else if(act==="up"){if(idx>0){var a=layers[idx-1];layers[idx-1]=layers[idx];layers[idx]=a;commit();renderAll();}}
+    else if(act==="down"){if(idx<layers.length-1){var b=layers[idx+1];layers[idx+1]=layers[idx];layers[idx]=b;commit();renderAll();}}
+    else if(act==="delete"){var nm=layers[idx].name;layers.splice(idx,1);if(selId===id)selId=null;commit();renderAll();setStatus("حُذفت طبقة «"+nm+"». الأصل لم يتأثر.");}
+  });
+  $("appLayerList").addEventListener("change",function(e){
+    var t=e.target;
+    if(t.getAttribute("data-act")!=="toggle")return;
+    var id=parseInt(t.getAttribute("data-id"),10),idx=fi(id);
+    if(idx<0)return;
+    layers[idx].enabled=t.checked;commit();renderAll();
+  });
+
+  $("appAmt").addEventListener("input",function(e){
+    var idx=selId==null?-1:fi(selId);if(idx<0)return;
+    var L=layers[idx],v=parseInt(e.target.value,10);
+    if(L.type==="rotate")L.params.angle=v;else L.params.amount=v;
+    $("appAmtVal").textContent=v;render();
+  });
+  $("appAmt").addEventListener("change",function(){if(selId!=null&&fi(selId)>=0)commit();});
+
+  $("appFilterSel").addEventListener("change",function(e){
+    var idx=selId==null?-1:fi(selId);if(idx<0||layers[idx].type!=="filter")return;
+    layers[idx].params.preset=e.target.value;commit();render();
+  });
+
+  ["appCropX","appCropY","appCropW","appCropH"].forEach(function(cid){
+    $(cid).addEventListener("input",function(e){
+      var idx=selId==null?-1:fi(selId);if(idx<0||layers[idx].type!=="crop")return;
+      var key=cid.charAt(cid.length-1).toLowerCase(),v=parseFloat(e.target.value),mn=(key==="w"||key==="h")?1:0;
+      if(isNaN(v))v=mn;
+      layers[idx].params[key]=Math.max(mn,Math.min(100,v));render();
+    });
+    $(cid).addEventListener("change",function(){if(selId!=null&&fi(selId)>=0)commit();});
+  });
+
+  $("appUndo").addEventListener("click",function(){if(histIndex>0){histIndex--;restore(history[histIndex]);setStatus("تم التراجع خطوة واحدة.");}});
+  $("appRedo").addEventListener("click",function(){if(histIndex<history.length-1){histIndex++;restore(history[histIndex]);setStatus("تمت الإعادة خطوة واحدة.");}});
+  $("appReset").addEventListener("click",function(){
+    if(!original){setStatus("حمّل صورة أولًا.");return;}
+    if(!layers.length){setStatus("لا توجد طبقات لإزالتها.");return;}
+    layers=[];selId=null;commit();renderAll();setStatus("تمت إزالة جميع الطبقات. الصورة الأصلية لم تتأثر.");
+  });
+
+  $("appSave").addEventListener("click",function(){
+    if(!original){setStatus("لا يوجد مشروع لحفظه. حمّل صورة أولًا.");return;}
+    try{
+      var data={v:1,name:originalName,layers:layers,image:original.toDataURL("image/png")};
+      localStorage.setItem("appNDProject",JSON.stringify(data));
+      setStatus("تم حفظ المشروع محليًا في هذا المتصفح. افتحه لاحقًا بزر «فتح مشروع محفوظ».");
+    }catch(err){setStatus("تعذّر الحفظ محليًا: قد تكون مساحة التخزين ممتلئة أو الصورة كبيرة جدًا.");}
+  });
+  $("appLoad").addEventListener("click",function(){
+    var raw=null;
+    try{raw=localStorage.getItem("appNDProject");}catch(err){setStatus("تعذّر الوصول إلى التخزين المحلي في هذا المتصفح.");return;}
+    if(!raw){setStatus("لا يوجد مشروع محفوظ في هذا المتصفح.");return;}
+    var data;
+    try{data=JSON.parse(raw);}catch(err){setStatus("المشروع المحفوظ تالف ولا يمكن فتحه.");return;}
+    if(!data||!data.image){setStatus("المشروع المحفوظ غير صالح.");return;}
+    var im=new Image();
+    im.onload=function(){
+      loadOriginal(im,data.name);layers=Array.isArray(data.layers)?data.layers:[];nextId=computeNext();selId=null;history=[];histIndex=-1;renderAll();commit();setStatus("تم فتح المشروع المحفوظ واستعادة طبقاته.");
+    };
+    im.onerror=function(){setStatus("تعذّر تحميل صورة المشروع المحفوظ.");};
+    im.src=data.image;
+  });
+
+  $("appQuality").addEventListener("input",function(e){$("appQualityVal").textContent=e.target.value+"%";});
+  function exportAs(type,q){
+    if(!original){setStatus("لا توجد صورة للتصدير. حمّل صورة أولًا.");return;}
+    var cv=nc(original.width,original.height);
+    cv.getContext("2d").drawImage(original,0,0);
+    for(var i=0;i<layers.length;i++){if(layers[i].enabled)cv=applyLayer(cv,layers[i]);}
+    var url=cv.toDataURL(type,q),base=(originalName||"edited").replace(/\.[^.]+$/,"");
+    var a=document.createElement("a");a.href=url;a.download=base+(type==="image/jpeg"?".jpg":".png");
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setStatus("تم إنشاء ملف التصدير وبدأ تنزيله على جهازك.");
+  }
+  $("appExportPNG").addEventListener("click",function(){exportAs("image/png");});
+  $("appExportJPG").addEventListener("click",function(){exportAs("image/jpeg",parseInt($("appQuality").value,10)/100);});
+
+  setReady(false);buildList();updateEditor();updateUndoRedo();
+})();
+</script>
+</body>
+</html>
