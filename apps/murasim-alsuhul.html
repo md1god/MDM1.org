@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر المخططات الانسيابية ونماذج الواجهات بالسحب والإفلات | MDM1</title>
+<meta name="description" content="أنشئ مخططات انسيابية ونماذج واجهات التطبيقات بالسحب والإفلات: أشكال جاهزة وأسهم وألوان، مع حفظ محلي وتصدير PNG أو JSON وواجهة عربية.">
+<link rel="canonical" href="https://mdm1.org/apps/murasim-alsuhul.html">
+<meta property="og:title" content="محرر المخططات الانسيابية ونماذج الواجهات بالسحب والإفلات">
+<meta property="og:description" content="أنشئ مخططات انسيابية ونماذج واجهات التطبيقات بالسحب والإفلات: أشكال جاهزة وأسهم وألوان، مع حفظ محلي وتصدير PNG أو JSON وواجهة عربية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/murasim-alsuhul.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{--app-line:rgba(212,175,55,.35);}
+.app-intro{max-width:900px;line-height:1.9;margin:0 0 1rem;}
+.app-bar{flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.6rem;}
+.app-bar .input{max-width:160px;}
+.app-swatches{display:flex;gap:.35rem;flex-wrap:wrap;}
+.app-swatch{width:26px;height:26px;border-radius:6px;border:2px solid var(--gold-dim);cursor:pointer;padding:0;}
+.app-stage{position:relative;height:540px;overflow:auto;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(0,0,0,.28);}
+.app-canvas{position:relative;width:3000px;height:2000px;transform-origin:0 0;}
+.app-svg{position:absolute;inset:0;pointer-events:none;}
+.app-node{position:absolute;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;cursor:move;user-select:none;padding:6px;font-size:14px;border:2px solid transparent;overflow:hidden;}
+.app-node.sel{outline:2px dashed var(--gold-bright);outline-offset:2px;}
+.app-node[data-type="circle"]{border-radius:50%;}
+.app-node[data-type="button"]{border-radius:22px;}
+.app-node[data-type="input"]{justify-content:flex-start;padding-inline-start:12px;}
+.app-edge{stroke:var(--app-line);stroke-width:2;pointer-events:stroke;cursor:pointer;}
+.app-edge.sel{stroke:var(--gold-bright);stroke-width:3;}
+.app-arrow{fill:var(--gold);pointer-events:none;}
+@media(max-width:640px){.app-stage{height:420px;}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر المخططات الانسيابية ونماذج واجهات التطبيقات", "url": "https://mdm1.org/apps/murasim-alsuhul.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يمكنني حفظ مشاريعي والرجوع إليها لاحقًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يُحفظ المشروع تلقائيًا داخل متصفحك عبر التخزين المحلي، ويمكنك أيضًا حفظه باسم مخصص واستدعاؤه في أي وقت من قائمة المشاريع."}}, {"@type": "Question", "name": "كيف أصدّر المخطط كصورة أو كملف؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر تصدير PNG للحصول على صورة جاهزة للمشاركة، أو زر تصدير JSON للحصول على ملف نسخة احتياطية يمكن تحميله لاحقًا."}}, {"@type": "Question", "name": "كيف أنشئ سهمًا يربط بين عنصرين؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر سهم ربط، ثم انقر العنصر المصدر ثم العنصر الهدف، وسيُرسم السهم تلقائيًا بين حدودهما."}}, {"@type": "Question", "name": "هل يمكن التراجع عن التعديلات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يدعم التطبيق التراجع والإعادة لكل عمليات الإضافة والتحريك وتغيير النصوص والألوان والحذف."}}, {"@type": "Question", "name": "ما الأشكال المتوفرة وكيف أغيّر ألوانها؟", "acceptedAnswer": {"@type": "Answer", "text": "مستطيلات ودوائر وأزرار وحقول إدخال مع أسهم الربط، ويمكنك تغيير نص أي عنصر ولون تعبئته ولون نصه من لوحة الخصائص أو لوحة الألوان الجاهزة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر المخططات الانسيابية ونماذج واجهات التطبيقات</h1>
+  <p class="page-sub">أنشئ مخططات انسيابية ونماذج واجهات التطبيقات بالسحب والإفلات: أشكال جاهزة وأسهم وألوان، مع حفظ محلي وتصدير PNG أو JSON وواجهة عربية.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">نعم، يمكنك بسهولة إنشاء المخططات الانسيابية ونماذج واجهات التطبيقات داخل متصفحك مباشرة دون أي إعداد. اسحب الأشكال الجاهزة مثل المستطيلات والدوائر والأزرار وحقول الإدخال وأفلتها على لوحة التصميم، ثم اربط بينها بأسهم توضّح تسلسل الخطوات. حرّك العناصر بحرية، عدّل نصوصها وألوانها من لوحة الخصائص، وكبّر أو صغّر مساحة العمل حسب حاجتك. يتيح لك التطبيق التراجع عن أي خطأ أو إعادته، وحفظ مشاريعك محليًا في متصفحك لتعود إليها لاحقًا، كما يمكنك تصدير العمل كصورة PNG أو ملف JSON لمشاركته أو نسخه احتياطيًا. كل ذلك بواجهة عربية كاملة من اليمين إلى اليسار مع دعم للوحة ألوان مرنة.</p>
+<div class="app" id="appRoot">
+  <div class="row app-bar" id="appPalette">
+    <button type="button" class="sec" id="addRect">مستطيل</button>
+    <button type="button" class="sec" id="addCircle">دائرة</button>
+    <button type="button" class="sec" id="addButton">زر</button>
+    <button type="button" class="sec" id="addInput">حقل إدخال</button>
+    <button type="button" class="sec" id="addEdgeMode">سهم ربط</button>
+  </div>
+  <div class="row app-bar" id="appTools">
+    <button type="button" class="sec" id="zoomOut">تصغير</button>
+    <span class="badge" id="zoomLabel">100%</span>
+    <button type="button" class="sec" id="zoomIn">تكبير</button>
+    <button type="button" class="sec" id="undoBtn">تراجع</button>
+    <button type="button" class="sec" id="redoBtn">إعادة</button>
+    <button type="button" class="sec" id="deleteBtn">حذف المحدد</button>
+    <button type="button" class="sec" id="clearBtn">مسح الكل</button>
+  </div>
+  <div class="row app-bar" id="appProps">
+    <label for="nodeText">النص</label>
+    <input class="input" type="text" id="nodeText" />
+    <label for="nodeFill">لون التعبئة</label>
+    <input class="input" type="color" id="nodeFill" />
+    <label for="nodeColor">لون النص</label>
+    <input class="input" type="color" id="nodeColor" />
+    <div class="app-swatches" id="swatches"></div>
+  </div>
+  <div class="app-stage" id="appStage">
+    <div class="app-canvas" id="appCanvas">
+      <svg class="app-svg" id="appSvg" width="3000" height="2000"></svg>
+    </div>
+  </div>
+  <div class="row app-bar" id="appIO">
+    <input class="input" type="text" id="projName" placeholder="اسم المشروع" />
+    <button type="button" id="saveBtn">حفظ في المتصفح</button>
+    <select class="select" id="projSelect"></select>
+    <button type="button" class="sec" id="loadBtn">تحميل المحدد</button>
+    <button type="button" class="sec" id="delProjBtn">حذف المشروع</button>
+    <button type="button" class="sec" id="exportJson">تصدير JSON</button>
+    <button type="button" class="sec" id="exportPng">تصدير PNG</button>
+  </div>
+  <div class="out" id="status">جاهز — اختر شكلًا لإضافته، واسحب العناصر لترتيبها.</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يمكنني حفظ مشاريعي والرجوع إليها لاحقًا؟</h3><p>نعم، يُحفظ المشروع تلقائيًا داخل متصفحك عبر التخزين المحلي، ويمكنك أيضًا حفظه باسم مخصص واستدعاؤه في أي وقت من قائمة المشاريع.</p><h3>كيف أصدّر المخطط كصورة أو كملف؟</h3><p>اضغط زر تصدير PNG للحصول على صورة جاهزة للمشاركة، أو زر تصدير JSON للحصول على ملف نسخة احتياطية يمكن تحميله لاحقًا.</p><h3>كيف أنشئ سهمًا يربط بين عنصرين؟</h3><p>اضغط زر سهم ربط، ثم انقر العنصر المصدر ثم العنصر الهدف، وسيُرسم السهم تلقائيًا بين حدودهما.</p><h3>هل يمكن التراجع عن التعديلات؟</h3><p>نعم، يدعم التطبيق التراجع والإعادة لكل عمليات الإضافة والتحريك وتغيير النصوص والألوان والحذف.</p><h3>ما الأشكال المتوفرة وكيف أغيّر ألوانها؟</h3><p>مستطيلات ودوائر وأزرار وحقول إدخال مع أسهم الربط، ويمكنك تغيير نص أي عنصر ولون تعبئته ولون نصه من لوحة الخصائص أو لوحة الألوان الجاهزة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-13 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var LS_KEY='appDiagramProjects_v1';
+  var AUTO_KEY='appDiagramAuto_v1';
+  var W=3000,H=2000;
+  var canvas=document.getElementById('appCanvas');
+  var svg=document.getElementById('appSvg');
+  var stage=document.getElementById('appStage');
+  var statusEl=document.getElementById('status');
+  var zoomLabel=document.getElementById('zoomLabel');
+  var projSelect=document.getElementById('projSelect');
+  var projName=document.getElementById('projName');
+  var nodeText=document.getElementById('nodeText');
+  var nodeFill=document.getElementById('nodeFill');
+  var nodeColor=document.getElementById('nodeColor');
+  var swatchesEl=document.getElementById('swatches');
+  var edgeModeBtn=document.getElementById('addEdgeMode');
+
+  var COLORS=['#d4af37','#8a7a35','#3a4a5a','#2f5d50','#6b3a3a','#4a3a5a','#e6d9b8','#f5f0e1'];
+  var zoom=1, state={nodes:[],edges:[]}, selected=null;
+  var edgeMode=false, edgeFrom=null;
+  var history=[], hIndex=-1, drag=null;
+
+  function uid(p){return p+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
+  function nodeById(id){for(var i=0;i<state.nodes.length;i++){if(state.nodes[i].id===id)return state.nodes[i];}return null;}
+  function selNode(){return selected&&selected.kind==='node'?nodeById(selected.id):null;}
+  function snap(){return JSON.stringify(state);}
+  function contrastText(hex){
+    var c=String(hex).replace('#',''); if(c.length===3)c=c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
+    var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);
+    return (0.299*r+0.587*g+0.114*b)>150?'#1a1408':'#f5f0e1';
+  }
+
+  function defaultNode(type,x,y){
+    var b={id:uid('n'),type:type,x:x,y:y,w:170,h:70,text:'خطوة',fill:'#3a4a5a',stroke:'#d4af37',color:'#f5f0e1',fs:14};
+    if(type==='circle'){b.w=120;b.h=120;b.text='بداية';}
+    if(type==='button'){b.w=150;b.h=46;b.text='زر';b.fill='#d4af37';b.color='#1a1408';}
+    if(type==='input'){b.w=210;b.h=48;b.text='حقل إدخال';}
+    return b;
+  }
+
+  function anchor(nd,tx,ty){
+    var cx=nd.x+nd.w/2, cy=nd.y+nd.h/2;
+    var dx=tx-cx, dy=ty-cy;
+    if(dx===0&&dy===0)return {x:cx,y:cy};
+    if(nd.type==='circle'){
+      var q=(dx/(nd.w/2))*(dx/(nd.w/2))+(dy/(nd.h/2))*(dy/(nd.h/2));
+      var t=1/Math.sqrt(q);
+      return {x:cx+dx*t,y:cy+dy*t};
+    }
+    var sx=Math.abs(dx)>1e-6?(nd.w/2)/Math.abs(dx):Infinity;
+    var sy=Math.abs(dy)>1e-6?(nd.h/2)/Math.abs(dy):Infinity;
+    var s=Math.min(sx,sy);
+    return {x:cx+dx*s,y:cy+dy*s};
+  }
+
+  function render(){
+    Array.prototype.slice.call(canvas.querySelectorAll('.app-node')).forEach(function(n){canvas.removeChild(n);});
+    var frag=document.createDocumentFragment();
+    state.nodes.forEach(function(nd){
+      var el=document.createElement('div');
+      el.id='node_'+nd.id;
+      el.className='app-node';
+      el.setAttribute('data-id',nd.id);
+      el.setAttribute('data-type',nd.type);
+      el.style.left=nd.x+'px'; el.style.top=nd.y+'px';
+      el.style.width=nd.w+'px'; el.style.height=nd.h+'px';
+      el.style.background=nd.fill; el.style.color=nd.color;
+      el.style.borderColor=nd.stroke; el.style.fontSize=nd.fs+'px';
+      el.textContent=nd.text;
+      frag.appendChild(el);
+    });
+    canvas.appendChild(frag);
+    renderEdges();
+    applySelection();
+    syncProps();
+  }
+
+  function arrowPoints(x1,y1,x2,y2){
+    var ang=Math.atan2(y2-y1,x2-x1), len=12, wid=5;
+    var bx=x2-Math.cos(ang)*len, by=y2-Math.sin(ang)*len;
+    var px=Math.sin(ang), py=-Math.cos(ang);
+    var a1=(bx+px*wid).toFixed(1)+','+(by+py*wid).toFixed(1);
+    var a2=(bx-px*wid).toFixed(1)+','+(by-py*wid).toFixed(1);
+    return x2.toFixed(1)+','+y2.toFixed(1)+' '+a1+' '+a2;
+  }
+
+  function renderEdges(){
+    var html='';
+    state.edges.forEach(function(e){
+      var a=nodeById(e.from), b=nodeById(e.to);
+      if(!a||!b)return;
+      var p1=anchor(a,b.x+b.w/2,b.y+b.h/2);
+      var p2=anchor(b,a.x+a.w/2,a.y+a.h/2);
+      var cls='app-edge'+(selected&&selected.kind==='edge'&&selected.id===e.id?' sel':'');
+      html+='<line id="edge_'+e.id+'" class="'+cls+'" data-id="'+e.id+'" x1="'+p1.x.toFixed(1)+'" y1="'+p1.y.toFixed(1)+'" x2="'+p2.x.toFixed(1)+'" y2="'+p2.y.toFixed(1)+'"/>';
+      html+='<polygon class="app-arrow" data-id="'+e.id+'" points="'+arrowPoints(p1.x,p1.y,p2.x,p2.y)+'"/>';
+    });
+    svg.innerHTML=html;
+    Array.prototype.slice.call(svg.querySelectorAll('.app-edge')).forEach(function(l){
+      l.addEventListener('pointerdown',function(ev){
+        ev.stopPropagation();
+        select('edge',l.getAttribute('data-id'));
+      });
+    });
+  }
+
+  function applySelection(){
+    Array.prototype.slice.call(canvas.querySelectorAll('.app-node')).forEach(function(el){
+      if(selected&&selected.kind==='node'&&el.getAttribute('data-id')===selected.id)el.classList.add('sel');
+      else el.classList.remove('sel');
+    });
+    Array.prototype.slice.call(svg.querySelectorAll('.app-edge')).forEach(function(el){
+      if(selected&&selected.kind==='edge'&&el.getAttribute('data-id')===selected.id)el.classList.add('sel');
+      else el.classList.remove('sel');
+    });
+  }
+
+  function syncProps(){
+    var n=selNode();
+    nodeText.disabled=!n; nodeFill.disabled=!n; nodeColor.disabled=!n;
+    if(n){nodeText.value=n.text; nodeFill.value=n.fill; nodeColor.value=n.color;}
+    else{nodeText.value='';}
+  }
+
+  function select(kind,id){
+    selected={kind:kind,id:id};
+    applySelection(); syncProps();
+    if(kind==='node'){var n=nodeById(id);statusEl.textContent='العنصر المحدد: '+((n&&n.text)?n.text:'بدون نص')+'.';}
+    else{statusEl.textContent='سهم محدد — استخدم زر حذف المحدد.';}
+  }
+
+  function autosave(){try{localStorage.setItem(AUTO_KEY,JSON.stringify(state));}catch(e){}}
+  function updateHistoryBtns(){
+    document.getElementById('undoBtn').disabled=hIndex<=0;
+    document.getElementById('redoBtn').disabled=hIndex>=history.length-1;
+  }
+  function commit(){
+    history=history.slice(0,hIndex+1);
+    history.push(snap()); hIndex=history.length-1;
+    autosave(); render(); updateHistoryBtns();
+  }
+  function restore(i){
+    hIndex=i; state=JSON.parse(history[i]);
+    if(selected&&selected.kind==='node'&&!nodeById(selected.id))selected=null;
+    if(selected&&selected.kind==='edge'&&!state.edges.some(function(e){return e.id===selected.id;}))selected=null;
+    render(); updateHistoryBtns();
+  }
+
+  function addNode(type){
+    var count=state.nodes.length;
+    var ox=(stage.scrollLeft+60)/zoom, oy=(stage.scrollTop+60)/zoom;
+    var n=defaultNode(type,Math.round(ox+(count%3)*210),Math.round(oy+Math.floor(count/3)*130));
+    state.nodes.push(n);
+    commit(); select('node',n.id);
+    statusEl.textContent='تمت إضافة عنصر جديد إلى اللوحة.';
+  }
+
+  function toCanvas(cx,cy){
+    var r=canvas.getBoundingClientRect();
+    return {x:(cx-r.left)/zoom,y:(cy-r.top)/zoom};
+  }
+  function setZoom(z){
+    zoom=Math.max(0.4,Math.min(2,Math.round(z*100)/100));
+    canvas.style.transform='scale('+zoom+')';
+    zoomLabel.textContent=Math.round(zoom*100)+'%';
+  }
+
+  function accountFill(col){
+    var n=selNode();
+    if(!n){statusEl.textContent='اختر عنصرًا أولاً لتغيير لونه.';return;}
+    n.fill=col; n.color=contrastText(col);
+    var el=canvas.querySelector('.app-node[data-id="'+n.id+'"]');
+    if(el){el.style.background=col;el.style.color=n.color;}
+    nodeFill.value=col; nodeColor.value=n.color;
+    commit();
+  }
+
+  function buildSwatches(){
+    COLORS.forEach(function(col,i){
+      var b=document.createElement('button');
+      b.type='button'; b.className='app-swatch'; b.id='swatch'+i;
+      b.style.background=col; b.title=col; b.setAttribute('aria-label','لون '+col);
+      b.addEventListener('click',function(){accountFill(col);});
+      swatchesEl.appendChild(b);
+    });
+  }
+
+  function readProjects(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}catch(e){return {};}}
+  function writeProjects(o){
+    try{localStorage.setItem(LS_KEY,JSON.stringify(o));return true;}
+    catch(e){statusEl.textContent='تعذر الحفظ محليًا في هذا المتصفح.';return false;}
+  }
+  function refreshSelect(){
+    var p=readProjects(), names=Object.keys(p);
+    projSelect.innerHTML='';
+    if(!names.length){
+      var o=document.createElement('option'); o.value=''; o.textContent='لا توجد مشاريع محفوظة';
+      projSelect.appendChild(o); return;
+    }
+    names.forEach(function(nm){
+      var o=document.createElement('option'); o.value=nm; o.textContent=nm; projSelect.appendChild(o);
+    });
+  }
+
+  function roundRect(g,x,y,w,h,r){
+    r=Math.min(r,w/2,h/2);
+    g.beginPath(); g.moveTo(x+r,y);
+    g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
+    g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
+  }
+  function drawNode(g,nd,ox,oy){
+    var x=nd.x+ox, y=nd.y+oy;
+    g.save();
+    g.fillStyle=nd.fill; g.strokeStyle=nd.stroke; g.lineWidth=2;
+    if(nd.type==='circle'){
+      g.beginPath(); g.ellipse(x+nd.w/2,y+nd.h/2,nd.w/2,nd.h/2,0,0,Math.PI*2); g.fill(); g.stroke();
+    } else {
+      roundRect(g,x,y,nd.w,nd.h,nd.type==='button'?nd.h/2:6); g.fill(); g.stroke();
+    }
+    g.fillStyle=nd.color; g.font='bold '+nd.fs+'px system-ui,sans-serif';
+    g.textBaseline='middle'; g.direction='rtl';
+    if(nd.type==='input'){g.textAlign='start';g.fillText(nd.text,x+12,y+nd.h/2);}
+    else{g.textAlign='center';g.fillText(nd.text,x+nd.w/2,y+nd.h/2,nd.w-12);}
+    g.restore();
+  }
+  function drawHead(g,x1,y1,x2,y2){
+    var ang=Math.atan2(y2-y1,x2-x1), len=12, wid=5;
+    var bx=x2-Math.cos(ang)*len, by=y2-Math.sin(ang)*len;
+    var px=Math.sin(ang), py=-Math.cos(ang);
+    g.fillStyle='#d4af37'; g.beginPath(); g.moveTo(x2,y2);
+    g.lineTo(bx+px*wid,by+py*wid); g.lineTo(bx-px*wid,by-py*wid);
+    g.closePath(); g.fill();
+  }
+  function computeBounds(){
+    if(!state.nodes.length)return {x:0,y:0,w:400,h:300};
+    var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+    state.nodes.forEach(function(n){
+      minX=Math.min(minX,n.x); minY=Math.min(minY,n.y);
+      maxX=Math.max(maxX,n.x+n.w); maxY=Math.max(maxY,n.y+n.h);
+    });
+    return {x:minX,y:minY,w:maxX-minX,h:maxY-minY};
+  }
+  function renderToPng(){
+    var pad=40, b=computeBounds();
+    var cw=Math.round(b.w+pad*2), ch=Math.round(b.h+pad*2);
+    var c=document.createElement('canvas'); c.width=cw; c.height=ch;
+    var g=c.getContext('2d');
+    g.fillStyle='#14110d'; g.fillRect(0,0,cw,ch);
+    var ox=pad-b.x, oy=pad-b.y;
+    state.edges.forEach(function(e){
+      var a=nodeById(e.from), bb=nodeById(e.to); if(!a||!bb)return;
+      var p1=anchor(a,bb.x+bb.w/2,bb.y+bb.h/2), p2=anchor(bb,a.x+a.w/2,a.y+a.h/2);
+      var x1=p1.x+ox,y1=p1.y+oy,x2=p2.x+ox,y2=p2.y+oy;
+      g.strokeStyle='#d4af37'; g.lineWidth=2;
+      g.beginPath(); g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke();
+      drawHead(g,x1,y1,x2,y2);
+    });
+    state.nodes.forEach(function(nd){drawNode(g,nd,ox,oy);});
+    return c.toDataURL('image/png');
+  }
+  function triggerDownload(name,url){
+    var a=document.createElement('a');
+    a.href=url; a.download=name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  function starter(){
+    var a=defaultNode('circle',120,120); a.text='بداية';
+    var b=defaultNode('rect',330,140); b.text='معالجة';
+    var c=defaultNode('button',580,150); c.text='تنفيذ';
+    var d=defaultNode('input',330,300); d.text='الاسم';
+    return {nodes:[a,b,c,d],edges:[{id:uid('e'),from:a.id,to:b.id},{id:uid('e'),from:b.id,to:c.id}]};
+  }
+
+  canvas.addEventListener('pointerdown',function(ev){
+    var node=ev.target&&ev.target.closest?ev.target.closest('.app-node'):null;
+    if(!node){
+      if(!edgeMode){selected=null;applySelection();syncProps();edgeFrom=null;}
+      return;
+    }
+    var id=node.getAttribute('data-id');
+    if(edgeMode){
+      if(!edgeFrom){edgeFrom=id;statusEl.textContent='تم تحديد العنصر المصدر، اختر الآن العنصر الهدف.';}
+      else if(edgeFrom!==id){
+        var dup=state.edges.some(function(e){return e.from===edgeFrom&&e.to===id;});
+        if(!dup){state.edges.push({id:uid('e'),from:edgeFrom,to:id});commit();}
+        edgeFrom=null; edgeMode=false; edgeModeBtn.classList.remove('sel');
+        statusEl.textContent=dup?'هذا السهم موجود مسبقًا.':'تم إنشاء السهم بين العنصرين.';
+      }
+      return;
+    }
+    select('node',id);
+    var p=toCanvas(ev.clientX,ev.clientY);
+    var n=nodeById(id);
+    drag={node:n,el:node,dx:p.x-n.x,dy:p.y-n.y,moved:false};
+    if(node.setPointerCapture)node.setPointerCapture(ev.pointerId);
+    ev.preventDefault();
+  });
+
+  window.addEventListener('pointermove',function(ev){
+    if(!drag)return;
+    var p=toCanvas(ev.clientX,ev.clientY);
+    var n=drag.node;
+    n.x=Math.max(0,Math.min(W-n.w,p.x-drag.dx));
+    n.y=Math.max(0,Math.min(H-n.h,p.y-drag.dy));
+    drag.el.style.left=n.x+'px'; drag.el.style.top=n.y+'px';
+    drag.moved=true;
+    renderEdges();
+  });
+  window.addEventListener('pointerup',function(){
+    if(!drag)return;
+    var moved=drag.moved; drag=null;
+    if(moved)commit(); else autosave();
+  });
+
+  stage.addEventListener('wheel',function(ev){
+    if(!ev.ctrlKey)return;
+    ev.preventDefault();
+    setZoom(zoom+(ev.deltaY<0?0.1:-0.1));
+  },{passive:false});
+
+  document.getElementById('addRect').addEventListener('click',function(){addNode('rect');});
+  document.getElementById('addCircle').addEventListener('click',function(){addNode('circle');});
+  document.getElementById('addButton').addEventListener('click',function(){addNode('button');});
+  document.getElementById('addInput').addEventListener('click',function(){addNode('input');});
+  edgeModeBtn.addEventListener('click',function(){
+    edgeMode=!edgeMode; edgeFrom=null;
+    edgeModeBtn.classList.toggle('sel',edgeMode);
+    statusEl.textContent=edgeMode?'وضع الربط مُفعّل: انقر العنصر المصدر ثم العنصر الهدف.':'تم إيقاف وضع الربط.';
+  });
+  document.getElementById('zoomIn').addEventListener('click',function(){setZoom(zoom+0.1);});
+  document.getElementById('zoomOut').addEventListener('click',function(){setZoom(zoom-0.1);});
+  document.getElementById('undoBtn').addEventListener('click',function(){
+    if(hIndex>0){restore(hIndex-1);statusEl.textContent='تم التراجع عن آخر خطوة.';}
+  });
+  document.getElementById('redoBtn').addEventListener('click',function(){
+    if(hIndex<history.length-1){restore(hIndex+1);statusEl.textContent='تمت إعادة الخطوة.';}
+  });
+  document.getElementById('deleteBtn').addEventListener('click',function(){
+    if(!selected){statusEl.textContent='لا يوجد عنصر محدد للحذف.';return;}
+    if(selected.kind==='node'){
+      state.nodes=state.nodes.filter(function(n){return n.id!==selected.id;});
+      state.edges=state.edges.filter(function(e){return e.from!==selected.id&&e.to!==selected.id;});
+    } else {
+      state.edges=state.edges.filter(function(e){return e.id!==selected.id;});
+    }
+    selected=null; commit(); statusEl.textContent='تم حذف العنصر المحدد.';
+  });
+  document.getElementById('clearBtn').addEventListener('click',function(){
+    if(!state.nodes.length&&!state.edges.length){statusEl.textContent='اللوحة فارغة بالفعل.';return;}
+    if(confirm('هل تريد مسح كل العناصر من اللوحة؟')){
+      state={nodes:[],edges:[]}; selected=null; commit();
+      statusEl.textContent='تم مسح اللوحة، ويمكنك التراجع إن أردت.';
+    }
+  });
+
+  nodeText.addEventListener('input',function(){
+    var n=selNode(); if(!n)return;
+    n.text=nodeText.value;
+    var el=canvas.querySelector('.app-node[data-id="'+n.id+'"]');
+    if(el)el.textContent=n.text;
+    autosave();
+  });
+  nodeText.addEventListener('change',function(){if(selNode())commit();});
+  nodeFill.addEventListener('input',function(){
+    var n=selNode(); if(!n)return;
+    n.fill=nodeFill.value;
+    var el=canvas.querySelector('.app-node[data-id="'+n.id+'"]');
+    if(el)el.style.background=n.fill;
+    autosave();
+  });
+  nodeFill.addEventListener('change',function(){if(selNode())commit();});
+  nodeColor.addEventListener('input',function(){
+    var n=selNode(); if(!n)return;
+    n.color=nodeColor.value;
+    var el=canvas.querySelector('.app-node[data-id="'+n.id+'"]');
+    if(el)el.style.color=n.color;
+    autosave();
+  });
+  nodeColor.addEventListener('change',function(){if(selNode())commit();});
+
+  document.getElementById('saveBtn').addEventListener('click',function(){
+    var name=projName.value.trim()||'مشروع بدون اسم';
+    var p=readProjects(); p[name]=state;
+    if(writeProjects(p)){refreshSelect(); projSelect.value=name; statusEl.textContent='تم حفظ المشروع باسم: '+name;}
+  });
+  document.getElementById('loadBtn').addEventListener('click',function(){
+    var name=projSelect.value, p=readProjects();
+    if(!name||!p[name]){statusEl.textContent='لا يوجد مشروع محدد للتحميل.';return;}
+    state=p[name]; selected=null; history=[snap()]; hIndex=0;
+    render(); updateHistoryBtns();
+    statusEl.textContent='تم تحميل المشروع: '+name;
+  });
+  document.getElementById('delProjBtn').addEventListener('click',function(){
+    var name=projSelect.value; if(!name){statusEl.textContent='لا يوجد مشروع محدد.';return;}
+    var p=readProjects();
+    if(!p[name]){statusEl.textContent='المشروع غير موجود.';return;}
+    delete p[name]; writeProjects(p); refreshSelect();
+    statusEl.textContent='تم حذف المشروع: '+name;
+  });
+  document.getElementById('exportJson').addEventListener('click',function(){
+    try{
+      var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+      var url=URL.createObjectURL(blob);
+      triggerDownload('diagram.json',url);
+      setTimeout(function(){URL.revokeObjectURL(url);},1500);
+      statusEl.textContent='تم تصدير ملف JSON.';
+    }catch(e){statusEl.textContent='تعذر التصدير في هذا المتصفح.';}
+  });
+  document.getElementById('exportPng').addEventListener('click',function(){
+    try{
+      if(!state.nodes.length){statusEl.textContent='أضف عنصرًا واحدًا على الأقل قبل التصدير.';return;}
+      triggerDownload('diagram.png',renderToPng());
+      statusEl.textContent='تم تصدير صورة PNG.';
+    }catch(e){statusEl.textContent='تعذر إنشاء الصورة في هذا المتصفح.';}
+  });
+
+  function init(){
+    var loaded=null;
+    try{loaded=localStorage.getItem(AUTO_KEY);}catch(e){}
+    if(loaded){try{state=JSON.parse(loaded);}catch(e){state=null;}}
+    if(!state||!state.nodes||!state.nodes.length)state=starter();
+    history=[snap()]; hIndex=0;
+    buildSwatches();
+    refreshSelect();
+    setZoom(1);
+    render();
+    updateHistoryBtns();
+    statusEl.textContent='جاهز — اختر شكلًا لإضافته، واسحب العناصر لترتيبها.';
+  }
+  init();
+})();
+</script>
+</body>
+</html>
