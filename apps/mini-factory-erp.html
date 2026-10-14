@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام إدارة التصنيع: أصناف ومخزون وBOM وMRP وأوامر عمل وجودة وتتبّع | MDM1</title>
+<meta name="description" content="أدِر التصنيع داخل متصفحك: أصناف ومخزون، قوائم مواد متعددة المستويات بإصدارات، تخطيط MRP، نواقص وتكاليف، أوامر عمل وجودة وتتبّع دُفعات، مع حفظ محلي وتصدير JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/mini-factory-erp.html">
+<meta property="og:title" content="نظام إدارة التصنيع: أصناف ومخزون وBOM وMRP وأوامر عمل وجودة وتتبّع">
+<meta property="og:description" content="أدِر التصنيع داخل متصفحك: أصناف ومخزون، قوائم مواد متعددة المستويات بإصدارات، تخطيط MRP، نواقص وتكاليف، أوامر عمل وجودة وتتبّع دُفعات، مع حفظ محلي وتصدير JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/mini-factory-erp.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:1000px}
+.app .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.app .tab{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.app .tab.on{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.app .panel{display:none}
+.app .panel.on{display:block}
+.app h3{margin:14px 0 8px;color:var(--gold-bright)}
+.app .wrap{overflow:auto;max-height:320px;border:1px solid var(--gold-dim);border-radius:6px;margin-top:8px}
+.app table{width:100%;border-collapse:collapse;font-size:13px}
+.app th,.app td{border-bottom:1px solid var(--gold-dim);padding:6px 8px;text-align:right;white-space:nowrap}
+.app th{background:rgba(212,175,55,.12);color:var(--gold-bright);position:sticky;top:0}
+.app .mini{padding:2px 8px;font-size:12px}
+.app .pill{display:inline-block;padding:1px 8px;border-radius:10px;border:1px solid var(--gold-dim);font-size:12px}
+.app .pill.on{border-color:var(--gold);color:var(--gold-bright)}
+.app .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0}
+.app .kpi div{border:1px solid var(--gold-dim);border-radius:6px;padding:8px;text-align:center;font-size:12px}
+.app .kpi b{display:block;font-size:18px;color:var(--gold-bright)}
+.app .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;align-items:end}
+.app .out{margin-top:8px;min-height:18px;white-space:pre-wrap}
+.app textarea{width:100%;margin-top:8px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "نظام متكامل لإدارة التصنيع داخل المتصفح", "url": "https://mdm1.org/apps/mini-factory-erp.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى إنترنت أو حساب مستخدم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل بالكامل داخل المتصفح ويخزّن البيانات محلياً في متصفحك دون خادم أو تسجيل دخول أو اتصال بالشبكة."}}, {"@type": "Question", "name": "كيف تُحسب النواقص في تخطيط MRP؟", "acceptedAnswer": {"@type": "Answer", "text": "يفكّك التطبيق قوائم المواد النشطة متعددة المستويات ويجمع الاحتياج الكلي لكل مكوّن، ثم يطرح المخزون المتاح ليُظهر الكمية الناقصة والتكلفة التقديرية."}}, {"@type": "Question", "name": "هل تدعم قوائم المواد إصدارات متعددة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن حفظ أكثر من إصدار لكل صنف ويُستخدم الإصدار النشط في الحسابات، مع إمكانية تنشيط أي إصدار آخر بضغطة واحدة."}}, {"@type": "Question", "name": "كيف يعمل التتبّع الأمامي والخلفي للدُفعات؟", "acceptedAnswer": {"@type": "Answer", "text": "عند إنشاء دفعة تربطها بأرقام دُفعات المصدر، يعرض التطبيق سلسلة الاستخدام الأمامي التي ذهبت إليها، ومصادر التكوين الخلفية التي جاءت منها."}}, {"@type": "Question", "name": "كيف أنقل بياناتي أو أنسخها احتياطياً؟", "acceptedAnswer": {"@type": "Answer", "text": "من تبويب التقارير صدّر البيانات كنص JSON، ويمكنك لصق نسخة محفوظة في نفس الحقل ثم الاستيراد لاستعادة الوضع كما كان."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">نظام متكامل لإدارة التصنيع داخل المتصفح</h1>
+  <p class="page-sub">أدِر التصنيع داخل متصفحك: أصناف ومخزون، قوائم مواد متعددة المستويات بإصدارات، تخطيط MRP، نواقص وتكاليف، أوامر عمل وجودة وتتبّع دُفعات، مع حفظ محلي وتصدير JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">
+<p>نعم، يمكنك إدارة كل عمليات التصنيع داخل المتصفح مباشرة دون أي خادم أو اتصال بالشبكة أو حساب. يوفّر هذا التطبيق تعريف الأصناف ومراقبة المخزون، وبناء قوائم مواد متعددة المستويات مع إصدارات متعددة لكل صنف، وتشغيل تخطيط الاحتياجات من المواد (MRP) لحساب الكميات المطلوبة والنواقص والتكلفة التقديرية. كما يدير أوامر العمل وأوراق السير الرقمية وتسجيل الوقت والكميات المنتَجة والتكلفة الفعلية، إضافة إلى وحدات الجودة من فحوصات وحالات عدم مطابقة وإجراءات تصحيحية، وتتبّع الدُفعات والأرقام التسلسلية أمامياً وخلفياً. تُخزَّن كل البيانات محلياً في متصفحك، مع تقارير وتصدير واستيراد بصيغة JSON، مما يجعله مناسباً للورش والمصانع الصغيرة وفرق الإنتاج.</p>
+
+<div class="tabs">
+<button class="tab" id="tabItems">الأصناف والمخزون</button>
+<button class="tab" id="tabBom">قوائم المواد</button>
+<button class="tab" id="tabWo">أوامر العمل</button>
+<button class="tab" id="tabMrp">تخطيط MRP</button>
+<button class="tab" id="tabQc">الجودة</button>
+<button class="tab" id="tabTrace">التتبّع</button>
+<button class="tab" id="tabRep">التقارير</button>
+</div>
+
+<section class="panel" id="secItems">
+<h3>تعريف الأصناف والمخزون</h3>
+<div class="row grid2">
+<div><label class="label" for="itCode">رمز الصنف</label><input class="input" id="itCode" placeholder="RAW-001"/></div>
+<div><label class="label" for="itName">اسم الصنف</label><input class="input" id="itName" placeholder="صفيحة فولاذية"/></div>
+<div><label class="label" for="itKind">النوع</label><select class="select" id="itKind"><option value="raw">مادة خام</option><option value="semi">نصف مصنّع</option><option value="final">منتج نهائي</option></select></div>
+<div><label class="label" for="itUnit">وحدة القياس</label><input class="input" id="itUnit" value="قطعة"/></div>
+<div><label class="label" for="itCost">تكلفة الوحدة</label><input class="input" id="itCost" type="number" min="0" step="0.01" value="0"/></div>
+<div><label class="label" for="itStock">الرصيد الحالي</label><input class="input" id="itStock" type="number" min="0" step="0.01" value="0"/></div>
+<div><label class="label" for="itMin">الحد الأدنى</label><input class="input" id="itMin" type="number" min="0" step="0.01" value="0"/></div>
+</div>
+<div class="row"><button id="btnAddItem">إضافة الصنف إلى المخزون</button></div>
+<div class="out" id="msgItems"></div>
+<div class="wrap"><table id="itemsTable"></table></div>
+</section>
+
+<section class="panel" id="secBom">
+<h3>قوائم المواد متعددة المستويات</h3>
+<div class="row grid2">
+<div><label class="label" for="bomItem">الصنف الأب</label><select class="select" id="bomItem"></select></div>
+<div><label class="label" for="bomVer">إصدار القائمة</label><input class="input" id="bomVer" type="number" min="1" value="1"/></div>
+</div>
+<div class="row"><button id="btnBomStart">بدء قائمة جديدة</button></div>
+<div class="row grid2">
+<div><label class="label" for="bomComp">المكوّن</label><select class="select" id="bomComp"></select></div>
+<div><label class="label" for="bomQty">الكمية لكل وحدة</label><input class="input" id="bomQty" type="number" min="0.0001" step="0.01" value="1"/></div>
+</div>
+<div class="row"><button class="sec" id="btnBomAdd">إضافة المكوّن للقائمة</button> <button id="btnBomSave">حفظ قائمة المواد</button></div>
+<div class="out" id="msgBom"></div>
+<div class="wrap"><table id="bomLines"></table></div>
+<h3>القوائم المحفوظة</h3>
+<div class="wrap"><table id="bomsTable"></table></div>
+</section>
+
+<section class="panel" id="secWo">
+<h3>أوامر العمل وأوراق السير</h3>
+<div class="row grid2">
+<div><label class="label" for="woItem">الصنف المطلوب</label><select class="select" id="woItem"></select></div>
+<div><label class="label" for="woQty">الكمية المطلوبة</label><input class="input" id="woQty" type="number" min="1" value="10"/></div>
+<div><label class="label" for="woDue">تاريخ الاستحقاق</label><input class="input" id="woDue" type="date"/></div>
+<div><label class="label" for="labRate">أجر الساعة (تكلفة العمل)</label><input class="input" id="labRate" type="number" min="0" step="0.01" value="0"/></div>
+</div>
+<div class="row"><button id="btnAddWo">إنشاء أمر عمل</button></div>
+<div class="out" id="msgWo"></div>
+<div class="wrap"><table id="wosTable"></table></div>
+<h3>ورقة السير والتكلفة الفعلية</h3>
+<div class="out" id="woCost"></div>
+<div class="wrap"><table id="routeTable"></table></div>
+<div class="row grid2">
+<div><label class="label" for="opSel">العملية</label><select class="select" id="opSel"></select></div>
+<div><label class="label" for="timeMins">الدقائق المسجّلة</label><input class="input" id="timeMins" type="number" min="1" value="30"/></div>
+<div><label class="label" for="logQty">كمية العملية</label><input class="input" id="logQty" type="number" min="0" value="0"/></div>
+<div><label class="label" for="prodQty">الكمية المنتَجة</label><input class="input" id="prodQty" type="number" min="1" value="0"/></div>
+</div>
+<div class="row">
+<button id="btnLogTime">تسجيل الوقت</button>
+<button class="sec" id="btnProd">تسجيل الكمية المنتَجة</button>
+<button class="sec" id="btnIssue">صرف المواد وخصم المخزون</button>
+<button class="sec" id="btnCompleteWo">إكمال أمر العمل</button>
+</div>
+<div class="out" id="msgWoOps"></div>
+</section>
+
+<section class="panel" id="secMrp">
+<h3>تخطيط الاحتياجات من المواد</h3>
+<div class="row grid2">
+<div><label class="label" for="mrpItem">الصنف النهائي</label><select class="select" id="mrpItem"></select></div>
+<div><label class="label" for="mrpQty">الكمية المطلوبة</label><input class="input" id="mrpQty" type="number" min="1" value="1"/></div>
+</div>
+<div class="row"><button id="btnMrp">حساب الاحتياجات والنواقص</button></div>
+<div class="out" id="msgMrp"></div>
+<div class="kpi">
+<div><b id="mrpCost">0</b>التكلفة التقديرية للمواد</div>
+<div><b id="mrpShort">0</b>إجمالي الوحدات الناقصة</div>
+</div>
+<div class="wrap"><table id="mrpTable"></table></div>
+</section>
+
+<section class="panel" id="secQc">
+<h3>فحوصات الجودة</h3>
+<div class="row grid2">
+<div><label class="label" for="qcWo">أمر العمل (اختياري)</label><select class="select" id="qcWo"></select></div>
+<div><label class="label" for="qcItem">الصنف</label><select class="select" id="qcItem"></select></div>
+<div><label class="label" for="qcQty">الكمية المفحوصة</label><input class="input" id="qcQty" type="number" min="0" value="1"/></div>
+<div><label class="label" for="qcResult">النتيجة</label><select class="select" id="qcResult"><option value="pass">مطابق</option><option value="fail">غير مطابق</option></select></div>
+<div><label class="label" for="qcNote">ملاحظة</label><input class="input" id="qcNote"/></div>
+</div>
+<div class="row"><button id="btnAddInsp">تسجيل فحص</button></div>
+<div class="out" id="msgQc"></div>
+<div class="wrap"><table id="inspTable"></table></div>
+<h3>عدم المطابقة والإجراءات التصحيحية</h3>
+<div class="row grid2">
+<div><label class="label" for="ncrWo">أمر العمل</label><select class="select" id="ncrWo"></select></div>
+<div><label class="label" for="ncrDesc">وصف المشكلة</label><input class="input" id="ncrDesc" placeholder="مثال: انحراف في المقاس"/></div>
+</div>
+<div class="row"><button id="btnAddNcr">تسجيل حالة عدم مطابقة</button></div>
+<div class="out" id="msgNcr"></div>
+<div class="wrap"><table id="ncrTable"></table></div>
+</section>
+
+<section class="panel" id="secTrace">
+<h3>الدُفعات والأرقام التسلسلية</h3>
+<div class="row grid2">
+<div><label class="label" for="lotNo">رقم الدفعة</label><input class="input" id="lotNo" placeholder="LOT-0001"/></div>
+<div><label class="label" for="lotItem">الصنف</label><select class="select" id="lotItem"></select></div>
+<div><label class="label" for="lotQty">الكمية</label><input class="input" id="lotQty" type="number" min="0" value="1"/></div>
+<div><label class="label" for="lotSerial">رقم تسلسلي (اختياري)</label><input class="input" id="lotSerial"/></div>
+<div><label class="label" for="lotWo">أمر العمل (اختياري)</label><select class="select" id="lotWo"></select></div>
+<div><label class="label" for="lotParents">الدُفعات المصدر (تحديد متعدد)</label><select class="select" id="lotParents" multiple size="3"></select></div>
+</div>
+<div class="row"><button id="btnAddLot">إضافة دفعة</button></div>
+<div class="out" id="msgLot"></div>
+<div class="wrap"><table id="lotsTable"></table></div>
+<div class="row grid2">
+<div><label class="label" for="traceSel">اختر دفعة للتتبّع</label><select class="select" id="traceSel"></select></div>
+</div>
+<div class="row">
+<button id="btnTraceFwd">تتبّع أمامي (إلى أين ذهبت)</button>
+<button class="sec" id="btnTraceBack">تتبّع خلفي (من أين جاءت)</button>
+</div>
+<div class="out" id="traceOut"></div>
+</section>
+
+<section class="panel" id="secRep">
+<h3>ملخّص النظام</h3>
+<div class="kpi" id="repSummary"></div>
+<h3>تصدير واستيراد JSON</h3>
+<div class="row">
+<button id="btnExport">تصدير البيانات كنص</button>
+<button class="sec" id="btnImport">استيراد البيانات من النص</button>
+<button class="sec" id="btnClear">مسح كل البيانات</button>
+</div>
+<div class="out" id="msgRep"></div>
+<textarea class="textarea" id="ioData" rows="8" placeholder="تظهر بيانات JSON هنا عند التصدير، ويمكن لصق نسخة محفوظة هنا ثم الاستيراد."></textarea>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى إنترنت أو حساب مستخدم؟</h3><p>لا، يعمل بالكامل داخل المتصفح ويخزّن البيانات محلياً في متصفحك دون خادم أو تسجيل دخول أو اتصال بالشبكة.</p><h3>كيف تُحسب النواقص في تخطيط MRP؟</h3><p>يفكّك التطبيق قوائم المواد النشطة متعددة المستويات ويجمع الاحتياج الكلي لكل مكوّن، ثم يطرح المخزون المتاح ليُظهر الكمية الناقصة والتكلفة التقديرية.</p><h3>هل تدعم قوائم المواد إصدارات متعددة؟</h3><p>نعم، يمكن حفظ أكثر من إصدار لكل صنف ويُستخدم الإصدار النشط في الحسابات، مع إمكانية تنشيط أي إصدار آخر بضغطة واحدة.</p><h3>كيف يعمل التتبّع الأمامي والخلفي للدُفعات؟</h3><p>عند إنشاء دفعة تربطها بأرقام دُفعات المصدر، يعرض التطبيق سلسلة الاستخدام الأمامي التي ذهبت إليها، ومصادر التكوين الخلفية التي جاءت منها.</p><h3>كيف أنقل بياناتي أو أنسخها احتياطياً؟</h3><p>من تبويب التقارير صدّر البيانات كنص JSON، ويمكنك لصق نسخة محفوظة في نفس الحقل ثم الاستيراد لاستعادة الوضع كما كان.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-14 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+let S={items:[],boms:[],wos:[],insp:[],ncr:[],lots:[]};
+const K='md_mfg_v1';
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
+const save=function(){try{localStorage.setItem(K,JSON.stringify(S));}catch(e){}};
+const $=function(id){return document.getElementById(id);};
+const uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);};
+const esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+const KIND={raw:'مادة خام',semi:'نصف مصنّع',final:'منتج نهائي'};
+const ST={planned:'مخطّط',released:'محرَّر',running:'قيد التنفيذ',done:'مكتمل'};
+const NC={open:'مفتوحة',review:'قيد المراجعة',closed:'مغلقة'};
+const OPS=['قص وتحضير','تشكيل','تجميع','فحص','تغليف'];
+let draft={itemId:null,ver:1,lines:[]};
+let curWo=null;
+function msg(id,t){const e=$(id);if(e)e.textContent=t||'';}
+function itemById(id){return S.items.find(function(i){return i.id===id;});}
+function itemLabel(id){const i=itemById(id);return i?i.code+' — '+i.name:'(صنف محذوف)';}
+function activeBom(itemId){return S.boms.filter(function(b){return b.itemId===itemId&&b.active;})[0]||null;}
+function kpi(t,v){return '<div><b>'+v+'</b>'+t+'</div>';}
+function fillSelects(){
+ var list=S.items.map(function(i){return '<option value="'+i.id+'">'+esc(i.code)+' — '+esc(i.name)+'</option>';}).join('');
+ ['bomItem','bomComp','woItem','mrpItem','qcItem','lotItem'].forEach(function(id){var s=$(id);if(!s)return;var v=s.value;s.innerHTML=list;if(s.querySelector('option[value="'+v+'"]'))s.value=v;});
+ if(!list)['bomItem','bomComp','woItem','mrpItem','qcItem','lotItem'].forEach(function(id){var s=$(id);if(s&&!s.options.length)s.innerHTML='<option value="">أضف أصنافاً أولاً</option>';});
+ var wos=S.wos.map(function(w){return '<option value="'+w.id+'">'+esc(w.code)+' — '+esc(itemLabel(w.itemId))+'</option>';}).join('');
+ ['qcWo','ncrWo','lotWo'].forEach(function(id){var s=$(id);if(!s)return;var v=s.value;s.innerHTML='<option value="">— بلا —</option>'+wos;if(s.querySelector('option[value="'+v+'"]'))s.value=v;});
+ var lp=$('lotParents');if(lp){var sel=Array.from(lp.selectedOptions).map(function(o){return o.value;});lp.innerHTML=S.lots.map(function(l){return '<option value="'+l.id+'">'+esc(l.no)+' — '+esc(itemLabel(l.itemId))+'</option>';}).join('');Array.from(lp.options).forEach(function(o){if(sel.indexOf(o.value)>=0)o.selected=true;});}
+}
+function renderItems(){
+ var t=$('itemsTable');
+ if(!S.items.length){t.innerHTML='<tr><td>لا توجد أصناف بعد. أضف صنفاً من النموذج أعلاه.</td></tr>';return;}
+ t.innerHTML='<tr><th>الرمز</th><th>الاسم</th><th>النوع</th><th>الوحدة</th><th>التكلفة</th><th>المخزون</th><th>الحد الأدنى</th><th>حذف</th></tr>'+
+ S.items.map(function(i){var low=i.stock<=i.min;return '<tr><td>'+esc(i.code)+'</td><td>'+esc(i.name)+'</td><td>'+(KIND[i.kind]||i.kind)+'</td><td>'+esc(i.unit)+'</td><td>'+i.cost+'</td><td>'+i.stock+(low?' ⚠ ناقص':'')+'</td><td>'+i.min+'</td><td><button class="sec mini" id="deli_'+i.id+'">حذف</button></td></tr>';}).join('');
+ S.items.forEach(function(i){$('deli_'+i.id).onclick=function(){S.items=S.items.filter(function(x){return x.id!==i.id;});S.boms=S.boms.filter(function(b){return b.itemId!==i.id;});save();render();};});
+}
+function renderBoms(){
+ var t=$('bomsTable');
+ if(!S.boms.length){t.innerHTML='<tr><td>لا توجد قوائم مواد محفوظة.</td></tr>';return;}
+ t.innerHTML='<tr><th>الصنف</th><th>الإصدار</th><th>الحالة</th><th>عدد المكوّنات</th><th>إجراءات</th></tr>'+
+ S.boms.map(function(b){return '<tr><td>'+esc(itemLabel(b.itemId))+'</td><td>v'+b.ver+'</td><td><span class="pill'+(b.active?' on':'')+'">'+(b.active?'نشط':'غير نشط')+'</span></td><td>'+b.lines.length+'</td><td>'+(b.active?'':'<button class="sec mini" id="act_'+b.id+'">تنشيط</button> ')+'<button class="sec mini" id="delb_'+b.id+'">حذف</button></td></tr>';}).join('');
+ S.boms.forEach(function(b){
+  var a=$('act_'+b.id);if(a)a.onclick=function(){S.boms.forEach(function(x){if(x.itemId===b.itemId)x.active=false;});b.active=true;save();render();};
+  $('delb_'+b.id).onclick=function(){S.boms=S.boms.filter(function(x){return x.id!==b.id;});save();render();};
+ });
+}
+function renderDraft(){
+ var t=$('bomLines');
+ if(!draft.itemId||!draft.lines.length){t.innerHTML='<tr><td>ابدأ قائمة جديدة ثم أضف المكوّنات لتظهر هنا.</td></tr>';return;}
+ t.innerHTML='<tr><th>المكوّن</th><th>الكمية لكل وحدة</th></tr>'+draft.lines.map(function(l){return '<tr><td>'+esc(itemLabel(l.cid))+'</td><td>'+l.qty+'</td></tr>';}).join('');
+}
+function renderWos(){
+ var t=$('wosTable');
+ if(!S.wos.length){t.innerHTML='<tr><td>لا توجد أوامر عمل بعد.</td></tr>';return;}
+ t.innerHTML='<tr><th>الرقم</th><th>الصنف</th><th>الكمية</th><th>منتج</th><th>الحالة</th><th>الاستحقاق</th><th>عرض</th></tr>'+
+ S.wos.map(function(w){return '<tr><td>'+esc(w.code)+'</td><td>'+esc(itemLabel(w.itemId))+'</td><td>'+w.qty+'</td><td>'+w.produced+'</td><td><span class="pill'+(w.status==='done'?' on':'')+'">'+(ST[w.status]||w.status)+'</span></td><td>'+esc(w.due||'—')+'</td><td><button class="sec mini" id="selw_'+w.id+'">عرض</button></td></tr>';}).join('');
+ S.wos.forEach(function(w){$('selw_'+w.id).onclick=function(){curWo=w.id;renderWoPanel();};});
+}
+function renderWoPanel(){
+ var w=S.wos.filter(function(x){return x.id===curWo;})[0];
+ var rt=$('routeTable'),ops=$('opSel'),cost=$('woCost');
+ if(!w){rt.innerHTML='<tr><td>اختر أمر عمل من الجدول أعلاه لعرض ورقة السير.</td></tr>';ops.innerHTML='';cost.textContent='';return;}
+ var pv=ops.value;
+ ops.innerHTML=w.route.map(function(r,i){return '<option value="'+i+'">'+esc(r.name)+'</option>';}).join('');
+ if(ops.querySelector('option[value="'+pv+'"]'))ops.value=pv;
+ rt.innerHTML='<tr><th>العملية</th><th>الدقائق</th><th>الكمية</th><th>الحالة</th></tr>'+
+ w.route.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td>'+r.mins+'</td><td>'+r.qty+'</td><td>'+(r.done?'منجزة':'معلّقة')+'</td></tr>';}).join('');
+ var mins=w.route.reduce(function(a,r){return a+r.mins;},0);
+ var rate=+(parseFloat($('labRate').value)||0);
+ var labor=+(mins/60*rate).toFixed(2);
+ var total=+((w.cost||0)+labor).toFixed(2);
+ var unit=w.produced>0?(total/w.produced).toFixed(2):'—';
+ cost.innerHTML='أمر '+esc(w.code)+' — حالة: '+ST[w.status]+' • تكلفة مواد: '+(w.cost||0).toFixed(2)+' • تكلفة عمل: '+labor+' • إجمالي فعلي: '+total+' • تكلفة الوحدة: '+unit;
+}
+function renderInsp(){
+ var t=$('inspTable');
+ if(!S.insp.length){t.innerHTML='<tr><td>لا توجد فحوصات مسجّلة.</td></tr>';return;}
+ t.innerHTML='<tr><th>التاريخ</th><th>الصنف</th><th>الكمية</th><th>النتيجة</th><th>ملاحظة</th></tr>'+
+ S.insp.map(function(i){return '<tr><td>'+esc(i.at)+'</td><td>'+esc(itemLabel(i.itemId))+'</td><td>'+i.qty+'</td><td><span class="pill'+(i.result==='pass'?' on':'')+'">'+(i.result==='pass'?'مطابق':'غير مطابق')+'</span></td><td>'+esc(i.note||'—')+'</td></tr>';}).join('');
+}
+function renderNcr(){
+ var t=$('ncrTable');
+ if(!S.ncr.length){t.innerHTML='<tr><td>لا توجد حالات عدم مطابقة.</td></tr>';return;}
+ t.innerHTML='<tr><th>الوصف</th><th>أمر العمل</th><th>الحالة</th><th>الإجراء التصحيحي</th><th>حفظ</th></tr>'+
+ S.ncr.map(function(n){var w=S.wos.filter(function(x){return x.id===n.woId;})[0];
+  return '<tr><td>'+esc(n.desc)+'</td><td>'+(w?esc(w.code):'—')+'</td><td><select class="select" id="nst_'+n.id+'">'+Object.keys(NC).map(function(k){return '<option value="'+k+'"'+(n.status===k?' selected':'')+'>'+NC[k]+'</option>';}).join('')+'</select></td><td><input class="input" id="ncap_'+n.id+'" value="'+esc(n.capa||'')+'" placeholder="اكتب الإجراء"/></td><td><button class="sec mini" id="nsv_'+n.id+'">حفظ</button></td></tr>';}).join('');
+ S.ncr.forEach(function(n){$('nsv_'+n.id).onclick=function(){n.status=$('nst_'+n.id).value;n.capa=$('ncap_'+n.id).value;save();msg('msgNcr','تم تحديث حالة عدم المطابقة.');};});
+}
+function renderLots(){
+ var t=$('lotsTable');
+ if(!S.lots.length){t.innerHTML='<tr><td>لا توجد دُفعات مسجّلة.</td></tr>';return;}
+ t.innerHTML='<tr><th>الدفعة</th><th>الصنف</th><th>الكمية</th><th>تسلسلي</th><th>أمر العمل</th><th>المصادر</th></tr>'+
+ S.lots.map(function(l){var w=S.wos.filter(function(x){return x.id===l.woId;})[0];var ps=l.parents.map(function(p){var q=S.lots.filter(function(z){return z.id===p;})[0];return q?q.no:p;});return '<tr><td>'+esc(l.no)+'</td><td>'+esc(itemLabel(l.itemId))+'</td><td>'+l.qty+'</td><td>'+esc(l.serial||'—')+'</td><td>'+(w?esc(w.code):'—')+'</td><td>'+esc(ps.length?ps.join('، '):'—')+'</td></tr>';}).join('');
+ var s=$('traceSel');if(s){var v=s.value;s.innerHTML=S.lots.map(function(l){return '<option value="'+l.id+'">'+esc(l.no)+' — '+esc(itemLabel(l.itemId))+'</option>';}).join('');if(s.querySelector('option[value="'+v+'"]'))s.value=v;}
+}
+function renderSummary(){
+ var c=function(k){return S.wos.filter(function(w){return w.status===k;}).length;};
+ var pass=S.insp.filter(function(i){return i.result==='pass';}).length;
+ $('repSummary').innerHTML=kpi('إجمالي الأصناف',S.items.length)+kpi('قوائم المواد',S.boms.length)+kpi('أوامر العمل',S.wos.length)+kpi('قيد التنفيذ',c('running'))+kpi('مكتملة',c('done'))+kpi('فحوصات ناجحة',pass+' / '+S.insp.length)+kpi('عدم مطابقة مفتوحة',S.ncr.filter(function(n){return n.status!=='closed';}).length)+kpi('الدُفعات',S.lots.length);
+}
+function render(){fillSelects();renderItems();renderBoms();renderDraft();renderWos();renderWoPanel();renderInsp();renderNcr();renderLots();renderSummary();}
+function traceFwd(id){var out=[],seen={};(function go(x){S.lots.filter(function(l){return l.parents.indexOf(x)>=0;}).forEach(function(l){if(!seen[l.id]){seen[l.id]=1;out.push(l);go(l.id);}});})(id);return out;}
+function traceBack(id){var out=[],seen={};(function go(x){var l=S.lots.filter(function(z){return z.id===x;})[0];if(!l)return;l.parents.forEach(function(p){if(!seen[p]){seen[p]=1;var q=S.lots.filter(function(z){return z.id===p;})[0];if(q){out.push(q);go(p);}}});})(id);return out;}
+['Items','Bom','Wo','Mrp','Qc','Trace','Rep'].forEach(function(n){$('tab'+n).onclick=function(){['Items','Bom','Wo','Mrp','Qc','Trace','Rep'].forEach(function(m){$('tab'+m).classList.remove('on');$('sec'+m).classList.remove('on');});$('tab'+n).classList.add('on');$('sec'+n).classList.add('on');};});
+$('tabItems').classList.add('on');$('secItems').classList.add('on');
+$('btnAddItem').onclick=function(){
+ var code=$('itCode').value.trim(),name=$('itName').value.trim();
+ if(!code||!name){msg('msgItems','أدخل رمز الصنف واسمه.');return;}
+ if(S.items.filter(function(i){return i.code===code;}).length){msg('msgItems','رمز الصنف مستخدم مسبقاً.');return;}
+ S.items.push({id:uid(),code:code,name:name,kind:$('itKind').value,unit:$('itUnit').value.trim()||'وحدة',cost:+$('itCost').value||0,stock:+$('itStock').value||0,min:+$('itMin').value||0});
+ $('itCode').value='';$('itName').value='';$('itCost').value=0;$('itStock').value=0;$('itMin').value=0;
+ save();render();msg('msgItems','تمت إضافة الصنف.');
+};
+$('btnBomStart').onclick=function(){var it=$('bomItem').value;if(!it){msg('msgBom','أضف أصنافاً أولاً.');return;}draft={itemId:it,ver:+$('bomVer').value||1,lines:[]};renderDraft();msg('msgBom','قائمة جديدة جاهزة للإصدار v'+draft.ver+'.');};
+$('btnBomAdd').onclick=function(){
+ if(!draft.itemId){msg('msgBom','ابدأ قائمة جديدة أولاً.');return;}
+ var c=$('bomComp').value,q=+$('bomQty').value;
+ if(!c){msg('msgBom','اختر مكوّناً.');return;}
+ if(!(q>0)){msg('msgBom','أدخل كمية لكل وحدة أكبر من صفر.');return;}
+ if(c===draft.itemId){msg('msgBom','لا يمكن أن يحتوي الصنف على نفسه.');return;}
+ draft.lines.push({cid:c,qty:q});renderDraft();msg('msgBom','تمت إضافة المكوّن.');
+};
+$('btnBomSave').onclick=function(){
+ if(!draft.itemId||!draft.lines.length){msg('msgBom','لا توجد مكوّنات لحفظها.');return;}
+ S.boms.forEach(function(b){if(b.itemId===draft.itemId)b.active=false;});
+ S.boms.push({id:uid(),itemId:draft.itemId,ver:draft.ver,active:true,lines:draft.lines.slice()});
+ draft={itemId:null,ver:1,lines:[]};save();render();msg('msgBom','تم حفظ قائمة المواد وتنشيطها.');
+};
+$('btnAddWo').onclick=function(){
+ var it=$('woItem').value,q=+$('woQty').value;
+ if(!it){msg('msgWo','أضف أصنافاً أولاً.');return;}
+ if(!(q>0)){msg('msgWo','أدخل كمية أكبر من صفر.');return;}
+ var n=S.wos.length+1;
+ S.wos.push({id:uid(),code:'WO-'+('000'+n).slice(-4),itemId:it,qty:q,produced:0,status:'planned',due:$('woDue').value||'',route:OPS.map(function(o){return {name:o,mins:0,qty:0,done:false};}),logs:[],cost:0,issued:false});
+ save();render();msg('msgWo','تم إنشاء أمر العمل.');
+};
+$('btnLogTime').onclick=function(){
+ var w=S.wos.filter(function(x){return x.id===curWo;})[0];if(!w){msg('msgWoOps','اختر أمر عمل من الجدول أولاً.');return;}
+ var op=+$('opSel').value,m=+$('timeMins').value,q=+$('logQty').value;
+ if(!(m>0)){msg('msgWoOps','أدخل دقائق أكبر من صفر.');return;}
+ w.route[op].mins+=m;if(q>0)w.route[op].qty+=q;
+ if(w.status==='planned'||w.status==='released')w.status='running';
+ w.logs.push({op:w.route[op].name,mins:m,qty:q||0,at:new Date().toISOString().slice(0,16).replace('T',' ')});
+ save();renderWos();renderWoPanel();msg('msgWoOps','تم تسجيل الوقت على العملية.');
+};
+$('btnProd').onclick=function(){
+ var w=S.wos.filter(function(x){return x.id===curWo;})[0];if(!w){msg('msgWoOps','اختر أمر عمل من الجدول أولاً.');return;}
+ var q=+$('prodQty').value;if(!(q>0)){msg('msgWoOps','أدخل كمية منتجة.');return;}
+ w.produced+=q;if(w.status!=='done')w.status='running';
+ save();renderWos();renderWoPanel();msg('msgWoOps','تم تسجيل الكمية المنتَجة.');
+};
+$('btnIssue').onclick=function(){
+ var w=S.wos.filter(function(x){return x.id===curWo;})[0];if(!w){msg('msgWoOps','اختر أمر عمل من الجدول أولاً.');return;}
+ var b=activeBom(w.itemId);if(!b){msg('msgWoOps','لا توجد قائمة مواد نشطة لهذا الصنف.');return;}
+ var short=[],c=0;
+ b.lines.forEach(function(l){var it=itemById(l.cid);var need=l.qty*w.qty;if(it&&it.stock<need)short.push(it.code+' (ناقص '+ (need-it.stock).toFixed(2)+')');});
+ b.lines.forEach(function(l){var it=itemById(l.cid);if(it){it.stock=Math.max(0,it.stock-l.qty*w.qty);c+=it.cost*l.qty*w.qty;}});
+ w.cost+=c;w.issued=true;save();render();
+ msg('msgWoOps',short.length?('تم الصرف مع نواقص: '+short.join('، ')):'تم صرف المواد وخصمها من المخزون.');
+};
+$('btnCompleteWo').onclick=function(){
+ var w=S.wos.filter(function(x){return x.id===curWo;})[0];if(!w){msg('msgWoOps','اختر أمر عمل من الجدول أولاً.');return;}
+ if(w.status==='done'){msg('msgWoOps','أمر العمل مكتمل مسبقاً.');return;}
+ var it=itemById(w.itemId);if(it)it.stock+=w.produced;
+ w.route.forEach(function(r){if(r.mins>0)r.done=true;});
+ w.status='done';save();render();msg('msgWoOps','تم إكمال الأمر وإضافة الكمية المنتَجة إلى المخزون.');
+};
+$('btnMrp').onclick=function(){
+ var root=$('mrpItem').value,q=+$('mrpQty').value;
+ if(!root||!(q>0)){msg('msgMrp','اختر صنفاً وكمية أكبر من صفر.');return;}
+ var req={};
+ (function ex(id,need,lvl){if(lvl>12)return;var b=activeBom(id);if(!b)return;b.lines.forEach(function(l){req[l.cid]=(req[l.cid]||0)+l.qty*need;ex(l.cid,l.qty*need,lvl+1);});})(root,q,0);
+ var ids=Object.keys(req);
+ if(!ids.length){$('mrpTable').innerHTML='<tr><td>لا توجد قائمة مواد نشطة لهذا الصنف.</td></tr>';$('mrpCost').textContent='0';$('mrpShort').textContent='0';msg('msgMrp','لا توجد قوائم مواد لتفكيكها.');return;}
+ var total=0,shortTotal=0;
+ var rows=ids.map(function(id){var it=itemById(id);var need=req[id];var stock=it?it.stock:0;var sh=Math.max(0,need-stock);var cost=it?it.cost*need:0;total+=cost;shortTotal+=sh;return '<tr><td>'+esc(it?it.code+' — '+it.name:'(صنف محذوف)')+'</td><td>'+need.toFixed(2)+'</td><td>'+stock+'</td><td>'+(sh?sh.toFixed(2):'—')+'</td><td>'+cost.toFixed(2)+'</td></tr>';});
+ $('mrpTable').innerHTML='<tr><th>المكوّن</th><th>الاحتياج</th><th>المخزون</th><th>الناقص</th><th>التكلفة التقديرية</th></tr>'+rows.join('');
+ $('mrpCost').textContent=total.toFixed(2);$('mrpShort').textContent=shortTotal.toFixed(2);
+ msg('msgMrp','تم حساب الاحتياجات لـ '+ids.length+' مكوّناً.');
+};
+$('btnAddInsp').onclick=function(){
+ var it=$('qcItem').value;if(!it){msg('msgQc','أضف أصنافاً أولاً.');return;}
+ S.insp.push({id:uid(),woId:$('qcWo').value||'',itemId:it,qty:+$('qcQty').value||0,result:$('qcResult').value,note:$('qcNote').value.trim(),at:new Date().toISOString().slice(0,10)});
+ $('qcNote').value='';save();render();msg('msgQc','تم تسجيل الفحص.');
+};
+$('btnAddNcr').onclick=function(){
+ var d=$('ncrDesc').value.trim();if(!d){msg('msgNcr','اكتب وصف المشكلة.');return;}
+ S.ncr.push({id:uid(),woId:$('ncrWo').value||'',desc:d,status:'open',capa:'',at:new Date().toISOString().slice(0,10)});
+ $('ncrDesc').value='';save();render();msg('msgNcr','تم تسجيل حالة عدم المطابقة.');
+};
+$('btnAddLot').onclick=function(){
+ var it=$('lotItem').value;if(!it){msg('msgLot','أضف أصنافاً أولاً.');return;}
+ var no=$('lotNo').value.trim()||('LOT-'+('000'+(S.lots.length+1)).slice(-4));
+ if(S.lots.filter(function(l){return l.no===no;}).length){msg('msgLot','رقم الدفعة مستخدم مسبقاً.');return;}
+ var parents=Array.from($('lotParents').selectedOptions).map(function(o){return o.value;});
+ S.lots.push({id:uid(),no:no,itemId:it,qty:+$('lotQty').value||0,serial:$('lotSerial').value.trim(),woId:$('lotWo').value||'',parents:parents,at:new Date().toISOString().slice(0,10)});
+ $('lotNo').value='';$('lotSerial').value='';save();render();msg('msgLot','تمت إضافة الدفعة.');
+};
+$('btnTraceFwd').onclick=function(){
+ var id=$('traceSel').value,o=$('traceOut');
+ if(!id){o.textContent='اختر دفعة أولاً.';return;}
+ var res=traceFwd(id);
+ if(!res.length){o.textContent='لا توجد استخدامات أمامية لهذه الدفعة.';return;}
+ o.innerHTML='<b>التتبّع الأمامي (إلى أين ذهبت):</b><br>'+res.map(function(l){return '↳ '+esc(l.no)+' • '+esc(itemLabel(l.itemId))+' • كمية '+l.qty;}).join('<br>');
+};
+$('btnTraceBack').onclick=function(){
+ var id=$('traceSel').value,o=$('traceOut');
+ if(!id){o.textContent='اختر دفعة أولاً.';return;}
+ var res=traceBack(id);
+ if(!res.length){o.textContent='لا توجد مصادر خلفية مسجّلة لهذه الدفعة.';return;}
+ o.innerHTML='<b>التتبّع الخلفي (من أين جاءت):</b><br>'+res.map(function(l){return '↳ '+esc(l.no)+' • '+esc(itemLabel(l.itemId))+' • كمية '+l.qty;}).join('<br>');
+};
+$('btnExport').onclick=function(){$('ioData').value=JSON.stringify(S,null,1);msg('msgRep','تم تجهيز بيانات JSON، انسخها للاحتفاظ بنسخة.');};
+$('btnImport').onclick=function(){
+ try{var d=JSON.parse($('ioData').value);if(!d||typeof d!=='object')throw new Error('bad');
+  S={items:d.items||[],boms:d.boms||[],wos:d.wos||[],insp:d.insp||[],ncr:d.ncr||[],lots:d.lots||[]};
+  curWo=null;draft={itemId:null,ver:1,lines:[]};save();render();msg('msgRep','تم استيراد البيانات بنجاح.');
+ }catch(e){msg('msgRep','تعذّر الاستيراد: النص ليس JSON صالحاً.');}
+};
+$('btnClear').onclick=function(){
+ S={items:[],boms:[],wos:[],insp:[],ncr:[],lots:[]};curWo=null;draft={itemId:null,ver:1,lines:[]};save();render();msg('msgRep','تم مسح جميع البيانات.');
+};
+render();
+})();
+</script>
+</body>
+</html>
