@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة السعرات والماكروز ودفتر الطعام اليومي في المتصفح | MDM1</title>
+<meta name="description" content="سجّل طعامك وشرابك مقابل هدف يومي من السعرات والماكروز يُحسب من طولك ووزنك وعمرك ونشاطك، مع قاعدة أطعمة وباركود ومخططات وتصدير مشفّر.">
+<link rel="canonical" href="https://mdm1.org/apps/private-calorie-diary.html">
+<meta property="og:title" content="حاسبة السعرات والماكروز ودفتر الطعام اليومي في المتصفح">
+<meta property="og:description" content="سجّل طعامك وشرابك مقابل هدف يومي من السعرات والماكروز يُحسب من طولك ووزنك وعمرك ونشاطك، مع قاعدة أطعمة وباركود ومخططات وتصدير مشفّر.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/private-calorie-diary.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:980px;margin:0 auto}
+.app h2{margin:.2em 0 .6em;font-size:1.15rem;color:var(--gold-bright)}
+.app h3{margin:.8em 0 .4em;font-size:1rem;color:var(--gold)}
+.app .app-block{margin:16px 0;padding:14px}
+.app .app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.app .app-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.app .app-field{display:flex;flex-direction:column;gap:4px;min-width:120px}
+.app .app-field label{font-size:.85rem;color:var(--gold-dim)}
+.app .app-list{margin-top:8px;max-height:280px;overflow:auto;font-size:.9rem}
+.app .app-dirow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px;border-bottom:1px dashed rgba(212,175,55,.25)}
+.app .app-empty{color:var(--gold-dim);padding:8px}
+.app .app-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;text-align:center;margin-top:8px}
+.app .app-stat{background:rgba(212,175,55,.08);border-radius:8px;padding:8px;font-size:.85rem;color:var(--gold-dim)}
+.app .app-stat b{display:block;font-size:1.25rem;color:var(--gold-bright)}
+.app .app-bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.app canvas{width:100%;height:180px;background:#141414;border-radius:8px}
+.app .app-pill{display:inline-block;margin:2px;padding:3px 8px;border-radius:999px;background:rgba(212,175,55,.12);font-size:.82rem}
+.app .app-note{font-size:.82rem;color:var(--gold-dim);margin-top:6px;line-height:1.6}
+.app textarea.textarea{width:100%;min-height:96px;font-family:monospace;direction:ltr;text-align:left}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "دفتر الطعام والشراب مع هدف السعرات والماكروز", "url": "https://mdm1.org/apps/private-calorie-diary.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى حساب أو اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل بالكامل داخل المتصفح وتُخزَّن جميع بياناتك محلياً في localStorage، ولا يُرسل أي شيء إلى أي خادم."}}, {"@type": "Question", "name": "كيف يُحسب هدفي من السعرات والماكروز؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد على معادلة تقريبية لمعدل الأيض الأساسي من الطول والوزن والعمر والجنس، ثم يضربها في معامل النشاط، ويوزّع البروتين والكربوهيدرات والدهون تلقائياً."}}, {"@type": "Question", "name": "هل يمكنني نقل بياناتي إلى جهاز آخر؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم تصدير JSON أو CSV ثم الصق النص في المربع واضغط استيراد، أو أنشئ نسخة مشفرة بكلمة مرور واستعدها لاحقاً."}}, {"@type": "Question", "name": "ماذا يحدث إذا حذفت بيانات المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "قد تُفقد البيانات المسجّلة، لذا يُنصح بتصدير نسخة احتياطية مشفّرة بشكل دوري للاحتفاظ بها في مكان آمن."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">دفتر الطعام والشراب مع هدف السعرات والماكروز</h1>
+  <p class="page-sub">سجّل طعامك وشرابك مقابل هدف يومي من السعرات والماكروز يُحسب من طولك ووزنك وعمرك ونشاطك، مع قاعدة أطعمة وباركود ومخططات وتصدير مشفّر.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: نعم، يمكنك تتبّع كل ما تأكله وتشربه خلال اليوم داخل متصفحك مباشرة، دون إنشاء حساب ودون اتصال بالإنترنت. يحسب التطبيق هدفك اليومي من السعرات والماكروز اعتماداً على طولك ووزنك وعمرك ومستوى نشاطك، ثم يوزّع البروتين والكربوهيدرات والدهون تلقائياً. تضم قاعدة الأطعمة المدمجة أصنافاً شائعة مع أكواد باركود، ويمكنك البحث بالاسم أو إدخال صنف يدوياً. يسجّل دفتر اليوميات وجبات الفطور والغداء والعشاء والوجبة الخفيفة على تقويم يومي، ويحفظ الماء والوزن، ويرسم مخططات الاتجاه. كما يوفّر لوحة مغذيات دقيقة، ووصفات قابلة لإعادة الاستخدام، ومؤقّت صيام اختياري، وتصديراً واستيراداً بصيغة JSON أو CSV مع نسخة احتياطية مشفّرة.</p>
+<section class="app" dir="rtl">
+<section class="card app-block">
+<h2>١. بياناتك وهدفك اليومي</h2>
+<div class="row app-grid2">
+<div class="app-field"><label for="age">العمر (سنة)</label><input class="input" id="age" type="number" min="10" max="100" value="30"></div>
+<div class="app-field"><label for="gender">الجنس</label><select class="select" id="gender"><option value="male">ذكر</option><option value="female">أنثى</option></select></div>
+<div class="app-field"><label for="height">الطول (سم)</label><input class="input" id="height" type="number" min="100" max="230" value="170"></div>
+<div class="app-field"><label for="weight">الوزن (كجم)</label><input class="input" id="weight" type="number" min="30" max="300" value="70"></div>
+<div class="app-field"><label for="activity">مستوى النشاط</label><select class="select" id="activity"><option value="1.2">قليل الحركة</option><option value="1.375">نشاط خفيف</option><option value="1.55">نشاط متوسط</option><option value="1.725">نشاط عالٍ</option><option value="1.9">نشاط شديد</option></select></div>
+</div>
+<div class="row"><button class="button" id="calcGoal" type="button">احسب الهدف اليومي</button></div>
+<div class="out">السعرات المستهدفة: <span class="big" id="goalOut">—</span> سعرة في اليوم
+<div id="macroOut" class="app-note">أدخل بياناتك واضغط الزر لحساب الماكروز.</div></div>
+</section>
+
+<section class="card app-block">
+<h2>٢. إدخال سريع (باركود أو بحث أو يدوي)</h2>
+<div class="row">
+<div class="app-field"><label for="diaryDate">تاريخ اليوميات</label><input class="input" id="diaryDate" type="date"></div>
+<div class="app-field"><label for="mealType">الوجبة</label><select class="select" id="mealType"><option value="breakfast">فطور</option><option value="lunch">غداء</option><option value="dinner">عشاء</option><option value="snack">وجبة خفيفة</option></select></div>
+</div>
+<div class="row">
+<div class="app-field"><label for="barcode">رقم الباركود</label><input class="input" id="barcode" type="text" inputmode="numeric" placeholder="مثال 1003"></div>
+<button class="button sec" id="barcodeBtn" type="button">ابحث عن الباركود</button>
+</div>
+<div id="barcodeOut" class="app-note">قاعدة البيانات المدمجة تستخدم أرقاماً تجريبية للباركود.</div>
+<div class="row">
+<div class="app-field"><label for="searchTerm">ابحث بالاسم</label><input class="input" id="searchTerm" type="text" placeholder="مثال: تفاح"></div>
+<button class="button sec" id="searchFood" type="button">ابحث في قاعدة الأطعمة</button>
+</div>
+<div id="searchResults" class="app-list"></div>
+<div class="row">
+<div class="app-field"><label for="dbSelect">صنف من قاعدة الأطعمة</label><select class="select" id="dbSelect"></select></div>
+<button class="button sec" id="loadDbFood" type="button">املأ الحقول بالصنف المحدد</button>
+</div>
+<div class="divider"></div>
+<div class="row app-grid">
+<div class="app-field"><label for="foodName">اسم الصنف</label><input class="input" id="foodName" type="text" placeholder="اسم الطعام أو الشراب"></div>
+<div class="app-field"><label for="servingQty">عدد الحصص</label><input class="input" id="servingQty" type="number" min="0.25" step="0.25" value="1"></div>
+<div class="app-field"><label for="foodCal">سعرات الحصة</label><input class="input" id="foodCal" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="foodProtein">بروتين (غ)</label><input class="input" id="foodProtein" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="foodCarbs">كربوهيدرات (غ)</label><input class="input" id="foodCarbs" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="foodFat">دهون (غ)</label><input class="input" id="foodFat" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="microIron">حديد (مغ)</label><input class="input" id="microIron" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="microCalcium">كالسيوم (مغ)</label><input class="input" id="microCalcium" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="microVitC">فيتامين ج (مغ)</label><input class="input" id="microVitC" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="microFiber">ألياف (غ)</label><input class="input" id="microFiber" type="number" min="0" value="0"></div>
+</div>
+<div class="row"><button class="button" id="addFood" type="button">أضف الصنف إلى دفتر اليوم</button></div>
+<div id="foodOut" class="app-note">لم تتم إضافة أي صنف بعد.</div>
+</section>
+
+<section class="card app-block">
+<h2>٣. دفتر اليوم وملخص الهدف</h2>
+<div id="diaryList" class="app-list"></div>
+<div class="divider"></div>
+<div class="app-stats">
+<div class="app-stat">سعرات<b id="sumCal">0</b><span id="sumCalGoal">—</span></div>
+<div class="app-stat">بروتين<b id="sumProtein">0</b><span id="sumProteinGoal">—</span></div>
+<div class="app-stat">كربوهيدرات<b id="sumCarbs">0</b><span id="sumCarbsGoal">—</span></div>
+<div class="app-stat">دهون<b id="sumFat">0</b><span id="sumFatGoal">—</span></div>
+<div class="app-stat">المتبقي<b id="sumRemain">—</b>سعرة</div>
+</div>
+<h3>المغذيات الدقيقة اليوم</h3>
+<div id="microPanel" class="app-note">لا توجد بيانات مغذيات بعد.</div>
+</section>
+
+<section class="card app-block">
+<h2>٤. الماء والوزن</h2>
+<div class="row">
+<div class="app-field"><label for="waterAmount">كمية الماء (مل)</label><input class="input" id="waterAmount" type="number" min="50" step="50" value="250"></div>
+<button class="button sec" id="addWater" type="button">أضف ماء اليوم</button>
+</div>
+<div class="out" id="waterOut">ماء اليوم: 0 مل (0 أكواب من أصل 8).</div>
+<div class="row">
+<div class="app-field"><label for="weightLog">وزن اليوم (كجم)</label><input class="input" id="weightLog" type="number" min="30" max="300" step="0.1" value="70"></div>
+<button class="button sec" id="addWeight" type="button">سجّل الوزن</button>
+</div>
+<div class="out" id="weightOut">لا يوجد وزن مسجّل بعد.</div>
+</section>
+
+<section class="card app-block">
+<h2>٥. مخططات الاتجاهات</h2>
+<div class="row"><button class="button sec" id="refreshCharts" type="button">حدّث المخططات</button></div>
+<div class="app-bars">
+<div><h3>السعرات مقابل الهدف (٧ أيام)</h3><canvas id="calChart" width="560" height="180"></canvas></div>
+<div><h3>الوزن (آخر القياسات)</h3><canvas id="weightChart" width="560" height="180"></canvas></div>
+<div><h3>الماء (٧ أيام)</h3><canvas id="waterChart" width="560" height="180"></canvas></div>
+</div>
+</section>
+
+<section class="card app-block">
+<h2>٦. الوصفات والحصص الجاهزة</h2>
+<div class="row app-grid2">
+<div class="app-field"><label for="recipeName">اسم الوصفة</label><input class="input" id="recipeName" type="text" placeholder="مثال: سلطة دجاج"></div>
+<div class="app-field"><label for="recipeCal">سعرات الحصة</label><input class="input" id="recipeCal" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="recipeProtein">بروتين (غ)</label><input class="input" id="recipeProtein" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="recipeCarbs">كربوهيدرات (غ)</label><input class="input" id="recipeCarbs" type="number" min="0" value="0"></div>
+<div class="app-field"><label for="recipeFat">دهون (غ)</label><input class="input" id="recipeFat" type="number" min="0" value="0"></div>
+</div>
+<div class="row">
+<button class="button" id="saveRecipe" type="button">احفظ الوصفة</button>
+<div class="app-field"><label for="recipeSelect">وصفاتي</label><select class="select" id="recipeSelect"></select></div>
+<button class="button sec" id="addRecipeToDiary" type="button">أضف الوصفة للوجبة المختارة</button>
+<button class="button sec" id="deleteRecipe" type="button">احذف الوصفة المحددة</button>
+</div>
+<div id="recipeOut" class="app-note">لا توجد وصفات محفوظة بعد.</div>
+</section>
+
+<section class="card app-block">
+<h2>٧. مؤقّت الصيام (اختياري)</h2>
+<div class="row">
+<div class="app-field"><label for="fastHours">ساعات الصيام المستهدفة</label><input class="input" id="fastHours" type="number" min="1" max="72" value="16"></div>
+<button class="button" id="startFast" type="button">ابدأ الصيام الآن</button>
+<button class="button sec" id="stopFast" type="button">أوقف الصيام</button>
+</div>
+<div class="out" id="fastOut">لم يبدأ أي صيام.</div>
+</section>
+
+<section class="card app-block">
+<h2>٨. التصدير والاستيراد والنسخ الاحتياطي</h2>
+<div class="row">
+<button class="button sec" id="exportJson" type="button">صدّر البيانات JSON</button>
+<button class="button sec" id="exportCsv" type="button">صدّر البيانات CSV</button>
+<button class="button" id="importData" type="button">استورد من المربع أدناه</button>
+</div>
+<div class="app-field"><label for="importArea">مربع التصدير/الاستيراد</label><textarea class="textarea" id="importArea" placeholder="الصق بيانات JSON أو CSV هنا ثم اضغط استيراد"></textarea></div>
+<div class="row">
+<div class="app-field"><label for="backupPass">كلمة مرور النسخة المشفرة</label><input class="input" id="backupPass" type="password" autocomplete="new-password"></div>
+<button class="button" id="makeBackup" type="button">أنشئ نسخة مشفرة</button>
+<button class="button sec" id="restoreBackup" type="button">استعد من النسخة المشفرة</button>
+</div>
+<div class="app-field"><label for="backupArea">النسخة المشفرة (الصقها هنا للاستعادة)</label><textarea class="textarea" id="backupArea" placeholder="نص النسخة المشفرة بصيغة JSON"></textarea></div>
+<div id="ioOut" class="app-note">كل البيانات تُحفَظ محلياً داخل متصفحك فقط.</div>
+</section>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى حساب أو اتصال بالإنترنت؟</h3><p>لا، يعمل بالكامل داخل المتصفح وتُخزَّن جميع بياناتك محلياً في localStorage، ولا يُرسل أي شيء إلى أي خادم.</p><h3>كيف يُحسب هدفي من السعرات والماكروز؟</h3><p>يعتمد على معادلة تقريبية لمعدل الأيض الأساسي من الطول والوزن والعمر والجنس، ثم يضربها في معامل النشاط، ويوزّع البروتين والكربوهيدرات والدهون تلقائياً.</p><h3>هل يمكنني نقل بياناتي إلى جهاز آخر؟</h3><p>نعم، استخدم تصدير JSON أو CSV ثم الصق النص في المربع واضغط استيراد، أو أنشئ نسخة مشفرة بكلمة مرور واستعدها لاحقاً.</p><h3>ماذا يحدث إذا حذفت بيانات المتصفح؟</h3><p>قد تُفقد البيانات المسجّلة، لذا يُنصح بتصدير نسخة احتياطية مشفّرة بشكل دوري للاحتفاظ بها في مكان آمن.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-14 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){'use strict';
+var FOODS=[
+{code:'1001',name:'تفاحة متوسطة',cal:95,p:0.5,c:25,f:0.3,iron:0.2,calcium:6,vitc:8,fiber:4.4},
+{code:'1002',name:'موز متوسط',cal:105,p:1.3,c:27,f:0.4,iron:0.3,calcium:6,vitc:10,fiber:3.1},
+{code:'1003',name:'صدر دجاج مشوي 100غ',cal:165,p:31,c:0,f:3.6,iron:1,calcium:15,vitc:0,fiber:0},
+{code:'1004',name:'أرز أبيض مطبوخ كوب',cal:205,p:4.3,c:45,f:0.4,iron:1.9,calcium:16,vitc:0,fiber:0.6},
+{code:'1005',name:'خبز عربي رغيف',cal:170,p:5.5,c:33,f:1,iron:1.5,calcium:20,vitc:0,fiber:1.5},
+{code:'1006',name:'بيض مسلوق حبة',cal:78,p:6.3,c:0.6,f:5.3,iron:0.6,calcium:25,vitc:0,fiber:0},
+{code:'1007',name:'حليب كامل الدسم كوب',cal:149,p:7.7,c:11.7,f:8,iron:0.1,calcium:276,vitc:2.4,fiber:0},
+{code:'1008',name:'لبن زبادي كوب',cal:149,p:8.5,c:11.4,f:8.3,iron:0.1,calcium:296,vitc:2,fiber:0},
+{code:'1009',name:'تمر ٣ حبات',cal:60,p:0.5,c:16,f:0,iron:0.3,calcium:12,vitc:0.2,fiber:1.6},
+{code:'1010',name:'لوز ١٠ حبات',cal:70,p:2.6,c:2.5,f:6,iron:0.5,calcium:36,vitc:0,fiber:1.5},
+{code:'1011',name:'سلطة خضراء طبق',cal:50,p:2,c:9,f:1,iron:1.2,calcium:40,vitc:20,fiber:3},
+{code:'1012',name:'سمك سلمون 100غ',cal:208,p:20,c:0,f:13,iron:0.3,calcium:9,vitc:0,fiber:0},
+{code:'1013',name:'عدس مطبوخ كوب',cal:230,p:18,c:40,f:0.8,iron:6.6,calcium:38,vitc:3,fiber:15.6},
+{code:'1014',name:'شوفان كوب',cal:154,p:6,c:27,f:2.6,iron:2.1,calcium:20,vitc:0,fiber:4},
+{code:'1015',name:'عصير برتقال كوب',cal:112,p:1.7,c:26,f:0.5,iron:0.5,calcium:27,vitc:124,fiber:0.5}
+];
+var MEALS={breakfast:'فطور',lunch:'غداء',dinner:'عشاء',snack:'وجبة خفيفة'};
+var REF={iron:18,calcium:1000,vitc:90,fiber:30};
+var fastTimer=null;
+function $(id){return document.getElementById(id);}
+function get(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function num(v){var n=parseFloat(v);return isFinite(n)?n:0;}
+function pad(n){return (n<10?'0':'')+n;}
+function fmtDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function today(){return fmtDate(new Date());}
+function keyDate(){return $('diaryDate').value||today();}
+function foods(){return get('mt_foods',FOODS);}
+function diary(){return get('mt_diary',{});}
+function r1(n){return Math.round(n*10)/10;}
+function buildFoodSelect(){var s=$('dbSelect'),f=foods(),i,o;s.textContent='';for(i=0;i<f.length;i++){o=document.createElement('option');o.value=String(i);o.textContent=f[i].name; s.appendChild(o);} }
+function fillFrom(food){$('foodName').value=food.name;$('foodCal').value=food.cal;$('foodProtein').value=food.p;$('foodCarbs').value=food.c;$('foodFat').value=food.f;$('microIron').value=food.iron;$('microCalcium').value=food.calcium;$('microVitC').value=food.vitc;$('microFiber').value=food.fiber;$('servingQty').value=1;}
+function clearFood(){['foodName','foodCal','foodProtein','foodCarbs','foodFat','microIron','microCalcium','microVitC','microFiber'].forEach(function(id){$(id).value=id==='foodName'?'':0;});$('servingQty').value=1;}
+function showGoal(p){$('goalOut').textContent=Math.round(p.gcal);$('macroOut').textContent='بروتين '+Math.round(p.gp)+' غ • كربوهيدرات '+Math.round(p.gc)+' غ • دهون '+Math.round(p.gf)+' غ في اليوم.';}
+function calcGoal(){
+var age=num($('age').value),h=num($('height').value),w=num($('weight').value),g=$('gender').value,act=num($('activity').value);
+if(age<10||age>100||h<100||h>230||w<30||w>300){$('goalOut').textContent='—';$('macroOut').textContent='تحقق من قيم العمر والطول والوزن قبل الحساب.';return;}
+var bmr=10*w+6.25*h-5*age+(g==='male'?5:-161);
+var gcal=bmr*act,gp=1.6*w,gf=0.25*gcal/9,gc=(gcal-gp*4-gf*9)/4;
+if(gc<0)gc=0;
+var p={age:age,gender:g,height:h,weight:w,activity:act,gcal:gcal,gp:gp,gc:gc,gf:gf};
+set('mt_profile',p);showGoal(p);renderSummary();
+}
+function addEntry(e){var d=keyDate(),dy=diary();if(!dy[d])dy[d]=[];dy[d].push(e);set('mt_diary',dy);}
+function deleteEntry(idx){var d=keyDate(),dy=diary();if(dy[d]){dy[d].splice(idx,1);set('mt_diary',dy);renderDiary();drawCharts();}}
+function renderDiary(){
+var d=keyDate(),dy=diary(),list=dy[d]||[],box=$('diaryList');box.textContent='';
+if(!list.length){var em=document.createElement('div');em.className='app-empty';em.textContent='لا توجد أصناف مسجّلة في هذا اليوم بعد.';box.appendChild(em);}
+list.forEach(function(it,idx){
+var row=document.createElement('div');row.className='app-dirow';
+var t=document.createElement('span');t.textContent=(MEALS[it.meal]||it.meal)+' • '+it.name+' • '+Math.round(it.cal)+' سعرة';
+var b=document.createElement('button');b.type='button';b.className='sec';b.id='delFood'+idx;b.textContent='حذف';b.addEventListener('click',function(){deleteEntry(idx);});
+row.appendChild(t);row.appendChild(b);box.appendChild(row);
+});
+renderSummary();
+}
+function renderSummary(){
+var d=keyDate(),list=diary()[d]||[],pr=get('mt_profile',{});
+var t={cal:0,p:0,c:0,f:0,iron:0,calcium:0,vitc:0,fiber:0};
+list.forEach(function(e){t.cal+=e.cal;t.p+=e.p;t.c+=e.c;t.f+=e.f;t.iron+=e.iron;t.calcium+=e.calcium;t.vitc+=e.vitc;t.fiber+=e.fiber;});
+$('sumCal').textContent=Math.round(t.cal);$('sumCalGoal').textContent=pr.gcal?('هدف '+Math.round(pr.gcal)):'—';
+$('sumProtein').textContent=Math.round(t.p);$('sumProteinGoal').textContent=pr.gp?('هدف '+Math.round(pr.gp)):'—';
+$('sumCarbs').textContent=Math.round(t.c);$('sumCarbsGoal').textContent=pr.gc?('هدف '+Math.round(pr.gc)):'—';
+$('sumFat').textContent=Math.round(t.f);$('sumFatGoal').textContent=pr.gf?('هدف '+Math.round(pr.gf)):'—';
+$('sumRemain').textContent=pr.gcal?Math.round(pr.gcal-t.cal):'—';
+var mp=$('microPanel');mp.textContent='';
+if(!list.length){mp.textContent='لا توجد بيانات مغذيات بعد.';return;}
+[['الحديد',t.iron,REF.iron,'مغ'],['الكالسيوم',t.calcium,REF.calcium,'مغ'],['فيتامين ج',t.vitc,REF.vitc,'مغ'],['الألياف',t.fiber,REF.fiber,'غ']].forEach(function(x){
+var s=document.createElement('span');s.className='app-pill';s.textContent=x[0]+': '+r1(x[1])+' '+x[3]+' ('+Math.round(x[1]/x[2]*100)+'%)';mp.appendChild(s);
+});
+}
+function addFood(){
+var name=$('foodName').value.trim(),qty=num($('servingQty').value)||1;
+if(!name){$('foodOut').textContent='الرجاء إدخال اسم الصنف أولاً.';return;}
+if(num($('foodCal').value)<0){$('foodOut').textContent='قيمة السعرات غير صحيحة.';return;}
+var e={meal:$('mealType').value,name:name,cal:num($('foodCal').value)*qty,p:num($('foodProtein').value)*qty,c:num($('foodCarbs').value)*qty,f:num($('foodFat').value)*qty,iron:num($('microIron').value)*qty,calcium:num($('microCalcium').value)*qty,vitc:num($('microVitC').value)*qty,fiber:num($('microFiber').value)*qty};
+addEntry(e);clearFood();$('foodOut').textContent='تمت إضافة "'+name+'" إلى '+MEALS[e.meal]+'.';renderDiary();drawCharts();
+}
+function searchFood(){
+var term=$('searchTerm').value.trim(),box=$('searchResults'),f=foods();
+box.textContent='';
+if(!term){box.textContent='اكتب كلمة للبحث في قاعدة الأطعمة.';return;}
+var hits=f.map(function(x,i){return {x:x,i:i};}).filter(function(o){return o.x.name.indexOf(term)!==-1;});
+if(!hits.length){box.textContent='لا نتائج مطابقة في قاعدة الأطعمة.';return;}
+hits.forEach(function(o){var row=document.createElement('div');row.className='app-dirow';var s=document.createElement('span');s.textContent=o.x.name+' • '+o.x.cal+' سعرة';var b=document.createElement('button');b.type='button';b.className='sec';b.id='addSrc'+o.i;b.textContent='اختر';b.addEventListener('click',function(){$('dbSelect').value=String(o.i);fillFrom(o.x);$('foodOut').textContent='تم تعبئة الحقول بالصنف: '+o.x.name+'.';});row.appendChild(s);row.appendChild(b);box.appendChild(row);});
+}
+function barcodeLookup(){
+var code=$('barcode').value.trim(),f=foods(),hit=null;
+for(var i=0;i<f.length;i++){if(f[i].code===code){hit=f[i];break;}}
+if(!hit){$('barcodeOut').textContent='لم يُعثر على صنف بهذا الباركود في القاعدة المدمجة.';return;}
+fillFrom(hit);$('barcodeOut').textContent='تم العثور على: '+hit.name+'. راجع الحقول ثم أضف الصنف.';
+}
+function addWater(){var d=keyDate(),w=get('mt_water',{});w[d]=(w[d]||0)+num($('waterAmount').value);set('mt_water',w);renderWater();drawCharts();}
+function renderWater(){var d=keyDate(),w=get('mt_water',{})[d]||0;$('waterOut').textContent='ماء اليوم: '+Math.round(w)+' مل ('+r1(w/250)+' كوب من أصل 8).';}
+function addWeight(){var kg=num($('weightLog').value);if(kg<30||kg>300){$('weightOut').textContent='أدخل وزناً بين 30 و300 كجم.';return;}var arr=get('mt_weights',[]);arr.push({date:keyDate(),kg:kg});set('mt_weights',arr);renderWeight();drawCharts();}
+function renderWeight(){var arr=get('mt_weights',[]);if(!arr.length){$('weightOut').textContent='لا يوجد وزن مسجّل بعد.';return;}var last=arr[arr.length-1];var first=arr[0];var diff=arr.length>1?(last.kg-first.kg):0;$('weightOut').textContent='آخر وزن: '+last.kg+' كجم ('+last.date+') • عدد القياسات: '+arr.length+' • التغير: '+r1(diff)+' كجم.';}
+function chartBase(cv){var ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);ctx.fillStyle='#141414';ctx.fillRect(0,0,cv.width,cv.height);return ctx;}
+function emptyMsg(ctx,cv,msg){ctx.fillStyle='#8a8a8a';ctx.textAlign='center';ctx.font='13px sans-serif';ctx.fillText(msg,cv.width/2,cv.height/2);}
+function drawCal(){
+var cv=$('calChart'),ctx=chartBase(cv),dy=diary(),pr=get('mt_profile',{}),goal=pr.gcal||0,data=[],i;
+for(i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var s=fmtDate(d),tot=0;(dy[s]||[]).forEach(function(e){tot+=e.cal;});data.push({l:s.slice(5),v:tot});}
+var max=goal,any=false;data.forEach(function(x){if(x.v>max)max=x.v;if(x.v>0)any=true;});if(max<=0)max=100;
+var pad=30,base=cv.height-20,bw=(cv.width-pad*2)/data.length;
+data.forEach(function(x,idx){var bh=(x.v/max)*(base-16),bx=pad+idx*bw+bw*0.18,bwid=bw*0.64;ctx.fillStyle=(goal>0&&x.v>goal)?'#e06666':'#d4af37';ctx.fillRect(bx,base-bh,bwid,bh);ctx.fillStyle='#c9c9c9';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(x.l,bx+bwid/2,cv.height-6);if(x.v>0)ctx.fillText(String(Math.round(x.v)),bx+bwid/2,base-bh-3);});
+if(goal>0){var gy=base-(goal/max)*(base-16);ctx.strokeStyle='#7fd1c0';ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(cv.width-pad,gy);ctx.stroke();ctx.fillStyle='#7fd1c0';ctx.textAlign='left';ctx.fillText('الهدف '+Math.round(goal),pad,gy-3);}
+if(!any)emptyMsg(ctx,cv,'لا توجد بيانات سعرات بعد');
+}
+function drawWeight(){
+var cv=$('weightChart'),ctx=chartBase(cv),arr=get('mt_weights',[]).slice(-10);
+if(arr.length<2){emptyMsg(ctx,cv,'سجّل وزنين على الأقل لعرض الاتجاه');return;}
+var vals=arr.map(function(a){return a.kg;}),mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mx===mn){mx=mn+1;mn=mn-1;}
+var pad=30,top=16,bot=cv.height-20,tx=(cv.width-pad*2)/(arr.length-1);
+ctx.strokeStyle='#d4af37';ctx.lineWidth=2;ctx.beginPath();
+arr.forEach(function(a,i){var px=pad+i*tx,py=bot-((a.kg-mn)/(mx-mn))*(bot-top);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);});
+ctx.stroke();
+ctx.fillStyle='#d4af37';
+arr.forEach(function(a,i){var px=pad+i*tx,py=bot-((a.kg-mn)/(mx-mn))*(bot-top);ctx.beginPath();ctx.arc(px,py,3,0,6.3);ctx.fill();ctx.fillStyle='#c9c9c9';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(a.kg,px,py-7);ctx.fillStyle='#d4af37';});
+ctx.fillStyle='#c9c9c9';ctx.textAlign='center';ctx.fillText(arr[0].date.slice(5),pad,cv.height-6);ctx.fillText(arr[arr.length-1].date.slice(5),cv.width-pad,cv.height-6);
+}
+function drawWater(){
+var cv=$('waterChart'),ctx=chartBase(cv),wm=get('mt_water',{}),goal=2000,data=[],i,any=false;
+for(i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var s=fmtDate(d);var v=wm[s]||0;if(v>0)any=true;data.push({l:s.slice(5),v:v});}
+var max=goal;data.forEach(function(x){if(x.v>max)max=x.v;});
+var pad=30,base=cv.height-20,bw=(cv.width-pad*2)/data.length;
+data.forEach(function(x,idx){var bh=(x.v/max)*(base-16),bx=pad+idx*bw+bw*0.18,bwid=bw*0.64;ctx.fillStyle=x.v>=goal?'#7fd1c0':'#c9a13b';ctx.fillRect(bx,base-bh,bwid,bh);ctx.fillStyle='#c9c9c9';ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(x.l,bx+bwid/2,cv.height-6);});
+var gy=base-(goal/max)*(base-16);ctx.strokeStyle='#7fd1c0';ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(cv.width-pad,gy);ctx.stroke();
+if(!any)emptyMsg(ctx,cv,'لا توجد بيانات ماء بعد');
+}
+function drawCharts(){drawCal();drawWeight();drawWater();}
+function renderRecipes(){var sel=$('recipeSelect'),arr=get('mt_recipes',[]);sel.textContent='';if(!arr.length){var o=document.createElement('option');o.value='';o.textContent='لا وصفات';sel.appendChild(o);$('recipeOut').textContent='لا توجد وصفات محفوظة بعد.';return;}arr.forEach(function(r,i){var op=document.createElement('option');op.value=String(i);op.textContent=r.name+' ('+r.cal+' سعرة)';sel.appendChild(op);});$('recipeOut').textContent='عدد الوصفات المحفوظة: '+arr.length+'.';}
+function saveRecipe(){var name=$('recipeName').value.trim();if(!name){$('recipeOut').textContent='أدخل اسم الوصفة قبل الحفظ.';return;}var arr=get('mt_recipes',[]);arr.push({name:name,cal:num($('recipeCal').value),p:num($('recipeProtein').value),c:num($('recipeCarbs').value),f:num($('recipeFat').value)});set('mt_recipes',arr);$('recipeName').value='';renderRecipes();$('recipeOut').textContent='تم حفظ الوصفة: '+name+'.';}
+function addRecipeToDiary(){var arr=get('mt_recipes',[]),i=$('recipeSelect').value;if(i===''||!arr[i]){$('recipeOut').textContent='اختر وصفة محفوظة أولاً.';return;}var r=arr[i];addEntry({meal:$('mealType').value,name:r.name,cal:r.cal,p:r.p,c:r.c,f:r.f,iron:0,calcium:0,vitc:0,fiber:0});renderDiary();drawCharts();$('recipeOut').textContent='تمت إضافة الوصفة "'+r.name+'" إلى '+MEALS[$('mealType').value]+'.';}
+function deleteRecipe(){var arr=get('mt_recipes',[]),i=$('recipeSelect').value;if(i===''||!arr[i]){$('recipeOut').textContent='اختر وصفة لحذفها.';return;}var n=arr[i].name;arr.splice(i,1);set('mt_recipes',arr);renderRecipes();$('recipeOut').textContent='تم حذف الوصفة: '+n+'.';}
+function startFast(){var h=num($('fastHours').value);if(h<=0||h>72){$('fastOut').textContent='أدخل عدد ساعات بين 1 و72.';return;}set('mt_fast',{start:Date.now(),hours:h});tickFast();}
+function stopFast(){set('mt_fast',null);if(fastTimer){clearInterval(fastTimer);fastTimer=null;}$('fastOut').textContent='تم إيقاف الصيام وإعادة ضبط المؤقت.';}
+function tickFast(){if(fastTimer){clearInterval(fastTimer);fastTimer=null;}var f=get('mt_fast',null);if(!f){$('fastOut').textContent='لم يبدأ أي صيام.';return;}fastTimer=setInterval(updateFast,1000);updateFast();}
+function updateFast(){var f=get('mt_fast',null);if(!f){if(fastTimer){clearInterval(fastTimer);fastTimer=null;}$('fastOut').textContent='لم يبدأ أي صيام.';return;}var el=Math.floor((Date.now()-f.start)/1000);var need=f.hours*3600,rem=need-el;var eh=Math.floor(el/3600),em=Math.floor((el%3600)/60);if(rem<=0){$('fastOut').textContent='اكتمل الصيام! المدة المنقضية '+eh+' س '+em+' د من أصل '+f.hours+' ساعة.';}else{var rh=Math.floor(rem/3600),rm=Math.floor((rem%3600)/60);$('fastOut').textContent='الصيام جارٍ: انقضى '+eh+' س '+em+' د • المتبقي '+rh+' س '+rm+' د من أصل '+f.hours+' ساعة.';}}
+function collect(){return {profile:get('mt_profile',{}),diary:diary(),water:get('mt_water',{}),weights:get('mt_weights',[]),recipes:get('mt_recipes',[])};}
+function apply(data){if(!data||typeof data!=='object')throw new Error('bad');if(data.profile)set('mt_profile',data.profile);if(data.diary)set('mt_diary',data.diary);if(data.water)set('mt_water',data.water);if(data.weights)set('mt_weights',data.weights);if(data.recipes)set('mt_recipes',data.recipes);var p=get('mt_profile',{});if(p.age){$('age').value=p.age;$('gender').value=p.gender;$('height').value=p.height;$('weight').value=p.weight;$('activity').value=String(p.activity);if(p.gcal)showGoal(p);}renderDiary();renderWater();renderWeight();renderRecipes();drawCharts();}
+function csvq(s){s=String(s);if(s.indexOf(',')!==-1||s.indexOf('"')!==-1||s.indexOf('\n')!==-1){return '"'+s.replace(/"/g,'""')+'"';}return s;}
+function exportJson(){$('importArea').value=JSON.stringify(collect(),null,1);$('ioOut').textContent='تم تجهيز بيانات JSON في المربع. انسخها للاحتفاظ بها.';}
+function exportCsv(){var dy=diary(),lines=['date,meal,name,cal,protein,carbs,fat,iron,calcium,vitaminC,fiber'];Object.keys(dy).sort().forEach(function(d){dy[d].forEach(function(e){lines.push([d,e.meal,csvq(e.name),r1(e.cal),r1(e.p),r1(e.c),r1(e.f),r1(e.iron),r1(e.calcium),r1(e.vitc),r1(e.fiber)].join(','));});});$('importArea').value=lines.join('\n');$('ioOut').textContent='تم تجهيز بيانات CSV في المربع. انسخها للاحتفاظ بها.';}
+function parseCsvLine(line){var out=[],cur='',q=false,i,ch;for(i=0;i<line.length;i++){ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}else{if(ch==='"')q=true;else if(ch===','){out.push(cur);cur='';}else cur+=ch;}}out.push(cur);return out;}
+function importData(){
+var txt=$('importArea').value.trim();if(!txt){$('ioOut').textContent='مربع الاستيراد فارغ.';return;}
+if(txt.charAt(0)==='{'){try{apply(JSON.parse(txt));$('ioOut').textContent='تم استيراد بيانات JSON بنجاح.';}catch(e){$('ioOut').textContent='فشل استيراد JSON: الصيغة غير صحيحة.';}return;}
+var lines=txt.split(/\r?\n/).filter(function(l){return l.trim()!=='';});
+if(lines.length<2){$('ioOut').textContent='ملف CSV لا يحتوي على صفوف بيانات.';return;}
+var added=0,dy=diary();
+for(var i=1;i<lines.length;i++){var p=parseCsvLine(lines[i]);if(p.length<4)continue;var d=p[0].trim();if(!d)continue;if(!dy[d])dy[d]=[];dy[d].push({meal:p[1].trim()||'snack',name:p[2].trim()||'صنف مستورد',cal:num(p[3]),p:num(p[4]),c:num(p[5]),f:num(p[6]),iron:num(p[7]),calcium:num(p[8]),vitc:num(p[9]),fiber:num(p[10])});added++;}
+if(!added){$('ioOut').textContent='لم يُستورد أي صف من CSV.';return;}
+set('mt_diary',dy);renderDiary();drawCharts();$('ioOut').textContent='تم استيراد '+added+' صفاً من CSV بنجاح.';
+}
+function b64(buf){var b=new Uint8Array(buf),s='',i;for(i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function unb64(str){var s=atob(str),b=new Uint8Array(s.length),i;for(i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+function deriveKey(pass,salt){var enc=new TextEncoder();return crypto.subtle.importKey('raw',enc.encode(pass),{name:'PBKDF2'},false,['deriveKey']).then(function(base){return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:120000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);});}
+function makeBackup(){
+var pass=$('backupPass').value;
+if(!pass||pass.length<4){$('ioOut').textContent='أدخل كلمة مرور من 4 أحرف على الأقل.';return;}
+if(!window.crypto||!crypto.subtle){$('ioOut').textContent='التشفير غير متاح في هذا المتصفح.';return;}
+var salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+deriveKey(pass,salt).then(function(key){return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(JSON.stringify(collect())));}).then(function(ct){$('backupArea').value=JSON.stringify({v:1,salt:b64(salt),iv:b64(iv),data:b64(ct)});$('ioOut').textContent='تم إنشاء نسخة مشفرة. احفظ النص في مكان آمن.';}).catch(function(){$('ioOut').textContent='تعذّر إنشاء النسخة المشفرة.';});
+}
+function restoreBackup(){
+var pass=$('backupPass').value,txt=$('backupArea').value.trim();
+if(!txt){$('ioOut').textContent='الصق نص النسخة المشفرة أولاً.';return;}
+if(!pass){$('ioOut').textContent='أدخل كلمة المرور لفك التشفير.';return;}
+if(!window.crypto||!crypto.subtle){$('ioOut').textContent='فك التشفير غير متاح في هذا المتصفح.';return;}
+var obj;try{obj=JSON.parse(txt);}catch(e){$('ioOut').textContent='نص النسخة غير صالح.';return;}
+var salt=unb64(obj.salt),iv=unb64(obj.iv);
+deriveKey(pass,salt).then(function(key){return crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,unb64(obj.data));}).then(function(pt){apply(JSON.parse(new TextDecoder().decode(pt)));$('ioOut').textContent='تمت استعادة النسخة بنجاح.';}).catch(function(){$('ioOut').textContent='فشل الاستعادة: كلمة المرور خاطئة أو النص تالف.';});
+}
+function bind(){
+$('calcGoal').addEventListener('click',calcGoal);
+$('addFood').addEventListener('click',addFood);
+$('searchFood').addEventListener('click',searchFood);
+$('barcodeBtn').addEventListener('click',barcodeLookup);
+$('loadDbFood').addEventListener('click',function(){var i=$('dbSelect').value,f=foods()[i];if(!f){$('foodOut').textContent='لا يوجد صنف محدد.';return;}fillFrom(f);$('foodOut').textContent='تم تعبئة الحقول بالصنف: '+f.name+'.';});
+$('addWater').addEventListener('click',addWater);
+$('addWeight').addEventListener('click',addWeight);
+$('refreshCharts').addEventListener('click',drawCharts);
+$('saveRecipe').addEventListener('click',saveRecipe);
+$('addRecipeToDiary').addEventListener('click',addRecipeToDiary);
+$('deleteRecipe').addEventListener('click',deleteRecipe);
+$('startFast').addEventListener('click',startFast);
+$('stopFast').addEventListener('click',stopFast);
+$('exportJson').addEventListener('click',exportJson);
+$('exportCsv').addEventListener('click',exportCsv);
+$('importData').addEventListener('click',importData);
+$('makeBackup').addEventListener('click',makeBackup);
+$('restoreBackup').addEventListener('click',restoreBackup);
+$('diaryDate').addEventListener('change',function(){renderDiary();renderWater();});
+}
+function init(){
+if(!get('mt_foods',null))set('mt_foods',FOODS);
+var p=get('mt_profile',{age:30,gender:'male',height:170,weight:70,activity:1.375});
+$('age').value=p.age;$('gender').value=p.gender;$('height').value=p.height;$('weight').value=p.weight;$('activity').value=String(p.activity);
+$('diaryDate').value=today();
+buildFoodSelect();bind();
+if(p.gcal)showGoal(p);
+renderDiary();renderWater();renderWeight();renderRecipes();drawCharts();tickFast();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
