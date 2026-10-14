@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاكي منصة الاشتراكات والفوترة: خطط، استخدام، فواتير وMRR | MDM1</title>
+<meta name="description" content="منصة محاكاة للاشتراكات والفوترة داخل المتصفح: خطط وأسعار، مشتركون، استخدام، فواتير بضريبة وتسويات نسبية، محاكاة دفع وتحصيل، ومؤشرات MRR مع حفظ محلي وتصدير.">
+<link rel="canonical" href="https://mdm1.org/apps/subscription-billing-simulator.html">
+<meta property="og:title" content="محاكي منصة الاشتراكات والفوترة: خطط، استخدام، فواتير وMRR">
+<meta property="og:description" content="منصة محاكاة للاشتراكات والفوترة داخل المتصفح: خطط وأسعار، مشتركون، استخدام، فواتير بضريبة وتسويات نسبية، محاكاة دفع وتحصيل، ومؤشرات MRR مع حفظ محلي وتصدير.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/subscription-billing-simulator.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .col{display:flex;flex-direction:column;gap:.25rem;min-width:150px;flex:1}
+.app h3{margin:1.1rem 0 .5rem;color:var(--gold-bright)}
+.app .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.75rem}
+.app .item{border:1px solid var(--gold-dim);border-radius:8px;padding:.6rem;background:rgba(255,255,255,.02)}
+.app .item h4{margin:0 0 .4rem;color:var(--gold)}
+.app .item button{margin-top:.4rem}
+.app .muted{color:var(--gold-dim);font-size:.85rem;margin:.1rem 0}
+.app .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem}
+.app .stat{border:1px solid var(--gold-dim);border-radius:8px;padding:.6rem;text-align:center}
+.app .stat .big{margin:.2rem 0 0}
+.app .badge.ok{color:#7bd88a;border-color:#7bd88a}
+.app .badge.warn{color:#ffcf6b;border-color:#ffcf6b}
+.app .badge.bad{color:#ff8a8a;border-color:#ff8a8a}
+.app textarea{min-height:160px;width:100%;box-sizing:border-box}
+.app .msg{min-height:1.2em;color:var(--gold-bright);font-size:.85rem;margin:.3rem 0}
+.app .divider{margin:1rem 0}
+.app .row{flex-wrap:wrap;gap:.5rem;align-items:flex-end}
+.app .row button{margin-top:.2rem}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منصة الاشتراكات والفوترة المتكاملة", "url": "https://mdm1.org/apps/subscription-billing-simulator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ بياناتي بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُحفظ الخطط والمشتركون والفواتير في localStorage داخل متصفحك، وتبقى متاحة عند إعادة فتح الصفحة. إن مسحت بيانات المتصفح فستُفقد السجلات."}}, {"@type": "Question", "name": "كيف تُحسب الفاتورة والاستخدام الإضافي؟", "acceptedAnswer": {"@type": "Answer", "text": "تُجمع قيمة الخطة الشهرية مع تكلفة الوحدات التي تتجاوز الكمية المشمولة، ثم تُطبَّق التسوية النسبية والضريبة والأرصدة الدائنة بهذا الترتيب للوصول إلى الإجمالي المستحق."}}, {"@type": "Question", "name": "ماذا يحدث عند الترقية أو التخفيض في منتصف الدورة؟", "acceptedAnswer": {"@type": "Answer", "text": "يحسب التطبيق ما تبقّى من الدورة ويوزّع قيمة الخطتين بنسبة الأيام المتبقية، فيظهر فرق موجب كرسوم أو فرق سالب كرصيد دائن يُخصم من الفاتورة التالية."}}, {"@type": "Question", "name": "كيف تعمل محاولات الدفع والتحصيل (dunning)؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك محاكاة دفع ناجح فتصبح الفاتورة مدفوعة والاشتراك نشطًا، أو محاكاة فشل تتحوّل معه الفاتورة إلى متأخرة، وبعد ثلاث محاولات فاشلة يُوقف الاشتراك."}}, {"@type": "Question", "name": "هل يحتاج التطبيق اتصالًا بالإنترنت أو حسابًا؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل بالكامل داخل المتصفح دون خادم أو شبكة أو تسجيل حساب، وجميع العمليات والتصدير تجري محليًا على جهازك."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منصة الاشتراكات والفوترة المتكاملة</h1>
+  <p class="page-sub">منصة محاكاة للاشتراكات والفوترة داخل المتصفح: خطط وأسعار، مشتركون، استخدام، فواتير بضريبة وتسويات نسبية، محاكاة دفع وتحصيل، ومؤشرات MRR مع حفظ محلي وتصدير.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot">
+<p>نعم، يمكنك إدارة اشتراكات وفوترة كاملة داخل متصفحك دون أي خادم أو اتصال بالشبكة. يمنحك هذا التطبيق لوحة متكاملة لبناء كتالوج الخطط والأسعار، وإضافة المشتركين وربطهم بالخطط المناسبة، ثم تسجيل الاستخدام حسب الوحدات واحتساب الرسوم الإضافية تلقائيًا. وعند توليد الفاتورة تُطبَّق الضريبة والأرصدة الدائنة والتسويات النسبية عند الترقية أو التخفيض، مع محاكاة محاولات الدفع الناجحة والفاشلة ومسار التحصيل (dunning) وتحديث حالة الاشتراك. تُحفظ جميع البيانات محليًا في localStorage، وتظهر مؤشرات الإيراد الشهري المتكرر (MRR) فورًا، مع إمكانية تصدير الفواتير كنص. كل ذلك بواجهة عربية واضحة تعمل دون تسجيل حساب أو ربط بأي خدمة خارجية.</p>
+
+<div class="stats">
+  <div class="stat"><div class="muted">الإيراد الشهري المتكرر (MRR)</div><div class="big" id="mrrValue">0</div></div>
+  <div class="stat"><div class="muted">الإيراد السنوي (ARR)</div><div class="big" id="arrValue">0</div></div>
+  <div class="stat"><div class="muted">اشتراكات نشطة</div><div class="big" id="activeCount">0</div></div>
+  <div class="stat"><div class="muted">فواتير غير محصّلة</div><div class="big" id="unpaidValue">0</div></div>
+  <div class="stat"><div class="muted">أرصدة دائنة</div><div class="big" id="creditValue">0</div></div>
+</div>
+<div class="divider"></div>
+
+<h3>الإعدادات المالية</h3>
+<div class="row">
+  <div class="col"><label class="label" for="taxRate">نسبة الضريبة (%)</label><input class="input" id="taxRate" type="number" min="0" max="100" step="0.5" value="15"></div>
+  <div class="col"><label class="label" for="currency">رمز العملة</label><input class="input" id="currency" type="text" maxlength="6" value="ر.س"></div>
+  <button id="saveSettings">حفظ الإعدادات المالية</button>
+</div>
+<div class="msg" id="settingsMsg"></div>
+
+<h3>كتالوج الخطط والأسعار</h3>
+<div class="row">
+  <div class="col"><label class="label" for="planName">اسم الخطة</label><input class="input" id="planName" type="text" placeholder="مثال: خطة النمو"></div>
+  <div class="col"><label class="label" for="planPrice">السعر الشهري</label><input class="input" id="planPrice" type="number" min="0" step="0.01"></div>
+  <div class="col"><label class="label" for="planIncluded">وحدات مشمولة</label><input class="input" id="planIncluded" type="number" min="0" step="1" value="0"></div>
+  <div class="col"><label class="label" for="planOverage">سعر الوحدة الإضافية</label><input class="input" id="planOverage" type="number" min="0" step="0.001" value="0"></div>
+  <button id="addPlan">إضافة خطة</button>
+</div>
+<div class="msg" id="planMsg"></div>
+<div class="grid" id="plansList"></div>
+<div class="divider"></div>
+
+<h3>المشتركون والاشتراكات</h3>
+<div class="row">
+  <div class="col"><label class="label" for="subName">اسم المشترك</label><input class="input" id="subName" type="text"></div>
+  <div class="col"><label class="label" for="subEmail">البريد الإلكتروني</label><input class="input" id="subEmail" type="email"></div>
+  <div class="col"><label class="label" for="subPlan">الخطة</label><select class="select" id="subPlan"></select></div>
+  <button id="addSub">إضافة مشترك</button>
+</div>
+<div class="msg" id="subMsg"></div>
+<div class="grid" id="subsList"></div>
+<div class="divider"></div>
+
+<h3>تسجيل الاستخدام (Metering)</h3>
+<div class="row">
+  <div class="col"><label class="label" for="usageSub">المشترك</label><select class="select" id="usageSub"></select></div>
+  <div class="col"><label class="label" for="usageQty">الكمية المستخدمة</label><input class="input" id="usageQty" type="number" min="0" step="1"></div>
+  <button id="recordUsage">تسجيل الاستخدام</button>
+</div>
+<div class="msg" id="usageMsg"></div>
+<div class="divider"></div>
+
+<h3>تغيير الخطة (ترقية / تخفيض بنسبية)</h3>
+<div class="row">
+  <div class="col"><label class="label" for="changeSub">المشترك</label><select class="select" id="changeSub"></select></div>
+  <div class="col"><label class="label" for="changePlan">الخطة الجديدة</label><select class="select" id="changePlan"></select></div>
+  <button id="changePlanBtn">تنفيذ تغيير الخطة بنسبية</button>
+</div>
+<div class="msg" id="changeMsg"></div>
+<div class="divider"></div>
+
+<h3>توليد الفواتير</h3>
+<div class="row">
+  <div class="col"><label class="label" for="invoiceSub">المشترك</label><select class="select" id="invoiceSub"></select></div>
+  <button id="genInvoice">توليد فاتورة للدورة الحالية</button>
+</div>
+<div class="msg" id="invoiceMsg"></div>
+<div class="grid" id="invoicesList"></div>
+<div class="divider"></div>
+
+<h3>تصدير الفواتير</h3>
+<div class="row">
+  <button id="exportBtn">تصدير الفواتير كنص</button>
+</div>
+<div class="msg" id="exportMsg"></div>
+<textarea class="textarea" id="exportArea" readonly placeholder="سيظهر نص الفواتير هنا بعد التصدير"></textarea>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ بياناتي بعد إغلاق الصفحة؟</h3><p>نعم، تُحفظ الخطط والمشتركون والفواتير في localStorage داخل متصفحك، وتبقى متاحة عند إعادة فتح الصفحة. إن مسحت بيانات المتصفح فستُفقد السجلات.</p><h3>كيف تُحسب الفاتورة والاستخدام الإضافي؟</h3><p>تُجمع قيمة الخطة الشهرية مع تكلفة الوحدات التي تتجاوز الكمية المشمولة، ثم تُطبَّق التسوية النسبية والضريبة والأرصدة الدائنة بهذا الترتيب للوصول إلى الإجمالي المستحق.</p><h3>ماذا يحدث عند الترقية أو التخفيض في منتصف الدورة؟</h3><p>يحسب التطبيق ما تبقّى من الدورة ويوزّع قيمة الخطتين بنسبة الأيام المتبقية، فيظهر فرق موجب كرسوم أو فرق سالب كرصيد دائن يُخصم من الفاتورة التالية.</p><h3>كيف تعمل محاولات الدفع والتحصيل (dunning)؟</h3><p>يمكنك محاكاة دفع ناجح فتصبح الفاتورة مدفوعة والاشتراك نشطًا، أو محاكاة فشل تتحوّل معه الفاتورة إلى متأخرة، وبعد ثلاث محاولات فاشلة يُوقف الاشتراك.</p><h3>هل يحتاج التطبيق اتصالًا بالإنترنت أو حسابًا؟</h3><p>لا، يعمل بالكامل داخل المتصفح دون خادم أو شبكة أو تسجيل حساب، وجميع العمليات والتصدير تجري محليًا على جهازك.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-14 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+var KEY='md1_billing_app_v1';
+var state=loadState();
+function loadState(){try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&o.plans){return o;}}}catch(e){}return seed();}
+function seed(){return {settings:{tax:15,currency:'ر.س'},plans:[{id:'p1',name:'الأساسية',price:99,included:1000,overage:0.05},{id:'p2',name:'المتقدمة',price:299,included:5000,overage:0.04},{id:'p3',name:'الاحترافية',price:999,included:20000,overage:0.03}],subs:[],invoices:[],seq:1,invSeq:1000};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function uid(){state.seq=(state.seq||1)+1;return 'x'+state.seq+'_'+Math.floor(Math.random()*1000);}
+function round(n){return Math.round((Number(n)||0)*100)/100;}
+function money(n){return round(n).toFixed(2)+' '+state.settings.currency;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function today(){var d=new Date();return d.toISOString().slice(0,10);}
+function $(id){return document.getElementById(id);}
+function msg(id,t){var e=$(id);if(e){e.textContent=t||'';}}
+function planById(id){for(var i=0;i<state.plans.length;i++){if(state.plans[i].id===id){return state.plans[i];}}return null;}
+function subById(id){for(var i=0;i<state.subs.length;i++){if(state.subs[i].id===id){return state.subs[i];}}return null;}
+function nextNum(){state.invSeq=(state.invSeq||1000)+1;return 'INV-'+state.invSeq;}
+function daysRemaining(start){var d=new Date(start+'T00:00:00');var now=new Date();var elapsed=Math.floor((now-d)/86400000);if(isNaN(elapsed)){return 30;}return Math.max(0,30-(elapsed%30));}
+function statusBadge(s){var cls='badge';if(s==='نشط'||s==='مدفوعة'){cls+=' ok';}else if(s==='متأخر'||s==='غير مدفوعة'){cls+=' warn';}else if(s==='موقوف'||s==='ملغي'){cls+=' bad';}return '<span class="'+cls+'">'+esc(s)+'</span>';}
+function renderDash(){var mrr=0,active=0,unpaid=0,credit=0;state.subs.forEach(function(s){if(s.status==='نشط'||s.status==='متأخر'){var p=planById(s.planId);if(p){mrr+=p.price;active++;}}credit+=(s.credit||0);});state.invoices.forEach(function(v){if(!v.paid&&v.status!=='ملغاة'){unpaid+=v.total;}});$('mrrValue').textContent=money(mrr);$('arrValue').textContent=money(mrr*12);$('activeCount').textContent=active;$('unpaidValue').textContent=money(unpaid);$('creditValue').textContent=money(credit);}
+function renderPlans(){var box=$('plansList');if(!state.plans.length){box.innerHTML='<div class="muted">لا توجد خطط بعد.</div>';return;}box.innerHTML=state.plans.map(function(p){var count=state.subs.filter(function(s){return s.planId===p.id;}).length;return '<div class="item"><h4>'+esc(p.name)+'</h4><div class="muted">السعر الشهري: '+money(p.price)+'</div><div class="muted">وحدات مشمولة: '+p.included+' | سعر الوحدة الإضافية: '+money(p.overage)+'</div><div class="muted">عدد المشتركين: '+count+'</div><button class="sec" id="delPlan_'+p.id+'">حذف الخطة</button></div>';}).join('');state.plans.forEach(function(p){var b=$('delPlan_'+p.id);if(b){b.addEventListener('click',function(){delPlan(p.id);});}});}
+function renderSubs(){var box=$('subsList');if(!state.subs.length){box.innerHTML='<div class="muted">لا يوجد مشتركون بعد.</div>';return;}box.innerHTML=state.subs.map(function(s){var p=planById(s.planId);return '<div class="item"><h4>'+esc(s.name)+' '+statusBadge(s.status)+'</h4><div class="muted">البريد: '+esc(s.email||'—')+'</div><div class="muted">الخطة: '+esc(p?p.name:'—')+'</div><div class="muted">استخدام الدورة الحالية: '+(s.usage||0)+' وحدة</div><div class="muted">تسوية نسبية معلّقة: '+money(s.proration||0)+'</div><div class="muted">رصيد دائن: '+money(s.credit||0)+'</div><div class="muted">بداية الدورة: '+esc(s.cycleStart)+'</div><button class="sec" id="delSub_'+s.id+'">حذف المشترك</button></div>';}).join('');state.subs.forEach(function(s){var b=$('delSub_'+s.id);if(b){b.addEventListener('click',function(){delSub(s.id);});}});}
+function renderInvoices(){var box=$('invoicesList');if(!state.invoices.length){box.innerHTML='<div class="muted">لا توجد فواتير بعد.</div>';return;}box.innerHTML=state.invoices.map(function(v){var lines='<div class="muted">الخطة: '+esc(v.planName)+' — قيمة الاشتراك: '+money(v.base)+'</div>'+(v.extra>0?'<div class="muted">استخدام إضافي ('+v.extra+' وحدة): '+money(v.overage)+'</div>':'')+(v.proration?'<div class="muted">تسوية نسبية: '+money(v.proration)+'</div>':'')+'<div class="muted">المجموع قبل الضريبة: '+money(v.subtotal)+'</div><div class="muted">الضريبة '+v.taxRate+'%: '+money(v.tax)+'</div>'+(v.credit?'<div class="muted">رصيد دائن مطبّق: -'+money(v.credit)+'</div>':'')+'<div><strong>الإجمالي المستحق: '+money(v.total)+'</strong></div>';var actions=(v.paid?'':'<button id="payOk_'+v.id+'">محاكاة دفع ناجح</button> <button class="sec" id="payFail_'+v.id+'">محاكاة فشل الدفع</button> ')+'<button class="sec" id="delInv_'+v.id+'">حذف الفاتورة</button>';return '<div class="item"><h4>'+esc(v.num)+' '+statusBadge(v.status)+'</h4><div class="muted">المشترك: '+esc(v.subName)+' — التاريخ: '+esc(v.date)+'</div>'+lines+'<div class="muted">محاولات الدفع: '+(v.attempts||0)+'</div><div class="row">'+actions+'</div></div>';}).join('');state.invoices.forEach(function(v){var ok=$('payOk_'+v.id),fail=$('payFail_'+v.id),del=$('delInv_'+v.id);if(ok){ok.addEventListener('click',function(){payInvoice(v.id,true);});}if(fail){fail.addEventListener('click',function(){payInvoice(v.id,false);});}if(del){del.addEventListener('click',function(){delInvoice(v.id);});}});}
+function fillSelects(){var subOpts='<option value="">— اختر مشتركًا —</option>'+state.subs.map(function(s){return '<option value="'+s.id+'">'+esc(s.name)+'</option>';}).join('');['usageSub','changeSub','invoiceSub'].forEach(function(id){var el=$(id);var cur=el.value;el.innerHTML=subOpts;el.value=cur;});var planOpts='<option value="">— اختر خطة —</option>'+state.plans.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('');['subPlan','changePlan'].forEach(function(id){var el=$(id);var cur=el.value;el.innerHTML=planOpts;el.value=cur;});}
+function renderAll(){fillSelects();renderDash();renderPlans();renderSubs();renderInvoices();}
+function addPlan(){var name=$('planName').value.trim();var price=parseFloat($('planPrice').value);var included=parseInt($('planIncluded').value,10)||0;var overage=parseFloat($('planOverage').value)||0;if(!name){msg('planMsg','أدخل اسم الخطة');return;}if(isNaN(price)||price<0){msg('planMsg','أدخل سعرًا شهريًا صحيحًا');return;}state.plans.push({id:uid(),name:name,price:round(price),included:included,overage:round(overage)});$('planName').value='';$('planPrice').value='';$('planIncluded').value='0';$('planOverage').value='0';save();renderAll();msg('planMsg','تمت إضافة الخطة '+name);}
+function delPlan(id){var used=state.subs.some(function(s){return s.planId===id;});if(used){msg('planMsg','لا يمكن حذف خطة مرتبطة بمشتركين حاليًا');return;}state.plans=state.plans.filter(function(p){return p.id!==id;});save();renderAll();msg('planMsg','تم حذف الخطة');}
+function addSub(){var name=$('subName').value.trim(),email=$('subEmail').value.trim(),planId=$('subPlan').value;if(!name){msg('subMsg','أدخل اسم المشترك');return;}if(!planId||!planById(planId)){msg('subMsg','اختر خطة صحيحة');return;}state.subs.push({id:uid(),name:name,email:email,planId:planId,status:'نشط',usage:0,credit:0,proration:0,cycleStart:today(),dunning:0});$('subName').value='';$('subEmail').value='';save();renderAll();msg('subMsg','تمت إضافة المشترك '+name);}
+function delSub(id){state.subs=state.subs.filter(function(s){return s.id!==id;});save();renderAll();msg('subMsg','تم حذف المشترك');}
+function recordUsage(){var subId=$('usageSub').value,qty=parseFloat($('usageQty').value);var sub=subById(subId);if(!sub){msg('usageMsg','اختر مشتركًا');return;}if(isNaN(qty)||qty<=0){msg('usageMsg','أدخل كمية استخدام أكبر من صفر');return;}sub.usage=round((sub.usage||0)+qty);$('usageQty').value='';save();renderAll();msg('usageMsg','تم تسجيل '+qty+' وحدة للمشترك '+sub.name);}
+function changePlan(){var sub=subById($('changeSub').value),np=planById($('changePlan').value);var op=sub?planById(sub.planId):null;if(!sub){msg('changeMsg','اختر مشتركًا');return;}if(!np){msg('changeMsg','اختر الخطة الجديدة');return;}if(sub.planId===np.id){msg('changeMsg','الخطة الجديدة مطابقة للخطة الحالية');return;}var frac=daysRemaining(sub.cycleStart)/30;var oldCredit=op?round(op.price*frac):0;var newCharge=round(np.price*frac);var net=round(newCharge-oldCredit);if(net<0){sub.credit=round((sub.credit||0)+(-net));}else{sub.proration=round((sub.proration||0)+net);}sub.planId=np.id;save();renderAll();msg('changeMsg','تم التغيير بنسبية: قيمة الخطة الجديدة '+money(newCharge)+' مقابل رصيد الخطة السابقة '+money(oldCredit)+' → الصافي '+money(net)+' ('+Math.round(frac*100)+'% من الدورة)');}
+function genInvoice(){var sub=subById($('invoiceSub').value);if(!sub){msg('invoiceMsg','اختر مشتركًا');return;}if(sub.status==='ملغي'){msg('invoiceMsg','لا يمكن إصدار فاتورة لاشتراك ملغي');return;}var p=planById(sub.planId);if(!p){msg('invoiceMsg','الخطة المرتبطة غير موجودة');return;}var qty=sub.usage||0;var extra=Math.max(0,qty-p.included);var overage=round(extra*p.overage);var proration=round(sub.proration||0);var subtotal=round(p.price+overage+proration);if(subtotal<0){subtotal=0;}var tax=round(subtotal*state.settings.tax/100);var gross=round(subtotal+tax);var creditUsed=round(Math.min(sub.credit||0,gross));var total=round(gross-creditUsed);sub.credit=round((sub.credit||0)-creditUsed);var inv={id:uid(),num:nextNum(),subId:sub.id,subName:sub.name,date:today(),planName:p.name,base:p.price,qty:qty,included:p.included,extra:extra,overage:overage,proration:proration,subtotal:subtotal,taxRate:state.settings.tax,tax:tax,credit:creditUsed,total:total,paid:false,attempts:0,status:'غير مدفوعة'};state.invoices.unshift(inv);sub.usage=0;sub.proration=0;save();renderAll();msg('invoiceMsg','تم إنشاء الفاتورة '+inv.num+' بإجمالي '+money(total));}
+function payInvoice(id,success){var inv=null;for(var i=0;i<state.invoices.length;i++){if(state.invoices[i].id===id){inv=state.invoices[i];break;}}if(!inv){return;}if(inv.paid){msg('invoiceMsg','هذه الفاتورة مدفوعة مسبقًا');return;}var sub=subById(inv.subId);if(success){inv.paid=true;inv.status='مدفوعة';if(sub){sub.status='نشط';sub.dunning=0;}msg('invoiceMsg','تم تسجيل الدفع بنجاح للفاتورة '+inv.num);}else{inv.attempts=(inv.attempts||0)+1;if(sub){sub.dunning=(sub.dunning||0)+1;if(sub.dunning>=3){inv.status='ملغاة';sub.status='موقوف';}else{inv.status='متأخرة';sub.status='متأخر';}}else{inv.status='متأخرة';}msg('invoiceMsg','فشل الدفع للفاتورة '+inv.num+' — المحاولة رقم '+inv.attempts);}save();renderAll();}
+function delInvoice(id){state.invoices=state.invoices.filter(function(v){return v.id!==id;});save();renderAll();msg('invoiceMsg','تم حذف الفاتورة');}
+function manualCopy(area){var ok=false;try{area.focus();area.select();ok=document.execCommand('copy');}catch(e){ok=false;}if(ok){msg('exportMsg','تم نسخ نص الفواتير إلى الحافظة');}else{msg('exportMsg','تعذّر النسخ التلقائي؛ النص معروض بالأسفل ويمكنك نسخه يدويًا.');}}
+function exportInvoices(){var area=$('exportArea');if(!state.invoices.length){area.value='';msg('exportMsg','لا توجد فواتير للتصدير');return;}var lines=['تصدير الفواتير','التاريخ: '+today(),'العملة: '+state.settings.currency,'--------------------'];state.invoices.forEach(function(v){lines.push(v.num+' | '+v.subName+' | '+v.date+' | '+v.status+' | الإجمالي: '+money(v.total));});var text=lines.join('\n');area.value=text;if(navigator.clipboard&&navigator.clipboard.writeText){try{navigator.clipboard.writeText(text).then(function(){msg('exportMsg','تم نسخ نص الفواتير إلى الحافظة');},function(){manualCopy(area);});}catch(e){manualCopy(area);}}else{manualCopy(area);}}
+function init(){$('taxRate').value=state.settings.tax;$('currency').value=state.settings.currency;$('saveSettings').addEventListener('click',function(){var t=parseFloat($('taxRate').value),c=$('currency').value.trim();if(isNaN(t)||t<0||t>100){msg('settingsMsg','أدخل نسبة ضريبة بين 0 و 100');return;}state.settings.tax=round(t);if(c){state.settings.currency=c;}save();renderAll();msg('settingsMsg','تم حفظ الإعدادات المالية');});$('addPlan').addEventListener('click',addPlan);$('addSub').addEventListener('click',addSub);$('recordUsage').addEventListener('click',recordUsage);$('changePlanBtn').addEventListener('click',changePlan);$('genInvoice').addEventListener('click',genInvoice);$('exportBtn').addEventListener('click',exportInvoices);renderAll();}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+</body>
+</html>
