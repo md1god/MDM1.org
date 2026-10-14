@@ -6,7 +6,7 @@ for u in ("https://mdm1.org/games/", "https://mdm1.org/games/10363-bloxorz.html"
     try:
         print("CHECK", u, urllib.request.urlopen(u, timeout=60).status)
     except Exception as e:
-        print("CHECK", u, "FAILED", e)
+        print("CHECK", u, "FAILED", e); sys.exit(2)
 xml = urllib.request.urlopen("https://mdm1.org/sitemap-games.xml", timeout=60).read().decode()
 urls = re.findall(r"<loc>([^<]+)</loc>", xml)
 print("urls", len(urls))
