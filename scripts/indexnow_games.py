@@ -2,6 +2,11 @@
 """One-off: tell Bing/Yandex (IndexNow) about the generated game pages, in batches of 10,000."""
 import json, re, sys, urllib.request
 KEY = "14aaa353c0894bc3f8a8e7855831190e"
+for u in ("https://mdm1.org/games/", "https://mdm1.org/games/10363-bloxorz.html", "https://mdm1.org/sitemap-games.xml"):
+    try:
+        print("CHECK", u, urllib.request.urlopen(u, timeout=60).status)
+    except Exception as e:
+        print("CHECK", u, "FAILED", e)
 xml = urllib.request.urlopen("https://mdm1.org/sitemap-games.xml", timeout=60).read().decode()
 urls = re.findall(r"<loc>([^<]+)</loc>", xml)
 print("urls", len(urls))
