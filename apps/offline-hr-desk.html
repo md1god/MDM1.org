@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق إدارة موارد بشرية | MDM1</title>
+<meta name="description" content="تطبيق كامل لإدارة الموارد البشرية يعمل محلياً داخل المتصفح مع الحضور والإجازات والرواتب والتقارير بدون خادم">
+<link rel="canonical" href="https://mdm1.org/apps/offline-hr-desk.html">
+<meta property="og:title" content="تطبيق إدارة موارد بشرية">
+<meta property="og:description" content="تطبيق كامل لإدارة الموارد البشرية يعمل محلياً داخل المتصفح مع الحضور والإجازات والرواتب والتقارير بدون خادم">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-hr-desk.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; font-size: 14px; line-height: 1.8; }
+.app .divider { margin: 24px 0 12px; font-weight: bold; color: var(--gold); font-size: 16px; }
+.app .card { padding: 16px; border: 1px solid var(--gold-dim); border-radius: 8px; background: linear-gradient(180deg, rgba(255,215,0,0.04), transparent); }
+.app .row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; align-items: flex-end; }
+.app .field { flex: 1 1 220px; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+.app .field.full { flex: 1 1 100%; }
+.app .label { color: var(--light); opacity: 0.9; }
+.app .input, .app .select, .app .textarea { background: var(--dark); color: var(--light); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 8px 10px; }
+.app .textarea { resize: vertical; }
+.app .out { margin-top: 12px; padding: 12px; border: 1px dashed var(--gold-dim); border-radius: 6px; }
+.app .out.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.app .big { font-size: 22px; color: var(--gold-bright); font-weight: bold; }
+.app .num { color: var(--gold-bright); font-weight: bold; }
+.app .tbl { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+.app .tbl th, .app .tbl td { border: 1px solid var(--gold-dim); padding: 8px 10px; text-align: right; }
+.app .tbl thead { background: rgba(255,215,0,0.08); }
+.app .file { max-width: 320px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مكتب موارد بشرية متكامل", "url": "https://mdm1.org/apps/offline-hr-desk.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل داخل المتصفح ويخزن جميع البيانات في localStorage بدون خادم أو اتصال خارجي."}}, {"@type": "Question", "name": "هل يمكن تصدير واستيراد البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يوفر قسم لوحة المؤشرات خيار تصدير نسخة احتياطية بصيغة نصية مع إمكانية استيرادها لاحقاً."}}, {"@type": "Question", "name": "هل يتم حساب الإجازات تلقائياً؟", "acceptedAnswer": {"@type": "Answer", "text": "يحسب التطبيق عدد أيام الإجازة بناءً على التواريخ المدخلة ويعرض حالة الطلب مع أرصدة افتراضية قابلة للمراجعة."}}, {"@type": "Question", "name": "هل تدعم الحاسبة الضرائب والخصومات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تحسب صافي الراتب بعد جمع البدلات والعلاوات وطرح الخصومات ونسبة الضريبة المدخلة."}}, {"@type": "Question", "name": "هل يمكن إدارة مهام التهيئة وإنهاء الخدمة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن إضافة مهام لكل حالة وتحديد المسؤول ووضع علامة منجز لتتبع الإنجاز بسهولة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مكتب موارد بشرية متكامل</h1>
+  <p class="page-sub">تطبيق كامل لإدارة الموارد البشرية يعمل محلياً داخل المتصفح مع الحضور والإجازات والرواتب والتقارير بدون خادم</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، هذا تطبيق مكتمل لمكتب الموارد البشرية يعمل بالكامل داخل المتصفح ويخزن جميع البيانات محلياً عبر localStorage دون الحاجة لحسابات أو خادم. يهدف التطبيق إلى تنظيم ملفات الموظفين وجهات الاتصال اليومية وإدارة الحضور والانصراف والطلبات مع احتساب أرصدة الإجازات والموافقات عليها. كما يوفر حاسبة رواتب مبسطة لاحتساب صافي الراتب بعد الخصومات والضريبة وفق نسب مخصصة، وقوائم مهام للتهيئة عند تعيين موظف جديد وإنهاء الخدمة عند مغادرته مع متابعة حالتها. إضافة إلى سجل تقييم الأداء ومخزون الأصول الثابتة ولوحة مؤشرات حية تعرض إحصائيات فورية مع إمكانية تصدير نسخة احتياطية من جميع البيانات بصيغة نصية للتحميل أو الحفظ آلياً، مع تصميم يتوافق مع الثيم الموجود ويعمل بالاتجاه العربي من اليمين لليسار.</p>
+
+<div class="app">
+  <div class="divider">إدارة الموظفين</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="empId">رقم الموظف</label><input class="input" id="empId" placeholder="مثال: 1001"></div>
+      <div class="field"><label class="label" for="empName">الاسم الكامل</label><input class="input" id="empName" placeholder="الاسم رباعي"></div>
+      <div class="field"><label class="label" for="empDept">القسم</label><input class="input" id="empDept" placeholder="القسم"></div>
+      <div class="field"><label class="label" for="empJob">المسمى الوظيفي</label><input class="input" id="empJob" placeholder="المسمى"></div>
+      <div class="field"><label class="label" for="empStatus">الحالة</label><select class="select" id="empStatus"><option value="نشط">نشط</option><option value="موقوف">موقوف</option><option value="مغادر">مغادر</option></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label class="label" for="empEmail">البريد الإلكتروني</label><input class="input" id="empEmail" placeholder="example@site.com"></div>
+      <div class="field"><label class="label" for="empPhone">رقم الجوال</label><input class="input" id="empPhone" placeholder="05xxxxxxxx"></div>
+      <div class="field"><label class="label" for="empHire">تاريخ التعيين</label><input class="input" type="date" id="empHire"></div>
+      <div class="field"><label class="label" for="empBase">الراتب الأساسي</label><input class="input" type="number" id="empBase" min="0" step="0.01" placeholder="0.00"></div>
+    </div>
+    <div class="row">
+      <button class="button" id="empSave">حفظ موظف جديد</button>
+      <button class="button sec" id="empClear">مسح النموذج</button>
+    </div>
+    <div class="out" id="empOut">لا يوجد موظفين بعد.</div>
+    <table class="tbl" id="empTbl"><thead><tr><th>رقم</th><th>الاسم</th><th>القسم</th><th>المسمى</th><th>الحالة</th><th>الجوال</th><th>التعيين</th><th>أساسي</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">جهات الاتصال</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="ctName">الاسم</label><input class="input" id="ctName" placeholder="اسم جهة الاتصال"></div>
+      <div class="field"><label class="label" for="ctOrg">الجهة</label><input class="input" id="ctOrg" placeholder="اسم المؤسسة"></div>
+      <div class="field"><label class="label" for="ctRole">الصفة</label><input class="input" id="ctRole" placeholder="مدير / مسؤول"></div>
+      <div class="field"><label class="label" for="ctPhone">الجوال</label><input class="input" id="ctPhone" placeholder="05xxxxxxxx"></div>
+      <div class="field"><label class="label" for="ctEmail">البريد</label><input class="input" id="ctEmail" placeholder="email@org.com"></div>
+    </div>
+    <div class="row"><button class="button" id="ctSave">إضافة جهة اتصال</button><button class="button sec" id="ctClear">مسح</button></div>
+    <div class="out" id="ctOut">لا توجد جهات اتصال.</div>
+    <table class="tbl" id="ctTbl"><thead><tr><th>الاسم</th><th>الجهة</th><th>الصفة</th><th>الجوال</th><th>البريد</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">الحضور والانصراف اليومي</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="attEmp">اختيار موظف</label><select class="select" id="attEmp"></select></div>
+      <div class="field"><label class="label" for="attDate">التاريخ</label><input class="input" type="date" id="attDate"></div>
+      <div class="field"><label class="label" for="attIn">وقت الحضور</label><input class="input" type="time" id="attIn"></div>
+      <div class="field"><label class="label" for="attOut">وقت الانصراف</label><input class="input" type="time" id="attOut"></div>
+      <div class="field"><label class="label" for="attNote">ملاحظات</label><input class="input" id="attNote" placeholder="ملاحظات"></div>
+    </div>
+    <div class="row"><button class="button" id="attSave">تسجيل حضور / تحديث</button><button class="button sec" id="attClear">مسح</button></div>
+    <div class="out" id="attOut">لا يوجد تسجيل حضور لهذا اليوم بعد.</div>
+    <table class="tbl" id="attTbl"><thead><tr><th>الموظف</th><th>التاريخ</th><th>حضور</th><th>انصراف</th><th>ساعات</th><th>ملاحظات</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">الإجازات وأرصدة الموافقة</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="lvEmp">الموظف</label><select class="select" id="lvEmp"></select></div>
+      <div class="field"><label class="label" for="lvType">نوع الإجازة</label><select class="select" id="lvType"><option value="سنوية">سنوية</option><option value="مرضية">مرضية</option><option value="طارئة">طارئة</option><option value="غير مدفوعة">غير مدفوعة</option></select></div>
+      <div class="field"><label class="label" for="lvStart">بداية الإجازة</label><input class="input" type="date" id="lvStart"></div>
+      <div class="field"><label class="label" for="lvEnd">نهاية الإجازة</label><input class="input" type="date" id="lvEnd"></div>
+      <div class="field"><label class="label" for="lvDays">عدد الأيام</label><input class="input" type="number" id="lvDays" min="0.5" step="0.5" placeholder="1.0"></div>
+      <div class="field"><label class="label" for="lvNote">سبب الطلب</label><input class="input" id="lvNote" placeholder="سبب الإجازة"></div>
+    </div>
+    <div class="row"><button class="button" id="lvApply">طلب إجازة</button><button class="button sec" id="lvApprove">موافقة</button><button class="button sec" id="lvReject">رفض</button><button class="button sec" id="lvClear">مسح</button></div>
+    <div class="out" id="lvOut">رصيد الإجازات السنوية: 21 يوماً. الطلبات فارغة.</div>
+    <table class="tbl" id="lvTbl"><thead><tr><th>الموظف</th><th>النوع</th><th>بداية</th><th>نهاية</th><th>أيام</th><th>حالة</th><th>ملاحظات</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">حاسبة الرواتب والخصومات والضرائب البسيطة</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="salEmp">الموظف</label><select class="select" id="salEmp"></select></div>
+      <div class="field"><label class="label" for="salBase">الراتب الأساسي</label><input class="input" type="number" id="salBase" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label class="label" for="salAllow">بدلات</label><input class="input" type="number" id="salAllow" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label class="label" for="salBonus">علاوات</label><input class="input" type="number" id="salBonus" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label class="label" for="salDed">خصومات متنوعة</label><input class="input" type="number" id="salDed" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label class="label" for="salTaxRate">نسبة الضريبة %</label><input class="input" type="number" id="salTaxRate" min="0" step="0.01" max="100" placeholder="0.00"></div>
+    </div>
+    <div class="row"><button class="button" id="salCalc">احتساب صافي الراتب</button><button class="button sec" id="salClear">مسح</button></div>
+    <div class="out" id="salOut">
+      <div>الإجمالي قبل الضريبة: <span class="num" id="salGross">0.00</span></div>
+      <div>ضريبة مستحقة: <span class="num" id="salTax">0.00</span></div>
+      <div>إجمالي الخصومات: <span class="num" id="salTotalDed">0.00</span></div>
+      <div>صافي الراتب: <span class="big" id="salNet">0.00</span></div>
+    </div>
+  </div>
+
+  <div class="divider">قوائم مهام التهيئة وإنهاء الخدمة</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="taskEmp">الموظف</label><select class="select" id="taskEmp"></select></div>
+      <div class="field"><label class="label" for="taskType">نوع القائمة</label><select class="select" id="taskType"><option value="تهيئة">تهيئة</option><option value="إنهاء خدمة">إنهاء خدمة</option></select></div>
+      <div class="field"><label class="label" for="taskItem">مهمة جديدة</label><input class="input" id="taskItem" placeholder="وصف المهمة"></div>
+      <div class="field"><label class="label" for="taskAss">مسؤول المهمة</label><input class="input" id="taskAss" placeholder="اسم المسؤول"></div>
+    </div>
+    <div class="row"><button class="button" id="taskAdd">إضافة مهمة</button><button class="button sec" id="taskDone">وضع علامة منجز</button><button class="button sec" id="taskClear">مسح</button></div>
+    <div class="out" id="taskOut">لا توجد قوائم مهام مسجلة.</div>
+    <table class="tbl" id="taskTbl"><thead><tr><th>الموظف</th><th>النوع</th><th>المهمة</th><th>المسؤول</th><th>الحالة</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">سجل تقييمات الأداء</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="perfEmp">الموظف</label><select class="select" id="perfEmp"></select></div>
+      <div class="field"><label class="label" for="perfDate">تاريخ التقييم</label><input class="input" type="date" id="perfDate"></div>
+      <div class="field"><label class="label" for="perfEval">المقيّم</label><input class="input" id="perfEval" placeholder="اسم المقيم"></div>
+      <div class="field"><label class="label" for="perfScore">الدرجة / 10</label><input class="input" type="number" id="perfScore" min="0" max="10" step="0.1" placeholder="0.0"></div>
+      <div class="field full"><label class="label" for="perfNote">ملاحظات التقييم</label><textarea class="textarea" id="perfNote" rows="2" placeholder="نقاط القوة والتحسين"></textarea></div>
+    </div>
+    <div class="row"><button class="button" id="perfSave">حفظ تقييم</button><button class="button sec" id="perfClear">مسح</button></div>
+    <div class="out" id="perfOut">لا توجد تقييمات مسجلة.</div>
+    <table class="tbl" id="perfTbl"><thead><tr><th>الموظف</th><th>التاريخ</th><th>المقيم</th><th>الدرجة</th><th>ملاحظات</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">مخزون الأصول</div>
+  <div class="card">
+    <div class="row">
+      <div class="field"><label class="label" for="assetId">معرّف الأصل</label><input class="input" id="assetId" placeholder="AST-001"></div>
+      <div class="field"><label class="label" for="assetName">اسم الأصل</label><input class="input" id="assetName" placeholder="جهاز / أثاث"></div>
+      <div class="field"><label class="label" for="assetCat">التصنيف</label><input class="input" id="assetCat" placeholder="حاسب / مكتبي"></div>
+      <div class="field"><label class="label" for="assetLoc">الموقع</label><input class="input" id="assetLoc" placeholder="المكتب / القسم"></div>
+      <div class="field"><label class="label" for="assetEmp">مسؤول الأصل</label><select class="select" id="assetEmp"></select></div>
+      <div class="field"><label class="label" for="assetStat">حالة الأصل</label><select class="select" id="assetStat"><option value="متوفر">متوفر</option><option value="مستعار">مستعار</option><option value="عاطل">عاطل</option><option value="مصادر">مصادر</option></select></div>
+      <div class="field"><label class="label" for="assetDate">تاريخ الإضافة</label><input class="input" type="date" id="assetDate"></div>
+    </div>
+    <div class="row"><button class="button" id="assetSave">إضافة أصل</button><button class="button sec" id="assetClear">مسح</button></div>
+    <div class="out" id="assetOut">لا توجد أصول مسجلة.</div>
+    <table class="tbl" id="assetTbl"><thead><tr><th>المعرف</th><th>الاسم</th><th>التصنيف</th><th>الموقع</th><th>المسؤول</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="divider">لوحة مؤشرات حية وقابلة للتصدير كنسخة احتياطية</div>
+  <div class="card">
+    <div class="row">
+      <button class="button" id="dashRefresh">تحديث المؤشرات</button>
+      <button class="button sec" id="dashExport">تصدير نسخة احتياطية</button>
+      <button class="button sec" id="dashImport">استيراد من نسخة احتياطية</button>
+      <input class="input file" type="file" id="dashFile" accept="text/plain,.json,.txt">
+    </div>
+    <div class="out grid">
+      <div>إجمالي الموظفين النشطين: <span class="big" id="dEmp">0</span></div>
+      <div>عدد الحضور اليوم: <span class="big" id="dAtt">0</span></div>
+      <div>طلبات إجازة قيد الانتظار: <span class="big" id="dLeave">0</span></div>
+      <div>مهام قيد التنفيذ: <span class="big" id="dTask">0</span></div>
+      <div>متوسط تقييم الأداء: <span class="big" id="dPerf">0.0</span></div>
+      <div>إجمالي الأصول المسجلة: <span class="big" id="dAsset">0</span></div>
+    </div>
+    <div class="out" id="dashOut">آخر تحديث: لم يتم التحديث بعد.</div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل داخل المتصفح ويخزن جميع البيانات في localStorage بدون خادم أو اتصال خارجي.</p><h3>هل يمكن تصدير واستيراد البيانات؟</h3><p>نعم، يوفر قسم لوحة المؤشرات خيار تصدير نسخة احتياطية بصيغة نصية مع إمكانية استيرادها لاحقاً.</p><h3>هل يتم حساب الإجازات تلقائياً؟</h3><p>يحسب التطبيق عدد أيام الإجازة بناءً على التواريخ المدخلة ويعرض حالة الطلب مع أرصدة افتراضية قابلة للمراجعة.</p><h3>هل تدعم الحاسبة الضرائب والخصومات؟</h3><p>نعم، تحسب صافي الراتب بعد جمع البدلات والعلاوات وطرح الخصومات ونسبة الضريبة المدخلة.</p><h3>هل يمكن إدارة مهام التهيئة وإنهاء الخدمة؟</h3><p>نعم، يمكن إضافة مهام لكل حالة وتحديد المسؤول ووضع علامة منجز لتتبع الإنجاز بسهولة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-14 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const LS_KEYS = {
+    emp: 'hr_emp',
+    ct: 'hr_ct',
+    att: 'hr_att',
+    lv: 'hr_lv',
+    task: 'hr_task',
+    perf: 'hr_perf',
+    asset: 'hr_asset'
+  };
+  function get(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; } catch(e){ return def; } }
+  function set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  function nowDate(){ return new Date().toISOString().slice(0,10); }
+  function toNum(v){ const n=Number(v||0); return isFinite(n)?n:0; }
+  function fmt(n){ return Number(n).toFixed(2); }
+  let employees = get(LS_KEYS.emp, []);
+  let contacts = get(LS_KEYS.ct, []);
+  let attendance = get(LS_KEYS.att, []);
+  let leaves = get(LS_KEYS.lv, []);
+  let tasks = get(LS_KEYS.task, []);
+  let perf = get(LS_KEYS.perf, []);
+  let assets = get(LS_KEYS.asset, []);
+  function fillEmpSelects(){
+    const sels=[document.getElementById('attEmp'), document.getElementById('lvEmp'), document.getElementById('salEmp'), document.getElementById('taskEmp'), document.getElementById('perfEmp'), document.getElementById('assetEmp')];
+    sels.forEach(s=>{ if(!s) return; s.innerHTML=''; employees.forEach(e=>{ const o=document.createElement('option'); o.value=e.id; o.textContent=e.name+' ('+e.id+')'; s.appendChild(o); }); });
+    const salB=document.getElementById('salBase'); if(salB && employees[0]) salB.value=employees[0].base||0;
+  }
+  function renderEmp(){
+    const out=document.getElementById('empOut'); const tb=document.querySelector('#empTbl tbody');
+    if(!out||!tb) return; tb.innerHTML='';
+    if(employees.length===0){ out.textContent='لا يوجد موظفين بعد.'; return; }
+    out.textContent='إجمالي الموظفين: '+employees.length;
+    employees.forEach(e=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+e.id+'</td><td>'+e.name+'</td><td>'+e.dept+'</td><td>'+e.job+'</td><td>'+e.status+'</td><td>'+e.phone+'</td><td>'+e.hire+'</td><td>'+fmt(e.base)+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('empSave')&&document.getElementById('empSave').addEventListener('click',function(){
+    const id=document.getElementById('empId').value.trim();
+    const name=document.getElementById('empName').value.trim();
+    const dept=document.getElementById('empDept').value.trim();
+    const job=document.getElementById('empJob').value.trim();
+    const status=document.getElementById('empStatus').value;
+    const email=document.getElementById('empEmail').value.trim();
+    const phone=document.getElementById('empPhone').value.trim();
+    const hire=document.getElementById('empHire').value;
+    const base=toNum(document.getElementById('empBase').value);
+    if(!id||!name){ alert('يرجى إدخال رقم الموظف والاسم الكامل'); return; }
+    const exists=employees.find(x=>x.id===id);
+    if(exists){ Object.assign(exists,{name,dept,job,status,email,phone,hire,base}); }
+    else employees.push({id,name,dept,job,status,email,phone,hire,base});
+    set(LS_KEYS.emp, employees); renderEmp(); fillEmpSelects();
+  });
+  document.getElementById('empClear')&&document.getElementById('empClear').addEventListener('click',function(){
+    document.getElementById('empId').value=''; document.getElementById('empName').value=''; document.getElementById('empDept').value=''; document.getElementById('empJob').value='';
+    document.getElementById('empStatus').value='نشط'; document.getElementById('empEmail').value=''; document.getElementById('empPhone').value=''; document.getElementById('empHire').value='';
+    document.getElementById('empBase').value='';
+  });
+  function renderCt(){
+    const out=document.getElementById('ctOut'); const tb=document.querySelector('#ctTbl tbody');
+    if(!out||!tb) return; tb.innerHTML='';
+    if(contacts.length===0){ out.textContent='لا توجد جهات اتصال.'; return; }
+    out.textContent='إجمالي جهات الاتصال: '+contacts.length;
+    contacts.forEach(c=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+c.name+'</td><td>'+c.org+'</td><td>'+c.role+'</td><td>'+c.phone+'</td><td>'+c.email+'</td>'; tb.appendChild(tr); });
+  }
+  document.getElementById('ctSave')&&document.getElementById('ctSave').addEventListener('click',function(){
+    const name=document.getElementById('ctName').value.trim(); const org=document.getElementById('ctOrg').value.trim(); const role=document.getElementById('ctRole').value.trim(); const phone=document.getElementById('ctPhone').value.trim(); const email=document.getElementById('ctEmail').value.trim();
+    if(!name){ alert('يرجى إدخال اسم جهة الاتصال'); return; }
+    contacts.push({name,org,role,phone,email}); set(LS_KEYS.ct,contacts); renderCt();
+  });
+  document.getElementById('ctClear')&&document.getElementById('ctClear').addEventListener('click',function(){
+    document.getElementById('ctName').value=''; document.getElementById('ctOrg').value=''; document.getElementById('ctRole').value=''; document.getElementById('ctPhone').value=''; document.getElementById('ctEmail').value='';
+  });
+  function hoursDiff(a,b){ if(!a||!b) return ''; const [h1,m1]=a.split(':'),[h2,m2]=b.split(':'); let t1=h1*60+m1*1, t2=h2*60+m2*1; let d=t2-t1; if(d<0) d+=24*60; return (d/60).toFixed(2); }
+  function renderAtt(){
+    const out=document.getElementById('attOut'); const tb=document.querySelector('#attTbl tbody'); const d=nowDate(); document.getElementById('attDate').value=d;
+    if(!out||!tb) return; tb.innerHTML='';
+    const list=attendance.filter(x=>x.date===d); if(list.length===0){ out.textContent='لا يوجد تسجيل حضور لهذا اليوم بعد.'; return; }
+    out.textContent='عدد السجلات لليوم: '+list.length;
+    list.forEach(x=>{ const e=employees.find(em=>em.id===x.emp)||{name:x.emp}; const tr=document.createElement('tr'); tr.innerHTML='<td>'+e.name+' ('+x.emp+')</td><td>'+x.date+'</td><td>'+x.in+'</td><td>'+x.out+'</td><td>'+hoursDiff(x.in,x.out)+'</td><td>'+x.note+'</td>'; tb.appendChild(tr); });
+  }
+  document.getElementById('attSave')&&document.getElementById('attSave').addEventListener('click',function(){
+    const emp=document.getElementById('attEmp').value; const date=document.getElementById('attDate').value; const inT=document.getElementById('attIn').value; const out=document.getElementById('attOut').value; const note=document.getElementById('attNote').value.trim();
+    if(!emp||!date||!inT){ alert('يرجى اختيار الموظف والتاريخ ووقت الحضور'); return; }
+    const ex=attendance.find(a=>a.emp===emp&&a.date===date);
+    if(ex){ ex.in=inT; ex.out=out; ex.note=note; } else attendance.push({emp,date,in:inT,out,note});
+    set(LS_KEYS.att,attendance); renderAtt();
+  });
+  document.getElementById('attClear')&&document.getElementById('attClear').addEventListener('click',function(){
+    document.getElementById('attIn').value=''; document.getElementById('attOut').value=''; document.getElementById('attNote').value='';
+  });
+  function renderLv(){
+    const out=document.getElementById('lvOut'); const tb=document.querySelector('#lvTbl tbody');
+    if(!out||!tb) return; tb.innerHTML='';
+    if(leaves.length===0){ out.textContent='رصيد الإجازات السنوية: 21 يوماً. الطلبات فارغة.'; return; }
+    out.textContent='إجمالي طلبات الإجازات: '+leaves.length+' | الرصيد الافتراضي 21 يوماً لكل موظف';
+    leaves.slice().reverse().forEach(l=>{
+      const e=employees.find(em=>em.id===l.emp)||{name:l.emp};
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+e.name+' ('+l.emp+')</td><td>'+l.type+'</td><td>'+l.start+'</td><td>'+l.end+'</td><td>'+l.days+'</td><td>'+l.status+'</td><td>'+l.note+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('lvApply')&&document.getElementById('lvApply').addEventListener('click',function(){
+    const emp=document.getElementById('lvEmp').value; const type=document.getElementById('lvType').value; const start=document.getElementById('lvStart').value; const end=document.getElementById('lvEnd').value; const days=toNum(document.getElementById('lvDays').value); const note=document.getElementById('lvNote').value.trim();
+    if(!emp||!start||!end||days<=0){ alert('يرجى تعبئة بيانات الطلب بشكل صحيح'); return; }
+    leaves.push({emp,type,start,end,days,status:'قيد الانتظار',note}); set(LS_KEYS.lv,leaves); renderLv();
+  });
+  document.getElementById('lvApprove')&&document.getElementById('lvApprove').addEventListener('click',function(){
+    if(leaves.length===0){ alert('لا توجد طلبات للموافقة'); return; }
+    const last=leaves[leaves.length-1]; last.status='موافقة'; set(LS_KEYS.lv,leaves); renderLv();
+  });
+  document.getElementById('lvReject')&&document.getElementById('lvReject').addEventListener('click',function(){
+    if(leaves.length===0){ alert('لا توجد طلبات للرفض'); return; }
+    const last=leaves[leaves.length-1]; last.status='رفض'; set(LS_KEYS.lv,leaves); renderLv();
+  });
+  document.getElementById('lvClear')&&document.getElementById('lvClear').addEventListener('click',function(){
+    document.getElementById('lvStart').value=''; document.getElementById('lvEnd').value=''; document.getElementById('lvDays').value=''; document.getElementById('lvNote').value='';
+  });
+  function renderSal(){
+    const sel=document.getElementById('salEmp'); if(sel) sel.onchange=function(){ const e=employees.find(x=>x.id===sel.value); if(e) document.getElementById('salBase').value=e.base||0; };
+  }
+  document.getElementById('salCalc')&&document.getElementById('salCalc').addEventListener('click',function(){
+    const base=toNum(document.getElementById('salBase').value); const allow=toNum(document.getElementById('salAllow').value); const bonus=toNum(document.getElementById('salBonus').value); const ded=toNum(document.getElementById('salDed').value); const rate=toNum(document.getElementById('salTaxRate').value);
+    const gross=base+allow+bonus; const tax=gross*(rate/100); const tded=ded; const net=gross-tax-tded;
+    document.getElementById('salGross').textContent=fmt(gross); document.getElementById('salTax').textContent=fmt(tax); document.getElementById('salTotalDed').textContent=fmt(tded); document.getElementById('salNet').textContent=fmt(net);
+  });
+  document.getElementById('salClear')&&document.getElementById('salClear').addEventListener('click',function(){
+    document.getElementById('salAllow').value=''; document.getElementById('salBonus').value=''; document.getElementById('salDed').value=''; document.getElementById('salTaxRate').value='';
+  });
+  function renderTask(){
+    const out=document.getElementById('taskOut'); const tb=document.querySelector('#taskTbl tbody');
+    if(!out||!tb) return; tb.innerHTML='';
+    if(tasks.length===0){ out.textContent='لا توجد قوائم مهام مسجلة.'; return; }
+    out.textContent='إجمالي المهام: '+tasks.length;
+    tasks.slice().reverse().forEach(t=>{
+      const e=employees.find(em=>em.id===t.emp)||{name:t.emp};
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+e.name+' ('+t.emp+')</td><td>'+t.type+'</td><td>'+t.item+'</td><td>'+t.ass+'</td><td>'+t.status+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('taskAdd')&&document.getElementById('taskAdd').addEventListener('click',function(){
+    const emp=document.getElementById('taskEmp').value; const type=document.getElementById('taskType').value; const item=document.getElementById('taskItem').value.trim(); const ass=document.getElementById('taskAss').value.trim();
+    if(!emp||!item){ alert('يرجى اختيار موظف وكتابة المهمة'); return; }
+    tasks.push({emp,type,item,ass,status:'قيد التنفيذ'}); set(LS_KEYS.task,tasks); renderTask();
+  });
+  document.getElementById('taskDone')&&document.getElementById('taskDone').addEventListener('click',function(){
+    if(tasks.length===0){ alert('لا توجد مهام لتحديث حالتها'); return; }
+    const last=tasks[tasks.length-1]; last.status='منجز'; set(LS_KEYS.task,tasks); renderTask();
+  });
+  document.getElementById('taskClear')&&document.getElementById('taskClear').addEventListener('click',function(){
+    document.getElementById('taskItem').value=''; document.getElementById('taskAss').value='';
+  });
+  function renderPerf(){
+    const out=document.getElementById('perfOut'); const tb=document.querySelector('#perfTbl tbody');
+    if(!out||!tb) return; tb.innerHTML='';
+    if(perf.length===0){ out.textContent='لا توجد تقييمات مسجلة.'; return; }
+    out.textContent='إجمالي التقييمات: '+perf.length;
+    perf.slice().reverse().forEach(p=>{
+      const e=employees.find(em=>em.id===p.emp)||{name:p.emp};
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+e.name+' ('+p.emp+')</td><td>'+p.date+'</td><td>'+p.eval+'</td><td>'+p.score+'</td><td>'+p.note+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('perfSave')&&document.getElementById('perfSave').addEventListener('click',function(){
+    const emp=document.getElementById('perfEmp').value; const date=document.getElementById('perfDate').value; const evalr=document.getElementById('perfEval').value.trim(); const score=toNum(document.getElementById('perfScore').value); const note=document.getElementById('perfNote').value.trim();
+    if(!emp||!date){ alert('يرجى اختيار موظف وتاريخ التقييم'); return; }
+    perf.push({emp,date,eval:evalr,score,note}); set(LS_KEYS.perf,perf); renderPerf();
+  });
+  document.getElementById('perfClear')&&document.getElementById('perfClear').addEventListener('click',function(){
+    document.getElementById('perfDate').value=''; document.getElementById('perfEval').value=''; document.getElementById('perfScore').value=''; document.getElementById('perfNote').value='';
+  });
+  function renderAsset(){
+    const out=document.getElementById('assetOut'); const tb=document.querySelector('#assetTbl tbody'); document.getElementById('assetDate').value=nowDate();
+    if(!out||!tb) return; tb.innerHTML='';
+    if(assets.length===0){ out.textContent='لا توجد أصول مسجلة.'; return; }
+    out.textContent='إجمالي الأصول: '+assets.length;
+    assets.forEach(a=>{
+      const e=employees.find(em=>em.id===a.emp)||{name:a.emp||'غير محدد'};
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+a.id+'</td><td>'+a.name+'</td><td>'+a.cat+'</td><td>'+a.loc+'</td><td>'+e.name+'</td><td>'+a.stat+'</td><td>'+a.date+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('assetSave')&&document.getElementById('assetSave').addEventListener('click',function(){
+    const id=document.getElementById('assetId').value.trim(); const name=document.getElementById('assetName').value.trim(); const cat=document.getElementById('assetCat').value.trim(); const loc=document.getElementById('assetLoc').value.trim(); const emp=document.getElementById('assetEmp').value; const stat=document.getElementById('assetStat').value; const date=document.getElementById('assetDate').value;
+    if(!id||!name){ alert('يرجى إدخال معرف الأصل واسمه'); return; }
+    const ex=assets.find(x=>x.id===id);
+    if(ex){ Object.assign(ex,{name,cat,loc,emp,stat,date}); } else assets.push({id,name,cat,loc,emp,stat,date});
+    set(LS_KEYS.asset,assets); renderAsset();
+  });
+  document.getElementById('assetClear')&&document.getElementById('assetClear').addEventListener('click',function(){
+    document.getElementById('assetId').value=''; document.getElementById('assetName').value=''; document.getElementById('assetCat').value=''; document.getElementById('assetLoc').value=''; document.getElementById('assetDate').value=nowDate();
+  });
+  function dash(){
+    const active=employees.filter(e=>e.status==='نشط').length;
+    const today=nowDate();
+    const attToday=attendance.filter(a=>a.date===today).length;
+    const pendingLv=leaves.filter(l=>l.status==='قيد الانتظار').length;
+    const pendTask=tasks.filter(t=>t.status==='قيد التنفيذ').length;
+    let avg=0; if(perf.length){ avg=perf.reduce((s,p)=>s+toNum(p.score),0)/perf.length; }
+    const aCount=assets.length;
+    document.getElementById('dEmp').textContent=active;
+    document.getElementById('dAtt').textContent=attToday;
+    document.getElementById('dLeave').textContent=pendingLv;
+    document.getElementById('dTask').textContent=pendTask;
+    document.getElementById('dPerf').textContent=avg.toFixed(1);
+    document.getElementById('dAsset').textContent=aCount;
+    document.getElementById('dashOut').textContent='آخر تحديث: '+new Date().toLocaleString();
+  }
+  document.getElementById('dashRefresh')&&document.getElementById('dashRefresh').addEventListener('click',dash);
+  document.getElementById('dashExport')&&document.getElementById('dashExport').addEventListener('click',function(){
+    const data={employees,contacts,attendance,leaves,tasks,perf,assets,exportedAt:new Date().toISOString()};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.download='hr_backup_'+nowDate()+'.txt';
+    a.href=URL.createObjectURL(blob);
+    document.body.appendChild(a); a.click(); setTimeout(function(){ document.body.removeChild(a); try{ URL.revokeObjectURL(a.href); }catch(e){} }, 100);
+  });
+  document.getElementById('dashImport')&&document.getElementById('dashImport').addEventListener('click',function(){
+    const f=document.getElementById('dashFile').files[0];
+    if(!f){ alert('يرجى اختيار ملف النسخة الاحتياطية'); return; }
+    const reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        const obj=JSON.parse(e.target.result);
+        if(obj.employees) employees=obj.employees; if(obj.contacts) contacts=obj.contacts;
+        if(obj.attendance) attendance=obj.attendance; if(obj.leaves) leaves=obj.leaves;
+        if(obj.tasks) tasks=obj.tasks; if(obj.perf) perf=obj.perf; if(obj.assets) assets=obj.assets;
+        set(LS_KEYS.emp,employees); set(LS_KEYS.ct,contacts); set(LS_KEYS.att,attendance); set(LS_KEYS.lv,leaves); set(LS_KEYS.task,tasks); set(LS_KEYS.perf,perf); set(LS_KEYS.asset,assets);
+        renderAll(); dash(); alert('تم استيراد البيانات بنجاح');
+      }catch(err){ alert('ملف غير صالح أو غير مطابق للتنسيق'); }
+    };
+    reader.readAsText(f);
+  });
+  function renderAll(){
+    renderEmp(); renderCt(); renderAtt(); renderLv(); renderTask(); renderPerf(); renderAsset(); renderSal();
+    fillEmpSelects(); dash();
+  }
+  window.addEventListener('load',function(){ renderAll(); });
+})();
+</script>
+</body>
+</html>
