@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور | MDM1</title>
+<meta name="description" content="أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء وروابط mailto وسجل إرسال، دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/private-newsletter-vault.html">
+<meta property="og:title" content="أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور">
+<meta property="og:description" content="أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء وروابط mailto وسجل إرسال، دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/private-newsletter-vault.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.app-intro{line-height:1.95;color:var(--light);opacity:.92;margin:0 0 8px}
+.app-card{padding:18px;display:flex;flex-direction:column;gap:12px}
+.app-h{margin:0;color:var(--gold-bright);font-size:1.15rem}
+.app-between{justify-content:space-between;align-items:center;width:100%}
+.app-note{margin:0;font-size:.9rem;color:var(--gold-dim);line-height:1.8}
+.app .row{flex-wrap:wrap;gap:8px;align-items:center}
+.app .row label{margin:0;flex:0 0 auto}
+.app .input,.app .select,.app .textarea{flex:1;min-width:150px}
+.app .textarea{min-height:72px;resize:vertical;font-family:inherit;line-height:1.7}
+.app .out{min-height:46px}
+.app-list{display:flex;flex-direction:column;gap:6px}
+.app-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--gold-dim);border-radius:8px}
+.app-item-main{display:flex;align-items:center;gap:8px;flex:1;min-width:0;cursor:pointer}
+.app-ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.app-sel{width:auto;flex:0 0 auto}
+.app-actions{display:flex;gap:6px;flex-wrap:wrap;flex:0 0 auto}
+.app-empty{color:var(--gold-dim);font-style:italic}
+.app-msg{margin:0;font-size:.9rem;min-height:1em}
+.app-err{color:#ff9a9a}
+.app-ok{color:#8fe6a8}
+.app-title{font-weight:700;color:var(--gold-bright)}
+.app-muted{font-size:.82rem;color:var(--gold-dim)}
+.app-lock{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;text-align:center;padding:24px}
+.app-lock[hidden]{display:none}
+.app a.button{text-decoration:none;display:inline-block}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منشئ الرسائل الإخبارية المشفّرة محليًا", "url": "https://mdm1.org/apps/private-newsletter-vault.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل بياناتي إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. الأداة تعمل بالكامل داخل المتصفّح؛ لا توجد طلبات شبكة ولا حسابات. تُخزَّن المشتركون والقوالب والسجل في localStorage على جهازك فقط، ويتم التشفير عبر WebCrypto محليًا."}}, {"@type": "Question", "name": "ما نوع التشفير المستخدم وما مدى قوته؟", "acceptedAnswer": {"@type": "Answer", "text": "يُستخدم AES-GCM بمفتاح 256 بت مشتق من كلمة المرور عبر PBKDF2 بـ150,000 تكرار وملح عشوائي (SHA-256). تُولَّد قيمة IV جديدة لكل رسالة، لذا تختلف النسخة المشفّرة حتى لو تكرّر النص."}}, {"@type": "Question", "name": "كيف تعمل النسخة المستقلة لكل مستلم؟", "acceptedAnswer": {"@type": "Answer", "text": "بعد دمج اسم المستلم وبريده في النص، يُشفَّر المحتوى ويُولَّد ملف HTML مستقل يحتوي البيانات المشفّرة وواجهة فك تشفير صغيرة. يفتح الملف في أي متصفح ويطلب كلمة المرور لعرض الرسالة، دون إنترنت."}}, {"@type": "Question", "name": "هل تعمل الأداة بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الوظائف محلية: التحرير والدمج والقوالب والتشفير والتوليد. كل ما تحتاجه هو متصفّح حديث يدعم WebCrypto. يمكنك حفظ الصفحة والعمل عليها دون اتصال."}}, {"@type": "Question", "name": "ماذا يحدث عند القفل التلقائي أو المسح الآمن؟", "acceptedAnswer": {"@type": "Answer", "text": "بعد مدة الخمول التي تحددها تُمسح الحقول الحساسة من الشاشة وتُقفل الأداة حتى تضغط فتّح. والمسح الآمن يحذف نهائيًا كل المشتركين والقوالب والسجل وكلمة المرور المخزّنة من هذا المتصفح."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منشئ الرسائل الإخبارية المشفّرة محليًا</h1>
+  <p class="page-sub">أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء وروابط mailto وسجل إرسال، دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="app">
+<p class="app-intro">هذه أداة مجانية تعمل بالكامل داخل متصفّحك لإنشاء الرسائل الإخبارية وتشفيرها محليًا بكلمة مرور دون أي خادم أو حساب أو اتصال بالشبكة. اكتب موضوع الرسالة ونصّها، وأدر قائمة المشتركين وجهات الاتصال، واحفظ قوالب جاهزة لإعادة الاستخدام مع دمج تلقائي لأسماء المستلمين وبُردهم. وعند الحاجة إلى الخصوصية شفّر المحتوى بمعيار AES-GCM عبر واجهة WebCrypto، ثم ولّد نسخة مستقلة قابلة للتنزيل أو النسخ لكل مستلم لا تُفكّ إلا بكلمة المرور الصحيحة. كما يمكنك إنتاج روابط mailto جماعية، والاحتفاظ بسجل إرسال محلي، مع قفل تلقائي عند الخمول ومسح آمن لكل البيانات الموجودة في المتصفح بضغطة واحدة.</p>
+
+<section class="card app-card">
+<div class="row app-between"><h2 class="app-h">القفل التلقائي</h2><span class="badge" id="lockStatus">نشط</span></div>
+<div class="row">
+<label class="label" for="lockMinutes">مدة القفل عند الخمول (بالدقائق)</label>
+<input class="input" id="lockMinutes" type="number" min="1" max="120" value="10">
+<button class="button sec" id="lockNow" type="button">قفل الآن</button>
+<button class="button sec" id="wipeBtn" type="button">مسح آمن لكل البيانات</button>
+</div>
+<p class="app-note">عند انتهاء المدة تُمسح الحقول الحساسة تلقائيًا وتُقفل الأداة حتى تفتحها من جديد.</p>
+</section>
+
+<section class="card app-card">
+<h2 class="app-h">المشتركون وجهات الاتصال</h2>
+<div class="row">
+<label class="label" for="cName">الاسم</label>
+<input class="input" id="cName" type="text" placeholder="مثال: سارة أحمد">
+<label class="label" for="cEmail">البريد الإلكتروني</label>
+<input class="input" id="cEmail" type="email" placeholder="name@example.com">
+<button class="button" id="addContact" type="button">إضافة جهة اتصال</button>
+</div>
+<div class="out" id="contactList"></div>
+<p class="app-msg" id="contactMsg"></p>
+<div class="row">
+<button class="button sec" id="exportContacts" type="button">تصدير القائمة (نسخ JSON)</button>
+<label class="label" for="importContacts">استيراد JSON</label>
+<textarea class="textarea" id="importContacts" placeholder="[ { &quot;name&quot;: &quot;سارة&quot;, &quot;email&quot;: &quot;s@example.com&quot; } ]"></textarea>
+<button class="button sec" id="importBtn" type="button">استيراد القائمة</button>
+</div>
+</section>
+
+<section class="card app-card">
+<h2 class="app-h">تحرير الرسالة</h2>
+<div class="row">
+<label class="label" for="subject">موضوع الرسالة</label>
+<input class="input" id="subject" type="text" placeholder="عنوان الرسالة الإخبارية">
+</div>
+<div class="row">
+<label class="label" for="body">نص الرسالة</label>
+<textarea class="textarea" id="body" rows="8" placeholder="اكتب النص هنا، واستخدم {{الاسم}} و {{البريد}} للدمج التلقائي."></textarea>
+</div>
+<div class="row">
+<button class="button sec" id="insertName" type="button">إدراج وسم الاسم</button>
+<button class="button sec" id="insertEmail" type="button">إدراج وسم البريد</button>
+<button class="button sec" id="previewBtn" type="button">معاينة الدمج</button>
+</div>
+<div class="row">
+<label class="label" for="previewWho">معاينة باسم المستلم</label>
+<select class="select" id="previewWho"></select>
+</div>
+<div class="out" id="previewOut"><span class="app-empty">اختر مستلمًا ثم اضغط معاينة الدمج.</span></div>
+</section>
+
+<section class="card app-card">
+<h2 class="app-h">القوالب القابلة لإعادة الاستخدام</h2>
+<div class="row">
+<label class="label" for="tplName">اسم القالب</label>
+<input class="input" id="tplName" type="text" placeholder="مثال: ترحيب شهري">
+<button class="button" id="saveTpl" type="button">حفظ الرسالة الحالية كقالب</button>
+</div>
+<p class="app-msg" id="tplMsg"></p>
+<div class="out" id="tplList"></div>
+</section>
+
+<section class="card app-card">
+<h2 class="app-h">التشفير المحلي AES-GCM</h2>
+<div class="row">
+<label class="label" for="pass">كلمة المرور</label>
+<input class="input" id="pass" type="password" placeholder="كلمة مرور قوية" autocomplete="off">
+<label class="label" for="pass2">تأكيد كلمة المرور</label>
+<input class="input" id="pass2" type="password" placeholder="أعد كتابتها" autocomplete="off">
+</div>
+<div class="row">
+<label class="label" for="scope">نطاق التوليد</label>
+<select class="select" id="scope">
+<option value="all">كل المشتركين</option>
+<option value="selected">المحددون فقط</option>
+</select>
+<button class="button" id="genEnc" type="button">توليد النسخ المشفّرة</button>
+<button class="button sec" id="downloadAll" type="button">تنزيل كل الملفات</button>
+</div>
+<p class="app-msg" id="encMsg"></p>
+<div class="out" id="encOut"></div>
+</section>
+
+<section class="card app-card">
+<h2 class="app-h">روابط mailto الجماعية</h2>
+<div class="row">
+<label class="label" for="mailScope">نطاق الروابط</label>
+<select class="select" id="mailScope">
+<option value="all">كل المشتركين</option>
+<option value="selected">المحددون فقط</option>
+</select>
+<button class="button" id="genMailto" type="button">توليد روابط البريد</button>
+</div>
+<p class="app-msg" id="mailMsg"></p>
+<div class="out" id="mailtoOut"><span class="app-empty">لم تُولّد روابط بعد.</span></div>
+</section>
+
+<section class="card app-card">
+<h2 class="app-h">سجل الإرسال المحلي</h2>
+<div class="row"><button class="button sec" id="clearLog" type="button">مسح السجل</button></div>
+<div class="out" id="logOut"></div>
+</section>
+
+<div class="app-lock" id="lockOverlay" hidden>
+<h2 class="app-h">الأداة مقفلة تلقائيًا</h2>
+<p class="app-note">تم مسح الحقول الحساسة من الشاشة لحماية بياناتك.</p>
+<button class="button" id="unlockBtn" type="button">فتح الأداة</button>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل بياناتي إلى أي خادم؟</h3><p>لا. الأداة تعمل بالكامل داخل المتصفّح؛ لا توجد طلبات شبكة ولا حسابات. تُخزَّن المشتركون والقوالب والسجل في localStorage على جهازك فقط، ويتم التشفير عبر WebCrypto محليًا.</p><h3>ما نوع التشفير المستخدم وما مدى قوته؟</h3><p>يُستخدم AES-GCM بمفتاح 256 بت مشتق من كلمة المرور عبر PBKDF2 بـ150,000 تكرار وملح عشوائي (SHA-256). تُولَّد قيمة IV جديدة لكل رسالة، لذا تختلف النسخة المشفّرة حتى لو تكرّر النص.</p><h3>كيف تعمل النسخة المستقلة لكل مستلم؟</h3><p>بعد دمج اسم المستلم وبريده في النص، يُشفَّر المحتوى ويُولَّد ملف HTML مستقل يحتوي البيانات المشفّرة وواجهة فك تشفير صغيرة. يفتح الملف في أي متصفح ويطلب كلمة المرور لعرض الرسالة، دون إنترنت.</p><h3>هل تعمل الأداة بدون اتصال بالإنترنت؟</h3><p>نعم، كل الوظائف محلية: التحرير والدمج والقوالب والتشفير والتوليد. كل ما تحتاجه هو متصفّح حديث يدعم WebCrypto. يمكنك حفظ الصفحة والعمل عليها دون اتصال.</p><h3>ماذا يحدث عند القفل التلقائي أو المسح الآمن؟</h3><p>بعد مدة الخمول التي تحددها تُمسح الحقول الحساسة من الشاشة وتُقفل الأداة حتى تضغط فتّح. والمسح الآمن يحذف نهائيًا كل المشتركين والقوالب والسجل وكلمة المرور المخزّنة من هذا المتصفح.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-14 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+
+var contacts=load('ml_contacts',[]);
+var templates=load('ml_templates',[]);
+var log=load('ml_log',[]);
+var sel={};
+var currentFiles=[];
+var mailtoCache=[];
+var locked=false,lockTimer=null,lockMinutes=parseInt(load('ml_lock',10),10)||10;
+
+function b64(u8){var s='',i;for(i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return btoa(s);}
+function unb64(str){var bin=atob(str),u8=new Uint8Array(bin.length),i;for(i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);return u8;}
+function hasCrypto(){return !!(window.crypto&&window.crypto.subtle&&window.TextEncoder);}
+
+function derive(pass,salt){
+var enc=new TextEncoder();
+return crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']).then(function(km){
+return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+});
+}
+function encryptText(text,pass){
+var enc=new TextEncoder();
+var salt=crypto.getRandomValues(new Uint8Array(16));
+var iv=crypto.getRandomValues(new Uint8Array(12));
+return derive(pass,salt).then(function(key){return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,enc.encode(text));})
+.then(function(ct){return {salt:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(ct))};});
+}
+
+function merge(text,c){
+return String(text||'')
+.replace(/\{\{\s*الاسم\s*\}\}/g,c.name||'')
+.replace(/\{\{\s*name\s*\}\}/gi,c.name||'')
+.replace(/\{\{\s*البريد\s*\}\}/g,c.email||'')
+.replace(/\{\{\s*email\s*\}\}/gi,c.email||'');
+}
+
+function buildStandalone(enc,label){
+var data=JSON.stringify(enc);
+var title=esc(label);
+var h='<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>رسالة مشفّرة</title>\n<style>\nbody{background:#14110d;color:#f3ead7;font-family:system-ui,Segoe UI,Tahoma,sans-serif;max-width:720px;margin:0 auto;padding:24px;line-height:1.9}\ninput,button{font:inherit;padding:10px;border-radius:8px;border:1px solid #b8934d}\ninput{width:100%;box-sizing:border-box;background:#221c14;color:#f3ead7}\nbutton{background:#d4af37;color:#1a1508;font-weight:700;margin-top:10px;cursor:pointer}\n.box{background:#221c14;border:1px solid #b8934d;border-radius:10px;padding:16px;margin-top:16px;white-space:pre-wrap;word-wrap:break-word}\n.err{color:#ff9a9a}\n.sub{color:#c9a24a}\n</style>\n</head>\n<body>\n<h1>رسالة مشفّرة</h1>\n<p>الرسالة موجّهة إلى: <strong>'+title+'</strong></p>\n<p class="sub">أدخل كلمة المرور لفك التشفير. تُنفّذ العملية محليًا داخل متصفحك ولا تُرسل أي بيانات.</p>\n<input id="p" type="password" placeholder="كلمة المرور" autocomplete="off">\n<button id="b" type="button">فك التشفير</button>\n<div id="m" class="box"></div>\n<script>\n(function(){\nvar D='+data+';\nvar b=document.getElementById("b"),p=document.getElementById("p"),m=document.getElementById("m");\nfunction ub(s){var x=atob(s),u=new Uint8Array(x.length);for(var i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return u;}\nb.addEventListener("click",function(){\nm.className="box";m.textContent="جارٍ فك التشفير...";\nvar enc=new TextEncoder();\ncrypto.subtle.importKey("raw",enc.encode(p.value),"PBKDF2",false,["deriveKey"]).then(function(km){\nreturn crypto.subtle.deriveKey({name:"PBKDF2",salt:ub(D.salt),iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);\n}).then(function(k){return crypto.subtle.decrypt({name:"AES-GCM",iv:ub(D.iv)},k,ub(D.ct));})\n.then(function(pt){var o=JSON.parse(new TextDecoder().decode(pt));var s=o.subject?("الموضوع: "+o.subject+"\\n\\n"):"";m.textContent=s+o.body;})\n.catch(function(){m.className="box err";m.textContent="تعذّر فك التشفير. تأكد من صحة كلمة المرور.";});\n});\n})();\n<\/script>\n</body>\n</html>';
+return h;
+}
+
+function saveBlob(filename,content,type){
+var blob=new Blob([content],{type:type||'text/html;charset=utf-8'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+document.body.removeChild(a);
+setTimeout(function(){URL.revokeObjectURL(url);},2000);
+}
+function fallbackCopy(text){
+var ta=document.createElement('textarea');ta.value=text;
+ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+try{document.execCommand('copy');}catch(e){}
+document.body.removeChild(ta);
+}
+function copyText(text,btn){
+function done(){if(btn){var o=btn.textContent;btn.textContent='تم النسخ';setTimeout(function(){btn.textContent=o;},1200);}}
+if(navigator.clipboard&&navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(done).catch(function(){fallbackCopy(text);done();});
+}else{fallbackCopy(text);done();}
+}
+
+function addLog(a,d){
+log.unshift({t:new Date().toLocaleString('ar-EG'),a:a,d:d||''});
+if(log.length>100)log=log.slice(0,100);
+save('ml_log',log);renderLog();
+}
+
+function renderContacts(){
+var box=$('contactList');
+if(!contacts.length){box.innerHTML='<p class="app-empty">لا يوجد مشتركون بعد. أضف أول جهة اتصال بالأعلى.</p>';return;}
+var h='<div class="app-list">';
+contacts.forEach(function(c){
+h+='<div class="app-item"><label class="app-item-main"><input class="app-sel" type="checkbox" data-sel="'+esc(c.id)+'"'+(sel[c.id]?' checked':'')+'><span class="app-ellipsis"><span class="app-title">'+esc(c.name||'بدون اسم')+'</span> <span class="app-muted">'+esc(c.email||'بدون بريد')+'</span></span></label><button class="button sec" type="button" data-del="'+esc(c.id)+'">حذف</button></div>';
+});
+box.innerHTML=h+'</div>';
+}
+function renderPreviewWho(){
+var s=$('previewWho'),o='<option value="">— اختر مستلمًا —</option>';
+contacts.forEach(function(c,i){o+='<option value="'+i+'">'+esc(c.name||c.email||('مستلم '+(i+1)))+'</option>';});
+s.innerHTML=o;
+}
+function renderTemplates(){
+var box=$('tplList');
+if(!templates.length){box.innerHTML='<p class="app-empty">لا توجد قوالب محفوظة.</p>';return;}
+var h='<div class="app-list">';
+templates.forEach(function(t,i){
+h+='<div class="app-item"><span class="app-ellipsis"><span class="app-title">'+esc(t.name)+'</span> <span class="app-muted">'+esc((t.subject||'بدون موضوع').slice(0,42))+'</span></span><span class="app-actions"><button class="button sec" type="button" data-load="'+i+'">تحميل</button><button class="button sec" type="button" data-del-tpl="'+i+'">حذف</button></span></div>';
+});
+box.innerHTML=h+'</div>';
+}
+function renderFiles(){
+var box=$('encOut');
+if(!currentFiles.length){box.innerHTML='<p class="app-empty">لم تُولّد نسخ مشفّرة بعد.</p>';return;}
+var h='<div class="app-list">';
+currentFiles.forEach(function(f,i){
+h+='<div class="app-item"><span class="app-ellipsis"><span class="app-title">'+esc(f.name)+'</span> <span class="app-muted">'+esc(f.filename)+'</span></span><span class="app-actions"><button class="button sec" type="button" data-dl="'+i+'">تنزيل</button><button class="button sec" type="button" data-copy="'+i+'">نسخ محتوى الملف</button></span></div>';
+});
+box.innerHTML=h+'</div>';
+}
+function renderLog(){
+var box=$('logOut');
+if(!log.length){box.innerHTML='<p class="app-empty">لا يوجد نشاط مسجّل.</p>';return;}
+var h='<div class="app-list">';
+log.forEach(function(l){
+h+='<div class="app-item"><span class="app-ellipsis"><span class="app-title">'+esc(l.a)+'</span> <span class="app-muted">'+esc(l.d)+'</span></span><span class="app-muted">'+esc(l.t)+'</span></div>';
+});
+box.innerHTML=h+'</div>';
+}
+
+function pick(list){return list==='selected'?contacts.filter(function(c){return sel[c.id];}):contacts.slice();}
+
+function addContact(){
+var n=$('cName').value.trim(),e=$('cEmail').value.trim();
+var msg=$('contactMsg');
+if(!n&&!e){msg.textContent='أدخل اسمًا أو بريدًا على الأقل.';msg.className='app-msg app-err';return;}
+if(e&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){msg.textContent='صيغة البريد غير صحيحة.';msg.className='app-msg app-err';return;}
+contacts.push({id:uid(),name:n,email:e});
+save('ml_contacts',contacts);
+$('cName').value='';$('cEmail').value='';
+msg.textContent='تمت إضافة جهة الاتصال.';msg.className='app-msg app-ok';
+renderContacts();renderPreviewWho();addLog('إضافة جهة اتصال',n||e);
+}
+function delContact(id){
+contacts=contacts.filter(function(c){return c.id!==id;});delete sel[id];
+save('ml_contacts',contacts);renderContacts();renderPreviewWho();
+}
+function exportContacts(){
+copyText(JSON.stringify(contacts,null,2),$('exportContacts'));
+$('contactMsg').textContent='تم نسخ قائمة المشتركين بصيغة JSON.';$('contactMsg').className='app-msg app-ok';
+}
+function importContacts(){
+var msg=$('contactMsg'),txt=$('importContacts').value.trim();
+if(!txt){msg.textContent='الصق نص JSON أولًا.';msg.className='app-msg app-err';return;}
+try{
+var arr=JSON.parse(txt);
+if(!Array.isArray(arr))throw new Error('bad');
+var n=0;
+arr.forEach(function(o){if(o&&(o.name||o.email)){contacts.push({id:uid(),name:String(o.name||''),email:String(o.email||'')});n++;}});
+save('ml_contacts',contacts);renderContacts();renderPreviewWho();$('importContacts').value='';
+msg.textContent='تم استيراد '+n+' جهة اتصال.';msg.className='app-msg app-ok';
+addLog('استيراد جهات اتصال','عدد: '+n);
+}catch(e){msg.textContent='ملف JSON غير صالح.';msg.className='app-msg app-err';}
+}
+function insert(tag){
+var t=$('body'),s=t.selectionStart||0,e=t.selectionEnd||0,v=t.value;
+t.value=v.slice(0,s)+tag+v.slice(e);t.focus();
+t.selectionStart=t.selectionEnd=s+tag.length;
+}
+function preview(){
+var i=parseInt($('previewWho').value,10),out=$('previewOut');
+if(isNaN(i)||!contacts[i]){out.innerHTML='<span class="app-empty">اختر مستلمًا للمعاينة.</span>';return;}
+var c=contacts[i];
+var s=merge($('subject').value,c),b=esc(merge($('body').value,c)).replace(/\n/g,'<br>');
+out.innerHTML='<div class="app-title">الموضوع: '+esc(s)+'</div><hr class="divider"><div>'+b+'</div>';
+}
+function saveTpl(){
+var name=$('tplName').value.trim(),msg=$('tplMsg');
+if(!name){msg.textContent='اكتب اسمًا للقالب.';msg.className='app-msg app-err';return;}
+templates.unshift({name:name,subject:$('subject').value,body:$('body').value});
+save('ml_templates',templates);$('tplName').value='';
+msg.textContent='تم حفظ القالب.';msg.className='app-msg app-ok';
+renderTemplates();addLog('حفظ قالب',name);
+}
+function loadTpl(i){
+var t=templates[i];if(!t)return;
+$('subject').value=t.subject||'';$('body').value=t.body||'';
+$('tplMsg').textContent='تم تحميل القالب: '+t.name;$('tplMsg').className='app-msg app-ok';
+}
+function delTpl(i){templates.splice(i,1);save('ml_templates',templates);renderTemplates();}
+
+function fileBase(c,i){
+var b=(c.name||c.email||('مستلم'+(i+1))).replace(/[\\/:*?"<>|\s]+/g,'_').replace(/[^\w\u0600-\u06FF_-]/g,'');
+if(!b)b='recipient'+(i+1);
+return 'encrypted_'+b+'_'+(i+1);
+}
+function genEncrypted(){
+var msg=$('encMsg');msg.textContent='';msg.className='app-msg';
+var p1=$('pass').value,p2=$('pass2').value;
+var subj=$('subject').value,body=$('body').value;
+if(!body.trim()){msg.textContent='اكتب نص الرسالة أولًا.';msg.className='app-msg app-err';return;}
+if(!p1){msg.textContent='أدخل كلمة المرور.';msg.className='app-msg app-err';return;}
+if(p1!==p2){msg.textContent='كلمتا المرور غير متطابقتين.';msg.className='app-msg app-err';return;}
+if(!hasCrypto()){msg.textContent='متصفحك لا يدعم WebCrypto.';msg.className='app-msg app-err';return;}
+var list=pick($('scope').value);
+if(!list.length){msg.textContent='لا يوجد مستلمون في النطاق المحدد.';msg.className='app-msg app-err';return;}
+var btn=$('genEnc'),orig=btn.textContent;btn.disabled=true;currentFiles=[];
+var chain=Promise.resolve();
+list.forEach(function(c,i){
+chain=chain.then(function(){
+btn.textContent='جارٍ التشفير '+(i+1)+'/'+list.length;
+var payload=JSON.stringify({subject:merge(subj,c),body:merge(body,c),to:c.email||''});
+return encryptText(payload,p1).then(function(enc){
+currentFiles.push({name:c.name||c.email||('مستلم '+(i+1)),filename:fileBase(c,i)+'.html',content:buildStandalone(enc,c.name||c.email||'')});
+});
+});
+});
+chain.then(function(){
+btn.disabled=false;btn.textContent=orig;renderFiles();
+msg.textContent='تم توليد '+currentFiles.length+' نسخة مشفّرة.';msg.className='app-msg app-ok';
+addLog('توليد نسخ مشفّرة','عدد: '+currentFiles.length);
+}).catch(function(err){
+btn.disabled=false;btn.textContent=orig;
+msg.textContent='تعذّر التشفير: '+(err&&err.message?err.message:'خطأ غير معروف');msg.className='app-msg app-err';
+});
+}
+function dlFile(i){var f=currentFiles[i];if(f)saveBlob(f.filename,f.content);}
+function copyFile(i,b){if(currentFiles[i])copyText(currentFiles[i].content,b);}
+function downloadAll(){
+var msg=$('encMsg');
+if(!currentFiles.length){msg.textContent='لا توجد ملفات لتنزيلها.';msg.className='app-msg app-err';return;}
+currentFiles.forEach(function(f,i){setTimeout(function(){saveBlob(f.filename,f.content);},i*450);});
+msg.textContent='يبدأ تنزيل '+currentFiles.length+' ملفًا.';msg.className='app-msg app-ok';
+addLog('تنزيل ملفات مشفّرة','عدد: '+currentFiles.length);
+}
+function genMailto(){
+var msg=$('mailMsg'),box=$('mailtoOut');msg.textContent='';msg.className='app-msg';
+var list=pick($('mailScope').value);
+mailtoCache=[];
+if(!list.length){box.innerHTML='<p class="app-empty">لا يوجد مستلمون في النطاق المحدد.</p>';return;}
+var subj=$('subject').value,body=$('body').value;
+var h='<div class="app-list">';
+list.forEach(function(c,i){
+var link='mailto:'+(c.email||'')+'?subject='+encodeURIComponent(merge(subj,c))+'&body='+encodeURIComponent(merge(body,c));
+mailtoCache.push(link);
+h+='<div class="app-item"><span class="app-ellipsis"><span class="app-title">'+esc(c.name||c.email)+'</span></span><span class="app-actions"><a class="button sec" href="'+esc(link)+'">فتح في البريد</a><button class="button sec" type="button" data-mc="'+i+'">نسخ الرابط</button></span></div>';
+});
+box.innerHTML=h+'</div>';
+msg.textContent='تم توليد '+list.length+' رابطًا.';msg.className='app-msg app-ok';
+addLog('توليد روابط mailto','عدد: '+list.length);
+}
+
+function setLockBadge(){var b=$('lockStatus');b.textContent=locked?'مقفل':'نشط';b.className='badge'+(locked?' app-err':'');}
+function lockNow(){
+if(locked)return;
+locked=true;clearTimeout(lockTimer);
+$('subject').value='';$('body').value='';$('pass').value='';$('pass2').value='';
+currentFiles=[];renderFiles();
+$('previewOut').innerHTML='<span class="app-empty">—</span>';
+$('mailtoOut').innerHTML='<span class="app-empty">—</span>';
+$('encMsg').textContent='';
+$('lockOverlay').hidden=false;setLockBadge();
+addLog('قفل تلقائي','تم مسح الحقول الحساسة');
+}
+function unlock(){locked=false;$('lockOverlay').hidden=true;setLockBadge();scheduleLock();addLog('فتح الأداة','');}
+function scheduleLock(){clearTimeout(lockTimer);if(locked)return;lockTimer=setTimeout(lockNow,lockMinutes*60000);}
+function wipe(){
+if(!confirm('سيتم حذف كل المشتركين والقوالب والسجل نهائيًا من هذا المتصفح. هل تريد المتابعة؟'))return;
+try{['ml_contacts','ml_templates','ml_log','ml_lock'].forEach(function(k){localStorage.removeItem(k);});}catch(e){}
+contacts=[];templates=[];log=[];sel={};currentFiles=[];mailtoCache=[];
+$('subject').value='';$('body').value='';$('pass').value='';$('pass2').value='';
+$('cName').value='';$('cEmail').value='';$('tplName').value='';$('importContacts').value='';
+$('previewOut').innerHTML='<span class="app-empty">—</span>';
+$('mailtoOut').innerHTML='<span class="app-empty">—</span>';
+$('contactMsg').textContent='';$('tplMsg').textContent='';$('encMsg').textContent='';$('mailMsg').textContent='';
+renderContacts();renderPreviewWho();renderTemplates();renderLog();renderFiles();
+addLog('مسح آمن','تم حذف كل البيانات المحلية');
+}
+
+function bind(){
+$('addContact').addEventListener('click',addContact);
+$('contactList').addEventListener('click',function(e){var t=e.target.closest('[data-del]');if(t)delContact(t.getAttribute('data-del'));});
+$('contactList').addEventListener('change',function(e){var t=e.target.closest('[data-sel]');if(t)sel[t.getAttribute('data-sel')]=t.checked;});
+$('exportContacts').addEventListener('click',exportContacts);
+$('importBtn').addEventListener('click',importContacts);
+$('insertName').addEventListener('click',function(){insert('{{الاسم}}');});
+$('insertEmail').addEventListener('click',function(){insert('{{البريد}}');});
+$('previewBtn').addEventListener('click',preview);
+$('previewWho').addEventListener('change',preview);
+$('saveTpl').addEventListener('click',saveTpl);
+$('tplList').addEventListener('click',function(e){
+var l=e.target.closest('[data-load]'),d=e.target.closest('[data-del-tpl]');
+if(l)loadTpl(parseInt(l.getAttribute('data-load'),10));
+if(d)delTpl(parseInt(d.getAttribute('data-del-tpl'),10));
+});
+$('genEnc').addEventListener('click',genEncrypted);
+$('downloadAll').addEventListener('click',downloadAll);
+$('encOut').addEventListener('click',function(e){
+var d=e.target.closest('[data-dl]'),c=e.target.closest('[data-copy]');
+if(d)dlFile(parseInt(d.getAttribute('data-dl'),10));
+if(c)copyFile(parseInt(c.getAttribute('data-copy'),10),c);
+});
+$('genMailto').addEventListener('click',genMailto);
+$('mailtoOut').addEventListener('click',function(e){var c=e.target.closest('[data-mc]');if(c)copyText(mailtoCache[parseInt(c.getAttribute('data-mc'),10)]||'',c);});
+$('clearLog').addEventListener('click',function(){log=[];save('ml_log',log);renderLog();});
+$('lockNow').addEventListener('click',lockNow);
+$('unlockBtn').addEventListener('click',unlock);
+$('wipeBtn').addEventListener('click',wipe);
+$('lockMinutes').addEventListener('change',function(){
+var v=parseInt(this.value,10);if(!v||v<1)v=1;if(v>120)v=120;
+this.value=v;lockMinutes=v;save('ml_lock',v);scheduleLock();
+});
+['click','keydown','mousemove','touchstart','scroll'].forEach(function(ev){
+document.addEventListener(ev,function(){if(!locked)scheduleLock();},{passive:true});
+});
+}
+function init(){
+$('lockMinutes').value=lockMinutes;
+renderContacts();renderPreviewWho();renderTemplates();renderLog();renderFiles();
+$('mailtoOut').innerHTML='<span class="app-empty">لم تُولّد روابط بعد.</span>';
+setLockBadge();scheduleLock();bind();
+}
+if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+</body>
+</html>
