@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سوق المنتجات الطازجة: إدارة المزارعين والمخزون والفواتير | MDM1</title>
+<meta name="description" content="أضف منتجات المزارعين، تبّع المخزون تلقائياً، أنشئ سلة شراء وفاتورة قابلة للطباعة، واستعرض تقارير المبيعات والأكثر طلباً مع حفظ محلي ونسخ احتياطي.">
+<link rel="canonical" href="https://mdm1.org/apps/local-produce-marketplace.html">
+<meta property="og:title" content="سوق المنتجات الطازجة: إدارة المزارعين والمخزون والفواتير">
+<meta property="og:description" content="أضف منتجات المزارعين، تبّع المخزون تلقائياً، أنشئ سلة شراء وفاتورة قابلة للطباعة، واستعرض تقارير المبيعات والأكثر طلباً مع حفظ محلي ونسخ احتياطي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-produce-marketplace.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{--app-gap:12px}
+.app-section{display:none}
+.app-section.app-active{display:block}
+.app-nav{flex-wrap:wrap;gap:8px;margin:12px 0}
+.app-nav .app-on{outline:2px solid var(--gold-bright);color:var(--gold-bright)}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+.app-prod{padding:12px}
+.app-prod h3{margin:0 0 6px;color:var(--gold-bright);font-size:1rem}
+.app-meta{font-size:.85rem;color:var(--light);opacity:.85;margin:3px 0}
+.app-price{color:var(--gold-bright);font-weight:700;margin:6px 0}
+.app-row{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.app-row label{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1}
+.app-empty{color:var(--gold-dim);margin:10px 0}
+.app-msg{min-height:1.2em;margin:6px 0;color:var(--gold-bright)}
+.app-err{color:#ff9d9d}
+.app-cart-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--gold-dim);flex-wrap:wrap}
+.app-qty{width:72px}
+.app-total{color:var(--gold-bright)}
+.app-block{margin-top:16px}
+.app-rep{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0}
+.app-rep .card{text-align:center;padding:12px}
+.app-rep .big{color:var(--gold-bright);display:block;font-size:1.6rem}
+.app-table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:6px}
+.app-table th,.app-table td{padding:6px;border-bottom:1px solid var(--gold-dim);text-align:right}
+.app-table th{color:var(--gold-bright)}
+.app-invoice h3{color:var(--gold-bright);margin-top:0}
+.app-invoice p{margin:6px 0}
+.app h2{color:var(--gold-bright)}
+@media print{.app-nav,.app-noprint,.app-section:not(#secCart){display:none!important}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "سوق محلي للمنتجات الطازجة مع سلة الشراء والتقارير", "url": "https://mdm1.org/apps/local-produce-marketplace.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت أو خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الوظائف تعمل داخل المتصفح فقط، وتُحفظ البيانات في localStorage، ولا تتم أي اتصالات شبكية."}}, {"@type": "Question", "name": "كيف يُدار المخزون عند كل عملية شراء؟", "acceptedAnswer": {"@type": "Answer", "text": "عند تأكيد الطلب تُخصم الكميات المشتراة من الكمية المتاحة لكل منتج، ويظهر المنتج كـ«نفدت الكمية» عند وصول الرصيد إلى صفر."}}, {"@type": "Question", "name": "هل يمكن طباعة الفاتورة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، بعد تأكيد الشراء اضغط «طباعة الفاتورة»، وسيُعرض الطلب بتنسيق مناسب للطباعة مع رقم الفاتورة والبنود والإجمالي."}}, {"@type": "Question", "name": "كيف أنقل بياناتي إلى جهاز آخر؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم «تصدير نسخة احتياطية كملف» لحفظ ملف JSON، ثم «استيراد نسخة احتياطية» في الجهاز الآخر لاستعادة المنتجات والطلبات."}}, {"@type": "Question", "name": "ماذا تعرض لوحة التقارير؟", "acceptedAnswer": {"@type": "Answer", "text": "تعرض إجمالي المبيعات وعدد الطلبات والوحدات المباعة، إضافة إلى المنتجات الأكثر طلباً وسجل كامل بالطلبات المحفوظة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">سوق محلي للمنتجات الطازجة مع سلة الشراء والتقارير</h1>
+  <p class="page-sub">أضف منتجات المزارعين، تبّع المخزون تلقائياً، أنشئ سلة شراء وفاتورة قابلة للطباعة، واستعرض تقارير المبيعات والأكثر طلباً مع حفظ محلي ونسخ احتياطي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك إنشاء سوق محلي كامل للمنتجات الطازجة يعمل بالكامل داخل المتصفح دون أي خادم أو اتصال بالإنترنت. يتيح هذا التطبيق للمزارعين والموزّعين إضافة منتجاتهم مع تحديد الاسم والفئة والسعر ووحدة البيع والكمية المتاحة والموسمية، ثم يظهر للمشترين كمتجر أنيق قابل للتصفح والبحث والتصفية حسب الفئة والموسم. عند إتمام الشراء يُخصم المخزون تلقائياً وتُولّد فاتورة قابلة للطباعة، مع حفظ المنتجات والطلبات محلياً في متصفحك، ولوحة تقارير تعرض إجمالي المبيعات والأكثر طلباً وسجل الطلبات، وإمكانية تصدير واستيراد نسخة احتياطية بسهولة، كل ذلك بواجهة عربية كاملة تدعم الاتجاه من اليمين إلى اليسار.</p>
+
+<div class="app">
+  <div class="row app-nav">
+    <button id="tabStore" class="button">المتجر</button>
+    <button id="tabAdd" class="button sec">إضافة منتج</button>
+    <button id="tabCart" class="button sec">سلة الشراء</button>
+    <button id="tabReports" class="button sec">التقارير</button>
+    <button id="tabBackup" class="button sec">نسخ احتياطي</button>
+  </div>
+
+  <section id="secStore" class="app-section app-active">
+    <h2>تصفح المنتجات المتاحة</h2>
+    <div class="row">
+      <label>البحث
+        <input id="searchInput" class="input" type="text" placeholder="ابحث باسم المنتج أو المُنتِج">
+      </label>
+      <label>الفئة
+        <select id="categoryFilter" class="select">
+          <option value="">كل الفئات</option>
+          <option value="خضروات">خضروات</option>
+          <option value="فواكه">فواكه</option>
+          <option value="حبوب">حبوب</option>
+          <option value="أعشاب">أعشاب</option>
+          <option value="ألبان">ألبان</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </label>
+      <label>الموسم
+        <select id="seasonFilter" class="select">
+          <option value="">كل المواسم</option>
+          <option value="طوال السنة">طوال السنة</option>
+          <option value="الربيع">الربيع</option>
+          <option value="الصيف">الصيف</option>
+          <option value="الخريف">الخريف</option>
+          <option value="الشتاء">الشتاء</option>
+        </select>
+      </label>
+      <button id="resetFilters" class="button sec">إعادة ضبط الفلاتر</button>
+    </div>
+    <p id="storeMsg" class="app-msg"></p>
+    <div id="productGrid" class="app-grid"></div>
+    <p id="storeEmpty" class="app-empty"></p>
+  </section>
+
+  <section id="secAdd" class="app-section">
+    <h2>إضافة منتج جديد</h2>
+    <div class="row app-row">
+      <label>اسم المنتج
+        <input id="productName" class="input" type="text" placeholder="مثال: طماطم بلدي">
+      </label>
+      <label>الفئة
+        <select id="productCategory" class="select">
+          <option value="خضروات">خضروات</option>
+          <option value="فواكه">فواكه</option>
+          <option value="حبوب">حبوب</option>
+          <option value="أعشاب">أعشاب</option>
+          <option value="ألبان">ألبان</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </label>
+      <label>السعر
+        <input id="productPrice" class="input" type="number" min="0" step="0.01" placeholder="0.00">
+      </label>
+      <label>وحدة البيع
+        <select id="productUnit" class="select">
+          <option value="كغ">كغ</option>
+          <option value="قطعة">قطعة</option>
+          <option value="ربطة">ربطة</option>
+          <option value="صندوق">صندوق</option>
+          <option value="لتر">لتر</option>
+          <option value="دستة">دستة</option>
+        </select>
+      </label>
+      <label>الكمية المتاحة
+        <input id="productQty" class="input" type="number" min="0" step="1" placeholder="0">
+      </label>
+      <label>الموسمية
+        <select id="productSeason" class="select">
+          <option value="طوال السنة">طوال السنة</option>
+          <option value="الربيع">الربيع</option>
+          <option value="الصيف">الصيف</option>
+          <option value="الخريف">الخريف</option>
+          <option value="الشتاء">الشتاء</option>
+        </select>
+      </label>
+      <label>اسم المُنتِج أو الموزّع
+        <input id="producerName" class="input" type="text" placeholder="مثال: مزرعة الوادي">
+      </label>
+    </div>
+    <div class="row">
+      <button id="addProductBtn" class="button">إضافة المنتج إلى السوق</button>
+      <button id="resetFormBtn" class="button sec">تفريغ حقول النموذج</button>
+    </div>
+    <p id="formMsg" class="app-msg"></p>
+  </section>
+
+  <section id="secCart" class="app-section">
+    <h2>سلة الشراء والفاتورة</h2>
+    <div id="cartList" class="app-noprint"></div>
+    <div class="row app-noprint">
+      <label>اسم المشتري
+        <input id="buyerName" class="input" type="text" placeholder="الاسم الكامل">
+      </label>
+      <label>رقم الهاتف (اختياري)
+        <input id="buyerPhone" class="input" type="text" placeholder="مثال: 09xxxxxxxx">
+      </label>
+    </div>
+    <p class="big app-total app-noprint" id="cartTotal">0</p>
+    <div class="row app-noprint">
+      <button id="checkoutBtn" class="button">تأكيد الشراء وتوليد الفاتورة</button>
+      <button id="clearCartBtn" class="button sec">إفراغ السلة</button>
+      <button id="printInvoiceBtn" class="button sec">طباعة الفاتورة</button>
+    </div>
+    <p id="cartMsg" class="app-msg app-noprint"></p>
+    <div id="invoiceOut" class="out"></div>
+  </section>
+
+  <section id="secReports" class="app-section">
+    <h2>لوحة التقارير والإحصاءات</h2>
+    <div id="reportsOut"></div>
+    <div id="topProducts" class="app-block"></div>
+    <div id="ordersList" class="app-block"></div>
+  </section>
+
+  <section id="secBackup" class="app-section">
+    <h2>النسخ الاحتياطي والاستيراد</h2>
+    <div class="row">
+      <button id="exportBtn" class="button">تصدير نسخة احتياطية كملف</button>
+      <label>استيراد نسخة احتياطية
+        <input id="importFile" class="input" type="file" accept=".json,application/json">
+      </label>
+      <button id="clearAllBtn" class="button sec">حذف جميع البيانات</button>
+    </div>
+    <p id="backupMsg" class="app-msg"></p>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت أو خادم؟</h3><p>نعم، كل الوظائف تعمل داخل المتصفح فقط، وتُحفظ البيانات في localStorage، ولا تتم أي اتصالات شبكية.</p><h3>كيف يُدار المخزون عند كل عملية شراء؟</h3><p>عند تأكيد الطلب تُخصم الكميات المشتراة من الكمية المتاحة لكل منتج، ويظهر المنتج كـ«نفدت الكمية» عند وصول الرصيد إلى صفر.</p><h3>هل يمكن طباعة الفاتورة؟</h3><p>نعم، بعد تأكيد الشراء اضغط «طباعة الفاتورة»، وسيُعرض الطلب بتنسيق مناسب للطباعة مع رقم الفاتورة والبنود والإجمالي.</p><h3>كيف أنقل بياناتي إلى جهاز آخر؟</h3><p>استخدم «تصدير نسخة احتياطية كملف» لحفظ ملف JSON، ثم «استيراد نسخة احتياطية» في الجهاز الآخر لاستعادة المنتجات والطلبات.</p><h3>ماذا تعرض لوحة التقارير؟</h3><p>تعرض إجمالي المبيعات وعدد الطلبات والوحدات المباعة، إضافة إلى المنتجات الأكثر طلباً وسجل كامل بالطلبات المحفوظة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-14 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var K={p:'fm_products',o:'fm_orders',c:'fm_cart',s:'fm_seeded'};
+  function lsGet(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  var products=lsGet(K.p,[]), orders=lsGet(K.o,[]), cart=lsGet(K.c,[]), lastInvoice=null;
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+  function money(n){return (Number(n)||0).toFixed(2)+' ر.س';}
+  function findP(id){for(var i=0;i<products.length;i++){if(products[i].id===id)return products[i];}return null;}
+  function setMsg(id,text,cls){var el=$(id);el.textContent=text;el.className='app-msg'+(cls?' '+cls:'');}
+
+  function seed(){
+    if(products.length===0&&!lsGet(K.s,false)){
+      products=[
+        {id:uid(),name:'طماطم بلدي',category:'خضروات',price:6,unit:'كغ',qty:40,season:'الصيف',producer:'مزرعة الوادي'},
+        {id:uid(),name:'خيار طازج',category:'خضروات',price:5,unit:'كغ',qty:30,season:'الصيف',producer:'مزرعة الوادي'},
+        {id:uid(),name:'برتقال',category:'فواكه',price:8,unit:'كغ',qty:25,season:'الشتاء',producer:'بستان الجنوب'},
+        {id:uid(),name:'عسل جبلي',category:'أخرى',price:60,unit:'كغ',qty:10,season:'طوال السنة',producer:'منحل الجبال'},
+        {id:uid(),name:'عدس',category:'حبوب',price:12,unit:'كغ',qty:50,season:'طوال السنة',producer:'تعاونية الحقول'},
+        {id:uid(),name:'نعناع',category:'أعشاب',price:3,unit:'ربطة',qty:20,season:'الربيع',producer:'مزرعة الوادي'}
+      ];
+      lsSet(K.p,products); lsSet(K.s,true);
+    }
+  }
+
+  function renderStore(){
+    var q=($('searchInput').value||'').trim().toLowerCase();
+    var cat=$('categoryFilter').value, sea=$('seasonFilter').value;
+    var list=products.filter(function(p){
+      var okQ=!q||p.name.toLowerCase().indexOf(q)>-1||p.producer.toLowerCase().indexOf(q)>-1;
+      var okC=!cat||p.category===cat;
+      var okS=!sea||p.season===sea;
+      return okQ&&okC&&okS;
+    });
+    var g=$('productGrid'); g.innerHTML='';
+    if(list.length===0){
+      $('storeEmpty').style.display='block';
+      $('storeEmpty').textContent=products.length?'لا توجد منتجات مطابقة للبحث أو التصفية الحالية.':'لا توجد منتجات بعد. افتح «إضافة منتج» لإدخال أول منتج.';
+      return;
+    }
+    $('storeEmpty').style.display='none';
+    list.forEach(function(p){
+      var out=p.qty<=0;
+      var card=document.createElement('div');
+      card.className='card app-prod';
+      card.innerHTML='<h3>'+esc(p.name)+'</h3>'+
+        '<p class="app-meta">المُنتِج: '+esc(p.producer)+'</p>'+
+        '<p class="app-meta">الفئة: '+esc(p.category)+' • الموسم: '+esc(p.season)+'</p>'+
+        '<p class="app-price">'+money(p.price)+' / '+esc(p.unit)+'</p>'+
+        '<p class="app-meta">المتاح: '+p.qty+' '+esc(p.unit)+'</p>'+
+        '<button id="add_'+p.id+'" class="button" data-act="add" data-id="'+p.id+'"'+(out?' disabled':'')+'>'+(out?'نفدت الكمية':'أضف إلى السلة')+'</button>';
+      g.appendChild(card);
+    });
+  }
+
+  function addToCart(id){
+    var p=findP(id);
+    if(!p){setMsg('storeMsg','تعذّر العثور على المنتج.','app-err');return;}
+    if(p.qty<=0){setMsg('storeMsg','هذا المنتج نفدت كميته.','app-err');return;}
+    var it=null;
+    for(var i=0;i<cart.length;i++){if(cart[i].productId===id){it=cart[i];break;}}
+    var cur=it?it.qty:0;
+    if(cur>=p.qty){setMsg('storeMsg','لا يمكن إضافة أكثر من الكمية المتاحة ('+p.qty+').','app-err');return;}
+    if(it){it.qty=cur+1;}else{cart.push({productId:id,qty:1});}
+    lsSet(K.c,cart); renderCart();
+    setMsg('storeMsg','تمت إضافة «'+p.name+'» إلى السلة.','');
+  }
+
+  function renderCart(){
+    var box=$('cartList'); box.innerHTML='';
+    cart=cart.filter(function(c){return findP(c.productId);});
+    var total=0;
+    if(cart.length===0){
+      box.innerHTML='<p class="app-empty">السلة فارغة. أضف منتجات من تبويب «المتجر».</p>';
+    }
+    cart.forEach(function(c){
+      var p=findP(c.productId);
+      if(c.qty>p.qty)c.qty=p.qty;
+      if(c.qty<1)c.qty=1;
+      var line=p.price*c.qty; total+=line;
+      var row=document.createElement('div');
+      row.className='app-cart-item';
+      row.innerHTML='<span>'+esc(p.name)+' <span class="app-meta">('+money(p.price)+' / '+esc(p.unit)+')</span></span>'+
+        '<span><input id="qty_'+p.id+'" class="input app-qty" data-act="qty" data-id="'+p.id+'" type="number" min="1" max="'+p.qty+'" value="'+c.qty+'"> '+
+        '<span id="line_'+p.id+'" class="app-total">'+money(line)+'</span> '+
+        '<button id="rm_'+p.id+'" class="button sec" data-act="rm" data-id="'+p.id+'">إزالة</button></span>';
+      box.appendChild(row);
+    });
+    $('cartTotal').textContent=money(total);
+    lsSet(K.c,cart);
+  }
+
+  function updateCartTotals(){
+    var total=0;
+    cart.forEach(function(c){
+      var p=findP(c.productId); if(!p)return;
+      var line=p.price*c.qty; total+=line;
+      var el=$('line_'+p.id); if(el)el.textContent=money(line);
+    });
+    $('cartTotal').textContent=money(total);
+  }
+
+  function renderInvoice(){
+    var box=$('invoiceOut');
+    if(!lastInvoice){box.innerHTML='<p class="app-empty">لا توجد فاتورة بعد. أضف منتجات ثم اضغط «تأكيد الشراء».</p>';return;}
+    var o=lastInvoice;
+    var rows=o.items.map(function(it){
+      return '<tr><td>'+esc(it.name)+'</td><td>'+it.qty+' '+esc(it.unit)+'</td><td>'+money(it.price)+'</td><td>'+money(it.line)+'</td></tr>';
+    }).join('');
+    box.innerHTML='<div class="app-invoice"><h3>فاتورة طلب رقم '+o.no+'</h3>'+
+      '<p>التاريخ: '+new Date(o.date).toLocaleString('ar-EG')+'</p>'+
+      '<p>المشتري: '+esc(o.buyer)+(o.phone?' — الهاتف: '+esc(o.phone):'')+'</p>'+
+      '<table class="app-table"><thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>إجمالي البند</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p class="big app-total">الإجمالي المستحق: '+money(o.total)+'</p></div>';
+  }
+
+  function checkout(){
+    if(cart.length===0){setMsg('cartMsg','السلة فارغة، لا يمكن إتمام الطلب.','app-err');return;}
+    var buyer=$('buyerName').value.trim();
+    if(!buyer){setMsg('cartMsg','يرجى إدخال اسم المشتري.','app-err');return;}
+    for(var i=0;i<cart.length;i++){
+      var p=findP(cart[i].productId);
+      if(!p){setMsg('cartMsg','أحد المنتجات لم يعد متوفراً في السوق.','app-err');return;}
+      if(cart[i].qty>p.qty){setMsg('cartMsg','الكمية المطلوبة من «'+p.name+'» تتجاوز المتاح ('+p.qty+' '+p.unit+').','app-err');return;}
+    }
+    var items=[], total=0;
+    cart.forEach(function(c){
+      var p=findP(c.productId);
+      p.qty-=c.qty;
+      var line=p.price*c.qty; total+=line;
+      items.push({name:p.name,unit:p.unit,price:p.price,qty:c.qty,line:line,producer:p.producer});
+    });
+    lastInvoice={id:uid(),no:orders.length+1,date:new Date().toISOString(),buyer:buyer,phone:$('buyerPhone').value.trim(),items:items,total:total};
+    orders.push(lastInvoice);
+    lsSet(K.o,orders); lsSet(K.p,products);
+    cart=[]; lsSet(K.c,cart);
+    renderStore(); renderCart(); renderReports(); renderInvoice();
+    $('buyerName').value=''; $('buyerPhone').value='';
+    setMsg('cartMsg','تم إنشاء الطلب بنجاح وخصم الكميات من المخزون. يمكنك طباعة الفاتورة الآن.','');
+  }
+
+  function renderReports(){
+    var totalSales=0, itemsSold=0;
+    orders.forEach(function(o){totalSales+=o.total; o.items.forEach(function(it){itemsSold+=it.qty;});});
+    $('reportsOut').innerHTML='<div class="app-rep">'+
+      '<div class="card"><span class="big">'+orders.length+'</span>عدد الطلبات</div>'+
+      '<div class="card"><span class="big">'+money(totalSales)+'</span>إجمالي المبيعات</div>'+
+      '<div class="card"><span class="big">'+itemsSold+'</span>الوحدات المباعة</div>'+
+      '<div class="card"><span class="big">'+products.length+'</span>عدد المنتجات</div></div>';
+    var counts={};
+    orders.forEach(function(o){o.items.forEach(function(it){counts[it.name]=(counts[it.name]||0)+it.qty;});});
+    var arr=Object.keys(counts).map(function(k){return {name:k,qty:counts[k]};}).sort(function(a,b){return b.qty-a.qty;}).slice(0,5);
+    $('topProducts').innerHTML=arr.length===0
+      ? '<p class="app-empty">لا توجد مبيعات بعد لعرض المنتجات الأكثر طلباً.</p>'
+      : '<h3>الأكثر طلباً</h3><table class="app-table"><thead><tr><th>المنتج</th><th>الوحدات المباعة</th></tr></thead><tbody>'+arr.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td>'+r.qty+'</td></tr>';}).join('')+'</tbody></table>';
+    $('ordersList').innerHTML=orders.length===0
+      ? '<p class="app-empty">لا توجد طلبات محفوظة بعد.</p>'
+      : '<h3>سجل الطلبات</h3><table class="app-table"><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>المشتري</th><th>الإجمالي</th></tr></thead><tbody>'+orders.slice().reverse().map(function(o){return '<tr><td>'+o.no+'</td><td>'+new Date(o.date).toLocaleDateString('ar-EG')+'</td><td>'+esc(o.buyer)+'</td><td>'+money(o.total)+'</td></tr>';}).join('')+'</tbody></table>';
+  }
+
+  function resetForm(){
+    $('productName').value=''; $('productPrice').value=''; $('productQty').value=''; $('producerName').value='';
+    $('productCategory').value='خضروات'; $('productUnit').value='كغ'; $('productSeason').value='طوال السنة';
+  }
+
+  function addProduct(){
+    var name=$('productName').value.trim();
+    var producer=$('producerName').value.trim();
+    var price=parseFloat($('productPrice').value);
+    var qty=parseInt($('productQty').value,10);
+    if(!name){setMsg('formMsg','يرجى إدخال اسم المنتج.','app-err');return;}
+    if(!producer){setMsg('formMsg','يرجى إدخال اسم المُنتِج أو الموزّع.','app-err');return;}
+    if(isNaN(price)||price<=0){setMsg('formMsg','يرجى إدخال سعر صحيح أكبر من صفر.','app-err');return;}
+    if(isNaN(qty)||qty<0){setMsg('formMsg','يرجى إدخال كمية متاحة صحيحة (صفر أو أكثر).','app-err');return;}
+    products.push({id:uid(),name:name,category:$('productCategory').value,price:price,unit:$('productUnit').value,qty:qty,season:$('productSeason').value,producer:producer});
+    lsSet(K.p,products);
+    resetForm();
+    setMsg('formMsg','تمت إضافة «'+name+'» إلى السوق بنجاح.','');
+    renderStore(); renderReports();
+  }
+
+  function exportData(){
+    var data={app:'market-backup',version:1,exportedAt:new Date().toISOString(),products:products,orders:orders};
+    var a=document.createElement('a');
+    a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data));
+    a.download='market-backup.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setMsg('backupMsg','تم تصدير النسخة الاحتياطية ('+products.length+' منتج و'+orders.length+' طلب).','');
+  }
+
+  var tabs=[['tabStore','secStore'],['tabAdd','secAdd'],['tabCart','secCart'],['tabReports','secReports'],['tabBackup','secBackup']];
+  function show(sec){
+    tabs.forEach(function(t){
+      var on=t[1]===sec;
+      $(t[1]).className='app-section'+(on?' app-active':'');
+      $(t[0]).className=(t[0]==='tabStore'?'button':'button sec')+(on?' app-on':'');
+    });
+  }
+
+  $('productGrid').addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('[data-act="add"]');
+    if(b)addToCart(b.getAttribute('data-id'));
+  });
+  $('cartList').addEventListener('input',function(e){
+    var t=e.target;
+    if(!t.getAttribute||t.getAttribute('data-act')!=='qty')return;
+    var id=t.getAttribute('data-id'), p=findP(id);
+    if(!p)return;
+    var v=parseInt(t.value,10);
+    if(isNaN(v)||v<1)v=1;
+    if(v>p.qty)v=p.qty;
+    t.value=v;
+    for(var i=0;i<cart.length;i++){if(cart[i].productId===id)cart[i].qty=v;}
+    lsSet(K.c,cart); updateCartTotals();
+  });
+  $('cartList').addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('[data-act="rm"]');
+    if(!b)return;
+    var id=b.getAttribute('data-id');
+    cart=cart.filter(function(c){return c.productId!==id;});
+    lsSet(K.c,cart); renderCart();
+  });
+  $('searchInput').addEventListener('input',renderStore);
+  $('categoryFilter').addEventListener('change',renderStore);
+  $('seasonFilter').addEventListener('change',renderStore);
+  $('resetFilters').addEventListener('click',function(){
+    $('searchInput').value=''; $('categoryFilter').value=''; $('seasonFilter').value='';
+    setMsg('storeMsg','',''); renderStore();
+  });
+  $('addProductBtn').addEventListener('click',addProduct);
+  $('resetFormBtn').addEventListener('click',function(){resetForm(); setMsg('formMsg','','');});
+  $('checkoutBtn').addEventListener('click',checkout);
+  $('clearCartBtn').addEventListener('click',function(){cart=[]; lsSet(K.c,cart); renderCart(); setMsg('cartMsg','تم إفراغ السلة.','');});
+  $('printInvoiceBtn').addEventListener('click',function(){
+    if(!lastInvoice){setMsg('cartMsg','لا توجد فاتورة للطباعة. أكمل عملية شراء أولاً.','app-err');return;}
+    window.print();
+  });
+  $('exportBtn').addEventListener('click',exportData);
+  $('importFile').addEventListener('change',function(e){
+    var f=e.target.files&&e.target.files[0];
+    if(!f)return;
+    var r=new FileReader();
+    r.onload=function(){
+      try{
+        var d=JSON.parse(r.result);
+        if(!d||!Array.isArray(d.products)||!Array.isArray(d.orders))throw new Error('bad');
+        products=d.products; orders=d.orders;
+        lsSet(K.p,products); lsSet(K.o,orders); lsSet(K.s,true);
+        renderStore(); renderCart(); renderReports();
+        setMsg('backupMsg','تم استيراد النسخة الاحتياطية بنجاح.','');
+      }catch(err){setMsg('backupMsg','ملف غير صالح. اختر ملف نسخة احتياطية صحيحاً.','app-err');}
+      e.target.value='';
+    };
+    r.onerror=function(){setMsg('backupMsg','تعذّر قراءة الملف.','app-err');};
+    r.readAsText(f);
+  });
+  $('clearAllBtn').addEventListener('click',function(){
+    if(!confirm('هل تريد حذف جميع المنتجات والطلبات والسلة نهائياً؟'))return;
+    products=[]; orders=[]; cart=[]; lastInvoice=null;
+    lsSet(K.p,[]); lsSet(K.o,[]); lsSet(K.c,[]); lsSet(K.s,true);
+    renderStore(); renderCart(); renderReports(); renderInvoice();
+    setMsg('backupMsg','تم حذف جميع البيانات المحلية.','');
+  });
+  tabs.forEach(function(t){$(t[0]).addEventListener('click',function(){show(t[1]);});});
+
+  seed();
+  show('secStore');
+  renderStore(); renderCart(); renderReports(); renderInvoice();
+})();
+</script>
+</body>
+</html>
