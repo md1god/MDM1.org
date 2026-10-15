@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق متابعة نوم ورعاية الرضيع | MDM1</title>
+<meta name="description" content="تطبيق عربي كامل داخل المتصفح لتسجيل نوم الرضيع وأطعمه وحفاضاته ووقت بطنه مع إحصائيات ورسم زمني وتنبؤ وحفظ محلي وصادرات واستيرادات">
+<link rel="canonical" href="https://mdm1.org/apps/cradle-day-tracker.html">
+<meta property="og:title" content="تطبيق متابعة نوم ورعاية الرضيع">
+<meta property="og:description" content="تطبيق عربي كامل داخل المتصفح لتسجيل نوم الرضيع وأطعمه وحفاضاته ووقت بطنه مع إحصائيات ورسم زمني وتنبؤ وحفظ محلي وصادرات واستيرادات">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/cradle-day-tracker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: right;
+  direction: rtl;
+}
+.app .card {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+.app .row {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: .8rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.app .row.wrap {
+  flex-wrap: wrap;
+}
+.app .row.gap {
+  gap: .6rem;
+}
+.app .field {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  flex: 1 1 14rem;
+}
+.app .field.top {
+  margin-top: .6rem;
+}
+.app .label {
+  color: var(--light);
+  font-size: .95rem;
+}
+.app .hint {
+  color: var(--gold-dim);
+  font-size: .85rem;
+}
+.app .muted {
+  color: var(--gold-dim);
+  opacity: .9;
+}
+.app .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: .8rem;
+}
+.app .grid.two {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.app .out {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 25%, transparent);
+  border-radius: .6rem;
+  padding: .8rem;
+  background: color-mix(in srgb, var(--dark) 92%, var(--gold-dim) 8%);
+}
+.app .big {
+  font-size: 2rem;
+  color: var(--gold-bright);
+}
+.app .small {
+  font-size: .9rem;
+}
+.app .line {
+  font-size: .95rem;
+}
+.app .badge {
+  display: inline-flex;
+  gap: .3rem;
+  padding: .25rem .55rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+  font-size: .88rem;
+}
+.app .sub {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.app .divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--gold) 30%, transparent), transparent);
+}
+.app .list {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.app .item {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 25%, transparent);
+  border-radius: .6rem;
+  padding: .7rem .8rem;
+}
+.app .item-head {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+.app .item-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+.app .empty {
+  text-align: center;
+  color: var(--gold-dim);
+  padding: .6rem 0;
+}
+.app .bars {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+  gap: .4rem;
+  height: 8rem;
+  padding-top: .4rem;
+}
+.app .bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  flex: 1 1 1rem;
+}
+.app .bar {
+  width: 100%;
+  min-height: .25rem;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border-radius: .3rem .3rem 0 0;
+}
+.app .bar-label {
+  font-size: .8rem;
+  color: var(--gold-dim);
+}
+.app .file {
+  position: relative;
+  overflow: hidden;
+}
+.app .file input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "متابعة نوم الرضيع والأطعمة والحفاضات ووقت البطن", "url": "https://mdm1.org/apps/cradle-day-tracker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل داخل المتصفح ولا يرسل أي بيانات لخادم. كل شيء يُحفظ في localStorage."}}, {"@type": "Question", "name": "هل يمكنني تعديل أو حذف حدث بعد إضافته؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، في السجل الزمني توجد أزرار \"تعديل\" و\"حذف\" لكل حدث مباشرة."}}, {"@type": "Question", "name": "كيف يحسب التنبؤ للرضاعة أو النوم القادم؟", "acceptedAnswer": {"@type": "Answer", "text": "يأخذ متوسط الفارق الزمني بين آخر ٣ أحداث من نفس النوع على الأقل، ثم يضيفه لوقت آخر حدث."}}, {"@type": "Question", "name": "هل يمكن تصدير واستيراد البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تصدير البيانات كنص JSON، أو استيراد ملف JSON صالح لاستعادة السجل بالكامل."}}, {"@type": "Question", "name": "هل يضيع السجل عند مسح ذاكرة المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "إذا قمت بمسح بيانات الموقع أو localStorage لهذا النطاق، ستفقد السجل. يفضل الاحتفاظ بنسخة تصدير دورية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">متابعة نوم الرضيع والأطعمة والحفاضات ووقت البطن</h1>
+  <p class="page-sub">تطبيق عربي كامل داخل المتصفح لتسجيل نوم الرضيع وأطعمه وحفاضاته ووقت بطنه مع إحصائيات ورسم زمني وتنبؤ وحفظ محلي وصادرات واستيرادات</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك متابعة كل ما يهم رضيعك من نوم ورضعات وحفاضات ووقت البطن مباشرة من هنا دون أي حساب أو اتصال. يعمل هذا التطبيق بالكامل داخل صفحتك ويحفظ كل بياناتك محليًا على جهازك فقط. ستجد سجلًا زمنيًا قابلًا للتعديل والحذف، وإحصائيات لمجموع الساعات وعدد الرضعات والتغييرات خلال اليوم واليوم السابق، ورسوماً مبسطة لاتجاهات النوم والرضاعة، وتنبؤًا تقريبيًا للحدث القادم بناءً على متوسط الفترات السابقة، مع إمكانية تصدير واستيراد البيانات.</p>
+
+<div id="babyApp" class="app" dir="rtl" lang="ar">
+
+  <div class="card">
+    <div class="row">
+      <div class="field">
+        <label class="label" for="dateInput">تاريخ الحدث</label>
+        <input class="input" type="date" id="dateInput">
+      </div>
+      <div class="field">
+        <label class="label" for="typeSelect">نوع الحدث</label>
+        <select class="select" id="typeSelect">
+          <option value="sleep">نوم</option>
+          <option value="feed">رضاعة</option>
+          <option value="diaper">حفاض</option>
+          <option value="tummy">وقت البطن</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label class="label" for="startInput">وقت البدء</label>
+        <input class="input" type="time" id="startInput">
+      </div>
+      <div class="field">
+        <label class="label" for="endInput">وقت الانتهاء</label>
+        <input class="input" type="time" id="endInput">
+        <small class="hint">يُترك فارغًا لحدث لحظي مثل رضاعة أو تغيير حفاض</small>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="noteInput">ملاحظات</label>
+      <textarea class="textarea" id="noteInput" rows="2" placeholder="مثال: رضاعة يمين، استيقاظ هادئ"></textarea>
+    </div>
+
+    <div class="row gap">
+      <button class="button" id="addBtn" type="button">إضافة حدث</button>
+      <button class="button sec" id="saveEditBtn" type="button" hidden>حفظ التعديل</button>
+      <button class="button sec" id="cancelEditBtn" type="button" hidden>إلغاء التعديل</button>
+    </div>
+    <input type="hidden" id="editId">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2 class="sub">لوحة التحكم</h2>
+    <div class="grid">
+      <div class="out">
+        <div class="small">اليوم الحالي</div>
+        <div class="big" id="todayHours">٠٫٠</div>
+        <div class="small">ساعات نوم</div>
+        <div class="row wrap">
+          <span class="badge">رضعات: <span id="todayFeeds">٠</span></span>
+          <span class="badge">تغييرات حفاض: <span id="todayDiapers">٠</span></span>
+          <span class="badge">وقت البطن: <span id="todayTummyMin">٠</span> د</span>
+        </div>
+      </div>
+      <div class="out">
+        <div class="small">اليوم السابق</div>
+        <div class="big" id="prevHours">٠٫٠</div>
+        <div class="small">ساعات نوم</div>
+        <div class="row wrap">
+          <span class="badge">رضعات: <span id="prevFeeds">٠</span></span>
+          <span class="badge">تغييرات حفاض: <span id="prevDiapers">٠</span></span>
+          <span class="badge">وقت البطن: <span id="prevTummyMin">٠</span> د</span>
+        </div>
+      </div>
+      <div class="out">
+        <div class="small">تنبؤ تقريبي</div>
+        <div class="line">الرضاعة القادمة: <span id="nextFeed">غير كافي</span></div>
+        <div class="line">النوم القادم: <span id="nextSleep">غير كافي</span></div>
+        <div class="small muted">يحسب بناءً على متوسط الفترات بين آخر ٣ أحداث متشابهة إن وُجدت</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2 class="sub">اتجاهات مبسطة</h2>
+    <div class="grid two">
+      <div class="out">
+        <div class="small">نوم خلال آخر ٧ أيام</div>
+        <div id="chartSleep" class="bars"></div>
+        <div class="small muted">كل عمود = مجموع ساعات النوم لليوم</div>
+      </div>
+      <div class="out">
+        <div class="small">رضاعات خلال آخر ٧ أيام</div>
+        <div id="chartFeed" class="bars"></div>
+        <div class="small muted">كل عمود = عدد الرضعات لليوم</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2 class="sub">السجل الزمني</h2>
+    <div class="list" id="timelineList"></div>
+    <div id="emptyState" class="empty">لا توجد أحداث بعد. أضف أول حدث من الأعلى.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2 class="sub">البيانات</h2>
+    <div class="row wrap gap">
+      <button class="button sec" id="exportBtn" type="button">تصدير البيانات كنص</button>
+      <label class="file">
+        <input type="file" id="importFile" accept="application/json,.json,text/json">
+        <span class="button sec">استيراد بيانات من ملف JSON</span>
+      </label>
+      <button class="button sec" id="clearBtn" type="button">مسح كل البيانات</button>
+    </div>
+    <div class="field top">
+      <label class="label" for="dataOut">محتوى التصدير / معاينة الاستيراد</label>
+      <textarea class="textarea" id="dataOut" rows="4" readonly></textarea>
+      <small class="hint">لا يتم رفع أي شيء. الحفظ يتم فقط في localStorage على هذا الجهاز.</small>
+    </div>
+  </div>
+
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون إنترنت؟</h3><p>نعم، يعمل بالكامل داخل المتصفح ولا يرسل أي بيانات لخادم. كل شيء يُحفظ في localStorage.</p><h3>هل يمكنني تعديل أو حذف حدث بعد إضافته؟</h3><p>نعم، في السجل الزمني توجد أزرار &quot;تعديل&quot; و&quot;حذف&quot; لكل حدث مباشرة.</p><h3>كيف يحسب التنبؤ للرضاعة أو النوم القادم؟</h3><p>يأخذ متوسط الفارق الزمني بين آخر ٣ أحداث من نفس النوع على الأقل، ثم يضيفه لوقت آخر حدث.</p><h3>هل يمكن تصدير واستيراد البيانات؟</h3><p>نعم، يمكنك تصدير البيانات كنص JSON، أو استيراد ملف JSON صالح لاستعادة السجل بالكامل.</p><h3>هل يضيع السجل عند مسح ذاكرة المتصفح؟</h3><p>إذا قمت بمسح بيانات الموقع أو localStorage لهذا النطاق، ستفقد السجل. يفضل الاحتفاظ بنسخة تصدير دورية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var LS_KEY = "baby_app_data_v1";
+
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  function pad(n) {
+    return n < 10 ? "0" + n : String(n);
+  }
+
+  function toDateStr(d) {
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+
+  function nowDateStr() {
+    return toDateStr(new Date());
+  }
+
+  function nowTimeStr() {
+    var d = new Date();
+    return pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  function minToHM(min) {
+    if (min <= 0) return "٠٫٠";
+    var h = Math.floor(min / 60);
+    var m = min % 60;
+    if (m === 0) return h + "٫٠";
+    var mStr = m < 10 ? "٠" + m : String(m);
+    return h + "٫" + mStr;
+  }
+
+  function timeToMin(t) {
+    if (!t) return NaN;
+    var p = t.split(":");
+    var hh = Number(p[0]);
+    var mm = Number(p[1]) || 0;
+    if (isNaN(hh)) return NaN;
+    return hh * 60 + mm;
+  }
+
+  function diffMin(a, b) {
+    if (isNaN(a) || isNaN(b)) return NaN;
+    var v = b - a;
+    if (v < 0) v = v + 24 * 60;
+    return v;
+  }
+
+  function sameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  function addDays(d, n) {
+    var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() + n);
+    return x;
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return [];
+      var obj = JSON.parse(raw);
+      if (Array.isArray(obj)) return obj;
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function save(list) {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(list));
+    } catch (e) {
+    }
+  }
+
+  var dateInput = $("dateInput");
+  var typeSelect = $("typeSelect");
+  var startInput = $("startInput");
+  var endInput = $("endInput");
+  var noteInput = $("noteInput");
+  var addBtn = $("addBtn");
+  var saveEditBtn = $("saveEditBtn");
+  var cancelEditBtn = $("cancelEditBtn");
+  var editId = $("editId");
+  var timelineList = $("timelineList");
+  var emptyState = $("emptyState");
+  var todayHours = $("todayHours");
+  var prevHours = $("prevHours");
+  var todayFeeds = $("todayFeeds");
+  var prevFeeds = $("prevFeeds");
+  var todayDiapers = $("todayDiapers");
+  var prevDiapers = $("prevDiapers");
+  var todayTummyMin = $("todayTummyMin");
+  var prevTummyMin = $("prevTummyMin");
+  var nextFeed = $("nextFeed");
+  var nextSleep = $("nextSleep");
+  var chartSleep = $("chartSleep");
+  var chartFeed = $("chartFeed");
+  var exportBtn = $("exportBtn");
+  var importFile = $("importFile");
+  var clearBtn = $("clearBtn");
+  var dataOut = $("dataOut");
+
+  var list = load();
+
+  function uid() {
+    var t = Date.now();
+    var r = Math.floor(Math.random() * 1000000);
+    return "e_" + t + "_" + r;
+  }
+
+  function setEditMode(on, id, item) {
+    if (on) {
+      addBtn.hidden = true;
+      saveEditBtn.hidden = false;
+      cancelEditBtn.hidden = false;
+      editId.value = id || "";
+      if (item) {
+        dateInput.value = item.date || nowDateStr();
+        typeSelect.value = item.type || "sleep";
+        startInput.value = item.start || nowTimeStr();
+        endInput.value = item.end || "";
+        noteInput.value = item.note || "";
+      }
+    } else {
+      addBtn.hidden = false;
+      saveEditBtn.hidden = true;
+      cancelEditBtn.hidden = true;
+      editId.value = "";
+      dateInput.value = nowDateStr();
+      typeSelect.value = "sleep";
+      startInput.value = nowTimeStr();
+      endInput.value = "";
+      noteInput.value = "";
+    }
+  }
+
+  function typeAr(t) {
+    if (t === "feed") return "رضاعة";
+    if (t === "diaper") return "حفاض";
+    if (t === "tummy") return "وقت البطن";
+    return "نوم";
+  }
+
+  function renderTimeline() {
+    timelineList.innerHTML = "";
+    if (list.length === 0) {
+      emptyState.style.display = "block";
+    } else {
+      emptyState.style.display = "none";
+      var sorted = list.slice().sort(function (a, b) {
+        var da = a.date + " " + (a.start || "00:00");
+        var db = b.date + " " + (b.start || "00:00");
+        if (da < db) return -1;
+        if (da > db) return 1;
+        return 0;
+      });
+      for (var i = 0; i < sorted.length; i++) {
+        var it = sorted[i];
+        var dur = "";
+        if (it.type === "sleep" || it.type === "tummy") {
+          var sm = timeToMin(it.start);
+          var em = timeToMin(it.end);
+          if (!isNaN(sm) && !isNaN(em)) {
+            var dm = diffMin(sm, em);
+            if (dm > 0) dur = "المدة: " + Math.round(dm) + " دقيقة";
+          }
+        }
+        var wrap = document.createElement("div");
+        wrap.className = "item";
+        var head = document.createElement("div");
+        head.className = "item-head";
+        var left = document.createElement("div");
+        left.className = "line";
+        left.textContent = it.date + " | " + (it.start || "--:--") + (it.end ? " – " + it.end : "") + " | " + typeAr(it.type) + (dur ? " | " + dur : "");
+        var acts = document.createElement("div");
+        acts.className = "item-actions";
+        var edit = document.createElement("button");
+        edit.className = "button sec";
+        edit.type = "button";
+        edit.textContent = "تعديل";
+        edit.onclick = (function (id, item) {
+          return function () {
+            setEditMode(true, id, item);
+            window.scrollTo({ top: 0, behavior: "auto" });
+          };
+        })(it.id, it);
+        var del = document.createElement("button");
+        del.className = "button sec";
+        del.type = "button";
+        del.textContent = "حذف";
+        del.onclick = (function (id) {
+          return function () {
+            var nl = [];
+            for (var j = 0; j < list.length; j++) {
+              if (list[j].id !== id) nl.push(list[j]);
+            }
+            list = nl;
+            save(list);
+            setEditMode(false);
+            renderAll();
+          };
+        })(it.id);
+        acts.appendChild(edit);
+        acts.appendChild(del);
+        head.appendChild(left);
+        head.appendChild(acts);
+        wrap.appendChild(head);
+        if (it.note) {
+          var note = document.createElement("div");
+          note.className = "small muted";
+          note.textContent = "ملاحظات: " + it.note;
+          wrap.appendChild(note);
+        }
+        timelineList.appendChild(wrap);
+      }
+    }
+  }
+
+  function getDayAgg(baseDate) {
+    var start = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+    var end = addDays(start, 1);
+    var sleepMin = 0;
+    var feeds = 0;
+    var diapers = 0;
+    var tummyMin = 0;
+    for (var i = 0; i < list.length; i++) {
+      var it = list[i];
+      var d = new Date(it.date + "T00:00:00");
+      if (d >= start && d < end) {
+        if (it.type === "sleep") {
+          var sm = timeToMin(it.start);
+          var em = timeToMin(it.end);
+          if (!isNaN(sm) && !isNaN(em)) sleepMin += diffMin(sm, em);
+        } else if (it.type === "feed") {
+          feeds++;
+        } else if (it.type === "diaper") {
+          diapers++;
+        } else if (it.type === "tummy") {
+          var tsm = timeToMin(it.start);
+          var tem = timeToMin(it.end);
+          if (!isNaN(tsm) && !isNaN(tem)) tummyMin += diffMin(tsm, tem);
+        }
+      }
+    }
+    return { sleepMin: sleepMin, feeds: feeds, diapers: diapers, tummyMin: tummyMin };
+  }
+
+  function renderStats() {
+    var today = new Date();
+    var prev = addDays(today, -1);
+    var t = getDayAgg(today);
+    var p = getDayAgg(prev);
+    todayHours.textContent = minToHM(t.sleepMin);
+    prevHours.textContent = minToHM(p.sleepMin);
+    todayFeeds.textContent = String(t.feeds);
+    prevFeeds.textContent = String(p.feeds);
+    todayDiapers.textContent = String(t.diapers);
+    prevDiapers.textContent = String(p.diapers);
+    todayTummyMin.textContent = String(Math.round(t.tummyMin));
+    prevTummyMin.textContent = String(Math.round(p.tummyMin));
+  }
+
+  function avgInterval(type) {
+    var items = [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].type === type) items.push(list[i]);
+    }
+    if (items.length < 2) return NaN;
+    items.sort(function (a, b) {
+      var da = new Date(a.date + "T" + (a.start || "00:00") + ":00");
+      var db = new Date(b.date + "T" + (b.start || "00:00") + ":00");
+      return da.getTime() - db.getTime();
+    });
+    var last = items[items.length - 1];
+    var sum = 0;
+    var cnt = 0;
+    for (var j = 0; j < items.length - 1; j++) {
+      var x = new Date(items[j].date + "T" + (items[j].start || "00:00") + ":00");
+      var y = new Date(items[j + 1].date + "T" + (items[j + 1].start || "00:00") + ":00");
+      var diffh = (y.getTime() - x.getTime()) / 60000;
+      if (diffh > 0 && diffh < 24 * 60 * 2) {
+        sum += diffh;
+        cnt++;
+      }
+    }
+    if (cnt === 0) return NaN;
+    var avg = sum / cnt;
+    var ldt = new Date(last.date + "T" + (last.start || "00:00") + ":00");
+    var nxt = new Date(ldt.getTime() + avg * 60000);
+    return { avgMin: Math.round(avg), next: nxt };
+  }
+
+  function fmtDT(d) {
+    return toDateStr(d) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  function renderPred() {
+    var af = avgInterval("feed");
+    var as = avgInterval("sleep");
+    if (isNaN(af)) {
+      nextFeed.textContent = "غير كافي";
+    } else {
+      nextFeed.textContent = fmtDT(af.next) + " (متوسط " + af.avgMin + " دقيقة)";
+    }
+    if (isNaN(as)) {
+      nextSleep.textContent = "غير كافي";
+    } else {
+      nextSleep.textContent = fmtDT(as.next) + " (متوسط " + as.avgMin + " دقيقة)";
+    }
+  }
+
+  function renderBars() {
+    chartSleep.innerHTML = "";
+    chartFeed.innerHTML = "";
+    var today = new Date();
+    var maxS = 1;
+    var maxF = 1;
+    var rowsS = [];
+    var rowsF = [];
+    for (var k = 6; k >= 0; k--) {
+      var d = addDays(today, -k);
+      var ag = getDayAgg(d);
+      if (ag.sleepMin > maxS) maxS = ag.sleepMin;
+      if (ag.feeds > maxF) maxF = ag.feeds;
+      rowsS.push({ d: d, v: ag.sleepMin });
+      rowsF.push({ d: d, v: ag.feeds });
+    }
+    for (var s = 0; s < rowsS.length; s++) {
+      var rs = rowsS[s];
+      var hS = Math.round((rs.v / maxS) * 100);
+      if (hS < 8) hS = 8;
+      var ws = document.createElement("div");
+      ws.className = "bar-wrap";
+      var bs = document.createElement("div");
+      bs.className = "bar";
+      bs.style.height = hS + "%";
+      var ls = document.createElement("div");
+      ls.className = "bar-label";
+      ls.textContent = pad(rs.d.getDate()) + "/" + pad(rs.d.getMonth() + 1);
+      ws.appendChild(bs);
+      ws.appendChild(ls);
+      chartSleep.appendChild(ws);
+    }
+    for (var f = 0; f < rowsF.length; f++) {
+      var rf = rowsF[f];
+      var hF = Math.round((rf.v / maxF) * 100);
+      if (hF < 8) hF = 8;
+      var wf = document.createElement("div");
+      wf.className = "bar-wrap";
+      var bf = document.createElement("div");
+      bf.className = "bar";
+      bf.style.height = hF + "%";
+      var lf = document.createElement("div");
+      lf.className = "bar-label";
+      lf.textContent = pad(rf.d.getDate()) + "/" + pad(rf.d.getMonth() + 1);
+      wf.appendChild(bf);
+      wf.appendChild(lf);
+      chartFeed.appendChild(wf);
+    }
+  }
+
+  function renderAll() {
+    renderTimeline();
+    renderStats();
+    renderPred();
+    renderBars();
+  }
+
+  addBtn.onclick = function () {
+    var item = {
+      id: uid(),
+      date: dateInput.value || nowDateStr(),
+      type: typeSelect.value,
+      start: startInput.value || nowTimeStr(),
+      end: endInput.value || "",
+      note: noteInput.value || ""
+    };
+    if (!item.start) return;
+    list.push(item);
+    save(list);
+    setEditMode(false);
+    renderAll();
+  };
+
+  saveEditBtn.onclick = function () {
+    var id = editId.value;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) {
+        list[i].date = dateInput.value || list[i].date;
+        list[i].type = typeSelect.value;
+        list[i].start = startInput.value || list[i].start;
+        list[i].end = endInput.value || "";
+        list[i].note = noteInput.value || "";
+        break;
+      }
+    }
+    save(list);
+    setEditMode(false);
+    renderAll();
+  };
+
+  cancelEditBtn.onclick = function () {
+    setEditMode(false);
+  };
+
+  exportBtn.onclick = function () {
+    var txt = JSON.stringify(list, null, 2);
+    dataOut.value = txt;
+    try {
+      dataOut.focus();
+      dataOut.select();
+    } catch (e) {
+    }
+  };
+
+  importFile.onchange = function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (re) {
+      var txt = re.target.result;
+      dataOut.value = txt;
+      try {
+        var obj = JSON.parse(txt);
+        if (Array.isArray(obj)) {
+          var cleaned = [];
+          for (var i = 0; i < obj.length; i++) {
+            var o = obj[i];
+            if (o && o.id && o.date && o.type && o.start !== undefined) {
+              cleaned.push({
+                id: o.id,
+                date: o.date,
+                type: o.type,
+                start: o.start,
+                end: o.end || "",
+                note: o.note || ""
+              });
+            }
+          }
+          if (cleaned.length > 0) {
+            list = cleaned;
+            save(list);
+            renderAll();
+            setEditMode(false);
+          }
+        }
+      } catch (e) {
+      }
+    };
+    reader.readAsText(file);
+    ev.target.value = "";
+  };
+
+  clearBtn.onclick = function () {
+    if (list.length === 0) return;
+    var ok = confirm("هل أنت متأكد من مسح كل البيانات؟ لا يمكن التراجع.");
+    if (ok) {
+      list = [];
+      save(list);
+      renderAll();
+      setEditMode(false);
+    }
+  };
+
+  setEditMode(false);
+  renderAll();
+})();
+</script>
+</body>
+</html>
