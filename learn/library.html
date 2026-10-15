@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>مكتبة المذاكرة — مصادر مجانية عالمية</title>
+<meta name="description" content="أفضل المصادر المجانية للمذاكرة مرتبة حسب المرحلة (أطفال، ثانوي، جامعة) والمادة.">
+<link rel="canonical" href="https://mdm1.org/learn/library.html">
+<meta property="og:title" content="مكتبة المذاكرة — مصادر مجانية عالمية">
+<meta property="og:description" content="أفضل المصادر المجانية للمذاكرة مرتبة حسب المرحلة (أطفال، ثانوي، جامعة) والمادة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/learn/library.html">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@600;800&family=Cairo:wght@400;600;700&display=swap">
+<style>
+/* Layout: header + language, three level tabs, search, subject chips, resource cards grouped by subject */
+:root{
+  --bg:#F2F6FC; --surface:#FFFFFF; --ink:#16233F; --muted:#5B6B8C; --line:#D6E0F0;
+  --accent:#2563EB; --accent-ink:#FFFFFF; --kids:#FF6B4A; --teen:#7A5CFA; --uni:#0E9F7A;
+  --font-display:'Baloo Bhaijaan 2','Cairo',system-ui,sans-serif; --font-body:'Cairo',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1730; --surface:#172346; --ink:#E8EEFF; --muted:#9DAED4; --line:#2A3A67;
+  --accent:#6AA0FF; --accent-ink:#0E1730; --kids:#FF8467; --teen:#9C85FF; --uni:#35CFA4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1730; --surface:#172346; --ink:#E8EEFF; --muted:#9DAED4; --line:#2A3A67;
+  --accent:#6AA0FF; --accent-ink:#0E1730; --kids:#FF8467; --teen:#9C85FF; --uni:#35CFA4; color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.6;
+  padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:820px;margin:0 auto}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 8px}
+h1{font-family:var(--font-display);font-weight:800;font-size:2rem;line-height:1.1;margin:0}
+.tag{color:var(--muted);margin:2px 0 0;font-size:.95rem}
+.lang{display:flex;gap:4px;background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:4px}
+.lang button{min-width:48px;min-height:40px;border-radius:999px;font-weight:700;padding:0 12px}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-block:14px}
+.lvl{min-height:84px;border-radius:20px;background:var(--surface);border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:var(--font-display);font-weight:800;font-size:1.05rem;padding:6px}
+.lvl .e{font-size:1.9rem;line-height:1.1}
+.lvl small{font-family:var(--font-body);font-weight:600;color:var(--muted);font-size:.75rem}
+.lvl[aria-pressed="true"]{border-color:var(--c);background:var(--c);color:#fff}
+.lvl[aria-pressed="true"] small{color:#fff}
+.search{width:100%;min-height:50px;border-radius:16px;border:2px solid var(--line);background:var(--surface);padding:0 16px;margin-bottom:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{min-height:42px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--surface);font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.group h2{font-family:var(--font-display);font-weight:800;font-size:1.4rem;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.res{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:14px 16px;text-decoration:none;color:inherit;min-width:0;transition:transform .12s,border-color .12s}
+.res:hover{border-color:var(--c);transform:translateY(-2px)}
+.res b{font-family:var(--font-display);font-weight:800;font-size:1.1rem;line-height:1.25;direction:ltr;unicode-bidi:isolate;text-align:start}
+.res p{margin:0;color:var(--muted);font-size:.92rem}
+.badge{align-self:flex-start;font-size:.75rem;font-weight:700;padding:1px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.empty{padding:30px 0;text-align:center;color:var(--muted)}
+.soon{margin-top:28px;padding:16px 18px;border-radius:20px;border:2px dashed var(--line);color:var(--muted)}
+.soon strong{color:var(--ink)}
+.foot{margin-top:18px;color:var(--muted);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div><h1 id="title"></h1><p class="tag" id="tag"></p></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button id="l-ar" aria-pressed="false">عربي</button><button id="l-en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+  <div class="levels" id="levels"></div>
+  <input class="search" id="q" type="search" autocomplete="off">
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+  <div class="soon" id="soon"></div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+(function(){
+var UI={
+ ar:{title:'مكتبة المذاكرة',tag:'أفضل المصادر المجانية عالمياً، مرتبة حسب مرحلتك ومادتك',all:'الكل',ph:'ابحث عن مادة أو موقع...',
+  none:'لا توجد نتائج. جرّب كلمة أخرى.',
+  lv:{kids:['الأطفال','الابتدائي'],teen:['الثانوي','ثانوية عامة وما يعادلها'],uni:['الجامعة','أول سنة وما بعدها']},
+  type:{video:'فيديو',book:'كتاب مفتوح',sim:'تجارب تفاعلية',practice:'تمارين',tool:'أداة',story:'قصص',course:'مقرر كامل'},
+  soon:'<strong>قريباً:</strong> ملخصات ودروس مكتوبة ومسموعة بالعامية المصرية وبلغات أخرى، لكل مرحلة ومادة. تُراجع قبل النشر.',
+  foot:'كل الروابط لمواقع خارجية مجانية. الكتب المدرسية الرسمية محمية بحقوق النشر، لذلك نعرض مصادر مفتوحة الترخيص.'},
+ en:{title:'Study Library',tag:'The best free resources worldwide, sorted by level and subject',all:'All',ph:'Search a subject or site...',
+  none:'No results. Try another word.',
+  lv:{kids:['Kids','Primary'],teen:['High school','Secondary and exam prep'],uni:['University','First year and beyond']},
+  type:{video:'Video',book:'Open book',sim:'Interactive',practice:'Practice',tool:'Tool',story:'Stories',course:'Full course'},
+  soon:'<strong>Coming soon:</strong> written and audio summaries and lessons in Egyptian Arabic and other languages, for each level and subject. Reviewed before publishing.',
+  foot:'All links go to free external sites. Official school textbooks are copyrighted, so we list openly licensed sources.'}
+};
+var SUBJ={
+ read:{ar:'القراءة والقصص',en:'Reading and stories',e:'📚'},
+ math:{ar:'الرياضيات',en:'Mathematics',e:'➗'},
+ sci:{ar:'العلوم',en:'Science',e:'🔬'},
+ phys:{ar:'الفيزياء',en:'Physics',e:'⚛️'},
+ chem:{ar:'الكيمياء',en:'Chemistry',e:'🧪'},
+ bio:{ar:'الأحياء والطب',en:'Biology and medicine',e:'🧬'},
+ cs:{ar:'البرمجة والحاسوب',en:'Programming and computing',e:'💻'},
+ lang:{ar:'اللغة الإنجليزية',en:'English language',e:'🔤'},
+ biz:{ar:'الاقتصاد والأعمال',en:'Economics and business',e:'📈'},
+ study:{ar:'البحث والكتابة',en:'Research and writing',e:'✍️'}
+};
+/* [level, subject, name, url, type, ar, en] */
+var R=[
+ ['kids','read','StoryWeaver','https://storyweaver.org.in','story','قصص مصورة للأطفال بلغات كثيرة، تقدر تقرأها وتحمّلها.','Illustrated children\'s stories in many languages, free to read and download.'],
+ ['kids','read','African Storybook','https://africanstorybook.org','story','قصص بسيطة مرتبة حسب مستوى القراءة وبلغات متعددة.','Simple stories sorted by reading level, in many languages.'],
+ ['kids','read','Open Library','https://openlibrary.org','book','مكتبة ضخمة للاستعارة الرقمية المجانية.','A huge library with free digital lending.'],
+ ['kids','math','Khan Academy Kids','https://learn.khanacademy.org/khan-academy-kids/','practice','تطبيق مجاني للأطفال: حروف وأرقام وقصص وألعاب تعليمية.','A free app for young children: letters, numbers, stories and learning games.'],
+ ['kids','math','Khan Academy','https://www.khanacademy.org','course','دروس وتمارين رياضيات من الصف الأول فما فوق.','Math lessons and practice from early grades up.'],
+ ['kids','sci','PhET Simulations','https://phet.colorado.edu','sim','تجارب علمية تفاعلية بسيطة، كثير منها مترجم لعدة لغات.','Simple interactive science experiments, many translated into several languages.'],
+ ['kids','cs','Scratch','https://scratch.mit.edu','tool','يبرمج الطفل ألعابه وقصصه بالسحب والإفلات.','Kids build their own games and stories by drag and drop.'],
+ ['kids','cs','Code.org','https://code.org','course','ساعة كود ودروس برمجة للأطفال.','Hour of Code and coding lessons for children.'],
+ ['kids','lang','BBC Learning English','https://www.bbc.co.uk/learningenglish','video','فيديوهات ومفردات إنجليزي بسيطة.','Simple English videos and vocabulary.'],
+
+ ['teen','math','Khan Academy','https://www.khanacademy.org','course','جبر وهندسة وتفاضل وتكامل وإحصاء، بالفيديو والتمارين.','Algebra, geometry, calculus and statistics with videos and practice.'],
+ ['teen','math','Desmos','https://www.desmos.com/calculator','tool','آلة حاسبة بيانية على الإنترنت لرسم الدوال.','An online graphing calculator for plotting functions.'],
+ ['teen','math','GeoGebra','https://www.geogebra.org','tool','هندسة وجبر وتفاضل بشكل بصري تفاعلي.','Geometry, algebra and calculus, visual and interactive.'],
+ ['teen','math','3Blue1Brown','https://www.3blue1brown.com','video','شرح بصري عميق لأفكار الرياضيات.','Deep visual explanations of mathematical ideas.'],
+ ['teen','phys','The Physics Classroom','https://www.physicsclassroom.com','course','شرح مبسط وتمارين لفيزياء المرحلة الثانوية.','Clear explanations and practice for high school physics.'],
+ ['teen','phys','PhET Simulations','https://phet.colorado.edu','sim','جرّب الدوائر الكهربائية والحركة والموجات بنفسك.','Try circuits, motion and waves yourself.'],
+ ['teen','phys','OpenStax High School Physics','https://openstax.org/subjects/science','book','كتاب فيزياء ثانوي مجاني ومفتوح الترخيص.','A free, openly licensed high school physics book.'],
+ ['teen','chem','LibreTexts Chemistry','https://chem.libretexts.org','book','مكتبة كتب كيمياء مجانية من الأساسيات للمتقدم.','A free library of chemistry texts from basics to advanced.'],
+ ['teen','chem','OpenStax Chemistry','https://openstax.org/subjects/science','book','كتاب كيمياء مجاني بتمارين وأمثلة محلولة.','A free chemistry book with exercises and worked examples.'],
+ ['teen','bio','OpenStax Biology','https://openstax.org/subjects/science','book','كتاب أحياء مجاني ومفصل.','A free and detailed biology book.'],
+ ['teen','bio','CK-12','https://www.ck12.org','course','دروس علوم ورياضيات قصيرة وقابلة للتخصيص.','Short customizable science and math lessons.'],
+ ['teen','lang','BBC Learning English','https://www.bbc.co.uk/learningenglish','video','فيديو وقواعد ومحادثة بمستويات مختلفة.','Video, grammar and conversation at different levels.'],
+ ['teen','lang','Project Gutenberg','https://www.gutenberg.org','book','أكثر من سبعين ألف كتاب كلاسيكي مجاناً.','Tens of thousands of classic books for free.'],
+ ['teen','cs','freeCodeCamp','https://www.freecodecamp.org','course','تعلّم الويب والبرمجة بالتطبيق العملي.','Learn web development and programming by building.'],
+ ['teen','study','Khan Academy Test Prep','https://www.khanacademy.org','practice','تحضير لاختبارات مثل SAT وغيرها.','Preparation for tests such as the SAT and others.'],
+
+ ['uni','math','MIT OpenCourseWare','https://ocw.mit.edu','course','محاضرات وواجبات وامتحانات سابقة من MIT مجاناً.','Lectures, assignments and past exams from MIT, free.'],
+ ['uni','math','Paul\'s Online Math Notes','https://tutorial.math.lamar.edu','book','شرح واضح للتفاضل والتكامل والمعادلات التفاضلية.','Clear notes on calculus and differential equations.'],
+ ['uni','math','OpenStax Mathematics','https://openstax.org/subjects/math','book','كتب كالكولاس وجبر خطي وإحصاء مفتوحة.','Open calculus, linear algebra and statistics books.'],
+ ['uni','phys','OpenStax University Physics','https://openstax.org/subjects/science','book','كتاب فيزياء جامعي مفتوح الترخيص.','An openly licensed university physics book.'],
+ ['uni','phys','MIT OpenCourseWare Physics','https://ocw.mit.edu','course','مقررات فيزياء كاملة بالفيديو والملاحظات.','Full physics courses with video and notes.'],
+ ['uni','chem','LibreTexts Chemistry','https://chem.libretexts.org','book','كيمياء عامة وعضوية وفيزيائية.','General, organic and physical chemistry.'],
+ ['uni','bio','OpenStax Anatomy and Physiology','https://openstax.org/subjects/science','book','تشريح ووظائف الأعضاء، مفيد للطب والتمريض.','Anatomy and physiology, useful for medicine and nursing.'],
+ ['uni','bio','OpenStax Biology 2e','https://openstax.org/subjects/science','book','أحياء جامعية شاملة.','Comprehensive university biology.'],
+ ['uni','cs','CS50 (Harvard)','https://cs50.harvard.edu','course','أشهر مقرر مدخل لعلوم الحاسب، مجاني بالفيديو.','The best-known intro computer science course, free on video.'],
+ ['uni','cs','MIT OCW Computer Science','https://ocw.mit.edu','course','خوارزميات وبرمجة وأنظمة من MIT.','Algorithms, programming and systems from MIT.'],
+ ['uni','cs','freeCodeCamp','https://www.freecodecamp.org','course','مشاريع عملية وشهادات مجانية في الويب والبيانات.','Hands-on projects and free certificates in web and data.'],
+ ['uni','biz','OpenStax Business and Economics','https://openstax.org/subjects/business','book','اقتصاد ومحاسبة وإدارة وتسويق مفتوحة.','Open economics, accounting, management and marketing.'],
+ ['uni','study','Purdue OWL','https://owl.purdue.edu','tool','أدلة الكتابة الأكاديمية والاقتباس والمراجع.','Guides for academic writing, citation and references.'],
+ ['uni','study','arXiv','https://arxiv.org','book','أبحاث علمية مفتوحة في الفيزياء والرياضيات والحاسب.','Open research papers in physics, math and computing.'],
+ ['uni','study','DOAJ','https://doaj.org','book','دليل المجلات العلمية المفتوحة الوصول.','Directory of open access scientific journals.']
+];
+var S={lang:'en',lvl:'teen',subj:'all',q:''};
+S.lang=(navigator.language||'').toLowerCase().indexOf('ar')===0?'ar':'en';
+try{var sv=JSON.parse(localStorage.getItem('study-lib')||'{}');if(sv.lang)S.lang=sv.lang;if(sv.lvl)S.lvl=sv.lvl;}catch(e){}
+var $=function(i){return document.getElementById(i)};
+var COL={kids:'var(--kids)',teen:'var(--teen)',uni:'var(--uni)'},EMO={kids:'🧒',teen:'🎒',uni:'🎓'};
+function save(){try{localStorage.setItem('study-lib',JSON.stringify({lang:S.lang,lvl:S.lvl}))}catch(e){}}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function render(){
+  var U=UI[S.lang],L=S.lang;
+  document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';document.title=U.title;
+  $('title').textContent=U.title;$('tag').textContent=U.tag;$('q').placeholder=U.ph;$('q').setAttribute('aria-label',U.ph);
+  $('soon').innerHTML=U.soon;$('foot').textContent=U.foot;
+  $('l-ar').setAttribute('aria-pressed',L==='ar');$('l-en').setAttribute('aria-pressed',L==='en');
+  $('levels').innerHTML=['kids','teen','uni'].map(function(k){
+    return '<button class="lvl" style="--c:'+COL[k]+'" data-lvl="'+k+'" aria-pressed="'+(S.lvl===k)+'"><span class="e">'+EMO[k]+'</span>'+U.lv[k][0]+'<small>'+U.lv[k][1]+'</small></button>';
+  }).join('');
+  var inLvl=R.filter(function(r){return r[0]===S.lvl});
+  var subs=[];inLvl.forEach(function(r){if(subs.indexOf(r[1])<0)subs.push(r[1])});
+  if(S.subj!=='all'&&subs.indexOf(S.subj)<0)S.subj='all';
+  $('chips').innerHTML='<button class="chip" data-s="all" aria-pressed="'+(S.subj==='all')+'">'+U.all+'</button>'+subs.map(function(s){
+    return '<button class="chip" data-s="'+s+'" aria-pressed="'+(S.subj===s)+'">'+SUBJ[s].e+' '+SUBJ[s][L]+'</button>';}).join('');
+  var q=S.q.trim().toLowerCase();
+  var shown=inLvl.filter(function(r){
+    if(S.subj!=='all'&&r[1]!==S.subj)return false;
+    if(!q)return true;
+    return (r[2]+' '+r[5]+' '+r[6]+' '+SUBJ[r[1]].ar+' '+SUBJ[r[1]].en).toLowerCase().indexOf(q)>=0;
+  });
+  var out='';
+  subs.forEach(function(s){
+    var items=shown.filter(function(r){return r[1]===s});
+    if(!items.length)return;
+    out+='<section class="group"><h2>'+SUBJ[s].e+' '+SUBJ[s][L]+'</h2><div class="grid">'+items.map(function(r){
+      return '<a class="res" style="--c:'+COL[S.lvl]+'" href="'+esc(r[3])+'" target="_blank" rel="noopener noreferrer"><span class="badge">'+U.type[r[4]]+'</span><b>'+esc(r[2])+'</b><p>'+(L==='ar'?r[5]:r[6])+'</p></a>';
+    }).join('')+'</div></section>';
+  });
+  $('list').innerHTML=out||'<p class="empty">'+U.none+'</p>';
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.id==='l-ar'||b.id==='l-en'){S.lang=b.id==='l-ar'?'ar':'en';save();render();return}
+  if(b.dataset.lvl){S.lvl=b.dataset.lvl;S.subj='all';save();render();return}
+  if(b.dataset.s){S.subj=b.dataset.s;render()}
+});
+$('q').addEventListener('input',function(e){S.q=e.target.value;var p=document.activeElement;render();});
+render();
+})();
+</script>
+</body>
+</html>
