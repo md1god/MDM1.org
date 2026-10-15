@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر واستوديو نماذج عربي في المتصفح مع JSON وتحقق وحسابات | MDM1</title>
+<meta name="description" content="أنشئ استبيانات واختبارات ونماذج متعددة الخطوات عبر تعريف JSON في متصفحك، مع تحقق ومنطق شرطي وحسابات وحفظ محلي واستيراد وتصدير بلا خادم أو حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/dynamic-form-studio.html">
+<meta property="og:title" content="محرر واستوديو نماذج عربي في المتصفح مع JSON وتحقق وحسابات">
+<meta property="og:description" content="أنشئ استبيانات واختبارات ونماذج متعددة الخطوات عبر تعريف JSON في متصفحك، مع تحقق ومنطق شرطي وحسابات وحفظ محلي واستيراد وتصدير بلا خادم أو حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/dynamic-form-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:16px}
+.app-panel{display:grid;gap:10px}
+.app-h{margin:6px 0;color:var(--gold-bright)}
+.app-intro{line-height:1.9;color:var(--light)}
+.app .row{align-items:center;flex-wrap:wrap;gap:8px}
+.app-json{min-height:170px;font-family:ui-monospace,Menlo,monospace;direction:ltr;text-align:left;font-size:13px}
+.app-status{border-color:var(--gold-dim);min-height:20px}
+.app-err{color:#ff9d9d;border-color:#ff9d9d}
+.app-field{display:grid;gap:4px;margin:10px 0}
+.app-opts{display:grid;gap:6px}
+.app-opt{display:flex;align-items:center;gap:8px}
+.app-list{display:grid;gap:6px;max-height:240px;overflow:auto}
+.app-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--gold-dim);border-radius:10px}
+.app-res-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed var(--gold-dim)}
+.app-res-row span{color:var(--gold-dim)}
+.app-file{display:none}
+.app-hidden{display:none!important}
+.app .button,.app .input,.app .select,.app .textarea{max-width:100%}
+.app .badge{color:var(--gold-bright)}
+.app .button:disabled{opacity:.45;cursor:not-allowed}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر واستوديو النماذج والاستبيانات في المتصفح", "url": "https://mdm1.org/apps/dynamic-form-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل بياناتي إلى خادم أو تحتاج حسابًا؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل بالكامل داخل المتصفح دون خادم أو حساب. تُحفظ القوالب والاستجابات في التخزين المحلي للمتصفح فقط، ولا يخرج أي شيء من جهازك."}}, {"@type": "Question", "name": "كيف أبني نموذجًا متعدد الخطوات؟", "acceptedAnswer": {"@type": "Answer", "text": "عرّف مصفوفة steps داخل JSON، وكل خطوة تحتوي على title ومصفوفة fields. تنقّل بين الخطوات بأزرار الخطوة السابقة والتالية، ولا ينتقل النموذج قبل اجتياز التحقق."}}, {"@type": "Question", "name": "كيف تعمل الحسابات والمنطق الشرطي؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف حقلًا من نوع calc مع تعبير رياضي مثل (price + quality) / 2 ليُحسب تلقائيًا، واستخدم showIf بخاصية field وop وvalue لإظهار أو إخفاء أي حقل حسب إجابة سابقة."}}, {"@type": "Question", "name": "كيف أصدّر القوالب والاستجابات أو أستوردها؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر النوع من القائمة ثم اضغط تصدير ملف JSON لتنزيله، وللاستيراد اضغط استيراد ملف JSON وحدد ملفًا؛ يتعرّف التطبيق تلقائيًا على تعريف النموذج أو القوالب أو الاستجابات."}}, {"@type": "Question", "name": "هل يمكن تغيير لغة الواجهة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر العربية أو English من قائمة اللغة، فيتبدّل اتجاه الواجهة والنصوص فورًا مع بقاء تعريف النموذج وبياناتك كما هي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر واستوديو النماذج والاستبيانات في المتصفح</h1>
+  <p class="page-sub">أنشئ استبيانات واختبارات ونماذج متعددة الخطوات عبر تعريف JSON في متصفحك، مع تحقق ومنطق شرطي وحسابات وحفظ محلي واستيراد وتصدير بلا خادم أو حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">محرر واستوديو النماذج هو أداة ويب تعمل بالكامل داخل المتصفح وتتيح لك بناء الاستبيانات والاختبارات والنماذج متعددة الخطوات دون أي خادم أو حساب. تكتب تعريف النموذج بصيغة JSON في المحرر، ثم تعاينه وتشغّله مباشرة مع تحقق من المدخلات ومنطق شرطي وحسابات تلقائية وانتقالات ذكية بين الخطوات. يمكنك حفظ القوالب والاستجابات محليًا في متصفحك، وتصديرها أو استيرادها كملفات، والتبديل بين العربية ولغات أخرى بسهولة. كل شيء يجري محليًا، فلا تُرسل بياناتك إلى أي مكان. ابدأ بتحميل نموذج مثال للتعرّف على البنية، ثم عدّل الحقول والأسئلة كما تريد وشاهد النتيجة فورًا في المعاينة.</p>
+<div class="app" id="app-root" dir="rtl">
+  <div class="card app-panel">
+    <div class="row">
+      <label class="label" for="app-lang" data-i18n="langLabel">اللغة</label>
+      <select class="select" id="app-lang">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+      </select>
+      <span class="badge" id="app-form-title"></span>
+    </div>
+    <div class="row">
+      <button class="button" id="app-sample" data-i18n="sample">تحميل نموذج مثال</button>
+      <button class="button sec" id="app-run" data-i18n="run">معاينة وتشغيل النموذج</button>
+      <button class="button sec" id="app-save-tpl" data-i18n="saveTpl">حفظ كقالب محلي</button>
+    </div>
+    <label class="label" for="app-json" data-i18n="jsonLabel">تعريف النموذج (JSON)</label>
+    <textarea class="textarea app-json" id="app-json" spellcheck="false" placeholder='{"title":"...","steps":[...]}'></textarea>
+    <div class="out app-status" id="app-status"></div>
+  </div>
+  <div class="card app-panel">
+    <h2 class="app-h" data-i18n="previewTitle">معاينة النموذج</h2>
+    <div id="app-form"></div>
+    <div class="row">
+      <button class="button sec" id="app-prev" data-i18n="prev">الخطوة السابقة</button>
+      <button class="button" id="app-next" data-i18n="next">الخطوة التالية</button>
+      <button class="button" id="app-submit" data-i18n="submit">إرسال الاستجابة</button>
+      <span class="badge" id="app-step-info"></span>
+    </div>
+  </div>
+  <div class="card app-panel">
+    <h2 class="app-h" data-i18n="resultsTitle">النتائج</h2>
+    <div class="big" id="app-big">0</div>
+    <div class="out" id="app-out"></div>
+  </div>
+  <div class="card app-panel">
+    <h2 class="app-h" data-i18n="storageTitle">القوالب والاستجابات المحفوظة</h2>
+    <div class="row">
+      <input class="input" id="app-tpl-name" placeholder="اسم القالب" data-i18n-ph="tplNamePh">
+      <select class="select" id="app-export-kind">
+        <option value="templates" data-i18n="kindTpl">القوالب</option>
+        <option value="responses" data-i18n="kindRes">الاستجابات</option>
+        <option value="both" data-i18n="kindBoth">الكل</option>
+      </select>
+      <button class="button" id="app-export" data-i18n="export">تصدير ملف JSON</button>
+      <button class="button sec" id="app-import" data-i18n="import">استيراد ملف JSON</button>
+      <input class="input app-file" id="app-file" type="file" accept="application/json,.json">
+      <button class="button sec" id="app-clear" data-i18n="clearAll">حذف كل المحفوظات</button>
+    </div>
+    <h3 class="app-h" data-i18n="tplListTitle">القوالب</h3>
+    <div class="app-list" id="app-templates"></div>
+    <h3 class="app-h" data-i18n="resListTitle">الاستجابات</h3>
+    <div class="app-list" id="app-responses"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل بياناتي إلى خادم أو تحتاج حسابًا؟</h3><p>لا، التطبيق يعمل بالكامل داخل المتصفح دون خادم أو حساب. تُحفظ القوالب والاستجابات في التخزين المحلي للمتصفح فقط، ولا يخرج أي شيء من جهازك.</p><h3>كيف أبني نموذجًا متعدد الخطوات؟</h3><p>عرّف مصفوفة steps داخل JSON، وكل خطوة تحتوي على title ومصفوفة fields. تنقّل بين الخطوات بأزرار الخطوة السابقة والتالية، ولا ينتقل النموذج قبل اجتياز التحقق.</p><h3>كيف تعمل الحسابات والمنطق الشرطي؟</h3><p>أضف حقلًا من نوع calc مع تعبير رياضي مثل (price + quality) / 2 ليُحسب تلقائيًا، واستخدم showIf بخاصية field وop وvalue لإظهار أو إخفاء أي حقل حسب إجابة سابقة.</p><h3>كيف أصدّر القوالب والاستجابات أو أستوردها؟</h3><p>اختر النوع من القائمة ثم اضغط تصدير ملف JSON لتنزيله، وللاستيراد اضغط استيراد ملف JSON وحدد ملفًا؛ يتعرّف التطبيق تلقائيًا على تعريف النموذج أو القوالب أو الاستجابات.</p><h3>هل يمكن تغيير لغة الواجهة؟</h3><p>نعم، اختر العربية أو English من قائمة اللغة، فيتبدّل اتجاه الواجهة والنصوص فورًا مع بقاء تعريف النموذج وبياناتك كما هي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+var LS_TPL='appFormsTemplates_v1', LS_RES='appFormsResponses_v1';
+var state={schema:null,answers:{},step:0,lang:'ar'};
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+var SAMPLE={
+ title:'استبيان رضا العملاء', scoreField:'avg',
+ steps:[
+  {id:'info',title:'معلومات عامة',fields:[
+   {id:'name',type:'text',label:'الاسم الكامل',required:true,minLength:2},
+   {id:'age',type:'number',label:'العمر',min:10,max:120},
+   {id:'role',type:'select',label:'الصفة',required:true,options:[{value:'cust',label:'عميل'},{value:'emp',label:'موظف'}]},
+   {id:'company',type:'text',label:'اسم جهة العمل',showIf:{field:'role',op:'eq',value:'emp'}}
+  ]},
+  {id:'rate',title:'التقييم',fields:[
+   {id:'price',type:'number',label:'تقييم السعر من 1 إلى 5',required:true,min:1,max:5},
+   {id:'quality',type:'number',label:'تقييم الجودة من 1 إلى 5',required:true,min:1,max:5},
+   {id:'avg',type:'calc',label:'متوسط التقييم',calc:'(price + quality) / 2'},
+   {id:'feedback',type:'textarea',label:'ملاحظات إضافية',maxLength:500}
+  ]}
+ ]
+};
+var I18N={ar:{langLabel:'اللغة',sample:'تحميل نموذج مثال',run:'معاينة وتشغيل النموذج',saveTpl:'حفظ كقالب محلي',jsonLabel:'تعريف النموذج (JSON)',previewTitle:'معاينة النموذج',prev:'الخطوة السابقة',next:'الخطوة التالية',submit:'إرسال الاستجابة',resultsTitle:'النتائج',storageTitle:'القوالب والاستجابات المحفوظة',tplNamePh:'اسم القالب',kindTpl:'القوالب',kindRes:'الاستجابات',kindBoth:'الكل',export:'تصدير ملف JSON',import:'استيراد ملف JSON',clearAll:'حذف كل المحفوظات',tplListTitle:'القوالب',resListTitle:'الاستجابات',load:'تحميل',delete:'حذف',view:'عرض',noTpl:'لا توجد قوالب محفوظة بعد.',noRes:'لا توجد استجابات محفوظة بعد.',noForm:'لا يوجد نموذج بعد. الصق تعريف JSON ثم اضغط معاينة وتشغيل النموذج.',emptyJson:'حقل التعريف فارغ.',invalidJson:'تعريف JSON غير صالح:',invalidSchema:'البنية غير صحيحة: يجب أن يحتوي على مصفوفة steps.',loadedOk:'تم تحميل النموذج بنجاح.',sampleLoaded:'تم تحميل النموذج المثال.',required:'هذا الحقل مطلوب',numInvalid:'قيمة رقمية غير صالحة',min:'الحد الأدنى',max:'الحد الأعلى',minLen:'أقل عدد أحرف',maxLen:'أكثر عدد أحرف',stepInfo:'الخطوة',submitted:'تم حفظ الاستجابة محليًا.',tplSaved:'تم حفظ القالب محليًا.',storeFail:'تعذر الحفظ في التخزين المحلي.',exported:'تم إنشاء ملف التصدير.',importedSchema:'تم استيراد تعريف النموذج.',importedTpl:'تم استيراد القوالب.',importedAll:'تم استيراد البيانات.',invalidFile:'ملف غير صالح.',cleared:'تم حذف كل المحفوظات.',confirmClear:'هل تريد حذف كل القوالب والاستجابات المحفوظة؟',untitled:'بدون عنوان',awaitSubmit:'أرسل الاستجابة لعرض النتائج هنا.',noData:'لا توجد بيانات.',yes:'نعم',no:'لا',selectPlaceholder:'اختر...'},
+en:{langLabel:'Language',sample:'Load sample form',run:'Preview and run form',saveTpl:'Save as local template',jsonLabel:'Form definition (JSON)',previewTitle:'Form preview',prev:'Previous step',next:'Next step',submit:'Submit response',resultsTitle:'Results',storageTitle:'Saved templates and responses',tplNamePh:'Template name',kindTpl:'Templates',kindRes:'Responses',kindBoth:'All',export:'Export JSON file',import:'Import JSON file',clearAll:'Clear all saved data',tplListTitle:'Templates',resListTitle:'Responses',load:'Load',delete:'Delete',view:'View',noTpl:'No saved templates yet.',noRes:'No saved responses yet.',noForm:'No form yet. Paste a JSON definition then press Preview and run form.',emptyJson:'The definition field is empty.',invalidJson:'Invalid JSON definition:',invalidSchema:'Invalid structure: a steps array is required.',loadedOk:'Form loaded successfully.',sampleLoaded:'Sample form loaded.',required:'This field is required',numInvalid:'Invalid numeric value',min:'Minimum',max:'Maximum',minLen:'Minimum characters',maxLen:'Maximum characters',stepInfo:'Step',submitted:'Response saved locally.',tplSaved:'Template saved locally.',storeFail:'Could not save to local storage.',exported:'Export file created.',importedSchema:'Form definition imported.',importedTpl:'Templates imported.',importedAll:'Data imported.',invalidFile:'Invalid file.',cleared:'All saved data cleared.',confirmClear:'Delete all saved templates and responses?',untitled:'Untitled',awaitSubmit:'Submit a response to show results here.',noData:'No data.',yes:'Yes',no:'No',selectPlaceholder:'Choose...'}};
+function t(k){var d=I18N[state.lang]||I18N.ar;return d[k]!=null?d[k]:(I18N.ar[k]!=null?I18N.ar[k]:k);}
+function load(k){try{return JSON.parse(localStorage.getItem(k)||'[]');}catch(e){return [];}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function applyLang(){var d=I18N[state.lang]||I18N.ar;var i,n;
+ n=document.querySelectorAll('[data-i18n]');for(i=0;i<n.length;i++){var k=n[i].getAttribute('data-i18n');if(d[k]!=null)n[i].textContent=d[k];}
+ n=document.querySelectorAll('[data-i18n-ph]');for(i=0;i<n.length;i++){var k2=n[i].getAttribute('data-i18n-ph');if(d[k2]!=null)n[i].setAttribute('placeholder',d[k2]);}
+ $('app-root').setAttribute('dir',state.lang==='ar'?'rtl':'ltr');}
+function refreshAll(){renderForm();renderTemplates();renderResponses();}
+function showStatus(m,e){var el=$('app-status');el.textContent=m;el.classList.toggle('app-err',!!e);}
+function testCond(c){if(!c)return true;var v=state.answers[c.field],x=c.value;switch(c.op){case 'eq':return String(v)===String(x);case 'neq':return String(v)!==String(x);case 'gt':return parseFloat(v)>parseFloat(x);case 'lt':return parseFloat(v)<parseFloat(x);case 'contains':return String(v==null?'':v).indexOf(String(x))>=0;case 'empty':return v==null||v==='';case 'notempty':return !(v==null||v==='');default:return true;}}
+function calcValue(expr,ans){try{var tk=String(expr).match(/\d+\.?\d*|[A-Za-z_][A-Za-z0-9_]*|[+\-*/()]/g);if(!tk)return '';var p=0;function pk(){return tk[p];}function nx(){return tk[p++];}function ex(){var v=tr();while(pk()==='+'||pk()==='-'){var o=nx(),r=tr();v=o==='+'?v+r:v-r;}return v;}function tr(){var v=fa();while(pk()==='*'||pk()==='/'){var o=nx(),r=fa();v=o==='*'?v*r:(r===0?0:v/r);}return v;}function fa(){var x=nx();if(x==='-')return -fa();if(x==='('){var v=ex();if(pk()===')')nx();return v;}if(x==null)return 0;if(/^\d/.test(x))return parseFloat(x);var n=parseFloat(ans[x]);return isNaN(n)?0:n;}var r=ex();if(p<tk.length||!isFinite(r))return '';return Math.round(r*100)/100;}catch(e){return '';}}
+function fieldHTML(f){var id='app-f-'+f.id,v=state.answers[f.id];var h='<div class="app-field" data-wrap="'+esc(f.id)+'">';var lab='<label class="label" for="'+id+'">'+esc(f.label)+(f.required?' *':'')+'</label>';
+ if(f.type==='text'){h+=lab+'<input class="input" id="'+id+'" data-field="'+esc(f.id)+'" type="text" value="'+esc(v)+'">';}
+ else if(f.type==='number'){h+=lab+'<input class="input" id="'+id+'" data-field="'+esc(f.id)+'" type="number" value="'+esc(v)+'">';}
+ else if(f.type==='textarea'){h+=lab+'<textarea class="textarea" id="'+id+'" data-field="'+esc(f.id)+'">'+esc(v)+'</textarea>';}
+ else if(f.type==='select'){h+=lab+'<select class="select" id="'+id+'" data-field="'+esc(f.id)+'"><option value="">'+esc(t('selectPlaceholder'))+'</option>';var o=f.options||[];for(var i=0;i<o.length;i++){h+='<option value="'+esc(o[i].value)+'"'+(String(v)===String(o[i].value)?' selected':'')+'>'+esc(o[i].label)+'</option>';}h+='</select>';}
+ else if(f.type==='radio'){h+=lab+'<div class="app-opts">';var r=f.options||[];for(var j=0;j<r.length;j++){var rid=id+'-'+j;h+='<label class="app-opt" for="'+rid+'"><input type="radio" id="'+rid+'" name="'+id+'" data-field="'+esc(f.id)+'" value="'+esc(r[j].value)+'"'+(String(v)===String(r[j].value)?' checked':'')+'><span>'+esc(r[j].label)+'</span></label>';}h+='</div>';}
+ else if(f.type==='checkbox'){h+='<label class="app-opt" for="'+id+'"><input type="checkbox" id="'+id+'" data-field="'+esc(f.id)+'"'+(v===true?' checked':'')+'><span>'+esc(f.label)+(f.required?' *':'')+'</span></label>';}
+ else if(f.type==='calc'){h+=lab+'<output class="out" id="'+id+'" data-calc="'+esc(f.id)+'">'+esc(calcValue(f.calc,state.answers))+'</output>';}
+ h+='</div>';return h;}
+function renderForm(){var c=$('app-form');var st=$('app-step-info');
+ if(!state.schema||!state.schema.steps||!state.schema.steps.length){c.innerHTML='<p class="out">'+t('noForm')+'</p>';st.textContent='';$('app-prev').disabled=true;$('app-next').disabled=true;$('app-submit').disabled=true;$('app-form-title').textContent='';return;}
+ var steps=state.schema.steps;if(state.step>=steps.length)state.step=steps.length-1;if(state.step<0)state.step=0;
+ var step=steps[state.step];var h='<h3 class="app-h">'+esc(step.title||('#'+(state.step+1)))+'</h3>';
+ var fs=step.fields||[];for(var i=0;i<fs.length;i++)h+=fieldHTML(fs[i]);
+ c.innerHTML=h;updateDynamic();st.textContent=t('stepInfo')+' '+(state.step+1)+' / '+steps.length;
+ $('app-prev').disabled=state.step===0;$('app-next').disabled=state.step>=steps.length-1;$('app-submit').disabled=state.step<steps.length-1;$('app-form-title').textContent=state.schema.title||'';}
+function updateDynamic(){if(!state.schema)return;var step=state.schema.steps[state.step];if(!step)return;var fs=step.fields||[];var c=$('app-form');for(var i=0;i<fs.length;i++){var f=fs[i];var w=c.querySelector('[data-wrap="'+f.id+'"]');if(w)w.classList.toggle('app-hidden',!!(f.showIf&&!testCond(f.showIf)));if(f.type==='calc'){var o=document.getElementById('app-f-'+f.id);if(o)o.textContent=String(calcValue(f.calc,state.answers));}}}
+function onFieldChange(e){var el=e.target;var fid=el&&el.getAttribute?el.getAttribute('data-field'):null;if(!fid)return;state.answers[fid]=el.type==='checkbox'?el.checked:el.value;updateDynamic();}
+function validateStep(){var errs=[];if(!state.schema)return errs;var step=state.schema.steps[state.step];if(!step)return errs;var fs=step.fields||[];for(var i=0;i<fs.length;i++){var f=fs[i];if(f.showIf&&!testCond(f.showIf))continue;if(f.type==='calc')continue;var v=state.answers[f.id];var empty=v==null||v===''||v===false;if(f.required&&empty){errs.push(f.label+': '+t('required'));continue;}if(empty)continue;if(f.type==='number'){var n=parseFloat(v);if(isNaN(n)){errs.push(f.label+': '+t('numInvalid'));}else{if(f.min!=null&&n<f.min)errs.push(f.label+': '+t('min')+' '+f.min);if(f.max!=null&&n>f.max)errs.push(f.label+': '+t('max')+' '+f.max);}}if(f.type==='text'||f.type==='textarea'){var L=String(v).length;if(f.minLength!=null&&L<f.minLength)errs.push(f.label+': '+t('minLen')+' '+f.minLength);if(f.maxLength!=null&&L>f.maxLength)errs.push(f.label+': '+t('maxLen')+' '+f.maxLength);}}return errs;}
+function go(d){if(!state.schema)return;if(d>0){var errs=validateStep();if(errs.length){showStatus(errs.join(' • '),true);return;}}var n=state.step+d,steps=state.schema.steps;
+ if(d>0){while(n<steps.length&&steps[n].showIf&&!testCond(steps[n].showIf))n++;}
+ else{while(n>0&&steps[n].showIf&&!testCond(steps[n].showIf))n--;}
+ if(n<0)n=0;if(n>=steps.length)n=steps.length-1;state.step=n;renderForm();showStatus('');}
+function fmt(v){if(v===true)return t('yes');if(v===false)return t('no');return String(v==null?'':v);}
+function showResults(data){var h='',ks=Object.keys(data);for(var i=0;i<ks.length;i++){h+='<div class="app-res-row"><span>'+esc(ks[i])+'</span><b>'+esc(fmt(data[ks[i]]))+'</b></div>';}$('app-out').innerHTML=h||('<p>'+t('noData')+'</p>');
+ var big=0,found=false;if(state.schema&&state.schema.scoreField&&data[state.schema.scoreField]!=null){big=data[state.schema.scoreField];found=true;}
+ if(!found){var s=0;for(var j=0;j<ks.length;j++){var n=parseFloat(data[ks[j]]);if(!isNaN(n)){s+=n;found=true;}}big=Math.round(s*100)/100;}
+ $('app-big').textContent=String(big);}
+function submitForm(){if(!state.schema)return;var errs=validateStep();if(errs.length){showStatus(errs.join(' • '),true);return;}
+ var data={},steps=state.schema.steps;for(var i=0;i<steps.length;i++){var fs=steps[i].fields||[];for(var j=0;j<fs.length;j++){var f=fs[j];data[f.id]=f.type==='calc'?calcValue(f.calc,state.answers):state.answers[f.id];}}
+ var list=load(LS_RES);list.unshift({at:Date.now(),title:state.schema.title||'',data:data});save(LS_RES,list.slice(0,60));renderResponses();showResults(data);showStatus(t('submitted'));}
+function renderTemplates(){var el=$('app-templates');var list=load(LS_TPL);if(!list.length){el.innerHTML='<p class="out">'+t('noTpl')+'</p>';return;}var h='';for(var i=0;i<list.length;i++){h+='<div class="app-item"><span>'+esc(list[i].name||t('untitled'))+'</span><span class="row"><button class="button sec" id="app-tpl-load-'+i+'" data-tpl-load="'+i+'">'+t('load')+'</button><button class="button sec" id="app-tpl-del-'+i+'" data-tpl-del="'+i+'">'+t('delete')+'</button></span></div>';}el.innerHTML=h;}
+function renderResponses(){var el=$('app-responses');var list=load(LS_RES);if(!list.length){el.innerHTML='<p class="out">'+t('noRes')+'</p>';return;}var h='';for(var i=0;i<list.length;i++){var d;try{d=new Date(list[i].at).toLocaleString(state.lang==='ar'?'ar':'en');}catch(e){d='';}h+='<div class="app-item"><span>'+esc(list[i].title||t('untitled'))+' — '+esc(d)+'</span><span class="row"><button class="button sec" id="app-res-load-'+i+'" data-res-load="'+i+'">'+t('view')+'</button><button class="button sec" id="app-res-del-'+i+'" data-res-del="'+i+'">'+t('delete')+'</button></span></div>';}el.innerHTML=h;}
+function runSchema(){var raw=$('app-json').value.trim();if(!raw){showStatus(t('emptyJson'),true);return;}var obj;try{obj=JSON.parse(raw);}catch(e){showStatus(t('invalidJson')+' '+e.message,true);return;}if(!obj||typeof obj!=='object'||!Array.isArray(obj.steps)){showStatus(t('invalidSchema'),true);return;}state.schema=obj;state.answers={};state.step=0;renderForm();$('app-out').textContent=t('awaitSubmit');$('app-big').textContent='0';showStatus(t('loadedOk'));}
+function saveTemplate(){if(!state.schema){showStatus(t('noForm'),true);return;}var name=$('app-tpl-name').value.trim()||state.schema.title||t('untitled');var list=load(LS_TPL);list.unshift({name:name,at:Date.now(),schema:state.schema});if(save(LS_TPL,list.slice(0,60))){$('app-tpl-name').value='';showStatus(t('tplSaved'));renderTemplates();}else showStatus(t('storeFail'),true);}
+function onTplClick(e){var el=e.target.closest?e.target.closest('[data-tpl-load],[data-tpl-del]'):null;if(!el)return;var list=load(LS_TPL);if(el.hasAttribute('data-tpl-load')){var i=+el.getAttribute('data-tpl-load');if(list[i]){$('app-json').value=JSON.stringify(list[i].schema,null,2);runSchema();}}else{var j=+el.getAttribute('data-tpl-del');list.splice(j,1);save(LS_TPL,list);renderTemplates();}}
+function onResClick(e){var el=e.target.closest?e.target.closest('[data-res-load],[data-res-del]'):null;if(!el)return;var list=load(LS_RES);if(el.hasAttribute('data-res-del')){list.splice(+el.getAttribute('data-res-del'),1);save(LS_RES,list);renderResponses();}else{var r=list[+el.getAttribute('data-res-load')];if(r){state.answers=r.data;showResults(r.data);showStatus(t('submitted'));}}}
+function download(name,text){try{var blob=new Blob([text],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},1500);}catch(e){showStatus(t('storeFail'),true);}}
+function exportData(){var kind=$('app-export-kind').value,data;if(kind==='templates')data=load(LS_TPL);else if(kind==='responses')data=load(LS_RES);else data={templates:load(LS_TPL),responses:load(LS_RES)};download('form-studio-'+kind+'.json',JSON.stringify(data,null,2));showStatus(t('exported'));}
+function importFile(e){var f=e.target.files&&e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(ev){try{var obj=JSON.parse(ev.target.result);if(obj&&Array.isArray(obj.steps)){$('app-json').value=JSON.stringify(obj,null,2);runSchema();showStatus(t('importedSchema'));}else if(Array.isArray(obj)){save(LS_TPL,obj.concat(load(LS_TPL)).slice(0,60));renderTemplates();showStatus(t('importedTpl'));}else if(obj&&(obj.templates||obj.responses)){if(obj.templates)save(LS_TPL,obj.templates.concat(load(LS_TPL)).slice(0,60));if(obj.responses)save(LS_RES,obj.responses.concat(load(LS_RES)).slice(0,60));renderTemplates();renderResponses();showStatus(t('importedAll'));}else showStatus(t('invalidFile'),true);}catch(err){showStatus(t('invalidFile')+' '+err.message,true);}$('app-file').value='';};rd.readAsText(f);}
+function clearAll(){if(!confirm(t('confirmClear')))return;try{localStorage.removeItem(LS_TPL);localStorage.removeItem(LS_RES);}catch(e){}renderTemplates();renderResponses();showStatus(t('cleared'));}
+function init(){applyLang();try{$('app-json').value=JSON.stringify(SAMPLE,null,2);}catch(e){}$('app-json').value=JSON.stringify(SAMPLE,null,2);runSchema();renderTemplates();renderResponses();
+ $('app-lang').addEventListener('change',function(){state.lang=this.value;applyLang();refreshAll();});
+ $('app-sample').addEventListener('click',function(){$('app-json').value=JSON.stringify(SAMPLE,null,2);runSchema();showStatus(t('sampleLoaded'));});
+ $('app-run').addEventListener('click',runSchema);
+ $('app-save-tpl').addEventListener('click',saveTemplate);
+ $('app-prev').addEventListener('click',function(){go(-1);});
+ $('app-next').addEventListener('click',function(){go(1);});
+ $('app-submit').addEventListener('click',submitForm);
+ $('app-form').addEventListener('input',onFieldChange);
+ $('app-form').addEventListener('change',onFieldChange);
+ $('app-export').addEventListener('click',exportData);
+ $('app-import').addEventListener('click',function(){$('app-file').click();});
+ $('app-file').addEventListener('change',importFile);
+ $('app-clear').addEventListener('click',clearAll);
+ $('app-templates').addEventListener('click',onTplClick);
+ $('app-responses').addEventListener('click',onResClick);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
