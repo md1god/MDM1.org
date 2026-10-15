@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشغّل صوتيات محلي بأسلوب الثمانينيات مع محلل طيف ومعادل صوت | MDM1</title>
+<meta name="description" content="مشغّل صوتيات يعمل بالكامل في متصفحك: اسحب ملفاتك MP3 وFLAC وOGG وWAV، واستمتع بقائمة تشغيل ومحلل طيف حيّ ومعادل صوت واختصارات، دون اتصال أو حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/retro-audio-deck.html">
+<meta property="og:title" content="مشغّل صوتيات محلي بأسلوب الثمانينيات مع محلل طيف ومعادل صوت">
+<meta property="og:description" content="مشغّل صوتيات يعمل بالكامل في متصفحك: اسحب ملفاتك MP3 وFLAC وOGG وWAV، واستمتع بقائمة تشغيل ومحلل طيف حيّ ومعادل صوت واختصارات، دون اتصال أو حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/retro-audio-deck.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { box-sizing: border-box; }
+.app * { box-sizing: border-box; }
+.app-intro { color: var(--light); line-height: 1.9; margin: 0 0 16px; }
+.app-shell { display: grid; gap: 14px; }
+.app-drop { border: 2px dashed var(--gold-dim); border-radius: 12px; padding: 22px; text-align: center; cursor: pointer; transition: .2s; background: rgba(255,215,0,.04); color: var(--light); }
+.app-drop.app-over { border-color: var(--gold-bright); background: rgba(255,215,0,.12); }
+.app-player { display: grid; grid-template-columns: 110px 1fr; gap: 14px; align-items: center; }
+.app-cover { width: 110px; height: 110px; border-radius: 10px; border: 2px solid var(--gold-dim); background: linear-gradient(135deg,#222,#000); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 38px; color: var(--gold); }
+.app-meta { min-width: 0; }
+.app-title { color: var(--gold-bright); font-weight: 700; font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-sub { color: var(--gold-dim); font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-viz { width: 100%; height: 110px; display: block; border-radius: 10px; background: #0a0a0a; border: 1px solid var(--gold-dim); }
+.app-seek, .app-vol { flex: 1; min-width: 120px; accent-color: var(--gold); }
+.app-eq { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.app-eq input { width: 100%; accent-color: var(--gold); }
+.app-list { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow: auto; }
+.app-item { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 1px solid rgba(255,215,0,.12); cursor: pointer; }
+.app-item:hover { background: rgba(255,215,0,.08); }
+.app-item.active { background: rgba(255,215,0,.16); color: var(--gold-bright); }
+.app-item small { color: var(--gold-dim); }
+.app-time { font-variant-numeric: tabular-nums; color: var(--gold-dim); font-size: .85rem; min-width: 42px; }
+.app-ps { text-align: center; }
+.app-hint { font-size: .8rem; color: var(--gold-dim); line-height: 1.7; }
+.app button.on { box-shadow: inset 0 0 0 2px var(--gold-bright); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مشغّل صوتيات داخل المتصفح بأسلوب الثمانينيات", "url": "https://mdm1.org/apps/retro-audio-deck.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم رفع ملفاتي الصوتية إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل عمليات فتح الملفات وفك ترميزها وتشغيلها تحدث محلياً داخل متصفحك فقط عبر واجهات المتصفح، ولا يتم أي إرسال أو اتصال بالشبكة، وتبقى ملفاتك على جهازك."}}, {"@type": "Question", "name": "هل تُحفظ قائمة التشغيل أو إعداداتي بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ تلقائياً في متصفحك خيارات الترتيب العشوائي ونمط التكرار ومستوى الصوت وقيم المعادل. أما الملفات نفسها فلا يمكن حفظها لأسباب أمنية، لذا أعد سحبها عند كل جلسة جديدة."}}, {"@type": "Question", "name": "ما الصيغ الصوتية المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم التطبيق صيغ MP3 وFLAC وOGG وWAV وM4A، مع قراءة بيانات العنوان والفنان والألبوم وصورة الغلاف من وسوم MP3 متى توفّرت، وإلا يستنتجها من اسم الملف."}}, {"@type": "Question", "name": "كيف أستخدم اختصارات لوحة المفاتيح؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط مسافة للتشغيل أو الإيقاف، وسهمي اليمين واليسار للتنقل الزمني، وسهمي الأعلى والأسفل للصوت، وحرف N للمسار التالي، وP للسابق، وS للعشوائي، وR للتكرار، وF لملء الشاشة."}}, {"@type": "Question", "name": "لماذا لا يظهر محلل الطيف عند التشغيل؟", "acceptedAnswer": {"@type": "Answer", "text": "يبدأ المحلل بعد أول تفاعل مع الصفحة بسبب سياسات المتصفح للصوت التلقائي؛ اضغط زر التشغيل مرة واحدة، وتأكد من دعم المتصفح لواجهة Web Audio، وسيظهر الطيف مباشرة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مشغّل صوتيات داخل المتصفح بأسلوب الثمانينيات</h1>
+  <p class="page-sub">مشغّل صوتيات يعمل بالكامل في متصفحك: اسحب ملفاتك MP3 وFLAC وOGG وWAV، واستمتع بقائمة تشغيل ومحلل طيف حيّ ومعادل صوت واختصارات، دون اتصال أو حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><section class="app" aria-label="مشغل الصوتيات المحلي">
+  <p class="app-intro">هل تبحث عن مشغّل صوتيات بسيط يعمل بالكامل داخل متصفحك دون تسجيل أو اتصال بالإنترنت؟ هذا التطبيق يمنحك مشغّلاً كاملاً بواجهة عربية أنيقة مستوحاة من الثمانينيات، تستطيع من خلاله سحب ملفاتك الصوتية المحلية بصيغ MP3 وFLAC وOGG وWAV وإفلاتها مباشرة في الصفحة ليبدأ التشغيل فوراً. يضم المشغّل قائمة تشغيل تفاعلية مع بحث وتصنيف حسب الفنان والألبوم، ونمط تشغيل عشوائي وخيارات تكرار محفوظة تلقائياً في متصفحك. كما يوفر محلل طيف بصري حيّ مرسوم على الـ canvas، ومُعدّل صوت بارامتري متعدد النطاقات للباس والمتوسط والتربل، مع عرض الغلاف والعنوان وشريط التقدّم. يدعم أيضاً وضع الشاشة الكاملة واختصارات لوحة المفاتيح، ويعمل دون أي حساب أو رفع للملفات.</p>
+
+  <div class="app-shell">
+    <div id="dropZone" class="app-drop" role="button" tabindex="0">
+      اسحب ملفاتك الصوتية وأفلتها هنا، أو انقر للاختيار من جهازك
+      <br><small class="app-hint">الصيغ المدعومة: MP3، FLAC، OGG، WAV، M4A</small>
+    </div>
+    <input type="file" id="fileInput" class="input" accept="audio/*,.mp3,.flac,.ogg,.wav,.m4a" multiple hidden>
+
+    <div class="app-player">
+      <div id="coverArt" class="app-cover">♪</div>
+      <div class="app-meta">
+        <div class="app-title" id="trackTitle">لا يوجد مسار</div>
+        <div class="app-sub" id="trackArtist">أضف ملفات للبدء</div>
+        <div class="app-sub" id="trackAlbum"></div>
+      </div>
+    </div>
+
+    <canvas id="vizCanvas" class="app-viz"></canvas>
+
+    <div class="row">
+      <span class="app-time" id="curTime">0:00</span>
+      <input type="range" id="seekBar" class="app-seek" min="0" max="100" value="0" step="0.1" aria-label="شريط تقدم المسار">
+      <span class="app-time" id="durTime">0:00</span>
+    </div>
+
+    <div class="row">
+      <button id="prevBtn" class="button sec" type="button">المسار السابق</button>
+      <button id="playPause" class="button" type="button">▶ تشغيل</button>
+      <button id="nextBtn" class="button sec" type="button">المسار التالي</button>
+      <button id="shuffleBtn" class="button sec" type="button">عشوائي: إيقاف</button>
+      <button id="repeatBtn" class="button sec" type="button">تكرار: إيقاف</button>
+      <button id="fullscreenBtn" class="button sec" type="button">ملء الشاشة</button>
+      <button id="clearBtn" class="button sec" type="button">مسح قائمة التشغيل</button>
+    </div>
+
+    <div class="row">
+      <label class="label" for="volumeBar">مستوى الصوت</label>
+      <input type="range" id="volumeBar" class="app-vol" min="0" max="1" step="0.01" value="1">
+    </div>
+
+    <div class="app-eq">
+      <div><label class="label" for="bassEq">الباس (منخفض)</label><input type="range" id="bassEq" min="-12" max="12" step="1" value="0"></div>
+      <div><label class="label" for="midEq">المتوسط</label><input type="range" id="midEq" min="-12" max="12" step="1" value="0"></div>
+      <div><label class="label" for="trebleEq">التربل (عالي)</label><input type="range" id="trebleEq" min="-12" max="12" step="1" value="0"></div>
+    </div>
+
+    <div class="row">
+      <input type="search" id="searchInput" class="input" placeholder="ابحث باسم الفنان أو الألبوم أو العنوان">
+      <select id="sortSelect" class="select">
+        <option value="added">ترتيب: الإضافة</option>
+        <option value="title">ترتيب: العنوان</option>
+        <option value="artist">ترتيب: الفنان</option>
+        <option value="album">ترتيب: الألبوم</option>
+        <option value="duration">ترتيب: المدة</option>
+      </select>
+      <span class="badge" id="trackCount">0 مسار</span>
+    </div>
+
+    <ul id="playlist" class="app-list card"></ul>
+    <div id="emptyState" class="app-ps app-hint">قائمة التشغيل فارغة. اسحب بعض الملفات الصوتية لتظهر هنا.</div>
+    <div id="statusOut" class="out">جاهز. أضف ملفات صوتية للبدء.</div>
+    <div class="app-hint">اختصارات: مسافة تشغيل/إيقاف، الأسهم يمين/يسار للتنقل الزمني، أعلى/أسفل للصوت، N التالي، P السابق، S عشوائي، R تكرار، F ملء الشاشة.</div>
+  </div>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم رفع ملفاتي الصوتية إلى أي خادم؟</h3><p>لا. كل عمليات فتح الملفات وفك ترميزها وتشغيلها تحدث محلياً داخل متصفحك فقط عبر واجهات المتصفح، ولا يتم أي إرسال أو اتصال بالشبكة، وتبقى ملفاتك على جهازك.</p><h3>هل تُحفظ قائمة التشغيل أو إعداداتي بعد إغلاق الصفحة؟</h3><p>تُحفظ تلقائياً في متصفحك خيارات الترتيب العشوائي ونمط التكرار ومستوى الصوت وقيم المعادل. أما الملفات نفسها فلا يمكن حفظها لأسباب أمنية، لذا أعد سحبها عند كل جلسة جديدة.</p><h3>ما الصيغ الصوتية المدعومة؟</h3><p>يدعم التطبيق صيغ MP3 وFLAC وOGG وWAV وM4A، مع قراءة بيانات العنوان والفنان والألبوم وصورة الغلاف من وسوم MP3 متى توفّرت، وإلا يستنتجها من اسم الملف.</p><h3>كيف أستخدم اختصارات لوحة المفاتيح؟</h3><p>اضغط مسافة للتشغيل أو الإيقاف، وسهمي اليمين واليسار للتنقل الزمني، وسهمي الأعلى والأسفل للصوت، وحرف N للمسار التالي، وP للسابق، وS للعشوائي، وR للتكرار، وF لملء الشاشة.</p><h3>لماذا لا يظهر محلل الطيف عند التشغيل؟</h3><p>يبدأ المحلل بعد أول تفاعل مع الصفحة بسبب سياسات المتصفح للصوت التلقائي؛ اضغط زر التشغيل مرة واحدة، وتأكد من دعم المتصفح لواجهة Web Audio، وسيظهر الطيف مباشرة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var audio = new Audio();
+  audio.preload = 'metadata';
+  var actx = null, source = null, bass = null, mid = null, treble = null, analyser = null;
+  var tracks = [], cur = -1, shuffle = false, repeat = 'off';
+
+  try {
+    var s = JSON.parse(localStorage.getItem('r80.settings') || '{}');
+    shuffle = !!s.shuffle;
+    repeat = s.repeat || 'off';
+    if (typeof s.volume === 'number') $('volumeBar').value = s.volume;
+    if (typeof s.bass === 'number') $('bassEq').value = s.bass;
+    if (typeof s.mid === 'number') $('midEq').value = s.mid;
+    if (typeof s.treble === 'number') $('trebleEq').value = s.treble;
+  } catch (e) {}
+
+  function save() {
+    try {
+      localStorage.setItem('r80.settings', JSON.stringify({
+        shuffle: shuffle, repeat: repeat,
+        volume: +$('volumeBar').value, bass: +$('bassEq').value,
+        mid: +$('midEq').value, treble: +$('trebleEq').value
+      }));
+    } catch (e) {}
+  }
+
+  function initAudio() {
+    if (actx) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      actx = new AC();
+      source = actx.createMediaElementSource(audio);
+      bass = actx.createBiquadFilter(); bass.type = 'lowshelf'; bass.frequency.value = 200;
+      mid = actx.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1000; mid.Q.value = 1;
+      treble = actx.createBiquadFilter(); treble.type = 'highshelf'; treble.frequency.value = 3200;
+      analyser = actx.createAnalyser(); analyser.fftSize = 256;
+      source.connect(bass); bass.connect(mid); mid.connect(treble);
+      treble.connect(analyser); analyser.connect(actx.destination);
+      bass.gain.value = +$('bassEq').value;
+      mid.gain.value = +$('midEq').value;
+      treble.gain.value = +$('trebleEq').value;
+    } catch (e) { actx = null; }
+  }
+
+  function fit() {
+    var cv = $('vizCanvas');
+    cv.width = cv.clientWidth || 320;
+    cv.height = cv.clientHeight || 110;
+  }
+
+  function draw() {
+    requestAnimationFrame(draw);
+    var cv = $('vizCanvas');
+    var ctx = cv.getContext('2d');
+    if (!ctx) return;
+    var W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    if (!analyser) {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, H - 2, W, 2);
+      return;
+    }
+    var data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+    var bars = 48, step = Math.max(1, Math.floor(data.length / bars)), bw = W / bars;
+    for (var i = 0; i < bars; i++) {
+      var v = 0;
+      for (var j = 0; j < step; j++) v = Math.max(v, data[i * step + j]);
+      var h = (v / 255) * H;
+      var g = ctx.createLinearGradient(0, H - h, 0, H);
+      g.addColorStop(0, '#ffe066');
+      g.addColorStop(1, '#b8860b');
+      ctx.fillStyle = g;
+      ctx.fillRect(i * bw + 1, H - h, bw - 2, h);
+    }
+  }
+
+  function fmt(sec) {
+    if (!isFinite(sec)) return '0:00';
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec / 60), r = sec % 60;
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+
+  function setStatus(msg) { $('statusOut').textContent = msg; }
+
+  function decodeText(dv, start, end) {
+    try {
+      var enc = dv.getUint8(start);
+      var bytes = new Uint8Array(dv.buffer, dv.byteOffset + start + 1, end - start - 1);
+      if (enc === 0) return new TextDecoder('iso-8859-1').decode(bytes).replace(/\0[\s\S]*$/, '').trim();
+      if (enc === 1) return new TextDecoder('utf-16').decode(bytes).replace(/\u0000/g, '').trim();
+      if (enc === 2) return new TextDecoder('utf-16be').decode(bytes).replace(/\u0000/g, '').trim();
+      return new TextDecoder('utf-8').decode(bytes).replace(/\0[\s\S]*$/, '').trim();
+    } catch (e) { return ''; }
+  }
+
+  function readID3(buf) {
+    try {
+      if (buf.byteLength < 10) return null;
+      var dv = new DataView(buf);
+      if (dv.getUint8(0) !== 73 || dv.getUint8(1) !== 68 || dv.getUint8(2) !== 51) return null;
+      var ver = dv.getUint8(3);
+      var size = ((dv.getUint8(6) & 0x7f) << 21) | ((dv.getUint8(7) & 0x7f) << 14) |
+                 ((dv.getUint8(8) & 0x7f) << 7) | (dv.getUint8(9) & 0x7f);
+      var off = 10, end = Math.min(10 + size, buf.byteLength);
+      var tags = { title: '', artist: '', album: '', cover: null };
+      while (off + 10 <= end) {
+        var id = String.fromCharCode(dv.getUint8(off), dv.getUint8(off + 1), dv.getUint8(off + 2), dv.getUint8(off + 3));
+        if (id.charCodeAt(0) === 0) break;
+        var fsize;
+        if (ver === 4) {
+          fsize = ((dv.getUint8(off + 4) & 0x7f) << 21) | ((dv.getUint8(off + 5) & 0x7f) << 14) |
+                  ((dv.getUint8(off + 6) & 0x7f) << 7) | (dv.getUint8(off + 7) & 0x7f);
+        } else {
+          fsize = (dv.getUint8(off + 4) << 24) | (dv.getUint8(off + 5) << 16) |
+                  (dv.getUint8(off + 6) << 8) | dv.getUint8(off + 7);
+        }
+        var fs = off + 10, fe = fs + fsize;
+        if (fsize <= 0 || fe > end) break;
+        if (id === 'TIT2') tags.title = decodeText(dv, fs, fe);
+        else if (id === 'TPE1') tags.artist = decodeText(dv, fs, fe);
+        else if (id === 'TALB') tags.album = decodeText(dv, fs, fe);
+        else if (id === 'APIC') {
+          var enc = dv.getUint8(fs), p = fs + 1, mime = '';
+          while (p < fe && dv.getUint8(p) !== 0) { mime += String.fromCharCode(dv.getUint8(p)); p++; }
+          p++; p++;
+          if (enc === 1 || enc === 2) {
+            while (p + 1 < fe && !(dv.getUint8(p) === 0 && dv.getUint8(p + 1) === 0)) p += 2;
+            p += 2;
+          } else {
+            while (p < fe && dv.getUint8(p) !== 0) p++;
+            p++;
+          }
+          if (p < fe) {
+            try {
+              tags.cover = URL.createObjectURL(new Blob([buf.slice(p, fe)], { type: mime || 'image/jpeg' }));
+            } catch (e) {}
+          }
+        }
+        off = fe;
+      }
+      return tags;
+    } catch (e) { return null; }
+  }
+
+  function loadDuration(t) {
+    var a = new Audio();
+    a.preload = 'metadata';
+    a.addEventListener('loadedmetadata', function () {
+      t.duration = a.duration;
+      render();
+    });
+    a.addEventListener('error', function () { t.duration = 0; render(); });
+    a.src = t.url;
+  }
+
+  function addFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []).filter(function (f) {
+      return /audio\//.test(f.type) || /\.(mp3|flac|ogg|wav|m4a|aac|opus)$/i.test(f.name);
+    });
+    if (!files.length) { setStatus('لم يتم العثور على ملفات صوتية مدعومة. الصيغ المسموحة: MP3، FLAC، OGG، WAV، M4A.'); return; }
+    setStatus('جارٍ تحميل ' + files.length + ' ملف…');
+    files.forEach(function (f) {
+      var url = URL.createObjectURL(f);
+      var t = { id: 't' + Date.now() + Math.random().toString(36).slice(2), name: f.name, url: url, title: '', artist: '', album: '', coverUrl: null, duration: NaN, size: f.size };
+      f.slice(0, 512 * 1024).arrayBuffer().then(function (buf) {
+        var tags = readID3(buf);
+        if (tags) {
+          t.title = tags.title; t.artist = tags.artist; t.album = tags.album;
+          if (tags.cover) t.coverUrl = tags.cover;
+        }
+        if (!t.title) {
+          var base = f.name.replace(/\.[^.]+$/, '');
+          var parts = base.split(' - ');
+          if (parts.length >= 2) { t.artist = parts[0].trim(); t.title = parts.slice(1).join(' - ').trim(); }
+          else t.title = base;
+        }
+        if (!t.artist) t.artist = 'فنان غير معروف';
+        if (!t.album) t.album = 'ألبوم غير معروف';
+        tracks.push(t);
+        render();
+        loadDuration(t);
+      }).catch(function () {
+        t.title = f.name.replace(/\.[^.]+$/, '');
+        t.artist = 'فنان غير معروف';
+        t.album = 'ألبوم غير معروف';
+        tracks.push(t);
+        render();
+        loadDuration(t);
+      });
+    });
+    setStatus('تمت إضافة ' + files.length + ' ملف. إجمالي المسارات: ' + (tracks.length) + '.');
+  }
+
+  function viewList() {
+    var q = $('searchInput').value.trim().toLowerCase();
+    var idx = tracks.map(function (t, i) { return i; });
+    if (q) {
+      idx = idx.filter(function (i) {
+        var t = tracks[i];
+        return (t.title + ' ' + t.artist + ' ' + t.album).toLowerCase().indexOf(q) > -1;
+      });
+    }
+    var sort = $('sortSelect').value;
+    if (sort !== 'added') {
+      idx.sort(function (a, b) {
+        var A = tracks[a], B = tracks[b];
+        if (sort === 'title') return A.title.localeCompare(B.title, 'ar');
+        if (sort === 'artist') return A.artist.localeCompare(B.artist, 'ar');
+        if (sort === 'album') return A.album.localeCompare(B.album, 'ar');
+        if (sort === 'duration') return (A.duration || 0) - (B.duration || 0);
+        return 0;
+      });
+    }
+    return idx;
+  }
+
+  function render() {
+    $('trackCount').textContent = tracks.length + ' مسار';
+    var list = $('playlist');
+    list.innerHTML = '';
+    $('emptyState').style.display = tracks.length ? 'none' : 'block';
+    if (!tracks.length) return;
+    var view = viewList();
+    if (!view.length) {
+      var li = document.createElement('li');
+      li.className = 'app-ps app-hint';
+      li.textContent = 'لا توجد نتائج مطابقة للبحث.';
+      list.appendChild(li);
+      return;
+    }
+    view.forEach(function (i) {
+      var t = tracks[i];
+      var row = document.createElement('li');
+      row.className = 'app-item' + (i === cur ? ' active' : '');
+      var name = document.createElement('span');
+      name.textContent = t.title;
+      var meta = document.createElement('small');
+      meta.textContent = t.artist + ' • ' + fmt(t.duration);
+      row.appendChild(name);
+      row.appendChild(meta);
+      row.addEventListener('click', function () { playIndex(i); });
+      list.appendChild(row);
+    });
+  }
+
+  function updateCurrent() {
+    var t = tracks[cur];
+    var cv = $('coverArt');
+    if (!t) {
+      $('trackTitle').textContent = 'لا يوجد مسار';
+      $('trackArtist').textContent = 'أضف ملفات للبدء';
+      $('trackAlbum').textContent = '';
+      cv.style.backgroundImage = 'none';
+      cv.textContent = '♪';
+      return;
+    }
+    $('trackTitle').textContent = t.title;
+    $('trackArtist').textContent = t.artist;
+    $('trackAlbum').textContent = t.album;
+    if (t.coverUrl) { cv.style.backgroundImage = 'url("' + t.coverUrl + '")'; cv.textContent = ''; }
+    else { cv.style.backgroundImage = 'none'; cv.textContent = '♪'; }
+  }
+
+  function playIndex(i) {
+    if (i < 0 || i >= tracks.length) return;
+    cur = i;
+    var t = tracks[i];
+    audio.src = t.url;
+    initAudio();
+    if (actx && actx.state === 'suspended') actx.resume();
+    audio.play().catch(function () { setStatus('تعذّر تشغيل الملف. قد تكون الصيغة غير مدعومة في هذا المتصفح.'); });
+    updateCurrent();
+    render();
+    setStatus('يتم تشغيل: ' + t.title + ' — ' + t.artist);
+  }
+
+  function toggle() {
+    if (!tracks.length) { setStatus('لا توجد ملفات. أضف ملفات صوتية أولاً.'); return; }
+    if (cur < 0) { playIndex(viewList()[0] || 0); return; }
+    initAudio();
+    if (actx && actx.state === 'suspended') actx.resume();
+    if (audio.paused) audio.play().catch(function () {}); else audio.pause();
+  }
+
+  function next(manual) {
+    if (!tracks.length) return;
+    var view = viewList();
+    if (!view.length) return;
+    if (shuffle && view.length > 1) {
+      var r; do { r = view[Math.floor(Math.random() * view.length)]; } while (r === cur);
+      playIndex(r); return;
+    }
+    var pos = view.indexOf(cur);
+    var np = pos < 0 ? 0 : (pos + 1 >= view.length ? 0 : pos + 1);
+    playIndex(view[np]);
+  }
+
+  function prev() {
+    if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+    var view = viewList();
+    if (!view.length) return;
+    var pos = view.indexOf(cur);
+    var pp = pos <= 0 ? view.length - 1 : pos - 1;
+    playIndex(view[pp]);
+  }
+
+  function onEnded() {
+    var view = viewList();
+    if (repeat === 'one') { audio.currentTime = 0; audio.play().catch(function () {}); return; }
+    if (!view.length) return;
+    if (shuffle) {
+      if (view.length < 2) { if (repeat === 'all') { audio.currentTime = 0; audio.play().catch(function () {}); } return; }
+      var r; do { r = view[Math.floor(Math.random() * view.length)]; } while (r === cur);
+      playIndex(r); return;
+    }
+    var pos = view.indexOf(cur);
+    if (pos > -1 && pos < view.length - 1) playIndex(view[pos + 1]);
+    else if (repeat === 'all') playIndex(view[0]);
+    else { $('playPause').textContent = '▶ تشغيل'; setStatus('انتهت قائمة التشغيل.'); }
+  }
+
+  function syncBtns() {
+    $('shuffleBtn').textContent = shuffle ? 'عشوائي: تشغيل' : 'عشوائي: إيقاف';
+    $('shuffleBtn').classList.toggle('on', shuffle);
+    var map = { off: 'تكرار: إيقاف', all: 'تكرار: الكل', one: 'تكرار: مسار واحد' };
+    $('repeatBtn').textContent = map[repeat];
+    $('repeatBtn').classList.toggle('on', repeat !== 'off');
+  }
+
+  function clearAll() {
+    audio.pause();
+    audio.removeAttribute('src');
+    audio.load();
+    tracks.forEach(function (t) {
+      URL.revokeObjectURL(t.url);
+      if (t.coverUrl) URL.revokeObjectURL(t.coverUrl);
+    });
+    tracks = []; cur = -1;
+    $('seekBar').value = 0;
+    $('curTime').textContent = '0:00';
+    $('durTime').textContent = '0:00';
+    $('searchInput').value = '';
+    render();
+    updateCurrent();
+    $('playPause').textContent = '▶ تشغيل';
+    setStatus('تم مسح قائمة التشغيل.');
+  }
+
+  function toggleFullscreen() {
+    var el = document.querySelector('.app');
+    if (!document.fullscreenElement) {
+      var req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (req) req.call(el); else setStatus('وضع ملء الشاشة غير مدعوم في هذا المتصفح.');
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+
+  var dz = $('dropZone');
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add('app-over'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove('app-over'); });
+  });
+  dz.addEventListener('drop', function (e) {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+  dz.addEventListener('click', function () { $('fileInput').click(); });
+  dz.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('fileInput').click(); }
+  });
+  document.addEventListener('dragover', function (e) { e.preventDefault(); });
+  document.addEventListener('drop', function (e) { e.preventDefault(); });
+  $('fileInput').addEventListener('change', function (e) { addFiles(e.target.files); e.target.value = ''; });
+
+  $('playPause').addEventListener('click', toggle);
+  $('nextBtn').addEventListener('click', function () { next(true); });
+  $('prevBtn').addEventListener('click', prev);
+  $('shuffleBtn').addEventListener('click', function () { shuffle = !shuffle; syncBtns(); save(); setStatus(shuffle ? 'الترتيب العشوائي مُفعّل.' : 'الترتيب العشوائي متوقف.'); });
+  $('repeatBtn').addEventListener('click', function () {
+    repeat = repeat === 'off' ? 'all' : (repeat === 'all' ? 'one' : 'off');
+    syncBtns(); save();
+    setStatus(repeat === 'off' ? 'التكرار متوقف.' : (repeat === 'all' ? 'تكرار كل القائمة.' : 'تكرار المسار الحالي.'));
+  });
+  $('fullscreenBtn').addEventListener('click', toggleFullscreen);
+  $('clearBtn').addEventListener('click', clearAll);
+
+  $('seekBar').addEventListener('input', function () {
+    if (audio.duration && isFinite(audio.duration)) audio.currentTime = (this.value / 100) * audio.duration;
+  });
+  $('volumeBar').addEventListener('input', function () { audio.volume = +this.value; save(); });
+  $('bassEq').addEventListener('input', function () { if (bass) bass.gain.value = +this.value; save(); });
+  $('midEq').addEventListener('input', function () { if (mid) mid.gain.value = +this.value; save(); });
+  $('trebleEq').addEventListener('input', function () { if (treble) treble.gain.value = +this.value; save(); });
+
+  $('searchInput').addEventListener('input', render);
+  $('sortSelect').addEventListener('change', render);
+
+  audio.addEventListener('timeupdate', function () {
+    if (audio.duration && isFinite(audio.duration)) {
+      $('seekBar').value = (audio.currentTime / audio.duration) * 100;
+    }
+    $('curTime').textContent = fmt(audio.currentTime);
+  });
+  audio.addEventListener('loadedmetadata', function () { $('durTime').textContent = fmt(audio.duration); });
+  audio.addEventListener('play', function () { $('playPause').textContent = '⏸ إيقاف مؤقت'; });
+  audio.addEventListener('pause', function () { $('playPause').textContent = '▶ تشغيل'; });
+  audio.addEventListener('ended', onEnded);
+  audio.addEventListener('error', function () {
+    if (tracks.length) setStatus('تعذّر قراءة الملف الحالي. جرّب صيغة أخرى.');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+    if (e.code === 'Space') { e.preventDefault(); toggle(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); if (audio.duration) audio.currentTime = Math.min(audio.duration, audio.currentTime + 5); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); audio.currentTime = Math.max(0, audio.currentTime - 5); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); $('volumeBar').value = Math.min(1, +$('volumeBar').value + 0.05); audio.volume = +$('volumeBar').value; save(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); $('volumeBar').value = Math.max(0, +$('volumeBar').value - 0.05); audio.volume = +$('volumeBar').value; save(); }
+    else if (e.key === 'n' || e.key === 'N') next(true);
+    else if (e.key === 'p' || e.key === 'P') prev();
+    else if (e.key === 's' || e.key === 'S') { shuffle = !shuffle; syncBtns(); save(); }
+    else if (e.key === 'r' || e.key === 'R') { repeat = repeat === 'off' ? 'all' : (repeat === 'all' ? 'one' : 'off'); syncBtns(); save(); }
+    else if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  });
+
+  window.addEventListener('resize', fit);
+
+  audio.volume = +$('volumeBar').value;
+  syncBtns();
+  render();
+  updateCurrent();
+  fit();
+  draw();
+})();
+</script>
+</body>
+</html>
