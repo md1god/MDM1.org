@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معمل مرئي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML | MDM1</title>
+<meta name="description" content="معمل مرئي عربي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML متدفقة، مع نقاط تفتيش وسفر زمني ولوحة تتبع بنمط OpenTelemetry وحفظ محلي كامل.">
+<link rel="canonical" href="https://mdm1.org/apps/agent-workflow-studio.html">
+<meta property="og:title" content="معمل مرئي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML">
+<meta property="og:description" content="معمل مرئي عربي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML متدفقة، مع نقاط تفتيش وسفر زمني ولوحة تتبع بنمط OpenTelemetry وحفظ محلي كامل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/agent-workflow-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:block}
+.app-intro{line-height:1.9;margin-bottom:14px}
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:820px){.app-grid{grid-template-columns:1fr}}
+.app-col{display:flex;flex-direction:column;gap:8px}
+.app-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;min-height:220px}
+.app-diagram{border:1px dashed var(--gold-dim);border-radius:10px;padding:10px;min-height:90px;overflow:auto}
+.app-nodes{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.app-node{border:1px solid var(--gold-dim);border-radius:8px;padding:6px 9px;background:rgba(212,175,55,.08);color:var(--light);font-size:12px;text-align:center}
+.app-node b{color:var(--gold-bright);display:block}
+.app-node.app-human{border-color:var(--gold-bright);box-shadow:0 0 0 1px var(--gold-bright) inset}
+.app-arrow{color:var(--gold);font-weight:700}
+.app-group{display:flex;flex-direction:column;gap:5px;border:1px dashed var(--gold-dim);border-radius:8px;padding:6px}
+.app-hub{border-color:var(--gold-bright);font-weight:700;display:block;margin-bottom:8px}
+.app-trace{max-height:340px;overflow:auto;display:flex;flex-direction:column;gap:8px;text-align:start}
+.app-span{border:1px solid var(--gold-dim);border-radius:8px;padding:8px;background:rgba(255,255,255,.02)}
+.app-span.ok{border-inline-start:3px solid var(--gold)}
+.app-span.err{border-inline-start:3px solid #e5534b}
+.app-span-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.app-attrs{font-size:12px;line-height:1.7;color:var(--light);opacity:.85;word-break:break-word}
+.app-dim{opacity:.65;font-size:12px}
+.app-exc{color:#ff9b93;font-size:12px;margin-top:4px}
+.app-warn{border-color:#e5534b;color:#ff9b93}
+.app-log{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;min-height:46px;text-align:start}
+.app-io{min-height:90px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.app-note{font-size:12px;opacity:.75}
+.app-node .app-dim{font-size:11px}
+.app .row{flex-wrap:wrap;gap:8px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "معمل مرئي لتصميم وتشغيل محاكاة الوكلاء المتعددين عبر مخططات متدفقة", "url": "https://mdm1.org/apps/agent-workflow-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتصل المعمل بالإنترنت أو بأي نموذج ذكاء اصطناعي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. يعمل بالكامل داخل المتصفح دون أي طلبات شبكة؛ التنفيذ محاكاة حتمية، وكل البيانات تُحفظ في localStorage فقط."}}, {"@type": "Question", "name": "كيف أعرّف الوكلاء والمخطط؟", "acceptedAnswer": {"@type": "Answer", "text": "بصيغة YAML بسيطة تضم قائمة agents بحقول id وlabel وrole وemit، وقائمة steps تحدد الوكيل والخطوات البشرية والملاحظات."}}, {"@type": "Question", "name": "ماذا تعني الأنماط الأربعة للتدفق؟", "acceptedAnswer": {"@type": "Answer", "text": "تسلسلي ينفّذ الوكلاء واحدًا تلو الآخر، ومتزامن يشغّل عدة وكلاء في دفعة واحدة، وتسليم باليد يمرّر ناتج كل وكيل إلى التالي، وتعاون جماعي يشغّل جميع الوكلاء في كل جلسة."}}, {"@type": "Question", "name": "كيف يعمل السفر الزمني ونقاط التفتيش؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ نسخة كاملة من الحالة قبل كل خطوة تلقائيًا، ويمكنك زر الإرجاع الزمني لاستعادة آخر نقطة تفتيش والتراجع عن التنفيذ."}}, {"@type": "Question", "name": "أين تُخزَّن مخططاتي وكيف أنقلها؟", "acceptedAnswer": {"@type": "Answer", "text": "تُخزَّن محليًا في localStorage، ويمكن تصديرها كملف JSON أو استيرادها من ملف أو من نص لصقته في المربع."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">معمل مرئي لتصميم وتشغيل محاكاة الوكلاء المتعددين عبر مخططات متدفقة</h1>
+  <p class="page-sub">معمل مرئي عربي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML متدفقة، مع نقاط تفتيش وسفر زمني ولوحة تتبع بنمط OpenTelemetry وحفظ محلي كامل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><section class="card app">
+  <p class="app-intro">صمّم وشغّل محاكاة وكلاء متعددين بالكامل داخل متصفحك دون أي اتصال بالشبكة أو نموذج ذكاء اصطناعي. يوفّر هذا المعمل المرئي محرّرًا لتعريف الوكلاء بصيغة YAML، وأربعة أنماط للتدفق: تسلسلي، ومتزامن، وتسليم باليد، وتعاون جماعي. يمكنك تشغيل المحاكاة خطوة بخطوة أو دفعة واحدة، مع نقاط تفتيش تلقائية وزر إرجاع زمني للتراجع عن أي خطوة سابقة. تعرض لوحة التتبع بنمط OpenTelemetry كل مسار تنفيذ مع المدة والحالة والسمات والاستثناءات، بينما تُظهر لوحة الحالة الأوامر الوسيطة والناتج النهائي. كما تدعم خطوات التحكم البشري بالموافقة أو الرفض، وتحفظ المخططات والتجارب في المتصفح مع إمكانية التصدير والاستيراد.</p>
+  <div class="app-grid">
+    <div class="app-col">
+      <label for="schema">تعريف الوكلاء والمخطط بصيغة YAML</label>
+      <textarea id="schema" class="textarea app-code" spellcheck="false"></textarea>
+      <div class="row">
+        <button id="btn-parse">تحليل المخطط وبناء التدفق</button>
+        <button id="btn-reset" class="sec">إعادة تعيين حالة التشغيل</button>
+      </div>
+      <label for="mode">نمط تدفق تنفيذ الوكلاء</label>
+      <select id="mode" class="select">
+        <option value="sequential">تسلسلي</option>
+        <option value="concurrent">متزامن</option>
+        <option value="handoff">تسليم باليد</option>
+        <option value="group">تعاون جماعي</option>
+      </select>
+      <label for="task">مدخل المهمة للمحاكاة</label>
+      <input id="task" class="input" type="text" value="اكتب تقريرًا عن أداء الأسبوع">
+      <div class="row">
+        <button id="btn-run">تشغيل كامل حتى الانتهاء</button>
+        <button id="btn-step" class="sec">تنفيذ خطوة واحدة</button>
+      </div>
+      <div class="row">
+        <button id="btn-approve">موافقة على الخطوة البشرية</button>
+        <button id="btn-reject" class="sec">رفض الخطوة البشرية</button>
+      </div>
+      <div class="row">
+        <button id="btn-back" class="sec">إرجاع زمني لنقطة التفتيش</button>
+        <button id="btn-clear" class="sec">تفريغ لوحة التتبع</button>
+      </div>
+    </div>
+    <div class="app-col">
+      <label>مخطط التدفق المرئي</label>
+      <div id="diagram" class="app-diagram"></div>
+      <div class="row">
+        <span id="status" class="badge">جاهز</span>
+        <span id="summary" class="app-note"></span>
+      </div>
+      <label>لوحة التتبع بنمط OpenTelemetry</label>
+      <div id="trace" class="out app-trace"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <label>الحالة والأوامر الوسيطة</label>
+  <div id="stateout" class="out app-log"></div>
+  <div class="out">الناتج النهائي: <span id="bigout" class="big">—</span></div>
+  <div class="divider"></div>
+  <label>الحفظ والتصدير والاستيراد</label>
+  <div class="row">
+    <button id="btn-save">حفظ في المتصفح</button>
+    <button id="btn-load" class="sec">تحميل من المتصفح</button>
+    <button id="btn-delete" class="sec">حذف المحفوظ</button>
+  </div>
+  <div class="row">
+    <button id="btn-export">تصدير مخطط كملف JSON</button>
+    <button id="btn-import-text" class="sec">استيراد من النص أدناه</button>
+    <input id="importfile" class="input" type="file" accept=".json,application/json">
+  </div>
+  <textarea id="io" class="textarea app-io" placeholder="ألصق هنا محتوى ملف JSON المُصدَّر ثم اضغط استيراد من النص"></textarea>
+  <div id="io-msg" class="app-note"></div>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتصل المعمل بالإنترنت أو بأي نموذج ذكاء اصطناعي؟</h3><p>لا. يعمل بالكامل داخل المتصفح دون أي طلبات شبكة؛ التنفيذ محاكاة حتمية، وكل البيانات تُحفظ في localStorage فقط.</p><h3>كيف أعرّف الوكلاء والمخطط؟</h3><p>بصيغة YAML بسيطة تضم قائمة agents بحقول id وlabel وrole وemit، وقائمة steps تحدد الوكيل والخطوات البشرية والملاحظات.</p><h3>ماذا تعني الأنماط الأربعة للتدفق؟</h3><p>تسلسلي ينفّذ الوكلاء واحدًا تلو الآخر، ومتزامن يشغّل عدة وكلاء في دفعة واحدة، وتسليم باليد يمرّر ناتج كل وكيل إلى التالي، وتعاون جماعي يشغّل جميع الوكلاء في كل جلسة.</p><h3>كيف يعمل السفر الزمني ونقاط التفتيش؟</h3><p>تُحفظ نسخة كاملة من الحالة قبل كل خطوة تلقائيًا، ويمكنك زر الإرجاع الزمني لاستعادة آخر نقطة تفتيش والتراجع عن التنفيذ.</p><h3>أين تُخزَّن مخططاتي وكيف أنقلها؟</h3><p>تُخزَّن محليًا في localStorage، ويمكن تصديرها كملف JSON أو استيرادها من ملف أو من نص لصقته في المربع.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var LS_KEY="md1_flow_lab_v1";
+  var DEFAULT=[
+    "name: خط إنتاج التقارير",
+    "mode: sequential",
+    "agents:",
+    "  - id: collector",
+    "    label: جامع البيانات",
+    "    role: جمع المتطلبات",
+    "    emit: بيانات",
+    "  - id: analyst",
+    "    label: المحلل",
+    "    role: تحليل الفجوات",
+    "    emit: تحليل",
+    "  - id: writer",
+    "    label: الكاتب",
+    "    role: صياغة التقرير",
+    "    emit: تقرير",
+    "steps:",
+    "  - agent: collector",
+    "    human: false",
+    "    note: جمع أولي",
+    "  - agent: analyst",
+    "    human: true",
+    "    note: مراجعة بشرية للتحليل",
+    "  - agent: writer",
+    "    human: false",
+    "    note: صياغة نهائية"
+  ].join("\n");
+  var $=function(id){return document.getElementById(id);};
+  var schema=$("schema"),modeSel=$("mode"),taskIn=$("task"),traceEl=$("trace"),
+      statusEl=$("status"),summaryEl=$("summary"),diagramEl=$("diagram"),
+      stateEl=$("stateout"),bigEl=$("bigout"),ioEl=$("io"),ioMsg=$("io-msg"),fileEl=$("importfile");
+  var state={doc:null,plan:[],byId:{},agents:[],mode:"sequential"};
+  var spans=[],vars={},cursor=0,history=[],waiting=null,approved=null,finalOut=null,lastVar=null,runStart=0;
+  function hash(s){var h=5381,i;for(i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0;}return h;}
+  function token(id,inp){return hash(id+"|"+JSON.stringify(inp)).toString(36).slice(0,7).toUpperCase();}
+  function coerce(v){
+    if((v.charAt(0)==='"'&&v.charAt(v.length-1)==='"')||(v.charAt(0)==="'"&&v.charAt(v.length-1)==="'"))v=v.slice(1,-1);
+    if(v==="true")return true;if(v==="false")return false;
+    if(v==="null"||v==="~")return null;
+    if(v!==""&&!isNaN(v))return Number(v);
+    return v;
+  }
+  function parseYAML(text){
+    var root={},list=null,item=null;
+    text.split(/\r?\n/).forEach(function(raw){
+      if(!raw.trim()||/^\s*#/.test(raw))return;
+      var indent=raw.length-raw.replace(/^\s+/,"").length,line=raw.trim();
+      if(line.indexOf("- ")===0){
+        item={};if(list)list.push(item);
+        var rest=line.slice(2).trim();
+        if(rest){var ci=rest.indexOf(":");if(ci>-1)item[rest.slice(0,ci).trim()]=coerce(rest.slice(ci+1).trim());}
+        return;
+      }
+      var c=line.indexOf(":");if(c<0)return;
+      var key=line.slice(0,c).trim(),val=line.slice(c+1).trim();
+      if(indent===0){item=null;if(val===""){list=[];root[key]=list;}else{root[key]=coerce(val);list=null;}}
+      else if(item){item[key]=coerce(val);}
+    });
+    return root;
+  }
+  function buildPlan(doc,m){
+    var agents=doc.agents||[],byId={};
+    agents.forEach(function(a){byId[a.id]=a;});
+    var raw=(Array.isArray(doc.steps)&&doc.steps.length)?doc.steps:agents.map(function(a){return {agent:a.id};});
+    var plan=[];
+    function mk(tasks,label){
+      var t=tasks.map(function(s){
+        var a=byId[s.agent]||{id:String(s.agent||"agent"),label:String(s.agent||"وكيل"),role:"",emit:""};
+        return {agent:a,human:!!s.human,note:s.note||""};
+      });
+      return {label:label,kind:m,human:t.some(function(x){return x.human;}),tasks:t};
+    }
+    if(m==="concurrent"){
+      var g={};
+      raw.forEach(function(s){var p=(s.phase==null)?1:s.phase;(g[p]=g[p]||[]).push(s);});
+      Object.keys(g).map(Number).sort(function(a,b){return a-b;}).forEach(function(p){plan.push(mk(g[p],"دفعة متزامنة "+p));});
+    }else if(m==="group"){
+      raw.forEach(function(s,i){plan.push(mk(agents.map(function(a){return {agent:a.id,human:s.human,note:s.note};}),"جلسة جماعية "+(i+1)));});
+    }else{
+      raw.forEach(function(s,i){plan.push(mk([s],"خطوة "+(i+1)));});
+    }
+    return {plan:plan,byId:byId,agents:agents};
+  }
+  function nodeEl(a,human){
+    var el=document.createElement("div");el.className="app-node"+(human?" app-human":"");
+    var b=document.createElement("b");b.textContent=a.label||a.id;el.appendChild(b);
+    var r=document.createElement("span");r.className="app-dim";
+    r.textContent=(a.role||"")+(human?" · خطوة بشرية":"");el.appendChild(r);return el;
+  }
+  function renderDiagram(){
+    diagramEl.textContent="";
+    if(!state.plan.length){diagramEl.textContent="لا يوجد مخطط معروض. اضغط تحليل المخطط وبناء التدفق.";return;}
+    if(state.mode==="group"){
+      var hub=document.createElement("div");hub.className="app-node app-hub";hub.textContent="منسّق جماعي";diagramEl.appendChild(hub);
+    }
+    var row=document.createElement("div");row.className="app-nodes";
+    state.plan.forEach(function(step,i){
+      if(i>0){var ar=document.createElement("span");ar.className="app-arrow";ar.textContent="→";row.appendChild(ar);}
+      if(step.tasks.length>1){
+        var grp=document.createElement("div");grp.className="app-group";
+        step.tasks.forEach(function(t){grp.appendChild(nodeEl(t.agent,t.human));});
+        row.appendChild(grp);
+      }else{row.appendChild(nodeEl(step.tasks[0].agent,step.human));}
+    });
+    diagramEl.appendChild(row);
+  }
+  function setStatus(m,w){statusEl.textContent=m;statusEl.className="badge"+(w?" app-warn":"");}
+  function renderTrace(){
+    traceEl.textContent="";
+    if(!spans.length){traceEl.textContent="لا توجد مسارات بعد. نفّذ خطوة واحدة أو التشغيل الكامل لبدء التتبع.";return;}
+    spans.forEach(function(s){
+      var el=document.createElement("div");el.className="app-span "+(s.status==="OK"?"ok":"err");
+      var head=document.createElement("div");head.className="app-span-h";
+      var b=document.createElement("span");b.className="badge";b.textContent=s.status;head.appendChild(b);
+      var nm=document.createElement("strong");nm.textContent=s.name;head.appendChild(nm);
+      var meta=document.createElement("span");meta.className="app-dim";
+      meta.textContent=" · "+s.kind+" · "+s.duration+"ms · span:"+s.id;head.appendChild(meta);
+      el.appendChild(head);
+      var at=document.createElement("div");at.className="app-attrs";
+      at.textContent="role="+s.attrs.role+" · emit="+s.attrs.emit+" · human="+s.attrs.human+" · out="+s.attrs.out+" · in="+s.attrs.in;
+      el.appendChild(at);
+      if(s.attrs.note){var nt=document.createElement("div");nt.className="app-dim";nt.textContent="ملاحظة: "+s.attrs.note;el.appendChild(nt);}
+      if(s.events&&s.events.length){var ev=document.createElement("div");ev.className="app-dim";ev.textContent="أحداث: "+s.events.map(function(e){return e.name;}).join(" → ");el.appendChild(ev);}
+      if(s.exception){var ex=document.createElement("div");ex.className="app-exc";ex.textContent="استثناء: "+s.exception;el.appendChild(ex);}
+      traceEl.appendChild(el);
+    });
+  }
+  function renderState(){
+    var keys=Object.keys(vars);
+    stateEl.textContent=keys.length?keys.map(function(k){return k+" = "+vars[k];}).join("\n"):"لا توجد أوامر وسيطة بعد.";
+    bigEl.textContent=(finalOut==null)?"—":finalOut;
+    summaryEl.textContent="المسارات: "+spans.length+" · نقاط التفتيش: "+history.length+" · المؤشر: "+cursor+"/"+state.plan.length;
+  }
+  function render(){
+    renderTrace();renderState();
+    $("btn-approve").disabled=(waiting===null);
+    $("btn-reject").disabled=(waiting===null);
+  }
+  function resetRun(){
+    spans=[];vars={};cursor=0;history=[];waiting=null;approved=null;finalOut=null;lastVar=null;
+    runStart=performance.now();
+    setStatus("جاهز للتشغيل");render();
+  }
+  function parseSchema(){
+    try{
+      var doc=parseYAML(schema.value);
+      if(!Array.isArray(doc.agents)||!doc.agents.length)throw new Error("لا يوجد تعريف وكلاء (agents)");
+      doc.agents.forEach(function(a,i){if(!a.id)throw new Error("الوكيل رقم "+(i+1)+" ينقصه المعرّف id");});
+      if(doc.mode){var ok=false,opts=modeSel.options,i;for(i=0;i<opts.length;i++){if(opts[i].value===doc.mode)ok=true;}if(ok)modeSel.value=doc.mode;}
+      state.doc=doc;state.mode=modeSel.value;
+      var built=buildPlan(doc,state.mode);
+      state.plan=built.plan;state.byId=built.byId;state.agents=built.agents;
+      resetRun();renderDiagram();
+      setStatus("تم التحليل: "+doc.agents.length+" وكلاء و "+state.plan.length+" خطوات تنفيذ");
+      render();
+    }catch(e){setStatus("خطأ في التحليل: "+e.message,true);state.plan=[];renderDiagram();}
+  }
+  function pushCheckpoint(){history.push({spans:spans.slice(),vars:Object.assign({},vars),cursor:cursor,finalOut:finalOut,lastVar:lastVar});}
+  function executeStep(step){
+    var snap=Object.assign({},vars),prevVar=lastVar,prevVal=prevVar?snap[prevVar]:null,lastVal=finalOut;
+    var inp=(step.kind==="handoff")?{handoff:prevVar||"المدخل",value:prevVal}:{task:taskIn.value};
+    step.tasks.forEach(function(t){
+      var a=t.agent,outVar=a.emit||(a.id+"_out"),val=token(a.id+"|"+outVar,inp);
+      vars[outVar]=val;lastVar=outVar;lastVal=val;
+      spans.push({
+        id:a.id,name:a.label||a.id,kind:step.kind,
+        start:Math.round(performance.now()-runStart),
+        duration:8+(hash(a.id+val)%34),status:"OK",
+        attrs:{role:a.role||"",emit:outVar,human:String(t.human),note:t.note,out:val,
+          in:(step.kind==="handoff")?((prevVar||"المدخل")+" = "+(prevVal==null?"∅":prevVal)):taskIn.value},
+        events:t.human?[{name:"human.review"},{name:"human.approve"}]:[],
+        exception:null
+      });
+    });
+    finalOut=lastVal;
+  }
+  function ensurePlan(){if(!state.plan.length)parseSchema();return state.plan.length>0;}
+  function stepOnce(){
+    if(!ensurePlan())return;
+    if(waiting!==null){setStatus("بانتظار قرار بشري على: "+state.plan[waiting].label,true);return;}
+    if(cursor>=state.plan.length){setStatus("اكتمل التشغيل بالفعل");return;}
+    var step=state.plan[cursor];
+    if(step.human&&approved!==cursor){waiting=cursor;setStatus("بانتظار قرار بشري على: "+step.label,true);render();return;}
+    approved=null;pushCheckpoint();executeStep(step);cursor++;
+    setStatus(cursor>=state.plan.length?"اكتمل التشغيل ✓":"تم تنفيذ: "+step.label);
+    render();
+  }
+  function runAll(){
+    if(!ensurePlan())return;
+    if(waiting!==null){setStatus("بانتظار قرار بشري على: "+state.plan[waiting].label,true);return;}
+    var guard=0;
+    while(cursor<state.plan.length&&guard++<1000){
+      var step=state.plan[cursor];
+      if(step.human&&approved!==cursor){waiting=cursor;break;}
+      approved=null;pushCheckpoint();executeStep(step);cursor++;
+    }
+    if(waiting!==null)setStatus("توقف مؤقت: بانتظار قرار بشري على "+state.plan[waiting].label,true);
+    else if(cursor>=state.plan.length)setStatus("اكتمل التشغيل ✓");
+    render();
+  }
+  function approveStep(){
+    if(waiting===null){setStatus("لا توجد خطوة بشرية معلّقة",true);return;}
+    var step=state.plan[waiting];approved=waiting;waiting=null;
+    pushCheckpoint();executeStep(step);cursor++;approved=null;
+    setStatus(cursor>=state.plan.length?"اكتمل التشغيل ✓":"تمت الموافقة وتنفيذ: "+step.label);
+    render();
+  }
+  function rejectStep(){
+    if(waiting===null){setStatus("لا توجد خطوة بشرية معلّقة",true);return;}
+    var step=state.plan[waiting];waiting=null;approved=null;pushCheckpoint();
+    step.tasks.forEach(function(t){
+      spans.push({id:t.agent.id,name:(t.agent.label||t.agent.id),kind:step.kind,
+        start:Math.round(performance.now()-runStart),duration:0,status:"ERROR",
+        attrs:{role:t.agent.role||"",emit:t.agent.emit||(t.agent.id+"_out"),human:"true",note:t.note,out:"",in:taskIn.value},
+        events:[{name:"human.review"},{name:"human.reject"}],exception:"رُفضت الخطوة البشرية بواسطة المراجع"});
+    });
+    cursor++;
+    setStatus("رُفضت الخطوة البشرية: "+step.label,true);
+    render();
+  }
+  function goBack(){
+    if(!history.length){setStatus("لا توجد نقطة تفتيش للإرجاع",true);return;}
+    var cp=history.pop();
+    spans=cp.spans;vars=cp.vars;cursor=cp.cursor;finalOut=cp.finalOut;lastVar=cp.lastVar;
+    waiting=null;approved=null;
+    setStatus("تم الإرجاع الزمني. نقاط التفتيش المتبقية: "+history.length);
+    render();
+  }
+  function setIO(m){ioMsg.textContent=m;}
+  function saveLocal(){
+    try{localStorage.setItem(LS_KEY,JSON.stringify({schema:schema.value,mode:modeSel.value,task:taskIn.value,at:Date.now()}));setIO("تم الحفظ في المتصفح بنجاح.");}
+    catch(e){setIO("تعذّر الحفظ: "+e.message);}
+  }
+  function loadLocal(){
+    try{
+      var raw=localStorage.getItem(LS_KEY);
+      if(!raw){setIO("لا يوجد حفظ سابق في المتصفح.");return;}
+      var o=JSON.parse(raw);
+      if(o.schema)schema.value=o.schema;
+      if(o.mode)modeSel.value=o.mode;
+      if(o.task)taskIn.value=o.task;
+      setIO("تم التحميل من المتصفح، جارٍ التحليل.");parseSchema();
+    }catch(e){setIO("تعذّر التحميل: "+e.message);}
+  }
+  function deleteLocal(){
+    try{localStorage.removeItem(LS_KEY);setIO("تم حذف الحفظ المحلي.");}
+    catch(e){setIO("تعذّر الحذف: "+e.message);}
+  }
+  function exportFile(){
+    try{
+      var data=JSON.stringify({schema:schema.value,mode:modeSel.value,task:taskIn.value},null,2);
+      ioEl.value=data;
+      var blob=new Blob([data],{type:"application/json"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);a.download="flow-lab.json";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+      setIO("تم تصدير الملف، ونسخته موجودة أيضًا في مربع النص.");
+    }catch(e){setIO("تعذّر التصدير: "+e.message);}
+  }
+  function importText(){
+    try{
+      var o=JSON.parse(ioEl.value);
+      if(!o.schema)throw new Error("الحقل schema مفقود");
+      schema.value=o.schema;
+      if(o.mode)modeSel.value=o.mode;
+      if(o.task)taskIn.value=o.task;
+      parseSchema();setIO("تم الاستيراد من النص بنجاح.");
+    }catch(e){setIO("تعذّر الاستيراد: "+e.message);}
+  }
+  function importFile(ev){
+    var f=ev.target.files&&ev.target.files[0];
+    if(!f){setIO("لم يتم اختيار ملف.");return;}
+    var r=new FileReader();
+    r.onload=function(){ioEl.value=String(r.result);importText();};
+    r.onerror=function(){setIO("تعذّرت قراءة الملف.");};
+    r.readAsText(f);
+  }
+  schema.value=DEFAULT;
+  $("btn-parse").addEventListener("click",parseSchema);
+  $("btn-reset").addEventListener("click",function(){resetRun();setStatus("تمت إعادة تعيين حالة التشغيل");render();});
+  $("btn-step").addEventListener("click",stepOnce);
+  $("btn-run").addEventListener("click",runAll);
+  $("btn-approve").addEventListener("click",approveStep);
+  $("btn-reject").addEventListener("click",rejectStep);
+  $("btn-back").addEventListener("click",goBack);
+  $("btn-clear").addEventListener("click",function(){spans=[];setStatus("تم تفريغ لوحة التتبع");render();});
+  modeSel.addEventListener("change",function(){
+    if(!state.doc)return;
+    state.mode=modeSel.value;
+    var built=buildPlan(state.doc,state.mode);
+    state.plan=built.plan;state.byId=built.byId;state.agents=built.agents;
+    resetRun();renderDiagram();
+    setStatus("تم تغيير النمط إلى "+state.mode+" مع إعادة بناء "+state.plan.length+" خطوات");render();
+  });
+  $("btn-save").addEventListener("click",saveLocal);
+  $("btn-load").addEventListener("click",loadLocal);
+  $("btn-delete").addEventListener("click",deleteLocal);
+  $("btn-export").addEventListener("click",exportFile);
+  $("btn-import-text").addEventListener("click",importText);
+  fileEl.addEventListener("change",importFile);
+  parseSchema();
+})();
+</script>
+</body>
+</html>
