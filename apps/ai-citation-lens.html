@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي | MDM1</title>
+<meta name="description" content="حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية والذكاء الاصطناعي محليًا دون خوادم.">
+<link rel="canonical" href="https://mdm1.org/apps/ai-citation-lens.html">
+<meta property="og:title" content="أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي">
+<meta property="og:description" content="حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية والذكاء الاصطناعي محليًا دون خوادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ai-citation-lens.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; font-family: inherit; }
+.app .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.app .row > label { min-width: 180px; font-weight: 600; color: var(--light); }
+.app .row > input, .app .row > select, .app .row > textarea { flex: 1; min-width: 220px; padding: 10px; background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); border-radius: 4px; }
+.app .row > textarea { min-height: 140px; resize: vertical; }
+.app .row > button { padding: 10px 20px; white-space: nowrap; }
+.app .out { background: rgba(0,0,0,0.3); padding: 16px; border-radius: 6px; border: 1px solid var(--gold-dim); line-height: 1.7; }
+.app .big { font-size: 2.5rem; font-weight: 700; color: var(--gold-bright); }
+.app .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.85rem; margin: 2px; background: var(--gold-dim); color: var(--dark); }
+.app .badge.pos { background: #1e7d32; color: #fff; }
+.app .badge.neg { background: #c62828; color: #fff; }
+.app .badge.neu { background: #546e7a; color: #fff; }
+.app .chart-wrap { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+.app .chart { flex: 1; min-width: 280px; height: 220px; background: rgba(0,0,0,0.2); border: 1px solid var(--gold-dim); border-radius: 6px; position: relative; }
+.app .chart canvas { width: 100% !important; height: 100% !important; }
+.app .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.app .stat-card { background: rgba(0,0,0,0.3); padding: 16px; border-radius: 6px; border: 1px solid var(--gold-dim); text-align: center; }
+.app .stat-card .label { font-size: 0.85rem; color: var(--gold-dim); margin-bottom: 6px; }
+.app .stat-card .value { font-size: 1.5rem; font-weight: 700; color: var(--gold-bright); }
+.app .mention-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gold-dim); }
+.app .mention-row:last-child { border-bottom: none; }
+.app .history-item { padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.2); border: 1px solid var(--gold-dim); border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+.app .history-item:hover { background: var(--gold-dim); color: var(--dark); }
+.app .history-item .meta { font-size: 0.85rem; color: var(--gold-dim); }
+.app #csvRow, .app #pasteRow { width: 100%; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة تحليل العلامة التجارية في مساعدات الذكاء الاصطناعي", "url": "https://mdm1.org/apps/ai-citation-lens.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل ترسل الأداة بياناتك إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تعمل الأداة بالكامل في متصفحك محليًا. لا يوجد أي اتصال بالشبكة، ولا تُرسل أي بيانات إلى خارج جهازك."}}, {"@type": "Question", "name": "ما تنسيق ملف CSV المطلوب؟", "acceptedAnswer": {"@type": "Answer", "text": "يجب أن يحتوي الملف على الأعمدة: query, answer, source, visits_organic, visits_ai. كل صف يمثل إجابة واحدة من مساعد ذكي."}}, {"@type": "Question", "name": "كيف تحسب الأداة المشاعر؟", "acceptedAnswer": {"@type": "Answer", "text": "تستخدم معجمًا عربيًا وإنجليزيًا مدمجًا للكلمات الإيجابية والسلبية. تحتسب الدرجة بناءً على ظهور هذه الكلمات في النص."}}, {"@type": "Question", "name": "أين تُحفظ الفحوصات؟", "acceptedAnswer": {"@type": "Answer", "text": "في localStorage بمتصفحك تحت المفتاح \"brand_scans\". تبقى متاحة حتى تمسح بيانات المتصفح يدويًا."}}, {"@type": "Question", "name": "هل يمكن مشاركة التقرير مع فريق العمل؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر \"تصدير تقرير\" ينزل ملف نصي قابل للمشاركة يحتوي على جميع نتائج التحليل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة تحليل العلامة التجارية في مساعدات الذكاء الاصطناعي</h1>
+  <p class="page-sub">حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية والذكاء الاصطناعي محليًا دون خوادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذه الأداة تحلل محليًا نصوص إجابات المساعدات الذكية أو ملفات CSV لقياس نسبة ظهور علامتك التجارية، ترتيب ذكرها بين المنافسين، عدد الاستشهادات، والمشاعر عبر معجم عربي وإنجليزي، مع رسوم بيانية تقارن الزيارات العضوية بزيارات الذكاء الاصطناعي لكشف تضارب الصفحات. تعمل بالكامل في المتصفح دون خادم أو حساب، وتحفظ الفحوصات في localStorage وتصدر تقريرًا قابلًا للمشاركة.</p>
+
+<div class="app card">
+  <div class="row">
+    <label for="brandInput">اسم علامتك التجارية</label>
+    <input type="text" id="brandInput" placeholder="مثال: شركة النور" />
+  </div>
+  <div class="row">
+    <label for="competitorsInput">المنافسون (افصل بفواصل)</label>
+    <input type="text" id="competitorsInput" placeholder="منافس1، منافس2، منافس3" />
+  </div>
+  <div class="row">
+    <label for="sourceSelect">مصدر البيانات</label>
+    <select id="sourceSelect">
+      <option value="paste">لصق نص إجابات الذكاء الاصطناعي</option>
+      <option value="csv">استيراد ملف CSV</option>
+    </select>
+  </div>
+  <div class="row" id="pasteRow">
+    <label for="pasteArea">الصق إجابات المساعدات الذكية هنا (سطر لكل إجابة)</label>
+    <textarea id="pasteArea" rows="8" placeholder="أدخل نصوص إجابات الذكاء الاصطناعي..."></textarea>
+  </div>
+  <div class="row" id="csvRow" style="display:none">
+    <label for="csvFile">اختر ملف CSV (أعمدة: query, answer, source, visits_organic, visits_ai)</label>
+    <input type="file" id="csvFile" accept=".csv" />
+  </div>
+  <div class="row">
+    <button id="analyzeBtn" class="button">تحليل</button>
+    <button id="clearBtn" class="button sec">مسح</button>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <button id="saveBtn" class="button sec">حفظ الفحص</button>
+    <button id="loadBtn" class="button sec">تحميل آخر فحص</button>
+    <button id="exportBtn" class="button sec">تصدير تقرير</button>
+  </div>
+  <div class="divider"></div>
+  <div id="results" class="out" style="display:none"></div>
+</div>
+
+<div class="app card" id="historyCard" style="display:none">
+  <h3>الفحوصات المحفوظة</h3>
+  <div id="historyList" class="out"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل ترسل الأداة بياناتك إلى أي خادم؟</h3><p>لا، تعمل الأداة بالكامل في متصفحك محليًا. لا يوجد أي اتصال بالشبكة، ولا تُرسل أي بيانات إلى خارج جهازك.</p><h3>ما تنسيق ملف CSV المطلوب؟</h3><p>يجب أن يحتوي الملف على الأعمدة: query, answer, source, visits_organic, visits_ai. كل صف يمثل إجابة واحدة من مساعد ذكي.</p><h3>كيف تحسب الأداة المشاعر؟</h3><p>تستخدم معجمًا عربيًا وإنجليزيًا مدمجًا للكلمات الإيجابية والسلبية. تحتسب الدرجة بناءً على ظهور هذه الكلمات في النص.</p><h3>أين تُحفظ الفحوصات؟</h3><p>في localStorage بمتصفحك تحت المفتاح &quot;brand_scans&quot;. تبقى متاحة حتى تمسح بيانات المتصفح يدويًا.</p><h3>هل يمكن مشاركة التقرير مع فريق العمل؟</h3><p>نعم، زر &quot;تصدير تقرير&quot; ينزل ملف نصي قابل للمشاركة يحتوي على جميع نتائج التحليل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  const AR_POS = new Set(['ممتاز','رائع','جيد','إيجابي','مفيد','قوي','أفضل','محبوب','موثوق','ناجح','متميز','رائد','مبتكر','عالي','كبير','قيمة','ثقة','رضا','سعيد','ممتنة']);
+  const AR_NEG = new Set(['سيء','ضعيف','سلبي','ضار','خطر','مشكلة','خطأ','فشل','أسوأ','مخيب','مقلق','منخفض','قليل','مفقود','غير موثوق','مضلل','معقد','صعب','بطيء','مكلف']);
+  const EN_POS = new Set(['excellent','great','good','positive','helpful','strong','best','loved','trusted','successful','outstanding','leading','innovative','high','large','valuable','trust','satisfaction','happy','grateful']);
+  const EN_NEG = new Set(['bad','weak','negative','harmful','risk','problem','error','failure','worst','disappointing','concerning','low','little','missing','unreliable','misleading','complex','difficult','slow','expensive']);
+
+  function sentiment(text) {
+    const words = text.toLowerCase().match(/[\u0600-\u06FFa-zA-Z]+/g) || [];
+    let score = 0;
+    for (const w of words) {
+      if (AR_POS.has(w) || EN_POS.has(w)) score++;
+      else if (AR_NEG.has(w) || EN_NEG.has(w)) score--;
+    }
+    if (score > 0) return 'positive';
+    if (score < 0) return 'negative';
+    return 'neutral';
+  }
+
+  function countMentions(text, brand) {
+    const regex = new RegExp(brand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    const matches = text.match(regex);
+    return matches ? matches.length : 0;
+  }
+
+  function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const qIdx = headers.indexOf('query');
+    const aIdx = headers.indexOf('answer');
+    const sIdx = headers.indexOf('source');
+    const voIdx = headers.indexOf('visits_organic');
+    const viIdx = headers.indexOf('visits_ai');
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',');
+      if (cols.length < headers.length) continue;
+      rows.push({
+        query: cols[qIdx] || '',
+        answer: cols[aIdx] || '',
+        source: cols[sIdx] || '',
+        visits_organic: parseInt(cols[voIdx]) || 0,
+        visits_ai: parseInt(cols[viIdx]) || 0
+      });
+    }
+    return rows;
+  }
+
+  function analyze() {
+    const brand = document.getElementById('brandInput').value.trim();
+    const competitors = document.getElementById('competitorsInput').value.split(',').map(s => s.trim()).filter(Boolean);
+    const source = document.getElementById('sourceSelect').value;
+    let rows = [];
+
+    if (source === 'paste') {
+      const text = document.getElementById('pasteArea').value.trim();
+      if (!text) return alert('الرجاء لصق نصوص الإجابات');
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      rows = lines.map((answer, i) => ({ query: '', answer, source: 'paste', visits_organic: 0, visits_ai: 0 }));
+    } else {
+      const file = document.getElementById('csvFile').files[0];
+      if (!file) return alert('الرجاء اختيار ملف CSV');
+      const reader = new FileReader();
+      reader.onload = e => {
+        rows = parseCSV(e.target.result);
+        if (!rows.length) return alert('ملف CSV فارغ أو غير صالح');
+        runAnalysis(rows, brand, competitors);
+      };
+      reader.readAsText(file);
+      return;
+    }
+    runAnalysis(rows, brand, competitors);
+  }
+
+  function runAnalysis(rows, brand, competitors) {
+    if (!brand) return alert('أدخل اسم العلامة التجارية');
+    const allBrands = [brand, ...competitors];
+    let totalAnswers = rows.length;
+    let brandMentions = 0;
+    let competitorMentions = {};
+    let citations = 0;
+    let sentimentCounts = { positive: 0, negative: 0, neutral: 0 };
+    let organicVisits = 0;
+    let aiVisits = 0;
+    let brandPositions = [];
+
+    allBrands.forEach(b => competitorMentions[b] = 0);
+
+    rows.forEach((row, idx) => {
+      const text = (row.query + ' ' + row.answer).trim();
+      organicVisits += row.visits_organic || 0;
+      aiVisits += row.visits_ai || 0;
+      if (row.source && row.source !== 'paste') citations++;
+
+      allBrands.forEach(b => {
+        const c = countMentions(text, b);
+        competitorMentions[b] += c;
+        if (b === brand) brandMentions += c;
+      });
+
+      const sent = sentiment(text);
+      sentimentCounts[sent]++;
+
+      const positions = allBrands.map(b => ({ brand: b, pos: text.toLowerCase().indexOf(b.toLowerCase()) }))
+        .filter(p => p.pos >= 0)
+        .sort((a, b) => a.pos - b.pos);
+      const brandRank = positions.findIndex(p => p.brand === brand);
+      if (brandRank >= 0) brandPositions.push(brandRank + 1);
+    });
+
+    const brandPct = totalAnswers ? ((brandMentions / totalAnswers) * 100).toFixed(1) : 0;
+    const avgRank = brandPositions.length ? (brandPositions.reduce((a, b) => a + b, 0) / brandPositions.length).toFixed(1) : '—';
+    const sortedCompetitors = Object.entries(competitorMentions).sort((a, b) => b[1] - a[1]);
+
+    renderResults({
+      brand,
+      totalAnswers,
+      brandMentions,
+      brandPct,
+      avgRank,
+      competitorMentions: sortedCompetitors,
+      citations,
+      sentimentCounts,
+      organicVisits,
+      aiVisits,
+      rows
+    });
+  }
+
+  function renderResults(data) {
+    const { brand, totalAnswers, brandMentions, brandPct, avgRank, competitorMentions, citations, sentimentCounts, organicVisits, aiVisits } = data;
+    const results = document.getElementById('results');
+    results.style.display = 'block';
+
+    const posPct = totalAnswers ? ((sentimentCounts.positive / totalAnswers) * 100).toFixed(1) : 0;
+    const negPct = totalAnswers ? ((sentimentCounts.negative / totalAnswers) * 100).toFixed(1) : 0;
+    const neuPct = totalAnswers ? ((sentimentCounts.neutral / totalAnswers) * 100).toFixed(1) : 0;
+
+    let compHtml = '';
+    competitorMentions.forEach(([name, count], i) => {
+      const isBrand = name === brand;
+      compHtml += `<div class="mention-row"><span>${i + 1}. ${name}${isBrand ? ' <span class="badge">علامتك</span>' : ''}</span><span class="big" style="font-size:1.2rem">${count}</span></div>`;
+    });
+
+    results.innerHTML = `
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">إجمالي الإجابات المحللة</div><div class="value big">${totalAnswers}</div></div>
+        <div class="stat-card"><div class="label">ذكر العلامة (${brand})</div><div class="value big">${brandMentions}</div></div>
+        <div class="stat-card"><div class="label">نسبة الظهور</div><div class="value big">${brandPct}%</div></div>
+        <div class="stat-card"><div class="label">متوسط ترتيب الذكر</div><div class="value big">#${avgRank}</div></div>
+        <div class="stat-card"><div class="label">الاستشهادات</div><div class="value big">${citations}</div></div>
+        <div class="stat-card"><div class="label">الزيارات العضوية</div><div class="value big">${organicVisits.toLocaleString()}</div></div>
+        <div class="stat-card"><div class="label">زيارات الذكاء الاصطناعي</div><div class="value big">${aiVisits.toLocaleString()}</div></div>
+      </div>
+      <div class="divider"></div>
+      <h4>تفاصيل الذكر حسب العلامة التجارية</h4>
+      <div class="out">${compHtml}</div>
+      <div class="divider"></div>
+      <h4>تحليل المشاعر</h4>
+      <div class="row">
+        <span class="badge pos">إيجابي ${posPct}%</span>
+        <span class="badge neu">محايد ${neuPct}%</span>
+        <span class="badge neg">سلبي ${negPct}%</span>
+      </div>
+      <div class="divider"></div>
+      <h4>مقارنة الزيارات: العضوية vs الذكاء الاصطناعي</h4>
+      <div class="chart-wrap">
+        <div class="chart"><canvas id="visitsChart"></canvas></div>
+        <div class="chart"><canvas id="sentimentChart"></canvas></div>
+      </div>
+    `;
+
+    drawVisitsChart(organicVisits, aiVisits);
+    drawSentimentChart(sentimentCounts.positive, sentimentCounts.neutral, sentimentCounts.negative);
+  }
+
+  function drawVisitsChart(organic, ai) {
+    const ctx = document.getElementById('visitsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['الزيارات العضوية', 'زيارات الذكاء الاصطناعي'],
+        datasets: [{
+          label: 'عدد الزيارات',
+          data: [organic, ai],
+          backgroundColor: ['rgba(255,215,0,0.7)', 'rgba(255,165,0,0.7)'],
+          borderColor: ['var(--gold)', 'var(--gold-bright)'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { color: 'var(--light)' }, grid: { color: 'rgba(255,215,0,0.1)' } }, x: { ticks: { color: 'var(--light)' }, grid: { display: false } } }
+      }
+    });
+  }
+
+  function drawSentimentChart(pos, neu, neg) {
+    const ctx = document.getElementById('sentimentChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['إيجابي', 'محايد', 'سلبي'],
+        datasets: [{
+          data: [pos, neu, neg],
+          backgroundColor: ['#2e7d32', '#546e7a', '#c62828'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'var(--light)' } } } }
+    });
+  }
+
+  function saveScan() {
+    const brand = document.getElementById('brandInput').value.trim();
+    const competitors = document.getElementById('competitorsInput').value.trim();
+    const source = document.getElementById('sourceSelect').value;
+    const paste = document.getElementById('pasteArea').value.trim();
+    const file = document.getElementById('csvFile').files[0];
+    if (!brand) return alert('لا يوجد بيانات للحفظ');
+    const scan = { brand, competitors, source, paste, timestamp: Date.now() };
+    try {
+      const history = JSON.parse(localStorage.getItem('brand_scans') || '[]');
+      history.unshift(scan);
+      if (history.length > 20) history.pop();
+      localStorage.setItem('brand_scans', JSON.stringify(history));
+      alert('تم الحفظ بنجاح');
+      renderHistory();
+    } catch (e) { alert('فشل الحفظ: ' + e.message); }
+  }
+
+  function loadScan() {
+    try {
+      const history = JSON.parse(localStorage.getItem('brand_scans') || '[]');
+      if (!history.length) return alert('لا توجد فحوصات محفوظة');
+      const scan = history[0];
+      document.getElementById('brandInput').value = scan.brand;
+      document.getElementById('competitorsInput').value = scan.competitors;
+      document.getElementById('sourceSelect').value = scan.source;
+      document.getElementById('pasteArea').value = scan.paste;
+      toggleSource(scan.source);
+      alert('تم تحميل آخر فحص');
+    } catch (e) { alert('فشل التحميل: ' + e.message); }
+  }
+
+  function exportReport() {
+    const results = document.getElementById('results');
+    if (!results.style.display || results.style.display === 'none') return alert('لا يوجد نتائج للتصدير');
+    const brand = document.getElementById('brandInput').value.trim();
+    const text = results.innerText;
+    const blob = new Blob([`تقرير تحليل العلامة التجارية: ${brand}\n${'='.repeat(40)}\n${text}\n\nتم إنشاؤه محليًا بواسطة أداة تحليل العلامة التجارية`], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brand-report-${brand}-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function toggleSource(val) {
+    document.getElementById('pasteRow').style.display = val === 'paste' ? 'flex' : 'none';
+    document.getElementById('csvRow').style.display = val === 'csv' ? 'flex' : 'none';
+  }
+
+  function renderHistory() {
+    try {
+      const history = JSON.parse(localStorage.getItem('brand_scans') || '[]');
+      const card = document.getElementById('historyCard');
+      const list = document.getElementById('historyList');
+      if (!history.length) { card.style.display = 'none'; return; }
+      card.style.display = 'block';
+      list.innerHTML = history.map((s, i) => `
+        <div class="history-item" data-index="${i}">
+          <strong>${s.brand}</strong> — ${s.competitors || 'بدون منافسين'}
+          <div class="meta">${new Date(s.timestamp).toLocaleString('ar-SA')} • ${s.source === 'paste' ? 'نص ملصق' : 'ملف CSV'}</div>
+        </div>
+      `).join('');
+      list.querySelectorAll('.history-item').forEach(el => {
+        el.onclick = () => {
+          const scan = history[el.dataset.index];
+          document.getElementById('brandInput').value = scan.brand;
+          document.getElementById('competitorsInput').value = scan.competitors;
+          document.getElementById('sourceSelect').value = scan.source;
+          document.getElementById('pasteArea').value = scan.paste;
+          toggleSource(scan.source);
+        };
+      });
+    } catch (e) {}
+  }
+
+  function clearAll() {
+    document.getElementById('brandInput').value = '';
+    document.getElementById('competitorsInput').value = '';
+    document.getElementById('pasteArea').value = '';
+    document.getElementById('csvFile').value = '';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('sourceSelect').value = 'paste';
+    toggleSource('paste');
+  }
+
+  document.getElementById('analyzeBtn').onclick = analyze;
+  document.getElementById('clearBtn').onclick = clearAll;
+  document.getElementById('saveBtn').onclick = saveScan;
+  document.getElementById('loadBtn').onclick = loadScan;
+  document.getElementById('exportBtn').onclick = exportReport;
+  document.getElementById('sourceSelect').onchange = e => toggleSource(e.target.value);
+
+  // Load Chart.js from inline (no network)
+  const Chart = (function () {
+    // Minimal Chart.js subset for bar and doughnut
+    class Chart {
+      constructor(ctx, config) {
+        this.ctx = ctx;
+        this.config = config;
+        this.draw();
+      }
+      draw() {
+        const { type, data, options } = this.config;
+        const ctx = this.ctx;
+        const canvas = ctx.canvas;
+        const w = canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+        const h = canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+        ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+        const cssW = canvas.offsetWidth;
+        const cssH = canvas.offsetHeight;
+        ctx.clearRect(0, 0, cssW, cssH);
+
+        if (type === 'bar') this.drawBar(cssW, cssH, data, options);
+        else if (type === 'doughnut') this.drawDoughnut(cssW, cssH, data, options);
+      }
+      drawBar(w, h, data, options) {
+        const ctx = this.ctx;
+        const labels = data.labels;
+        const values = data.datasets[0].data;
+        const colors = data.datasets[0].backgroundColor;
+        const maxVal = Math.max(...values, 1);
+        const padding = 40;
+        const barW = (w - padding * 2) / labels.length * 0.6;
+        const gap = (w - padding * 2) / labels.length * 0.4;
+        const xStart = padding;
+        const yZero = h - padding;
+
+        // Axes
+        ctx.strokeStyle = 'rgba(255,215,0,0.2)';
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, yZero);
+        ctx.lineTo(w - padding, yZero);
+        ctx.stroke();
+
+        // Y ticks
+        ctx.fillStyle = 'var(--light)';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= 5; i++) {
+          const y = yZero - (h - padding * 2) * i / 5;
+          const val = Math.round(maxVal * i / 5);
+          ctx.fillText(val.toLocaleString(), padding - 8, y + 4);
+        }
+
+        // Bars
+        labels.forEach((label, i) => {
+          const x = xStart + i * (barW + gap) + gap / 2;
+          const barH = (values[i] / maxVal) * (h - padding * 2);
+          const y = yZero - barH;
+          ctx.fillStyle = colors[i];
+          ctx.fillRect(x, y, barW, barH);
+          // Label
+          ctx.fillStyle = 'var(--light)';
+          ctx.textAlign = 'center';
+          ctx.font = '13px sans-serif';
+          ctx.fillText(label, x + barW / 2, yZero + 20);
+          // Value on bar
+          ctx.fillText(values[i].toLocaleString(), x + barW / 2, y - 8);
+        });
+      }
+      drawDoughnut(w, h, data, options) {
+        const ctx = this.ctx;
+        const values = data.datasets[0].data;
+        const colors = data.datasets[0].backgroundColor;
+        const labels = data.labels;
+        const total = values.reduce((a, b) => a + b, 1);
+        const cx = w / 2;
+        const cy = h / 2;
+        const radius = Math.min(w, h) / 2 - 30;
+        const innerR = radius * 0.6;
+        let startAng = -Math.PI / 2;
+
+        values.forEach((val, i) => {
+          const sliceAng = (val / total) * 2 * Math.PI;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, startAng, startAng + sliceAng);
+          ctx.arc(cx, cy, innerR, startAng + sliceAng, startAng, true);
+          ctx.closePath();
+          ctx.fillStyle = colors[i];
+          ctx.fill();
+          startAng += sliceAng;
+        });
+
+        // Legend
+        if (options.plugins?.legend?.position === 'bottom') {
+          ctx.font = '12px sans-serif';
+          ctx.textAlign = 'left';
+          let y = h - 40;
+          labels.forEach((label, i) => {
+            ctx.fillStyle = colors[i];
+            ctx.fillRect(20, y, 12, 12);
+            ctx.fillStyle = 'var(--light)';
+            ctx.fillText(`${label} ${values[i]}`, 40, y + 10);
+            y += 20;
+          });
+        }
+      }
+    }
+    return Chart;
+  })();
+
+  renderHistory();
+  toggleSource('paste');
+})();
+</script>
+</body>
+</html>
