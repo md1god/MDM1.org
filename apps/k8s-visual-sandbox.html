@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تعلم Kubernetes محلياً في المتصفح | MDM1</title>
+<meta name="description" content="تعلم واختبار ملفات YAML لمكونات Kubernetes مباشرة في المتصفح مع تصور مرئي وحفظ المشاريع محليًا دون خادم أو تثبيت فعلي">
+<link rel="canonical" href="https://mdm1.org/apps/k8s-visual-sandbox.html">
+<meta property="og:title" content="تعلم Kubernetes محلياً في المتصفح">
+<meta property="og:description" content="تعلم واختبار ملفات YAML لمكونات Kubernetes مباشرة في المتصفح مع تصور مرئي وحفظ المشاريع محليًا دون خادم أو تثبيت فعلي">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/k8s-visual-sandbox.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:flex; flex-direction:column; gap:0.75rem; max-width:900px; }
+.app textarea { width:100%; font-family:monospace; }
+.app canvas { width:100%; height:auto; border:1px solid var(--gold-dim); background:var(--dark); border-radius:4px; }
+.app .row { flex-wrap:wrap; gap:0.5rem; align-items:center; }
+.app .out { display:flex; gap:0.5rem; align-items:baseline; }
+.app #errorBox { color:var(--gold-bright); display:none; }
+.app #emptyState { display:block; }
+.app .select { min-width:200px; }
+.app .input { flex:1; min-width:200px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "اختبار مفاهيم Kubernetes محليًا", "url": "https://mdm1.org/apps/k8s-visual-sandbox.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل هذا التطبيق بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل داخل المتصفح ولا يستخدم أي طلبات شبكية، لذا يمكن استخدامه دون اتصال."}}, {"@type": "Question", "name": "هل أحتاج إلى تثبيت Kubernetes فعلي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الغرض هو تعلم وفهم مفاهيم ملفات YAML وتصورها فقط، دون تشغيل كتلة فعلية."}}, {"@type": "Question", "name": "هل يمكن حفظ المشاريع بشكل دائم؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم حفظها عبر localStorage في متصفحك ولا ترسل إلى أي خادم."}}, {"@type": "Question", "name": "ما المكونات المدعومة للعرض؟", "acceptedAnswer": {"@type": "Answer", "text": "حاليًا يتم دعم Pods والخدمات والعقد (Nodes) في التمثيل البسيط للعرض."}}, {"@type": "Question", "name": "ماذا يحدث في حالة إدخال YAML غير صحيح؟", "acceptedAnswer": {"@type": "Answer", "text": "التطبيق يتحقق من وجود المكونات الأساسية فقط ويعرض النتائج المتاحة دون إيقاف العمل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">اختبار مفاهيم Kubernetes محليًا</h1>
+  <p class="page-sub">تعلم واختبار ملفات YAML لمكونات Kubernetes مباشرة في المتصفح مع تصور مرئي وحفظ المشاريع محليًا دون خادم أو تثبيت فعلي</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>
+نعم، يمكنك فهم واختبار مفاهيم Kubernetes محليًا مباشرة داخل المتصفح دون الحاجة إلى خادم أو تثبيت فعلي. يساعدك هذا التطبيق على كتابة أو لصق ملفات YAML الخاصة بمكونات الكتلة مثل Pods والخدمات والعقد، ثم يقوم بتحليلها وعرض توزيعها على لوحة مرئية بسيطة. كما يتيح لك حفظ المشاريع في المتصفح عبر localStorage لمراجعتها لاحقًا في أي وقت. هذه تجربة تعليمية خفيفة ومجردة صُممت خصيصًا لتوضيح العلاقات بين المكونات الأساسية، مع نتائج واضحة وسريعة دون تعقيدات بيئة حقيقية. كل ما تحتاجه هو المتصفح فقط لبدء التعلم والتجربة بأمان تام.
+</p>
+
+<div class="app card">
+  <div class="row">
+    <label class="label" for="yamlInput">كتابة أو لصق ملف YAML</label>
+  </div>
+  <textarea id="yamlInput" class="textarea" dir="rtl" rows="10" placeholder="apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: app"></textarea>
+
+  <div class="row">
+    <button id="btnParse" class="button">تحليل ملف YAML وعرض النتائج</button>
+    <button id="btnClear" class="button sec">مسح المدخلات</button>
+  </div>
+
+  <div class="divider"></div>
+  <div class="row">
+    <div class="out">
+      <span class="big" id="countPods">0</span><span>Pods</span>
+    </div>
+    <div class="out">
+      <span class="big" id="countServices">0</span><span>Services</span>
+    </div>
+    <div class="out">
+      <span class="big" id="countNodes">0</span><span>Nodes</span>
+    </div>
+  </div>
+
+  <div class="out" id="errorBox" dir="rtl"></div>
+
+  <div class="divider"></div>
+  <div class="row">
+    <label class="label" for="projName">اسم المشروع</label>
+    <input id="projName" class="input" dir="rtl" placeholder="أدخل اسم المشروع">
+  </div>
+  <div class="row">
+    <button id="btnSave" class="button">حفظ المشروع في المتصفح</button>
+    <button id="btnNew" class="button sec">بدء مشروع جديد</button>
+  </div>
+
+  <div class="divider"></div>
+  <div class="row">
+    <label class="label" for="projList">المشاريع المحفوظة</label>
+    <select id="projList" class="select" dir="rtl"></select>
+    <button id="btnLoad" class="button sec">فتح المشروع المحدد</button>
+    <button id="btnDelete" class="button sec">حذف المشروع المحدد</button>
+  </div>
+
+  <div class="divider"></div>
+  <canvas id="canvas" width="800" height="400" aria-label="لوحة تصور مكونات الكتلة"></canvas>
+  <div class="out" id="emptyState" dir="rtl">لا توجد مكونات لعرضها بعد. أدخل ملف YAML ثم اضغط على زر تحليل ملف YAML وعرض النتائج.</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل هذا التطبيق بدون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل داخل المتصفح ولا يستخدم أي طلبات شبكية، لذا يمكن استخدامه دون اتصال.</p><h3>هل أحتاج إلى تثبيت Kubernetes فعلي؟</h3><p>لا، الغرض هو تعلم وفهم مفاهيم ملفات YAML وتصورها فقط، دون تشغيل كتلة فعلية.</p><h3>هل يمكن حفظ المشاريع بشكل دائم؟</h3><p>نعم، يتم حفظها عبر localStorage في متصفحك ولا ترسل إلى أي خادم.</p><h3>ما المكونات المدعومة للعرض؟</h3><p>حاليًا يتم دعم Pods والخدمات والعقد (Nodes) في التمثيل البسيط للعرض.</p><h3>ماذا يحدث في حالة إدخال YAML غير صحيح؟</h3><p>التطبيق يتحقق من وجود المكونات الأساسية فقط ويعرض النتائج المتاحة دون إيقاف العمل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var yamlInput=document.getElementById('yamlInput');
+  var btnParse=document.getElementById('btnParse');
+  var btnClear=document.getElementById('btnClear');
+  var btnSave=document.getElementById('btnSave');
+  var btnNew=document.getElementById('btnNew');
+  var btnLoad=document.getElementById('btnLoad');
+  var btnDelete=document.getElementById('btnDelete');
+  var projName=document.getElementById('projName');
+  var projList=document.getElementById('projList');
+  var countPods=document.getElementById('countPods');
+  var countServices=document.getElementById('countServices');
+  var countNodes=document.getElementById('countNodes');
+  var errorBox=document.getElementById('errorBox');
+  var emptyState=document.getElementById('emptyState');
+  var canvas=document.getElementById('canvas');
+  var ctx=canvas.getContext('2d');
+
+  var STORE_KEY='k8s_vis_local_proj_v1';
+  var projects={};
+
+  function loadStore(){
+    try{
+      var raw=localStorage.getItem(STORE_KEY);
+      if(raw){ projects=JSON.parse(raw); }
+    }catch(e){ projects={}; }
+  }
+  function saveStore(){
+    try{ localStorage.setItem(STORE_KEY,JSON.stringify(projects)); }catch(e){}
+  }
+
+  function clearErrors(){
+    errorBox.style.display='none';
+    errorBox.textContent='';
+  }
+  function showError(msg){
+    errorBox.style.display='block';
+    errorBox.textContent=msg;
+  }
+
+  function refreshList(){
+    projList.innerHTML='';
+    var keys=Object.keys(projects).sort();
+    if(keys.length===0){
+      var opt=document.createElement('option');
+      opt.value=''; opt.textContent='لا توجد مشاريع محفوظة';
+      projList.appendChild(opt);
+      return;
+    }
+    for(var i=0;i<keys.length;i++){
+      var o=document.createElement('option');
+      o.value=keys[i]; o.textContent=keys[i];
+      projList.appendChild(o);
+    }
+  }
+
+  function newProject(){
+    yamlInput.value='';
+    projName.value='';
+    countPods.textContent='0'; countServices.textContent='0'; countNodes.textContent='0';
+    clearErrors();
+    emptyState.style.display='block';
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+
+  function parseYAML(text){
+    var res={pods:[],services:[],nodes:[]};
+    if(!text){ return res; }
+    var lines=text.replace(/\r\n/g,'\n').split('\n');
+    for(var i=0;i<lines.length;i++){
+      var s=lines[i];
+      if(s.trim().length===0) continue;
+      if(s.indexOf('#')===0) continue;
+      var mkind=s.match(/^\s*kind\s*:\s*(.+?)\s*$/);
+      if(mkind){
+        var kindName=mkind[1].trim();
+        var name='';
+        for(var j=i+1;j<lines.length && j<i+40;j++){
+          var t=lines[j];
+          var mname=t.match(/^\s*name\s*:\s*(.+?)\s*$/);
+          if(mname){ name=mname[1].trim(); break; }
+        }
+        if(kindName==='Pod'||kindName==='pods'){ res.pods.push({name:name||('pod-'+(res.pods.length+1))}); }
+        else if(kindName==='Service'||kindName==='services'){ res.services.push({name:name||('svc-'+(res.services.length+1))}); }
+        else if(kindName==='Node'||kindName==='nodes'){ res.nodes.push({name:name||('node-'+(res.nodes.length+1))}); }
+      }
+    }
+    return res;
+  }
+
+  function draw(res){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    var w=canvas.width,h=canvas.height;
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--dark')||'#000';
+    ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--gold-dim')||'#bfa46a';
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--light')||'#fff';
+    ctx.font='14px sans-serif';
+    var cols=[{items:res.nodes,title:'Nodes'},{items:res.pods,title:'Pods'},{items:res.services,title:'Services'}];
+    var colW=w/3;
+    for(var c=0;c<cols.length;c++){
+      var x=c*colW+20,y=30;
+      ctx.fillText(cols[c].title,x,y-10);
+      for(var k=0;k<cols[c].items.length;k++){
+        var it=cols[c].items[k];
+        var bx=x,by=y+30*k;
+        ctx.strokeRect(bx,by,140,22);
+        ctx.fillText(it.name,bx+6,by+16);
+      }
+    }
+  }
+
+  btnParse.addEventListener('click',function(){
+    clearErrors();
+    var t=yamlInput.value;
+    if(!t||t.trim()===''){
+      showError('يرجى إدخال أو لصق محتوى YAML قبل التحليل.');
+      emptyState.style.display='block';
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      return;
+    }
+    var res=parseYAML(t);
+    countPods.textContent=res.pods.length;
+    countServices.textContent=res.services.length;
+    countNodes.textContent=res.nodes.length;
+    if(res.pods.length===0&&res.services.length===0&&res.nodes.length===0){
+      emptyState.style.display='block';
+    }else{
+      emptyState.style.display='none';
+    }
+    draw(res);
+  });
+
+  btnClear.addEventListener('click',function(){
+    yamlInput.value='';
+    clearErrors();
+    emptyState.style.display='block';
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    countPods.textContent='0'; countServices.textContent='0'; countNodes.textContent='0';
+  });
+
+  btnSave.addEventListener('click',function(){
+    var name=projName.value.trim();
+    if(!name){ showError('يرجى إدخال اسم المشروع لحفظه.'); return; }
+    if(!yamlInput.value||yamlInput.value.trim()===''){ showError('لا يمكن حفظ مشروع فارغ.'); return; }
+    projects[name]={yaml:yamlInput.value};
+    saveStore(); refreshList(); clearErrors();
+    showError('تم حفظ المشروع بنجاح.');
+  });
+
+  btnNew.addEventListener('click',function(){
+    newProject(); refreshList(); clearErrors();
+  });
+
+  btnLoad.addEventListener('click',function(){
+    var name=projList.value;
+    if(!name||!projects[name]){ showError('يرجى تحديد مشروع موجود لفتحه.'); return; }
+    yamlInput.value=projects[name].yaml;
+    projName.value=name;
+    clearErrors();
+    var res=parseYAML(yamlInput.value);
+    countPods.textContent=res.pods.length;
+    countServices.textContent=res.services.length;
+    countNodes.textContent=res.nodes.length;
+    emptyState.style.display=(res.pods.length===0&&res.services.length===0&&res.nodes.length===0)?'block':'none';
+    draw(res);
+  });
+
+  btnDelete.addEventListener('click',function(){
+    var name=projList.value;
+    if(!name||!projects[name]){ showError('يرجى تحديد مشروع لحذفه.'); return; }
+    delete projects[name];
+    saveStore(); refreshList();
+    if(projName.value===name){ projName.value=''; yamlInput.value=''; }
+    clearErrors();
+    showError('تم حذف المشروع المحدد.');
+  });
+
+  loadStore(); refreshList(); newProject();
+})();
+</script>
+</body>
+</html>
