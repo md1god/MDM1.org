@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة مراقبة أخطاء المتصفح: التقاط وتحليل وتصدير محلي | MDM1</title>
+<meta name="description" content="التقط رسائل الخطأ والاستثناءات في متصفحك واعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع، مع فلترة وبحث وتصدير محلي ونافذة زمنية، بلا خادم أو حسابات.">
+<link rel="canonical" href="https://mdm1.org/apps/error-watch-dashboard.html">
+<meta property="og:title" content="لوحة مراقبة أخطاء المتصفح: التقاط وتحليل وتصدير محلي">
+<meta property="og:description" content="التقط رسائل الخطأ والاستثناءات في متصفحك واعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع، مع فلترة وبحث وتصدير محلي ونافذة زمنية، بلا خادم أو حسابات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/error-watch-dashboard.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app h2{margin:0 0 12px;font-size:1.05rem;color:var(--gold-bright)}
+.app label{display:block;margin-bottom:6px}
+.app input,.app select{width:100%;box-sizing:border-box}
+.app .row{flex-wrap:wrap;gap:10px}
+.app .row>div{flex:1 1 170px;min-width:0}
+.app-msg{margin:10px 0 0;color:var(--gold);font-size:.9rem;min-height:1.2em}
+.app-stats{align-items:stretch}
+.app-stats>div{flex:1 1 140px;background:rgba(0,0,0,.22);border:1px solid rgba(212,175,55,.25);border-radius:10px;padding:10px;text-align:center}
+.app-stats .big{display:block;color:var(--gold-bright);font-size:1.5rem;font-weight:700;line-height:1.3}
+.app-stats label{margin:4px 0 0;font-size:.8rem;color:var(--light);opacity:.75}
+.app-tablewrap{overflow-x:auto}
+.app-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.app-table th{color:var(--gold);text-align:right;padding:8px;border-bottom:1px solid rgba(212,175,55,.45);white-space:nowrap}
+.app-table td{padding:8px;border-bottom:1px solid rgba(212,175,55,.15);vertical-align:top}
+.app-table tbody tr{cursor:pointer}
+.app-table tbody tr:hover{background:rgba(212,175,55,.08)}
+.app-table tbody tr.sel{background:rgba(212,175,55,.16)}
+.app-msg-cell{max-width:340px;word-break:break-word}
+.app-empty{color:var(--light);opacity:.7;font-size:.9rem}
+.app-pre{margin:0;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow:auto;font-size:.82rem}
+.app .divider{margin:14px 0}
+.app .out{word-break:break-word}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة مراقبة أخطاء المتصفح داخل الصفحة", "url": "https://mdm1.org/apps/error-watch-dashboard.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل أخطاء الموقع إلى خادم خارجي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، اللوحة تعمل بالكامل داخل المتصفح ولا تستخدم أي طلب شبكة، وتُخزّن الأحداث في localStorage على جهازك فقط، ولا توجد حسابات ولا تتبع."}}, {"@type": "Question", "name": "كيف تتم إعادة إرسال السكربت في صفحاتي؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف عنصرًا يحمل الـ ids الموجودة في اللوحة داخل صفحتك ثم اربط أحداث window.onerror وunhandledrejection بدالة تسجّل type وmessage وstack، وستظهر التقارير مجمّعة فورًا."}}, {"@type": "Question", "name": "ما معنى تجميع الأخطاء المتكررة في سطر واحد؟", "acceptedAnswer": {"@type": "Answer", "text": "يُبنى بصمة من نوع الخطأ ونص الرسالة بعد توحيد الأرقام والمسافات، فتظهر كل الحالات المتشابهة كمجموعة واحدة بعددها وعدد مرات التكرار وأول وآخر ظهور."}}, {"@type": "Question", "name": "ماذا تعرض نافذة زمنية للعرض ومتى أستفيد منها؟", "acceptedAnswer": {"@type": "Answer", "text": "تحدّد فترة ظهور الأحداث (آخر دقائق أو ساعة أو أيام أو مدى مخصص)، فتُحسب الإحصاءات والفلاتر داخلها فقط، وهو مفيد لعزل خطأ حدث حديثًا دون ضجيج قديم."}}, {"@type": "Question", "name": "هل يمكن تصدير التقرير لمشاركته مع فريق التطوير؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تنزيل تقرير JSON كامل أو نتائج الفلاتر الحالية، أو نسخ تقرير نصي منظم يحتوي الرسائل والتكرارات والسياق وأجزاء من سلسلة التتبع للصقه في تذكرة مشكلة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة مراقبة أخطاء المتصفح داخل الصفحة</h1>
+  <p class="page-sub">التقط رسائل الخطأ والاستثناءات في متصفحك واعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع، مع فلترة وبحث وتصدير محلي ونافذة زمنية، بلا خادم أو حسابات.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: يمكنك التقاط أخطاء صفحاتك وعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع وتصدير تقريرها محليًا، وكل ذلك يعمل بالكامل داخل المتصفح دون خادم ودون حسابات. تعمل اللوحة كسكربت صغير تحقنها في صفحتك لتسمع أحداث <strong>window.onerror</strong> و<strong>unhandledrejection</strong> وتسجيل التقارير اليدوية، ثم تجمّع المتكرر منها بصحة باعث (بصمة) واحدة تزيد عدّادها مع كل تكرار، وتعرض المتصفح واللغة ونظام التشغيل والدقة وحجم الشاشة ومسار الصفحة وزمن الحدث ونص التتبع الكامل. يمكنك تصفية النتائج بنافذة زمنية سريعة أو مخصصة، وبحث نصي، وفرز بالتكرار أو الأحدث، وتصفية بنوع الخطأ، وتفريغ مخزن البيانات أو حذف مجموعة واحدة، وتصدير تقرير JSON أو نسخ نصًا منظّمًا للصقه في تذكرة مشكلة، دون أي اتصال بالشبكة.</p>
+
+<div class="app">
+  <div class="card" id="statusCard">
+    <div class="row">
+      <button id="btnToggleListen" type="button">إيقاف الالتقاط</button>
+      <button class="sec" id="btnRefresh" type="button">تحديث العرض</button>
+      <span class="badge" id="listenState">الالتقاط يعمل</span>
+      <span class="badge" id="storageState">التخزين: جاهز</span>
+    </div>
+  </div>
+
+  <div class="card" id="manualCard">
+    <h2>التقاط خطأ يدوي</h2>
+    <div class="row">
+      <div>
+        <label for="selType">نوع الخطأ</label>
+        <select id="selType">
+          <option value="error">خطأ عام (Error)</option>
+          <option value="typeerror">خطأ نوع (TypeError)</option>
+          <option value="referenceerror">خطأ مرجع (ReferenceError)</option>
+          <option value="network">خطأ شبكة (Network)</option>
+          <option value="resource">مورد مفقود (Resource)</option>
+          <option value="promise">وعد مرفوض (Promise)</option>
+          <option value="console">رسالة سجل (Console)</option>
+        </select>
+      </div>
+      <div>
+        <label for="inMsg">نص الرسالة</label>
+        <input id="inMsg" type="text" placeholder="مثال: فشل تحميل قائمة المنتجات">
+      </div>
+      <div>
+        <label for="inSrc">الملف أو المصدر (اختياري)</label>
+        <input id="inSrc" type="text" placeholder="مثال: app.js سطر 42">
+      </div>
+    </div>
+    <div class="row">
+      <button id="btnAddManual" type="button">تسجيل الخطأ اليدوي</button>
+      <button class="sec" id="btnTestThrow" type="button">اختبار: رمي استثناء</button>
+      <button class="sec" id="btnTestPromise" type="button">اختبار: وعد مرفوض</button>
+      <button class="sec" id="btnTestType" type="button">اختبار: خطأ نوع</button>
+    </div>
+    <p class="app-msg" id="manualMsg" role="status"></p>
+  </div>
+
+  <div class="card" id="summaryCard">
+    <div class="row app-stats">
+      <div><span class="big" id="statTotal">0</span><label>إجمالي الأحداث</label></div>
+      <div><span class="big" id="statGroups">0</span><label>رسائل فريدة</label></div>
+      <div><span class="big" id="statRepeats">0</span><label>مرات التكرار</label></div>
+      <div><span class="big" id="statLast">—</span><label>آخر حدث</label></div>
+      <div><span class="big" id="statWindow">0</span><label>داخل النافذة الزمنية</label></div>
+    </div>
+  </div>
+
+  <div class="card" id="filterCard">
+    <div class="row">
+      <div>
+        <label for="selWindow">النافذة الزمنية للعرض</label>
+        <select id="selWindow">
+          <option value="600000">آخر 10 دقائق</option>
+          <option value="3600000">آخر ساعة</option>
+          <option value="86400000" selected>آخر 24 ساعة</option>
+          <option value="604800000">آخر 7 أيام</option>
+          <option value="2592000000">آخر 30 يومًا</option>
+          <option value="all">كل الوقت</option>
+          <option value="custom">نافذة مخصصة…</option>
+        </select>
+      </div>
+      <div>
+        <label for="inFrom">من (تاريخ ووقت)</label>
+        <input id="inFrom" type="datetime-local" disabled>
+      </div>
+      <div>
+        <label for="inTo">إلى (تاريخ ووقت)</label>
+        <input id="inTo" type="datetime-local" disabled>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="selFilterType">نوع الخطأ</label>
+        <select id="selFilterType">
+          <option value="all">كل الأنواع</option>
+          <option value="error">خطأ عام</option>
+          <option value="typeerror">خطأ نوع</option>
+          <option value="referenceerror">خطأ مرجع</option>
+          <option value="network">خطأ شبكة</option>
+          <option value="resource">مورد مفقود</option>
+          <option value="promise">وعد مرفوض</option>
+          <option value="console">رسالة سجل</option>
+        </select>
+      </div>
+      <div>
+        <label for="selSort">ترتيب المجموعات</label>
+        <select id="selSort">
+          <option value="count">الأكثر تكرارًا</option>
+          <option value="last">الأحدث حدوثًا</option>
+          <option value="first">الأقدم أولًا</option>
+        </select>
+      </div>
+      <div>
+        <label for="inSearch">بحث في الرسائل والمسارات</label>
+        <input id="inSearch" type="search" placeholder="اكتب نصًا للبحث…">
+      </div>
+    </div>
+    <div class="row">
+      <button class="sec" id="btnClearFilters" type="button">إعادة ضبط الفلاتر</button>
+      <span class="badge" id="filterInfo">0 نتيجة</span>
+    </div>
+  </div>
+
+  <div class="card" id="groupsCard">
+    <h2>الأخطاء المجمّعة حسب التكرار</h2>
+    <div class="app-tablewrap">
+      <table class="app-table">
+        <thead>
+          <tr><th>الرسالة</th><th>النوع</th><th>التكرار</th><th>آخر ظهور</th><th>التفاصيل</th></tr>
+        </thead>
+        <tbody id="errGroupsBody"></tbody>
+      </table>
+    </div>
+    <p class="app-empty" id="emptyState">لا توجد أخطاء مطابقة. ابدأ الالتقاط أو سجّل خطأ يدوي أو اختبر أحد أزرار الاختبار.</p>
+  </div>
+
+  <div class="card" id="detailCard">
+    <h2>تفاصيل الخطأ المحدد</h2>
+    <p class="app-empty" id="detailEmpty">اختر مجموعة من الجدول لعرض تفاصيلها كاملة.</p>
+    <div id="detailWrap" hidden>
+      <div class="row">
+        <span class="badge" id="dType">—</span>
+        <span class="badge" id="dCount">0</span>
+        <span class="badge" id="dFirst">—</span>
+        <span class="badge" id="dLast">—</span>
+      </div>
+      <label>نص الرسالة</label>
+      <div class="out" id="dMsg"></div>
+      <label>سياق المتصفح ونظام التشغيل</label>
+      <div class="out" id="dEnv"></div>
+      <label>سياق الصفحة</label>
+      <div class="out" id="dCtx"></div>
+      <label>سلسلة التتبع</label>
+      <pre class="out app-pre" id="dStack"></pre>
+    </div>
+  </div>
+
+  <div class="card" id="exportCard">
+    <h2>تصدير التقارير محليًا</h2>
+    <div class="row">
+      <button id="btnExportJson" type="button">تنزيل تقرير JSON</button>
+      <button class="sec" id="btnCopyText" type="button">نسخ تقرير نصي</button>
+      <button class="sec" id="btnExportFiltered" type="button">تنزيل نتائج الفلاتر فقط</button>
+      <button class="sec" id="btnClearAll" type="button">حذف كل الأخطاء</button>
+    </div>
+    <p class="app-msg" id="exportMsg" role="status"></p>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل أخطاء الموقع إلى خادم خارجي؟</h3><p>لا، اللوحة تعمل بالكامل داخل المتصفح ولا تستخدم أي طلب شبكة، وتُخزّن الأحداث في localStorage على جهازك فقط، ولا توجد حسابات ولا تتبع.</p><h3>كيف تتم إعادة إرسال السكربت في صفحاتي؟</h3><p>أضف عنصرًا يحمل الـ ids الموجودة في اللوحة داخل صفحتك ثم اربط أحداث window.onerror وunhandledrejection بدالة تسجّل type وmessage وstack، وستظهر التقارير مجمّعة فورًا.</p><h3>ما معنى تجميع الأخطاء المتكررة في سطر واحد؟</h3><p>يُبنى بصمة من نوع الخطأ ونص الرسالة بعد توحيد الأرقام والمسافات، فتظهر كل الحالات المتشابهة كمجموعة واحدة بعددها وعدد مرات التكرار وأول وآخر ظهور.</p><h3>ماذا تعرض نافذة زمنية للعرض ومتى أستفيد منها؟</h3><p>تحدّد فترة ظهور الأحداث (آخر دقائق أو ساعة أو أيام أو مدى مخصص)، فتُحسب الإحصاءات والفلاتر داخلها فقط، وهو مفيد لعزل خطأ حدث حديثًا دون ضجيج قديم.</p><h3>هل يمكن تصدير التقرير لمشاركته مع فريق التطوير؟</h3><p>نعم، يمكنك تنزيل تقرير JSON كامل أو نتائج الفلاتر الحالية، أو نسخ تقرير نصي منظم يحتوي الرسائل والتكرارات والسياق وأجزاء من سلسلة التتبع للصقه في تذكرة مشكلة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+var KEY="errPanel.v1",CAP="errPanel.cap";
+var state={entries:[],selected:null,capturing:true,storageOk:true};
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function load(){try{var r=localStorage.getItem(KEY);state.entries=r?JSON.parse(r):[];if(!Array.isArray(state.entries))state.entries=[];}catch(e){state.entries=[];state.storageOk=false;}
+try{state.capturing=localStorage.getItem(CAP)!=="0";}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state.entries));}catch(e){state.storageOk=false;}}
+function fmtTime(t){if(!t)return "—";try{return new Date(t).toLocaleString("ar-EG",{hour12:false});}catch(e){return new Date(t).toISOString();}}
+function ago(t){if(!t)return "—";var d=Date.now()-t;if(d<0)d=0;var m=Math.floor(d/60000);if(m<1)return "الآن";if(m<60)return "قبل "+m+" دقيقة";var h=Math.floor(m/60);if(h<24)return "قبل "+h+" ساعة";return "قبل "+Math.floor(h/24)+" يوم";}
+function typeLabel(t){var m={error:"خطأ عام",typeerror:"خطأ نوع",referenceerror:"خطأ مرجع",network:"خطأ شبكة",resource:"مورد مفقود",promise:"وعد مرفوض",console:"رسالة سجل"};return m[t]||t||"غير معروف";}
+function fingerprint(type,msg){var s=String(type||"")+"|"+String(msg||"");s=s.replace(/\d+/g,"n").replace(/\s+/g," ").toLowerCase().trim();var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0;}return h.toString(36);}
+function envInfo(){var ua=navigator.userAgent||"غير معروف";var lang=navigator.language||"—";var plat=navigator.platform||"—";
+try{
+var dm=screen.devicePixelRatio||1;
+return "المتصفح: "+ua+"\nاللغة: "+lang+"\nالمنصة: "+plat+"\nالدقة: "+dm+"\nالشاشة: "+screen.width+"×"+screen.height;
+}catch(e){return "المتصفح: "+ua+"\nاللغة: "+lang;}}
+function ctxInfo(){
+try{return "الصفحة: "+location.pathname+"\nالعنوان: "+document.title+"\nاتجاه المستند: "+(document.dir||"—")+"\nعمق تاريخ: "+history.length+"\nمتصل: "+(navigator.onLine?"نعم":"لا");}catch(e){return "سياق غير متاح";}}
+function entry(o){return {id:"e"+Date.now().toString(36)+Math.floor(Math.random()*1e5).toString(36),t:Date.now(),type:o.type||"error",message:String(o.message||"خطأ غير معروف").slice(0,800),source:String(o.source||"").slice(0,300),stack:String(o.stack||"").slice(0,6000),fingerprint:fingerprint(o.type,o.message)};}
+function push(o){var e=entry(o);state.entries.unshift(e);if(state.entries.length>600)state.entries.length=600;save();render();return e;}
+function bounds(){var w=$("selWindow").value;
+if(w==="custom"){var f=$("inFrom").value?new Date($("inFrom").value).getTime():null;var t=$("inTo").value?new Date($("inTo").value).getTime():null;return {a:f,b:t};}
+if(w==="all")return {a:null,b:null};return {a:Date.now()-parseInt(w,10),b:null};}
+function inWindow(e){var bd=bounds();if(bd.a!=null&&e.t<bd.a)return false;if(bd.b!=null&&e.t>bd.b)return false;return true;}
+function buildGroups(){var ft=$("selFilterType").value,q=$("inSearch").value.trim().toLowerCase();var arr=state.entries.filter(function(e){if(!inWindow(e))return false;if(ft!=="all"&&e.type!==ft)return false;if(q){var hay=(e.message+" "+e.stack+" "+e.source).toLowerCase();if(hay.indexOf(q)===-1)return false;}return true;});
+var map={};arr.forEach(function(e){var g=map[e.fingerprint];if(!g){g=map[e.fingerprint]={fingerprint:e.fingerprint,message:e.message,type:e.type,count:0,first:e.t,last:e.t,source:e.source,stack:e.stack,env:envInfo(),ctx:ctxInfo(),occurrences:[]};map[e.fingerprint]=g;}g.count++;g.occurrences.push({t:e.t,source:e.source});if(e.t>g.last)g.last=e.t;if(e.t<g.first)g.first=e.t;if(e.stack&&(!g.stack||e.stack.length>g.stack.length)){g.stack=e.stack;}if(e.source&&!g.source)g.source=e.source;});
+var list=Object.keys(map).map(function(k){return map[k];});var s=$("selSort").value;
+list.sort(function(a,b){if(s==="count")return b.count-a.count||b.last-a.last;if(s==="first")return a.first-b.first;return b.last-a.last;});return list;}
+function renderSummary(){var win=state.entries.filter(inWindow).length;$("statTotal").textContent=state.entries.length;$("statGroups").textContent=state.entries.length?new Set(state.entries.map(function(e){return e.fingerprint;})).size:0;
+var counts={};state.entries.forEach(function(e){counts[e.fingerprint]=(counts[e.fingerprint]||0)+1;});var rep=0;Object.keys(counts).forEach(function(k){if(counts[k]>1)rep+=counts[k]-1;});$("statRepeats").textContent=rep;
+$("statLast").textContent=state.entries.length?ago(state.entries[0].t):"—";$("statWindow").textContent=win;}
+function renderTable(){var list=buildGroups();var body=$("errGroupsBody");var html="";
+list.forEach(function(g){html+='<tr data-fp="'+esc(g.fingerprint)+'"'+(state.selected===g.fingerprint?' class="sel"':"")+'><td class="app-msg-cell">'+esc(g.message)+'</td><td>'+esc(typeLabel(g.type))+'</td><td>'+g.count+'</td><td>'+esc(ago(g.last))+'</td><td><button class="sec" type="button" data-view="'+esc(g.fingerprint)+'">عرض التفاصيل</button></td></tr>';});
+body.innerHTML=html;$("emptyState").hidden=list.length>0;$("filterInfo").textContent=list.length+" مجموعة";renderSummary();}
+function renderDetail(){var list=buildGroups();var g=null;for(var i=0;i<list.length;i++){if(list[i].fingerprint===state.selected){g=list[i];break;}}
+if(!g){$("detailWrap").hidden=true;$("detailEmpty").hidden=false;return;}
+$("detailWrap").hidden=false;$("detailEmpty").hidden=true;$("dType").textContent=typeLabel(g.type);$("dCount").textContent="التكرار: "+g.count;$("dFirst").textContent="أول ظهور: "+fmtTime(g.first);$("dLast").textContent="آخر ظهور: "+fmtTime(g.last);$("dMsg").textContent=g.message;$("dEnv").textContent=g.env;$("dCtx").textContent=g.ctx+"\nالمصدر: "+(g.source||"—");$("dStack").textContent=g.stack||"لا توجد سلسلة تتبع لهذا الخطأ.";}
+function render(){renderTable();renderDetail();}
+function report(id,text,ok){var el=$(id);if(!el)return;el.textContent=text;el.style.color=ok?"var(--gold-bright)":"#e08b8b";}
+function setCapture(v){state.capturing=v;try{localStorage.setItem(CAP,v?"1":"0");}catch(e){}
+$("listenState").textContent=v?"الالتقاط يعمل":"الالتقاط متوقف";$("btnToggleListen").textContent=v?"إيقاف الالتقاط":"بدء الالتقاط";}
+function download(name,text){try{var b=new Blob([text],{type:"application/json;charset=utf-8"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},400);}catch(e){report("exportMsg","تعذر إنشاء الملف على هذا المتصفح.",false);}}
+function reportText(list){var L=["تقرير أخطاء — "+new Date().toLocaleString("ar-EG"),"عدد المجموعات: "+list.length,""];list.forEach(function(g,i){L.push((i+1)+") "+g.message);L.push("   النوع: "+typeLabel(g.type)+" | التكرار: "+g.count);L.push("   أول ظهور: "+fmtTime(g.first)+" | آخر ظهور: "+fmtTime(g.last));L.push("   المصدر: "+(g.source||"—"));L.push("   المتصفح: "+g.env.split("\n")[0]);L.push("   السلسلة: "+(g.stack||"—").split("\n").slice(0,6).join(" / "));L.push("");});return L.join("\n");}
+window.addEventListener("error",function(ev){if(!state.capturing)return;var msg=ev.message||"خطأ غير معروف";if(ev.target&&ev.target!==window&&(ev.target.src||ev.target.href)){msg="تعذر تحميل مورد: "+(ev.target.src||ev.target.href);push({type:"resource",message:msg,source:ev.filename||"",stack:""});return;}var src=(ev.filename||"")+ (ev.lineno?":"+ev.lineno:"") +(ev.colno?":"+ev.colno:"");push({type:"error",message:msg,source:src,stack:(ev.error&&ev.error.stack)||""});});
+window.addEventListener("unhandledrejection",function(ev){if(!state.capturing)return;var r=ev.reason;var msg="";var stack="";if(r&&r.message){msg=r.message;stack=r.stack||String(r);}else{msg=String(r);}push({type:"promise",message:"وعد مرفوض: "+msg,source:"",stack:stack});});
+function init(){
+$("btnToggleListen").addEventListener("click",function(){setCapture(!state.capturing);});
+$("btnRefresh").addEventListener("click",function(){render();report("exportMsg","تم تحديث العرض.",true);});
+$("btnAddManual").addEventListener("click",function(){var m=$("inMsg").value.trim();if(!m){report("manualMsg","اكتب نص الرسالة أولًا.",false);return;}push({type:$("selType").value,message:m,source:$("inSrc").value.trim(),stack:""});$("inMsg").value="";$("inSrc").value="";report("manualMsg","تم تسجيل الخطأ اليدوي وتحديث اللوحة.",true);});
+$("btnTestThrow").addEventListener("click",function(){try{null.toFixed();}catch(e){if(state.capturing)push({type:"typeerror",message:"اختبار رمي استثناء: "+e.message,source:"اختبار داخلي",stack:e.stack||""});report("manualMsg","تم رمي استثناء التحقق والتقاطه.",true);}});
+$("btnTestPromise").addEventListener("addEventListener" in window?"click":"click",function(){var pr=Promise.reject(new Error("اختبار رفض وعد بدون معالج"));pr.catch(function(){});setTimeout(function(){if(state.capturing)push({type:"promise",message:"وعد مرفوض: اختبار رفض وعد بدون معالج",source:"اختبار داخلي",stack:""});},0);report("manualMsg","تم إنشاء وعد مرفوض للاختبار.",true);});
+$("btnTestType").addEventListener("click",function(){var und;try{und.foo();}catch(e){if(state.capturing)push({type:"referenceerror",message:"اختبار خطأ مرجع: "+e.message,source:"اختبار داخلي",stack:e.stack||""});}report("manualMsg","تم إنشاء خطأ مرجع للاختبار.",true);});
+["selWindow","selFilterType","selSort","inSearch","inFrom","inTo"].forEach(function(id){var el=$(id);el.addEventListener(el.tagName==="INPUT"?"input":"change",function(){if(id==="selWindow"){var custom=el.value==="custom";$("inFrom").disabled=!custom;$("inTo").disabled=!custom;}render();});});
+$("btnClearFilters").addEventListener("click",function(){$("selWindow").value="86400000";$("inFrom").disabled=true;$("inTo").disabled=true;$("selFilterType").value="all";$("selSort").value="count";$("inSearch").value="";state.selected=null;render();report("exportMsg","تمت إعادة ضبط الفلاتر.",true);});
+$("errGroupsBody").addEventListener("click",function(ev){var tr=ev.target.closest?ev.target.closest("tr"):null;if(!tr)return;state.selected=tr.getAttribute("data-fp");render();});
+$("btnExportJson").addEventListener("click",function(){var list=buildGroups();if(!list.length){report("exportMsg","لا توجد بيانات للتصدير.",false);return;}download("تقرير-الأخطاء-"+Date.now()+".json",JSON.stringify({generatedAt:new Date().toISOString(),window:$("selWindow").selectedOptions[0].textContent,filters:{type:$("selFilterType").value,search:$("inSearch").value},summary:{total:state.entries.length,groups:list.length},groups:list},null,2));report("exportMsg","تم تنزيل تقرير JSON محليًا.",true);});
+$("btnExportFiltered").addEventListener("click",function(){var list=buildGroups();if(!list.length){report("exportMsg","لا توجد نتائج مطابقة للتصدير.",false);return;}download("الأخطاء-المفلترة-"+Date.now()+".json",JSON.stringify({generatedAt:new Date().toISOString(),groups:list},null,2));report("exportMsg","تم تنزيل نتائج الفلاتر الحالية.",true);});
+$("btnCopyText").addEventListener("click",function(){var list=buildGroups();if(!list.length){report("exportMsg","لا توجد بيانات لنسخها.",false);return;}var txt=reportText(list);
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){report("exportMsg","تم نسخ التقرير النصي إلى الحافظة.",true);},function(){report("exportMsg","تعذر النسخ؛ استخدم تنزيل JSON.",false);});}else{report("exportMsg","النسخ غير مدعوم في هذا المتصفح؛ استخدم تنزيل JSON.",false);}});
+$("btnClearAll").addEventListener("click",function(){if(!state.entries.length){report("exportMsg","لا توجد بيانات لحذفها.",false);return;}if(!confirm("سيتم حذف كل الأخطاء المخزنة. هل أنت متأكد؟"))return;state.entries=[];state.selected=null;save();render();report("exportMsg","تم حذف كل الأخطاء المخزنة.",true);});
+setCapture(state.capturing);$("storageState").textContent=state.storageOk?"التخزين: جاهز":"التخزين: غير متاح";render();}
+load();init();
+})();
+</script>
+</body>
+</html>
