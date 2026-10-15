@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مصمم خط أنابيب نشر واختبار في المتصفح | MDM1</title>
+<meta name="description" content="ابنِ خط أنابيب بناء واختبار ونشر في YAML، اسحب قوالب إلى المحرر، شاهد المراحل وسجلات لحظية، واحفظ المشاريع في localStorage دون خادم أو حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/pipeline-canvas-simulator.html">
+<meta property="og:title" content="مصمم خط أنابيب نشر واختبار في المتصفح">
+<meta property="og:description" content="ابنِ خط أنابيب بناء واختبار ونشر في YAML، اسحب قوالب إلى المحرر، شاهد المراحل وسجلات لحظية، واحفظ المشاريع في localStorage دون خادم أو حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/pipeline-canvas-simulator.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-shell{display:grid;gap:1rem}
+.app-grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.app-row{flex-wrap:wrap;align-items:center;gap:.5rem}
+.app-intro{line-height:1.8;margin:0 0 1rem}
+.app-status{margin:.5rem 0 0;min-height:1.4em}
+.app-status.app-ok{color:var(--gold-bright)}
+.app-status.app-error{color:#d77}
+.app-hint{margin:.25rem 0 .75rem;opacity:.85}
+.app-library{display:grid;gap:.5rem}
+.app-chip{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.5rem;border:1px dashed var(--gold-dim);border-radius:.5rem;cursor:grab}
+.app-chip:active{cursor:grabbing}
+.app-pipeline{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.75rem 0}
+.app-stage{border:1px solid var(--gold-dim);border-radius:.75rem;padding:.75rem;min-height:6rem;display:grid;gap:.35rem;align-content:start}
+.app-stage.is-running{border-color:var(--gold-bright);box-shadow:inset 0 0 0 1px var(--gold-bright)}
+.app-stage.is-success{border-color:#6c6}
+.app-stage.is-failed{border-color:#c55}
+.app-stage.is-skipped{opacity:.6}
+.app-badge{width:fit-content}
+.app-progress{height:.5rem;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:.5rem 0}
+.app-progress-fill{height:100%;width:0%;background:var(--gold);transition:width .25s ease}
+.app-log{white-space:pre-wrap;max-height:24rem;overflow:auto;min-height:8rem}
+.app-empty{opacity:.8}
+.app-saved-list{display:grid;gap:.5rem}
+.app-saved-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;border:1px solid var(--gold-dim);border-radius:.5rem;padding:.5rem}
+.app-dropzone{position:relative}
+.app-dropzone.is-dragover{outline:2px dashed var(--gold-bright)}
+.app-summary{min-height:1.4em;margin:.5rem 0 0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مصمم خط أنابيب نشر واختبار", "url": "https://mdm1.org/apps/pipeline-canvas-simulator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال?", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الميزات تعمل في المتصفح ولا نحتاج إلى الشبكة أو حساب."}}, {"@type": "Question", "name": "كيف أحفظ مشروعي؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل اسمًا ثم اضغط «حفظ المشروع»؛ سيُخزن في التخزين المحلي."}}, {"@type": "Question", "name": "ماذا يفعل وضع الفشل؟", "acceptedAnswer": {"@type": "Answer", "text": "يجبر إحدى المراحل على الفشل لعرض سجلات الخطأ وتخطي المراحل التالية."}}, {"@type": "Question", "name": "هل يمكن تعديل YAML يدويًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، المحرر نصي بالكامل ويسمح باللصق والتحرير."}}, {"@type": "Question", "name": "أين تُحفظ السجلات؟", "acceptedAnswer": {"@type": "Answer", "text": "في الذاكرة أثناء الجلسة، ويمكن مسحها بزر «مسح السجلات»."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مصمم خط أنابيب نشر واختبار</h1>
+  <p class="page-sub">ابنِ خط أنابيب بناء واختبار ونشر في YAML، اسحب قوالب إلى المحرر، شاهد المراحل وسجلات لحظية، واحفظ المشاريع في localStorage دون خادم أو حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p id="appIntro" class="app-intro">الجواب السريع: يمكنك في هذا التطبيق تصميم خط أنابيب للبناء والاختبار والنشر، وتحرير إعدادات YAML بالسحب والإفلات، ومتابعة مراحل التنفيذ على لوحة بصرية، وقراءة سجلات لحظية أثناء المحاكاة، وحفظ المشاريع في التخزين المحلي. ابدأ باختيار قالب أو إدخال YAML يدويًا، ثم شاهد تقدم كل مرحلة، واضبط وضع الفشل والسرعة، واحفظ النتيجة لإعادة استخدامها لاحقًا. كل البيانات تبقى على جهازك، ولا تُرسل إلى أي خادم، ولا يتطلب حسابًا أو تسجيل دخول أو شبكة. يمكنك أيضًا إعادة الضبط ومسح السجلات، أو تحميل أي مشروع محفوظ والتعديل عليه.</p>
+<section class="app-shell" id="appShell" dir="rtl" lang="ar">
+  <div class="app-grid" id="appGrid">
+    <article class="card app-card" id="appProjectCard">
+      <h2 id="appProjectHeading">المشروع</h2>
+      <div class="row app-row" id="appProjectRow">
+        <label class="label" for="appProjectName">اسم المشروع</label>
+        <input id="appProjectName" class="input" type="text" maxlength="80" placeholder="أداة إصدار">
+        <button id="appSaveProjectBtn" class="button" type="button">حفظ المشروع</button>
+        <button id="appNewProjectBtn" class="button sec" type="button">مشروع جديد</button>
+      </div>
+      <div class="row app-row" id="appLoadRow">
+        <label class="label" for="appSavedSelect">المشاريع المحفوظة</label>
+        <select id="appSavedSelect" class="select"></select>
+        <button id="appLoadProjectBtn" class="button" type="button">تحميل</button>
+        <button id="appDeleteProjectBtn" class="button sec" type="button">حذف</button>
+      </div>
+      <p id="appProjectStatus" class="app-status" role="status">لا توجد رسائل بعد.</p>
+    </article>
+    <article class="card app-card" id="appLibraryCard">
+      <h2 id="appLibraryHeading">مكتبة القوالب والجاهزات</h2>
+      <p id="appLibraryHint" class="app-hint">اسحب أي عنصر وأفلته في محرر YAML، أو استخدم زر «إدراج».</p>
+      <div class="app-library" id="appLibrary">
+        <div class="app-chip" id="appTplNode" draggable="true" tabindex="0" data-template="node"><span>قالب Node.js: بناء، اختبار، نشر</span><button id="appInsertNodeBtn" class="button sec" type="button">إدراج</button></div>
+        <div class="app-chip" id="appTplPython" draggable="true" tabindex="0" data-template="python"><span>قالب Python: تجميع، فحص، رفع</span><button id="appInsertPythonBtn" class="button sec" type="button">إدراج</button></div>
+        <div class="app-chip" id="appTplDocker" draggable="true" tabindex="0" data-template="docker"><span>قالب Docker: صورة ثم اختبار ثم دفع</span><button id="appInsertDockerBtn" class="button sec" type="button">إدراج</button></div>
+        <div class="app-chip" id="appTplStatic" draggable="true" tabindex="0" data-template="static"><span>قالب موقع ثابت: بناء ثم نشر</span><button id="appInsertStaticBtn" class="button sec" type="button">إدراج</button></div>
+        <div class="app-chip" id="appPresetEnv" draggable="true" tabindex="0" data-template="env"><span>جاهزة متغيرات البيئة</span><button id="appInsertEnvBtn" class="button sec" type="button">إدراج</button></div>
+        <div class="app-chip" id="appPresetNotify" draggable="true" tabindex="0" data-template="notify"><span>جاهزة إشعارات النشر</span><button id="appInsertNotifyBtn" class="button sec" type="button">إدراج</button></div>
+        <div class="app-chip" id="appPresetCache" draggable="true" tabindex="0" data-template="cache"><span>جاهزة التخزين المؤقت</span><button id="appInsertCacheBtn" class="button sec" type="button">إدراج</button></div>
+      </div>
+    </article>
+    <article class="card app-card" id="appPipelineCard">
+      <h2 id="appPipelineHeading">مراحل التنفيذ</h2>
+      <div class="app-pipeline" id="appPipeline">
+        <div class="app-stage is-pending" id="appStageBuild" data-stage="build"><span class="badge app-badge" id="appBuildBadge">قيد الانتظار</span><strong id="appBuildTitle">بناء</strong><small id="appBuildDetail">تجميع وإعداد الأثر</small></div>
+        <div class="app-stage is-pending" id="appStageTest" data-stage="test"><span class="badge app-badge" id="appTestBadge">قيد الانتظار</span><strong id="appTestTitle"> اختبار</strong><small id="appTestDetail">تشغيل الفحوصات</small></div>
+        <div class="app-stage is-pending" id="appStageDeploy" data-stage="deploy"><span class="badge app-badge" id="appDeployBadge">قيد الانتظار</span><strong id="appDeployTitle">نشر</strong><small id="appDeployDetail">رفع إلى البيئة</small></div>
+      </div>
+      <div class="app-progress" id="appProgress" aria-hidden="true"><div class="app-progress-fill" id="appProgressFill"></div></div>
+      <div class="row app-row" id="appRunControls">
+        <label class="label" for="appFailureMode">وضع الفشل</label>
+        <select id="appFailureMode" class="select"><option value="none">بدون فشل</option><option value="build">فشل البناء</option><option value="test">فشل الاختبار</option><option value="deploy">فشل النشر</option></select>
+        <label class="label" for="appSpeed">سرعة المحاكاة</label>
+        <select id="appSpeed" class="select"><option value="fast">سريعة</option><option value="normal" selected>عادية</option><option value="slow">بطيئة</option></select>
+        <button id="appRunBtn" class="button" type="button">تشغيل المحاكاة</button>
+        <button id="appStopBtn" class="button sec" type="button" disabled>إيقاف</button>
+        <button id="appResetBtn" class="button sec" type="button">إعادة الضبط</button>
+        <button id="appClearLogsBtn" class="button sec" type="button">مسح السجلات</button>
+      </div>
+      <p id="appRunSummary" class="app-summary" role="status">لم تُشغّل أي محاكاة بعد.</p>
+    </article>
+    <article class="card app-card" id="appEditorCard">
+      <h2 id="appEditorHeading">محرر YAML</h2>
+      <label class="label" for="appYamlEditor">إعدادات خط الأنابيب</label>
+      <div class="app-dropzone" id="appDropzone">
+        <textarea id="appYamlEditor" class="textarea" rows="16" spellcheck="false" placeholder="name: my-pipeline\nstages:\n  - stage: build"></textarea>
+      </div>
+      <div class="row app-row" id="appEditorControls">
+        <button id="appValidateBtn" class="button" type="button">التحقق من YAML</button>
+        <label class="label" for="appTemplateSelect">قالب جاهز</label>
+        <select id="appTemplateSelect" class="select"></select>
+        <button id="appInsertTemplateBtn" class="button sec" type="button">إدراج القالب</button>
+      </div>
+      <p id="appValidationMessage" class="app-status" role="alert">في انتظار التحقق.</p>
+    </article>
+    <article class="card app-card" id="appLogCard">
+      <h2 id="appLogHeading">سجلات المحاكاة</h2>
+      <div class="out app-log" id="appLogBox" aria-live="polite">لا توجد سجلات بعد. اضغط «تشغيل المحاكاة».</div>
+    </article>
+    <article class="card app-card" id="appSavedCard">
+      <h2 id="appSavedHeading">المشاريع المحفوظة</h2>
+      <div class="app-saved-list" id="appSavedList">
+        <p id="appSavedEmpty" class="app-empty">لا توجد مشاريع محفوظة. احفظ مشروعًا لتظهر هنا.</p>
+      </div>
+    </article>
+  </div>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال?</h3><p>نعم، كل الميزات تعمل في المتصفح ولا نحتاج إلى الشبكة أو حساب.</p><h3>كيف أحفظ مشروعي؟</h3><p>أدخل اسمًا ثم اضغط «حفظ المشروع»؛ سيُخزن في التخزين المحلي.</p><h3>ماذا يفعل وضع الفشل؟</h3><p>يجبر إحدى المراحل على الفشل لعرض سجلات الخطأ وتخطي المراحل التالية.</p><h3>هل يمكن تعديل YAML يدويًا؟</h3><p>نعم، المحرر نصي بالكامل ويسمح باللصق والتحرير.</p><h3>أين تُحفظ السجلات؟</h3><p>في الذاكرة أثناء الجلسة، ويمكن مسحها بزر «مسح السجلات».</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  "use strict";
+  const STORAGE_KEY = "md1_pipeline_projects_v1";
+  const SPEEDS = { fast: 400, normal: 900, slow: 1600 };
+  const STAGE_NAMES = { build: "البناء", test: "الاختبار", deploy: "النشر" };
+  const TEMPLATES = {
+    node: "name: node-web-app\nruntime: node\nstages:\n  - stage: build\n    commands:\n      - npm ci\n      - npm run build\n  - stage: test\n    commands:\n      - npm test\n  - stage: deploy\n    target: production\nenv:\n  NODE_ENV: production",
+    python: "name: python-package\nruntime: python\nstages:\n  - stage: build\n    commands:\n      - python -m build\n  - stage: test\n    commands:\n      - pytest\n  - stage: deploy\n    target: pypi\nenv:\n  PYTHON_VERSION: '3.11'",
+    docker: "name: docker-image\nruntime: docker\nstages:\n  - stage: build\n    commands:\n      - docker build -t app:latest .\n  - stage: test\n    commands:\n      - docker run --rm app:latest npm test\n  - stage: deploy\n    target: registry\n",
+    static: "name: static-site\nruntime: static\nstages:\n  - stage: build\n    commands:\n      - npm run build\n  - stage: deploy\n    target: pages\n",
+    env: "env:\n  NODE_ENV: production\n  LOG_LEVEL: info\n  REGION: eu-central",
+    notify: "notifications:\n  on_success: true\n  on_failure: true\n  channel: release-team",
+    cache: "cache:\n  key: app-${{commit}}\n  paths:\n    - node_modules\n    - .cache"
+  };
+  const TEMPLATE_LABELS = [
+    ["node", "Node.js"],
+    ["python", "Python"],
+    ["docker", "Docker"],
+    ["static", "موقع ثابت"],
+    ["env", "متغيرات البيئة"],
+    ["notify", "الإشعارات"],
+    ["cache", "التخزين المؤقت"]
+  ];
+
+  function $(id) { return document.getElementById(id); }
+  function statusText(el, text, ok) {
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove("app-ok", "app-error");
+    if (ok === true) el.classList.add("app-ok");
+    if (ok === false) el.classList.add("app-error");
+  }
+  function nowTime() {
+    try { return new Date().toLocaleTimeString("ar-SA"); } catch (e) { return new Date().toLocaleTimeString(); }
+  }
+
+  let projects = [];
+  let running = false;
+  let stopRequested = false;
+  const logLines = [];
+
+  function renderLogs() {
+    const el = $("appLogBox");
+    if (!el) return;
+    el.textContent = logLines.length ? logLines.join("\n") : "لا توجد سجلات بعد. اضغط «تشغيل المحاكاة».";
+    el.scrollTop = el.scrollHeight;
+  }
+  function log(level, message) {
+    logLines.push("[" + nowTime() + "] " + level + ": " + message);
+    if (logLines.length > 400) logLines.shift();
+    renderLogs();
+  }
+
+  function setStageStatus(stage, status) {
+    const el = $("appStage" + stage.charAt(0).toUpperCase() + stage.slice(1));
+    const badge = $("app" + stage.charAt(0).toUpperCase() + stage.slice(1) + "Badge");
+    if (!el) return;
+    el.classList.remove("is-pending", "is-running", "is-success", "is-failed", "is-skipped");
+    el.classList.add("is-" + status);
+    if (badge) {
+      const names = { pending: "قيد الانتظار", running: "قيد التنفيذ", success: "نجح", failed: "فشل", skipped: "تم تخطيه" };
+      badge.textContent = names[status] || status;
+    }
+  }
+  function resetStages() {
+    ["build", "test", "deploy"].forEach(function (s) { setStageStatus(s, "pending"); });
+  }
+  function setProgress(value) {
+    const el = $("appProgressFill");
+    if (el) el.style.width = Math.max(0, Math.min(100, value)) + "%";
+  }
+  function sleep(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+
+  function validateYaml() {
+    const editor = $("appYamlEditor");
+    const msg = $("appValidationMessage");
+    const text = editor ? editor.value.trim() : "";
+    const errors = [];
+    if (!text) errors.push("محرر YAML فارغ.");
+    const found = text.match(/^\s*-\s*stage:\s*(build|test|deploy)\s*$/gim) || [];
+    if (found.length === 0) errors.push("يجب تعريف مرحلة بناء أو اختبار أو نشر على الأقل.");
+    if (text.indexOf("\t") !== -1) errors.push("استخدم مسافات بدل Tab.");
+    if (text.length > 20000) errors.push("النص طويل جدًا.");
+    const ok = errors.length === 0;
+    statusText(msg, ok ? "YAML صالح: " + found.length + " مرحلة معرّفة." : "خطأ: " + errors.join(" "), ok);
+    return ok;
+  }
+
+  function stagesFromYaml(text) {
+    const found = [];
+    const re = /^\s*-\s*stage:\s*(build|test|deploy)\s*$/gim;
+    let m;
+    while ((m = re.exec(text))) {
+      if (found.indexOf(m[1]) === -1) found.push(m[1]);
+    }
+    return found.length ? found : ["build", "test", "deploy"];
+  }
+
+  function stageLabel(stage) { return STAGE_NAMES[stage] || stage; }
+
+  function insertText(text) {
+    const ta = $("appYamlEditor");
+    if (!ta || !text) return;
+    const start = ta.selectionStart || 0;
+    const end = ta.selectionEnd || 0;
+    let before = ta.value.slice(0, start);
+    let after = ta.value.slice(end);
+    const needsNl = before.length > 0 && before.charAt(before.length - 1) !== "\n";
+    const payload = (needsNl ? "\n" : "") + text.trim() + "\n";
+    ta.value = before + payload + after;
+    const pos = before.length + payload.length;
+    ta.focus();
+    ta.selectionStart = pos;
+    ta.selectionEnd = pos;
+    log("معلومات", "تم إدراج قالب في محرر YAML.");
+    validateYaml();
+  }
+
+  function insertByKey(key) {
+    if (TEMPLATES[key]) insertText(TEMPLATES[key]);
+  }
+
+  function setRunningState(isRunning) {
+    running = isRunning;
+    const runBtn = $("appRunBtn");
+    const stopBtn = $("appStopBtn");
+    const resetBtn = $("appResetBtn");
+    const clearBtn = $("appClearLogsBtn");
+    const validateBtn = $("appValidateBtn");
+    if (runBtn) runBtn.disabled = isRunning;
+    if (stopBtn) stopBtn.disabled = !isRunning;
+    if (resetBtn) resetBtn.disabled = isRunning;
+    if (clearBtn) clearBtn.disabled = isRunning;
+    if (validateBtn) validateBtn.disabled = isRunning;
+  }
+
+  function toggleSavedEmpty() {
+    const empty = $("appSavedEmpty");
+    const list = $("appSavedList");
+    if (!empty || !list) return;
+    empty.style.display = projects.length ? "none" : "block";
+  }
+
+  function loadProjects() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      projects = Array.isArray(parsed) ? parsed : [];
+      statusText($("appProjectStatus"), "تم تحميل " + projects.length + " مشروعًا من التخزين.", true);
+    } catch (e) {
+      projects = [];
+      statusText($("appProjectStatus"), "تعذّر قراءة التخزين المحلي (قد يكون الوضع الخاص مفعلاً).", false);
+    }
+    renderSavedProjects();
+  }
+
+  function persistProjects() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+      return true;
+    } catch (e) {
+      statusText($("appProjectStatus"), "تعذّر الحفظ في التخزين (مساحة أو صلاحيات).", false);
+      return false;
+    }
+  }
+
+  function renderSavedProjects() {
+    const list = $("appSavedList");
+    const select = $("appSavedSelect");
+    if (!list || !select) return;
+    const empty = $("appSavedEmpty");
+    while (list.firstChild) list.removeChild(list.firstChild);
+    if (empty) list.appendChild(empty);
+    select.innerHTML = "";
+    if (!projects.length) {
+      toggleSavedEmpty();
+      return;
+    }
+    toggleSavedEmpty();
+    projects.forEach(function (p, index) {
+      const item = document.createElement("div");
+      item.className = "app-saved-item";
+      const name = document.createElement("span");
+      name.textContent = p.name || ("مشروع " + (index + 1));
+      const updated = document.createElement("small");
+      updated.textContent = p.updatedAt ? (" · " + p.updatedAt.slice(0, 16).replace("T", " ")) : "";
+      const wrap = document.createElement("span");
+      wrap.appendChild(name);
+      wrap.appendChild(updated);
+      item.appendChild(wrap);
+      list.appendChild(item);
+
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = (p.name || ("مشروع " + (index + 1)));
+      select.appendChild(option);
+    });
+  }
+
+  function saveProject() {
+    const nameInput = $("appProjectName");
+    const editor = $("appYamlEditor");
+    const failure = $("appFailureMode");
+    const speed = $("appSpeed");
+    if (!nameInput || !editor) return;
+    const name = nameInput.value.trim();
+    if (!name) {
+      statusText($("appProjectStatus"), "أدخل اسم المشروع قبل الحفظ.", false);
+      return;
+    }
+    if (!validateYaml()) {
+      statusText($("appProjectStatus"), "صحّح YAML قبل الحفظ.", false);
+      return;
+    }
+    const entry = {
+      name: name,
+      yaml: editor.value,
+      failureMode: failure ? failure.value : "none",
+      speed: speed ? speed.value : "normal",
+      updatedAt: new Date().toISOString()
+    };
+    const existing = projects.findIndex(function (p) { return p.name === name; });
+    if (existing !== -1) projects[existing] = entry; else projects.push(entry);
+    if (persistProjects()) {
+      renderSavedProjects();
+      statusText($("appProjectStatus"), "تم حفظ المشروع «" + name + "».", true);
+    }
+  }
+
+  function loadSelectedProject() {
+    const select = $("appSavedSelect");
+    if (!select || !select.value) {
+      statusText($("appProjectStatus"), "اختر مشروعًا لتحميله.", false);
+      return;
+    }
+    const index = Number(select.value);
+    const p = projects[index];
+    if (!p) {
+      statusText($("appProjectStatus"), "المشروع المحدد غير متاح.", false);
+      return;
+    }
+    const editor = $("appYamlEditor");
+    const nameInput = $("appProjectName");
+    const failure = $("appFailureMode");
+    const speed = $("appSpeed");
+    if (editor) editor.value = p.yaml || "";
+    if (nameInput) nameInput.value = p.name || "";
+    if (failure && p.failureMode) failure.value = p.failureMode;
+    if (speed && p.speed) speed.value = p.speed;
+    validateYaml();
+    statusText($("appProjectStatus"), "تم تحميل المشروع «" + (p.name || "") + "».", true);
+  }
+
+  function deleteSelectedProject() {
+    const select = $("appSavedSelect");
+    if (!select || !select.value) {
+      statusText($("appProjectStatus"), "اختر مشروعًا لحذفه.", false);
+      return;
+    }
+    const index = Number(select.value);
+    const p = projects[index];
+    if (!p) return;
+    projects.splice(index, 1);
+    if (persistProjects()) {
+      renderSavedProjects();
+      statusText($("appProjectStatus"), "تم حذف المشروع «" + (p.name || "") + "».", true);
+    }
+  }
+
+  async function runPipeline() {
+    if (running) return;
+    const editor = $("appYamlEditor");
+    const text = editor ? editor.value.trim() : "";
+    if (!validateYaml()) {
+      log("خطأ", "تعذّر بدء المحاكاة: YAML غير صالح.");
+      statusText($("appRunSummary"), "أصلح YAML ثم أعد المحاولة.", false);
+      return;
+    }
+    const order = stagesFromYaml(text);
+    const failureMode = ($("appFailureMode") || {}).value || "none";
+    const delayMs = SPEEDS[($("appSpeed") || {}).value] || SPEEDS.normal;
+    setRunningState(true);
+    stopRequested = false;
+    resetStages();
+    setProgress(0);
+    log("معلومات", "بدء المحاكاة. الترتيب: " + order.map(stageLabel).join(" ← "));
+    let failed = false;
+    for (let i = 0; i < order.length; i++) {
+      if (stopRequested) {
+        for (let j = i; j < order.length; j++) setStageStatus(order[j], "skipped");
+        log("تحذير", "تم إيقاف المحاكاة في مرحلة " + stageLabel(order[i]) + ".");
+        break;
+      }
+      const stage = order[i];
+      setStageStatus(stage, "running");
+      log("مرحلة", "بدء " + stageLabel(stage) + "...");
+      await sleep(delayMs);
+      if (stopRequested) {
+        setStageStatus(stage, "skipped");
+        for (let j = i + 1; j < order.length; j++) setStageStatus(order[j], "skipped");
+        log("تحذير", "تم إيقاف المحاكاة أثناء " + stageLabel(stage) + ".");
+        break;
+      }
+      if (failureMode === stage) {
+        setStageStatus(stage, "failed");
+        log("خطأ", stageLabel(stage) + " فشل: تم تشغيل وضع الفشل المحدد.");
+        failed = true;
+        for (let j = i + 1; j < order.length; j++) setStageStatus(order[j], "skipped");
+        break;
+      }
+      setStageStatus(stage, "success");
+      log("نجاح", stageLabel(stage) + " اكتمل بنجاح.");
+      setProgress(Math.round(((i + 1) / order.length) * 100));
+    }
+    if (!stopRequested && !failed) {
+      setProgress(100);
+      log("نجاح", "اكتملت جميع المراحل.");
+      statusText($("appRunSummary"), "اكتملت المحاكاة بنجاح.", true);
+    } else if (failed) {
+      statusText($("appRunSummary"), "فشلت المحاكاة في مرحلة " + stageLabel(failureMode) + ".", false);
+    } else {
+      statusText($("appRunSummary"), "تم إيقاف المحاكاة من قبل المستخدم.", false);
+    }
+    setRunningState(false);
+  }
+
+  function stopPipeline() {
+    if (!running) return;
+    stopRequested = true;
+    const btn = $("appStopBtn");
+    if (btn) btn.disabled = true;
+    log("تحذير", "طلب إيقاف... سيتم الإيقاف بعد الخطوة الحالية.");
+  }
+
+  function resetPipeline() {
+    if (running) return;
+    resetStages();
+    setProgress(0);
+    const summary = $("appRunSummary");
+    if (summary) summary.textContent = "تمت إعادة ضبط المراحل.";
+    log("معلومات", "تمت إعادة ضبط لوحة المراحل.");
+  }
+
+  function clearLogs() {
+    if (running) return;
+    logLines.length = 0;
+    renderLogs();
+    statusText($("appProjectStatus"), "تم مسح السجلات.", true);
+  }
+
+  function populateTemplateSelect() {
+    const select = $("appTemplateSelect");
+    if (!select) return;
+    select.innerHTML = "";
+    TEMPLATE_LABELS.forEach(function (pair) {
+      const option = document.createElement("option");
+      option.value = pair[0];
+      option.textContent = pair[1];
+      select.appendChild(option);
+    });
+  }
+
+  function wireLibrary() {
+    document.querySelectorAll(".app-chip").forEach(function (chip) {
+      const key = chip.getAttribute("data-template");
+      const snippet = TEMPLATES[key];
+      chip.addEventListener("dragstart", function (e) {
+        if (!e.dataTransfer) return;
+        e.dataTransfer.setData("text/plain", snippet || "");
+        e.dataTransfer.effectAllowed = "copy";
+      });
+      chip.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          insertByKey(key);
+        }
+      });
+    });
+    $("appInsertNodeBtn") && $("appInsertNodeBtn").addEventListener("click", function () { insertByKey("node"); });
+    $("appInsertPythonBtn") && $("appInsertPythonBtn").addEventListener("click", function () { insertByKey("python"); });
+    $("appInsertDockerBtn") && $("appInsertDockerBtn").addEventListener("click", function () { insertByKey("docker"); });
+    $("appInsertStaticBtn") && $("appInsertStaticBtn").addEventListener("click", function () { insertByKey("static"); });
+    $("appInsertEnvBtn") && $("appInsertEnvBtn").addEventListener("click", function () { insertByKey("env"); });
+    $("appInsertNotifyBtn") && $("appInsertNotifyBtn").addEventListener("click", function () { insertByKey("notify"); });
+    $("appInsertCacheBtn") && $("appInsertCacheBtn").addEventListener("click", function () { insertByKey("cache"); });
+  }
+
+  function wireDropzone() {
+    const zone = $("appDropzone");
+    const editor = $("appYamlEditor");
+    if (!zone || !editor) return;
+    ["dragenter", "dragover"].forEach(function (ev) {
+      zone.addEventListener(ev, function (e) {
+        e.preventDefault();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+        zone.classList.add("is-dragover");
+      });
+    });
+    zone.addEventListener("dragleave", function () { zone.classList.remove("is-dragover"); });
+    zone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      zone.classList.remove("is-dragover");
+      const text = e.dataTransfer ? e.dataTransfer.getData("text/plain") : "";
+      if (text) insertText(text);
+      else log("تحذير", "لم يتم العثور على محتوى قابل للإفلات.");
+    });
+    editor.addEventListener("paste", function () { setTimeout(validateYaml, 50); });
+  }
+
+  function wireEvents() {
+    $("appSaveProjectBtn") && $("appSaveProjectBtn").addEventListener("click", saveProject);
+    $("appNewProjectBtn") && $("appNewProjectBtn").addEventListener("click", function () {
+      $("appProjectName").value = "";
+      $("appYamlEditor").value = "";
+      if ($("appFailureMode")) $("appFailureMode").value = "none";
+      if ($("appSpeed")) $("appSpeed").value = "normal";
+      validateYaml();
+      statusText($("appProjectStatus"), "تم بدء مشروع جديد.", true);
+    });
+    $("appLoadProjectBtn") && $("appLoadProjectBtn").addEventListener("click", loadSelectedProject);
+    $("appDeleteProjectBtn") && $("appDeleteProjectBtn").addEventListener("click", deleteSelectedProject);
+    $("appRunBtn") && $("appRunBtn").addEventListener("click", runPipeline);
+    $("appStopBtn") && $("appStopBtn").addEventListener("click", stopPipeline);
+    $("appResetBtn") && $("appResetBtn").addEventListener("click", resetPipeline);
+    $("appClearLogsBtn") && $("appClearLogsBtn").addEventListener("click", clearLogs);
+    $("appValidateBtn") && $("appValidateBtn").addEventListener("click", validateYaml);
+    $("appInsertTemplateBtn") && $("appInsertTemplateBtn").addEventListener("click", function () {
+      insertByKey(($("appTemplateSelect") || {}).value || "node");
+    });
+    $("appYamlEditor") && $("appYamlEditor").addEventListener("input", function () { /* lazy validation */ });
+  }
+
+  function init() {
+    populateTemplateSelect();
+    loadProjects();
+    wireLibrary();
+    wireDropzone();
+    wireEvents();
+    renderLogs();
+    validateYaml();
+    log("معلومات", "التطبيق جاهز. اسحب قالبًا أو اكتب YAML ثم شغّل المحاكاة.");
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+</body>
+</html>
