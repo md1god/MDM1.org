@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منتدي روابطي - متصفح شخصي لحفظ وتنظيم المقالات التقنية | MDM1</title>
+<meta name="description" content="نظّم روابطك التقنية في منتدى خاص: صوّت بالسهام، علّق تعليقات متداخلة، وسوم برمجة وأمن وذكاء اصطناعي، ترتيب بالشعبية أو التاريخ، بحث وفلترة، حفظ محلي وتصدير JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/personal-link-hoard.html">
+<meta property="og:title" content="منتدي روابطي - متصفح شخصي لحفظ وتنظيم المقالات التقنية">
+<meta property="og:description" content="نظّم روابطك التقنية في منتدى خاص: صوّت بالسهام، علّق تعليقات متداخلة، وسوم برمجة وأمن وذكاء اصطناعي، ترتيب بالشعبية أو التاريخ، بحث وفلترة، حفظ محلي وتصدير JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/personal-link-hoard.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:14px}
+.app .row{flex-wrap:wrap;gap:8px;align-items:center}
+.app input,.app select,.app textarea{flex:1;min-width:140px}
+.app-list{display:flex;flex-direction:column;gap:14px}
+.app-item{border:1px solid var(--gold-dim);border-radius:10px;padding:12px;background:rgba(0,0,0,.25)}
+.app-item.editing{border-color:var(--gold-bright)}
+.app-title{font-size:1.05em;font-weight:700;color:var(--gold-bright);word-break:break-word}
+.app-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px;font-size:.9em;color:var(--light);opacity:.85}
+.app-tag{background:var(--gold-dim);color:var(--dark);border-radius:12px;padding:2px 9px;font-size:.8em}
+.app-vote{min-width:44px;text-align:center;font-weight:700;color:var(--gold)}
+.app-comments{margin-top:10px;padding-top:10px;border-top:1px dashed var(--gold-dim);display:flex;flex-direction:column;gap:8px}
+.app-comment{background:rgba(255,255,255,.05);border-radius:8px;padding:8px;font-size:.92em;word-break:break-word}
+.app-comment .app-meta{margin-top:4px}
+.app-empty{border:1px dashed var(--gold-dim);border-radius:10px;padding:22px;text-align:center;color:var(--gold)}
+.app-error{color:#ffb4b4}
+.app-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.app-actions button{padding:4px 10px;font-size:.85em}
+.app-nest{margin-right:22px;border-right:2px solid var(--gold-dim);padding-right:8px}
+@media(max-width:640px){.app .row{flex-direction:column;align-items:stretch}.app-nest{margin-right:12px}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منتدي روابطي - متصفح شخصي للمقالات التقنية", "url": "https://mdm1.org/apps/personal-link-hoard.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى خادم أو اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل التطبيق بالكامل داخل متصفحك، ويحفظ البيانات في localStorage، ولا يرسل أي شيء إلى الشبكة."}}, {"@type": "Question", "name": "كيف أحفظ بياناتي بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحفظ كل شيء تلقائيًا في localStorage عند كل إضافة أو تصويت أو تعليق، ويمكنك تصدير نسخة احتياطية كملف JSON."}}, {"@type": "Question", "name": "ما معنى التعليقات المتداخلة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك الرد على أي تعليق لينشأ رد متداخل، مع أزرار تعديل وحذف لكل تعليق ورد على حدة."}}, {"@type": "Question", "name": "كيف أستعيد بياناتي على جهاز آخر؟", "acceptedAnswer": {"@type": "Answer", "text": "صدّر ملف JSON من جهازك الأول، ثم افتح التطبيق على الجهاز الآخر واضغط استيراد ملف JSON واختر الملف."}}, {"@type": "Question", "name": "هل يمكنني التعديل أو حذف مقالة بعد إضافتها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل مقالة تحتوي أزرار تعديل المقالة وحذف المقالة، وكذلك تصويت صاعد وهابط ووسوم قابلة للتعديل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منتدي روابطي - متصفح شخصي للمقالات التقنية</h1>
+  <p class="page-sub">نظّم روابطك التقنية في منتدى خاص: صوّت بالسهام، علّق تعليقات متداخلة، وسوم برمجة وأمن وذكاء اصطناعي، ترتيب بالشعبية أو التاريخ، بحث وفلترة، حفظ محلي وتصدير JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: هذا التطبيق متصفح شخصي يجمع فيه روابط المقالات التقنية وينظّمها كمنتدى خاص يعمل بالكامل داخل متصفحك دون أي خادم، يتيح لك التصويت بالسهام الصاعدة والهابطة، وكتابة تعليقات متداخلة، وتصنيف الروابط بوسوم مثل البرمجة والأمن وذكاء الاصطناعي، وترتيبها بالشعبية أو بالتاريخ، مع بحث وفلترة محلية فورية، وحفظ تلقائي في localStorage، وتصدير واستيراد ملف JSON لنقل بياناتك بسهولة. ابدأ بإضافة رابط، ثم صوّت وعلّق وصنّف، وكل شيء يُحفظ محليًا.</p>
+<div class="app">
+  <div class="card">
+    <div class="row">
+      <label for="linkUrl">رابط المقالة:</label>
+      <input id="linkUrl" type="url" placeholder="https://example.com/article">
+    </div>
+    <div class="row">
+      <label for="linkTitle">عنوان المقالة:</label>
+      <input id="linkTitle" type="text" placeholder="عنوان المقالة">
+    </div>
+    <div class="row">
+      <label for="linkTags">الوسوم (مفصولة بفاصلة):</label>
+      <input id="linkTags" type="text" placeholder="برمجة, أمن, ذكاء اصطناعي">
+    </div>
+    <div class="row">
+      <button id="addLinkBtn">إضافة المقالة إلى المنتدى</button>
+      <button id="cancelEditBtn" class="sec" hidden>إلغاء التعديل</button>
+    </div>
+    <p id="formMsg" class="badge" role="status" aria-live="polite"></p>
+  </div>
+  <div class="card">
+    <div class="row">
+      <label for="searchInput">بحث:</label>
+      <input id="searchInput" type="search" placeholder="ابحث في العناوين والوسوم">
+      <label for="tagFilter">فلترة حسب وسم:</label>
+      <select id="tagFilter"><option value="">كل الوسوم</option></select>
+    </div>
+    <div class="row">
+      <label for="sortSelect">الترتيب:</label>
+      <select id="sortSelect">
+        <option value="new">الأحدث أولًا</option>
+        <option value="old">الأقدم أولًا</option>
+        <option value="pop">الأكثر شعبية</option>
+        <option value="unpop">الأقل شعبية</option>
+      </select>
+      <button id="exportBtn" class="sec">تصدير ملف JSON</button>
+      <button id="importBtn" class="sec">استيراد ملف JSON</button>
+      <input id="importFile" type="file" accept="application/json" hidden>
+      <button id="clearAllBtn" class="sec">حذف كل البيانات</button>
+    </div>
+    <p id="listMsg" class="badge" role="status" aria-live="polite"></p>
+  </div>
+  <div id="listWrap" class="app-list"></div>
+  <div class="card">
+    <div class="row"><label>ملخص المنتدى</label></div>
+    <div class="row">
+      <span class="badge">المقالات: <span class="big" id="countLinks">0</span></span>
+      <span class="badge">التعليقات: <span class="big" id="countComments">0</span></span>
+      <span class="badge">صافي التصويتات: <span class="big" id="totalVotes">0</span></span>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <label for="exportStatus" class="badge">حالة النسخ الاحتياطي:</label>
+      <span id="exportStatus">لم تُصدَّر بيانات بعد.</span>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى خادم أو اتصال بالإنترنت؟</h3><p>لا، يعمل التطبيق بالكامل داخل متصفحك، ويحفظ البيانات في localStorage، ولا يرسل أي شيء إلى الشبكة.</p><h3>كيف أحفظ بياناتي بعد إغلاق المتصفح؟</h3><p>يُحفظ كل شيء تلقائيًا في localStorage عند كل إضافة أو تصويت أو تعليق، ويمكنك تصدير نسخة احتياطية كملف JSON.</p><h3>ما معنى التعليقات المتداخلة؟</h3><p>يمكنك الرد على أي تعليق لينشأ رد متداخل، مع أزرار تعديل وحذف لكل تعليق ورد على حدة.</p><h3>كيف أستعيد بياناتي على جهاز آخر؟</h3><p>صدّر ملف JSON من جهازك الأول، ثم افتح التطبيق على الجهاز الآخر واضغط استيراد ملف JSON واختر الملف.</p><h3>هل يمكنني التعديل أو حذف مقالة بعد إضافتها؟</h3><p>نعم، كل مقالة تحتوي أزرار تعديل المقالة وحذف المقالة، وكذلك تصويت صاعد وهابط ووسوم قابلة للتعديل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var KEY="arabicForumLinksV1";
+  var state={links:[],editingId:null};
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function uid(){return "l"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(state));return true;}
+    catch(e){$("listMsg").textContent="تعذّر الحفظ المحلي: "+e.message;$("listMsg").classList.add("app-error");return false;}
+  }
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){var d=JSON.parse(raw);if(d&&Array.isArray(d.links)){state.links=d.links;}}
+    }catch(e){}
+    state.editingId=null;
+  }
+  function now(){return Date.now();}
+  function normTags(s){
+    return String(s||"").split(/[,،\n]/).map(function(t){return t.trim();})
+      .filter(function(t,i,a){return t&&a.indexOf(t)===i;});
+  }
+  function votes(l){return (l.up||0)-(l.down||0);}
+  function countComments(list){
+    var n=0;
+    (list||[]).forEach(function(c){n+=1+countComments(c.replies);});
+    return n;
+  }
+  function totalCommentCount(){
+    var n=0;state.links.forEach(function(l){n+=countComments(l.comments);});return n;
+  }
+  function findLink(id){
+    for(var i=0;i<state.links.length;i++){if(state.links[i].id===id)return state.links[i];}
+    return null;
+  }
+  function findComment(list,cid){
+    for(var i=0;i<list.length;i++){
+      if(list[i].id===cid)return list[i];
+      var f=findComment(list[i].replies||[],cid);
+      if(f)return f;
+    }
+    return null;
+  }
+  function updateSummary(){
+    var tv=0;state.links.forEach(function(l){tv+=votes(l);});
+    $("countLinks").textContent=state.links.length;
+    $("countComments").textContent=totalCommentCount();
+    $("totalVotes").textContent=tv;
+  }
+  function refreshTagFilter(){
+    var sel=$("tagFilter"),cur=sel.value,tags={};
+    state.links.forEach(function(l){(l.tags||[]).forEach(function(t){tags[t]=1;});});
+    var names=Object.keys(tags).sort();
+    sel.innerHTML='<option value="">كل الوسوم</option>';
+    names.forEach(function(t){
+      var o=document.createElement("option");o.value=t;o.textContent=t;
+      if(t===cur)o.selected=true;sel.appendChild(o);
+    });
+    if(cur&&names.indexOf(cur)===-1)sel.value="";
+  }
+  function filtered(){
+    var q=$("searchInput").value.trim().toLowerCase();
+    var tag=$("tagFilter").value;
+    var sort=$("sortSelect").value;
+    var out=state.links.filter(function(l){
+      if(tag&&(l.tags||[]).indexOf(tag)===-1)return false;
+      if(!q)return true;
+      var hay=((l.title||"")+" "+(l.url||"")+" "+(l.tags||[]).join(" ")).toLowerCase();
+      return hay.indexOf(q)!==-1;
+    });
+    out.sort(function(a,b){
+      if(sort==="pop")return votes(b)-votes(a)||(b.createdAt||0)-(a.createdAt||0);
+      if(sort==="unpop")return votes(a)-votes(b)||(b.createdAt||0)-(a.createdAt||0);
+      if(sort==="old")return (a.createdAt||0)-(b.createdAt||0);
+      return (b.createdAt||0)-(a.createdAt||0);
+    });
+    return out;
+  }
+  function fmtDate(ts){
+    try{return new Date(ts).toLocaleString("ar");}catch(e){return "";}
+  }
+  function renderComment(link,c,depth){
+    var kids=(c.replies||[]).map(function(r){return renderComment(link,r,depth+1);}).join("");
+    var isEd=state.editingId==="c:"+c.id;
+    var body=isEd
+      ? '<textarea id="editBody_'+esc(c.id)+'" rows="2">'+esc(c.body)+'</textarea>'+
+        '<div class="app-actions"><button id="saveC_'+esc(c.id)+'">حفظ التعليق</button>'+
+        '<button class="sec" id="cancelC_'+esc(c.id)+'">إلغاء التعديل</button></div>'
+      : '<div>'+esc(c.body)+'</div>'+
+        '<div class="app-meta"><span>'+esc(fmtDate(c.createdAt))+'</span></div>'+
+        '<div class="app-actions">'+
+        '<button id="reply_'+esc(c.id)+'">رد على هذا التعليق</button>'+
+        '<button class="sec" id="editC_'+esc(c.id)+'">تعديل التعليق</button>'+
+        '<button class="sec" id="delC_'+esc(c.id)+'">حذف التعليق</button></div>'+
+        '<div id="replyBox_'+esc(c.id)+'" hidden><div class="row">'+
+        '<textarea id="replyText_'+esc(c.id)+'" rows="2" placeholder="اكتب ردك هنا"></textarea>'+
+        '<button id="sendReply_'+esc(c.id)+'">إرسال الرد</button></div></div>';
+    return '<div class="app-comment'+(depth>0?" app-nest":"")+'" data-cid="'+esc(c.id)+'">'+body+
+      (kids?'<div class="app-comments">'+kids+'</div>':'')+'</div>';
+  }
+  function renderLink(l){
+    var ed=state.editingId===l.id;
+    var head=ed
+      ? '<div class="row"><input id="editTitle_'+esc(l.id)+'" value="'+esc(l.title)+'" placeholder="العنوان"></div>'+
+        '<div class="row"><input id="editUrl_'+esc(l.id)+'" value="'+esc(l.url)+'" placeholder="الرابط"></div>'+
+        '<div class="row"><input id="editTags_'+esc(l.id)+'" value="'+esc((l.tags||[]).join(", "))+" placeholder=\"الوسوم\"></div>"+
+        '<div class="app-actions"><button id="saveL_'+esc(l.id)+'">حفظ التعديل</button>'+
+        '<button class="sec" id="cancelL_'+esc(l.id)+'">إلغاء التعديل</button></div>'
+      : '<div class="app-title">'+esc(l.title)+'</div>'+
+        '<div class="app-meta"><span>الرابط: '+esc(l.url)+'</span></div>'+
+        '<div class="app-meta"><span>'+esc(fmtDate(l.createdAt))+'</span>'+
+        (l.tags||[]).map(function(t){return '<span class="app-tag">'+esc(t)+'</span>';}).join("")+'</div>';
+    var actions='<div class="app-actions">'+
+      '<button id="up_'+esc(l.id)+'" aria-label="تصويت صاعد">▲ تصويت صاعد</button>'+
+      '<button class="sec" id="down_'+esc(l.id)+'" aria-label="تصويت هابط">▼ تصويت هابط</button>'+
+      '<span class="app-vote">النتيجة: '+votes(l)+'</span>'+
+      '<button class="sec" id="editL_'+esc(l.id)+'">تعديل المقالة</button>'+
+      '<button class="sec" id="delL_'+esc(l.id)+'">حذف المقالة</button></div>';
+    var comments='<div class="app-comments">'+
+      '<div class="row"><textarea id="newComment_'+esc(l.id)+'" rows="2" placeholder="اكتب تعليقًا على المقالة"></textarea>'+
+      '<button id="addComment_'+esc(l.id)+'">إضافة تعليق</button></div>'+
+      ((l.comments&&l.comments.length)?l.comments.map(function(c){return renderComment(l,c,0);}).join("")
+        :'<div class="app-empty">لا توجد تعليقات بعد. كن أول من يعلّق.</div>')+
+      '</div>';
+    return '<div class="app-item'+(ed?" editing":"")+'" data-id="'+esc(l.id)+'">'+head+actions+
+      '<div class="divider"></div>'+comments+'</div>';
+  }
+  function render(){
+    refreshTagFilter();
+    var items=filtered();
+    var wrap=$("listWrap");
+    if(!state.links.length){
+      wrap.innerHTML='<div class="app-empty">لا توجد مقالات بعد. أضف أول رابط من النموذج أعلاه.</div>';
+    }else if(!items.length){
+      wrap.innerHTML='<div class="app-empty">لا نتائج مطابقة للبحث أو الفلتر الحالي.</div>';
+    }else{
+      wrap.innerHTML=items.map(renderLink).join("");
+    }
+    updateSummary();
+    bindList();
+  }
+  function msg(id,text,isErr){
+    var el=$(id);el.textContent=text||"";el.classList.toggle("app-error",!!isErr);
+  }
+  function bindList(){
+    var wrap=$("listWrap");
+    Array.prototype.forEach.call(wrap.querySelectorAll("[id]"),function(el){
+      var id=el.id;
+      el.addEventListener("click",function(){handleAction(id);});
+    });
+  }
+  function handleAction(id){
+    var p=id.split("_"),key=p[0],rest=p.slice(1).join("_");
+    if(key==="up"||key==="down"){
+      var l=findLink(rest);if(!l)return;
+      if(key==="up")l.up=(l.up||0)+1;else l.down=(l.down||0)+1;
+      save();render();msg("listMsg","تم تسجيل تصويتك.");return;
+    }
+    if(key==="delL"){
+      state.links=state.links.filter(function(x){return x.id!==rest;});
+      if(state.editingId===rest)state.editingId=null;
+      save();render();msg("listMsg","تم حذف المقالة.");return;
+    }
+    if(key==="editL"){state.editingId=rest;render();msg("listMsg","أدخل التعديلات ثم اضغط حفظ.");return;}
+    if(key==="cancelL"){state.editingId=null;render();msg("listMsg","تم إلغاء التعديل.");return;}
+    if(key==="saveL"){
+      var lk=findLink(rest);if(!lk)return;
+      var t=$("editTitle_"+rest),u=$("editUrl_"+rest),tg=$("editTags_"+rest);
+      var tV=t?t.value.trim():"",uV=u?u.value.trim():"";
+      if(!tV||!uV){msg("listMsg","العنوان والرابط مطلوبان.",true);return;}
+      lk.title=tV;lk.url=uV;lk.tags=normTags(tg?tg.value:"");
+      state.editingId=null;save();render();msg("listMsg","تم حفظ التعديل.");return;
+    }
+    if(key==="addComment"){
+      var la=findLink(rest);if(!la)return;
+      var box=$("newComment_"+rest);
+      var val=box?box.value.trim():"";
+      if(!val){msg("listMsg","اكتب نص التعليق أولًا.",true);return;}
+      la.comments=la.comments||[];
+      la.comments.push({id:uid(),body:val,createdAt:now(),replies:[]});
+      save();render();msg("listMsg","تمت إضافة التعليق.");return;
+    }
+    if(key==="reply"){
+      var rb=$("replyBox_"+rest);
+      if(rb){rb.hidden=!rb.hidden;if(!rb.hidden){var rt=$("replyText_"+rest);if(rt)rt.focus();}}
+      return;
+    }
+    if(key==="sendReply"){
+      var all=null,pl=null;
+      for(var i=0;i<state.links.length;i++){
+        var c=findComment(state.links[i].comments||[],rest);
+        if(c){all=state.links[i];pl=c;break;}
+      }
+      if(!pl)return;
+      var inp=$("replyText_"+rest);
+      var v=inp?inp.value.trim():"";
+      if(!v){msg("listMsg","اكتب نص الرد أولًا.",true);return;}
+      pl.replies=pl.replies||[];
+      pl.replies.push({id:uid(),body:v,createdAt:now(),replies:[]});
+      save();render();msg("listMsg","تم إرسال الرد.");return;
+    }
+    if(key==="editC"){state.editingId="c:"+rest;render();msg("listMsg","عدّل نص التعليق ثم احفظ.");return;}
+    if(key==="cancelC"){state.editingId=null;render();msg("listMsg","تم إلغاء تعديل التعليق.");return;}
+    if(key==="saveC"){
+      var target=null,tl=null;
+      for(var j=0;j<state.links.length;j++){
+        var cc=findComment(state.links[j].comments||[],rest);
+        if(cc){target=cc;tl=state.links[j];break;}
+      }
+      if(!target)return;
+      var ta=$("editBody_"+rest);
+      var nv=ta?ta.value.trim():"";
+      if(!nv){msg("listMsg","نص التعليق فارغ.",true);return;}
+      target.body=nv;state.editingId=null;
+      save();render();msg("listMsg","تم حفظ التعليق.");return;
+    }
+    if(key==="delC"){
+      function removeFrom(list){
+        for(var k=0;k<list.length;k++){
+          if(list[k].id===rest){list.splice(k,1);return true;}
+          if(removeFrom(list[k].replies||[]))return true;
+        }
+        return false;
+      }
+      for(var m=0;m<state.links.length;m++){
+        if(removeFrom(state.links[m].comments||[]))break;
+      }
+      if(state.editingId==="c:"+rest)state.editingId=null;
+      save();render();msg("listMsg","تم حذف التعليق.");return;
+    }
+  }
+  function addLink(){
+    var u=$("linkUrl").value.trim(),t=$("linkTitle").value.trim(),tg=normTags($("linkTags").value);
+    if(!u||!t){msg("formMsg","العنوان والرابط مطلوبان لإضافة المقالة.",true);return;}
+    if(!/^[a-zA-Z][a-zA-Z0-9+.\-]*:/.test(u)){msg("formMsg","أدخل رابطًا صالحًا يبدأ بـ http أو https.",true);return;}
+    state.links.push({id:uid(),url:u,title:t,tags:tg,up:0,down:0,createdAt:now(),comments:[]});
+    $("linkUrl").value="";$("linkTitle").value="";$("linkTags").value="";
+    save();render();msg("formMsg","تمت إضافة المقالة إلى المنتدى.");
+    $("linkTitle").focus();
+  }
+  function exportJson(){
+    try{
+      var data=JSON.stringify({version:1,exportedAt:new Date().toISOString(),links:state.links},null,2);
+      var blob=new Blob([data],{type:"application/json"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download="forum-links-backup.json";
+      document.body.appendChild(a);a.click();
+      setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},0);
+      $("exportStatus").textContent="تم تصدير "+state.links.length+" مقالة بنجاح.";
+      msg("listMsg","تم تجهيز ملف التصدير.");
+    }catch(e){msg("listMsg","تعذّر التصدير: "+e.message,true);}
+  }
+  function importJson(file){
+    if(!file){msg("listMsg","اختر ملف JSON أولًا.",true);return;}
+    var r=new FileReader();
+    r.onload=function(){
+      try{
+        var d=JSON.parse(String(r.result));
+        var arr=(d&&Array.isArray(d.links))?d.links:(Array.isArray(d)?d:null);
+        if(!arr)throw new Error("الملف لا يحتوي على قائمة روابط صالحة.");
+        var clean=arr.filter(function(x){return x&&x.title&&x.url;}).map(function(x){
+          return {id:x.id||uid(),url:String(x.url),title:String(x.title),
+            tags:Array.isArray(x.tags)?x.tags.map(String):normTags(x.tags),
+            up:Number(x.up)||0,down:Number(x.down)||0,
+            createdAt:Number(x.createdAt)||now(),
+            comments:Array.isArray(x.comments)?x.comments:[]};
+        });
+        if(!clean.length){msg("listMsg","لم يُعثر على روابط صالحة داخل الملف.",true);return;}
+        state.links=clean;state.editingId=null;
+        save();render();
+        $("exportStatus").textContent="تم استيراد "+clean.length+" مقالة.";
+        msg("listMsg","تم استيراد البيانات بنجاح.");
+      }catch(e){msg("listMsg","خطأ في الملف: "+e.message,true);}
+    };
+    r.onerror=function(){msg("listMsg","تعذّرت قراءة الملف.",true);};
+    r.readAsText(file);
+  }
+  function clearAll(){
+    if(!state.links.length){msg("listMsg","لا توجد بيانات لحذفها.",true);return;}
+    if(!window.confirm("هل تريد حذف جميع المقالات والتعليقات نهائيًا؟"))return;
+    state.links=[];state.editingId=null;
+    save();render();msg("formMsg","تم حذف كل البيانات.");
+    $("exportStatus").textContent="تم حذف كل البيانات.";
+  }
+  $("addLinkBtn").addEventListener("click",addLink);
+  $("cancelEditBtn").addEventListener("click",function(){state.editingId=null;render();});
+  $("searchInput").addEventListener("input",render);
+  $("tagFilter").addEventListener("change",render);
+  $("sortSelect").addEventListener("change",render);
+  $("exportBtn").addEventListener("click",exportJson);
+  $("importBtn").addEventListener("click",function(){$("importFile").click();});
+  $("importFile").addEventListener("change",function(e){
+    var f=e.target.files&&e.target.files[0];
+    importJson(f);
+    e.target.value="";
+  });
+  $("clearAllBtn").addEventListener("click",clearAll);
+  $("linkTags").addEventListener("keydown",function(e){
+    if(e.key==="Enter"){e.preventDefault();addLink();}
+  });
+  load();render();
+})();
+</script>
+</body>
+</html>
