@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تخطيط الفيديوهات الطويلة بدون وجه | سيناريو ومخطط زمني | MDM1</title>
+<meta name="description" content="أداة عربية تعمل داخل المتصفح بلا خادم: قوالب سيناريو محسّنة للسيو للفيديوهات الطويلة بدون وجه، مخطط زمني على Canvas، محرر ترجمات، حفظ محلي وتصدير JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/local-faceless-video-planner.html">
+<meta property="og:title" content="أداة تخطيط الفيديوهات الطويلة بدون وجه | سيناريو ومخطط زمني">
+<meta property="og:description" content="أداة عربية تعمل داخل المتصفح بلا خادم: قوالب سيناريو محسّنة للسيو للفيديوهات الطويلة بدون وجه، مخطط زمني على Canvas، محرر ترجمات، حفظ محلي وتصدير JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-faceless-video-planner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .card { margin-bottom: 16px; }
+.app h2 { color: var(--gold); font-size: 1.05rem; margin: 0 0 8px; }
+.app .badge { display: block; margin: 6px 0; line-height: 1.7; }
+.app .row { flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 8px; }
+.app .row > div { display: flex; flex-direction: column; gap: 4px; }
+.app label { color: var(--light); font-size: .85rem; }
+.app input, .app select, .app textarea {
+  background: var(--dark); color: var(--light);
+  border: 1px solid var(--gold-dim); border-radius: 8px; padding: 8px;
+}
+.app textarea { width: 100%; box-sizing: border-box; margin-top: 6px; }
+.app .app-list { margin-top: 10px; }
+.app .app-scene {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--gold-dim); border-radius: 8px; margin-bottom: 6px;
+}
+.app .app-name { flex: 1; }
+.app .app-del {
+  border: 1px solid var(--gold-dim); background: transparent; color: var(--light);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer;
+}
+.app .app-del:hover { border-color: var(--gold); color: var(--gold); }
+.app .app-canvas {
+  width: 100%; margin-top: 10px; background: var(--dark);
+  border: 1px solid var(--gold-dim); border-radius: 8px;
+}
+.app .app-media {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px; margin-top: 10px;
+}
+.app .app-thumb {
+  border: 1px solid var(--gold-dim); border-radius: 8px; padding: 6px;
+  font-size: .78rem; overflow: hidden;
+}
+.app .app-thumb img { width: 100%; height: 72px; object-fit: cover; border-radius: 6px; display: block; }
+.app .app-audio { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.app .app-empty { color: var(--gold-dim); font-size: .85rem; }
+@media (max-width: 640px) { .app .row > div, .app input, .app select { width: 100%; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تخطيط وإعداد الفيديوهات الطويلة بدون وجه خطوة بخطوة", "url": "https://mdm1.org/apps/local-faceless-video-planner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تحتاج الأداة إلى اتصال بالإنترنت أو تسجيل حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. تعمل الأداة بالكامل داخل متصفحك دون أي طلب شبكة، ولا تطلب تسجيل دخول. لا تُرسل عناوينك أو مشاهدك أو ملفاتك إلى أي خدمة خارجية، وكل المعالجة تجري محليًا على جهازك."}}, {"@type": "Question", "name": "أين تُحفظ مشاريعي وكيف أستعيدها؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحفظ المشروع في التخزين المحلي لمتصفحك عند الضغط على «حفظ المشروع في المتصفح»، ويُستعاد بزر «استرجاع المشروع المحفوظ». الحفظ مرتبط بهذا المتصفح، لذا استخدم التصدير كنسخة احتياطية."}}, {"@type": "Question", "name": "هل تُحفظ الصور والموسيقى التي أضيفها؟", "acceptedAnswer": {"@type": "Answer", "text": "تُعرض الصور وتُشغَّل الموسيقى أثناء الجلسة، لكن الملفات نفسها لا تُدمج في ملف JSON لأنها قد تكون كبيرة. عند الاستيراد تظهر لك قائمة بأسماء الملفات لتُعيد إضافتها من جهازك."}}, {"@type": "Question", "name": "كيف أجعل مجموع المدة بين 8 و15 دقيقة؟", "acceptedAnswer": {"@type": "Answer", "text": "حدّد المدة المستهدفة ثم ولّد المشاهد من قالب؛ ستُوزَّع المدة تلقائيًا. راقب مؤشر مجموع الثواني وملاحظة التغطية، وعدّل أو احذف المشاهد حتى تصبح المدة داخل النطاق المطلوب."}}, {"@type": "Question", "name": "هل يمكن تصدير العمل ومشاركته مع فريق؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. زر «تصدير المشروع كملف JSON» ينزّل ملفًا يجمع العنوان والكلمة المفتاحية والمشاهد والترجمات وأسماء الوسائط، ويمكن لأي شخص استيراده في نفس الأداة لمتابعة العمل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تخطيط وإعداد الفيديوهات الطويلة بدون وجه خطوة بخطوة</h1>
+  <p class="page-sub">أداة عربية تعمل داخل المتصفح بلا خادم: قوالب سيناريو محسّنة للسيو للفيديوهات الطويلة بدون وجه، مخطط زمني على Canvas، محرر ترجمات، حفظ محلي وتصدير JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الجواب السريع: يمكنك تخطيط فيديو طويل بدون وجه مدته بين 8 و15 دقيقة بالكامل داخل متصفحك دون خادم أو تسجيل دخول، عبر أربع خطوات واضحة: اختيار قالب سيناريو محسّن للسيو، ثم توليد قائمة مشاهد بمُدد محددة، ثم ضبط المخطط الزمني بصريًا على لوحة الرسم، وأخيرًا كتابة الترجمات وإرفاق صورك وموسيقاك المحلية من جهازك. تجمع هذه الأداة كل ما يحتاجه منشئ المحتوى في مكان واحد: قوالب جاهزة للسيناريو التعليمي والقوائم والقصص والمراجعات، وتوزيعًا تلقائيًا للمدة على المشاهد بحسب الطول المستهدف، ومخططًا زمنيًا مرسومًا على Canvas لتتخيّل الإيقاع قبل المونتاج، ومحررًا بسيطًا للترجمات يعمل بالتوقيتات، ودعمًا لإضافة الصور والموسيقى من ملفاتك مباشرة. كل شيء يعمل دون اتصال بالشبكة، وتُحفظ مشاريعك في التخزين المحلي لمتصفحك ويمكن تصديرها كملف JSON لاستكمال العمل أو مشاركته يدويًا مع فريقك. لا تُرفع أي بيانات إلى أي خدمة خارجية، وتبقى ملفاتك ومسوداتك ملكك وحدك.</p>
+
+<div class="app">
+  <section class="card app-sec">
+    <h2>١. بيانات المشروع</h2>
+    <p class="badge">أدخل عنوان الفيديو وكلمته المفتاحية وطولك المستهدف، ثم اضغط «تحديث ملخص المشروع».</p>
+    <div class="row">
+      <div>
+        <label for="projTitle">عنوان الفيديو</label>
+        <input id="projTitle" type="text" placeholder="مثال: أسرار تنظيم الوقت">
+      </div>
+      <div>
+        <label for="projKeyword">الكلمة المفتاحية المستهدفة</label>
+        <input id="projKeyword" type="text" placeholder="تنظيم الوقت">
+      </div>
+      <div>
+        <label for="projMinutes">المدة المستهدفة (بالدقائق)</label>
+        <input id="projMinutes" type="number" min="8" max="15" value="10">
+      </div>
+    </div>
+    <div class="row">
+      <button id="btnUpdateMeta" type="button">تحديث ملخص المشروع</button>
+      <button id="btnClear" class="sec" type="button">تفريغ المشروع بالكامل</button>
+    </div>
+    <div class="out" id="metaOut">لم تُدخل بيانات المشروع بعد.</div>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٢. قالب السيناريو</h2>
+    <p class="badge">اختر قالبًا ثم ولّد مشاهد تُوزّع تلقائيًا على المدة المستهدفة.</p>
+    <div class="row">
+      <div>
+        <label for="tplSelect">القالب الجاهز</label>
+        <select id="tplSelect">
+          <option value="educational">تعليمي: شرح خطوة بخطوة</option>
+          <option value="listicle">قائمة: نقاط مرقّمة</option>
+          <option value="story">قصصي: سرد وحكاية</option>
+          <option value="review">مراجعة ومقارنة</option>
+        </select>
+      </div>
+      <button id="btnGenerate" type="button">توليد مشاهد من القالب</button>
+    </div>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٣. المشاهد وترتيبها</h2>
+    <p class="badge">أضف مشاهدك يدويًا أو عدّل التي وُلّدت من القالب، وراقب مجموع المدة.</p>
+    <div class="row">
+      <div>
+        <label for="sceneName">عنوان المشهد</label>
+        <input id="sceneName" type="text" placeholder="مثال: مقدمة تشويقية">
+      </div>
+      <div>
+        <label for="sceneSec">المدة بالثواني</label>
+        <input id="sceneSec" type="number" min="3" max="300" value="30">
+      </div>
+      <button id="btnAddScene" type="button">إضافة مشهد إلى القائمة</button>
+    </div>
+    <div id="sceneList" class="app-list"></div>
+    <div class="out">مجموع مدة المشاهد: <span class="big" id="totalSec">0</span> ثانية</div>
+    <p class="badge" id="durationNote">أضف مشاهد لحساب التغطية.</p>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٤. المخطط الزمني البصري</h2>
+    <p class="badge">يُرسم المخطط من اليمين إلى اليسار ليطابق اتجاه القراءة العربي.</p>
+    <canvas id="timeline" class="app-canvas" width="900" height="180"></canvas>
+    <div class="row">
+      <button id="btnDraw" type="button">إعادة رسم المخطط الزمني</button>
+    </div>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٥. محرر الترجمات</h2>
+    <p class="badge">اكتب كل ترجمة في سطر بصيغة: 00:30 - نص الترجمة.</p>
+    <textarea id="subs" rows="8" placeholder="00:00 - مرحبًا بكم في هذا الفيديو&#10;00:35 - سنتعرّف اليوم على ثلاث خطوات"></textarea>
+    <div class="row">
+      <button id="btnParseSubs" type="button">تحليل سطور الترجمات</button>
+      <button id="btnSubsFromScenes" class="sec" type="button">توليد الترجمات من المشاهد</button>
+    </div>
+    <div class="out" id="subsOut">لا توجد ترجمات بعد.</div>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٦. الصور والموسيقى المحلية</h2>
+    <p class="badge">تُضاف الملفات من جهازك فقط ولا تُرسل إلى أي مكان.</p>
+    <div class="row">
+      <div>
+        <label for="imgFiles">إضافة صور من الجهاز</label>
+        <input id="imgFiles" type="file" accept="image/*" multiple>
+      </div>
+      <div>
+        <label for="audFile">إضافة ملف موسيقى</label>
+        <input id="audFile" type="file" accept="audio/*">
+      </div>
+    </div>
+    <div id="mediaList" class="app-media"></div>
+  </section>
+
+  <section class="card app-sec">
+    <h2>٧. الحفظ والتصدير والاستيراد</h2>
+    <p class="badge">يُحفظ العمل في متصفحك، ويمكن تصديره كملف JSON أو استيراده لاحقًا.</p>
+    <div class="row">
+      <button id="btnSave" type="button">حفظ المشروع في المتصفح</button>
+      <button id="btnLoad" class="sec" type="button">استرجاع المشروع المحفوظ</button>
+      <button id="btnExport" class="sec" type="button">تصدير المشروع كملف JSON</button>
+      <div>
+        <label for="importFile">استيراد ملف JSON</label>
+        <input id="importFile" type="file" accept=".json,application/json">
+      </div>
+    </div>
+    <div class="out" id="saveStatus">لم يتم الحفظ بعد.</div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تحتاج الأداة إلى اتصال بالإنترنت أو تسجيل حساب؟</h3><p>لا. تعمل الأداة بالكامل داخل متصفحك دون أي طلب شبكة، ولا تطلب تسجيل دخول. لا تُرسل عناوينك أو مشاهدك أو ملفاتك إلى أي خدمة خارجية، وكل المعالجة تجري محليًا على جهازك.</p><h3>أين تُحفظ مشاريعي وكيف أستعيدها؟</h3><p>يُحفظ المشروع في التخزين المحلي لمتصفحك عند الضغط على «حفظ المشروع في المتصفح»، ويُستعاد بزر «استرجاع المشروع المحفوظ». الحفظ مرتبط بهذا المتصفح، لذا استخدم التصدير كنسخة احتياطية.</p><h3>هل تُحفظ الصور والموسيقى التي أضيفها؟</h3><p>تُعرض الصور وتُشغَّل الموسيقى أثناء الجلسة، لكن الملفات نفسها لا تُدمج في ملف JSON لأنها قد تكون كبيرة. عند الاستيراد تظهر لك قائمة بأسماء الملفات لتُعيد إضافتها من جهازك.</p><h3>كيف أجعل مجموع المدة بين 8 و15 دقيقة؟</h3><p>حدّد المدة المستهدفة ثم ولّد المشاهد من قالب؛ ستُوزَّع المدة تلقائيًا. راقب مؤشر مجموع الثواني وملاحظة التغطية، وعدّل أو احذف المشاهد حتى تصبح المدة داخل النطاق المطلوب.</p><h3>هل يمكن تصدير العمل ومشاركته مع فريق؟</h3><p>نعم. زر «تصدير المشروع كملف JSON» ينزّل ملفًا يجمع العنوان والكلمة المفتاحية والمشاهد والترجمات وأسماء الوسائط، ويمكن لأي شخص استيراده في نفس الأداة لمتابعة العمل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  'use strict';
+  function $(id) { return document.getElementById(id); }
+  var STORE_KEY = 'longform_planner_project_v1';
+
+  var templates = {
+    educational: [
+      { name: 'مقدمة تشويقية وطرح السؤال المحوري', sec: 30 },
+      { name: 'تعريف المشكلة وأثرها على المشاهد', sec: 60 },
+      { name: 'الفكرة الأساسية في سطر واحد', sec: 45 },
+      { name: 'الخطوة الأولى مع مثال عملي', sec: 75 },
+      { name: 'الخطوة الثانية مع مثال عملي', sec: 75 },
+      { name: 'الخطوة الثالثة مع مثال عملي', sec: 75 },
+      { name: 'أخطاء شائعة يجب تجنبها', sec: 65 },
+      { name: 'خلاصة سريعة للنقاط', sec: 45 },
+      { name: 'دعوة للاشتراك والتعليق', sec: 30 }
+    ],
+    listicle: [
+      { name: 'مقدمة ووعد بذكر القائمة كاملة', sec: 35 },
+      { name: 'تهيئة سريعة قبل النقاط', sec: 30 },
+      { name: 'النقطة الأولى', sec: 60 },
+      { name: 'النقطة الثانية', sec: 60 },
+      { name: 'النقطة الثالثة', sec: 60 },
+      { name: 'النقطة الرابعة', sec: 60 },
+      { name: 'النقطة الخامسة', sec: 60 },
+      { name: 'النقطة السادسة', sec: 60 },
+      { name: 'خاتمة وتوصية بالمشاهدة', sec: 35 }
+    ],
+    story: [
+      { name: 'افتتاحية مشهد قصصي', sec: 40 },
+      { name: 'تقديم الشخصية المحورية', sec: 65 },
+      { name: 'بداية الرحلة والتحدي', sec: 80 },
+      { name: 'نقطة التحول', sec: 80 },
+      { name: 'الأزمة الكبرى', sec: 80 },
+      { name: 'طريق الحل', sec: 75 },
+      { name: 'الدرس المستفاد', sec: 55 },
+      { name: 'خاتمة وعبرة', sec: 40 }
+    ],
+    review: [
+      { name: 'مقدمة وتحديد طرفي المقارنة', sec: 35 },
+      { name: 'معايير المقارنة', sec: 50 },
+      { name: 'الميزات المشتركة', sec: 60 },
+      { name: 'مزايا الخيار الأول', sec: 70 },
+      { name: 'مزايا الخيار الثاني', sec: 70 },
+      { name: 'العيوب والحدود', sec: 65 },
+      { name: 'السعر مقابل القيمة', sec: 45 },
+      { name: 'التوصية النهائية', sec: 40 }
+    ]
+  };
+
+  var state = { scenes: [], mediaImgs: [], audioName: '', audioUrl: '' };
+
+  function fmt(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function cssVar(name) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || '#c9a227';
+  }
+  function totalSec() {
+    return state.scenes.reduce(function (a, b) { return a + b.sec; }, 0);
+  }
+
+  function renderScenes() {
+    var list = $('sceneList');
+    list.innerHTML = '';
+    if (state.scenes.length === 0) {
+      var e = document.createElement('p');
+      e.className = 'app-empty';
+      e.textContent = 'لا توجد مشاهد بعد. أضف مشهدًا يدويًا أو ولّد مشاهد من قالب.';
+      list.appendChild(e);
+    }
+    state.scenes.forEach(function (s, i) {
+      var row = document.createElement('div');
+      row.className = 'app-scene';
+      var nm = document.createElement('span');
+      nm.className = 'app-name';
+      nm.textContent = (i + 1) + '. ' + s.name;
+      var d = document.createElement('span');
+      d.className = 'badge';
+      d.textContent = s.sec + ' ث (' + fmt(s.sec) + ')';
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'app-del';
+      del.textContent = 'حذف';
+      del.addEventListener('click', function () {
+        state.scenes.splice(i, 1);
+        renderScenes();
+        drawTimeline();
+      });
+      row.appendChild(nm); row.appendChild(d); row.appendChild(del);
+      list.appendChild(row);
+    });
+    updateTotals();
+  }
+
+  function updateTotals() {
+    var t = totalSec();
+    $('totalSec').textContent = t;
+    var mins = t / 60;
+    var msg;
+    if (t === 0) msg = 'أضف مشاهد لحساب التغطية.';
+    else if (mins < 8) msg = 'المدة أقصر من المطلوب (' + mins.toFixed(1) + ' دقيقة) — أضف مشاهد.';
+    else if (mins > 15) msg = 'المدة أطول من المطلوب (' + mins.toFixed(1) + ' دقيقة) — اختصر المشاهد.';
+    else msg = 'المدة مناسبة للفيديو الطويل (' + mins.toFixed(1) + ' دقيقة).';
+    $('durationNote').textContent = msg;
+  }
+
+  function updateMetaOut() {
+    var t = $('projTitle').value.trim();
+    var k = $('projKeyword').value.trim();
+    var mins = parseInt($('projMinutes').value, 10) || 10;
+    var parts = [];
+    parts.push(t ? ('العنوان: ' + t) : 'لم يُدخل عنوان بعد.');
+    parts.push(k ? ('الكلمة المفتاحية: ' + k) : 'لم تُدخل كلمة مفتاحية بعد.');
+    parts.push('المدة المستهدفة: ' + mins + ' دقيقة (' + (mins * 60) + ' ثانية).');
+    $('metaOut').textContent = parts.join('  |  ');
+    updateTotals();
+  }
+
+  function generateTemplate() {
+    var key = $('tplSelect').value;
+    var base = templates[key] || [];
+    var mins = Math.min(15, Math.max(8, parseInt($('projMinutes').value, 10) || 10));
+    $('projMinutes').value = mins;
+    var target = mins * 60;
+    var source = base.reduce(function (a, b) { return a + b.sec; }, 0) || 1;
+    state.scenes = base.map(function (s) {
+      return { name: s.name, sec: Math.max(8, Math.round(s.sec * target / source)) };
+    });
+    renderScenes();
+    drawTimeline();
+  }
+
+  function addScene() {
+    var name = $('sceneName').value.trim();
+    var sec = parseInt($('sceneSec').value, 10);
+    if (!name) { $('sceneName').focus(); $('durationNote').textContent = 'اكتب عنوان المشهد أولًا.'; return; }
+    if (!(sec > 0)) sec = 30;
+    state.scenes.push({ name: name, sec: Math.min(300, sec) });
+    $('sceneName').value = '';
+    renderScenes();
+    drawTimeline();
+  }
+
+  function drawTimeline() {
+    var cv = $('timeline');
+    if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d');
+    var W = cv.width, H = cv.height;
+    var gold = cssVar('--gold'), goldDim = cssVar('--gold-dim');
+    var light = cssVar('--light'), dark = cssVar('--dark');
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = dark;
+    ctx.fillRect(0, 0, W, H);
+    ctx.font = '14px sans-serif';
+    ctx.textBaseline = 'middle';
+    var total = totalSec();
+    var padX = 16, barY = 44, barH = 56;
+    if (total <= 0) {
+      ctx.fillStyle = goldDim;
+      ctx.textAlign = 'center';
+      ctx.fillText('لا توجد مشاهد لرسم المخطط الزمني', W / 2, H / 2);
+      return;
+    }
+    var availW = W - padX * 2;
+    var x = W - padX;
+    var shades = [gold, goldDim];
+    state.scenes.forEach(function (s, i) {
+      var w = availW * (s.sec / total);
+      x -= w;
+      ctx.fillStyle = shades[i % 2];
+      ctx.globalAlpha = 0.92;
+      ctx.fillRect(x, barY, Math.max(1, w - 2), barH);
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, barY, Math.max(1, w - 2), barH);
+      if (w > 46) {
+        ctx.fillStyle = dark;
+        ctx.textAlign = 'center';
+        ctx.fillText((i + 1) + ' · ' + s.sec + 'ث', x + w / 2, barY + barH / 2);
+      }
+    });
+    ctx.strokeStyle = goldDim;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padX, barY + barH + 18);
+    ctx.lineTo(W - padX, barY + barH + 18);
+    ctx.stroke();
+    var marks = 4;
+    for (var m = 0; m <= marks; m++) {
+      var tx = W - padX - (availW * m / marks);
+      ctx.beginPath();
+      ctx.moveTo(tx, barY + barH + 12);
+      ctx.lineTo(tx, barY + barH + 24);
+      ctx.stroke();
+      ctx.fillStyle = light;
+      ctx.textAlign = 'center';
+      ctx.fillText(fmt(total * m / marks), tx, barY + barH + 38);
+    }
+  }
+
+  function parseSubs() {
+    var lines = $('subs').value.split(/\r?\n/);
+    var re = /^\s*(\d{1,2}:\d{2})(?::\d{2})?\s*[-–—]\s*(.+)$/;
+    var ok = 0, bad = 0, first = '', last = '';
+    lines.forEach(function (l) {
+      if (!l.trim()) return;
+      var m = re.exec(l);
+      if (m) { ok++; if (!first) first = m[1]; last = m[1]; }
+      else bad++;
+    });
+    if (ok === 0) {
+      $('subsOut').textContent = 'لم يتم العثور على أسطر صالحة. استخدم الصيغة: 00:30 - نص الترجمة.';
+    } else {
+      $('subsOut').textContent = 'تم تحليل ' + ok + ' سطرًا من ' + first + ' إلى ' + last +
+        (bad ? (' — وتُجوهل ' + bad + ' سطرًا غير صالح.') : '.');
+    }
+  }
+
+  function subsFromScenes() {
+    if (state.scenes.length === 0) {
+      $('subsOut').textContent = 'لا توجد مشاهد لتوليد الترجمات منها.';
+      return;
+    }
+    var acc = 0;
+    var out = state.scenes.map(function (s) {
+      var line = fmt(acc) + ' - ' + s.name;
+      acc += s.sec;
+      return line;
+    });
+    $('subs').value = out.join('\n');
+    parseSubs();
+  }
+
+  function addImages(files) {
+    if (!files || !files.length) return;
+    for (var i = 0; i < files.length; i++) {
+      if (!/^image\//.test(files[i].type)) continue;
+      state.mediaImgs.push({ name: files[i].name, url: URL.createObjectURL(files[i]) });
+    }
+    renderMedia();
+  }
+
+  function addAudio(files) {
+    if (!files || !files.length) return;
+    if (!/^audio\//.test(files[0].type)) {
+      $('saveStatus').textContent = 'الملف المختار ليس ملفًا صوتيًا صالحًا.';
+      return;
+    }
+    state.audioName = files[0].name;
+    state.audioUrl = URL.createObjectURL(files[0]);
+    renderMedia();
+  }
+
+  function renderMedia() {
+    var box = $('mediaList');
+    box.innerHTML = '';
+    if (state.mediaImgs.length === 0 && !state.audioName) {
+      var e = document.createElement('p');
+      e.className = 'app-empty';
+      e.textContent = 'لم تُضف أي وسائط بعد.';
+      box.appendChild(e);
+      return;
+    }
+    state.mediaImgs.forEach(function (im) {
+      var d = document.createElement('div');
+      d.className = 'app-thumb';
+      var img = document.createElement('img');
+      img.src = im.url;
+      img.alt = im.name;
+      var cap = document.createElement('div');
+      cap.textContent = im.name;
+      d.appendChild(img); d.appendChild(cap);
+      box.appendChild(d);
+    });
+    if (state.audioName) {
+      var a = document.createElement('div');
+      a.className = 'app-audio';
+      var t = document.createElement('span');
+      t.textContent = 'موسيقى: ' + state.audioName;
+      a.appendChild(t);
+      if (state.audioUrl) {
+        var au = document.createElement('audio');
+        au.id = 'audioEl';
+        au.controls = true;
+        au.src = state.audioUrl;
+        a.appendChild(au);
+      }
+      box.appendChild(a);
+    }
+  }
+
+  function buildData() {
+    return {
+      app: 'longform-planner', version: 1,
+      meta: {
+        title: $('projTitle').value.trim(),
+        keyword: $('projKeyword').value.trim(),
+        minutes: parseInt($('projMinutes').value, 10) || 10
+      },
+      scenes: state.scenes.map(function (s) { return { name: s.name, sec: s.sec }; }),
+      subs: $('subs').value,
+      mediaNames: state.mediaImgs.map(function (i) { return i.name; })
+        .concat(state.audioName ? [state.audioName] : [])
+    };
+  }
+
+  function applyData(d) {
+    if (!d || typeof d !== 'object') throw new Error('bad');
+    var m = d.meta || {};
+    $('projTitle').value = m.title || '';
+    $('projKeyword').value = m.keyword || '';
+    $('projMinutes').value = m.minutes || 10;
+    state.scenes = Array.isArray(d.scenes)
+      ? d.scenes.filter(function (s) { return s && s.name; }).map(function (s) {
+          return { name: String(s.name), sec: Math.max(3, parseInt(s.sec, 10) || 10) };
+        })
+      : [];
+    $('subs').value = typeof d.subs === 'string' ? d.subs : '';
+    renderScenes();
+    drawTimeline();
+    updateMetaOut();
+    if (Array.isArray(d.mediaNames) && d.mediaNames.length) {
+      $('saveStatus').textContent = 'ملاحظة: أعد إضافة ملفات الوسائط التالية لأنها لا تُحفظ: ' +
+        d.mediaNames.join('، ');
+    } else {
+      $('saveStatus').textContent = 'تم استرجاع المشروع بنجاح.';
+    }
+  }
+
+  function saveProject() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(buildData()));
+      $('saveStatus').textContent = 'تم حفظ المشروع في متصفحك بنجاح.';
+    } catch (err) {
+      $('saveStatus').textContent = 'تعذّر الحفظ في المتصفح: ' + err.message;
+    }
+  }
+
+  function loadProject() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) { $('saveStatus').textContent = 'لا يوجد مشروع محفوظ في متصفحك بعد.'; return; }
+      applyData(JSON.parse(raw));
+    } catch (err) {
+      $('saveStatus').textContent = 'تعذّر الاسترجاع: ' + err.message;
+    }
+  }
+
+  function exportJSON() {
+    try {
+      var data = buildData();
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (data.meta.title || 'mashroo').replace(/[^\p{L}\p{N} _-]/gu, '').slice(0, 40) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+      $('saveStatus').textContent = 'تم تجهيز ملف JSON وبدأ تنزيله.';
+    } catch (err) {
+      $('saveStatus').textContent = 'تعذّر التصدير: ' + err.message;
+    }
+  }
+
+  function importJSON(ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        applyData(JSON.parse(r.result));
+      } catch (err) {
+        $('saveStatus').textContent = 'ملف JSON غير صالح أو تالف.';
+      }
+    };
+    r.onerror = function () { $('saveStatus').textContent = 'تعذّر قراءة الملف.'; };
+    r.readAsText(f);
+  }
+
+  function clearAll() {
+    if (!confirm('سيتم تفريغ كل البيانات غير المحفوظة. هل تريد المتابعة؟')) return;
+    state.scenes = []; state.mediaImgs = [];
+    state.audioName = ''; state.audioUrl = '';
+    $('projTitle').value = ''; $('projKeyword').value = ''; $('projMinutes').value = 10;
+    $('subs').value = '';
+    $('imgFiles').value = ''; $('audFile').value = ''; $('importFile').value = '';
+    renderScenes(); renderMedia(); drawTimeline(); updateMetaOut();
+    $('subsOut').textContent = 'لا توجد ترجمات بعد.';
+    $('saveStatus').textContent = 'تم تفريغ المشروع.';
+  }
+
+  function init() {
+    $('btnUpdateMeta').addEventListener('click', updateMetaOut);
+    $('btnClear').addEventListener('click', clearAll);
+    $('btnGenerate').addEventListener('click', generateTemplate);
+    $('btnAddScene').addEventListener('click', addScene);
+    $('btnDraw').addEventListener('click', drawTimeline);
+    $('btnParseSubs').addEventListener('click', parseSubs);
+    $('btnSubsFromScenes').addEventListener('click', subsFromScenes);
+    $('imgFiles').addEventListener('change', function (e) { addImages(e.target.files); e.target.value = ''; });
+    $('audFile').addEventListener('change', function (e) { addAudio(e.target.files); e.target.value = ''; });
+    $('btnSave').addEventListener('click', saveProject);
+    $('btnLoad').addEventListener('click', loadProject);
+    $('btnExport').addEventListener('click', exportJSON);
+    $('importFile').addEventListener('change', importJSON);
+    $('projMinutes').addEventListener('change', function () {
+      var v = Math.min(15, Math.max(8, parseInt(this.value, 10) || 10));
+      this.value = v; updateTotals();
+    });
+    renderScenes();
+    renderMedia();
+    drawTimeline();
+    updateMetaOut();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
