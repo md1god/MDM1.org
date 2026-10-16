@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مكتبة صور محلية: ألبومات ووسوم وعرض شرائح في المتصفح | MDM1</title>
+<meta name="description" content="نظّم صورك محليًا في المتصفح: ارفع صورًا، أنشئ ألبومات، أضف وسومًا للبحث السريع، واستعرضها بمعرض مصغرات وعرض ملء الشاشة بشرائح تلقائية، مع حفظ خاص محلي">
+<link rel="canonical" href="https://mdm1.org/apps/local-photo-shelf.html">
+<meta property="og:title" content="مكتبة صور محلية: ألبومات ووسوم وعرض شرائح في المتصفح">
+<meta property="og:description" content="نظّم صورك محليًا في المتصفح: ارفع صورًا، أنشئ ألبومات، أضف وسومًا للبحث السريع، واستعرضها بمعرض مصغرات وعرض ملء الشاشة بشرائح تلقائية، مع حفظ خاص محلي">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-photo-shelf.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:1080px;margin:0 auto;color:var(--light)}
+.app-intro{line-height:1.9;margin:0 0 18px}
+.app-panel{margin-bottom:18px}
+.app-row{flex-wrap:wrap;gap:10px;align-items:center}
+.app-status{margin:10px 0 0;font-size:.92em}
+.app-ok{color:var(--gold-bright)}
+.app-err{color:#ff8b7a}
+.app-muted{color:var(--gold-dim);font-size:.85em}
+.app-stats{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap}
+.app-statblock{display:flex;flex-direction:column;gap:6px}
+.app-albumrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--gold-dim);flex-wrap:wrap}
+.app-albumrow:last-child{border-bottom:0}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:14px}
+.app-thumb{position:relative;aspect-ratio:1/1;overflow:hidden;border-radius:12px;border:1px solid var(--gold-dim);background:var(--dark);cursor:pointer}
+.app-thumb:focus{outline:2px solid var(--gold-bright);outline-offset:2px}
+.app-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.app-thumb:hover img{transform:scale(1.06)}
+.app-thumbtag{position:absolute;inset-inline-start:6px;bottom:6px;background:rgba(0,0,0,.65);color:var(--gold-bright);font-size:.72em;padding:2px 8px;border-radius:20px}
+.app-empty{padding:34px 12px;text-align:center;color:var(--gold-dim);border:1px dashed var(--gold-dim);border-radius:12px;margin-top:14px}
+.app-viewer{position:fixed;inset:0;z-index:9999;display:none;background:rgba(0,0,0,.94);color:var(--light)}
+.app-viewer.open{display:flex;flex-direction:column}
+.app-vhead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;flex-wrap:wrap}
+.app-vstage{flex:1;display:flex;align-items:center;justify-content:center;padding:0 12px;min-height:0}
+.app-vstage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.app-vfoot{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.app-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,.15);border:1px solid var(--gold-dim);color:var(--gold-bright);border-radius:20px;padding:3px 10px;font-size:.85em;margin:3px}
+.app-chipx{background:none;border:0;color:var(--gold-bright);cursor:pointer;font-size:1.1em;line-height:1}
+.app-chipbox{display:flex;flex-wrap:wrap;min-height:28px;align-items:center}
+.app-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مكتبة الصور المحلية: نظّم صورك بألبومات ووسوم وعرض ملء الشاشة", "url": "https://mdm1.org/apps/local-photo-shelf.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "أين تُحفظ صوري وهل تُرسل إلى الإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ الصور والألبومات والوسوم داخل مساحة التخزين المحلية لمتصفحك فقط، ولا يُرسل أي شيء عبر الشبكة، لذا يعمل التطبيق دون اتصال وتبقى صورك خاصة بالكامل."}}, {"@type": "Question", "name": "كم عدد الصور التي يمكنني تخزينها؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد ذلك على المساحة المتاحة في متصفحك، ولذلك يصغّر التطبيق الصور الكبيرة تلقائيًا. عند امتلاء المساحة يظهر تنبيه، ويمكنك حذف صور لتوفير مكان ثم إعادة المحاولة."}}, {"@type": "Question", "name": "كيف أبحث بسرعة عن صورة معينة؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف وسومًا للصورة من عرض ملء الشاشة، ثم اكتب الوسم أو جزءًا من اسم الملف في حقل البحث، أو اختر ألبومًا من قائمة التصفية لعرض صوره فقط."}}, {"@type": "Question", "name": "هل يعمل التشغيل التلقائي للشرائح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، افتح صورة بملء الشاشة ثم اضغط «تشغيل الشرائح التلقائية» واختر المدة بين صورة وأخرى، ويمكنك الإيقاف في أي لحظة أو التنقل يدويًا."}}, {"@type": "Question", "name": "هل يمكنني حذف صورة أو ألبوم لاحقًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، من عرض ملء الشاشة اضغط «حذف هذه الصورة»، ومن قسم الألبومات اضغط «حذف الألبوم» فتبقى صوره في المكتبة بدون ألبوم، ويمكنك أيضًا تفريغ المكتبة كاملة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مكتبة الصور المحلية: نظّم صورك بألبومات ووسوم وعرض ملء الشاشة</h1>
+  <p class="page-sub">نظّم صورك محليًا في المتصفح: ارفع صورًا، أنشئ ألبومات، أضف وسومًا للبحث السريع، واستعرضها بمعرض مصغرات وعرض ملء الشاشة بشرائح تلقائية، مع حفظ خاص محلي</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+  <p class="app-intro">نعم، يمكنك إدارة مكتبة صورك كاملة داخل متصفحك دون خادم أو حساب، فكل شيء يبقى على جهازك. يتيح لك هذا التطبيق رفع الصور من حاسوبك أو هاتفك، ثم تنظيمها في ألبومات متعددة وإضافة وسوم عربية أو إنجليزية لكل صورة لتسهيل البحث لاحقًا. تحصل على معرض مصغرات أنيق يعرض صورك بسرعة، وبنقرة واحدة تفتح عرضًا بملء الشاشة يدعم التنقل بين الصور وتشغيل شرائح تلقائية بمعدل زمني تختاره. يُحفظ كل ما تفعله محليًا داخل مساحة التخزين في المتصفح، لذا لا تُرسل صورك إلى أي خدمة خارجية، ويعمل التطبيق حتى بدون اتصال بالشبكة. ويمكنك حذف الصور أو الألبومات في أي وقت بخصوصية تامة ودون أي تسجيل.</p>
+
+  <section class="card app-panel">
+    <h2>رفع الصور</h2>
+    <div class="row app-row">
+      <label class="label" for="fileInput">اختر صورًا من جهازك (يمكن تحديد أكثر من صورة)</label>
+      <input class="input" type="file" id="fileInput" accept="image/*" multiple>
+      <label class="label" for="uploadAlbumSelect">إضافة الصور إلى</label>
+      <select class="select" id="uploadAlbumSelect"></select>
+    </div>
+    <p class="app-status" id="uploadStatus">لم يتم رفع أي صور بعد. اختر صورًا من الأعلى لتبدأ.</p>
+  </section>
+
+  <section class="card app-panel">
+    <h2>المكتبة والألبومات</h2>
+    <div class="app-stats">
+      <span class="app-statblock">
+        <span class="big" id="photoCount">0</span>
+        <span class="app-muted">إجمالي الصور</span>
+      </span>
+      <span class="app-statblock">
+        <span class="badge" id="albumCountBadge">0 ألبوم</span>
+        <span class="badge" id="tagCountBadge">0 وسم</span>
+      </span>
+    </div>
+    <div class="divider"></div>
+    <div class="row app-row">
+      <label class="label" for="albumNameInput">اسم الألبوم الجديد</label>
+      <input class="input" type="text" id="albumNameInput" maxlength="40" placeholder="مثال: رحلة الشتاء">
+      <button class="button" type="button" id="createAlbumBtn">إنشاء ألبوم جديد</button>
+    </div>
+    <div id="albumList"></div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>البحث والتصفية</h2>
+    <div class="row app-row">
+      <label class="label" for="searchInput">ابحث بالوسم أو باسم الملف</label>
+      <input class="input" type="search" id="searchInput" placeholder="اكتب وسمًا أو جزءًا من اسم الصورة">
+      <label class="label" for="filterAlbumSelect">تصفية حسب الألبوم</label>
+      <select class="select" id="filterAlbumSelect"></select>
+      <button class="button sec" type="button" id="clearFiltersBtn">مسح عوامل التصفية</button>
+    </div>
+  </section>
+
+  <section class="card app-panel">
+    <div class="row app-row">
+      <h2>معرض الصور</h2>
+      <button class="button sec" type="button" id="clearAllBtn">حذف جميع الصور والألبومات</button>
+    </div>
+    <div class="app-grid" id="galleryGrid"></div>
+    <div class="app-empty" id="galleryEmpty">لم ترفع أي صور بعد. ابدأ باختيار صور من قسم رفع الصور.</div>
+  </section>
+</div>
+
+<div class="app-viewer" id="viewer" aria-hidden="true" role="dialog" aria-label="عرض الصورة بملء الشاشة">
+  <div class="app-vhead">
+    <span class="badge" id="viewerCounter">0 / 0</span>
+    <div class="app-nav">
+      <button class="button sec" type="button" id="viewerPrevBtn">الصورة السابقة</button>
+      <button class="button sec" type="button" id="viewerNextBtn">الصورة التالية</button>
+      <button class="button" type="button" id="slideshowBtn">تشغيل الشرائح التلقائية</button>
+      <label class="label" for="slideshowInterval">مدة العرض</label>
+      <select class="select" id="slideshowInterval">
+        <option value="2">كل ثانيتين</option>
+        <option value="3" selected>كل ثلاث ثوانٍ</option>
+        <option value="5">كل خمس ثوانٍ</option>
+        <option value="8">كل ثماني ثوانٍ</option>
+      </select>
+      <button class="button sec" type="button" id="viewerCloseBtn">إغلاق العرض</button>
+    </div>
+  </div>
+  <div class="app-vstage"><img id="viewerImg" alt="عرض الصورة الحالية"></div>
+  <div class="app-vfoot">
+    <span id="viewerCaption" class="app-muted"></span>
+    <div class="app-chipbox" id="viewerTags"></div>
+    <div class="row app-row">
+      <label class="label" for="viewerTagInput">إضافة وسم للصورة الحالية</label>
+      <input class="input" type="text" id="viewerTagInput" maxlength="24" placeholder="مثال: بحر">
+      <button class="button" type="button" id="viewerAddTagBtn">إضافة الوسم</button>
+      <button class="button sec" type="button" id="viewerDeleteBtn">حذف هذه الصورة</button>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>أين تُحفظ صوري وهل تُرسل إلى الإنترنت؟</h3><p>تُحفظ الصور والألبومات والوسوم داخل مساحة التخزين المحلية لمتصفحك فقط، ولا يُرسل أي شيء عبر الشبكة، لذا يعمل التطبيق دون اتصال وتبقى صورك خاصة بالكامل.</p><h3>كم عدد الصور التي يمكنني تخزينها؟</h3><p>يعتمد ذلك على المساحة المتاحة في متصفحك، ولذلك يصغّر التطبيق الصور الكبيرة تلقائيًا. عند امتلاء المساحة يظهر تنبيه، ويمكنك حذف صور لتوفير مكان ثم إعادة المحاولة.</p><h3>كيف أبحث بسرعة عن صورة معينة؟</h3><p>أضف وسومًا للصورة من عرض ملء الشاشة، ثم اكتب الوسم أو جزءًا من اسم الملف في حقل البحث، أو اختر ألبومًا من قائمة التصفية لعرض صوره فقط.</p><h3>هل يعمل التشغيل التلقائي للشرائح؟</h3><p>نعم، افتح صورة بملء الشاشة ثم اضغط «تشغيل الشرائح التلقائية» واختر المدة بين صورة وأخرى، ويمكنك الإيقاف في أي لحظة أو التنقل يدويًا.</p><h3>هل يمكنني حذف صورة أو ألبوم لاحقًا؟</h3><p>نعم، من عرض ملء الشاشة اضغط «حذف هذه الصورة»، ومن قسم الألبومات اضغط «حذف الألبوم» فتبقى صوره في المكتبة بدون ألبوم، ويمكنك أيضًا تفريغ المكتبة كاملة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  var KEY = 'app_image_library_v1';
+  var state = { albums: [], photos: [] };
+  var view = { list: [], index: 0, timer: null };
+
+  function $(id){ return document.getElementById(id); }
+  function uid(prefix){ return (prefix || 'x') + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function load(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var d = JSON.parse(raw);
+        if (d && typeof d === 'object') {
+          state.albums = Array.isArray(d.albums) ? d.albums : [];
+          state.photos = Array.isArray(d.photos) ? d.photos : [];
+        }
+      }
+    } catch (e) {
+      flash('تعذّر قراءة البيانات المحفوظة، وسيتم البدء بقائمة فارغة.', true);
+    }
+  }
+
+  function persist(){
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      return true;
+    } catch (e) {
+      flash('مساحة التخزين المحلية ممتلئة. احذف بعض الصور ثم أعد المحاولة.', true);
+      return false;
+    }
+  }
+
+  function flash(msg, isError){
+    var el = $('uploadStatus');
+    if (!el) { return; }
+    el.textContent = msg;
+    el.className = isError ? 'app-status app-err' : 'app-status app-ok';
+  }
+
+  function albumName(id){
+    for (var i = 0; i < state.albums.length; i++) {
+      if (state.albums[i].id === id) { return state.albums[i].name; }
+    }
+    return '';
+  }
+
+  function fillSelect(sel, allLabel){
+    var prev = sel.value;
+    var html = '<option value="">' + allLabel + '</option>';
+    state.albums.forEach(function(a){
+      html += '<option value="' + esc(a.id) + '">' + esc(a.name) + '</option>';
+    });
+    sel.innerHTML = html;
+    var found = false;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === prev) { found = true; break; }
+    }
+    sel.value = found ? prev : '';
+  }
+
+  function renderStats(){
+    $('photoCount').textContent = state.photos.length;
+    $('albumCountBadge').textContent = state.albums.length + ' ألبوم';
+    var set = {};
+    state.photos.forEach(function(p){
+      (p.tags || []).forEach(function(t){ set[t] = 1; });
+    });
+    $('tagCountBadge').textContent = Object.keys(set).length + ' وسم';
+  }
+
+  function renderAlbumList(){
+    var box = $('albumList');
+    if (!state.albums.length) {
+      box.innerHTML = '<p class="app-muted">لا توجد ألبومات بعد. أنشئ ألبومًا لتجميع صورك.</p>';
+      return;
+    }
+    var html = '';
+    state.albums.forEach(function(a){
+      var n = state.photos.filter(function(p){ return p.albumId === a.id; }).length;
+      html += '<div class="app-albumrow">' +
+        '<span class="badge">' + esc(a.name) + '</span>' +
+        '<span class="app-muted">' + n + ' صورة</span>' +
+        '<button class="button sec" type="button" id="albumDel_' + esc(a.id) + '" data-del-album="' + esc(a.id) + '">حذف الألبوم</button>' +
+        '</div>';
+    });
+    box.innerHTML = html;
+  }
+
+  function currentList(){
+    var q = ($('searchInput').value || '').trim().toLowerCase();
+    var af = $('filterAlbumSelect').value;
+    return state.photos.filter(function(p){
+      if (af && p.albumId !== af) { return false; }
+      if (!q) { return true; }
+      if ((p.name || '').toLowerCase().indexOf(q) > -1) { return true; }
+      return (p.tags || []).some(function(t){ return t.toLowerCase().indexOf(q) > -1; });
+    });
+  }
+
+  function renderGallery(){
+    var grid = $('galleryGrid');
+    var empty = $('galleryEmpty');
+    if (!state.photos.length) {
+      grid.innerHTML = '';
+      empty.textContent = 'لم ترفع أي صور بعد. ابدأ باختيار صور من قسم رفع الصور.';
+      empty.style.display = 'block';
+      return;
+    }
+    var list = currentList();
+    if (!list.length) {
+      grid.innerHTML = '';
+      empty.textContent = 'لا توجد صور مطابقة لبحثك أو لعوامل التصفية الحالية.';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    list.forEach(function(p){
+      var t = (p.tags || []).length;
+      html += '<div class="app-thumb" id="thumb_' + esc(p.id) + '" data-photo="' + esc(p.id) + '" tabindex="0" role="button" aria-label="' + esc(p.name || 'صورة') + '">' +
+        '<img src="' + p.dataUrl + '" alt="' + esc(p.name || 'صورة') + '">' +
+        (t ? '<span class="app-thumbtag">' + t + ' وسم</span>' : '') +
+        '</div>';
+    });
+    grid.innerHTML = html;
+  }
+
+  function renderViewerTags(){
+    var box = $('viewerTags');
+    var p = view.list[view.index];
+    if (!p) { box.innerHTML = ''; return; }
+    var tags = p.tags || [];
+    if (!tags.length) {
+      box.innerHTML = '<span class="app-muted">لا توجد وسوم لهذه الصورة بعد.</span>';
+      return;
+    }
+    var html = '';
+    tags.forEach(function(t, i){
+      html += '<span class="app-chip">' + esc(t) +
+        '<button class="app-chipx" type="button" id="tagRm_' + i + '" data-rm-tag="' + i + '" title="حذف الوسم" aria-label="حذف الوسم ' + esc(t) + '">×</button></span>';
+    });
+    box.innerHTML = html;
+  }
+
+  function showPhoto(){
+    var p = view.list[view.index];
+    if (!p) { closeViewer(); return; }
+    $('viewerImg').src = p.dataUrl;
+    $('viewerImg').alt = p.name || 'صورة';
+    $('viewerCaption').textContent = (p.name || 'صورة بدون اسم') + ' — ' + (albumName(p.albumId) || 'بدون ألبوم');
+    $('viewerCounter').textContent = (view.index + 1) + ' / ' + view.list.length;
+    renderViewerTags();
+  }
+
+  function openViewer(id){
+    view.list = currentList();
+    view.index = 0;
+    for (var i = 0; i < view.list.length; i++) {
+      if (view.list[i].id === id) { view.index = i; break; }
+    }
+    $('viewer').classList.add('open');
+    $('viewer').setAttribute('aria-hidden', 'false');
+    $('viewerTagInput').value = '';
+    showPhoto();
+  }
+
+  function closeViewer(){
+    stopSlideshow();
+    $('viewer').classList.remove('open');
+    $('viewer').setAttribute('aria-hidden', 'true');
+    $('viewerImg').removeAttribute('src');
+  }
+
+  function nextPhoto(){
+    if (!view.list.length) { return; }
+    view.index = (view.index + 1) % view.list.length;
+    showPhoto();
+  }
+
+  function prevPhoto(){
+    if (!view.list.length) { return; }
+    view.index = (view.index - 1 + view.list.length) % view.list.length;
+    showPhoto();
+  }
+
+  function startSlideshow(){
+    stopSlideshow();
+    var secs = parseInt($('slideshowInterval').value, 10) || 3;
+    view.timer = setInterval(nextPhoto, secs * 1000);
+    $('slideshowBtn').textContent = 'إيقاف التشغيل التلقائي';
+  }
+
+  function stopSlideshow(){
+    if (view.timer) { clearInterval(view.timer); view.timer = null; }
+    $('slideshowBtn').textContent = 'تشغيل الشرائح التلقائية';
+  }
+
+  function addTagFromInput(){
+    var p = view.list[view.index];
+    if (!p) { return; }
+    var v = ($('viewerTagInput').value || '').trim();
+    if (!v) { return; }
+    if (v.length > 24) { v = v.slice(0, 24); }
+    p.tags = p.tags || [];
+    var exists = p.tags.some(function(t){ return t.toLowerCase() === v.toLowerCase(); });
+    if (!exists) {
+      p.tags.push(v);
+      persist();
+    }
+    $('viewerTagInput').value = '';
+    renderViewerTags();
+    renderGallery();
+    renderStats();
+  }
+
+  function readImage(file){
+    return new Promise(function(resolve, reject){
+      if (!/^image\//.test(file.type)) { reject(new Error('نوع غير مدعوم')); return; }
+      var reader = new FileReader();
+      reader.onload = function(){
+        shrink(reader.result).then(resolve, function(){ resolve(reader.result); });
+      };
+      reader.onerror = function(){ reject(new Error('تعذّر قراءة الملف')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function shrink(dataUrl){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){
+        var max = 1600;
+        var w = img.width, h = img.height;
+        if (w <= max && h <= max) { resolve(dataUrl); return; }
+        var scale = Math.min(max / w, max / h);
+        var cw = Math.max(1, Math.round(w * scale));
+        var ch = Math.max(1, Math.round(h * scale));
+        var c = document.createElement('canvas');
+        c.width = cw; c.height = ch;
+        c.getContext('2d').drawImage(img, 0, 0, cw, ch);
+        try { resolve(c.toDataURL('image/jpeg', 0.82)); }
+        catch (e) { resolve(dataUrl); }
+      };
+      img.onerror = function(){ reject(new Error('صورة غير صالحة')); };
+      img.src = dataUrl;
+    });
+  }
+
+  function render(){
+    renderStats();
+    fillSelect($('uploadAlbumSelect'), 'بدون ألبوم');
+    fillSelect($('filterAlbumSelect'), 'كل الألبومات');
+    renderAlbumList();
+    renderGallery();
+  }
+
+  function init(){
+    load();
+
+    $('fileInput').addEventListener('change', function(e){
+      var files = Array.prototype.slice.call(e.target.files || []);
+      if (!files.length) { return; }
+      var albumId = $('uploadAlbumSelect').value || null;
+      flash('جارٍ معالجة ' + files.length + ' صورة، يرجى الانتظار...', false);
+      var added = [];
+      var chain = Promise.resolve();
+      files.forEach(function(f){
+        chain = chain.then(function(){
+          return readImage(f).then(function(dataUrl){
+            var photo = { id: uid('p'), name: f.name, dataUrl: dataUrl, albumId: albumId, tags: [], createdAt: Date.now() };
+            state.photos.push(photo);
+            added.push(photo);
+          }).catch(function(){});
+        });
+      });
+      chain.then(function(){
+        if (!added.length) {
+          flash('لم تتم إضافة أي صورة صالحة. تأكد من أن الملفات صور.', true);
+        } else if (persist()) {
+          flash('تمت إضافة ' + added.length + ' صورة بنجاح.', false);
+        } else {
+          state.photos = state.photos.filter(function(p){ return added.indexOf(p) === -1; });
+          flash('تمت معالجة الصور لكن تعذّر حفظها لامتلاء مساحة التخزين.', true);
+        }
+        e.target.value = '';
+        render();
+      });
+    });
+
+    $('createAlbumBtn').addEventListener('click', function(){
+      var name = ($('albumNameInput').value || '').trim();
+      if (!name) { flash('اكتب اسمًا للألبوم أولًا.', true); return; }
+      var dup = state.albums.some(function(a){ return a.name.toLowerCase() === name.toLowerCase(); });
+      if (dup) { flash('يوجد ألبوم بنفس الاسم بالفعل.', true); return; }
+      state.albums.push({ id: uid('a'), name: name });
+      $('albumNameInput').value = '';
+      persist();
+      render();
+      flash('تم إنشاء الألبوم «' + name + '».', false);
+    });
+
+    $('albumList').addEventListener('click', function(e){
+      var b = e.target.closest('[data-del-album]');
+      if (!b) { return; }
+      var id = b.getAttribute('data-del-album');
+      if (!confirm('حذف هذا الألبوم؟ ستبقى صوره في المكتبة بدون ألبوم.')) { return; }
+      state.albums = state.albums.filter(function(a){ return a.id !== id; });
+      state.photos.forEach(function(p){ if (p.albumId === id) { p.albumId = null; } });
+      persist();
+      render();
+      flash('تم حذف الألبوم وبقيت صوره في المكتبة.', false);
+    });
+
+    $('searchInput').addEventListener('input', renderGallery);
+    $('filterAlbumSelect').addEventListener('change', renderGallery);
+    $('clearFiltersBtn').addEventListener('click', function(){
+      $('searchInput').value = '';
+      $('filterAlbumSelect').value = '';
+      renderGallery();
+    });
+
+    $('clearAllBtn').addEventListener('click', function(){
+      if (!state.photos.length && !state.albums.length) { flash('المكتبة فارغة بالفعل.', false); return; }
+      if (!confirm('حذف جميع الصور والألبومات نهائيًا من هذا المتصفح؟')) { return; }
+      state.albums = [];
+      state.photos = [];
+      persist();
+      render();
+      flash('تم تفريغ المكتبة بالكامل.', false);
+    });
+
+    $('galleryGrid').addEventListener('click', function(e){
+      var t = e.target.closest('[data-photo]');
+      if (t) { openViewer(t.getAttribute('data-photo')); }
+    });
+    $('galleryGrid').addEventListener('keydown', function(e){
+      if (e.key !== 'Enter' && e.key !== ' ') { return; }
+      var t = e.target.closest('[data-photo]');
+      if (t) { e.preventDefault(); openViewer(t.getAttribute('data-photo')); }
+    });
+
+    $('viewerPrevBtn').addEventListener('click', prevPhoto);
+    $('viewerNextBtn').addEventListener('click', nextPhoto);
+    $('viewerCloseBtn').addEventListener('click', closeViewer);
+    $('slideshowBtn').addEventListener('click', function(){
+      if (view.timer) { stopSlideshow(); } else { startSlideshow(); }
+    });
+    $('slideshowInterval').addEventListener('change', function(){
+      if (view.timer) { startSlideshow(); }
+    });
+
+    $('viewerAddTagBtn').addEventListener('click', addTagFromInput);
+    $('viewerTagInput').addEventListener('keydown', function(e){
+      if (e.key === 'Enter') { e.preventDefault(); addTagFromInput(); }
+    });
+
+    $('viewerTags').addEventListener('click', function(e){
+      var b = e.target.closest('[data-rm-tag]');
+      if (!b) { return; }
+      var p = view.list[view.index];
+      if (!p) { return; }
+      var i = parseInt(b.getAttribute('data-rm-tag'), 10);
+      p.tags.splice(i, 1);
+      persist();
+      renderViewerTags();
+      renderGallery();
+      renderStats();
+    });
+
+    $('viewerDeleteBtn').addEventListener('click', function(){
+      var p = view.list[view.index];
+      if (!p) { return; }
+      if (!confirm('حذف هذه الصورة نهائيًا من المكتبة؟')) { return; }
+      state.photos = state.photos.filter(function(x){ return x.id !== p.id; });
+      persist();
+      view.list = currentList();
+      if (!view.list.length) {
+        closeViewer();
+      } else {
+        view.index = Math.min(view.index, view.list.length - 1);
+        showPhoto();
+      }
+      render();
+      flash('تم حذف الصورة من المكتبة.', false);
+    });
+
+    document.addEventListener('keydown', function(e){
+      if (!$('viewer').classList.contains('open')) { return; }
+      if (e.key === 'Escape') { closeViewer(); }
+      else if (e.key === 'ArrowLeft') { nextPhoto(); }
+      else if (e.key === 'ArrowRight') { prevPhoto(); }
+    });
+
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
