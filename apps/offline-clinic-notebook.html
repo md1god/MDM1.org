@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق محلي لإدارة سجلات المرضى والمواعيد | MDM1</title>
+<meta name="description" content="نظام records طبية مصغّر يعمل في المتصفح دون إنترنت، لإدارة المرضى والمواعيد والزيارات والأدوية مع حفظ البيانات محلياً.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-clinic-notebook.html">
+<meta property="og:title" content="تطبيق محلي لإدارة سجلات المرضى والمواعيد">
+<meta property="og:description" content="نظام records طبية مصغّر يعمل في المتصفح دون إنترنت، لإدارة المرضى والمواعيد والزيارات والأدوية مع حفظ البيانات محلياً.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-clinic-notebook.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .hidden{display:none}
+.app .tabs{gap:6px}
+.app .panel{display:none}
+.app .panel.active{display:block}
+.app .list{display:grid;gap:8px;margin-top:8px}
+.app .item{border:1px solid var(--gold-dim);border-radius:8px;padding:8px}
+.app .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.app .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.app .chip{background:var(--gold-dim);color:var(--light);padding:4px 8px;border-radius:999px;font-size:12px;cursor:pointer}
+.app .status{font-size:12px;color:var(--gold-bright)}
+.app .item h4{color:var(--gold);margin:0 0 4px 0}
+.app .item .meta{font-size:12px;color:var(--gold-bright)}
+.app .mt{margin-top:8px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق ويب محلي لإدارة السجلات الطبية", "url": "https://mdm1.org/apps/offline-clinic-notebook.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل trong المتصفح without internet using localStorage لحفظ البيانات محلياً."}}, {"@type": "Question", "name": "أين تُحفظ البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في متصفحك على localStorage على جهازك، دون إرسالها إلى أي خادم."}}, {"@type": "Question", "name": "هل يمكن تعديل أو حذف السجلات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل مريض وموعد وزيارة có buttons تعديل وحذف within القوائم."}}, {"@type": "Question", "name": "ماذا happens عند فقدان التخزين؟", "acceptedAnswer": {"@type": "Answer", "text": "يعرض التطبيق رسالة about storage error y continúa functioning where possible without crashing."}}, {"@type": "Question", "name": "هل يحل محل السجلات الطبية الرسمية؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، it's intended for training and remote locations only, not for official medical records compliance."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق ويب محلي لإدارة السجلات الطبية</h1>
+  <p class="page-sub">نظام records طبية مصغّر يعمل في المتصفح دون إنترنت، لإدارة المرضى والمواعيد والزيارات والأدوية مع حفظ البيانات محلياً.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl" id="appRoot">
+<p id="introText">هذا التطبيق يوفر نظام سجلات طبية مصغّر يعمل بالكامل داخل المتصفح دون إنترنت أو خادم، لمساعدة الأطباء والممارسين في المواقع النائية أو لأغراض التدريب. يمكن إضافة المرضى وتحديث بياناتهم، وجدولة المواعيد ومتابعتها في جدول زمني، وتوثيق زيارات المرضى مع التشخيص والخطة العلاجية وقائمة الأدوية، إضافة إلى البحث السريع وإنشاء تقارير موجزة. تُحفظ جميع البيانات محلياً على جهاز المستخدم، مع إمكانية تعديل أو حذف السجلات في أي وقت، وعرض حالات فارغة وأخطاء بهدوء عند الحاجة.</p>
+<div class="row" id="tabsRow">
+<button id="tabPatients" type="button">المرضى</button>
+<button id="tabAppointments" type="button" class="sec">المواعيد</button>
+<button id="tabVisits" type="button" class="sec">الزيارات</button>
+<button id="tabReports" type="button" class="sec">التقارير</button>
+<button id="tabSearch" type="button" class="sec">بحث</button>
+<span class="badge" id="storageStatus">التخزين: جاهز</span>
+</div>
+
+<section id="panelPatients" class="panel active">
+<div class="card">
+<h3>بيانات المريض</h3>
+<div class="row">
+<label for="pName">الاسم</label>
+<input id="pName" class="input" type="text" placeholder="اسم المريض">
+<label for="pAge">العمر</label>
+<input id="pAge" class="input" type="number" min="0" max="120">
+<label for="pGender">الجنس</label>
+<select id="pGender" class="select">
+<option value="">اختر</option>
+<option value="ذكر">ذكر</option>
+<option value="أنثى">أنثى</option>
+</select>
+</div>
+<div class="row">
+<label for="pPhone">الهاتف</label>
+<input id="pPhone" class="input" type="tel" placeholder="رقم الهاتف">
+<label for="pBlood">فصيلة الدم</label>
+<select id="pBlood" class="select">
+<option value="">غير مذكور</option>
+<option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+</select>
+</div>
+<label for="pAddress">العنوان</label>
+<input id="pAddress" class="input" type="text" placeholder="العنوان">
+<label for="pAllergies">الحساسية</label>
+<textarea id="pAllergies" class="textarea" rows="2" placeholder="حساسيات معروفة"></textarea>
+<label for="pConditions">الحالات المرضية</label>
+<textarea id="pConditions" class="textarea" rows="2" placeholder="},
+([...])"></textarea>
+<input id="pEditingId" class="input hidden" type="hidden">
+<div class="row">
+<button id="pSave" type="button">حفظ المريض</button>
+<button id="pClear" type="button" class="sec">مسح النموذج</button>
+</div>
+<div id="pMsg" class="out hidden"></div>
+</div>
+<div class="card">
+<h3>قائمة المرضى</h3>
+<div id="pList" class="list"></div>
+<div id="pEmpty" class="out">لا يوجد مرضى مسجلون بعد.</div>
+</div>
+</section>
+
+<section id="panelAppointments" class="panel">
+<div class="card">
+<h3>موعد جديد</h3>
+<div class="row">
+<label for="aPatient">المريض</label>
+<select id="aPatient" class="select"></select>
+<label for="aDate">التاريخ</label>
+<input id="aDate" class="input" type="date">
+<label for="aTime">الوقت</label>
+<input id="aTime" class="input" type="time">
+</div>
+<div class="row">
+<label for="aType">نوع الزيارة</label>
+<select id="aType" class="select">
+<option value="فحص">فحص</option>
+<option value="متابعة">متابعة</option>
+<option value="طوارئ">طوارئ</option>
+</select>
+<label for="aStatus">الحالة</label>
+<select id="aStatus" class="select">
+<option value="مجدول">مجدول</option>
+<option value="مكتمل">مكتمل</option>
+<option value="ملغى">ملغى</option>
+</select>
+</div>
+<label for="aNotes">ملاحظات</label>
+<textarea id="aNotes" class="textarea" rows="2" placeholder="ملاحظات الموعد"></textarea>
+<input id="aEditingId" class="input hidden" type="hidden">
+<div class="row">
+<button id="aSave" type="button">حفظ الموعد</button>
+<button id="aClear" type="button" class="sec">مسح النموذج</button>
+</div>
+<div id="aMsg" class="out hidden"></div>
+</div>
+<div class="card">
+<h3>الجدول الزمني</h3>
+<label for="aFilterDate">تصفية حسب التاريخ</label>
+<input id="aFilterDate" class="input" type="date">
+<div id="aTimeline" class="list"></div>
+<div id="aEmpty" class="out">لا توجد مواعيد مسجلة.</div>
+</div>
+</section>
+
+<section id="panelVisits" class="panel">
+<div class="card">
+<h3>ملاحظة زيارة</h3>
+<div class="row">
+<label for="vPatient">المريض</label>
+<select id="vPatient" class="select"></select>
+<label for="vDate">التاريخ</label>
+<input id="vDate" class="input" type="date">
+</div>
+<label for="vComplaint">الشكوى</label>
+<textarea id="vComplaint" class="textarea" rows="2" placeholder="الشكوى الرئيسية"></textarea>
+<label for="vDiagnosis">التشخيص</label>
+<textarea id="vDiagnosis" class="textarea" rows="2" placeholder="التشخيص"></textarea>
+<label for="vTreatment">الخطة العلاجية</label>
+<textarea id="vTreatment" class="textarea" rows="3" placeholder="الخطة العلاجية"></textarea>
+<label for="vNotes">ملاحظات إضافية</label>
+<textarea id="vNotes" class="textarea" rows="2" placeholder="ملاحظات"></textarea>
+<div class="row">
+<label for="vMedName">اسم الدواء</label>
+<input id="vMedName" class="input" type="text" placeholder="اسم الدواء">
+<label for="vMedDose">الجرعة</label>
+<input id="vMedDose" class="input" type="text" placeholder="الجرعة">
+<label for="vMedFreq">التكرار</label>
+<input id="vMedFreq" class="input" type="text" placeholder="التكرار">
+<button id="vMedAdd" type="button" class="sec">إضافة دواء</button>
+</div>
+<div id="vMedList" class="chips"></div>
+<input id="vEditingId" class="input hidden" type="hidden">
+<div class="row">
+<button id="vSave" type="button">حفظ الزيارة</button>
+<button id="vClear" type="button" class="sec">مسح النموذج</button>
+</div>
+<div id="vMsg" class="out hidden"></div>
+</div>
+<div class="card">
+<h3>الزيارات المحفوظة</h3>
+<div id="vList" class="list"></div>
+<div id="vEmpty" class="out">لا توجد زيارات مسجلة.</div>
+</div>
+</section>
+
+<section id="panelReports" class="panel">
+<div class="card">
+<h3>تقرير سريع</h3>
+<div class="row">
+<label for="rFrom">من تاريخ</label>
+<input id="rFrom" class="input" type="date">
+<label for="rTo">إلى تاريخ</label>
+<input id="rTo" class="input" type="date">
+<button id="rGenerate" type="button">إنشاء التقرير</button>
+</div>
+<div id="rOutput" class="out"></div>
+</div>
+</section>
+
+<section id="panelSearch" class="panel">
+<div class="card">
+<h3>بحث عن مريض</h3>
+<div class="row">
+<input id="sQuery" class="input" type="search" placeholder="اسم أو هاتف أو حالة">
+<button id="sBtn" type="button">بحث</button>
+</div>
+<div id="sResults" class="list"></div>
+<div id="sEmpty" class="out">اكتب كلمة للبحث.</div>
+</div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون إنترنت؟</h3><p>نعم، يعمل بالكامل trong المتصفح without internet using localStorage لحفظ البيانات محلياً.</p><h3>أين تُحفظ البيانات؟</h3><p>تُحفظ في متصفحك على localStorage على جهازك، دون إرسالها إلى أي خادم.</p><h3>هل يمكن تعديل أو حذف السجلات؟</h3><p>نعم، كل مريض وموعد وزيارة có buttons تعديل وحذف within القوائم.</p><h3>ماذا happens عند فقدان التخزين؟</h3><p>يعرض التطبيق رسالة about storage error y continúa functioning where possible without crashing.</p><h3>هل يحل محل السجلات الطبية الرسمية؟</h3><p>لا، it&#x27;s intended for training and remote locations only, not for official medical records compliance.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const K_P='md_patients',K_A='md_appts',K_V='md_visits';
+  const $=id=>document.getElementById(id);
+  let patients=[],appts=[],visits=[];
+  let editingPatient=null,editingAppt=null,editingVisit=null;
+  let currentMeds=[];
+  function load(){try{patients=JSON.parse(localStorage.getItem(K_P)||'[]');}catch(e){patients=[];}try{appts=JSON.parse(localStorage.getItem(K_A)||'[]');}catch(e){appts=[];}try{visits=JSON.parse(localStorage.getItem(K_V)||'[]');}catch(e){visits=[];}setStorageStatus(true);}
+  function saveP(){try{localStorage.setItem(K_P,JSON.stringify(patients));return true;}catch(e){setStorageStatus(false);return false;}}
+  function saveA(){try{localStorage.setItem(K_A,JSON.stringify(appts));return true;}catch(e){setStorageStatus(false);return false;}}
+  function saveV(){try{localStorage.setItem(K_V,JSON.stringify(visits));return true;}catch(e){setStorageStatus(false);return false;}}
+  function setStorageStatus(ok){const el=$('storageStatus');if(el){el.textContent=ok?'التخزين: جاهز':'خطأ في التخزين';el.style.color=ok?'':'#ff6b6b';}}
+  function showMsg(id,text,ok){const el=$(id);if(!el)return;el.textContent=text;el.classList.remove('hidden');el.style.borderColor=ok?'var(--gold)':'#ff6b6b';}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+  function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function patientName(id){const p=patients.find(x=>x.id===id);return p?p.name:'غير محدد';}
+  const tabs=['Patients','Appointments','Visits','Reports','Search'];
+  function activateTab(name){
+    tabs.forEach(t=>{
+      const btn=$('tab'+t),panel=$('panel'+t);
+      if(btn){btn.classList.toggle('sec',t!==name);}
+      if(panel){panel.classList.toggle('active',t===name);}
+    });
+    if(name==='Patients')renderPatients();
+    if(name==='Appointments'){fillPatientSelect('aPatient');renderTimeline();}
+    if(name==='Visits'){fillPatientSelect('vPatient');renderVisits();}
+  }
+  tabs.forEach(t=>{const btn=$('tab'+t);if(btn)btn.addEventListener('click',()=>activateTab(t));});
+  function fillPatientSelect(id){const sel=$(id);if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">اختر مريضاً</option>'+patients.map(p=>'<option value="'+p.id+'">'+escapeHtml(p.name)+'</option>').join('');if(cur)sel.value=cur;}
+  // Patients
+  function clearPatientForm(){['pName','pAge','pGender','pPhone','pBlood','pAddress','pAllergies','pConditions'].forEach(i=>{const e=$(i);if(e)e.value='';});$('pEditingId').value='';}
+  $('pSave').addEventListener('click',()=>{
+    const name=$('pName').value.trim();
+    if(!name){showMsg('pMsg','الاسم مطلوب',false);return;}
+    const data={id:editingPatient||uid(),name,age:$('pAge').value,gender:$('pGender').value,phone:$('pPhone').value.trim(),blood:$('pBlood').value,address:$('pAddress').value.trim(),allergies:$('pAllergies').value.trim(),conditions:$('pConditions').value.trim(),createdAt:editingPatient? (patients.find(x=>x.id===editingPatient)||{}).createdAt||Date.now():Date.now()};
+    if(editingPatient){const idx=patients.findIndex(x=>x.id===editingPatient);if(idx>-1)patients[idx]=data;}else patients.push(data);
+    editingPatient=null;
+    if(saveP()){showMsg('pMsg','تم الحفظ',true);clearPatientForm();renderPatients();}else showMsg('pMsg','فشل الحفظ',false);
+  });
+  $('pClear').addEventListener('click',()=>{editingPatient=null;clearPatientForm();$('pMsg').classList.add('hidden');});
+  function renderPatients(){
+    fillPatientSelect('aPatient');fillPatientSelect('vPatient');
+    const list=$('pList'),empty=$('pEmpty');if(!list)return;
+    if(!patients.length){list.innerHTML='';empty.classList.remove('hidden');return;}
+    empty.classList.add('hidden');
+    list.innerHTML=patients.map(p=>'<div class="item"><h4>'+escapeHtml(p.name)+'</h4><div class="meta">العمر: '+escapeHtml(p.age||'-')+' | الجنس: '+escapeHtml(p.gender||'-')+' | الهاتف: '+escapeHtml(p.phone||'-')+' | فصيلة: '+escapeHtml(p.blood||'-')+'</div><div class="meta">الحالات: '+escapeHtml(p.conditions||'-')+'</div><div class="row mt"><button type="button" class="sec" data-edit="'+p.id+'">تعديل</button><button type="button" class="sec" data-del="'+p.id+'">حذف</button></div></div>').join('');
+    list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{
+      const p=patients.find(x=>x.id===b.dataset.edit);if(!p)return;
+      editingPatient=p.id;
+      $('pName').value=p.name;$('pAge').value=p.age;$('pGender').value=p.gender;$('pPhone').value=p.phone;$('pBlood').value=p.blood;$('pAddress').value=p.address;$('pAllergies').value=p.allergies;$('pConditions').value=p.conditions;$('pEditingId').value=p.id;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }));
+    list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+      if(!confirm('حذف هذا المريض؟'))return;
+      const id=b.dataset.del;patients=patients.filter(x=>x.id!==id);appts=appts.filter(x=>x.patientId!==id);visits=visits.filter(x=>x.patientId!==id);
+      saveP();saveA();saveV();renderPatients();renderTimeline();renderVisits();
+    }));
+  }
+  // Appointments
+  function clearApptForm(){['aDate','aTime','aNotes'].forEach(i=>{const e=$(i);if(e)e.value='';});$('aStatus').value='مجدول';$('aType').value='فحص';$('aPatient').value='';$('aEditingId').value='';}
+  $('aSave').addEventListener('click',()=>{
+    const pid=$('aPatient').value;if(!pid){showMsg('aMsg','اختر مريضاً',false);return;}
+    const date=$('aDate').value;if(!date){showMsg('aMsg','التاريخ مطلوب',false);return;}
+    const data={id:editingAppt||uid(),patientId:pid,date,time:$('aTime').value,type:$('aType').value,status:$('aStatus').value,notes:$('aNotes').value.trim()};
+    if(editingAppt){const idx=appts.findIndex(x=>x.id===editingAppt);if(idx>-1)appts[idx]=data;}else appts.push(data);
+    editingAppt=null;
+    if(saveA()){showMsg('aMsg','تم الحفظ',true);clearApptForm();renderTimeline();}else showMsg('aMsg','فشل الحفظ',false);
+  });
+  $('aClear').addEventListener('click',()=>{editingAppt=null;clearApptForm();$('aMsg').classList.add('hidden');});
+  $('aFilterDate').addEventListener('change',renderTimeline);
+  function renderTimeline(){
+    const container=$('aTimeline'),empty=$('aEmpty');if(!container)return;
+    const filter=$('aFilterDate').value;
+    let list=[...appts];if(filter)list=list.filter(a=>a.date===filter);
+    list.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+    if(!list.length){container.innerHTML='';empty.classList.remove('hidden');return;}
+    empty.classList.add('hidden');
+    const groups={};
+    list.forEach(a=>{if(!groups[a.date])groups[a.date]=[];groups[a.date].push(a);});
+    container.innerHTML=Object.keys(groups).sort().map(d=>'<div class="timeline-day"><h4>'+escapeHtml(d)+'</h4>'+groups[d].map(a=>'<div class="item"><div class="meta">'+escapeHtml(a.time||'--:--')+' | '+escapeHtml(patientName(a.patientId))+' | '+escapeHtml(a.type)+' | '+escapeHtml(a.status)+'</div><div>'+escapeHtml(a.notes||'')+'</div><div class="row mt"><button type="button" class="sec" data-edita="'+a.id+'">تعديل</button><button type="button" class="sec" data-dela="'+a.id+'">حذف</button></div></div>').join('')+'</div>').join('');
+    container.querySelectorAll('[data-edita]').forEach(b=>b.addEventListener('click',()=>{
+      const a=appts.find(x=>x.id===b.dataset.edita);if(!a)return;
+      editingAppt=a.id;fillPatientSelect('aPatient');$('aPatient').value=a.patientId;$('aDate').value=a.date;$('aTime').value=a.time;$('aType').value=a.type;$('aStatus').value=a.status;$('aNotes').value=a.notes;$('aEditingId').value=a.id;
+    }));
+    container.querySelectorAll('[data-dela]').forEach(b=>b.addEventListener('click',()=>{
+      if(!confirm('حذف هذا الموعد؟'))return;appts=appts.filter(x=>x.id!==b.dataset.dela);saveA();renderTimeline();
+    }));
+  }
+  // Visits
+  function clearVisitForm(){['vDate','vComplaint','vDiagnosis','vTreatment','vNotes','vMedName','vMedDose','vMedFreq'].forEach(i=>{const e=$(i);if(e)e.value='';});$('vPatient').value='';$('vEditingId').value='';currentMeds=[];renderMeds();}
+  function renderMeds(){const el=$('vMedList');if(!el)return;el.innerHTML=currentMeds.map((m,i)=>'<span class="chip" data-rm="'+i+'">'+escapeHtml(m.name)+' - '+escapeHtml(m.dose)+' - '+escapeHtml(m.freq)+' ✕</span>').join('');el.querySelectorAll('[data-rm]').forEach(c=>c.addEventListener('click',()=>{currentMeds.splice(parseInt(c.dataset.rm),1);renderMeds();}));}
+  $('vMedAdd').addEventListener('click',()=>{
+    const name=$('vMedName').value.trim();if(!name){return;}
+    currentMeds.push({name,dose:$('vMedDose').value.trim(),freq:$('vMedFreq').value.trim()});
+    $('vMedName').value='';$('vMedDose').value='';$('vMedFreq').value='';renderMeds();
+  });
+  function clearVisitForm2(){clearVisitForm();}
+  $('vSave').addEventListener('click',()=>{
+    const pid=$('vPatient').value;if(!pid){showMsg('vMsg','اختر مريضاً',false);return;}
+    const date=$('vDate').value;if(!date){showMsg('vMsg','التاريخ مطلوب',false);return;}
+    const data={id:editingVisit||uid(),patientId:pid,date,complaint:$('vComplaint').value.trim(),diagnosis:$('vDiagnosis').value.trim(),treatment:$('vTreatment').value.trim(),notes:$('vNotes').value.trim(),medications:[...currentMeds]};
+    if(editingVisit){const idx=visits.findIndex(x=>x.id===editingVisit);if(idx>-1)visits[idx]=data;}else visits.push(data);
+    editingVisit=null;
+    if(saveV()){showMsg('vMsg','تم الحفظ',true);clearVisitForm();renderVisits();}else showMsg('vMsg','فشل الحفظ',false);
+  });
+  $('vClear').addEventListener('click',()=>{editingVisit=null;clearVisitForm();$('vMsg').classList.add('hidden');});
+  function renderVisits(){
+    const container=$('vList'),empty=$('vEmpty');if(!container)return;
+    const list=[...visits].sort((a,b)=>b.date.localeCompare(a.date));
+    if(!list.length){container.innerHTML='';empty.classList.remove('hidden');return;}
+    empty.classList.add('hidden');
+    container.innerHTML=list.map(v=>'<div class="item"><h4>'+escapeHtml(patientName(v.patientId))+' — '+escapeHtml(v.date)+'</h4><div class="meta">الشكوى: '+escapeHtml(v.complaint||'-')+'</div><div class="meta">التشخيص: '+escapeHtml(v.diagnosis||'-')+'</div><div class="meta">الخطة: '+escapeHtml(v.treatment||'-')+'</div>'+(v.medications&&v.medications.length?'<div class="meta">الأدوية: '+v.medications.map(m=>escapeHtml(m.name)+' ('+escapeHtml(m.dose)+', '+escapeHtml(m.freq)+')').join('، ')+'</div>':'')+'<div class="row mt"><button type="button" class="sec" data-editv="'+v.id+'">تعديل</button><button type="button" class="sec" data-delv="'+v.id+'">حذف</button></div></div>').join('');
+    container.querySelectorAll('[data-editv]').forEach(b=>b.addEventListener('click',()=>{
+      const v=visits.find(x=>x.id===b.dataset.editv);if(!v)return;
+      editingVisit=v.id;fillPatientSelect('vPatient');$('vPatient').value=v.patientId;$('vDate').value=v.date;$('vComplaint').value=v.complaint;$('vDiagnosis').value=v.diagnosis;$('vTreatment').value=v.treatment;$('vNotes').value=v.notes;$('vEditingId').value=v.id;currentMeds=[...v.medications];renderMeds();
+    }));
+    container.querySelectorAll('[data-delv]').forEach(b=>b.addEventListener('click',()=>{
+      if(!confirm('حذف هذه الزيارة؟'))return;visits=visits.filter(x=>x.id!==b.dataset.delv);saveV();renderVisits();
+    }));
+  }
+  // Reports
+  $('rGenerate').addEventListener('click',()=>{
+    const from=$('rFrom').value,to=$('rTo').value;
+    const inRange=d=>(!from||d>=from)&&(!to||d<=to);
+    const filteredAppts=appts.filter(a=>inRange(a.date));
+    const filteredVisits=visits.filter(v=>inRange(v.date));
+    let html='<strong>تقرير</strong><br>';
+    html+='عدد المرضى: '+patients.length+'<br>';
+    html+='المواعيد في النطاق: '+filteredAppts.length+'<br>';
+    html+='الزيارات في النطاق: '+filteredVisits.length+'<br>';
+    html+='المواعيد المكتملة: '+filteredAppts.filter(a=>a.status==='مكتمل').length+'<br>';
+    html+='المواعيد الملغاة: '+filteredAppts.filter(a=>a.status==='ملغى').length+'<br>';
+    html+='<br><strong>قائمة المواعيد</strong><br>';
+    filteredAppts.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+    html+=filteredAppts.map(a=>escapeHtml(a.date)+' '+escapeHtml(a.time||'')+' - '+escapeHtml(patientName(a.patientId))+' - '+escapeHtml(a.status)).join('<br>')||'لا توجد';
+    $('rOutput').innerHTML=html;
+  });
+  // Search
+  $('sBtn').addEventListener('click',runSearch);
+  $('sQuery').addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});
+  function runSearch(){
+    const q=$('sQuery').value.trim().toLowerCase();const res=$('sResults'),empty=$('sEmpty');
+    if(!q){res.innerHTML='';empty.textContent='اكتب كلمة للبحث.';empty.classList.remove('hidden');return;}
+    const matched=patients.filter(p=>(p.name+p.phone+p.conditions+p.allergies+p.address).toLowerCase().includes(q));
+    if(!matched.length){res.innerHTML='';empty.textContent='لا توجد نتائج.';empty.classList.remove('hidden');return;}
+    empty.classList.add('hidden');
+    res.innerHTML=matched.map(p=>'<div class="item"><h4>'+escapeHtml(p.name)+'</h4><div class="meta">الهاتف: '+escapeHtml(p.phone||'-')+' | Conditions: '+escapeHtml(p.conditions||'-')+'</div><div class="meta">زيارات: '+visits.filter(v=>v.patientId===p.id).length+' | مواعيد: '+appts.filter(a=>a.patientId===p.id).length+'</div></div>').join('');
+  }
+  load();
+  renderPatients();
+  activateTab('Patients');
+})();
+</script>
+</body>
+</html>
