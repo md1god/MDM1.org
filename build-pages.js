@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const { seoHead, writeSitemapPages, ensureRobotsSitemap } = require('./scripts/seo-meta');
 
 const dataFile = fs.readFileSync('pages-data.json', 'utf8');
 const data = JSON.parse(dataFile);
@@ -154,12 +155,18 @@ function generatePageHTML(pageNumber, title, description, quote, customBody = ''
   const safeQuote = escapeHtml(quote);
   const i18n = customBody && Object.keys(translations).length
     ? i18nBlocks(title, description, customBody, quote, translations) : { bar: '', script: '' };
+  // السيو: صفحات Scout (لها نص كامل) تُفهرس بوصف وcanonical وJSON-LD؛ الصفحات الرقيقة (حكمة اليوم فقط) noindex
+  const seoHtml = seoHead({
+    title, description, urlPath: `/pages/${pageNumber}.html`,
+    isoDate: new Date().toISOString(), noindex: !customBody
+  }).trimStart();
   const template = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${safeTitle} - MDM1</title>
+  ${seoHtml}
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
   <style>
@@ -227,6 +234,8 @@ function generateIndexHTML(pages) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>كل الصفحات - MDM1</title>
+  <meta name="description" content="فهرس صفحات MDM1: خطط مشاريع رقمية كاملة وصفحات المشروع والمجتمع، مرتبة من الأحدث.">
+  <link rel="canonical" href="https://mdm1.org/pages/index.html">
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
 <meta name="google-adsense-account" content="ca-pub-8270783733461099">
@@ -303,6 +312,15 @@ const entry = { number: pageNumber, slug: pageSlug, title, date: new Date().toIS
 if (scoutId) { entry.scoutId = scoutId; entry.langs = ['ar', ...Object.keys(translations)]; }
 registry.push(entry);
 fs.writeFileSync(registryFile, JSON.stringify(registry, null, 2), 'utf8');
+
+// إعادة بناء sitemap-pages.xml: كل صفحة موجودة وغير noindex
+const indexableEntries = registry.filter(e => {
+  if (!/^\d+$/.test(String(e.slug))) return false; // أدوات الـ tools لها sitemap-tools.xml الخاص بها
+  const f = path.join('pages', `${e.slug}.html`);
+  return fs.existsSync(f) && !/name="robots"[^>]*noindex/.test(fs.readFileSync(f, 'utf8'));
+}).sort((a, b) => Number(a.slug) - Number(b.slug));
+writeSitemapPages(indexableEntries);
+ensureRobotsSitemap();
 
 // إعادة بناء صفحة الفهرس كل مرة عشان تفضل محدثة بكل الصفحات
 const indexHtml = generateIndexHTML(registry);
