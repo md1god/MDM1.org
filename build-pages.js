@@ -234,6 +234,8 @@ function generateIndexHTML(pages) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>كل الصفحات - MDM1</title>
+  <meta name="description" content="فهرس صفحات MDM1: خطط مشاريع رقمية كاملة وصفحات المشروع والمجتمع، مرتبة من الأحدث.">
+  <link rel="canonical" href="https://mdm1.org/pages/index.html">
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
 <meta name="google-adsense-account" content="ca-pub-8270783733461099">
