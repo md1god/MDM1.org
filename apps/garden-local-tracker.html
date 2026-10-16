@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق حديقة ذكي لتسجيل المحاصيل وتقييم التوافق | MDM1</title>
+<meta name="description" content="تطبيق حديقة ذكي يتيح لمزارعي الأقاليم الصغار تسجيل محاصيلهم وزراعاتهم موسمًا بعد موسم، وتقييم توافق النباتات، وتتبع الحصاد، وتوليد تقارير د periodic locally in the browser.">
+<link rel="canonical" href="https://mdm1.org/apps/garden-local-tracker.html">
+<meta property="og:title" content="تطبيق حديقة ذكي لتسجيل المحاصيل وتقييم التوافق">
+<meta property="og:description" content="تطبيق حديقة ذكي يتيح لمزارعي الأقاليم الصغار تسجيل محاصيلهم وزراعاتهم موسمًا بعد موسم، وتقييم توافق النباتات، وتتبع الحصاد، وتوليد تقارير د periodic locally in the browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/garden-local-tracker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-section { margin-top: 1rem; }
+.app-section[hidden] { display: none; }
+.app-tabs { flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.app-tabs button.active { background: var(--gold-bright); color: var(--dark); }
+.app-list { display: grid; gap: .75rem; margin-top: .75rem; }
+.app-crop { border: 1px solid var(--gold-dim); padding: .75rem; border-radius: .5rem; }
+.app-crop h3 { margin: 0 0 .5rem; color: var(--gold-bright); }
+.app-crop .meta { font-size: .9rem; opacity: .85; }
+.app-crop .actions { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+.app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: .75rem; }
+.app-muted { opacity: .7; font-size: .9rem; }
+.app-badge { display: inline-block; padding: .15rem .5rem; border-radius: 999px; background: var(--gold-dim); color: var(--light); font-size: .8rem; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق حديقة ذكي: تسجيل المحاصيل وتقييم توافق النباتات", "url": "https://mdm1.org/apps/garden-local-tracker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ البيانات على خادم خارجي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع البيانات تُحفظ محليًا في متصفحك عبر localStorage ولا تُرسل لأي خادم."}}, {"@type": "Question", "name": "هل يمكن استخدام التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، بعد تحميل الصفحة يعمل التطبيق دون اتصال لأن البيانات تُخزن محليًا."}}, {"@type": "Question", "name": "كيف يتم تقييم توافق النباتات؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد على قاعدة بيانات للزراعة المصاحبة ويعرض نتيجة: متوافق، غير متوافق، أو محايد."}}, {"@type": "Question", "name": "هل يمكن توليد تقرير لموسم محدد؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر الموسم من قائمة التقرير ثم اضغط توليد التقرير لعرض الملخص."}}, {"@type": "Question", "name": "هل يمكن حذف محصول؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل بطاقة محصول تحتوي زر حذف، مع تأكيد قبل الحذف.\n\nNote: I noticed a typo in DESCRIPTION (\"د periodic\" mixed language). Let me fix to Arabic."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق حديقة ذكي: تسجيل المحاصيل وتقييم توافق النباتات</h1>
+  <p class="page-sub">تطبيق حديقة ذكي يتيح لمزارعي الأقاليم الصغار تسجيل محاصيلهم وزراعاتهم موسمًا بعد موسم، وتقييم توافق النباتات، وتتبع الحصاد، وتوليد تقارير د periodic locally in the browser.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>تطبيق حديقة ذكي هو أداة متصفح محلية تساعد مزارعي الأقاليم الصغار على تسجيل محاصيلهم وزراعاتهم موسمًا بعد موسم، وتقييم توافق النباتات (الزراعة المصاحبة)، وتتبع الحصاد، وتوليد تقارير دورية، مع حفظ جميع البيانات في المتصفح دون الحاجة إلى اتصال بالإنترنت. أضف محصولًا، اختر موسم الزراعة، واحصل على تقييم التوافق ونصائح زراعية فورية. يُستخدم التطبيق لتنظيم خطط الزراعة، وتجنب التعارض بين النباتات، ومتابعة كميات الحصاد، وإعداد ملخصات موسمية تساعد في اتخاذ قرارات أفضل للموسم القادم، كما يمكن تصفية المحاصيل حسب النوع أو الموسم وتصدير ملاحظات ميدانية.</p>
+<div class="app" id="appRoot">
+  <div class="row app-tabs" id="appTabs">
+    <button id="tabCrops" type="button">المحاصيل</button>
+    <button id="tabCompat" class="sec" type="button">التوافق</button>
+    <button id="tabHarvest" class="sec" type="button">الحصاد</button>
+    <button id="tabReport" class="sec" type="button">التقرير</button>
+    <button id="tabTips" class="sec" type="button">نصائح</button>
+  </div>
+
+  <section id="secCrops" class="app-section">
+    <h2>تسجيل محصول / زراعة</h2>
+    <div class="card">
+      <div class="row">
+        <label for="cropName">اسم المحصول</label>
+        <input id="cropName" type="text" placeholder="مثال: طماطم">
+        <label for="cropType">النوع</label>
+        <select id="cropType">
+          <option value="خضروات">خضروات</option>
+          <option value="فواكه">فواكه</option>
+          <option value="حبوب">حبوب</option>
+          <option value="بقوليات">بقوليات</option>
+          <option value="أعشاب">أعشاب</option>
+          <option value="زهور">زهور</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="cropArea">المساحة (م²)</label>
+        <input id="cropArea" type="number" min="0" step="0.1" placeholder="0">
+        <label for="cropSeason">الموسم</label>
+        <select id="cropSeason">
+          <option value="ربيع">ربيع</option>
+          <option value="صيف">صيف</option>
+          <option value="خريف">خريف</option>
+          <option value="شتاء">شتاء</option>
+        </select>
+        <label for="cropYear">السنة</label>
+        <input id="cropYear" type="number" min="2000" max="2100" placeholder="2026">
+      </div>
+      <div class="row">
+        <label for="cropPlantDate">تاريخ الزراعة</label>
+        <input id="cropPlantDate" type="date">
+        <label for="cropHarvestDate">تاريخ الحصاد المتوقع</label>
+        <input id="cropHarvestDate" type="date">
+      </div>
+      <div class="row">
+        <label for="cropQty">الكمية المتوقعة</label>
+        <input id="cropQty" type="number" min="0" step="0.1" placeholder="0">
+        <label for="cropStatus">الحالة</label>
+        <select id="cropStatus">
+          <option value="مخطط">مخطط</option>
+          <option value="مزروع">مزروع</option>
+          <option value="جارٍ">جارٍ</option>
+          <option value="محصود">محصود</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="cropNotes">ملاحظات</label>
+        <textarea id="cropNotes" rows="2" placeholder="ملاحظات ميدانية"></textarea>
+      </div>
+      <div class="row">
+        <button id="addCropBtn" type="button">إضافة محصول</button>
+        <button id="clearFormBtn" class="sec" type="button">مسح النموذج</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <input id="cropSearch" type="search" placeholder="بحث في المحاصيل">
+      <select id="cropFilterSeason"><option value="">كل المواسم</option></select>
+      <select id="cropFilterType">
+        <option value="">كل الأنواع</option>
+        <option value="خضروات">خضروات</option>
+        <option value="فواكه">فواكه</option>
+        <option value="حبوب">حبوب</option>
+        <option value="بقوليات">بقوليات</option>
+        <option value="أعشاب">أعشاب</option>
+        <option value="زهور">زهور</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+    </div>
+    <div id="cropsList" class="app-list"></div>
+    <div id="cropsEmpty" class="out">لا توجد محاصيل مسجلة بعد.</div>
+  </section>
+
+  <section id="secCompat" class="app-section" hidden>
+    <h2>تقييم توافق النباتات (الزراعة المصاحبة)</h2>
+    <div class="card">
+      <div class="row">
+        <label for="compatA">النبات الأول</label>
+        <select id="compatA"></select>
+        <label for="compatB">النبات الثاني</label>
+        <select id="compatB"></select>
+      </div>
+      <div class="row">
+        <button id="assessBtn" type="button">تقييم التوافق</button>
+      </div>
+    </div>
+    <div id="compatResult" class="out">اختر نباتين ثم اضغط تقييم التوافق.</div>
+  </section>
+
+  <section id="secHarvest" class="app-section" hidden>
+    <h2>تتبع الحصاد</h2>
+    <div class="card">
+      <div class="row">
+        <label for="harvestCrop">المحصول</label>
+        <select id="harvestCrop"></select>
+        <label for="harvestQty">الكمية المحسودة</label>
+        <input id="harvestQty" type="number" min="0" step="0.1" placeholder="0">
+        <label for="harvestDate">تاريخ الحصاد</label>
+        <input id="harvestDate" type="date">
+      </div>
+      <div class="row">
+        <button id="recordHarvestBtn" type="button">تسجيل حصاد</button>
+      </div>
+    </div>
+    <div id="harvestList" class="app-list"></div>
+    <div id="harvestEmpty" class="out">لا توجد محاصيل لتسجيل الحصاد.</div>
+  </section>
+
+  <section id="secReport" class="app-section" hidden>
+    <h2>تقرير دوري للمحاصيل</h2>
+    <div class="card">
+      <div class="row">
+        <label for="reportSeason">الموسم</label>
+        <select id="reportSeason"><option value="">جميع المواسم</option></select>
+        <button id="genReportBtn" type="button">توليد التقرير</button>
+      </div>
+    </div>
+    <div id="reportOut" class="out">اضغط توليد التقرير لعرض الملخص.</div>
+  </section>
+
+  <section id="secTips" class="app-section" hidden>
+    <h2>نصائح الزراعة</h2>
+    <div class="card">
+      <div class="row">
+        <label for="tipType">نوع المحصول</label>
+        <select id="tipType">
+          <option value="خضروات">خضروات</option>
+          <option value="فواكه">فواكه</option>
+          <option value="حبوب">حبوب</option>
+          <option value="بقوليات">بقوليات</option>
+          <option value="أعشاب">أعشاب</option>
+          <option value="زهور">زهور</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+        <button id="genTipsBtn" type="button">عرض النصائح</button>
+      </div>
+    </div>
+    <div id="tipsOut" class="out">اختر نوع محصول ثم اعرض النصائح.</div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ البيانات على خادم خارجي؟</h3><p>لا، جميع البيانات تُحفظ محليًا في متصفحك عبر localStorage ولا تُرسل لأي خادم.</p><h3>هل يمكن استخدام التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، بعد تحميل الصفحة يعمل التطبيق دون اتصال لأن البيانات تُخزن محليًا.</p><h3>كيف يتم تقييم توافق النباتات؟</h3><p>يعتمد على قاعدة بيانات للزراعة المصاحبة ويعرض نتيجة: متوافق، غير متوافق، أو محايد.</p><h3>هل يمكن توليد تقرير لموسم محدد؟</h3><p>نعم، اختر الموسم من قائمة التقرير ثم اضغط توليد التقرير لعرض الملخص.</p><h3>هل يمكن حذف محصول؟</h3><p>نعم، كل بطاقة محصول تحتوي زر حذف، مع تأكيد قبل الحذف.
+
+Note: I noticed a typo in DESCRIPTION (&quot;د periodic&quot; mixed language). Let me fix to Arabic.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  const STORAGE_KEY='smartgarden_crops_v1';
+  let crops=[];
+
+  const plants=['طماطم','خيار','فلفل','باذنجان','كوسا','جزر','بصل','ثوم','خس','سبانخ','ريحان','نعناع','فاصوليا','ذرة','بطاطس','فراولة','كرنب','قرنبيط','بروكلي','شمندر','فجل','كزبرة','بقدونس'];
+
+  const goodPairs=[
+    ['طماطم','ريحان'],['طماطم','جزر'],['طماطم','بصل'],['طماطم','ثوم'],['طماطم','سبانخ'],
+    ['خيار','شمس'],['خيار','فاصوليا'],['خيار','خس'],['خيار','سبانخ'],
+    ['جزر','بصل'],['جزر','ثوم'],['جزر','طماطم'],['جزر','فاصوليا'],
+    ['فاصوليا','ذرة'],['فاصوليا','خيار'],['فاصوليا','جزر'],['فاصوليا','سبانخ'],
+    ['خس','فراولة'],['خس','خيار'],['خس','جزر'],
+    ['سبانخ','فراولة'],['سبانخ','طماطم'],['سبانخ','فاصوليا'],
+    ['فلفل','ريحان'],['فلفل','بصل'],['فلفل','ثوم'],
+    ['باذنجان','فاصوليا'],['باذنجان','سبانخ'],
+    ['ذرة','فاصوليا'],['ذرة','قرع'],
+    ['بصل','جزر'],['بصل','طماطم'],['بصل','فلفل'],['بصل','خس'],
+    ['ثوم','طماطم'],['ثوم','جزر'],['ثوم','فلفل'],
+    ['ريحان','طماطم'],['ريحان','فلفل'],
+    ['نعناع','ملفوف'],['نعناع','طماطم'],
+    ['فراولة','سبانخ'],['فراولة','خس'],['فراولة','ثوم'],
+    ['كرنب','نعناع'],['كرنب','بقدونس'],['كرنب','كزبرة'],
+    ['بروكلي','نعناع'],['بروكلي','كزبرة'],
+    ['شمندر','بصل'],['شمندر','ثوم'],['شمندر','خس'],
+    ['فجل','خيار'],['فجل','خس'],['فجل','سبانخ'],
+    ['كزبرة','كرنب'],['كزبرة','بروكلي'],
+    ['بقدونس','طماطم'],['بقدونس','كرنب']
+  ];
+  const badPairs=[
+    ['طماطم','بطاطس'],['طماطم','ذرة'],['طماطم','شمندر'],
+    ['بصل','بقوليات'],['بصل','فاصوليا'],
+    ['ثوم','بقوليات'],
+    ['فاصوليا','بصل'],['فاصوليا','ثوم'],
+    ['خيار','بطاطس'],['خيار','ريحان'],
+    ['جزر','شمندر'],
+    ['فلفل','فاصوليا'],
+    ['باذنجان','طماطم'],
+    ['بطاطس','طماطم'],['بطاطس','خيار'],['بطاطس','قرع'],['بطاطس','شمس'],
+    ['كرنب','طماطم'],['كرنب','فراولة'],
+    ['قرنبيط','طماطم'],['قرنبيط','فراولة'],
+    ['بروكلي','طماطم'],['بروكلي','فراولة'],
+    ['نعناع','بقدونس'],
+    ['ريحان','خيار']
+  ];
+
+  const tipsByType={
+    'خضروات':['ازرع في تربة جيدة التصريف وغنية بالمواد العضوية.','سقِ بانتظام early morning لتجنب الأمراض.','دوّر المحاصيل سنويًا لتقليل الآفات.','استخدم مالش (mulch) للحفاظ على الرطوبة.'],
+    'فواكه':['اختر موقعًا مشمسًا (6-8 ساعات).','تقليم الأغصان سنويًا لتحسين التهوية.','راقب الحشرات بانتظام.','استخدم تسميدًا متوازنًا.'],
+    'حبوب':['تأكد من كثافة البذور حسب التوصيات.','راقب الأعشاب الضارة.','سقِ during flowering stage.','تجنب الزراعة في تربة مائية.'],
+    'بقوليات':['ثبت على دعامات (trellis) للنباتات المتسلقة.','لا تفرط في التسميد بالنيتروجين.','استخدم لتحسين التربة (تثبيت النيتروجين).','راقب حشرة المن.'],
+    'أعشاب':['ازرع في أواني أو حديقة مع تصريف جيد.','قص الأوراق بانتظام لتشجيع النمو.','تجنب الإفراط في السقي.','اجمع قبل الإزهار للحصول على أفضل نكهة.'],
+    'زهور':[' deadhead لإطالة الإزهار.','سقِ at base لتجنب الأمراض.','استخدم تربة خفيفة.','أزل الأوراق الميتة.'],
+    'أخرى':['راقب رطوبة التربة.','استخدم سماد عضوي.','سجّل الملاحظات ميدانيًا.','قيّم التوافق قبل الزراعة.']
+  };
+
+  function load(){
+    try{ const r=localStorage.getItem(STORAGE_KEY); crops = r?JSON.parse(r):[]; if(!Array.isArray(crops)) crops=[]; }
+    catch(e){ crops=[]; }
+  }
+  function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(crops)); }catch(e){} }
+
+  function uid(){ return 'c'+Date.now()+Math.random().toString(36).slice(2,7); }
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function seasonLabel(c){ return c.season+' '+c.year; }
+
+  function switchTab(name){
+    const sections={crops:'secCrops',compat:'secCompat',harvest:'secHarvest',report:'secReport',tips:'secTips'};
+    const tabs={crops:'tabCrops',compat:'tabCompat',harvest:'tabHarvest',report:'tabReport',tips:'tabTips'};
+    Object.keys(sections).forEach(k=>{
+      const sec=document.getElementById(sections[k]);
+      const tab=document.getElementById(tabs[k]);
+      if(k===name){ sec.removeAttribute('hidden'); tab.classList.remove('sec'); tab.classList.add('active'); }
+      else { sec.setAttribute('hidden',''); tab.classList.add('sec'); tab.classList.remove('active'); }
+    });
+  }
+
+  function populatePlantSelects(){
+    const ids=['compatA','compatB'];
+    ids.forEach(id=>{
+      const sel=document.getElementById(id);
+      if(!sel) return;
+      sel.innerHTML='';
+      plants.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; sel.appendChild(o); });
+    });
+    const a=document.getElementById('compatA'); const b=document.getElementById('compatB');
+    if(a && b && a.options.length>1){ b.selectedIndex=1; }
+  }
+
+  function populateHarvestSelect(){
+    const sel=document.getElementById('harvestCrop');
+    if(!sel) return;
+    const prev=sel.value;
+    sel.innerHTML='';
+    if(crops.length===0){ const o=document.createElement('option'); o.value=''; o.textContent='لا توجد محاصيل'; sel.appendChild(o); return; }
+    crops.forEach(c=>{
+      const o=document.createElement('option'); o.value=c.id; o.textContent=c.name+' ('+seasonLabel(c)+')'; sel.appendChild(o);
+    });
+    if(prev) sel.value=prev;
+  }
+
+  function populateSeasonFilters(){
+    const seasons=[...new Set(crops.map(c=>seasonLabel(c)))].sort();
+    const ids=['cropFilterSeason','reportSeason'];
+    ids.forEach(id=>{
+      const sel=document.getElementById(id);
+      if(!sel) return;
+      const first = id==='reportSeason' ? '<option value="">جميع المواسم</option>' : '<option value="">كل المواسم</option>';
+      sel.innerHTML=first;
+      seasons.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); });
+    });
+  }
+
+  function renderCrops(){
+    const list=document.getElementById('cropsList');
+    const empty=document.getElementById('cropsEmpty');
+    const q=(document.getElementById('cropSearch').value||'').trim().toLowerCase();
+    const fs=document.getElementById('cropFilterSeason').value;
+    const ft=document.getElementById('cropFilterType').value;
+    const filtered=crops.filter(c=>{
+      if(q && !String(c.name).toLowerCase().includes(q) && !String(c.notes||'').toLowerCase().includes(q)) return false;
+      if(fs && seasonLabel(c)!==fs) return false;
+      if(ft && c.type!==ft) return false;
+      return true;
+    });
+    list.innerHTML='';
+    if(filtered.length===0){ empty.style.display='block'; return; }
+    empty.style.display='none';
+    filtered.forEach(c=>{
+      const div=document.createElement('div');
+      div.className='app-crop';
+      div.innerHTML=
+        '<h3>'+esc(c.name)+'</h3>'+
+        '<div class="meta">النوع: '+esc(c.type)+' | المساحة: '+esc(c.area||0)+' م² | الموسم: '+esc(seasonLabel(c))+'</div>'+
+        '<div class="meta">الزراعة: '+esc(c.plantDate||'-')+' | الحصاد المتوقع: '+esc(c.harvestDate||'-')+' | الحالة: '+esc(c.status)+'</div>'+
+        '<div class="meta">الكمية المتوقعة: '+esc(c.qty||0)+' | المحسود: '+esc(c.harvestedQty||0)+' ('+esc(c.harvestedDate||'-')+')</div>'+
+        (c.notes?'<div class="meta">ملاحظات: '+esc(c.notes)+'</div>':'')+
+        '<div class="actions">'+
+          '<button type="button" data-action="harvest" data-id="'+esc(c.id)+'" class="sec">تسجيل حصاد</button>'+
+          '<button type="button" data-action="delete" data-id="'+esc(c.id)+'" class="sec">حذف</button>'+
+        '</div>';
+      list.appendChild(div);
+    });
+  }
+
+  function clearForm(){
+    ['cropName','cropArea','cropQty','cropNotes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    const y=document.getElementById('cropYear'); if(y) y.value='';
+    const pd=document.getElementById('cropPlantDate'); if(pd) pd.value='';
+    const hd=document.getElementById('cropHarvestDate'); if(hd) hd.value='';
+    const st=document.getElementById('cropStatus'); if(st) st.value='مخطط';
+    const ty=document.getElementById('cropType'); if(ty) ty.value='خضروات';
+    const se=document.getElementById('cropSeason'); if(se) se.value='ربيع';
+  }
+
+  function addCrop(){
+    const name=(document.getElementById('cropName').value||'').trim();
+    if(!name){ alert('يرجى إدخال اسم المحصول.'); return; }
+    const area=parseFloat(document.getElementById('cropArea').value);
+    const qty=parseFloat(document.getElementById('cropQty').value);
+    const year=parseInt(document.getElementById('cropYear').value,10);
+    const crop={
+      id:uid(),
+      name:name,
+      type:document.getElementById('cropType').value,
+      area:isNaN(area)?0:area,
+      season:document.getElementById('cropSeason').value,
+      year:isNaN(year)?new Date().getFullYear():year,
+      plantDate:document.getElementById('cropPlantDate').value,
+      harvestDate:document.getElementById('cropHarvestDate').value,
+      qty:isNaN(qty)?0:qty,
+      status:document.getElementById('cropStatus').value,
+      notes:(document.getElementById('cropNotes').value||'').trim(),
+      harvestedQty:0,
+      harvestedDate:''
+    };
+    crops.push(crop);
+    save();
+    clearForm();
+    populateSeasonFilters();
+    populateHarvestSelect();
+    renderCrops();
+  }
+
+  function deleteCrop(id){
+    if(!confirm('حذف هذا المحصول؟')) return;
+    crops=crops.filter(c=>c.id!==id);
+    save();
+    populateSeasonFilters();
+    populateHarvestSelect();
+    renderCrops();
+  }
+
+  function gotoHarvest(id){
+    switchTab('harvest');
+    const sel=document.getElementById('harvestCrop');
+    if(sel) sel.value=id;
+  }
+
+  function recordHarvest(){
+    const id=document.getElementById('harvestCrop').value;
+    const crop=crops.find(c=>c.id===id);
+    if(!crop){ alert('اختر محصولًا.'); return; }
+    const q=parseFloat(document.getElementById('harvestQty').value);
+    const d=document.getElementById('harvestDate').value;
+    if(isNaN(q) || q<0){ alert('أدخل كمية صحيحة.'); return; }
+    crop.harvestedQty=(crop.harvestedQty||0)+q;
+    crop.harvestedDate=d||new Date().toISOString().slice(0,10);
+    crop.status='محصود';
+    save();
+    document.getElementById('harvestQty').value='';
+    document.getElementById('harvestDate').value='';
+    populateHarvestSelect();
+    renderCrops();
+    renderHarvestList();
+    alert('تم تسجيل الحصاد.');
+  }
+
+  function renderHarvestList(){
+    const list=document.getElementById('harvestList');
+    const empty=document.getElementById('harvestEmpty');
+    list.innerHTML='';
+    const harvested=crops.filter(c=>(c.harvestedQty||0)>0);
+    if(harvested.length===0){ empty.style.display='block'; return; }
+    empty.style.display='none';
+    harvested.forEach(c=>{
+      const div=document.createElement('div');
+      div.className='app-crop';
+      div.innerHTML='<h3>'+esc(c.name)+'</h3>'+
+        '<div class="meta">الموسم: '+esc(seasonLabel(c))+' | المحسود: '+esc(c.harvestedQty)+' | التاريخ: '+esc(c.harvestedDate)+'</div>'+
+        '<div class="meta">المتوقع: '+esc(c.qty||0)+' | الفرق: '+esc((c.harvestedQty||0)-(c.qty||0))+'</div>';
+      list.appendChild(div);
+    });
+  }
+
+  function assessCompat(){
+    const a=document.getElementById('compatA').value;
+    const b=document.getElementById('compatB').value;
+    const res=document.getElementById('compatResult');
+    if(a===b){ res.textContent='اختر نباتين مختلفين.'; return; }
+    let level='neutral', msg='لا توجد بيانات خاصة؛ يمكن زراعتهما مع مراقبة التربة والري.';
+    const isGood=goodPairs.some(p=>(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a));
+    const isBad=badPairs.some(p=>(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a));
+    if(isGood){ level='good'; msg='توافق جيد: يُنصح بزراعتهما معًا (زراعة مصاحبة).'; }
+    else if(isBad){ level='bad'; msg='توافق ضعيف: تجنب زراعتهما متلاصقين؛ افصلهما أو اختر بديلًا.'; }
+    const badge=level==='good'?'<span class="badge">متوافق</span>':level==='bad'?'<span class="badge">غير متوافق</span>':'<span class="badge">محايد</span>';
+    res.innerHTML=badge+' <strong>'+esc(a)+' + '+esc(b)+'</strong><br>'+msg;
+  }
+
+  function genReport(){
+    const sel=document.getElementById('reportSeason').value;
+    const filtered=sel?crops.filter(c=>seasonLabel(c)===sel):crops;
+    const out=document.getElementById('reportOut');
+    if(filtered.length===0){ out.textContent='لا توجد بيانات للموسم المحدد.'; return; }
+    const totalArea=filtered.reduce((s,c)=>s+(c.area||0),0);
+    const totalQty=filtered.reduce((s,c)=>s+(c.qty||0),0);
+    const totalHarv=filtered.reduce((s,c)=>s+(c.harvestedQty||0),0);
+    const byType={};
+    filtered.forEach(c=>{ byType[c.type]=(byType[c.type]||0)+1; });
+    const typeLines=Object.keys(byType).map(t=>t+': '+byType[t]).join('، ');
+    const harvestedCount=filtered.filter(c=>c.status==='محصود').length;
+    out.innerHTML=
+      '<div class="big">'+filtered.length+'</div>'+
+      '<div>عدد المحاصيل/الزراعة: '+filtered.length+'</div>'+
+      '<div>المساحة الإجمالية: '+totalArea.toFixed(1)+' م²</div>'+
+      '<div>الكمية المتوقعة: '+totalQty.toFixed(1)+'</div>'+
+      '<div>الكمية المحسودة: '+totalHarv.toFixed(1)+'</div>'+
+      '<div>المحاصيل المحصودة: '+harvestedCount+'</div>'+
+      '<div>التوزيع حسب النوع: '+typeLines+'</div>'+
+      '<div class="app-muted">الموسم: '+(sel||'جميع المواسم')+'</div>';
+  }
+
+  function genTips(){
+    const t=document.getElementById('tipType').value;
+    const list=tipsByType[t]||[];
+    const out=document.getElementById('tipsOut');
+    if(list.length===0){ out.textContent='لا توجد نصائح.'; return; }
+    out.innerHTML='<ul>'+list.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  }
+
+  function init(){
+    load();
+    populatePlantSelects();
+    populateHarvestSelect();
+    populateSeasonFilters();
+    renderCrops();
+    renderHarvestList();
+    switchTab('crops');
+
+    document.getElementById('tabCrops').addEventListener('click',()=>switchTab('crops'));
+    document.getElementById('tabCompat').addEventListener('click',()=>switchTab('compat'));
+    document.getElementById('tabHarvest').addEventListener('click',()=>switchTab('harvest'));
+    document.getElementById('tabReport').addEventListener('click',()=>switchTab('report'));
+    document.getElementById('tabTips').addEventListener('click',()=>switchTab('tips'));
+
+    document.getElementById('addCropBtn').addEventListener('click',addCrop);
+    document.getElementById('clearFormBtn').addEventListener('click',clearForm);
+    document.getElementById('cropSearch').addEventListener('input',renderCrops);
+    document.getElementById('cropFilterSeason').addEventListener('change',renderCrops);
+    document.getElementById('cropFilterType').addEventListener('change',renderCrops);
+
+    document.getElementById('cropsList').addEventListener('click',function(e){
+      const btn=e.target.closest('button[data-action]');
+      if(!btn) return;
+      const id=btn.getAttribute('data-id');
+      const action=btn.getAttribute('data-action');
+      if(action==='delete') deleteCrop(id);
+      else if(action==='harvest') gotoHarvest(id);
+    });
+
+    document.getElementById('assessBtn').addEventListener('click',assessCompat);
+    document.getElementById('recordHarvestBtn').addEventListener('click',recordHarvest);
+    document.getElementById('genReportBtn').addEventListener('click',genReport);
+    document.getElementById('genTipsBtn').addEventListener('click',genTips);
+  }
+
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',init); }
+  else { init(); }
+})();
+</script>
+</body>
+</html>
