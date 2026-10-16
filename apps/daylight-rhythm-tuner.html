@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة موقع الشمس وحرارة لون ضوء النهار بالعرض والوقت | MDM1</title>
+<meta name="description" content="احسب ارتفاع الشمس وحرارة لون ضوء النهار (CCT) والسطوع (lx) لحظة بلحظة حسب خط العرض والوقت المحلي مع رسوم بيANYة وتصدير جداول.">
+<link rel="canonical" href="https://mdm1.org/apps/daylight-rhythm-tuner.html">
+<meta property="og:title" content="أداة موقع الشمس وحرارة لون ضوء النهار بالعرض والوقت">
+<meta property="og:description" content="احسب ارتفاع الشمس وحرارة لون ضوء النهار (CCT) والسطوع (lx) لحظة بلحظة حسب خط العرض والوقت المحلي مع رسوم بيANYة وتصدير جداول.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/daylight-rhythm-tuner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-wrap{display:grid;gap:.75rem}
+.app-field{display:flex;flex-direction:column;gap:.35rem;min-width:120px}
+.app-field label{font-size:.85rem}
+.app-buttons{display:flex;flex-wrap:wrap;gap:.5rem}
+.app-canvas{width:100%;height:auto;border:1px solid var(--gold-dim);border-radius:.5rem;background:#000}
+.app-results{white-space:pre-wrap;min-height:120px}
+.app-status{font-size:.9rem;color:var(--gold-bright)}
+.app-export{width:100%;min-height:160px}
+.app-timer{font-variant-numeric:tabular-nums;font-size:.9rem}
+.app-overlay{position:fixed;inset:0;pointer-events:none;z-index:2147483646;transition:background-color .8s ease}
+.app-overlay[hidden]{display:none}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "حاسبة موقع الشمس وحرارة لون ضوء النهار", "url": "https://mdm1.org/apps/daylight-rhythm-tuner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل دون انترنت أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الحسابات تتم في المتص_por باستخدام JavaScript، ولا تُرسل بيانات."}}, {"@type": "Question", "name": "ماذا يُصّدر الملف CSV؟", "acceptedAnswer": {"@type": "Answer", "text": "جدول زمني (ملانوبيك أو RGB أو XY أو السطوع) بفاصل 5–30 دقيقة."}}, {"@type": "Question", "name": "كيف تُحسب حرارة اللون؟", "acceptedAnswer": {"@type": "Answer", "text": "من ارتفاع الشمس عبر مسار يومي (≈4800–12000 K) مع x/y وRGB مكافئة."}}, {"@type": "Question", "name": "ماذا يفعل وضع النوم؟", "acceptedAnswer": {"@type": "Answer", "text": "ينقل طبقة الشاشة إلى أبيض بارد 1٪ تدريجيًا خلال المدة المحددة."}}, {"@type": "Question", "name": "أين تُحفظ الإعدادات؟", "acceptedAnswer": {"@type": "Answer", "text": "في localStorage of المتص_por\n</rfl:parameter>"}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">حاسبة موقع الشمس وحرارة لون ضوء النهار</h1>
+  <p class="page-sub">احسب ارتفاع الشمس وحرارة لون ضوء النهار (CCT) والسطوع (lx) لحظة بلحظة حسب خط العرض والوقت المحلي مع رسوم بيANYة وتصدير جداول.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: أدخل خط العرض والطول والوقت المحلي لترى ارتفاع الشمس وسمتها وحرارة لون ضوء النهار والسطوع وقيم Melanopic و RGB و XY، مع رسوم بيانية لمنحنى اليوم وتصدير جدول زمني. جميع الحسابات تتم داخل المتص_por دون خادم أو حساب، وتُحفظ الإعدادات محلياً في localStorage. تتابع طبقة لون الشاشة المنحنى natural throughout اليوم، ويمكن تفعيل وضع النوم لخفضها إلى أبيض بارد 1٪ عبر مؤقت تدريجي. استخدمها لمواءمة الإضاءة مع إيقاع النهار وتجربة ومDاينة results across locations and times different. تعتمD locally cached settings always.</p>
+<div class="card app-wrap">
+<div class="row">
+<div class="app-field"><label for="appLat">خط العرض</label><input id="appLat" class="input" type="number" step="0.0001" min="-90" max="90" value="24.7136"></div>
+<div class="app-field"><label for="appLon">خط الطول</label><input id="appLon" class="input" type="number" step="0.0001" min="-180" max="180" value="46.6753"></div>
+<div class="app-field"><label for="appDate">التاريخ</label><input id="appDate" class="input" type="date"></div>
+<div class="app-field"><label for="appTime">الوقت (محلي)</label><input id="appTime" class="input" type="time"></div>
+</div>
+<div class="row">
+<div class="app-field"><label for="appLive">تحديث لحظي</label><input id="appLive" class="input" type="checkbox"></div>
+<div class="app-field"><label for="appStep">الفاصل (دقيقة)</label><select id="appStep" class="select"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="30">30</option></select></div>
+<div class="app-field"><label for="appChannel">قناة التصدير</label><select id="appChannel" class="select"><option value="mel">Melanopic</option><option value="rgb">RGB</option><option value="xy">XY</option><option value="lux">السطوع فقط</option></select></div>
+<div class="app-field"><label for="appSleepMin">مدة النوم (دقائق)</label><input id="appSleepMin" class="input" type="number" min="1" max="120" value="5"></div>
+<div class="app-field"><label for="appOverlayOn">طبقة Шаша</label><input id="appOverlayOn" class="input" type="checkbox" checked></div>
+</div>
+<div class="app-buttons">
+<button id="appCalc" class="button" type="button">حساب</button>
+<button id="appNow" class="button sec" type="button">الآن</button>
+<button id="appExport" class="button sec" type="button">تصدير CSV</button>
+<button id="appCopy" class="button sec" type="button">نسخ</button>
+<button id="appSleep" class="button sec" type="button">تفعيل النوم</button>
+<button id="appSleepStop" class="button sec" type="button">إيقاف النوم</button>
+<button id="appReset" class="button sec" type="button">إعادة تعيين</button>
+</div>
+<div id="appStatus" class="app-status"></div>
+<div id="appResult" class="out app-results"></div>
+<canvas id="appSunChart" class="app-canvas" width="640" height="180"></canvas>
+<canvas id="appColorChart" class="app-canvas" width="640" height="180"></canvas>
+<canvas id="appLightChart" class="app-canvas" width="640" height="180"></canvas>
+<textarea id="appExportArea" class="textarea app-export" readonly></textarea>
+<div id="appTimer" class="app-timer"></div>
+</div>
+<div id="appOverlay" class="app-overlay" aria-hidden="true"></div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل دون انترنت أو حساب؟</h3><p>نعم، كل الحسابات تتم في المتص_por باستخدام JavaScript، ولا تُرسل بيانات.</p><h3>ماذا يُصّدر الملف CSV؟</h3><p>جدول زمني (ملانوبيك أو RGB أو XY أو السطوع) بفاصل 5–30 دقيقة.</p><h3>كيف تُحسب حرارة اللون؟</h3><p>من ارتفاع الشمس عبر مسار يومي (≈4800–12000 K) مع x/y وRGB مكافئة.</p><h3>ماذا يفعل وضع النوم؟</h3><p>ينقل طبقة الشاشة إلى أبيض بارد 1٪ تدريجيًا خلال المدة المحددة.</p><h3>أين تُحفظ الإعدادات؟</h3><p>في localStorage of المتص_por
+&lt;/rfl:parameter&gt;</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+function q(id){return document.getElementById(id);}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function dateStr(d){var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),da=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+da;}
+function timeStr(d){var h=String(d.getHours()).padStart(2,'0'),m=String(d.getMinutes()).padStart(2,'0');return h+':'+m;}
+function solar(lat,lon,date){
+var jd=date.getTime()/86400000+2440587.5;
+var T=(jd-2451545)/36525;
+var L0=(280.46646+36000.76983*T+0.0003032*T*T)%360;
+var M=357.52911+35999.05029*T-0.0001537*T*T;
+var e=0.016708634-0.000042037*T-0.0000001267*T*T;
+var Mr=M*Math.PI/180;
+var C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(Mr)+(0.019993-0.000101*T)*Math.sin(2*Mr)+0.000289*Math.sin(3*Mr);
+var trueLon=L0+C;
+var trueAnom=M+C;
+var omega=125.04-1934.136*T;
+var lambdaApp=trueLon-0.00569-0.00478*Math.sin(omega*Math.PI/180);
+var meanObl=23+(26+(21.448-T*(46.815+T*(0.00059-T*0.001813))))/60;
+var oblCorr=meanObl+0.00256*Math.cos(omega*Math.PI/180);
+var oblRad=oblCorr*Math.PI/180;
+var lamRad=lambdaApp*Math.PI/180;
+var alpha=Math.atan2(Math.cos(oblRad)*Math.sin(lamRad),Math.cos(lamRad));
+var delta=Math.asin(Math.sin(oblRad)*Math.sin(lamRad));
+var gmst=280.46061837+360.98564736629*(jd-2451545)+0.000387933*T*T-(T*T*T)/38710000;
+var lmst=(gmst+lon)%360;if(lmst<0)lmst+=360;
+var haDeg=((lmst-alpha*180/Math.PI)+540)%360-180;
+var ha=haDeg*Math.PI/180;
+var latR=lat*Math.PI/180;
+var zen=Math.acos(clamp(Math.sin(latR)*Math.sin(delta)+Math.cos(latR)*Math.cos(delta)*Math.cos(ha),-1,1));
+var elev=90-zen*180/Math.PI;
+var az=Math.atan2(Math.sin(ha),Math.cos(ha)*Math.sin(latR)-Math.tan(delta)*Math.cos(latR))*180/Math.PI;
+if(az<0)az+=360;
+return {elev:Math.round(elev*100)/100,az:Math.round(az*100)/100};
+}
+function dayCCT(elev){
+if(elev<=-6)return 12000;
+if(elev<=0)return 9000-500*elev;
+if(elev<25)return 9000-168*elev;
+if(elev<90)return 4800+26.154*(elev-25);
+return 6500;
+}
+function cctToXy(T){
+var x=0.244063+0.09911*1000/T+2.9678e6/(T*T)-4.6070e9/(T*T*T);
+var y=-3*x*x+2.870*x-0.2753;
+return {x:x,y:y};
+}
+function xyToRgb(x,y){
+var Y=1,X=x/y*Y,Z=(1-x-y)/y*Y;
+var r=3.2406*X-1.5372*Y-0.4986*Z;
+var g=-0.9689*X+1.8758*Y+0.0415*Z;
+var b=0.0557*X-0.2040*Y+1.0570*Z;
+function gam(u){if(u<=0.0031308)return 12.92*u;return 1.055*Math.pow(u,1/2.4)-0.055;}
+r=gam(r);g=gam(g);b=gam(b);
+r=clamp(r,0,1);g=clamp(g,0,1);b=clamp(b,0,1);
+return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];
+}
+function luxForElev(elev){
+if(elev<=0){if(elev<-6)return 0;return Math.max(0,10*Math.exp((elev+6)*0.7));}
+var h=elev;
+var m=1/(Math.sin(h*Math.PI/180)+0.50572*Math.pow(h+6.07995,-1.6364));
+var dni=1361*Math.pow(0.7,m);
+var ghi=dni*Math.sin(h*Math.PI/180);
+return Math.max(0,ghi*107);
+}
+function melanopicFactor(T){return clamp(0.45+(T-2700)/(6500-2700)*0.8,0.35,1.35);}
+function hexRgb(rgb){return '#'+rgb.map(function(c){return c.toString(16).padStart(2,'0');}).join('');}
+function buildSeries(lat,lon,dt,step){
+var out=[];var start=new Date(dt);start.setHours(0,0,0,0);
+var n=Math.round(1440/step);
+for(var i=0;i<n;i++){
+var t=new Date(start.getTime()+i*step*60000);
+var sp=solar(lat,lon,t);
+var cct=dayCCT(sp.elev);
+var xy=cctToXy(cct);
+var rgb=xyToRgb(xy.x,xy.y);
+var lux=luxForElev(sp.elev);
+out.push({t:t,elev:sp.elev,az:sp.az,cct:cct,lux:lux,xy:xy,rgb:rgb,mel:lux*melanopicFactor(cct)});
+}
+return out;
+}
+function drawChart(canvas,series,getter,title){
+var ctx=canvas.getContext('2d');var w=canvas.width,h=canvas.height;
+ctx.clearRect(0,0,w,h);ctx.fillStyle='#050505';ctx.fillRect(0,0,w,h);
+ctx.fillStyle='rgba(255,215,0,.18)';ctx.font='12px sans-serif';ctx.fillText(title,10,14);
+if(!series||!series.length){ctx.fillStyle='#aaa';ctx.fillText('لا توجد بيانات',w/2-40,h/2);return;}
+var vals=series.map(getter);var min=Math.min.apply(null,vals);var max=Math.max.apply(null,vals);
+if(min===max){min-=1;max+=1;}
+var pad={t:22,r:10,b:20,l:42};var pw=w-pad.l-pad.r;var ph=h-pad.t-pad.b;
+ctx.strokeStyle='rgba(255,215,0,.12)';ctx.lineWidth=1;
+for(var i=0;i<=4;i++){var y=pad.t+ph*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();}
+ctx.fillStyle='#bbb';ctx.font='10px sans-serif';
+ctx.fillText(max.toFixed(0),4,pad.t+8);ctx.fillText(min.toFixed(0),4,h-pad.b);
+ctx.beginPath();
+series.forEach(function(s,i){var v=getter(s);var x=pad.l+pw*i/(series.length-1);var y=pad.t+ph*(max-v)/(max-min);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+ctx.strokeStyle='#f3c03e';ctx.lineWidth=2;ctx.stroke();
+}
+function readInputs(){
+var lat=parseFloat(q('appLat').value);var lon=parseFloat(q('appLon').value);
+if(!isFinite(lat)||lat<-90||lat>90)throw new Error('lat');
+if(!isFinite(lon)||lon<-180||lon>180)throw new Error('lon');
+var live=q('appLive').checked;var dt;
+if(live){dt=new Date();q('appDate').value=dateStr(dt);q('appTime').value=timeStr(dt);}
+else{
+var ds=q('appDate').value,ts=q('appTime').value;
+if(!ds)throw new Error('date');
+var p=ds.split('-');var h=0,m=0;
+if(ts){var tp=ts.split(':');h=parseInt(tp[0]||'0',10);m=parseInt(tp[1]||'0',10);}
+if(p.length!==3)throw new Error('date');
+dt=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),h,m);
+if(isNaN(dt.getTime()))throw new Error('date');
+}
+var step=parseInt(q('appStep').value,10);if(!isFinite(step)||step<=0)step=10;
+return {lat:lat,lon:lon,dt:dt,step:step,channel:q('appChannel').value};
+}
+var currentRgb=[120,120,120],currentLux=0,currentSeries=[],currentAlpha=0.08;
+var sleepActive=false,sleepId=null,sleepStart=0,sleepDuration=300,sleepInitRgb=[120,120,120],sleepInitAlpha=0.08;
+function updateOverlayNatural(rgb,lux){
+currentRgb=rgb;currentLux=lux;
+if(sleepActive)return;
+var on=q('appOverlayOn').checked;
+var overlay=q('appOverlay');
+if(!on){overlay.style.backgroundColor='transparent';return;}
+var alpha=clamp(0.04+(1-Math.min(1,lux/100000))*0.14,0.04,0.18);
+overlay.style.backgroundColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+alpha.toFixed(3)+')';
+currentAlpha=alpha;
+}
+function updateExport(series,channel){
+var area=q('appExportArea');if(!series||!series.length){area.value='لا تتوفر بيانات لتصديرها.';return;}
+var lines=[];
+if(channel==='mel'){lines.push('الوقت,ارتفاع الشمس,حرارة اللون,السطوع,lx,Melanopic');
+series.forEach(function(s){lines.push(timeStr(s.t)+','+s.elev.toFixed(1)+','+Math.round(s.cct)+','+Math.round(s.lux)+','+Math.round(s.mel));});}
+else if(channel==='rgb'){lines.push('الوقت,R,G,B,HEX,CCT');
+series.forEach(function(s){lines.push(timeStr(s.t)+','+s.rgb[0]+','+s.rgb[1]+','+s.rgb[2]+','+hexRgb(s.rgb)+','+Math.round(s.cct));});}
+else if(channel==='xy'){lines.push('الوقت,x,y,CCT');
+series.forEach(function(s){lines.push(timeStr(s.t)+','+s.xy.x.toFixed(4)+','+s.xy.y.toFixed(4)+','+Math.round(s.cct));});}
+else{lines.push('الوقت,السطوع,lx,نسبة تقديرية');
+series.forEach(function(s){lines.push(timeStr(s.t)+','+Math.round(s.lux)+','+(Math.min(100,s.lux/100000*100)).toFixed(1)+'%');});}
+area.value=lines.join('\n');
+}
+function compute(){
+try{
+var inp=readInputs();
+var sp=solar(inp.lat,inp.lon,inp.dt);
+var cct=dayCCT(sp.elev);
+var xy=cctToXy(cct);
+var rgb=xyToRgb(xy.x,xy.y);
+var lux=luxForElev(sp.elev);
+var mel=lux*melanopicFactor(cct);
+currentSeries=buildSeries(inp.lat,inp.lon,inp.dt,inp.step);
+drawChart(q('appSunChart'),currentSeries,function(s){return s.elev;},'منحنى ارتفاع الشمس (°)');
+drawChart(q('appColorChart'),currentSeries,function(s){return s.cct;},'حرارة لون ضوء النهار (K)');
+drawChart(q('appLightChart'),currentSeries,function(s){return s.lux;},'مستوى السطوع (lx)');
+var res=q('appResult');
+res.textContent='ارتفاع الشمس: '+sp.elev.toFixed(1)+'°\nالسمت: '+sp.az.toFixed(1)+'°\nحرارة اللون (CCT): '+Math.round(cct)+' K\nمستوى السطوع: '+Math.round(lux).toLocaleString('en-US')+' lx\nMelanopic EDI: '+Math.round(mel).toLocaleString('en-US')+'\nRGB: '+hexRgb(rgb)+'\nXY: '+xy.x.toFixed(4)+', '+xy.y.toFixed(4)+'\nطبقة الشاشة: '+(q('appOverlayOn').checked?'نشطة':'متوقفة')+'\nالحالة: '+(sp.elev>0?'نهار':'ليل/شفق');
+updateExport(currentSeries,inp.channel);
+updateOverlayNatural(rgb,lux);
+q('appStatus').textContent='تم التحديث: '+timeStr(inp.dt);
+saveSettings();
+}catch(e){
+q('appResult').textContent='تعذّر الحساب: تحقق من خط العرض/الطول والتاريخ والوقت.';
+drawChart(q('appSunChart'),[],function(s){return 0;},'منحنى ارتفاع الشمس (°)');
+drawChart(q('appColorChart'),[],function(s){return 0;},'حرارة لون ضوء النهار (K)');
+drawChart(q('appLightChart'),[],function(s){return 0;},'مستوى السطوع (lx)');
+q('appExportArea').value='لا تتوفر بيانات لتصديرها.';
+q('appStatus').textContent='خطأ في الإدخال';
+}
+}
+function saveSettings(){
+try{localStorage.setItem('mdSunCctV1',JSON.stringify({lat:q('appLat').value,lon:q('appLon').value,step:q('appStep').value,channel:q('appChannel').value,sleep:q('appSleepMin').value,overlay:q('appOverlayOn').checked,live:q('appLive').checked}));}catch(e){}
+}
+function loadSettings(){
+try{var s=JSON.parse(localStorage.getItem('mdSunCctV1')||'null');if(s){if(s.lat!=null)q('appLat').value=s.lat;if(s.lon!=null)q('appLon').value=s.lon;if(s.step!=null)q('appStep').value=s.step;if(s.channel!=null)q('appChannel').value=s.channel;if(s.sleep!=null)q('appSleepMin').value=s.sleep;if(s.overlay!=null)q('appOverlayOn').checked=!!s.overlay;if(s.live!=null)q('appLive').checked=!!s.live;}}catch(e){}
+}
+function startSleep(){
+if(sleepId)clearInterval(sleepId);
+sleepActive=true;sleepInitRgb=[currentRgb[0],currentRgb[1],currentRgb[2]];sleepInitAlpha=currentAlpha||0.08;
+var mins=parseFloat(q('appSleepMin').value);if(!isFinite(mins)||mins<1)mins=5;
+sleepDuration=mins*60;sleepStart=Date.now();
+q('appOverlayOn').checked=true;
+sleepId=setInterval(sleepTick,1000);sleepTick();
+}
+function sleepTick(){
+var elapsed=(Date.now()-sleepStart)/1000;var p=clamp(elapsed/sleepDuration,0,1);
+var cold=[220,235,255];var rgb=sleepInitRgb.map(function(v,i){return Math.round(v+(cold[i]-v)*p);});
+var alpha=sleepInitAlpha*(1-p)+0.01*p;
+q('appOverlay').style.backgroundColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+alpha.toFixed(3)+')';
+var rem=Math.max(0,sleepDuration-elapsed);
+var timer=q('appTimer');
+if(p>=1){timer.textContent='وضع النوم نشط: أبيض بارد خافت 1٪';if(sleepId){clearInterval(sleepId);sleepId=null;}}
+else{timer.textContent='انتقال للنوم: '+Math.floor(rem/60)+':'+String(Math.floor(rem%60)).padStart(2,'0');}
+}
+function stopSleep(){
+sleepActive=false;if(sleepId){clearInterval(sleepId);sleepId=null;}
+q('appTimer').textContent='';updateOverlayNatural(currentRgb,currentLux);saveSettings();
+}
+function init(){
+loadSettings();
+var now=new Date();
+if(!q('appDate').value)q('appDate').value=dateStr(now);
+if(!q('appTime').value)q('appTime').value=timeStr(now);
+q('appCalc').addEventListener('click',compute);
+q('appNow').addEventListener('click',function(){q('appLive').checked=false;var n=new Date();q('appDate').value=dateStr(n);q('appTime').value=timeStr(n);compute();});
+q('appExport').addEventListener('click',function(){updateExport(currentSeries,q('appChannel').value);});
+q('appCopy').addEventListener('click',function(){var a=q('appExportArea');a.focus();a.select();try{document.execCommand('copy');q('appStatus').textContent='تم النسخ';}catch(e){q('appStatus').textContent='انسخ يدوياً';}});
+q('appSleep').addEventListener('click',startSleep);
+q('appSleepStop').addEventListener('click',stopSleep);
+q('appReset').addEventListener('click',function(){try{localStorage.removeItem('mdSunCctV1');}catch(e){}q('appLat').value='24.7136';q('appLon').value='46.6753';q('appStep').value='10';q('appChannel').value='mel';q('appSleepMin').value='5';q('appOverlayOn').checked=true;q('appLive').checked=false;var n=new Date();q('appDate').value=dateStr(n);q('appTime').value=timeStr(n);compute();});
+q('appLive').addEventListener('change',compute);
+q('appOverlayOn').addEventListener('change',function(){updateOverlayNatural(currentRgb,currentLux);saveSettings();});
+q('appStep').addEventListener('change',compute);
+q('appChannel').addEventListener('change',function(){updateExport(currentSeries,q('appChannel').value);saveSettings();});
+q('appLat').addEventListener('change',saveSettings);
+q('appLon').addEventListener('change',saveSettings);
+q('appSleepMin').addEventListener('change',saveSettings);
+compute();
+setInterval(function(){if(q('appLive').checked)compute();},30000);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
