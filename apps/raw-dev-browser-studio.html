@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB | MDM1</title>
+<meta name="description" content="أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص والتدوير وتصحيح العدسات، قارن قبل/بعد وصدّر النتيجة.">
+<link rel="canonical" href="https://mdm1.org/apps/raw-dev-browser-studio.html">
+<meta property="og:title" content="محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB">
+<meta property="og:description" content="أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص والتدوير وتصحيح العدسات، قارن قبل/بعد وصدّر النتيجة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/raw-dev-browser-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:block}
+.app .card{padding:12px;margin:10px 0}
+.app-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.app-bar label{color:var(--gold-bright)}
+.app-stage{margin:10px 0;overflow:hidden;display:flex;justify-content:center}
+.app-stage canvas{max-width:100%;height:auto;display:block}
+.app-viewbar{flex-wrap:wrap;gap:8px;align-items:center}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.app-panel{padding:12px}
+.app-panel h3{margin:.2em 0 .6em;color:var(--gold-bright);font-size:1rem}
+.app-ctl{display:flex;align-items:center;gap:8px;margin:6px 0}
+.app-ctl label{flex:1;min-width:90px;color:var(--light)}
+.app-ctl input[type=range]{flex:2;min-width:90px}
+.app-ctl output{width:46px;text-align:center;color:var(--gold);font-variant-numeric:tabular-nums}
+.app-curve{width:100%;max-width:256px;height:auto;background:var(--dark);border:1px solid var(--gold-dim);border-radius:6px;touch-action:none;display:block;margin:8px 0}
+.app-presets{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.app-hide{display:none}
+.app-note{color:var(--gold-dim);font-size:.85rem;margin:.4em 0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر الصور الفوتوغرافية غير الإتلافي داخل المتصفح", "url": "https://mdm1.org/apps/raw-dev-browser-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع صوري إلى خادم أو تُخزَّن في مكان ما؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. تُقرأ الصورة محلياً داخل المتصفح فقط ولا تُرسل إلى أي خادم. الإعدادات المحفوظة تبقى في التخزين المحلي لجهازك وحده، ويمكنك حذفها متى شئت."}}, {"@type": "Question", "name": "ما معنى أن التحرير غير إتلافي؟", "acceptedAnswer": {"@type": "Answer", "text": "الصورة الأصلية لا تُعدَّل أبداً؛ تبقى في الذاكرة كما هي، وتُبنى النتيجة من جديد في كل مرة انطلاقاً من قيم الأدوات، لذا يمكنك تغيير أي إعداد أو إعادته دون فقدان الجودة."}}, {"@type": "Question", "name": "كيف أستخدم منحنى RGB والقنوات المنفصلة؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر القناة من القائمة (الكل أو الأحمر أو الأخضر أو الأزرق)، ثم انقر داخل الرسم لإضافة نقطة، واسحبها لتغيير القيمة، وانقر مرتين لحذفها. زر إعادة التعيين يعيد القناة إلى الحالة الطبيعية."}}, {"@type": "Question", "name": "لماذا يقل حجم الصورة عند التصدير أو التحميل؟", "acceptedAnswer": {"@type": "Answer", "text": "لضمان سرعة المعالجة تُحدّ صور العرض الكبيرة إلى 1600 بكسل كأقصى بُعد قبل المعالجة، لذلك قد تكون دقة التصدير أقل من الأصل للصور الضخمة جداً."}}, {"@type": "Question", "name": "هل تعمل الأداة مع صور PNG وWEBP؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يقبل المحرر صيغ JPG وPNG وWEBP. التصدير يكون دائماً بصيغة PNG للحفاظ على أعلى جودة بغض النظر عن صيغة الملف الأصلي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر الصور الفوتوغرافية غير الإتلافي داخل المتصفح</h1>
+  <p class="page-sub">أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص والتدوير وتصحيح العدسات، قارن قبل/بعد وصدّر النتيجة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك تطوير صورك الفوتوغرافية وتعديلها بالكامل داخل المتصفح دون رفعها إلى أي خادم ودون إنشاء حساب. هذا المحرر يحمّل الصورة من جهازك مباشرة ويعالجها محلياً بتقنية غير إتلافية، أي أن الصورة الأصلية تبقى كما هي ويُعاد بناء النتيجة في كل مرة من قيم الأدوات. تتحكم في التعريض والتباين والدفء والتشبع والاهتزاز اللوني، وضبط الإبرازات والظلال للديناميكية، والصقل والوضوح وتقليل التشويش، إضافة إلى منحنيات RGB والقنوات المنفصلة للتحكم الدقيق في الألوان. كما يمكنك الاقتصاص والتدوير وتصحيح تشوّه العدسة، ومقارنة قبل وبعد بنمطين، وحفظ إعداداتك المفضلة محلياً وتصدير الصورة النهائية بضغطة واحدة.</p>
+<div class="app" id="appRoot">
+<div class="app-bar card">
+<label for="imgInput">تحميل صورة من الجهاز</label>
+<input type="file" id="imgInput" accept="image/*">
+<button class="button sec" id="btnReset" type="button">إعادة ضبط كل التعديلات</button>
+<button class="button" id="btnExport" type="button">تصدير الصورة النهائية</button>
+</div>
+<p class="badge" id="appStatus">لم يتم تحميل صورة بعد.</p>
+<div class="out" id="appEmpty">لا توجد صورة محمّلة. اضغط «تحميل صورة من الجهاز» واختر ملف صورة (JPG أو PNG أو WEBP) لعرضها هنا وتعديلها.</div>
+<div class="app-stage card app-hide" id="appStage"><canvas id="viewCanvas"></canvas></div>
+<div class="row app-viewbar">
+<button class="button sec" id="btnViewAfter" type="button">عرض النتيجة</button>
+<button class="button sec" id="btnViewBefore" type="button">عرض الأصل</button>
+<button class="button sec" id="btnViewSplit" type="button">مقارنة منقسمة</button>
+<button class="button sec" id="btnViewSide" type="button">مقارنة مزدوجة</button>
+<label for="splitRange">موضع الفاصل</label>
+<input type="range" id="splitRange" min="0" max="100" step="1" value="50">
+</div>
+<div class="app-grid">
+<div class="card app-panel">
+<h3>الضوء واللون</h3>
+<div class="app-ctl"><label for="sExposure">التعريض</label><input type="range" id="sExposure" min="-100" max="100" step="1" value="0"><output id="oExposure">0</output></div>
+<div class="app-ctl"><label for="sContrast">التباين</label><input type="range" id="sContrast" min="-100" max="100" step="1" value="0"><output id="oContrast">0</output></div>
+<div class="app-ctl"><label for="sWarmth">الدفء اللوني</label><input type="range" id="sWarmth" min="-100" max="100" step="1" value="0"><output id="oWarmth">0</output></div>
+<div class="app-ctl"><label for="sSaturation">التشبع</label><input type="range" id="sSaturation" min="-100" max="100" step="1" value="0"><output id="oSaturation">0</output></div>
+<div class="app-ctl"><label for="sVibrance">الاهتزاز اللوني</label><input type="range" id="sVibrance" min="-100" max="100" step="1" value="0"><output id="oVibrance">0</output></div>
+<div class="app-ctl"><label for="sHighlights">الإبرازات</label><input type="range" id="sHighlights" min="-100" max="100" step="1" value="0"><output id="oHighlights">0</output></div>
+<div class="app-ctl"><label for="sShadows">الظلال</label><input type="range" id="sShadows" min="-100" max="100" step="1" value="0"><output id="oShadows">0</output></div>
+</div>
+<div class="card app-panel">
+<h3>منحنيات RGB والقنوات</h3>
+<div class="app-ctl"><label for="channelSelect">القناة</label><select id="channelSelect"><option value="rgb">RGB الكل</option><option value="r">الأحمر</option><option value="g">الأخضر</option><option value="b">الأزرق</option></select></div>
+<canvas class="app-curve" id="curveCanvas" width="256" height="256"></canvas>
+<p class="app-note">انقر لإضافة نقطة، اسحب لتعديلها، وانقر مرتين لحذفها.</p>
+<button class="button sec" id="btnResetCurve" type="button">إعادة تعيين منحنى القناة</button>
+</div>
+<div class="card app-panel">
+<h3>البنية والتفاصيل</h3>
+<div class="app-ctl"><label for="sClarity">الصقل</label><input type="range" id="sClarity" min="-100" max="100" step="1" value="0"><output id="oClarity">0</output></div>
+<div class="app-ctl"><label for="sSharpen">الوضوح</label><input type="range" id="sSharpen" min="0" max="100" step="1" value="0"><output id="oSharpen">0</output></div>
+<div class="app-ctl"><label for="sNoise">تقليل التشويش</label><input type="range" id="sNoise" min="0" max="100" step="1" value="0"><output id="oNoise">0</output></div>
+</div>
+<div class="card app-panel">
+<h3>الهندسة والعدسة</h3>
+<div class="app-ctl"><label for="sRotate">التدوير</label><input type="range" id="sRotate" min="-180" max="180" step="1" value="0"><output id="oRotate">0</output></div>
+<div class="app-ctl"><label for="sLens">تصحيح العدسة</label><input type="range" id="sLens" min="-100" max="100" step="1" value="0"><output id="oLens">0</output></div>
+<div class="app-ctl"><label for="sCropX">بداية الاقتصاص أفقياً</label><input type="range" id="sCropX" min="0" max="90" step="1" value="0"><output id="oCropX">0</output></div>
+<div class="app-ctl"><label for="sCropY">بداية الاقتصاص رأسياً</label><input type="range" id="sCropY" min="0" max="90" step="1" value="0"><output id="oCropY">0</output></div>
+<div class="app-ctl"><label for="sCropW">عرض الاقتصاص</label><input type="range" id="sCropW" min="10" max="100" step="1" value="100"><output id="oCropW">100</output></div>
+<div class="app-ctl"><label for="sCropH">ارتفاع الاقتصاص</label><input type="range" id="sCropH" min="10" max="100" step="1" value="100"><output id="oCropH">100</output></div>
+</div>
+<div class="card app-panel">
+<h3>الإعدادات المحفوظة</h3>
+<div class="app-presets">
+<input class="input" type="text" id="presetName" placeholder="اسم الإعداد">
+<button class="button" id="btnSavePreset" type="button">حفظ الإعداد الحالي</button>
+</div>
+<div class="app-presets">
+<select id="presetSelect"><option value="">لا توجد إعدادات محفوظة</option></select>
+<button class="button sec" id="btnLoadPreset" type="button">تحميل الإعداد المحدد</button>
+<button class="button sec" id="btnDeletePreset" type="button">حذف الإعداد المحدد</button>
+</div>
+<p class="app-note">يُحفظ كل شيء داخل متصفحك فقط عبر التخزين المحلي.</p>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع صوري إلى خادم أو تُخزَّن في مكان ما؟</h3><p>لا. تُقرأ الصورة محلياً داخل المتصفح فقط ولا تُرسل إلى أي خادم. الإعدادات المحفوظة تبقى في التخزين المحلي لجهازك وحده، ويمكنك حذفها متى شئت.</p><h3>ما معنى أن التحرير غير إتلافي؟</h3><p>الصورة الأصلية لا تُعدَّل أبداً؛ تبقى في الذاكرة كما هي، وتُبنى النتيجة من جديد في كل مرة انطلاقاً من قيم الأدوات، لذا يمكنك تغيير أي إعداد أو إعادته دون فقدان الجودة.</p><h3>كيف أستخدم منحنى RGB والقنوات المنفصلة؟</h3><p>اختر القناة من القائمة (الكل أو الأحمر أو الأخضر أو الأزرق)، ثم انقر داخل الرسم لإضافة نقطة، واسحبها لتغيير القيمة، وانقر مرتين لحذفها. زر إعادة التعيين يعيد القناة إلى الحالة الطبيعية.</p><h3>لماذا يقل حجم الصورة عند التصدير أو التحميل؟</h3><p>لضمان سرعة المعالجة تُحدّ صور العرض الكبيرة إلى 1600 بكسل كأقصى بُعد قبل المعالجة، لذلك قد تكون دقة التصدير أقل من الأصل للصور الضخمة جداً.</p><h3>هل تعمل الأداة مع صور PNG وWEBP؟</h3><p>نعم، يقبل المحرر صيغ JPG وPNG وWEBP. التصدير يكون دائماً بصيغة PNG للحفاظ على أعلى جودة بغض النظر عن صيغة الملف الأصلي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var MAX=1600;
+var DEFAULTS={exposure:0,contrast:0,warmth:0,saturation:0,vibrance:0,highlights:0,shadows:0,clarity:0,sharpen:0,noise:0,rotate:0,lens:0,cropX:0,cropY:0,cropW:100,cropH:100};
+var KEYS=['exposure','contrast','warmth','saturation','vibrance','highlights','shadows','clarity','sharpen','noise','rotate','lens','cropX','cropY','cropW','cropH'];
+var state={adj:{},curves:null,channel:'rgb',mode:'after',split:50};
+var img=null,outW=0,outH=0,beforeData=null,afterData=null,geoKey='',dragIdx=-1,raf=null;
+var beforeCanvas=document.createElement('canvas');
+var afterCanvas=document.createElement('canvas');
+var work=document.createElement('canvas');
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function freshCurves(){return {rgb:[[0,0],[255,255]],r:[[0,0],[255,255]],g:[[0,0],[255,255]],b:[[0,0],[255,255]]};}
+function cap(k){return k.charAt(0).toUpperCase()+k.slice(1);}
+function clamp255(v){return v<0?0:(v>255?255:v);}
+function setStatus(t){var e=$('appStatus');if(e)e.textContent=t;}
+function buildLUT(pts){
+var p=pts.slice().sort(function(a,b){return a[0]-b[0];});
+var lut=new Uint8ClampedArray(256),i=0,x,x0,y0,x1,y1,t;
+if(p.length===1){var v=p[0][1];for(x=0;x<256;x++)lut[x]=v;return lut;}
+for(x=0;x<256;x++){
+while(i<p.length-2&&x>p[i+1][0])i++;
+x0=p[i][0];y0=p[i][1];x1=p[i+1][0];y1=p[i+1][1];
+t=(x-x0)/Math.max(1,x1-x0);t=t<0?0:(t>1?1:t);
+lut[x]=y0+(y1-y0)*t;
+}
+return lut;
+}
+function chanLUT(ch){
+var base=buildLUT(state.curves.rgb),own=buildLUT(state.curves[ch]),out=new Uint8ClampedArray(256),i;
+for(i=0;i<256;i++)out[i]=own[base[i]];
+return out;
+}
+function boxBlur(src,w,h,r){
+r=Math.max(0,Math.round(r));
+if(r<1)return src.slice();
+var tmp=new Uint8ClampedArray(src.length),out=new Uint8ClampedArray(src.length),d=2*r+1,x,y,c,sum,xa,xb,ya,yb,row,i;
+for(y=0;y<h;y++){
+row=y*w*4;
+for(c=0;c<3;c++){
+sum=0;
+for(i=-r;i<=r;i++){x=Math.min(w-1,Math.max(0,i));sum+=src[row+x*4+c];}
+for(x=0;x<w;x++){
+tmp[row+x*4+c]=sum/d;
+xa=Math.min(w-1,Math.max(0,x-r));xb=Math.min(w-1,Math.max(0,x+r+1));
+sum+=src[row+xb*4+c]-src[row+xa*4+c];
+}
+}
+}
+for(x=0;x<w;x++){
+for(c=0;c<3;c++){
+sum=0;
+for(i=-r;i<=r;i++){y=Math.min(h-1,Math.max(0,i));sum+=tmp[(y*w+x)*4+c];}
+for(y=0;y<h;y++){
+out[(y*w+x)*4+c]=sum/d;
+ya=Math.min(h-1,Math.max(0,y-r));yb=Math.min(h-1,Math.max(0,y+r+1));
+sum+=tmp[(yb*w+x)*4+c]-tmp[(ya*w+x)*4+c];
+}
+}
+}
+for(i=3;i<out.length;i+=4)out[i]=255;
+return out;
+}
+function unsharp(dst,blur,amount){
+var i,c,v;
+for(i=0;i<dst.length;i+=4){
+for(c=0;c<3;c++){v=dst[i+c]+amount*(dst[i+c]-blur[i+c]);dst[i+c]=v;}
+}
+}
+function blendNoise(dst,blur,n){
+var i,c;
+for(i=0;i<dst.length;i+=4){
+for(c=0;c<3;c++){dst[i+c]=dst[i+c]*(1-n)+blur[i+c]*n;}
+}
+}
+function applyLens(src){
+var w=src.width,h=src.height,s=src.data,out=new Uint8ClampedArray(s.length);
+var k=state.adj.lens/100*0.35,cx=w/2,cy=h/2,cx2=cx*cx+cy*cy;
+var x,y,dx,dy,r2,f,sx,sy,di,x0,y0,fx,fy,i00,i10,i01,i11,c,v;
+for(y=0;y<h;y++){
+for(x=0;x<w;x++){
+dx=x-cx;dy=y-cy;r2=(dx*dx+dy*dy)/cx2;f=1+k*r2;
+sx=cx+dx*f;sy=cy+dy*f;di=(y*w+x)*4;
+if(sx<0||sy<0||sx>=w-1||sy>=h-1){out[di]=0;out[di+1]=0;out[di+2]=0;out[di+3]=255;continue;}
+x0=Math.floor(sx);y0=Math.floor(sy);fx=sx-x0;fy=sy-y0;
+i00=(y0*w+x0)*4;i10=i00+4;i01=i00+w*4;i11=i01+4;
+for(c=0;c<3;c++){
+v=s[i00+c]*(1-fx)*(1-fy)+s[i10+c]*fx*(1-fy)+s[i01+c]*(1-fx)*fy+s[i11+c]*fx*fy;
+out[di+c]=v;
+}
+out[di+3]=255;
+}
+}
+return new ImageData(out,w,h);
+}
+function buildGeometry(){
+var sw=img.naturalWidth,sh=img.naturalHeight;
+var sc=Math.min(1,MAX/Math.max(sw,sh)),bw=sw*sc,bh=sh*sc;
+var a=state.adj.rotate*Math.PI/180,cos=Math.cos(a),sin=Math.sin(a);
+var rw=Math.abs(bw*cos)+Math.abs(bh*sin),rh=Math.abs(bw*sin)+Math.abs(bh*cos);
+work.width=Math.max(1,Math.round(rw));work.height=Math.max(1,Math.round(rh));
+var c=work.getContext('2d');
+c.clearRect(0,0,work.width,work.height);
+c.save();c.translate(work.width/2,work.height/2);c.rotate(a);c.drawImage(img,-bw/2,-bh/2,bw,bh);c.restore();
+var cx=state.adj.cropX/100*work.width,cy=state.adj.cropY/100*work.height;
+var cw=Math.max(16,Math.min(work.width-cx,state.adj.cropW/100*work.width));
+var ch=Math.max(16,Math.min(work.height-cy,state.adj.cropH/100*work.height));
+outW=Math.round(cw);outH=Math.round(ch);
+beforeCanvas.width=outW;beforeCanvas.height=outH;
+var bc=beforeCanvas.getContext('2d');
+bc.clearRect(0,0,outW,outH);
+bc.drawImage(work,cx,cy,cw,ch,0,0,outW,outH);
+var data=bc.getImageData(0,0,outW,outH);
+if(state.adj.lens!==0)data=applyLens(data);
+beforeData=data;
+afterCanvas.width=outW;afterCanvas.height=outH;
+}
+function processData(src){
+var w=src.width,h=src.height,s=src.data,out=new Uint8ClampedArray(s.length),i;
+var ev=Math.pow(2,state.adj.exposure/100*1.5);
+var Cf=state.adj.contrast/100*128,cf=(259*(Cf+255))/(255*(259-Cf));
+var warm=state.adj.warmth/100*40,sat=1+state.adj.saturation/100,vib=state.adj.vibrance/100;
+var sh=state.adj.shadows/100,hl=state.adj.highlights/100;
+var lutR=chanLUT('r'),lutG=chanLUT('g'),lutB=chanLUT('b');
+var r,g,b,l,d,ws,wh,gray,mx,mn,sp,f,g2;
+for(i=0;i<s.length;i+=4){
+r=s[i]*ev;g=s[i+1]*ev;b=s[i+2]*ev;
+r+=warm;b-=warm;
+r=cf*(r-128)+128;g=cf*(g-128)+128;b=cf*(b-128)+128;
+if(sh||hl){
+l=(0.2126*r+0.7152*g+0.0722*b)/255;l=l<0?0:(l>1?1:l);
+ws=(1-l)*(1-l);wh=l*l;d=sh*90*ws+hl*90*wh;r+=d;g+=d;b+=d;
+}
+gray=0.2126*r+0.7152*g+0.0722*b;
+if(sat!==1){r=gray+(r-gray)*sat;g=gray+(g-gray)*sat;b=gray+(b-gray)*sat;}
+if(vib){
+mx=Math.max(r,g,b);mn=Math.min(r,g,b);sp=mx<=0?0:(mx-mn)/mx;f=1+vib*(1-sp);
+g2=0.2126*r+0.7152*g+0.0722*b;r=g2+(r-g2)*f;g=g2+(g-g2)*f;b=g2+(b-g2)*f;
+}
+out[i]=lutR[clamp255(r)|0];
+out[i+1]=lutG[clamp255(g)|0];
+out[i+2]=lutB[clamp255(b)|0];
+out[i+3]=s[i+3];
+}
+if(state.adj.noise>0){var nb=boxBlur(out,w,h,Math.round(1+state.adj.noise/100*3));blendNoise(out,nb,state.adj.noise/100*0.7);}
+if(state.adj.clarity!==0){var cb=boxBlur(out,w,h,Math.max(2,Math.round(Math.max(w,h)/60)));unsharp(out,cb,state.adj.clarity/100*0.8);}
+if(state.adj.sharpen>0){var sb=boxBlur(out,w,h,1);unsharp(out,sb,state.adj.sharpen/100*1.2);}
+return new ImageData(out,w,h);
+}
+function modeName(){return state.mode==='after'?'النتيجة':state.mode==='before'?'الأصل':state.mode==='split'?'مقارنة منقسمة':'مقارنة مزدوجة';}
+function composeDisplay(){
+var vc=$('viewCanvas'),c;
+if(state.mode==='side'){vc.width=outW*2;vc.height=outH;}else{vc.width=outW;vc.height=outH;}
+c=vc.getContext('2d');c.clearRect(0,0,vc.width,vc.height);
+if(state.mode==='after'){c.drawImage(afterCanvas,0,0);}
+else if(state.mode==='before'){c.drawImage(beforeCanvas,0,0);}
+else if(state.mode==='side'){c.drawImage(beforeCanvas,0,0);c.drawImage(afterCanvas,outW,0);c.fillStyle='rgba(212,175,55,.9)';c.fillRect(outW-1,0,2,outH);}
+else{
+c.drawImage(beforeCanvas,0,0);
+var sx=outW*state.split/100;
+c.save();c.beginPath();c.rect(sx,0,outW-sx,outH);c.clip();c.drawImage(afterCanvas,0,0);c.restore();
+c.fillStyle='rgba(212,175,55,.9)';c.fillRect(sx-1,0,2,outH);
+}
+}
+function render(){
+if(!img){$('appEmpty').classList.remove('app-hide');$('appStage').classList.add('app-hide');return;}
+$('appEmpty').classList.add('app-hide');$('appStage').classList.remove('app-hide');
+var key=[state.adj.rotate,state.adj.lens,state.adj.cropX,state.adj.cropY,state.adj.cropW,state.adj.cropH].join('|');
+if(key!==geoKey){geoKey=key;buildGeometry();}
+afterData=processData(beforeData);
+afterCanvas.getContext('2d').putImageData(afterData,0,0);
+composeDisplay();
+setStatus('الأبعاد: '+outW+'×'+outH+' بكسل — العرض: '+modeName());
+}
+function schedule(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){raf=null;render();});}
+function updateSliders(){
+KEYS.forEach(function(k){
+var el=$('s'+cap(k)),o=$('o'+cap(k));
+if(el){el.value=state.adj[k];if(o)o.textContent=state.adj[k];}
+});
+$('splitRange').value=state.split;
+}
+function drawCurve(){
+var cv=$('curveCanvas'),c=cv.getContext('2d'),S=cv.width,x,y,i,t;
+c.clearRect(0,0,S,S);
+c.fillStyle='#0d0d0d';c.fillRect(0,0,S,S);
+c.strokeStyle='rgba(212,175,55,.25)';c.lineWidth=1;
+for(i=0;i<=4;i++){t=i*S/4;c.beginPath();c.moveTo(t,0);c.lineTo(t,S);c.stroke();c.beginPath();c.moveTo(0,t);c.lineTo(S,t);c.stroke();}
+c.strokeStyle='rgba(212,175,55,.35)';c.beginPath();c.moveTo(0,S);c.lineTo(S,0);c.stroke();
+var ch=state.channel,pts=state.curves[ch],lut=buildLUT(pts);
+c.strokeStyle=ch==='r'?'#ff6b6b':ch==='g'?'#6bff9b':ch==='b'?'#6bb8ff':'#e8c96a';
+c.lineWidth=2;c.beginPath();
+for(x=0;x<S;x++){var v=lut[Math.round(x/(S-1)*255)]/255;y=S-1-v*(S-1);if(x===0)c.moveTo(x,y);else c.lineTo(x,y);}
+c.stroke();
+c.fillStyle='#f0e6c8';
+pts.forEach(function(p){var px=p[0]/255*(S-1),py=S-1-p[1]/255*(S-1);c.beginPath();c.arc(px,py,3.5,0,Math.PI*2);c.fill();});
+}
+function curvePointAt(ev){
+var r=$('curveCanvas').getBoundingClientRect();
+var x=(ev.clientX-r.left)/r.width*255,y=(1-(ev.clientY-r.top)/r.height)*255;
+return {x:Math.max(0,Math.min(255,x)),y:Math.max(0,Math.min(255,y))};
+}
+function movePoint(p){
+var pts=state.curves[state.channel];
+if(dragIdx<0||dragIdx>=pts.length)return;
+if(dragIdx===0)pts[dragIdx][0]=0;
+else if(dragIdx===pts.length-1)pts[dragIdx][0]=255;
+else{var lo=pts[dragIdx-1][0]+1,hi=pts[dragIdx+1][0]-1;pts[dragIdx][0]=Math.max(lo,Math.min(hi,p.x));}
+pts[dragIdx][1]=p.y;
+}
+function loadPresets(){try{return JSON.parse(localStorage.getItem('md_photo_presets_v1')||'{}');}catch(e){return {};}}
+function persist(o){try{localStorage.setItem('md_photo_presets_v1',JSON.stringify(o));return true;}catch(e){return false;}}
+function refreshPresetSelect(){
+var o=loadPresets(),sel=$('presetSelect'),cur=sel.value,ks=Object.keys(o),op;
+sel.innerHTML='';
+if(!ks.length){op=document.createElement('option');op.value='';op.textContent='لا توجد إعدادات محفوظة';sel.appendChild(op);}
+else{ks.forEach(function(k){op=document.createElement('option');op.value=k;op.textContent=k;sel.appendChild(op);});if(cur&&o[cur])sel.value=cur;}
+}
+function resetAll(showMsg){
+state.adj=clone(DEFAULTS);state.curves=freshCurves();state.channel='rgb';state.mode='after';state.split=50;
+$('channelSelect').value='rgb';updateSliders();drawCurve();geoKey='';schedule();
+if(showMsg)setStatus('تمت إعادة ضبط كل التعديلات.');
+}
+KEYS.forEach(function(k){
+var el=$('s'+cap(k)),o=$('o'+cap(k));
+if(!el)return;
+el.addEventListener('input',function(){
+state.adj[k]=parseFloat(el.value);
+if(o)o.textContent=el.value;
+schedule();
+});
+});
+[['btnViewAfter','after'],['btnViewBefore','before'],['btnViewSplit','split'],['btnViewSide','side']].forEach(function(p){
+$(p[0]).addEventListener('click',function(){state.mode=p[1];schedule();});
+});
+$('splitRange').addEventListener('input',function(e){state.split=parseFloat(e.target.value);schedule();});
+$('channelSelect').addEventListener('change',function(e){state.channel=e.target.value;drawCurve();});
+$('btnResetCurve').addEventListener('click',function(){
+state.curves[state.channel]=[[0,0],[255,255]];
+drawCurve();schedule();setStatus('تمت إعادة تعيين منحنى القناة المحددة.');
+});
+var curveCanvas=$('curveCanvas');
+curveCanvas.addEventListener('pointerdown',function(ev){
+var ch=state.channel,pts=state.curves[ch],p=curvePointAt(ev);
+var r=curveCanvas.getBoundingClientRect(),tol=10/r.width*255+6,idx=-1,best=tol;
+pts.forEach(function(q,i){var d=Math.hypot(q[0]-p.x,q[1]-p.y);if(d<best){best=d;idx=i;}});
+if(idx<0){
+var np=[Math.max(1,Math.min(254,p.x)),p.y];
+pts.push(np);pts.sort(function(a,b){return a[0]-b[0];});idx=pts.indexOf(np);
+}
+dragIdx=idx;
+try{curveCanvas.setPointerCapture(ev.pointerId);}catch(e){}
+movePoint(p);drawCurve();schedule();
+});
+curveCanvas.addEventListener('pointermove',function(ev){
+if(dragIdx<0)return;
+movePoint(curvePointAt(ev));drawCurve();schedule();
+});
+window.addEventListener('pointerup',function(){dragIdx=-1;});
+curveCanvas.addEventListener('dblclick',function(ev){
+var pts=state.curves[state.channel],p=curvePointAt(ev);
+var r=curveCanvas.getBoundingClientRect(),tol=10/r.width*255+6,idx=-1,best=tol;
+pts.forEach(function(q,i){
+if(i===0||i===pts.length-1)return;
+var d=Math.hypot(q[0]-p.x,q[1]-p.y);
+if(d<best){best=d;idx=i;}
+});
+if(idx>0){pts.splice(idx,1);drawCurve();schedule();setStatus('تم حذف النقطة من المنحنى.');}
+});
+$('imgInput').addEventListener('change',function(e){
+var f=e.target.files&&e.target.files[0];
+if(!f){setStatus('لم يتم اختيار أي ملف.');return;}
+if(!/^image\//.test(f.type)){setStatus('الملف المختار ليس صورة صالحة. اختر JPG أو PNG أو WEBP.');return;}
+var url=URL.createObjectURL(f),im=new Image();
+im.onload=function(){
+img=im;URL.revokeObjectURL(url);resetAll(false);
+setStatus('تم تحميل الصورة بنجاح ('+im.naturalWidth+'×'+im.naturalHeight+').');
+};
+im.onerror=function(){URL.revokeObjectURL(url);setStatus('تعذر قراءة الصورة. تأكد أن الملف صورة سليمة.');};
+im.src=url;
+});
+$('btnExport').addEventListener('click',function(){
+if(!img||!afterData){setStatus('حمّل صورة أولاً لتتمكن من التصدير.');return;}
+afterCanvas.toBlob(function(blob){
+if(!blob){setStatus('تعذر إنشاء ملف التصدير.');return;}
+var url=URL.createObjectURL(blob),a=document.createElement('a');
+a.href=url;a.download='photo-edited.png';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+setTimeout(function(){URL.revokeObjectURL(url);},1000);
+setStatus('تم تصدير الصورة بحجم '+outW+'×'+outH+' بكسل.');
+},'image/png');
+});
+$('btnReset').addEventListener('click',function(){resetAll(true);});
+$('btnSavePreset').addEventListener('click',function(){
+if(!img){setStatus('حمّل صورة أولاً قبل حفظ الإعدادات.');return;}
+var name=$('presetName').value.trim();
+if(!name){setStatus('اكتب اسماً للإعداد قبل الحفظ.');return;}
+var o=loadPresets();o[name]={adj:clone(state.adj),curves:clone(state.curves)};
+if(persist(o)){refreshPresetSelect();$('presetSelect').value=name;setStatus('تم حفظ الإعداد «'+name+'».');}
+else setStatus('تعذر الحفظ؛ التخزين المحلي غير متاح.');
+});
+$('btnLoadPreset').addEventListener('click',function(){
+var o=loadPresets(),name=$('presetSelect').value;
+if(!name||!o[name]){setStatus('لا يوجد إعداد محفوظ لتحميله.');return;}
+var d=o[name];
+KEYS.forEach(function(k){if(d.adj&&typeof d.adj[k]==='number')state.adj[k]=d.adj[k];});
+if(d.curves)state.curves=clone(d.curves);
+updateSliders();drawCurve();geoKey='';schedule();
+setStatus('تم تحميل الإعداد «'+name+'».');
+});
+$('btnDeletePreset').addEventListener('click',function(){
+var o=loadPresets(),name=$('presetSelect').value;
+if(!name||!o[name]){setStatus('لا يوجد إعداد محفوظ لحذفه.');return;}
+delete o[name];
+if(persist(o)){refreshPresetSelect();setStatus('تم حذف الإعداد «'+name+'».');}
+else setStatus('تعذر الحذف؛ التخزين المحلي غير متاح.');
+});
+resetAll(false);refreshPresetSelect();drawCurve();
+})();
+</script>
+</body>
+</html>
