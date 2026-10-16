@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مكتبة أنمي شخصية محلية: استيراد ومشاهدة بدون خادم | MDM1</title>
+<meta name="description" content="مكتبة أنمي عربية تعمل بالكامل في المتصفح: استورد فيديوهاتك وصورك، تابع التقدم، نظّم السيناريوهات والمدبلج، أدر ملفات متعددة وترجمات خارجية دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/local-anime-library-tracker.html">
+<meta property="og:title" content="مكتبة أنمي شخصية محلية: استيراد ومشاهدة بدون خادم">
+<meta property="og:description" content="مكتبة أنمي عربية تعمل بالكامل في المتصفح: استورد فيديوهاتك وصورك، تابع التقدم، نظّم السيناريوهات والمدبلج، أدر ملفات متعددة وترجمات خارجية دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-anime-library-tracker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{--gap:10px;display:flex;flex-direction:column;gap:14px}
+.app h2{margin:0;font-size:1.05rem;color:var(--gold-bright)}
+.app .appStats{flex-wrap:wrap;gap:8px}
+.app .appStats .big{color:var(--gold-bright);font-size:1.1rem}
+.app .row{flex-wrap:wrap;align-items:center;gap:var(--gap)}
+.app .out{flex:1 1 100%;min-height:38px;line-height:1.7}
+.app .workList,.app .fileList,.app .profileList,.app .historyList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.app .workList li,.app .fileList li,.app .historyList li{border:1px solid var(--gold-dim);border-radius:8px;padding:8px 10px;background:rgba(0,0,0,.2);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.app .workList li.is-active,.app .fileList li.is-active{border-color:var(--gold)}
+.app .workTitle{font-weight:700;color:var(--light)}
+.app .fileMeta,.app .histMeta{color:var(--gold-dim);font-size:.85rem}
+.app .workList button,.app .fileList button,.app .profileList button{white-space:nowrap}
+.app .profileList{flex-direction:row;flex-wrap:wrap}
+.app .profileList li{border:1px solid var(--gold-dim);border-radius:8px;padding:8px 12px;display:flex;gap:8px;align-items:center;background:rgba(0,0,0,.2)}
+.app .profileList li.is-active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold-dim) inset}
+.app .progress{height:10px;background:rgba(255,255,255,.08);border-radius:6px;cursor:pointer;overflow:hidden}
+.app .progressFill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+.app .mediaBox{position:relative;background:#000;border:1px solid var(--gold-dim);border-radius:10px;min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.app .mediaBox video,.app .mediaBox img{max-width:100%;max-height:60vh;display:block}
+.app .mediaEmpty{color:var(--gold-dim);padding:30px 14px;text-align:center}
+.app .chip{border:1px solid var(--gold-dim);border-radius:999px;padding:2px 9px;font-size:.8rem;color:var(--gold-bright)}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مكتبة أنمي شخصية للاستيراد والمشاهدة محلياً داخل المتصفح", "url": "https://mdm1.org/apps/local-anime-library-tracker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى خادم أو إنترنت لتشغيل ملفاتي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل شيء يعمل داخل المتصفح: تُستورد الملفات من جهازك وتُخزن محلياً عبر IndexedDB، ويتم التشغيل عبر روابط مؤقتة داخل الصفحة دون أي طلب شبكة."}}, {"@type": "Question", "name": "كيف يُحفظ تقدم المشاهدة وأين تُخزن البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحفظ تقدم الفيديو كل أربع ثوانٍ وعند الإيقاف وإغلاق الصفحة، مع ربطه بالعمل والحلقة والسيناريو، وكل البيانات تُخزن في localStorage وIndexedDB على جهازك فقط."}}, {"@type": "Question", "name": "ما صيغ الترجمة الخارجية المدعومة وكيف أربطها بالملف؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم المكتبة صيغ SRT وVTT وASS/SSA، وتُقرأ النصوص محلياً وتُضاف كمسار ترجمة للملف الحالي، ويمكنك تغيير حجم الترجمة أثناء التشغيل."}}, {"@type": "Question", "name": "هل يمكن فصل بيانات كل شخص في العائلة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، أنشئ ملفات شخصية متعددة لكل فرد، فلكل ملف مكتبته وقوائم متابعته وسيناريوهاته وسجل مشاهدته المستقل، ويمكن التبديل بينها في أي وقت."}}, {"@type": "Question", "name": "ماذا يحدث إذا حذفت الملف أو مسحت بيانات المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "عند حذف ملف من المكتبة يُحذف من التخزين المحلي أيضاً، وإذا مسحت بيانات المتصفح ستفقد المكتبة، لذا استورد نسخاً احتياطية من ملفاتك الأصلية لحين دعم النسخ الاحتياطي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مكتبة أنمي شخصية للاستيراد والمشاهدة محلياً داخل المتصفح</h1>
+  <p class="page-sub">مكتبة أنمي عربية تعمل بالكامل في المتصفح: استورد فيديوهاتك وصورك، تابع التقدم، نظّم السيناريوهات والمدبلج، أدر ملفات متعددة وترجمات خارجية دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الحل السريع: هذه المكتبة تعمل بالكامل داخل متصفحك دون خادم أو إنترنت، فقط استورد ملفات الفيديو والصور من جهازك لتتابعها محلياً مع حفظ تقدم المشاهدة تلقائياً لكل ملف. تتيح لك الواجهة تنظيم الأعمال في سيناريوهات ومدبلجات فرعية، وتشغيل ملفات الترجمة الخارجية بصيغ SRT وVTT وASS، مع إنشاء ملفات شخصية متعددة تفصل سجل المشاهدة وقوائم المتابعة بين الأفراد، وواجهة عربية RTL تنقل بين المشاهدة والتنظيم والإحصاءات بسلاسة، وكل البيانات محفوظة محلياً في جهازك فقط.</p>
+<div class="card app" id="appRoot">
+  <div class="row appStats" id="statsRow">
+    <div class="badge">الأعمال: <span class="big" id="statWorks">0</span></div>
+    <div class="badge">الملفات: <span class="big" id="statFiles">0</span></div>
+    <div class="badge">المكتملة: <span class="big" id="statDone">0</span></div>
+    <div class="badge">وقت المشاهدة: <span class="big" id="statTime">0</span> د</div>
+  </div>
+
+  <div class="row" id="importRow">
+    <label for="fileMediaInput">ملفات الفيديو والصور</label>
+    <input type="file" id="fileMediaInput" accept="video/*,image/*" multiple>
+    <label for="fileSubInput">ملفات الترجمة الخارجية</label>
+    <input type="file" id="fileSubInput" accept=".srt,.vtt,.ass,.ssa,text/*" multiple>
+    <div id="importMsg" class="out" role="status">لا توجد ملفات بعد، ابدأ باستيراد فيديو أو صورة من جهازك.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row" id="libraryRow">
+    <label for="searchInput">بحث في المكتبة</label>
+    <input type="search" id="searchInput" placeholder="اكتب اسم عمل أو ملف…">
+    <label for="statusFilter">حالة المتابعة</label>
+    <select id="statusFilter">
+      <option value="all">كل الحالات</option>
+      <option value="watchlist">في قائمة المتابعة</option>
+      <option value="watching">أتابعه الآن</option>
+      <option value="completed">مكتمل</option>
+      <option value="paused">متوقف مؤقتاً</option>
+      <option value="dropped">متروك</option>
+    </select>
+    <label for="sortSelect">ترتيب</label>
+    <select id="sortSelect">
+      <option value="updated">آخر تحديث</option>
+      <option value="title">الاسم أبجدياً</option>
+      <option value="progress">نسبة التقدم</option>
+    </select>
+    <button type="button" id="addWorkBtn">إضافة عمل يدوياً</button>
+    <div class="out" id="libraryMsg">المكتبة فارغة.</div>
+    <ul class="workList" id="workList" aria-label="قائمة الأعمال"></ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <section class="player" id="playerCard" hidden>
+    <div class="row" id="playerHeadRow">
+      <h2 id="nowTitle">لم يتم اختيار ملف</h2>
+      <span class="badge" id="nowMeta">—</span>
+      <button type="button" class="sec" id="closePlayerBtn">إغلاق المشغل</button>
+    </div>
+    <div class="mediaBox" id="mediaBox">
+      <video id="videoPlayer" playsinline preload="metadata"></video>
+      <img id="imagePlayer" alt="صورة من المكتبة" hidden>
+      <div class="mediaEmpty" id="mediaEmpty">اختر ملفاً من المكتبة لبدء المشاهدة محلياً.</div>
+    </div>
+    <div class="progress" id="seekTrack" role="slider" aria-label="شريط التقدم" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="progressFill" id="seekFill"></div></div>
+    <div class="row" id="controlRow">
+      <button type="button" id="playToggleBtn">تشغيل</button>
+      <button type="button" class="sec" id="back10Btn">رجوع 10 ثوانٍ</button>
+      <button type="button" class="sec" id="fwd10Btn">تقديم 10 ثوانٍ</button>
+      <label for="seekRange">الانتقال</label>
+      <input type="range" id="seekRange" min="0" max="1000" value="0">
+      <span class="badge" id="timeLabel">00:00 / 00:00</span>
+      <label for="volumeRange">مستوى الصوت</label>
+      <input type="range" id="volumeRange" min="0" max="100" value="100">
+      <label for="speedSelect">سرعة التشغيل</label>
+      <select id="speedSelect">
+        <option value="0.5">0.5x</option>
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+        <option value="2">2x</option>
+      </select>
+      <label for="subtitleSelect">ملف الترجمة</label>
+      <select id="subtitleSelect"><option value="">بدون ترجمة</option></select>
+      <button type="button" class="sec" id="loadSubBtn">تحميل ترجمة لهذا الملف</button>
+      <label for="subSizeRange">حجم الترجمة</label>
+      <input type="range" id="subSizeRange" min="14" max="42" value="24">
+      <label for="audioSelect">الصوت / المدبلج</label>
+      <select id="audioSelect"><option value="">الصوت الأصلي (الافتراضي)</option></select>
+      <button type="button" class="sec" id="toggleFullBtn">ملء الشاشة</button>
+      <div class="out" id="playerMsg">يتم حفظ التقدم تلقائياً في هذا المتصفح.</div>
+    </div>
+    <p class="out" id="imageInfo"></p>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="detail" id="detailCard" hidden>
+    <div class="row" id="detailHeadRow">
+      <h2 id="detailTitle">تفاصيل العمل</h2>
+      <label for="statusSelect">حالة المتابعة</label>
+      <select id="statusSelect">
+        <option value="watchlist">في قائمة المتابعة</option>
+        <option value="watching">أتابعه الآن</option>
+        <option value="completed">مكتمل</option>
+        <option value="paused">متوقف مؤقتاً</option>
+        <option value="dropped">متروك</option>
+      </select>
+      <label for="ratingSelect">التقييم</label>
+      <select id="ratingSelect">
+        <option value="0">بدون تقييم</option>
+        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+        <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+      <label for="epTotalInput">عدد الحلقات المتوقع</label>
+      <input type="number" id="epTotalInput" min="0" max="9999" placeholder="مثال: 12">
+      <label for="workNotesInput">ملاحظات</label>
+      <input type="text" id="workNotesInput" placeholder="ملاحظتك الخاصة عن العمل">
+      <button type="button" class="sec" id="deleteWorkBtn">حذف العمل وملفاته</button>
+      <div class="out" id="detailMsg">اختر عملاً لتنظيم سيناريوهات ومدبلجاته.</div>
+    </div>
+    <div class="row" id="scenarioRow">
+      <label for="scenarioSelect">السيناريو / المدبلج</label>
+      <select id="scenarioSelect"></select>
+      <label for="newScenarioInput">سيناريو جديد</label>
+      <input type="text" id="newScenarioInput" placeholder="مثال: مدبلج عربي">
+      <button type="button" id="addScenarioBtn">إضافة السيناريو</button>
+      <button type="button" class="sec" id="deleteScenarioBtn">حذف السيناريو المحدد</button>
+      <span class="badge" id="detailProgress">0%</span>
+    </div>
+    <ul class="fileList" id="fileList" aria-label="ملفات العمل"></ul>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="profiles" id="profilesCard">
+    <div class="row" id="profileControls">
+      <h2>الملفات الشخصية</h2>
+      <label for="profileNameInput">اسم ملف جديد</label>
+      <input type="text" id="profileNameInput" placeholder="مثال: سارة">
+      <label for="profileAvatarSelect">الرمز</label>
+      <select id="profileAvatarSelect">
+        <option value="🌸">🌸</option><option value="⭐">⭐</option><option value="🎮">🎮</option>
+        <option value="📚">📚</option><option value="🎬">🎬</option><option value="🌙">🌙</option>
+      </select>
+      <button type="button" id="addProfileBtn">إضافة ملف شخصي</button>
+      <button type="button" class="sec" id="deleteProfileBtn">حذف الملف الحالي</button>
+      <div class="out" id="profileMsg">يمكنك إنشاء ملف لكل فرد لفصل سجل المشاهدة.</div>
+    </div>
+    <ul class="profileList" id="profileList" aria-label="الملفات الشخصية"></ul>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="history" id="historyCard">
+    <div class="row" id="historyRow">
+      <h2>سجل المشاهدة</h2>
+      <button type="button" class="sec" id="clearHistoryBtn">مسح السجل</button>
+      <div class="out" id="historyMsg">لا يوجد سجل مشاهدة بعد.</div>
+    </div>
+    <ul class="historyList" id="historyList" aria-label="سجل المشاهدة"></ul>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى خادم أو إنترنت لتشغيل ملفاتي؟</h3><p>لا، كل شيء يعمل داخل المتصفح: تُستورد الملفات من جهازك وتُخزن محلياً عبر IndexedDB، ويتم التشغيل عبر روابط مؤقتة داخل الصفحة دون أي طلب شبكة.</p><h3>كيف يُحفظ تقدم المشاهدة وأين تُخزن البيانات؟</h3><p>يُحفظ تقدم الفيديو كل أربع ثوانٍ وعند الإيقاف وإغلاق الصفحة، مع ربطه بالعمل والحلقة والسيناريو، وكل البيانات تُخزن في localStorage وIndexedDB على جهازك فقط.</p><h3>ما صيغ الترجمة الخارجية المدعومة وكيف أربطها بالملف؟</h3><p>تدعم المكتبة صيغ SRT وVTT وASS/SSA، وتُقرأ النصوص محلياً وتُضاف كمسار ترجمة للملف الحالي، ويمكنك تغيير حجم الترجمة أثناء التشغيل.</p><h3>هل يمكن فصل بيانات كل شخص في العائلة؟</h3><p>نعم، أنشئ ملفات شخصية متعددة لكل فرد، فلكل ملف مكتبته وقوائم متابعته وسيناريوهاته وسجل مشاهدته المستقل، ويمكن التبديل بينها في أي وقت.</p><h3>ماذا يحدث إذا حذفت الملف أو مسحت بيانات المتصفح؟</h3><p>عند حذف ملف من المكتبة يُحذف من التخزين المحلي أيضاً، وإذا مسحت بيانات المتصفح ستفقد المكتبة، لذا استورد نسخاً احتياطية من ملفاتك الأصلية لحين دعم النسخ الاحتياطي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var LSKEY="animeLibV1";
+var state={data:null,db:null,activeFileId:null,activeWorkId:null,video:null,media:null,tracks:[],trackTimer:0,saveTimer:0,cleanup:[]};
+function defaultData(){
+  var p1=(Date.now().toString(36)+Math.random().toString(36).slice(2,8));
+  return {activeProfile:p1,profiles:[{id:p1,name:"المشاهد الأساسي",avatar:"⭐"}],works:{},files:{},history:{}};
+}
+function safeGet(key,fb){
+  try{var raw=localStorage.getItem(key);return raw?JSON.parse(raw):fb;}catch(e){return fb;}
+}
+function safeSet(key,val){
+  try{localStorage.setItem(key,JSON.stringify(val));return true;}catch(e){setMsg("profileMsg","تعذر الحفظ محلياً: مساحة المتصفح ممتلئة أو الحفظ محظور.");return false;}
+}
+function load(){
+  var d=safeGet(LSKEY,null);
+  if(!d||typeof d!=="object"||!d.profiles||!d.profiles.length)d=defaultData();
+  d.works=d.works||{};d.files=d.files||{};d.history=d.history||{};
+  if(!d.profiles.some(function(p){return p.id===d.activeProfile;}))d.activeProfile=d.profiles[0].id;
+  return d;
+}
+function save(){safeSet(LSKEY,state.data);}
+function openDb(){
+  return new Promise(function(res){
+    if(!window.indexedDB){res(null);return;}
+    var rq;
+    try{rq=indexedDB.open("animeLibFiles",2);}catch(e){res(null);return;}
+    rq.onupgradeneeded=function(){var db=rq.result;if(!db.objectStoreNames.contains("files"))db.createObjectStore("files",{keyPath:"id"});};
+    rq.onsuccess=function(){res(rq.result);};
+    rq.onerror=function(){res(null);};
+  });
+}
+function tx(mode){return state.db.transaction("files",mode).objectStore("files");}
+function dbPut(rec){
+  return new Promise(function(res,rej){
+    if(!state.db){rej(new Error("no-db"));return;}
+    var r=tx("readwrite").put(rec);r.onsuccess=function(){res(true);};r.onerror=function(){rej(r.error);};
+  });
+}
+function dbDel(id){
+  return new Promise(function(res){
+    if(!state.db){res(false);return;}
+    var r=tx("readwrite").delete(id);r.onsuccess=function(){res(true);};r.onerror=function(){res(false);};
+  });
+}
+function dbGet(id){
+  return new Promise(function(res){
+    if(!state.db){res(null);return;}
+    var r=tx("readonly").get(id);r.onsuccess=function(){res(r.result||null);};r.onerror=function(){res(null);};
+  });
+}
+function pid(){return state.data.activeProfile;}
+function worksOf(){var p=pid();return state.data.works[p]||{};}
+function filesOf(){var p=pid();return state.data.files[p]||{};}
+function ensureMaps(){
+  var p=pid();
+  if(!state.data.works[p])state.data.works[p]={};
+  if(!state.data.files[p])state.data.files[p]={};
+  if(!state.data.history[p])state.data.history[p]=[];
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,9);}
+function setMsg(id,text,cls){var el=$(id);if(!el)return;el.textContent=text;el.className="out"+(cls?" "+cls:"");}
+function fmtTime(s){
+  if(!isFinite(s)||s<0)s=0;
+  var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=Math.floor(s%60);
+  var p=function(n){return n<10?"0"+n:""+n;};
+  return (h>0?h+":":"")+p(m)+":"+p(x);
+}
+function pctOf(f){var d=f.duration||0;return d>0?Math.max(0,Math.min(100,(f.progress||0)/d*100)):0;}
+function isDone(f){return pctOf(f)>=90||f.status==="completed";}
+function guessKind(name){
+  var n=(name||"").toLowerCase();
+  if(/\.(mp4|mkv|webm|mov|m4v|avi|ogv)$/.test(n))return "video";
+  if(/\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)$/.test(n))return "image";
+  if(/\.(srt|vtt|ass|ssa)$/.test(n))return "sub";
+  return "other";
+}
+function epFromName(name){
+  var base=name.replace(/\.[^.]+$/,"");
+  var m=base.match(/S\d{1,2}\s*E(\d{1,3})/i)||base.match(/\bEP?(\d{1,3})\b/i)||base.match(/\b(\d{1,3})\b/);
+  return m?parseInt(m[1],10):null;
+}
+function titleFromName(name){
+  var base=name.replace(/\.[^.]+$/,"");
+  var t=base.replace(/S\d{1,2}\s*E\d{1,3}/ig," ").replace(/\bEP?\d{1,3}\b/ig," ").replace(/[\[\(]._+?[\]\)]/g," ").replace(/[_]+/g," ").replace(/\s{2,}/g," ").trim();
+  if(!t)t=base;
+  if(t.length>60)t=t.slice(0,60);
+  return t;
+}
+function findWorkByTitle(title){
+  var map=worksOf(),id;
+  for(id in map){if(map[id].title===title)return id;}
+  return null;
+}
+function createWork(title){
+  ensureMaps();
+  var id=uid();
+  worksOf()[id]={id:id,title:title,status:"watchlist",rating:0,epTotal:0,epSeen:0,notes:"",scenarios:["افتراضي"],files:[],progress:0,updated:Date.now()};
+  return id;
+}
+function historyAdd(title,fileLabel){
+  ensureMaps();
+  var h=state.data.history[pid()]||[];
+  h.unshift({t:Date.now(),title:title,file:fileLabel});
+  if(h.length>40)h.length=40;
+  state.data.history[pid()]=h;
+}
+function visibleWorks(){
+  var q=($("searchInput").value||"").trim().toLowerCase();
+  var st=$("statusFilter").value,sort=$("sortSelect").value;
+  var map=worksOf(),list=[],id;
+  for(id in map){var w=map[id];w._id=id;list.push(w);}
+  list=list.filter(function(w){
+    if(st==="watchlist"&&!(w.status==="watchlist"||w.status==="watching"))return false;
+    if(st!=="all"&&st!=="watchlist"&&w.status!==st)return false;
+    if(!q)return true;
+    if(w.title.toLowerCase().indexOf(q)>-1)return true;
+    var fl=w.files||[],i;
+    for(i=0;i<fl.length;i++){var f=filesOf()[fl[i]];if(f&&(f.name||"").toLowerCase().indexOf(q)>-1)return true;}
+    return false;
+  });
+  if(sort==="title")list.sort(function(a,b){return a.title.localeCompare(b.title,"ar");});
+  else if(sort==="progress")list.sort(function(a,b){return (b.progress||0)-(a.progress||0);});
+  else list.sort(function(a,b){return (b.updated||0)-(a.updated||0);});
+  return list;
+}
+function renderStats(){
+  var map=worksOf(),files=filesOf(),w=0,fc=0,done=0,prog=0,id;
+  for(id in map){w++;if(map[id].status==="completed")done++;prog+=map[id].progress||0;}
+  for(id in files)fc++;
+  $("statWorks").textContent=w;$("statFiles").textContent=fc;
+  $("statDone").textContent=done;$("statTime").textContent=Math.round(prog/60);
+}
+function renderLibrary(){
+  var list=visibleWorks(),ul=$("workList");ul.innerHTML="";
+  if(!list.length){setMsg("libraryMsg","لا توجد أعمال مطابقة. استورد ملفات الفيديو أو أضف عملاً يدوياً.");return;}
+  setMsg("libraryMsg","عدد الأعمال المعروضة: "+list.length+". اضغط «فتح» لتنظيم الملفات والسيناريوهات.");
+  list.forEach(function(w){
+    var li=document.createElement("li");
+    if(w.id===state.activeWorkId)li.className="is-active";
+    var t=document.createElement("span");t.className="workTitle";t.textContent=w.avatar?w.avatar+" ":"";t.textContent+=w.title;
+    var st=document.createElement("span");st.className="chip";st.textContent=w.status==="watchlist"?"في القائمة":(w.status==="watching"?"أتابعه":(w.status==="completed"?"مكتمل":(w.status==="paused"?"متوقف":"متروك")));
+    var pr=document.createElement("span");pr.className="badge";pr.textContent=Math.round(w.progress||0)+"%";
+    var mp=document.createElement("span");mp.className="fileMeta";mp.textContent=(w.files?w.files.length:0)+" ملف | "+(w.scenarios?w.scenarios.length:0)+" سيناريو";
+    var open=document.createElement("button");open.type="button";open.className="sec";open.textContent="فتح التفاصيل";open.addEventListener("click",function(){selectWork(w.id);});
+    var wl=document.createElement("button");wl.type="button";wl.textContent=w.status==="watchlist"?"إضافة للمتابعة مفعّلة":"أضف للمتابعة";
+    wl.disabled=w.status==="watchlist";
+    wl.addEventListener("click",function(){var m=worksOf()[w.id];m.status="watchlist";m.updated=Date.now();save();renderAll();});
+    li.appendChild(t);li.appendChild(st);li.appendChild(pr);li.appendChild(mp);li.appendChild(open);li.appendChild(wl);
+    ul.appendChild(li);
+  });
+}
+function renderFiles(){
+  var ul=$("fileList");ul.innerHTML="";
+  var w=worksOf()[state.activeWorkId];
+  if(!w){setMsg("detailMsg","اختر عملاً من المكتبة أولاً لعرض ملفاته.");return;}
+  var sc=$("scenarioSelect");sc.innerHTML="";
+  (w.scenarios||[]).forEach(function(s,i){
+    var o=document.createElement("option");o.value=String(i);o.textContent=s;sc.appendChild(o);
+  });
+  if(w.currentScenario==null)w.currentScenario=0;
+  if(w.currentScenario>=(w.scenarios||[]).length)w.currentScenario=0;
+  sc.value=String(w.currentScenario);
+  var ids=(w.files||[]).filter(function(id){return !!filesOf()[id];});
+  if(!ids.length){setMsg("detailMsg","لا توجد ملفات م associated بهذا العمل. استورد فيديو أو صورة وستُربط تلقائياً.");return;}
+  setMsg("detailMsg","ملفات العمل: "+ids.length+". نظّمها بالسيناريو ثم اضغط «تشغيل».");
+  ids.sort(function(a,b){var fa=filesOf()[a],fb=filesOf()[b];return (fa.ep||0)-(fb.ep||0);});
+  ids.forEach(function(id){
+    var f=filesOf()[id];
+    var li=document.createElement("li");
+    if(id===state.activeFileId)li.className="is-active";
+    var name=document.createElement("span");name.className="workTitle";name.textContent=(f.ep?"E"+f.ep+" ":"")+f.name;
+    var meta=document.createElement("span");meta.className="fileMeta";
+    meta.textContent=(f.kind==="image"?"صورة":"فيديو")+" | "+(w.scenarios[f.scenario||0]||"افتراضي")+" | "+Math.round(pctOf(f))+"%"+(isDone(f)?" | مكتمل":"");
+    var btn=document.createElement("button");btn.type="button";btn.textContent="تشغيل";btn.addEventListener("click",function(){openFile(id);});
+    var rm=document.createElement("button");rm.type="button";rm.className="sec";rm.textContent="حذف من العمل";
+    rm.addEventListener("click",function(){removeFile(id);});
+    li.appendChild(name);li.appendChild(meta);li.appendChild(btn);li.appendChild(rm);
+    ul.appendChild(li);
+  });
+}
+function renderProfiles(){
+  var ul=$("profileList");ul.innerHTML="";
+  state.data.profiles.forEach(function(p){
+    var li=document.createElement("li");
+    if(p.id===state.data.activeProfile)li.className="is-active";
+    var n=document.createElement("span");n.className="workTitle";n.textContent=(p.avatar||"👤")+" "+p.name;
+    var sw=document.createElement("button");sw.type="button";sw.className="sec";sw.textContent="تبديل إلى هذا الملف";
+    sw.addEventListener("click",function(){switchProfile(p.id);});
+    li.appendChild(n);li.appendChild(sw);ul.appendChild(li);
+  });
+  var cur=state.data.profiles.filter(function(p){return p.id===state.data.activeProfile;})[0];
+  $("deleteProfileBtn").disabled=state.data.profiles.length<2;
+  if(cur)setMsg("profileMsg","الملف الحالي: "+(cur.avatar||"")+" "+cur.name+". البيانات محفوظة محلياً لكل ملف.");
+}
+function renderHistory(){
+  var ul=$("historyList");ul.innerHTML="";
+  var h=state.data.history[pid()]||[];
+  if(!h.length){setMsg("historyMsg","لا يوجد سجل مشاهدة بعد.");return;}
+  setMsg("historyMsg","آخر "+Math.min(h.length,10)+" عمليات مشاهدة في هذا الملف الشخصي.");
+  h.slice(0,10).forEach(function(it){
+    var li=document.createElement("li");
+    var t=document.createElement("span");t.className="workTitle";t.textContent=it.title;
+    var m=document.createElement("span");m.className="histMeta";
+    m.textContent=(it.file||"")+" | "+new Date(it.t).toLocaleString("ar");
+    li.appendChild(t);li.appendChild(m);ul.appendChild(li);
+  });
+}
+function renderDetail(){
+  var w=worksOf()[state.activeWorkId];
+  if(!w){$("detailCard").hidden=true;return;}
+  $("detailCard").hidden=false;
+  $("detailTitle").textContent=w.title;
+  $("statusSelect").value=w.status||"watchlist";
+  $("ratingSelect").value=String(w.rating||0);
+  $("epTotalInput").value=w.epTotal?String(w.epTotal):"";
+  $("workNotesInput").value=w.notes||"";
+  $("detailProgress").textContent=Math.round(w.progress||0)+"%";
+  renderFiles();
+}
+function renderSubtitles(){
+  var sel=$("subtitleSelect");sel.innerHTML="";
+  var o0=document.createElement("option");o0.value="";o0.textContent="بدون ترجمة";sel.appendChild(o0);
+  var f=state.activeFileId?filesOf()[state.activeFileId]:null;
+  var subs=f&&f.subs?f.subs:[];
+  subs.forEach(function(s,i){
+    var o=document.createElement("option");o.value=String(i);o.textContent=s.name+" ("+(s.format||"").toUpperCase()+")";sel.appendChild(o);
+  });
+  if(f&&f.activeSub!=null&&f.activeSub<subs.length)sel.value=String(f.activeSub);
+}
+function renderAll(){renderStats();renderLibrary();renderDetail();renderProfiles();renderHistory();renderSubtitles();}
+function selectWork(id){
+  state.activeWorkId=id;
+  var w=worksOf()[id];
+  if(w&&w.epSeen)historyAdd("فتح العمل: "+w.title,"");
+  save();renderAll();
+  setMsg("detailMsg","تم فتح العمل «"+(w?w.title:"")+"». اختر سيناريوهات وشغّل الملفات.");
+}
+function removeFile(id){
+  var w=worksOf()[state.activeWorkId];
+  dbDel(id);
+  var files=filesOf();delete files[id];
+  if(w){w.files=(w.files||[]).filter(function(x){return x!==id;});w.updated=Date.now();}
+  if(state.activeFileId===id)closePlayer();
+  save();renderAll();
+  setMsg("detailMsg","تم حذف الملف من العمل (ومن التخزين المحلي إن أمكن).");
+}
+function closePlayer(){
+  state.cleanup.forEach(function(u){try{URL.revokeObjectURL(u);}catch(e){}});
+  state.cleanup=[];
+  var v=$("videoPlayer");
+  try{v.pause();v.removeAttribute("src");v.load();}catch(e){}
+  v.hidden=true;
+  var im=$("imagePlayer");im.hidden=true;im.removeAttribute("src");
+  $("playerCard").hidden=true;
+  state.activeFileId=null;state.media=null;
+  clearInterval(state.trackTimer);state.trackTimer=0;
+}
+function openFile(id){
+  var f=filesOf()[id];
+  if(!f){setMsg("playerMsg","الملف غير موجود في هذا الملف الشخصي.");return;}
+  dbGet(id).then(function(rec){
+    if(!rec||!rec.blob){setMsg("playerMsg","تعذر العثور على البيانات المحلية لهذا الملف، أعد استيراده.");return;}
+    state.cleanup.forEach(function(u){try{URL.revokeObjectURL(u);}catch(e){}});
+    state.cleanup=[];
+    var url=URL.createObjectURL(rec.blob);
+    state.cleanup.push(url);
+    state.activeFileId=id;
+    state.activeWorkId=f.workId;
+    var w=worksOf()[f.workId];
+    $("playerCard").hidden=false;
+    $("mediaEmpty").hidden=true;
+    $("nowTitle").textContent=(w?w.title:"ملف")+(f.ep?" - حلقة "+f.ep:"");
+    $("nowMeta").textContent=f.name;
+    clearInterval(state.trackTimer);state.trackTimer=0;
+    if(f.kind==="image"){
+      var im=$("imagePlayer"),v=$("videoPlayer");
+      try{v.pause();v.removeAttribute("src");v.load();}catch(e){}
+      v.hidden=true;
+      im.hidden=false;im.src=url;
+      state.media=im;
+      $("playToggleBtn").textContent="الصورة معروضة";
+      $("playToggleBtn").disabled=true;
+      $("timeLabel").textContent="صورة";
+      $("seekFill").style.width="100%";
+      $("seekRange").value="1000";
+      $("imageInfo").textContent="الأبعاد: "+(f.width||"?")+"×"+(f.height||"?")+" | تمت الإشارة كمشاهدة عند فتحها.";
+      if(w){w.status="completed";w.progress=100;w.epSeen=Math.max(w.epSeen||0,f.ep||0);w.updated=Date.now();}
+      historyAdd((w?w.title:"صورة"),f.name);
+      save();renderAll();
+      setMsg("playerMsg","تم فتح الصورة محلياً وتحديث سجل المشاهدة.");
+      return;
+    }
+    var v2=$("videoPlayer"),im2=$("imagePlayer");
+    im2.hidden=true;im2.removeAttribute("src");
+    v2.hidden=false;
+    $("playToggleBtn").disabled=false;
+    $("playToggleBtn").textContent="تشغيل";
+    $("imageInfo").textContent="";
+    state.media=v2;
+    v2.src=url;
+    v2.playbackRate=parseFloat($("speedSelect").value)||1;
+    v2.volume=(parseInt($("volumeRange").value,10)||100)/100;
+    v2.onloadedmetadata=function(){
+      var dur=isFinite(v2.duration)?v2.duration:0;
+      if(dur>0&&!f.duration){f.duration=dur;}
+      var start=(f.progress&&f.progress<dur-2)?f.progress:0;
+      try{v2.currentTime=start;}catch(e){}
+      $("timeLabel").textContent=fmtTime(start)+" / "+fmtTime(dur);
+    };
+    v2.onerror=function(){setMsg("playerMsg","تعذر تشغيل هذا الملف. الصيغة غير مدعومة في متصفحك أو الملف تالف.","badge");};
+    renderSubtitles();applySubtitle();
+    renderAudioTracks();
+    state.trackTimer=setInterval(saveProgress,4000);
+    renderAll();
+    setMsg("playerMsg","جارٍ التشغيل محلياً. التقدم يُحفظ تلقائياً عند كل 4 ثوانٍ وإيقاف.");
+  });
+}
+function saveProgress(){
+  var id=state.activeFileId,v=$("videoPlayer");
+  if(!id||!v||v.hidden||!isFinite(v.duration)||v.duration<=0)return;
+  var f=filesOf()[id];if(!f)return;
+  f.progress=v.currentTime;f.duration=v.duration;
+  var w=worksOf()[f.workId];
+  if(w){
+    w.progress=pctOf(f);w.updated=Date.now();
+    if(w.progress>=90)w.status="completed";
+    else if(w.status==="watchlist")w.status="watching";
+    if(f.ep&&w.progress>=90)w.epSeen=Math.max(w.epSeen||0,f.ep);
+  }
+  save();renderStats();
+}
+function addHistoryOnce(){
+  var id=state.activeFileId;if(!id)return;
+  var f=filesOf()[id];if(!f)return;
+  var w=worksOf()[f.workId];
+  historyAdd(w?w.title:f.name,f.name);
+  save();renderHistory();
+}
+function parseTimecode(tc){
+  var m=String(tc).match(/(?:(\d+):)?(\d+):(\d+)[.,](\d+)/);
+  if(!m)return 0;
+  var h=m[1]?parseInt(m[1],10):0,mi=parseInt(m[2],10),s=parseInt(m[3],10),ms=m[4].length===2?parseInt(m[4],10)*10:parseInt(m[4],10);
+  return ((h*60+mi)*60+s)*1000+ms;
+}
+function parseSubtitles(text,format){
+  var clean=String(text||"").replace(/\r/g,"");
+  if(!clean.trim())return [];
+  format=(format||"").toLowerCase();
+  if(!format){
+    if(/WEBVTT/.test(clean))format="vtt";
+    else if(/\[Events\]/.test(clean)||/Dialogue:/.test(clean))format="ass";
+    else format="srt";
+  }
+  var out=[];
+  if(format==="ass"||format==="ssa"){
+    clean.split("\n").forEach(function(line){
+      if(line.indexOf("Dialogue:")!==0)return;
+      var parts=line.slice(9).split(",");
+      if(parts.length<10)return;
+      var start=parseTimecode(parts[1]),end=parseTimecode(parts[2]);
+      var txt=parts.slice(9).join(",").replace(/\\N/g," ").replace(/\\n/g," ").replace(/<[^>]*>/g,"").trim();
+      if(txt)out.push({start:start,end:end,text:txt});
+    });
+  }else{
+    var blocks=(format==="vtt"?clean.replace(/^WEBVTT.*$/m,""):clean).split(/\n{2,}/);
+    blocks.forEach(function(b){
+      var lines=b.split("\n").filter(function(l){return l.trim()!=="";});
+      if(!lines.length)return;
+      var ti=-1,i;
+      for(i=0;i<lines.length;i++){if(lines[i].indexOf("-->")>-1){ti=i;break;}}
+      if(ti<0)return;
+      var mm=lines[ti].match(/(\d{1,2}:\d{2}:\d{2}[.,]\d{1,3}|\d{1,2}:\d{2}[.,]\d{1,3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[.,]\d{1,3}|\d{1,2}:\d{2}[.,]\d{1,3})/);
+      if(!mm)return;
+      var txt2=lines.slice(ti+1).join(" ").replace(/<[^>]*>/g,"").trim();
+      if(txt2)out.push({start:parseTimecode(mm[1]),end:parseTimecode(mm[2]),text:txt2});
+    });
+  }
+  out.sort(function(a,b){return a.start-b.start;});
+  return out;
+}
+function applySubtitle(){
+  var v=$("videoPlayer");
+  while(v.textTracks&&v.textTracks.length>0){try{v.removeTextTrack(v.textTracks[0]);}catch(e){break;}}
+  var f=state.activeFileId?filesOf()[state.activeFileId]:null;
+  if(!f||f.activeSub==null)return;
+  var sub=(f.subs||[])[f.activeSub];
+  if(!sub||!sub.cues||!sub.cues.length)return;
+  var tt;
+  try{tt=v.addTextTrack("subtitles",sub.name,"ar");}catch(e){setMsg("playerMsg","المتصفح لا يدعم الترجمات الخارجية.","badge");return;}
+  sub.cues.forEach(function(c){
+    try{tt.addCue(new TextTrackCue(c.start/1000,c.end/1000,c.text));}catch(e){}
+  });
+  tt.mode="showing";
+  var size=parseInt($("subSizeRange").value,10)||24;
+  try{v.style.setProperty("--sub-size",size+"px");}catch(e){}
+  setMsg("playerMsg","تم تحميل الترجمة: "+sub.name+" ("+sub.cues.length+" سطر).");
+}
+function renderAudioTracks(){
+  var sel=$("audioSelect");sel.innerHTML="";
+  var o0=document.createElement("option");o0.value="";o0.textContent="الصوت الأصلي (الافتراضي)";sel.appendChild(o0);
+  var v=$("videoPlayer");
+  var any=false;
+  try{
+    if(v.audioTracks){
+      for(var i=0;i<v.audioTracks.length;i++){
+        var t=v.audioTracks[i];
+        var o=document.createElement("option");o.value=String(i);
+        o.textContent=t.label||("مسار "+(i+1));
+        if(!t.enabled)o.disabled=false;
+        sel.appendChild(o);any=true;
+      }
+    }
+  }catch(e){}
+  if(!any){
+    var o1=document.createElement("option");o1.value="";o1.disabled=true;
+    o1.textContent="لا يوفر هذا المتصفح اختيار المسار الصوتي";sel.appendChild(o1);
+  }
+}
+function addWorkManually(){
+  var name=($("newScenarioInput").value||"").trim();
+  var title=window.prompt("اكتب اسم العمل الذي تريد إضافته يدوياً:");
+  if(!title||!title.trim())return;
+  ensureMaps();
+  var id=createWork(title.trim());
+  save();selectWork(id);
+  setMsg("libraryMsg","تمت إضافة العمل «"+title.trim()+"» إلى قائمتك.");
+}
+function addScenario(){
+  var w=worksOf()[state.activeWorkId];
+  if(!w){setMsg("detailMsg","اختر عملاً أولاً قبل إضافة سيناريو.");return;}
+  var name=($("newScenarioInput").value||"").trim();
+  if(!name){setMsg("detailMsg","اكتب اسم السيناريو أو المدبلج أولاً.","badge");return;}
+  w.scenarios=w.scenarios||[];
+  if(w.scenarios.indexOf(name)>-1){setMsg("detailMsg","هذا السيناريو موجود مسبقاً.","badge");return;}
+  w.scenarios.push(name);w.currentScenario=w.scenarios.length-1;w.updated=Date.now();
+  $("newScenarioInput").value="";save();renderAll();
+  setMsg("detailMsg","تمت إضافة السيناريو «"+name+"».");
+}
+function deleteScenario(){
+  var w=worksOf()[state.activeWorkId];
+  if(!w||!w.scenarios||w.scenarios.length<2){setMsg("detailMsg","لا يمكن حذف آخر سيناريو متاح.","badge");return;}
+  var idx=parseInt($("scenarioSelect").value,10)||0;
+  var name=w.scenarios[idx];
+  w.scenarios.splice(idx,1);
+  (w.files||[]).forEach(function(id){var f=filesOf()[id];if(f&&f.scenario===idx)f.scenario=0;});
+  (w.files||[]).forEach(function(id){var f=filesOf()[id];if(f&&f.scenario>idx)f.scenario--;});
+  w.currentScenario=0;w.updated=Date.now();
+  save();renderAll();
+  setMsg("detailMsg","تم حذف السيناريو «"+(name||"")+"» وإرجاع ملفاته إلى الافتراضي.");
+}
+function switchProfile(id){
+  if(id===state.data.activeProfile)return;
+  closePlayer();
+  state.activeWorkId=null;
+  state.data.activeProfile=id;save();
+  renderAll();
+  setMsg("profileMsg","تم التبديل إلى الملف الشخصي الحالي. المكتبة والسجل مفصولة لكل ملف.");
+}
+function importFiles(fileList){
+  var arr=Array.prototype.slice.call(fileList||[]);
+  if(!arr.length){setMsg("importMsg","لم يتم اختيار أي ملف.");return;}
+  ensureMaps();
+  setMsg("importMsg","جارٍ الاستيراد… ("+arr.length+" ملف)");
+  var pending=arr.length,done=0;
+  var finish=function(){
+    pending--;
+    if(pending>0){
+      setMsg("importMsg","جارٍ الاستيراد… تبقّى "+pending+" ملف.");
+      return;
+    }
+    save();renderAll();
+    setMsg("importMsg","تم استيراد "+done+" ملف بنجاح إلى المكتبة المحلية.");
+  };
+  arr.forEach(function(file){
+    var kind=guessKind(file.name);
+    if(kind==="other"){setMsg("importMsg","صيغة غير مدعومة: "+file.name,"badge");finish();return;}
+    if(kind==="sub"){handleSubtitleFile(file,function(ok){if(ok)done++;finish();});return;}
+    var id=uid();
+    var rec={id:id,name:file.name,blob:file,size:file.size,kind:kind,imported:Date.now()};
+    var probe=document.createElement(kind==="image"?"img":"video");
+    var url=URL.createObjectURL(file);
+    var proceed=function(){
+      try{URL.revokeObjectURL(url);}catch(e){}
+      var title=titleFromName(file.name);
+      var wid=findWorkByTitle(title);
+      if(!wid)wid=createWork(title);
+      var w=worksOf()[wid];
+      w.files=w.files||[];
+      var sub=w.currentScenario||0;
+      var fmeta={id:id,name:file.name,kind:kind,size:file.size,workId:wid,ep:epFromName(file.name),
+        duration:rec.duration||0,width:rec.width||0,height:rec.height||0,
+        progress:0,status:"watchlist",scenario:sub,subs:[],activeSub:null,imported:Date.now()};
+      filesOf()[id]=fmeta;
+      w.files.push(id);
+      w.updated=Date.now();
+      dbPut(rec).then(function(){
+        done++;
+        finish();
+      }).catch(function(){
+        delete filesOf()[id];
+        w.files=w.files.filter(function(x){return x!==id;});
+        setMsg("importMsg","تعذر حفظ "+file.name+" محلياً (مساحة التخزين ممتلئة).","badge");
+        finish();
+      });
+    };
+    if(kind==="image"){
+      probe.onload=function(){rec.width=probe.naturalWidth;rec.height=probe.naturalHeight;proceed();};
+      probe.onerror=function(){setMsg("importMsg","تعذر قراءة الصورة "+file.name,"badge");try{URL.revokeObjectURL(url);}catch(e){};finish();};
+      probe.src=url;
+    }else{
+      probe.preload="metadata";
+      probe.onloadedmetadata=function(){
+        rec.duration=isFinite(probe.duration)?probe.duration:0;
+        rec.width=probe.videoWidth||0;rec.height=probe.videoHeight||0;
+        proceed();
+      };
+      probe.onerror=function(){rec.duration=0;proceed();};
+      probe.src=url;
+      setTimeout(function(){if(rec.duration===0&&pending>0)proceed();},4000);
+    }
+  });
+}
+function handleSubtitleFile(file,cb){
+  var wid=state.activeWorkId,fid=state.activeFileId;
+  if(!wid||!fid){setMsg("importMsg","اختر ملف فيديو من المكتبة أولاً لربط الترجمة به.","badge");cb(false);return;}
+  var fr=new FileReader();
+  fr.onload=function(){
+    var cues=parseSubtitles(String(fr.result||""),"");
+    if(!cues.length){setMsg("importMsg","ملف الترجمة فارغ أو غير صالح: "+file.name,"badge");cb(false);return;}
+    var ext=(file.name.split(".").pop()||"srt").toLowerCase();
+    var f=filesOf()[fid];
+    if(!f){cb(false);return;}
+    f.subs=f.subs||[];
+    f.subs.push({name:file.name,format:ext,cues:cues});
+    f.activeSub=f.subs.length-1;
+    save();renderSubtitles();applySubtitle();
+    setMsg("importMsg","تم ربط الترجمة «"+file.name+"» بالملف الحالي: "+cues.length+" سطر.");
+    cb(true);
+  };
+  fr.onerror=function(){setMsg("importMsg","تعذر قراءة ملف الترجمة.","badge");cb(false);};
+  fr.readAsText(file);
+}
+function bind(){
+  $("fileMediaInput").addEventListener("change",function(){importFiles(this.files);this.value="";});
+  $("fileSubInput").addEventListener("change",function(){importFiles(this.files);this.value="";});
+  $("loadSubBtn").addEventListener("click",function(){$("fileSubInput").click();});
+  $("searchInput").addEventListener("input",renderLibrary);
+  $("statusFilter").addEventListener("change",renderLibrary);
+  $("sortSelect").addEventListener("change",renderLibrary);
+  $("addWorkBtn").addEventListener("click",addWorkManually);
+  $("addScenarioBtn").addEventListener("click",addScenario);
+  $("deleteScenarioBtn").addEventListener("click",deleteScenario);
+  $("scenarioSelect").addEventListener("change",function(){
+    var w=worksOf()[state.activeWorkId];if(!w)return;
+    w.currentScenario=parseInt(this.value,10)||0;save();renderFiles();
+    setMsg("detailMsg","عرض سيناريو: "+(w.scenarios[w.currentScenario]||""));
+  });
+  $("statusSelect").addEventListener("change",function(){
+    var w=worksOf()[state.activeWorkId];if(!w)return;
+    w.status=this.value;w.updated=Date.now();save();renderAll();
+    setMsg("detailMsg","تم تحديث حالة المتابعة.");
+  });
+  $("ratingSelect").addEventListener("change",function(){
+    var w=worksOf()[state.activeWorkId];if(!w)return;
+    w.rating=parseInt(this.value,10)||0;save();renderStats();
+    setMsg("detailMsg","تم حفظ التقييم: "+w.rating);
+  });
+  $("epTotalInput").addEventListener("change",function(){
+    var w=worksOf()[state.activeWorkId];if(!w)return;
+    w.epTotal=parseInt(this.value,10)||0;save();renderStats();
+  });
+  $("workNotesInput").addEventListener("change",function(){
+    var w=worksOf()[state.activeWorkId];if(!w)return;
+    w.notes=this.value;save();setMsg("detailMsg","تم حفظ الملاحظات.");
+  });
+  $("deleteWorkBtn").addEventListener("click",function(){
+    var w=worksOf()[state.activeWorkId];if(!w)return;
+    if(!window.confirm("حذف العمل «"+w.title+"» وكل ملفاته؟"))return;
+    (w.files||[]).forEach(function(id){dbDel(id);delete filesOf()[id];});
+    delete worksOf()[state.activeWorkId];
+    state.activeWorkId=null;closePlayer();save();renderAll();
+    setMsg("libraryMsg","تم حذف العمل من المكتبة.");
+  });
+  $("closePlayerBtn").addEventListener("click",function(){closePlayer();setMsg("playerMsg","تم إغلاق المشغل.");});
+  $("playToggleBtn").addEventListener("click",function(){
+    var v=$("videoPlayer");if(v.hidden)return;
+    if(v.paused){v.play().catch(function(){setMsg("playerMsg","تعذر بدء التشغيل.","badge");});}
+    else v.pause();
+  });
+  $("back10Btn").addEventListener("click",function(){var v=$("videoPlayer");if(!v.hidden)v.currentTime=Math.max(0,v.currentTime-10);});
+  $("fwd10Btn").addEventListener("click",function(){var v=$("videoPlayer");if(!v.hidden&&isFinite(v.duration))v.currentTime=Math.min(v.duration,v.currentTime+10);});
+  $("seekRange").addEventListener("input",function(){
+    var v=$("videoPlayer");if(v.hidden||!isFinite(v.duration))return;
+    v.currentTime=(parseInt(this.value,10)/1000)*v.duration;
+  });
+  $("seekTrack").addEventListener("click",function(e){
+    var v=$("videoPlayer");if(v.hidden||!isFinite(v.duration))return;
+    var r=this.getBoundingClientRect();
+    var p=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
+    v.currentTime=p*v.duration;
+  });
+  $("seekTrack").addEventListener("keydown",function(e){
+    var v=$("videoPlayer");if(v.hidden||!isFinite(v.duration))return;
+    if(e.key==="ArrowRight"){v.currentTime=Math.min(v.duration,v.currentTime+5);e.preventDefault();}
+    if(e.key==="ArrowLeft"){v.currentTime=Math.max(0,v.currentTime-5);e.preventDefault();}
+  });
+  $("volumeRange").addEventListener("input",function(){
+    var v=$("videoPlayer");v.volume=(parseInt(this.value,10)||0)/100;
+    setMsg("playerMsg","مستوى الصوت: "+this.value+"%");
+  });
+  $("speedSelect").addEventListener("change",function(){
+    var v=$("videoPlayer");v.playbackRate=parseFloat(this.value)||1;
+    setMsg("playerMsg","سرعة التشغيل: "+this.value+"x");
+  });
+  $("subtitleSelect").addEventListener("change",function(){
+    var f=state.activeFileId?filesOf()[state.activeFileId]:null;
+    if(!f)return;
+    f.activeSub=this.value===""?null:parseInt(this.value,10);
+    save();applySubtitle();
+  });
+  $("subSizeRange").addEventListener("input",function(){
+    var v=$("videoPlayer");
+    try{v.style.setProperty("--sub-size",this.value+"px");}catch(e){}
+    setMsg("playerMsg","حجم الترجمة: "+this.value+"px");
+  });
+  $("audioSelect").addEventListener("change",function(){
+    var v=$("videoPlayer");
+    try{
+      if(v.audioTracks){
+        for(var i=0;i<v.audioTracks.length;i++)v.audioTracks[i].enabled=(String(i)===this.value);
+      }
+      setMsg("playerMsg",this.value===""?"تم اختيار المسار الافتراضي.":"تم تبديل المسار الصوتي.");
+    }catch(e){setMsg("playerMsg","تبديل المسار الصوتي غير مدعوم في هذا المتصفح.","badge");}
+  });
+  $("toggleFullBtn").addEventListener("click",function(){
+    var box=$("mediaBox");
+    try{
+      if(document.fullscreenElement)document.exitFullscreen();
+      else if(box.requestFullscreen)box.requestFullscreen();
+      else setMsg("playerMsg","ملء الشاشة غير مدعوم في هذا المتصفح.","badge");
+    }catch(e){setMsg("playerMsg","تعذر تفعيل ملء الشاشة.","badge");}
+  });
+  $("addProfileBtn").addEventListener("click",function(){
+    var name=($("profileNameInput").value||"").trim();
+    if(!name){setMsg("profileMsg","اكتب اسماً للملف الشخصي أولاً.","badge");return;}
+    if(state.data.profiles.length>=8){setMsg("profileMsg","الحد الأقصى 8 ملفات شخصية.","badge");return;}
+    var id=uid();
+    state.data.profiles.push({id:id,name:name,avatar:$("profileAvatarSelect").value||"👤"});
+    $("profileNameInput").value="";
+    save();switchProfile(id);
+    setMsg("profileMsg","تمت إضافة الملف الشخصي «"+name+"» والتبديل إليه.");
+  });
+  $("deleteProfileBtn").addEventListener("click",function(){
+    if(state.data.profiles.length<2){setMsg("profileMsg","يجب الإبقاء على ملف شخصي واحد على الأقل.","badge");return;}
+    var cur=state.data.profiles.filter(function(p){return p.id===state.data.activeProfile;})[0];
+    if(!window.confirm("حذف الملف الشخصي «"+(cur?cur.name:"")+"» وكل بياناته المحلية؟"))return;
+    var files=filesOf(),id;
+    for(id in files)dbDel(id);
+    delete state.data.works[pid()];
+    delete state.data.files[pid()];
+    delete state.data.history[pid()];
+    state.data.profiles=state.data.profiles.filter(function(p){return p.id!==state.data.activeProfile;});
+    state.data.activeProfile=state.data.profiles[0].id;
+    state.activeWorkId=null;closePlayer();save();renderAll();
+    setMsg("profileMsg","تم حذف الملف الشخصي والتبديل إلى ملف آخر.");
+  });
+  $("clearHistoryBtn").addEventListener("click",function(){
+    state.data.history[pid()]=[];save();renderHistory();
+    setMsg("historyMsg","تم مسح سجل المشاهدة لهذا الملف الشخصي.");
+  });
+  var v=$("videoPlayer");
+  v.addEventListener("play",function(){
+    $("playToggleBtn").textContent="إيقاف مؤقت";
+    addHistoryOnce();
+  });
+  v.addEventListener("pause",function(){
+    $("playToggleBtn").textContent="تشغيل";
+    saveProgress();save();renderAll();
+  });
+  v.addEventListener("ended",function(){
+    saveProgress();
+    var f=state.activeFileId?filesOf()[state.activeFileId]:null;
+    if(f&&worksOf()[f.workId]){worksOf()[f.workId].status="completed";worksOf()[f.workId].progress=100;save();}
+    renderAll();
+    setMsg("playerMsg","انتهت المشاهدة وتم تسجيلها كمكتملة.");
+  });
+  v.addEventListener("timeupdate",function(){
+    if(!isFinite(v.duration)||v.duration<=0)return;
+    var p=v.currentTime/v.duration;
+    $("seekFill").style.width=(p*100)+"%";
+    $("seekRange").value=String(Math.round(p*1000));
+    $("seekTrack").setAttribute("aria-valuenow",String(Math.round(p*100)));
+    $("timeLabel").textContent=fmtTime(v.currentTime)+" / "+fmtTime(v.duration);
+  });
+  v.addEventListener("loadedmetadata",function(){renderAudioTracks();});
+  window.addEventListener("beforeunload",function(){saveProgress();save();});
+}
+function boot(){
+  state.data=load();
+  ensureMaps();
+  bind();
+  openDb().then(function(db){
+    state.db=db;
+    renderAll();
+    if(!db){
+      setMsg("importMsg","تنبيه: التخزين الدائم غير متاح في هذا المتصفح، قد لا تبقى الملفات بعد إغلاق الصفحة.");
+    }else{
+      setMsg("importMsg","جاهز للاستيراد. اختر فيديو أو صورة من جهازك لتبدأ المكتبة المحلية.");
+    }
+  });
+}
+boot();
+})();
+</script>
+</body>
+</html>
