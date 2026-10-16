@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة سير عمل وكلاء افتراضيين مع سياق مشترك وإعادة تشغيل | MDM1</title>
+<meta name="description" content="منصة عربية تفسير سير عمل وكلاء افتراضيين عبر سياق مشترك متبادل مع اعادة تشغيل تلقائية للأعطال وتتبع التكلفة واستهلاك الموارد لكل مهمة.">
+<link rel="canonical" href="https://mdm1.org/apps/agent-swarm.html">
+<meta property="og:title" content="منصة سير عمل وكلاء افتراضيين مع سياق مشترك وإعادة تشغيل">
+<meta property="og:description" content="منصة عربية تفسير سير عمل وكلاء افتراضيين عبر سياق مشترك متبادل مع اعادة تشغيل تلقائية للأعطال وتتبع التكلفة واستهلاك الموارد لكل مهمة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/agent-swarm.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:14px}
+.app-intro{margin:0 0 4px;padding:14px 16px;line-height:1.95;font-size:.95rem;color:var(--light);border:1px solid var(--gold-dim);border-radius:10px;background:rgba(212,175,55,.06)}
+.app h2{margin:0 0 12px;font-size:1.05rem;color:var(--gold)}
+.app .row{flex-wrap:wrap;gap:10px;align-items:flex-end}
+.app .row>label{display:flex;flex-direction:column;gap:6px;font-size:.84rem;color:var(--light);min-width:130px}
+.app input,.app select{min-width:120px}
+.app-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.app-item{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border:1px dashed var(--gold-dim);border-radius:8px;background:rgba(0,0,0,.25)}
+.app-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--light)}
+.app-meta strong{color:var(--gold-bright)}
+.app-empty,.app-err{margin:10px 0 0;font-size:.85rem;opacity:.85}
+.app-err{color:#ff9c9c;min-height:1.1em}
+.app-err.ok{color:#7ee0a8;opacity:1}
+.app-stat{flex:1 1 150px;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--gold-dim);border-radius:8px;background:rgba(0,0,0,.25)}
+.app-lab{font-size:.74rem;color:var(--gold-dim)}
+.app .big{font-size:1.6rem;color:var(--gold-bright);line-height:1.2}
+.app-log{max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:6px;font-size:.82rem;line-height:1.7}
+.app-log div{border-right:3px solid var(--gold-dim);padding-right:8px}
+.app-log .ok{border-color:#4caf7d}
+.app-log .bad{border-color:#e26a6a}
+.app-log .warn{border-color:var(--gold)}
+.app-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.app-chips .badge{display:inline-flex;gap:6px;align-items:center}
+.app-chips button{font-size:.7rem;padding:2px 6px}
+.app-chart{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.app-bar{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center;font-size:.8rem;color:var(--light)}
+.app-bar-track{background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden}
+.app-bar-fill{display:block;height:12px;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));border-radius:6px;min-width:3px}
+.app .badge.app-ok{color:#7ee0a8;border-color:#4caf7d}
+.app .badge.app-bad{color:#ff9c9c;border-color:#e26a6a}
+.app .badge.app-warn{color:var(--gold-bright);border-color:var(--gold)}
+@media (max-width:640px){.app .row{flex-direction:column;align-items:stretch}.app-bar{grid-template-columns:90px 1fr auto}.app-item{flex-direction:column;align-items:flex-start}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منصة تفسير ومحاكاة سير عمل الوكلاء الافتراضيين عبر سياق مشترك متبادل", "url": "https://mdm1.org/apps/agent-swarm.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما المقصود بالسياق المشترك المتبادل بين الوكلاء؟", "acceptedAnswer": {"@type": "Answer", "text": "هو مخزن مفاتيح يقرأ منه كل وكيل ما تحتاجه مهمته وينشر فيه ما تحققه، فتصبح المهام متسلسلة منطقيًا؛ لا تبدأ مهمة قبل توفر مفاتيحها المطلوبة، وعند نجاحها يظهر مفتاحها الناتج لتمكين المهام التالية، وإذا حُذف مفتاح بقيت المهام المنتظرة حجبًا حتى يعيد أحد الوكلاء نشره."}}, {"@type": "Question", "name": "كيف تعمل الاستجابة التلقائية للأعطال وإعادة التشغيل؟", "acceptedAnswer": {"@type": "Answer", "text": "عند تنفيذ كل محاولة تُقارن المنصة النسبة المحددة لنسبة الأعطال؛ عند الفشل تُحتسب تكلفة إعادة التشغيل وتُضاف للمهمة، ثم تعود المهمة إلى قائمة الانتظار بعد مهلة قصيرة متصاعدة، ويُسجَّل كل حدث في السجل اللحظي مع رقم المحاولة."}}, {"@type": "Question", "name": "ماذا يحدث عند تجاوز الحد الأقصى لإعادة التشغيل؟", "acceptedAnswer": {"@type": "Answer", "text": "إذا تجاوزت المهمة حد إعادة التشغيل المضبوط ولم يوجد وكيل احتياطي تُعلَّم المهمة كفاشلة ويظهر عددها في الإحصاءات؛ أما إذا حددت وكيلًا احتياطيًا فتُصعَّد المهمة إليه مرة واحدة وتُصفَّر محاولاتها لتنفذ من جديد."}}, {"@type": "Question", "name": "كيف تحتسب المنصة تكلفة كل مهمة واستهلاك مواردها؟", "acceptedAnswer": {"@type": "Answer", "text": "تُضاف تكلفة استدعاء الوكيل وسعر الوحدة مضروبًا في وحدات المهمة لكل محاولة، وتُضاف تكلفة إعادة التشغيل عند الفشل؛ وتُعرض التكلفة الإجمالية وتكلفة كل وكيل في التقرير، كما تُعرض الوحدات المستهلكة لكل مهمة مع حدّها الأقصى."}}, {"@type": "Question", "name": "هل تُرفع بيانات الإعدادات إلى خادم خارجي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل العمل يتم داخل متصفحك دون أي اتصال شبكي؛ زر «حفظ الإعدادات» يخزن الوكلاء والمهام والضبط في ذاكرة المتصفح المحلية داخل bloc try/catch، و«استعادة الإعدادات» يعيد تحميلها، و«حذف المحفوظات» يزيلها نهائيًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منصة تفسير ومحاكاة سير عمل الوكلاء الافتراضيين عبر سياق مشترك متبادل</h1>
+  <p class="page-sub">منصة عربية تفسير سير عمل وكلاء افتراضيين عبر سياق مشترك متبادل مع اعادة تشغيل تلقائية للأعطال وتتبع التكلفة واستهلاك الموارد لكل مهمة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">الإجابة السريعة: هذه المنصة منصة ويب عربية تشرح وتُحاكي سير عمل مجموعة من الوكلاء الافتراضيين الذين يعملون معًا على مهمة واحدة عبر سياق مشترك متبادل، مع استجابة تلقائية للأعطال وإعادة تشغيل محسوبة، وتتبّع دقيق للتكلفة واستهلاك الموارد لكل مهمة. تبدأ بتعريف الوكلاء ودور كل منهم وتكلفة استدعاءه وحدّ إعادة المحاولة المسموح له، ثم تبني المهام وتحدد أولوياتها ووحدات مواردها ومفاتيح السياق التي تحتاجها من الوكلاء الآخرين ومفتاح السياق الذي ستنشئه عند نجاحها، فتتحول العلاقة بين المهام إلى اعتماد حقيقي على السياق المشترك. بعد ذلك تضبط نسبة الأعطال وعدد محاولات إعادة التشغيل والتكلفة الجزافية لكل إعادة تشغيل وتكلفة الوحدة الواحدة وعدد المهام التي تعمل بالتوازي، ثم تشغّل المحاكاة أو تتقدّم خطوة بخطوة لترى كل مهمة تنتقل من الانتظار إلى التنفيذ ثم إلى النجاح أو الفشل، مع إعادة تشغيل تلقائية فورية عند كل عطل وتصعيد إلى وكيل احتياطي عند تجاوز الحد، وبإمكانك حقن عطل يدوي لاختبار منطق التعافي. في النهاية يعرض التطبيق إجمالي التكلفة واستهلاك الوحدات وعدد النجاحات والفشلات وإعادات التشغيل، إضافة إلى تقرير بياني مبسّط يقارن تكلفة كل وكيل ووحدات كل مهمة، مع سجل لحظي يوثّق كل قرار وحفظ واستعادة للإعدادات داخل متصفحك.</p>
+
+<div class="app">
+<p id="formMsg" class="app-err" role="alert"></p>
+
+<section class="card">
+<h2>1) إعداد الوكلاء الافتراضيين</h2>
+<div class="row">
+<label for="agentName">اسم الوكيل<input id="agentName" type="text" placeholder="مثال: محلل البيانات"></label>
+<label for="agentRole">الدور<input id="agentRole" type="text" placeholder="تحليل، كتابة، تدقيق"></label>
+<label for="agentCost">تكلفة الاستدعاء<input id="agentCost" type="number" min="0" step="0.1" value="1"></label>
+<label for="agentRetry">حد إعادة المحاولة<input id="agentRetry" type="number" min="0" max="9" value="3"></label>
+<button type="button" id="agentAdd">إضافة الوكيل</button>
+<button type="button" id="demoFill" class="button sec">تعبئة مثال تجريبي</button>
+</div>
+<div id="agentList" class="app-list"></div>
+<p id="agentEmpty" class="app-empty">لا توجد وكلاء بعد. أضف وكيلًا واحدًا على الأقل، أو اضغط «تعبئة مثال تجريبي» لرؤية المنصة فورًا.</p>
+</section>
+
+<section class="card">
+<h2>2) المهام وربطها بالسياق المشترك</h2>
+<div class="row">
+<label for="taskName">اسم المهمة<input id="taskName" type="text" placeholder="مثال: بناء التقرير"></label>
+<label for="taskAgent">الوكيل المسؤول<select id="taskAgent"><option value="">لا يوجد وكلاء</option></select></label>
+<label for="taskPriority">الأولوية<select id="taskPriority"><option value="1">عالية</option><option value="2">متوسطة</option><option value="3">منخفضة</option></select></label>
+<label for="taskUnits">وحدات الموارد<input id="taskUnits" type="number" min="1" max="999" value="10"></label>
+<label for="taskRequires">مفاتيح السياق المطلوبة<input id="taskRequires" type="text" placeholder="clean_data،market_feed"></label>
+<label for="taskOutput">مفتاح السياق الناتج<input id="taskOutput" type="text" placeholder="final_report"></label>
+<button type="button" id="taskAdd">إضافة المهمة</button>
+</div>
+<div id="taskList" class="app-list"></div>
+<p id="taskEmpty" class="app-empty">لا توجد مهام بعد. أضف مهمة واختر لها وكيلًا مسؤولًا لبدء بناء سير العمل.</p>
+</section>
+
+<section class="card">
+<h2>3) السياق المشترك المتبادل</h2>
+<div class="row">
+<label for="ctxKey">مفتاح سياق جديد<input id="ctxKey" type="text" placeholder="raw_data"></label>
+<button type="button" id="ctxAdd">إضافة المفتاح للسياق</button>
+<button type="button" id="ctxClear" class="button sec">تفريغ السياق المشترك</button>
+</div>
+<div id="ctxList" class="app-chips"></div>
+<p id="ctxEmpty" class="app-empty">السياق المشترك فارغ حاليًا. المهام التي تتطلب مفاتيح غير موجودة ستبقى في الانتظار حتى ينشرها وكيل آخر.</p>
+</section>
+
+<section class="card">
+<h2>4) إعدادات الأعطال وإعادة التشغيل</h2>
+<div class="row">
+<label for="failRate">نسبة الأعطال (%)<input id="failRate" type="range" min="0" max="90" step="5" value="30"></label>
+<span id="failRateVal" class="badge">30%</span>
+<label for="maxRetry">الحد الأقصى لإعادة التشغيل<input id="maxRetry" type="number" min="0" max="9" value="2"></label>
+<label for="restartPenalty">تكلفة إعادة التشغيل<input id="restartPenalty" type="number" min="0" step="0.1" value="0.5"></label>
+<label for="unitCost">تكلفة الوحدة الواحدة<input id="unitCost" type="number" min="0" step="0.01" value="0.05"></label>
+<label for="concurrency">التشغيل المتزامن<input id="concurrency" type="number" min="1" max="6" value="2"></label>
+<label for="backupAgent">الوكيل الاحتياطي<select id="backupAgent"><option value="">بدون وكيل احتياطي</option></select></label>
+</div>
+<div class="row">
+<button type="button" id="runStart">تشغيل المحاكاة</button>
+<button type="button" id="runPause" class="button sec">إيقاف مؤقت</button>
+<button type="button" id="runStep" class="button sec">خطوة يدوية</button>
+<button type="button" id="runStop" class="button sec">إنهاء المحاكاة</button>
+<button type="button" id="runReset" class="button sec">إعادة ضبط الجولة</button>
+</div>
+<div class="row">
+<label for="faultTask">مهمة لحقن عطل فيها<select id="faultTask"><option value="">اختر مهمة</option></select></label>
+<button type="button" id="faultInject" class="button sec">حقن العطل الآن</button>
+<button type="button" id="saveCfg" class="button sec">حفظ الإعدادات</button>
+<button type="button" id="loadCfg" class="button sec">استعادة الإعدادات</button>
+<button type="button" id="clearCfg" class="button sec">حذف المحفوظات</button>
+</div>
+</section>
+
+<section class="card">
+<h2>5) نتائج التكلفة واستهلاك الموارد</h2>
+<div class="row">
+<div class="app-stat"><span class="app-lab">إجمالي التكلفة (ر.س)</span><span id="statCost" class="big">0.00</span></div>
+<div class="app-stat"><span class="app-lab">الوحدات المستهلكة</span><span id="statUnits" class="big">0</span></div>
+<div class="app-stat"><span class="app-lab">مهام مكتملة</span><span id="statDone" class="big">0</span></div>
+<div class="app-stat"><span class="app-lab">مهام فاشلة</span><span id="statFailed" class="big">0</span></div>
+<div class="app-stat"><span class="app-lab">إعادات تشغيل</span><span id="statRestarts" class="big">0</span></div>
+<div class="app-stat"><span class="app-lab">مهام منتظرة</span><span id="statPending" class="big">0</span></div>
+</div>
+<div class="row">
+<span id="runStatus" class="badge">الحالة: متوقف</span>
+<span id="runTick" class="badge">الخطوة: 0</span>
+</div>
+<div id="runLog" class="out app-log" aria-live="polite">لا توجد أحداث بعد. شغّل المحاكاة لعرض السجل اللحظي.</div>
+</section>
+
+<section class="card">
+<h2>6) تقرير التكلفة والموارد</h2>
+<div class="row">
+<label for="chartMode">نوع التقرير<select id="chartMode"><option value="cost">تكلفة كل وكيل (ر.س)</option><option value="units">وحدات كل مهمة</option><option value="retries">إعادات تشغيل كل مهمة</option></select></label>
+</div>
+<div id="chartBox" class="app-chart"></div>
+<p id="chartEmpty" class="app-empty">لا توجد بيانات بعد. أضف وكلاء ومهام ثم شغّل المحاكاة لتظهر النتائج هنا.</p>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما المقصود بالسياق المشترك المتبادل بين الوكلاء؟</h3><p>هو مخزن مفاتيح يقرأ منه كل وكيل ما تحتاجه مهمته وينشر فيه ما تحققه، فتصبح المهام متسلسلة منطقيًا؛ لا تبدأ مهمة قبل توفر مفاتيحها المطلوبة، وعند نجاحها يظهر مفتاحها الناتج لتمكين المهام التالية، وإذا حُذف مفتاح بقيت المهام المنتظرة حجبًا حتى يعيد أحد الوكلاء نشره.</p><h3>كيف تعمل الاستجابة التلقائية للأعطال وإعادة التشغيل؟</h3><p>عند تنفيذ كل محاولة تُقارن المنصة النسبة المحددة لنسبة الأعطال؛ عند الفشل تُحتسب تكلفة إعادة التشغيل وتُضاف للمهمة، ثم تعود المهمة إلى قائمة الانتظار بعد مهلة قصيرة متصاعدة، ويُسجَّل كل حدث في السجل اللحظي مع رقم المحاولة.</p><h3>ماذا يحدث عند تجاوز الحد الأقصى لإعادة التشغيل؟</h3><p>إذا تجاوزت المهمة حد إعادة التشغيل المضبوط ولم يوجد وكيل احتياطي تُعلَّم المهمة كفاشلة ويظهر عددها في الإحصاءات؛ أما إذا حددت وكيلًا احتياطيًا فتُصعَّد المهمة إليه مرة واحدة وتُصفَّر محاولاتها لتنفذ من جديد.</p><h3>كيف تحتسب المنصة تكلفة كل مهمة واستهلاك مواردها؟</h3><p>تُضاف تكلفة استدعاء الوكيل وسعر الوحدة مضروبًا في وحدات المهمة لكل محاولة، وتُضاف تكلفة إعادة التشغيل عند الفشل؛ وتُعرض التكلفة الإجمالية وتكلفة كل وكيل في التقرير، كما تُعرض الوحدات المستهلكة لكل مهمة مع حدّها الأقصى.</p><h3>هل تُرفع بيانات الإعدادات إلى خادم خارجي؟</h3><p>لا، كل العمل يتم داخل متصفحك دون أي اتصال شبكي؛ زر «حفظ الإعدادات» يخزن الوكلاء والمهام والضبط في ذاكرة المتصفح المحلية داخل bloc try/catch، و«استعادة الإعدادات» يعيد تحميلها، و«حذف المحفوظات» يزيلها نهائيًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  "use strict";
+  var KEY = "ar-agent-flow-v1";
+  var G = { agents: [], tasks: [], ctx: [], sa: 0, st: 0 };
+  var S = { running: false, timer: null, tick: 0, cost: 0, units: 0, done: 0, failed: 0, restarts: 0, finished: false, ctxStart: null };
+  var $ = function (id) { return document.getElementById(id); };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function n(v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; }
+  function num(v, d) { return n(v).toFixed(d === undefined ? 2 : d); }
+  function msg(t, k) { var e = $("formMsg"); e.textContent = t || ""; e.className = "app-err" + (k === "ok" ? " ok" : ""); }
+  function cfg() {
+    return {
+      fail: n($("failRate").value),
+      max: n($("maxRetry").value),
+      pen: n($("restartPenalty").value),
+      unit: n($("unitCost").value),
+      conc: Math.max(1, Math.round(n($("concurrency").value)))
+    };
+  }
+  function findAgent(id) { for (var i = 0; i < G.agents.length; i++) { if (G.agents[i].id === id) return G.agents[i]; } return null; }
+  function findTask(id) { for (var i = 0; i < G.tasks.length; i++) { if (G.tasks[i].id === id) return G.tasks[i]; } return null; }
+  function hasCtx(keys) { for (var i = 0; i < keys.length; i++) { if (G.ctx.indexOf(keys[i]) < 0) return false; } return true; }
+  function prioLabel(p) { return p === 1 ? "عالية" : p === 2 ? "متوسطة" : "منخفضة"; }
+  function stateLabel(s) { return { pending: "في الانتظار", running: "قيد التنفيذ", restart: "إعادة تشغيل", done: "مكتملة", failed: "فاشلة" }[s] || s; }
+  function stateClass(s) { return { pending: "", running: "ok", restart: "warn", done: "ok", failed: "bad" }[s] || ""; }
+
+  function log(text, kind) {
+    var el = $("runLog");
+    if (el.getAttribute("data-empty") === "1") { el.textContent = ""; el.removeAttribute("data-empty"); }
+    var d = document.createElement("div");
+    d.className = kind || "warn";
+    d.textContent = "[خطوة " + S.tick + "] " + text;
+    el.appendChild(d);
+    el.scrollTop = el.scrollHeight;
+    while (el.childNodes.length > 150) { el.removeChild(el.firstChild); }
+  }
+  function setStatus(text, kind) {
+    var el = $("runStatus");
+    el.textContent = "الحالة: " + text;
+    el.className = "badge" + (kind ? " app-" + kind : "");
+  }
+
+  function fillSelect(sel, items, placeholder, valOf, txtOf) {
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">' + placeholder + "</option>";
+    items.forEach(function (it) {
+      var o = document.createElement("option");
+      o.value = String(valOf(it));
+      o.textContent = txtOf(it);
+      sel.appendChild(o);
+    });
+    if (cur) { sel.value = cur; }
+  }
+  function fillSelects() {
+    fillSelect($("taskAgent"), G.agents, "اختر الوكيل المسؤول", function (a) { return a.id; }, function (a) { return a.name; });
+    fillSelect($("backupAgent"), G.agents, "بدون وكيل احتياطي", function (a) { return a.id; }, function (a) { return a.name; });
+    fillSelect($("faultTask"), G.tasks.filter(function (t) { return t.status !== "done" && t.status !== "failed"; }), "اختر مهمة", function (t) { return t.id; }, function (t) { return t.name; });
+  }
+
+  function renderAgents() {
+    var list = $("agentList"), empty = $("agentEmpty");
+    if (!G.agents.length) { list.innerHTML = ""; empty.style.display = ""; fillSelects(); return; }
+    empty.style.display = "none";
+    list.innerHTML = G.agents.map(function (a) {
+      return '<div class="app-item"><div class="app-meta">' +
+        "<strong>" + esc(a.name) + "</strong>" +
+        '<span class="badge">الدور: ' + esc(a.role || "عام") + "</span>" +
+        '<span class="badge">تكلفة الاستدعاء: ' + num(a.call) + "</span>" +
+        '<span class="badge">حد إعادة المحاولة: ' + a.retry + "</span>" +
+        '<span class="badge">تكلفة متراكمة: ' + num(a.acc) + "</span>" +
+        '</div><button type="button" class="button sec" id="agentDel' + a.id + '" data-aid="' + a.id + '">حذف الوكيل</button></div>';
+    }).join("");
+    list.querySelectorAll("button[data-aid]").forEach(function (b) {
+      b.addEventListener("click", function () { removeAgent(parseInt(b.getAttribute("data-aid"), 10)); });
+    });
+    fillSelects();
+  }
+
+  function renderTasks() {
+    var list = $("taskList"), empty = $("taskEmpty");
+    if (!G.tasks.length) { list.innerHTML = ""; empty.style.display = ""; fillSelects(); return; }
+    empty.style.display = "none";
+    list.innerHTML = G.tasks.map(function (t) {
+      var a = findAgent(t.agentId);
+      return '<div class="app-item"><div class="app-meta">' +
+        "<strong>" + esc(t.name) + "</strong>" +
+        '<span class="badge ' + stateClass(t.status) + '">' + stateLabel(t.status) + "</span>" +
+        '<span class="badge">الوكيل: ' + esc(a ? a.name : "غير محدد") + "</span>" +
+        '<span class="badge">الأولوية: ' + prioLabel(t.prio) + "</span>" +
+        '<span class="badge">التكلفة: ' + num(t.cost) + "</span>" +
+        '<span class="badge">الوحدات: ' + num(t.usedUnits, 0) + "/" + t.units + "</span>" +
+        '<span class="badge">إعادات التشغيل: ' + t.retries + "</span>" +
+        '<span class="badge">السياق المطلوب: ' + (t.requires.length ? esc(t.requires.join("، ")) : "لا شيء") + "</span>" +
+        '<span class="badge">السياق الناتج: ' + (t.output ? esc(t.output) : "لا شيء") + "</span>" +
+        '</div><button type="button" class="button sec" id="taskDel' + t.id + '" data-tid="' + t.id + '">حذف المهمة</button></div>';
+    }).join("");
+    list.querySelectorAll("button[data-tid]").forEach(function (b) {
+      b.addEventListener("click", function () { removeTask(parseInt(b.getAttribute("data-tid"), 10)); });
+    });
+    fillSelects();
+  }
+
+  function renderCtx() {
+    var box = $("ctxList"), empty = $("ctxEmpty");
+    if (!G.ctx.length) { box.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    box.innerHTML = G.ctx.map(function (k, i) {
+      var users = G.tasks.filter(function (t) { return t.requires.indexOf(k) > -1; }).length;
+      return '<span class="badge">' + esc(k) + ' <small>(' + users + ' مهمة)</small> ' +
+        '<button type="button" id="ctxDel' + i + '" data-k="' + esc(k) + '">إزالة</button></span>';
+    }).join("");
+    box.querySelectorAll("button[data-k]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-k");
+        G.ctx = G.ctx.filter(function (x) { return x !== k; });
+        log("أزيل المفتاح «" + k + "» من السياق المشترك", "warn");
+        renderCtx(); renderTasks(); renderChart();
+      });
+    });
+  }
+
+  function renderStats() {
+    $("statCost").textContent = num(S.cost);
+    $("statUnits").textContent = num(S.units, 0);
+    $("statDone").textContent = String(S.done);
+    $("statFailed").textContent = String(S.failed);
+    $("statRestarts").textContent = String(S.restarts);
+    $("statPending").textContent = String(G.tasks.filter(function (t) { return t.status === "pending" || t.status === "restart"; }).length);
+    $("runTick").textContent = "الخطوة: " + S.tick;
+  }
+
+  function renderChart() {
+    var mode = $("chartMode").value, rows = [];
+    if (mode === "cost") {
+      G.agents.forEach(function (a) { rows.push({ l: a.name, v: a.acc || 0, f: num(a.acc || 0) }); });
+    } else if (mode === "units") {
+      G.tasks.forEach(function (t) { rows.push({ l: t.name, v: t.usedUnits, f: String(t.usedUnits) }); });
+    } else {
+      G.tasks.forEach(function (t) { rows.push({ l: t.name, v: t.retries, f: String(t.retries) }); });
+    }
+    var box = $("chartBox"), empty = $("chartEmpty");
+    var any = rows.some(function (r) { return r.v > 0; });
+    if (!rows.length || !any) {
+      box.innerHTML = "";
+      empty.style.display = "";
+      empty.textContent = rows.length ? "لا توجد بيانات بعد. شغّل المحاكاة أولًا لتظهر أرقام التقرير." : "لا توجد عناصر لعرضها. أضف وكلاء أو مهام ثم شغّل المحاكاة.";
+      return;
+    }
+    empty.style.display = "none";
+    var max = 0;
+    rows.forEach(function (r) { if (r.v > max) { max = r.v; } });
+    if (!max) { max = 1; }
+    box.innerHTML = rows.map(function (r) {
+      var w = Math.max(2, Math.round(r.v / max * 100));
+      return '<div class="app-bar"><span>' + esc(r.l) + '</span>' +
+        '<span class="app-bar-track"><span class="app-bar-fill" style="width:' + w + '%"></span></span>' +
+        "<span>" + esc(r.f) + "</span></div>";
+    }).join("");
+  }
+
+  function renderAll() { renderAgents(); renderTasks(); renderCtx(); renderStats(); renderChart(); }
+
+  function removeAgent(id) {
+    if (G.tasks.some(function (t) { return t.agentId === id; })) {
+      msg("لا يمكن حذف وكيل لديه مهام مرتبطة. احذف مهامه أولًا.");
+      return;
+    }
+    G.agents = G.agents.filter(function (a) { return a.id !== id; });
+    renderAll();
+    msg("تم حذف الوكيل", "ok");
+  }
+  function removeTask(id) {
+    G.tasks = G.tasks.filter(function (t) { return t.id !== id; });
+    renderAll();
+    msg("تم حذف المهمة", "ok");
+  }
+
+  function startTimer() {
+    if (S.timer) { clearInterval(S.timer); }
+    S.timer = setInterval(function () { tick(); }, 650);
+    S.running = true;
+    setStatus("قيد التشغيل", "ok");
+  }
+  function stopTimer() {
+    if (S.timer) { clearInterval(S.timer); S.timer = null; }
+    S.running = false;
+  }
+
+  function startTask(t) {
+    var a = findAgent(t.agentId);
+    t.status = "running";
+    t.attemptCost = a ? a.call : 0;
+    t.attemptUnits = t.units;
+    log("بدأت المهمة «" + t.name + "» على الوكيل «" + (a ? a.name : "غير محدد") + "» (المحاولة " + (t.retries + 1) + ")", "warn");
+  }
+  function finishFailed(t, reason) {
+    t.status = "failed";
+    S.failed++;
+    log(reason, "bad");
+  }
+  function resolve(t) {
+    var c = cfg();
+    var a = findAgent(t.agentId);
+    if (!a) { finishFailed(t, "تعذّر تنفيذ «" + t.name + "» لأن وكيلها لم يعد موجودًا"); return; }
+    var willFail = t.forceFail || (Math.random() * 100 < c.fail);
+    t.forceFail = false;
+    var charge = t.attemptCost + (willFail ? c.pen : 0);
+    t.cost += charge;
+    t.usedUnits += t.attemptUnits;
+    a.acc = (a.acc || 0) + charge;
+    S.cost += charge;
+    S.units += t.attemptUnits;
+    if (!willFail) {
+      t.status = "done";
+      S.done++;
+      if (t.output && G.ctx.indexOf(t.output) < 0) { G.ctx.push(t.output); renderCtx(); }
+      log("نجحت المهمة «" + t.name + "» ونشرت في السياق المشترك: " + (t.output || "لا ناتج"), "ok");
+      return;
+    }
+    if (t.retries < c.max) {
+      t.retries++;
+      S.restarts++;
+      var w = Math.min(4, 1 + t.retries);
+      t.status = "restart";
+      t.wait = w;
+      log("عطل في «" + t.name + "» → إعادة تشغيل تلقائية بعد " + w + " خطوة (المحاولة " + (t.retries + 1) + " من " + (c.max + 1) + ")", "bad");
+    } else {
+      var b = $("backupAgent").value;
+      if (b && !t.escalated && parseInt(b, 10) !== t.agentId) {
+        t.escalated = true;
+        t.retries = 0;
+        t.status = "pending";
+        t.agentId = parseInt(b, 10);
+        var ba = findAgent(t.agentId);
+        log("فشل نهائي لـ«" + t.name + "» → التصعيد إلى الوكيل الاحتياطي «" + (ba ? ba.name : "") + "»", "warn");
+      } else {
+        finishFailed(t, "استُنفدت محاولات المهمة «" + t.name + "» دون نجاح");
+      }
+    }
+  }
+
+  function tick() {
+    if (S.finished) { return; }
+    var c = cfg();
+    S.tick++;
+    G.tasks.forEach(function (t) {
+      if (t.status === "restart" && t.wait > 0) {
+        t.wait--;
+        if (t.wait === 0) { t.status = "pending"; log("أصبحت المهمة «" + t.name + "» جاهزة لإعادة التنفيذ", "warn"); }
+      }
+    });
+    var running = G.tasks.filter(function (t) { return t.status === "running"; });
+    var slots = Math.max(0, c.conc - running.length);
+    G.tasks.filter(function (t) { return t.status === "pending"; })
+      .sort(function (a, b) { return a.prio - b.prio || a.id - b.id; })
+      .forEach(function (t) {
+        if (slots > 0 && hasCtx(t.requires)) { startTask(t); slots--; }
+      });
+    G.tasks.filter(function (t) { return t.status === "running"; }).forEach(resolve);
+    renderTasks();
+    renderStats();
+    renderChart();
+    checkEnd();
+  }
+
+  function checkEnd() {
+    var active = G.tasks.some(function (t) { return t.status === "running" || t.status === "restart"; });
+    var pending = G.tasks.filter(function (t) { return t.status === "pending"; });
+    var startable = pending.some(function (t) { return hasCtx(t.requires); });
+    if (active || startable) { return; }
+    S.finished = true;
+    stopTimer();
+    if (!G.tasks.length) {
+      setStatus("لا توجد مهام", "bad");
+    } else if (pending.length) {
+      setStatus("تعارض في السياق المشترك", "bad");
+      log("توقف سير العمل: " + pending.length + " مهمة محجوبة لعدم توفّر مفاتيح السياق المطلوبة", "bad");
+    } else if (S.failed > 0) {
+      setStatus("اكتمل مع أعطال", "warn");
+      log("انتهى السير: نجحت " + S.done + "، فشلت " + S.failed + "، إعادة تشغيل " + S.restarts + "، التكلفة " + num(S.cost) + " ر.س", "warn");
+    } else {
+      setStatus("اكتمل بنجاح", "ok");
+      log("اكتمل سير العمل بالكامل: " + S.done + " مهمة، التكلفة " + num(S.cost) + " ر.س، الوحدات " + num(S.units, 0), "ok");
+    }
+  }
+
+  function resetRun() {
+    stopTimer();
+    S.tick = 0; S.cost = 0; S.units = 0; S.done = 0; S.failed = 0; S.restarts = 0; S.finished = false;
+    G.tasks.forEach(function (t) {
+      t.status = "pending"; t.retries = 0; t.cost = 0; t.usedUnits = 0;
+      t.escalated = false; t.forceFail = false; t.wait = 0;
+    });
+    G.agents.forEach(function (a) { a.acc = 0; });
+    if (S.ctxStart) { G.ctx = S.ctxStart.slice(); }
+    setStatus("متوقف", "");
+    renderAll();
+  }
+
+  function onStart() {
+    if (!G.agents.length) { msg("أضف وكيلًا واحدًا على الأقل قبل تشغيل المحاكاة"); return; }
+    if (!G.tasks.length) { msg("أضف مهمة واحدة على الأقل قبل تشغيل المحاكاة"); return; }
+    if (S.finished) { resetRun(); }
+    if (S.tick === 0 && !S.ctxStart) { S.ctxStart = G.ctx.slice(); }
+    msg("");
+    log("بدء سير العمل: " + G.tasks.length + " مهمة، " + G.agents.length + " وكيل، نسبة أعطال " + cfg().fail + "%", "ok");
+    startTimer();
+    renderTasks();
+  }
+  function onPause() {
+    if (!S.running) { setStatus("متوقف مؤقتًا بالفعل", "warn"); return; }
+    stopTimer();
+    setStatus("متوقف مؤقتًا", "warn");
+    log("تم إيقاف المحاكاة مؤقتًا", "warn");
+  }
+  function onStep() {
+    if (S.finished) { msg("اكتملت الجولة بالفعل. اضغط «إعادة ضبط الجولة» ثم أعد التشغيل."); return; }
+    if (!G.agents.length || !G.tasks.length) { msg("أضف وكلاء ومهام أولًا حتى تعمل الخطوة اليدوية"); return; }
+    stopTimer();
+    if (S.tick === 0 && !S.ctxStart) { S.ctxStart = G.ctx.slice(); }
+    msg("");
+    tick();
+    setStatus("خطوة يدوية", "");
+  }
+  function onStop() {
+    stopTimer();
+    G.tasks.forEach(function (t) { if (t.status === "running") { t.status = "pending"; } });
+    setStatus("تم الإيقاف", "warn");
+    log("تم إنهاء التشغيل يدويًا", "warn");
+    renderTasks();
+  }
+
+  function onFault() {
+    var id = $("faultTask").value;
+    if (!id) { msg("اختر مهمة لحقن العطل فيها"); return; }
+    var t = findTask(parseInt(id, 10));
+    if (!t) { msg("المهمة المحددة غير موجودة"); return; }
+    if (t.status === "done" || t.status === "failed") { msg("هذه المهمة انتهت بالفعل ولا يمكن حقن عطل فيها"); return; }
+    t.forceFail = true;
+    if (t.status === "pending") { startTask(t); renderTasks(); }
+    msg("تم حقن عطل في المهمة «" + t.name + "»", "ok");
+    log("عطل مُحقن يدويًا في المهمة «" + t.name + "»", "bad");
+  }
+
+  function saveCfg() {
+    try {
+      var data = {
+        a: G.agents, t: G.tasks, c: G.ctx, sa: G.sa, st: G.st,
+        fr: $("failRate").value, mr: $("maxRetry").value, rp: $("restartPenalty").value,
+        uc: $("unitCost").value, cc: $("concurrency").value, bk: $("backupAgent").value
+      };
+      localStorage.setItem(KEY, JSON.stringify(data));
+      msg("تم حفظ الإعدادات والبيانات في هذا المتصفح", "ok");
+      log("تم حفظ الإعدادات محليًا", "ok");
+    } catch (e) {
+      msg("تعذّر الحفظ: " + (e && e.message ? e.message : "خطأ غير معروف"));
+    }
+  }
+  function loadCfg() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) { msg("لا توجد إعدادات محفوظة في هذا المتصفح"); return; }
+      var d = JSON.parse(raw);
+      if (!d || !Array.isArray(d.a) || !Array.isArray(d.t)) { msg("الملف المحفوظ غير صالح"); return; }
+      stopTimer();
+      G.agents = d.a; G.tasks = d.t; G.ctx = Array.isArray(d.c) ? d.c : [];
+      G.sa = d.sa || 0; G.st = d.st || 0;
+      G.tasks.forEach(function (t) { t.status = "pending"; t.retries = 0; t.cost = 0; t.usedUnits = 0; t.escalated = false; t.forceFail = false; t.wait = 0; });
+      G.agents.forEach(function (a) { a.acc = 0; });
+      if (d.fr !== undefined) { $("failRate").value = d.fr; }
+      if (d.mr !== undefined) { $("maxRetry").value = d.mr; }
+      if (d.rp !== undefined) { $("restartPenalty").value = d.rp; }
+      if (d.uc !== undefined) { $("unitCost").value = d.uc; }
+      if (d.cc !== undefined) { $("concurrency").value = d.cc; }
+      if (d.bk !== undefined) { $("backupAgent").value = d.bk; }
+      S.ctxStart = null;
+      resetRun();
+      updateFailLabel();
+      msg("تمت استعادة الإعدادات المحفوظة", "ok");
+      log("تم تحميل الإعدادات المحفوظة محليًا", "ok");
+    } catch (e) {
+      msg("تعذّر الاستعادة: " + (e && e.message ? e.message : "بيانات تالفة"));
+    }
+  }
+  function clearCfg() {
+    try {
+      localStorage.removeItem(KEY);
+      msg("تم حذف البيانات المحفوظة من هذا المتصفح", "ok");
+    } catch (e) {
+      msg("تعذّر الحذف: " + (e && e.message ? e.message : "خطأ غير معروف"));
+    }
+  }
+
+  function updateFailLabel() { $("failRateVal").textContent = $("failRate").value + "%"; }
+
+  function demoFill() {
+    stopTimer();
+    G.agents = [
+      { id: ++G.sa, name: "وكيل التحليل", role: "تحليل", call: 1.2, retry: 3, acc: 0 },
+      { id: ++G.sa, name: "وكيل التحرير", role: "كتابة", call: 2, retry: 2, acc: 0 },
+      { id: ++G.sa, name: "وكيل التدقيق", role: "تدقيق", call: 1.5, retry: 2, acc: 0 }
+    ];
+    G.ctx = ["raw_data"];
+    G.tasks = [
+      { id: ++G.st, name: "تنظيف البيانات الخام", agentId: G.agents[0].id, prio: 1, units: 20, requires: ["raw_data"], output: "clean_data", status: "pending", retries: 0, cost: 0, usedUnits: 0, escalated: false, forceFail: false, wait: 0 },
+      { id: ++G.st, name: "استخراج مؤشرات السوق", agentId: G.agents[0].id, prio: 2, units: 15, requires: ["raw_data"], output: "market_feed", status: "pending", retries: 0, cost: 0, usedUnits: 0, escalated: false, forceFail: false, wait: 0 },
+      { id: ++G.st, name: "بناء الملخص التنفيذي", agentId: G.agents[1].id, prio: 1, units: 30, requires: ["clean_data", "market_feed"], output: "exec_summary", status: "pending", retries: 0, cost: 0, usedUnits: 0, escalated: false, forceFail: false, wait: 0 },
+      { id: ++G.st, name: "مراجعة الجودة النهائية", agentId: G.agents[2].id, prio: 1, units: 12, requires: ["exec_summary"], output: "final_report", status: "pending", retries: 0, cost: 0, usedUnits: 0, escalated: false, forceFail: false, wait: 0 }
+    ];
+    S.ctxStart = G.ctx.slice();
+    S.tick = 0; S.cost = 0; S.units = 0; S.done = 0; S.failed = 0; S.restarts = 0; S.finished = false;
+    setStatus("متوقف", "");
+    renderAll();
+    msg("تم تعبئة مثال تجريبي جاهز للتشغيل", "ok");
+    log("تم تحميل مثال: 3 وكلاء و4 مهام تعتمد على سياق مشترك", "ok");
+  }
+
+  $("agentAdd").addEventListener("click", function () {
+    var name = $("agentName").value.trim();
+    var role = $("agentRole").value.trim();
+    var call = n($("agentCost").value);
+    var retry = Math.round(n($("agentRetry").value));
+    if (!name) { msg("اكتب اسم الوكيل أولًا"); $("agentName").focus(); return; }
+    if (call < 0 || retry < 0) { msg("أدخل قيمًا صحيحة غير سالبة لتكلفة الاستدعاء وحد إعادة المحاولة"); return; }
+    G.agents.push({ id: ++G.sa, name: name, role: role || "عام", call: call, retry: retry, acc: 0 });
+    $("agentName").value = ""; $("agentRole").value = "";
+    renderAgents(); renderTasks(); renderChart();
+    msg("تمت إضافة الوكيل «" + name + "»", "ok");
+  });
+
+  $("taskAdd").addEventListener("click", function () {
+    var name = $("taskName").value.trim();
+    var agentId = parseInt($("taskAgent").value, 10);
+    var prio = parseInt($("taskPriority").value, 10) || 1;
+    var units = Math.max(1, Math.round(n($("taskUnits").value)));
+    var requires = $("taskRequires").value.split(/[,،]+/).map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+    var output = $("taskOutput").value.trim();
+    if (!name) { msg("اكتب اسم المهمة أولًا"); $("taskName").focus(); return; }
+    if (!findAgent(agentId)) { msg("اختر الوكيل المسؤول لهذه المهمة"); return; }
+    G.tasks.push({ id: ++G.st, name: name, agentId: agentId, prio: prio, units: units, requires: requires, output: output, status: "pending", retries: 0, cost: 0, usedUnits: 0, escalated: false, forceFail: false, wait: 0 });
+    $("taskName").value = ""; $("taskRequires").value = ""; $("taskOutput").value = "";
+    renderTasks(); renderChart();
+    msg("تمت إضافة المهمة «" + name + "»", "ok");
+  });
+
+  $("ctxAdd").addEventListener("click", function () {
+    var k = $("ctxKey").value.trim();
+    if (!k) { msg("اكتب مفتاح السياق أولًا"); $("ctxKey").focus(); return; }
+    if (G.ctx.indexOf(k) > -1) { msg("المفتاح «" + k + "» موجود بالفعل في السياق المشترك"); return; }
+    G.ctx.push(k);
+    $("ctxKey").value = "";
+    renderCtx(); renderTasks();
+    msg("تمت إضافة المفتاح «" + k + "» للسياق المشترك", "ok");
+  });
+
+  $("ctxClear").addEventListener("click", function () {
+    if (!G.ctx.length) { msg("السياق المشترك فارغ بالفعل"); return; }
+    G.ctx = [];
+    renderCtx(); renderTasks();
+    msg("تم تفريغ السياق المشترك", "ok");
+    log("تم تفريغ السياق المشترك، وقد تتعارض المهام اللاحقة", "warn");
+  });
+
+  $("demoFill").addEventListener("click", demoFill);
+  $("runStart").addEventListener("click", onStart);
+  $("runPause").addEventListener("click", onPause);
+  $("runStep").addEventListener("click", onStep);
+  $("runStop").addEventListener("click", onStop);
+  $("runReset").addEventListener("click", function () { resetRun(); msg("تمت إعادة ضبط الجولة", "ok"); log("تمت إعادة ضبط الجولة", "warn"); });
+  $("faultInject").addEventListener("click", onFault);
+  $("saveCfg").addEventListener("click", saveCfg);
+  $("loadCfg").addEventListener("click", loadCfg);
+  $("clearCfg").addEventListener("click", clearCfg);
+  $("chartMode").addEventListener("change", renderChart);
+  $("failRate").addEventListener("input", updateFailLabel);
+
+  $("runLog").setAttribute("data-empty", "1");
+  updateFailLabel();
+  renderAll();
+  setStatus("متوقف", "");
+})();
+</script>
+</body>
+</html>
