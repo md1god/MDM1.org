@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مختبر ضغط الصور: تحويل وضغط PNG وJPEG وGIF وWebP داخل المتصفح | MDM1</title>
+<meta name="description" content="حوّل واضغط صور PNG وJPEG وGIF وWebP داخل المتصفح مع شريط جودة ومستويات جهد، واعرض نسبة التوفير وحجم الملف قبل وبعد وزمن فك الضغط، دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/browser-image-codec-lab.html">
+<meta property="og:title" content="مختبر ضغط الصور: تحويل وضغط PNG وJPEG وGIF وWebP داخل المتصفح">
+<meta property="og:description" content="حوّل واضغط صور PNG وJPEG وGIF وWebP داخل المتصفح مع شريط جودة ومستويات جهد، واعرض نسبة التوفير وحجم الملف قبل وبعد وزمن فك الضغط، دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/browser-image-codec-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:960px}
+.app-intro{line-height:1.9;margin:0 0 18px}
+.app-panel{margin-bottom:16px}
+.app .row{flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.app-status{min-height:22px;font-size:.95rem;margin-top:6px;color:var(--gold-dim)}
+.app-status.err{color:#ff8080}
+.app-status.ok{color:var(--gold-bright)}
+.app-status.warn{color:#ffc266}
+.app-results{display:grid;gap:14px}
+.app-item{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.app-thumb{width:120px;height:120px;object-fit:contain;border:1px solid var(--gold-dim);border-radius:8px;background:var(--dark)}
+.app-info{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px}
+.app-name{font-weight:700;color:var(--gold-bright);word-break:break-all}
+.app-meta{font-size:.9rem;color:var(--light);opacity:.85}
+.app-info .badge{align-self:flex-start}
+.app-info button{width:auto;align-self:flex-start}
+.app .out{text-align:center}
+.app .big{color:var(--gold-bright)}
+.app-error{color:#ff8080;font-size:.9rem;margin:4px 0}
+.app-quality-off{opacity:.5}
+@media(max-width:560px){.app-thumb{width:100%;height:160px}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مختبر ضغط وتحويل الصور محليًا في المتصفح", "url": "https://mdm1.org/apps/browser-image-codec-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع صوري إلى خادم أو تُخزَّن؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل المعالجة تتم محليًا داخل متصفحك عبر Canvas، ولا يُرسل أي ملف إلى أي خادم ولا تحتاج حسابًا، والإعدادات فقط تُحفظ محليًا عند توفّر التخزين."}}, {"@type": "Question", "name": "ما الفرق بين الضغط دون فقدان والضغط مع فقدان؟", "acceptedAnswer": {"@type": "Answer", "text": "إخراج PNG دون فقدان دائمًا، أما JPEG وWebP فيستخدمان فقدانًا تتحكم شدّته بشريط الجودة. وزر إعادة ضغط JPEG دون فقدان يزيل البيانات الوصفية فقط دون المساس ببكسلات الصورة."}}, {"@type": "Question", "name": "ماذا تعني المسافة الإدراكية المعروضة؟", "acceptedAnswer": {"@type": "Answer", "text": "هي قيمة مئوية تقيس مقدار اختلاف البكسلات بين الأصل والناتج بعد فك الضغط؛ كلما كانت أصغر كان الناتج أقرب بصريًا إلى الأصل."}}, {"@type": "Question", "name": "كيف يؤثر مستوى الجهد على النتيجة؟", "acceptedAnswer": {"@type": "Answer", "text": "الجهد العالي يجرّب عدة قيم جودة ويختار أصغر ملف يبقى ضمن حدّ مسافة إدراكية أدقّ، ما يستغرق وقتًا أطول قليلًا مقابل حجم أصغر."}}, {"@type": "Question", "name": "هل تدعم الصور المتحركة GIF؟", "acceptedAnswer": {"@type": "Answer", "text": "عند القراءة يُعالج الإطار الأول فقط، وعند الإخراج بصيغة GIF يُبنى ملف جديد بلوحة ألوان تصل إلى 256 لونًا عبر تكميم الوسيط."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مختبر ضغط وتحويل الصور محليًا في المتصفح</h1>
+  <p class="page-sub">حوّل واضغط صور PNG وJPEG وGIF وWebP داخل المتصفح مع شريط جودة ومستويات جهد، واعرض نسبة التوفير وحجم الملف قبل وبعد وزمن فك الضغط، دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+  <p class="app-intro">مختبر ضغط الصور هذا أداة عربية تعمل بالكامل داخل متصفحك: تختار صورة أو مجموعة صور ثم تحوّلها بين الصيغ PNG وJPEG وGIF وWebP وتضغطها فورًا دون رفع أي ملف إلى خادم ودون حساب أو تسجيل. يمكنك ضبط الجودة عبر شريط من 0 إلى 100 لاختيار التوازن بين صغر الحجم وجودة المظهر، ورفع مستوى الجهد ليبحث التطبيق عن أصغر حجم ممكن ضمن حدّ مسافة إدراكية مقبول. يعرض المختبر حجم الملف قبل وبعد ونسبة التوفير لكل صورة، ويقيس زمن فك الضغط بالمللي ثانية، ويحسب المسافة الإدراكية بين الأصل والنتيجة. كما يوفّر زرًا خاصًا لإعادة ضغط ملفات JPEG دون فقدان عبر إزالة البيانات الوصفية فقط، مع إمكانية تنزيل كل نتيجة على حدة.</p>
+
+  <div class="card app-panel">
+    <div class="row">
+      <label for="appFiles">اختر الصور</label>
+      <input id="appFiles" type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple>
+    </div>
+    <div class="row">
+      <label for="appFormat">صيغة الإخراج</label>
+      <select id="appFormat">
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/webp">WebP</option>
+        <option value="image/png">PNG (دون فقدان)</option>
+        <option value="image/gif">GIF (256 لون)</option>
+      </select>
+      <label for="appQuality">شريط الجودة</label>
+      <input id="appQuality" type="range" min="0" max="100" value="80">
+      <output id="appQualityVal" class="badge">80</output>
+      <label for="appEffort">مستوى الجهد</label>
+      <select id="appEffort">
+        <option value="1">منخفض</option>
+        <option value="2" selected>متوسط</option>
+        <option value="3">عالٍ</option>
+      </select>
+    </div>
+    <div class="row">
+      <button id="appRun" type="button">تحويل وضغط الصور</button>
+      <button id="appJpegLossless" type="button" class="sec">إعادة ضغط JPEG دون فقدان</button>
+      <button id="appClear" type="button" class="sec">مسح النتائج</button>
+    </div>
+    <div id="appStatus" class="app-status" role="status"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <span>إجمالي الأصلي</span><span id="appSumBefore" class="badge">0 بايت</span>
+      <span>إجمالي بعد الضغط</span><span id="appSumAfter" class="badge">0 بايت</span>
+      <span>التوفير الكلي</span><span id="appSumSave" class="badge">0%</span>
+    </div>
+    <div class="out">
+      <div class="big" id="appBigSave">0%</div>
+      <div>متوسط التوفير الإجمالي عبر كل الصور</div>
+    </div>
+  </div>
+
+  <div id="appResults" class="app-results"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع صوري إلى خادم أو تُخزَّن؟</h3><p>لا، كل المعالجة تتم محليًا داخل متصفحك عبر Canvas، ولا يُرسل أي ملف إلى أي خادم ولا تحتاج حسابًا، والإعدادات فقط تُحفظ محليًا عند توفّر التخزين.</p><h3>ما الفرق بين الضغط دون فقدان والضغط مع فقدان؟</h3><p>إخراج PNG دون فقدان دائمًا، أما JPEG وWebP فيستخدمان فقدانًا تتحكم شدّته بشريط الجودة. وزر إعادة ضغط JPEG دون فقدان يزيل البيانات الوصفية فقط دون المساس ببكسلات الصورة.</p><h3>ماذا تعني المسافة الإدراكية المعروضة؟</h3><p>هي قيمة مئوية تقيس مقدار اختلاف البكسلات بين الأصل والناتج بعد فك الضغط؛ كلما كانت أصغر كان الناتج أقرب بصريًا إلى الأصل.</p><h3>كيف يؤثر مستوى الجهد على النتيجة؟</h3><p>الجهد العالي يجرّب عدة قيم جودة ويختار أصغر ملف يبقى ضمن حدّ مسافة إدراكية أدقّ، ما يستغرق وقتًا أطول قليلًا مقابل حجم أصغر.</p><h3>هل تدعم الصور المتحركة GIF؟</h3><p>عند القراءة يُعالج الإطار الأول فقط، وعند الإخراج بصيغة GIF يُبنى ملف جديد بلوحة ألوان تصل إلى 256 لونًا عبر تكميم الوسيط.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var filesInput=$("appFiles"),fmt=$("appFormat"),q=$("appQuality"),qv=$("appQualityVal"),
+effort=$("appEffort"),run=$("appRun"),jpegBtn=$("appJpegLossless"),clear=$("appClear"),
+status=$("appStatus"),results=$("appResults"),sumBefore=$("appSumBefore"),sumAfter=$("appSumAfter"),
+sumSave=$("appSumSave"),bigSave=$("appBigSave");
+var stored=[],dlCounter=0;
+
+try{
+  var saved=localStorage.getItem("app_img_lab");
+  if(saved){var o=JSON.parse(saved);
+    if(o.format)fmt.value=o.format;
+    if(o.quality!=null)q.value=o.quality;
+    if(o.effort)effort.value=o.effort;}
+}catch(e){}
+
+function persist(){
+  try{
+    localStorage.setItem("app_img_lab",JSON.stringify({format:fmt.value,quality:q.value,effort:effort.value}));
+  }catch(e){}
+}
+function syncQuality(){
+  var lossless=(fmt.value==="image/png"||fmt.value==="image/gif");
+  q.disabled=lossless;
+  qv.textContent=lossless?"—":q.value;
+  qv.classList.toggle("app-quality-off",lossless);
+}
+q.addEventListener("input",function(){qv.textContent=q.value;persist();});
+fmt.addEventListener("change",function(){syncQuality();persist();});
+effort.addEventListener("change",persist);
+
+function fmtSize(b){
+  if(b<1024)return b+" بايت";
+  if(b<1048576)return (b/1024).toFixed(1)+" ك.ب";
+  return (b/1048576).toFixed(2)+" م.ب";
+}
+function setStatus(msg,kind){status.textContent=msg;status.className="app-status"+(kind?" "+kind:"");}
+
+function perceptual(a,b){
+  var sum=0,n=a.length/4;
+  for(var i=0;i<a.length;i+=4){
+    var dr=a[i]-b[i],dg=a[i+1]-b[i+1],db=a[i+2]-b[i+2];
+    sum+=Math.sqrt(0.3*dr*dr+0.59*dg*dg+0.11*db*db);
+  }
+  if(n===0)return 0;
+  return sum/n/255*100;
+}
+function toBlob(canvas,type,quality){
+  return new Promise(function(res,rej){
+    canvas.toBlob(function(bl){bl?res(bl):rej(new Error("تعذّر ترميز الصورة بهذه الصيغة"));},type,quality);
+  });
+}
+function distanceOf(blob,w,h,src){
+  return createImageBitmap(blob).then(function(bm){
+    var c=document.createElement("canvas");c.width=w;c.height=h;
+    var x=c.getContext("2d",{willReadFrequently:true});
+    x.drawImage(bm,0,0,w,h);
+    return perceptual(src,x.getImageData(0,0,w,h).data);
+  }).catch(function(){return 0;});
+}
+function lzwEncode(minCodeSize,indices){
+  var clearCode=1<<minCodeSize,eoiCode=clearCode+1;
+  var codeSize=minCodeSize+1,nextCode=eoiCode+1,dict=new Map(),out=[];
+  var bitBuf=0,bitCnt=0;
+  function write(code){
+    bitBuf|=(code<<bitCnt);bitCnt+=codeSize;
+    while(bitCnt>=8){out.push(bitBuf&0xFF);bitBuf>>=8;bitCnt-=8;}
+  }
+  write(clearCode);
+  var prev=indices[0];
+  for(var i=1;i<indices.length;i++){
+    var c=indices[i],key=prev*4096+c;
+    if(dict.has(key)){prev=dict.get(key);continue;}
+    write(prev);
+    if(nextCode<4096){
+      dict.set(key,nextCode);nextCode++;
+      if(nextCode===(1<<codeSize)&&codeSize<12)codeSize++;
+    }else{
+      write(clearCode);dict.clear();nextCode=eoiCode+1;codeSize=minCodeSize+1;
+    }
+    prev=c;
+  }
+  write(prev);write(eoiCode);
+  if(bitCnt>0)out.push(bitBuf&0xFF);
+  return out;
+}
+function quantize(rgba,count,maxColors){
+  var hist=new Map(),i,o,key;
+  for(i=0;i<count;i++){
+    o=i*4;key=((rgba[o]>>3)<<10)|((rgba[o+1]>>3)<<5)|(rgba[o+2]>>3);
+    hist.set(key,(hist.get(key)||0)+1);
+  }
+  var entries=[];
+  hist.forEach(function(c,k){
+    entries.push({r:((k>>10)&31)*8+4,g:((k>>5)&31)*8+4,b:(k&31)*8+4,c:c,key:k});
+  });
+  function boxInfo(list){
+    var rmin=255,rmax=0,gmin=255,gmax=0,bmin=255,bmax=0,total=0;
+    for(var j=0;j<list.length;j++){
+      var e=list[j];
+      if(e.r<rmin)rmin=e.r;if(e.r>rmax)rmax=e.r;
+      if(e.g<gmin)gmin=e.g;if(e.g>gmax)gmax=e.g;
+      if(e.b<bmin)bmin=e.b;if(e.b>bmax)bmax=e.b;
+      total+=e.c;
+    }
+    var rr=rmax-rmin,gg=gmax-gmin,bb=bmax-bmin;
+    var ch=0,rng=rr;if(gg>rng){ch=1;rng=gg;}if(bb>rng){ch=2;rng=bb;}
+    return {ch:ch,rng:rng,total:total};
+  }
+  var boxes=[{list:entries,info:boxInfo(entries)}];
+  while(boxes.length<maxColors){
+    var bi=-1,best=-1;
+    for(i=0;i<boxes.length;i++){
+      if(boxes[i].list.length>1&&boxes[i].info.rng>best){best=boxes[i].info.rng;bi=i;}
+    }
+    if(bi<0)break;
+    var box=boxes[bi],ch=box.info.ch;
+    box.list.sort(function(p,en){return ch===0?p.r-en.r:ch===1?p.g-en.g:p.b-en.b;});
+    var acc=0,half=box.info.total/2,split=0;
+    for(i=0;i<box.list.length;i++){acc+=box.list[i].c;if(acc>=half){split=i+1;break;}}
+    if(split<1)split=1;
+    if(split>=box.list.length)split=box.list.length-1;
+    var left=box.list.slice(0,split),right=box.list.slice(split);
+    boxes.splice(bi,1,{list:left,info:boxInfo(left)},{list:right,info:boxInfo(right)});
+  }
+  var palette=[],lookup=new Map();
+  for(i=0;i<boxes.length;i++){
+    var r=0,g=0,b=0,t=0,j;
+    for(j=0;j<boxes[i].list.length;j++){
+      var en=boxes[i].list[j];r+=en.r*en.c;g+=en.g*en.c;b+=en.b*en.c;t+=en.c;
+    }
+    palette.push([Math.round(r/t),Math.round(g/t),Math.round(b/t)]);
+    for(j=0;j<boxes[i].list.length;j++)lookup.set(boxes[i].list[j].key,i);
+  }
+  var indices=new Uint8Array(count);
+  for(i=0;i<count;i++){
+    o=i*4;key=((rgba[o]>>3)<<10)|((rgba[o+1]>>3)<<5)|(rgba[o+2]>>3);
+    indices[i]=lookup.get(key)||0;
+  }
+  return {palette:palette,indices:indices};
+}
+function encodeGIF(w,h,rgba){
+  var res=quantize(rgba,w*h,256),palette=res.palette,indices=res.indices;
+  var bits=1;while((1<<bits)<palette.length)bits++;
+  bits=Math.max(1,Math.min(8,bits));
+  var gct=1<<bits,out=[];
+  function push(b){out.push(b&255);}
+  "GIF89a".split("").forEach(function(ch){push(ch.charCodeAt(0));});
+  push(w);push(w>>8);push(h);push(h>>8);
+  push(0x80|((bits-1)<<4)|(bits-1));push(0);push(0);
+  for(var i=0;i<gct;i++){var c=palette[i]||[0,0,0];push(c[0]);push(c[1]);push(c[2]);}
+  push(0x2C);push(0);push(0);push(0);push(0);
+  push(w);push(w>>8);push(h);push(h>>8);push(0);
+  var minCodeSize=Math.max(2,bits);push(minCodeSize);
+  var data=lzwEncode(minCodeSize,indices);
+  for(i=0;i<data.length;i+=255){
+    var n=Math.min(255,data.length-i);push(n);
+    for(var j=0;j<n;j++)push(data[i+j]);
+  }
+  push(0);push(0x3B);
+  return new Blob([new Uint8Array(out)],{type:"image/gif"});
+}
+function encodeBest(canvas,opts,srcData){
+  var type=opts.format,w=canvas.width,h=canvas.height,ctx=canvas.getContext("2d",{willReadFrequently:true});
+  if(type==="image/gif"){
+    return Promise.resolve({blob:encodeGIF(w,h,ctx.getImageData(0,0,w,h).data),type:type,quality:null});
+  }
+  if(type==="image/png"){
+    return toBlob(canvas,"image/png").then(function(bl){return {blob:bl,type:type,quality:null};});
+  }
+  var q=opts.quality,eff=opts.effort;
+  var limit=eff===1?null:(eff===2?4:2.5);
+  var cands=eff===1?[q]:(eff===2?[q,q-8,q-16]:[q,q-4,q-8,q-12,q-16,q-20]);
+  var seen={},list=[];
+  cands.forEach(function(v){if(v>=1&&v<=100&&!seen[v]){seen[v]=1;list.push(v);}});
+  var fallback=null,best=null,i=0;
+  function step(){
+    if(i>=list.length)return Promise.resolve(best||fallback);
+    var cq=list[i++];
+    return toBlob(canvas,type,cq/100).then(function(bl){
+      return distanceOf(bl,w,h,srcData).then(function(d){
+        var entry={blob:bl,type:type,quality:cq,dist:d};
+        if(!fallback)fallback=entry;
+        if(limit===null)return entry;
+        if(d<=limit&&(!best||bl.size<best.blob.size))best=entry;
+        return step();
+      });
+    });
+  }
+  return step();
+}
+function processOne(file,opts){
+  var tDec=performance.now();
+  return createImageBitmap(file).then(function(src){
+    var srcDecode=performance.now()-tDec;
+    var w=src.width,h=src.height;
+    var canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+    var ctx=canvas.getContext("2d",{willReadFrequently:true});
+    ctx.drawImage(src,0,0);
+    var srcData=ctx.getImageData(0,0,w,h);
+    var tEnc=performance.now();
+    return encodeBest(canvas,opts,srcData.data).then(function(enc){
+      var encodeMs=performance.now()-tEnc;
+      return distanceOf(enc.blob,w,h,srcData.data).then(function(d){
+        var outDecode=0;
+        var td=performance.now();
+        return createImageBitmap(enc.blob).then(function(){outDecode=performance.now()-td;}).catch(function(){})
+        .then(function(){
+          return {name:file.name,w:w,h:h,srcSize:file.size,outSize:enc.blob.size,blob:enc.blob,
+            type:enc.type,quality:enc.quality,dist:d,srcDecodeMs:srcDecode,outDecodeMs:outDecode,encodeMs:encodeMs};
+        });
+      });
+    });
+  });
+}
+function renameOut(name,type){
+  var base=name.replace(/\.[^.]+$/,"");
+  var ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif"}[type]||"bin";
+  return base+"-compressed."+ext;
+}
+function addResult(r){
+  var card=document.createElement("div");card.className="card app-item";
+  var img=document.createElement("img");img.className="app-thumb";img.alt=r.name;
+  img.src=URL.createObjectURL(r.blob);
+  var info=document.createElement("div");info.className="app-info";
+  var title=document.createElement("div");title.className="app-name";title.textContent=r.name;
+  var dims=document.createElement("div");dims.className="app-meta";
+  dims.textContent=r.w+"×"+r.h+" بكسل · نوع الإخراج "+(r.type.split("/")[1]||"").toUpperCase();
+  var save=r.srcSize>0?((r.srcSize-r.outSize)/r.srcSize*100):0;
+  var badge=document.createElement("span");badge.className="badge";
+  badge.textContent=(save>=0?"توفير ":"زيادة ")+Math.abs(save).toFixed(1)+"%";
+  var sizes=document.createElement("div");sizes.className="app-meta";
+  sizes.textContent="قبل: "+fmtSize(r.srcSize)+" → بعد: "+fmtSize(r.outSize);
+  var metrics=document.createElement("div");metrics.className="app-meta";
+  metrics.textContent="فك ضغط الأصل: "+r.srcDecodeMs.toFixed(1)+" م.ث · فك ضغط الناتج: "+r.outDecodeMs.toFixed(1)+
+    " م.ث · ترميز: "+r.encodeMs.toFixed(1)+" م.ث · المسافة الإدراكية: "+r.dist.toFixed(2)+"%"+
+    (r.quality!=null?" · الجودة: "+r.quality:"");
+  var dl=document.createElement("button");dl.type="button";dl.className="sec";dl.id="appDl"+(dlCounter++);
+  dl.textContent="تنزيل الناتج";
+  dl.addEventListener("click",function(){
+    var a=document.createElement("a");a.download=renameOut(r.name,r.type);
+    a.href=URL.createObjectURL(r.blob);document.body.appendChild(a);a.click();
+    document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href);},4000);
+  });
+  info.appendChild(title);info.appendChild(dims);info.appendChild(sizes);
+  info.appendChild(badge);info.appendChild(metrics);info.appendChild(dl);
+  card.appendChild(img);card.appendChild(info);
+  results.appendChild(card);
+}
+function addError(name,msg){
+  var d=document.createElement("div");d.className="out app-error";
+  d.textContent=name+" — "+msg;results.appendChild(d);
+}
+function updateSummary(before,after){
+  sumBefore.textContent=fmtSize(before);
+  sumAfter.textContent=fmtSize(after);
+  var save=before>0?((before-after)/before*100):0;
+  sumSave.textContent=save.toFixed(1)+"%";
+  bigSave.textContent=save.toFixed(1)+"%";
+}
+run.addEventListener("click",function(){
+  var files=Array.prototype.slice.call(filesInput.files);
+  if(!files.length){setStatus("يرجى اختيار صورة واحدة على الأقل أولًا.","err");return;}
+  results.innerHTML="";stored=[];
+  run.disabled=true;setStatus("جارٍ المعالجة…","");
+  var opts={format:fmt.value,quality:parseInt(q.value,10),effort:parseInt(effort.value,10)};
+  var before=0,after=0,done=0,fail=0,i=0;
+  function next(){
+    if(i>=files.length){
+      run.disabled=false;updateSummary(before,after);
+      var s=before>0?((before-after)/before*100):0;
+      setStatus("تمت معالجة "+done+" صورة"+(fail?" وفشل "+fail:"")+". التوفير الإجمالي "+s.toFixed(1)+"%.",fail?"warn":"ok");
+      return;
+    }
+    var f=files[i++];
+    if(!/^image\//.test(f.type)){fail++;addError(f.name,"نوع الملف غير مدعوم");return next();}
+    processOne(f,opts).then(function(r){
+      stored.push(r);before+=r.srcSize;after+=r.outSize;done++;addResult(r);
+    }).catch(function(e){
+      fail++;addError(f.name,"تعذّرت المعالجة ("+(e&&e.message?e.message:"خطأ")+")");
+    }).then(next);
+  }
+  next();
+});
+function stripJpeg(bytes){
+  if(bytes.length<4||bytes[0]!==0xFF||bytes[1]!==0xD8)return null;
+  var out=[0xFF,0xD8],i=2;
+  while(i<bytes.length){
+    if(bytes[i]!==0xFF){for(;i<bytes.length;i++)out.push(bytes[i]);break;}
+    var m=i+1;while(m<bytes.length&&bytes[m]===0xFF)m++;
+    if(m>=bytes.length)break;
+    var marker=bytes[m];
+    if(marker===0xD9){out.push(0xFF,0xD9);break;}
+    if(marker===0x01||(marker>=0xD0&&marker<=0xD7)){out.push(0xFF,marker);i=m+1;continue;}
+    if(m>=bytes.length-2)break;
+    var len=(bytes[m+1]<<8)|bytes[m+2],segEnd=m+1+len;
+    var isMeta=(marker>=0xE0&&marker<=0xEF)||marker===0xFE;
+    if(!isMeta){for(var k=i;k<segEnd&&k<bytes.length;k++)out.push(bytes[k]);}
+    if(marker===0xDA){for(k=segEnd;k<bytes.length;k++)out.push(bytes[k]);break;}
+    i=segEnd;
+  }
+  return new Uint8Array(out);
+}
+jpegBtn.addEventListener("click",function(){
+  var files=Array.prototype.slice.call(filesInput.files).filter(function(f){
+    return /jpe?g/i.test(f.type)||/\.jpe?g$/i.test(f.name);
+  });
+  if(!files.length){setStatus("اختر ملف JPEG واحدًا على الأقل لإعادة الضغط دون فقدان.","err");return;}
+  results.innerHTML="";stored=[];jpegBtn.disabled=true;
+  setStatus("جارٍ إعادة ضغط JPEG دون فقدان…","");
+  var before=0,after=0,done=0,fail=0,i=0;
+  function next(){
+    if(i>=files.length){
+      jpegBtn.disabled=false;updateSummary(before,after);
+      setStatus("تمت إعادة ضغط "+done+" ملف JPEG دون فقدان"+(fail?" وفشل "+fail:"")+".",fail?"warn":"ok");
+      return;
+    }
+    var f=files[i++];
+    f.arrayBuffer().then(function(buf){
+      var stripped=stripJpeg(new Uint8Array(buf));
+      if(!stripped)throw new Error("ليس ملف JPEG صالحًا");
+      var blob=new Blob([stripped],{type:"image/jpeg"});
+      var td=performance.now();
+      return createImageBitmap(blob).then(function(bm){
+        var dms=performance.now()-td;
+        var r={name:f.name,w:bm.width,h:bm.height,srcSize:f.size,outSize:blob.size,blob:blob,
+          type:"image/jpeg",quality:null,dist:0,srcDecodeMs:dms,outDecodeMs:dms,encodeMs:0};
+        before+=f.size;after+=blob.size;done++;addResult(r);
+      });
+    }).catch(function(e){
+      fail++;addError(f.name,"تعذّرت إعادة الضغط ("+(e&&e.message?e.message:"خطأ")+")");
+    }).then(next);
+  }
+  next();
+});
+clear.addEventListener("click",function(){
+  results.innerHTML="";stored=[];filesInput.value="";
+  updateSummary(0,0);setStatus("","");
+});
+syncQuality();
+setStatus("جاهز. اختر الصور ثم اضبط الصيغة والجودة ومستوى الجهد.","");
+})();
+</script>
+</body>
+</html>
