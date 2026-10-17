@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محول صيغ الصور PNG وJPG وWebP مع ضغط وجودة محلي | MDM1</title>
+<meta name="description" content="حوّل صورك بين صيغ PNG وJPG وWebP مباشرة في متصفحك، مع اختيار جودة الضغط ومعاينة الحجم قبل وبعد، وتنزيل فردي أو جماعي، دون رفع أي ملف إلى خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/image-format-converter.html">
+<meta property="og:title" content="محول صيغ الصور PNG وJPG وWebP مع ضغط وجودة محلي">
+<meta property="og:description" content="حوّل صورك بين صيغ PNG وJPG وWebP مباشرة في متصفحك، مع اختيار جودة الضغط ومعاينة الحجم قبل وبعد، وتنزيل فردي أو جماعي، دون رفع أي ملف إلى خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/image-format-converter.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:block; }
+.app .row { gap:.6rem; flex-wrap:wrap; align-items:center; margin:.55rem 0; }
+.app label { color: var(--light); font-weight:600; }
+.app select, .app input[type=file] { background: var(--dark); color: var(--light); border:1px solid var(--gold-dim); border-radius:8px; padding:.45rem .6rem; max-width:100%; }
+.app input[type=range] { accent-color: var(--gold); vertical-align:middle; }
+.app #status { min-height:1.3rem; margin:.4rem 0; }
+.app .app-results { display:grid; gap:.8rem; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); margin-top:.6rem; }
+.app .app-item { border:1px solid var(--gold-dim); border-radius:10px; padding:.6rem; background:rgba(255,255,255,.03); }
+.app .app-item img { display:block; width:100%; height:130px; object-fit:contain; background:#111; border-radius:6px; }
+.app .app-name { font-size:.85rem; word-break:break-all; margin:.45rem 0; color:var(--light); }
+.app .app-meta { display:flex; justify-content:space-between; gap:.4rem; font-size:.85rem; }
+.app .app-save { font-weight:700; color:var(--gold-bright); }
+.app .app-hint { color:var(--gold-dim); font-size:.82rem; }
+.app .app-bar { height:6px; background:#333; border-radius:4px; overflow:hidden; margin:.4rem 0; }
+.app .app-bar > span { display:block; height:100%; background:var(--gold); }
+.app .app-actions { display:flex; gap:.4rem; margin-top:.5rem; }
+.app .app-actions button { flex:1; }
+.app .app-err { color:#ff8f8f; }
+.app .app-ok { color:var(--gold-bright); }
+.app #summary { font-size:.95rem; }
+.app #summary .big { font-size:1.5rem; color:var(--gold-bright); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محول صيغ الصور: حوّل PNG وJPG وWebP بجودة مخصّصة", "url": "https://mdm1.org/apps/image-format-converter.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع صوري إلى خادم خارجي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تتم كل عملية التحويل والضغط داخل متصفحك باستخدام Canvas، ولا يُرسل أي ملف عبر الشبكة، فتبقى صورك على جهازك."}}, {"@type": "Question", "name": "هل يؤثر شريط الجودة على صيغة PNG؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، صيغة PNG بلا فقدان ولا تستخدم قيمة الجودة، بينما تؤثر الجودة فعليًا على JPG وWebP."}}, {"@type": "Question", "name": "لماذا يزيد حجم بعض الصور بعد التحويل؟", "acceptedAnswer": {"@type": "Answer", "text": "قد يزيد الحجم عند التحويل إلى PNG أو عند ضبط جودة عالية؛ اختر JPG أو WebP بجودة أقل للحصول على حجم أصغر."}}, {"@type": "Question", "name": "هل يمكنني تحويل عدة صور دفعة واحدة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر عدة ملفات ثم اضغط \"تحويل الصور\"، ويمكنك تنزيل كل صورة على حدة أو الضغط على \"تنزيل الكل\"."}}, {"@type": "Question", "name": "ما الصيغ المدعومة للإدخال والإخراج؟", "acceptedAnswer": {"@type": "Answer", "text": "الإدخال يقبل أي صورة يفهمها متصفحك، أما الإخراج فيتيح الصيغ PNG وJPG وWebP."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محول صيغ الصور: حوّل PNG وJPG وWebP بجودة مخصّصة</h1>
+  <p class="page-sub">حوّل صورك بين صيغ PNG وJPG وWebP مباشرة في متصفحك، مع اختيار جودة الضغط ومعاينة الحجم قبل وبعد، وتنزيل فردي أو جماعي، دون رفع أي ملف إلى خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الجواب السريع: يمكنك تحويل صيغة صورك بين PNG وJPG وWebP وضغطها بالجودة التي تختارها، بالكامل داخل متصفحك ودون رفع أي ملف إلى خادم خارجي، وهذا يحافظ على خصوصية صورك ويجعل المعالجة فورية. ارفع صورة أو عدة صور، ثم اختر الصيغة الناتجة من القائمة واضبط شريط الجودة حسب حجم مناسب. سيعرض لك التطبيق الحجم الأصلي قبل التحويل والحجم الجديد بعد الضغط لكل صورة، مع معاينة مصغّرة، ثم يمكنك تنزيل كل صورة على حدة أو تنزيل الكل بضغطة واحدة. لا يُرسل أي شيء عبر الشبكة، وتبقى كل الملفات على جهازك. مناسب للمصممين والمسوّقين وكل من يحتاج تقليل حجم الصور بسرعة وأمان.</p>
+
+<div class="card app">
+  <div class="row">
+    <label for="fileInput">اختر الصور</label>
+    <input type="file" id="fileInput" class="input" accept="image/*" multiple>
+  </div>
+  <div class="row">
+    <label for="formatSel">الصيغة الناتجة</label>
+    <select id="formatSel" class="select">
+      <option value="image/png">PNG</option>
+      <option value="image/jpeg">JPG</option>
+      <option value="image/webp" selected>WebP</option>
+    </select>
+    <label for="qualityRange">جودة الضغط</label>
+    <input type="range" id="qualityRange" class="input" min="10" max="100" value="80">
+    <span id="qualityVal" class="badge">80%</span>
+  </div>
+  <div class="row">
+    <button id="convertBtn">تحويل الصور</button>
+    <button id="downloadAllBtn" class="sec">تنزيل الكل</button>
+    <button id="clearBtn" class="sec">إفراغ القائمة</button>
+  </div>
+  <div id="status" class="out"></div>
+  <div id="summary" class="out"></div>
+  <div class="divider"></div>
+  <div id="emptyState" class="out">لم تُضف أي صورة بعد. ابدأ برفع صورة أو عدة صور لبدء التحويل.</div>
+  <div id="results" class="app-results"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع صوري إلى خادم خارجي؟</h3><p>لا، تتم كل عملية التحويل والضغط داخل متصفحك باستخدام Canvas، ولا يُرسل أي ملف عبر الشبكة، فتبقى صورك على جهازك.</p><h3>هل يؤثر شريط الجودة على صيغة PNG؟</h3><p>لا، صيغة PNG بلا فقدان ولا تستخدم قيمة الجودة، بينما تؤثر الجودة فعليًا على JPG وWebP.</p><h3>لماذا يزيد حجم بعض الصور بعد التحويل؟</h3><p>قد يزيد الحجم عند التحويل إلى PNG أو عند ضبط جودة عالية؛ اختر JPG أو WebP بجودة أقل للحصول على حجم أصغر.</p><h3>هل يمكنني تحويل عدة صور دفعة واحدة؟</h3><p>نعم، اختر عدة ملفات ثم اضغط &quot;تحويل الصور&quot;، ويمكنك تنزيل كل صورة على حدة أو الضغط على &quot;تنزيل الكل&quot;.</p><h3>ما الصيغ المدعومة للإدخال والإخراج؟</h3><p>الإدخال يقبل أي صورة يفهمها متصفحك، أما الإخراج فيتيح الصيغ PNG وJPG وWebP.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var fileInput = document.getElementById('fileInput');
+  var formatSel = document.getElementById('formatSel');
+  var qualityRange = document.getElementById('qualityRange');
+  var qualityVal = document.getElementById('qualityVal');
+  var convertBtn = document.getElementById('convertBtn');
+  var downloadAllBtn = document.getElementById('downloadAllBtn');
+  var clearBtn = document.getElementById('clearBtn');
+  var status = document.getElementById('status');
+  var results = document.getElementById('results');
+  var emptyState = document.getElementById('emptyState');
+  var summary = document.getElementById('summary');
+
+  var items = [];
+  var seq = 0;
+
+  function fmtBytes(n){
+    if(!n){ return '0 بايت'; }
+    var u = ['بايت','ك.ب','م.ب','ج.ب'];
+    var i = Math.floor(Math.log(n)/Math.log(1024));
+    i = Math.min(i, u.length-1);
+    var v = n/Math.pow(1024,i);
+    var s = (i===0) ? String(v) : v.toFixed(v<10?2:1);
+    return s + ' ' + u[i];
+  }
+
+  function baseName(name){
+    var i = name.lastIndexOf('.');
+    return i>0 ? name.slice(0,i) : name;
+  }
+
+  function extOf(mime){
+    if(mime==='image/png'){ return 'png'; }
+    if(mime==='image/jpeg'){ return 'jpg'; }
+    if(mime==='image/webp'){ return 'webp'; }
+    return 'img';
+  }
+
+  function setStatus(msg, cls){
+    status.textContent = msg || '';
+    status.className = 'out ' + (cls || '');
+  }
+
+  function updateEmpty(){
+    emptyState.style.display = items.length ? 'none' : 'block';
+  }
+
+  function updateSummary(){
+    if(!items.length){ summary.innerHTML = ''; return; }
+    var totalBefore = 0, totalAfter = 0, conv = 0;
+    items.forEach(function(it){
+      totalBefore += it.origSize;
+      if(it.outSize != null){ totalAfter += it.outSize; conv++; }
+    });
+    summary.innerHTML = 'الصور: <b class="big">' + items.length + '</b> — المحوّلة: <b class="big">' + conv +
+      '</b> — قبل: <b class="big">' + fmtBytes(totalBefore) + '</b>' +
+      (conv ? (' — بعد: <b class="big">' + fmtBytes(totalAfter) + '</b>') : '');
+  }
+
+  function downloadOne(it){
+    if(!it.outUrl){ return; }
+    var a = document.createElement('a');
+    a.href = it.outUrl;
+    a.download = it.outName || it.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function removeItem(id){
+    for(var i=0;i<items.length;i++){
+      if(items[i].id === id){
+        var it = items[i];
+        if(it.origUrl){ URL.revokeObjectURL(it.origUrl); }
+        if(it.outUrl){ URL.revokeObjectURL(it.outUrl); }
+        items.splice(i,1);
+        break;
+      }
+    }
+    render();
+    setStatus('تمت إزالة الصورة من القائمة.', 'app-hint');
+  }
+
+  function render(){
+    results.innerHTML = '';
+    items.forEach(function(it){
+      var card = document.createElement('div');
+      card.className = 'app-item';
+      card.id = 'card-' + it.id;
+
+      var img = document.createElement('img');
+      img.alt = it.name;
+      img.src = it.outUrl || it.origUrl;
+      card.appendChild(img);
+
+      var nm = document.createElement('div');
+      nm.className = 'app-name';
+      nm.textContent = it.name;
+      card.appendChild(nm);
+
+      var meta = document.createElement('div');
+      meta.className = 'app-meta';
+      var before = document.createElement('span');
+      before.className = 'app-hint';
+      before.textContent = 'قبل: ' + fmtBytes(it.origSize);
+      meta.appendChild(before);
+      var after = document.createElement('span');
+      after.className = 'app-save';
+      after.textContent = (it.outSize != null) ? ('بعد: ' + fmtBytes(it.outSize)) : 'بعد: —';
+      meta.appendChild(after);
+      card.appendChild(meta);
+
+      if(it.outSize != null && it.origSize > 0){
+        var bar = document.createElement('div');
+        bar.className = 'app-bar';
+        var inner = document.createElement('span');
+        var ratio = Math.min(100, Math.round(it.outSize / it.origSize * 100));
+        inner.style.width = ratio + '%';
+        bar.appendChild(inner);
+        card.appendChild(bar);
+        var diff = document.createElement('div');
+        diff.className = 'app-hint';
+        var delta = Math.round((1 - it.outSize / it.origSize) * 100);
+        diff.textContent = (delta >= 0) ? ('انخفاض ' + delta + '%') : ('زيادة ' + Math.abs(delta) + '%');
+        card.appendChild(diff);
+      }
+
+      var actions = document.createElement('div');
+      actions.className = 'app-actions';
+      var dl = document.createElement('button');
+      dl.id = 'dl-' + it.id;
+      dl.textContent = 'تنزيل هذه الصورة';
+      dl.disabled = !it.outUrl;
+      dl.addEventListener('click', function(){ downloadOne(it); });
+      actions.appendChild(dl);
+
+      var rm = document.createElement('button');
+      rm.id = 'rm-' + it.id;
+      rm.className = 'sec';
+      rm.textContent = 'إزالة';
+      rm.addEventListener('click', function(){ removeItem(it.id); });
+      actions.appendChild(rm);
+
+      card.appendChild(actions);
+      results.appendChild(card);
+    });
+    updateEmpty();
+    updateSummary();
+  }
+
+  function convertItem(it, mime, q, cb){
+    var img = new Image();
+    img.onload = function(){
+      try{
+        var c = document.createElement('canvas');
+        c.width = img.naturalWidth;
+        c.height = img.naturalHeight;
+        var ctx = c.getContext('2d');
+        if(mime === 'image/jpeg'){
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0,0,c.width,c.height);
+        }
+        ctx.drawImage(img,0,0);
+        var quality = (mime === 'image/png') ? undefined : q;
+        c.toBlob(function(blob){
+          if(!blob){
+            it.outUrl = null;
+            it.outSize = null;
+            setStatus('تعذّر تحويل الصورة: ' + it.name, 'app-err');
+            cb();
+            return;
+          }
+          if(it.outUrl){ URL.revokeObjectURL(it.outUrl); }
+          it.outUrl = URL.createObjectURL(blob);
+          it.outSize = blob.size;
+          it.outMime = mime;
+          it.outName = baseName(it.name) + '.' + extOf(mime);
+          cb();
+        }, mime, quality);
+      }catch(e){
+        setStatus('خطأ أثناء معالجة: ' + it.name, 'app-err');
+        cb();
+      }
+    };
+    img.onerror = function(){
+      it.outUrl = null;
+      it.outSize = null;
+      setStatus('ملف صورة غير صالح: ' + it.name, 'app-err');
+      cb();
+    };
+    img.src = it.origUrl;
+  }
+
+  function convertAll(){
+    if(!items.length){
+      setStatus('لا توجد صور للتحويل. ارفع صورة أو أكثر أولاً.', 'app-err');
+      return;
+    }
+    var mime = formatSel.value;
+    var q = parseInt(qualityRange.value,10) / 100;
+    convertBtn.disabled = true;
+    setStatus('جارٍ تحويل ' + items.length + ' صورة...', 'app-hint');
+    var i = 0;
+    function next(){
+      if(i >= items.length){
+        convertBtn.disabled = false;
+        var done = items.filter(function(x){ return x.outSize != null; }).length;
+        setStatus('اكتمل التحويل: ' + done + ' صورة بصيغة ' + extOf(mime).toUpperCase() + '.', 'app-ok');
+        return;
+      }
+      var it = items[i++];
+      convertItem(it, mime, q, function(){
+        render();
+        next();
+      });
+    }
+    next();
+  }
+
+  function downloadAll(){
+    var ready = items.filter(function(x){ return !!x.outUrl; });
+    if(!ready.length){
+      setStatus('لا توجد صور محوّلة لتنزيلها. اضغط "تحويل الصور" أولاً.', 'app-err');
+      return;
+    }
+    ready.forEach(function(it, idx){
+      setTimeout(function(){ downloadOne(it); }, idx * 400);
+    });
+    setStatus('بدأ تنزيل ' + ready.length + ' صورة.', 'app-ok');
+  }
+
+  function clearAll(){
+    items.forEach(function(it){
+      if(it.origUrl){ URL.revokeObjectURL(it.origUrl); }
+      if(it.outUrl){ URL.revokeObjectURL(it.outUrl); }
+    });
+    items = [];
+    render();
+    setStatus('تم إفراغ القائمة بالكامل.', 'app-hint');
+  }
+
+  fileInput.addEventListener('change', function(){
+    var files = Array.prototype.slice.call(fileInput.files || []);
+    if(!files.length){ return; }
+    var added = 0, skipped = 0;
+    files.forEach(function(f){
+      if(!/^image\//.test(f.type)){ skipped++; return; }
+      items.push({
+        id: 'it' + (++seq),
+        name: f.name,
+        origSize: f.size,
+        origUrl: URL.createObjectURL(f),
+        outUrl: null,
+        outSize: null,
+        outMime: null,
+        outName: null
+      });
+      added++;
+    });
+    fileInput.value = '';
+    render();
+    if(skipped){ setStatus('تمت إضافة ' + added + ' وتجاهل ' + skipped + ' ملف غير صالح.', 'app-err'); }
+    else { setStatus('تمت إضافة ' + added + ' صورة. اضغط "تحويل الصور" للبدء.', 'app-ok'); }
+  });
+
+  qualityRange.addEventListener('input', function(){
+    qualityVal.textContent = qualityRange.value + '%';
+  });
+
+  convertBtn.addEventListener('click', convertAll);
+  downloadAllBtn.addEventListener('click', downloadAll);
+  clearBtn.addEventListener('click', clearAll);
+
+  qualityVal.textContent = qualityRange.value + '%';
+  updateEmpty();
+})();
+</script>
+</body>
+</html>
