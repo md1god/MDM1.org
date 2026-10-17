@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منظم موحد للمهام والملاحظات وجهات الاتصال ولوحة التخطيط | MDM1</title>
+<meta name="description" content="نظّم مهامك وملاحظاتك وجهات اتصالك ولوحة تخطيطك في تطبيق واحد يعمل داخل المتصفح ويحفظ كل شيء محليًا في localStorage مع بحث موحد وربط بين العناصر ونسخة احتياطية.">
+<link rel="canonical" href="https://mdm1.org/apps/local-unified-workspace.html">
+<meta property="og:title" content="منظم موحد للمهام والملاحظات وجهات الاتصال ولوحة التخطيط">
+<meta property="og:description" content="نظّم مهامك وملاحظاتك وجهات اتصالك ولوحة تخطيطك في تطبيق واحد يعمل داخل المتصفح ويحفظ كل شيء محليًا في localStorage مع بحث موحد وربط بين العناصر ونسخة احتياطية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-unified-workspace.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 16px; }
+.app-stats .big { color: var(--gold-bright); }
+.app-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.app-list li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,0.03); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 8px; }
+.app-list .app-title { font-weight: bold; color: var(--light); }
+.app-empty { color: var(--gold-dim); font-style: italic; }
+.app-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.app-col { border: 1px solid var(--gold-dim); border-radius: 8px; padding: 8px; min-height: 90px; }
+.app-col h3 { margin: 0 0 6px; color: var(--gold-bright); font-size: 0.95rem; }
+.app-col .app-list li { flex-direction: column; align-items: flex-start; }
+.app-meta { color: var(--gold-dim); font-size: 0.8rem; }
+.app-actions { display: flex; gap: 6px; margin-inline-start: auto; }
+.app-actions button { padding: 4px 8px; font-size: 0.8rem; }
+.app-check { accent-color: var(--gold); width: 18px; height: 18px; }
+.app-search-hit { border-inline-start: 3px solid var(--gold); padding-inline-start: 8px; margin-bottom: 6px; }
+.app textarea.textarea { min-height: 70px; }
+.app .row .select, .app .row .input { min-width: 0; }
+.app-warn { color: var(--gold-bright); }
+@media (max-width: 640px) { .app-board { grid-template-columns: 1fr; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منظمك الشخصي الموحد: المهام والملاحظات وجهات الاتصال والتخطيط", "url": "https://mdm1.org/apps/local-unified-workspace.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل بياناتي إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، لا يتصل التطبيق بأي شبكة. كل المهام والملاحظات وجهات الاتصال تُحفظ في متصفحك عبر localStorage فقط، ولا توجد حسابات ولا خوادم."}}, {"@type": "Question", "name": "كيف أربط ملاحظة بمهمة أو جهة اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "في قسم الملاحظات اختر نوع الربط (مهمة أو جهة اتصال)، ثم اختر العنصر من القائمة، ثم اضغط أضف ملاحظة. سيظهر اسم العنصر المرتبط بجانب الملاحظة."}}, {"@type": "Question", "name": "ماذا يحدث إذا حذفت بيانات المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ البيانات داخل هذا المتصفح وحده، لذا قد تُفقد عند مسح بيانات التصفح. استخدم زر اعرض نسخة البيانات وانسخها للاحتفاظ بنسخة احتياطية."}}, {"@type": "Question", "name": "هل يمكنني تصفية القوائم وعرض إحصاءات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، لكل قسم حقل تصفية خاص، ويمكنك تغيير حالة المهمة من لوحة التخطيط أو من قائمتها، مع أرقام إجمالية محدّثة أعلى الصفحة."}}, {"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل دون اتصال لأن كل المنطق ينفَّذ في المتصفح والبيانات محلية، ويمكنك البحث والإضافة والتعديل في أي وقت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منظمك الشخصي الموحد: المهام والملاحظات وجهات الاتصال والتخطيط</h1>
+  <p class="page-sub">نظّم مهامك وملاحظاتك وجهات اتصالك ولوحة تخطيطك في تطبيق واحد يعمل داخل المتصفح ويحفظ كل شيء محليًا في localStorage مع بحث موحد وربط بين العناصر ونسخة احتياطية.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>
+نعم، يمكنك إدارة مهامك وملاحظاتك وجهات اتصالك ولوحة تخطيطك من شاشة واحدة دون أي حساب أو اتصال بالخادم. يعمل هذا التطبيق بالكامل داخل المتصفح ويخزّن كل بياناتك محليًا في localStorage، فتجدها فورًا عند إعادة فتح الصفحة. أضف مهمة وحدّد أولويتها واربطها بجهة اتصال، أو دوّن ملاحظة واربطها بمهمة موجودة، ثم تابع تقدّم الأعمال في لوحة تخطيط بثلاث حالات. يتيح لك البحث الموحد العثور على أي عنصر بالاسم أو النص خلال لحظة، ويمكنك تصفية كل قائمة على حدة، مع عرض إحصاءات سريعة ونسخة احتياطية قابلة للاستيراد والإفراغ.
+</p>
+<div class="app">
+  <section class="card app-stats">
+    <span class="label">إجمالي العناصر المحفوظة</span>
+    <div class="big" id="statTotal">0</div>
+    <div class="row">
+      <span class="badge" id="statTasks">المهام: 0</span>
+      <span class="badge" id="statNotes">الملاحظات: 0</span>
+      <span class="badge" id="statContacts">جهات الاتصال: 0</span>
+      <span class="badge" id="statDone">المنجزة: 0</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>البحث الموحد</h2>
+    <div class="row">
+      <input id="searchInput" class="input" type="search" placeholder="ابحث بالاسم أو النص..." />
+      <select id="searchType" class="select">
+        <option value="all">كل الأنواع</option>
+        <option value="task">المهام</option>
+        <option value="note">الملاحظات</option>
+        <option value="contact">جهات الاتصال</option>
+      </select>
+      <button id="searchBtn" type="button">ابحث الآن</button>
+      <button id="clearSearch" class="sec" type="button">مسح البحث</button>
+    </div>
+    <div id="searchResults" class="out">اكتب كلمة للبحث في كل العناصر.</div>
+  </section>
+
+  <section class="card">
+    <h2>المهام</h2>
+    <div class="row">
+      <input id="taskTitle" class="input" type="text" placeholder="عنوان المهمة" />
+      <select id="taskPriority" class="select" aria-label="أولوية المهمة">
+        <option value="منخفضة">أولوية منخفضة</option>
+        <option value="متوسطة" selected>أولوية متوسطة</option>
+        <option value="عالية">أولوية عالية</option>
+      </select>
+      <select id="taskContact" class="select" aria-label="ربط المهمة بجهة اتصال"></select>
+      <input id="taskDue" class="input" type="date" aria-label="تاريخ الاستحقاق" />
+      <button id="addTask" type="button">أضف مهمة</button>
+    </div>
+    <div class="row">
+      <select id="taskFilter" class="select" aria-label="تصفية المهام بالحالة">
+        <option value="all">كل الحالات</option>
+        <option value="todo">قيد الانتظار</option>
+        <option value="doing">قيد التنفيذ</option>
+        <option value="done">منجزة</option>
+      </select>
+      <span id="taskMsg" class="badge"></span>
+    </div>
+    <ul id="taskList" class="app-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>الملاحظات</h2>
+    <div class="row">
+      <input id="noteTitle" class="input" type="text" placeholder="عنوان الملاحظة" />
+      <select id="noteLinkType" class="select" aria-label="نوع الربط">
+        <option value="">بدون ربط</option>
+        <option value="task">ربط بمهمة</option>
+        <option value="contact">ربط بجهة اتصال</option>
+      </select>
+      <select id="noteLinkId" class="select" aria-label="العنصر المرتبط"></select>
+    </div>
+    <div class="row">
+      <textarea id="noteBody" class="textarea" placeholder="اكتب نص الملاحظة"></textarea>
+    </div>
+    <div class="row">
+      <button id="addNote" type="button">أضف ملاحظة</button>
+      <input id="noteFilter" class="input" type="search" placeholder="تصفية الملاحظات بالنص" />
+      <span id="noteMsg" class="badge"></span>
+    </div>
+    <ul id="noteList" class="app-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>جهات الاتصال</h2>
+    <div class="row">
+      <input id="contactName" class="input" type="text" placeholder="الاسم الكامل" />
+      <input id="contactPhone" class="input" type="tel" placeholder="رقم الهاتف" />
+      <input id="contactEmail" class="input" type="email" placeholder="البريد الإلكتروني" />
+      <button id="addContact" type="button">أضف جهة اتصال</button>
+    </div>
+    <div class="row">
+      <input id="contactFilter" class="input" type="search" placeholder="تصفية جهات الاتصال" />
+      <span id="contactMsg" class="badge"></span>
+    </div>
+    <ul id="contactList" class="app-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>لوحة التخطيط</h2>
+    <div class="app-board" id="plannerBoard">
+      <div class="app-col">
+        <h3>قيد الانتظار</h3>
+        <ul id="boardTodo" class="app-list"></ul>
+      </div>
+      <div class="app-col">
+        <h3>قيد التنفيذ</h3>
+        <ul id="boardDoing" class="app-list"></ul>
+      </div>
+      <div class="app-col">
+        <h3>منجزة</h3>
+        <ul id="boardDone" class="app-list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>النسخة الاحتياطية والبيانات</h2>
+    <div class="row">
+      <button id="exportData" class="sec" type="button">اعرض نسخة البيانات</button>
+      <button id="importData" class="sec" type="button">استورد من النسخة</button>
+      <button id="clearAll" class="sec" type="button">احذف كل البيانات</button>
+    </div>
+    <textarea id="backupBox" class="textarea" placeholder="ستظهر نسخة بياناتك هنا، ويمكنك لصق نسخة سابقة ثم الضغط على استورد."></textarea>
+    <div id="backupMsg" class="out"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل بياناتي إلى أي خادم؟</h3><p>لا، لا يتصل التطبيق بأي شبكة. كل المهام والملاحظات وجهات الاتصال تُحفظ في متصفحك عبر localStorage فقط، ولا توجد حسابات ولا خوادم.</p><h3>كيف أربط ملاحظة بمهمة أو جهة اتصال؟</h3><p>في قسم الملاحظات اختر نوع الربط (مهمة أو جهة اتصال)، ثم اختر العنصر من القائمة، ثم اضغط أضف ملاحظة. سيظهر اسم العنصر المرتبط بجانب الملاحظة.</p><h3>ماذا يحدث إذا حذفت بيانات المتصفح؟</h3><p>تُحفظ البيانات داخل هذا المتصفح وحده، لذا قد تُفقد عند مسح بيانات التصفح. استخدم زر اعرض نسخة البيانات وانسخها للاحتفاظ بنسخة احتياطية.</p><h3>هل يمكنني تصفية القوائم وعرض إحصاءات؟</h3><p>نعم، لكل قسم حقل تصفية خاص، ويمكنك تغيير حالة المهمة من لوحة التخطيط أو من قائمتها، مع أرقام إجمالية محدّثة أعلى الصفحة.</p><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل دون اتصال لأن كل المنطق ينفَّذ في المتصفح والبيانات محلية، ويمكنك البحث والإضافة والتعديل في أي وقت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  var KEYS = { tasks: 'md_tasks_v1', notes: 'md_notes_v1', contacts: 'md_contacts_v1' };
+  var state = { tasks: [], notes: [], contacts: [] };
+  var STATUS = { todo: 'قيد الانتظار', doing: 'قيد التنفيذ', done: 'منجزة' };
+  var MOVE = { todo: 'انتظار', doing: 'تنفيذ', done: 'إنجاز' };
+
+  function $(id) { return document.getElementById(id); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function read(key) {
+    try { var raw = localStorage.getItem(key); var val = raw ? JSON.parse(raw) : []; return Array.isArray(val) ? val : []; }
+    catch (e) { return []; }
+  }
+  function load() { state.tasks = read(KEYS.tasks); state.notes = read(KEYS.notes); state.contacts = read(KEYS.contacts); }
+  function save() {
+    try {
+      localStorage.setItem(KEYS.tasks, JSON.stringify(state.tasks));
+      localStorage.setItem(KEYS.notes, JSON.stringify(state.notes));
+      localStorage.setItem(KEYS.contacts, JSON.stringify(state.contacts));
+    } catch (e) { flash('backupMsg', 'تعذّر الحفظ محليًا، قد تكون مساحة التخزين ممتلئة.', true); }
+  }
+  function flash(id, text, warn) {
+    var el = $(id); if (!el) return;
+    el.textContent = text;
+    if (warn) el.classList.add('app-warn'); else el.classList.remove('app-warn');
+    if (text) { setTimeout(function () { if (el.textContent === text) el.textContent = ''; }, 4000); }
+  }
+  function nameOfContact(id) { var c = state.contacts.filter(function (x) { return x.id === id; })[0]; return c ? c.name : ''; }
+  function titleOfTask(id) { var t = state.tasks.filter(function (x) { return x.id === id; })[0]; return t ? t.title : ''; }
+  function statusOptions(sel) {
+    return Object.keys(STATUS).map(function (k) {
+      return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + STATUS[k] + '</option>';
+    }).join('');
+  }
+
+  function renderStats() {
+    $('statTotal').textContent = state.tasks.length + state.notes.length + state.contacts.length;
+    $('statTasks').textContent = 'المهام: ' + state.tasks.length;
+    $('statNotes').textContent = 'الملاحظات: ' + state.notes.length;
+    $('statContacts').textContent = 'جهات الاتصال: ' + state.contacts.length;
+    $('statDone').textContent = 'المنجزة: ' + state.tasks.filter(function (t) { return t.status === 'done'; }).length;
+  }
+
+  function renderTasks() {
+    var filter = $('taskFilter').value;
+    var list = $('taskList');
+    list.innerHTML = '';
+    var arr = state.tasks.filter(function (t) { return filter === 'all' || t.status === filter; });
+    if (!arr.length) { list.innerHTML = '<li class="app-empty">لا توجد مهام مطابقة بعد.</li>'; return; }
+    arr.forEach(function (t) {
+      var li = document.createElement('li');
+      var contact = t.contactId ? nameOfContact(t.contactId) : '';
+      li.innerHTML =
+        '<input type="checkbox" class="app-check" data-id="' + t.id + '"' + (t.status === 'done' ? ' checked' : '') + ' aria-label="إتمام المهمة">' +
+        '<span class="app-title">' + esc(t.title) + '</span>' +
+        '<span class="badge">' + esc(t.priority) + '</span>' +
+        (contact ? '<span class="badge">' + esc(contact) + '</span>' : '') +
+        (t.due ? '<span class="app-meta">' + esc(t.due) + '</span>' : '') +
+        '<select class="select" data-id="' + t.id + '" aria-label="حالة المهمة">' + statusOptions(t.status) + '</select>' +
+        '<span class="app-actions"><button type="button" class="sec" data-del="' + t.id + '">احذف المهمة</button></span>';
+      list.appendChild(li);
+    });
+  }
+
+  function renderNotes() {
+    var q = $('noteFilter').value.trim().toLowerCase();
+    var list = $('noteList');
+    list.innerHTML = '';
+    var arr = state.notes.filter(function (n) {
+      return !q || (n.title + ' ' + n.body).toLowerCase().indexOf(q) > -1;
+    });
+    if (!arr.length) { list.innerHTML = '<li class="app-empty">لا توجد ملاحظات مطابقة.</li>'; return; }
+    arr.forEach(function (n) {
+      var link = '';
+      if (n.linkType === 'task' && n.linkId) link = 'مرتبطة بمهمة: ' + titleOfTask(n.linkId);
+      if (n.linkType === 'contact' && n.linkId) link = 'مرتبطة بجهة اتصال: ' + nameOfContact(n.linkId);
+      var li = document.createElement('li');
+      li.innerHTML =
+        '<span class="app-title">' + esc(n.title) + '</span>' +
+        (link ? '<span class="badge">' + esc(link) + '</span>' : '') +
+        '<span class="app-meta">' + esc((n.body || '').slice(0, 90)) + '</span>' +
+        '<span class="app-actions"><button type="button" class="sec" data-del="' + n.id + '">احذف الملاحظة</button></span>';
+      list.appendChild(li);
+    });
+  }
+
+  function renderContacts() {
+    var q = $('contactFilter').value.trim().toLowerCase();
+    var list = $('contactList');
+    list.innerHTML = '';
+    var arr = state.contacts.filter(function (c) {
+      return !q || (c.name + ' ' + c.phone + ' ' + c.email).toLowerCase().indexOf(q) > -1;
+    });
+    if (!arr.length) { list.innerHTML = '<li class="app-empty">لا توجد جهات اتصال مطابقة.</li>'; return; }
+    arr.forEach(function (c) {
+      var linked = state.tasks.filter(function (t) { return t.contactId === c.id; }).length +
+        state.notes.filter(function (n) { return n.linkType === 'contact' && n.linkId === c.id; }).length;
+      var li = document.createElement('li');
+      li.innerHTML =
+        '<span class="app-title">' + esc(c.name) + '</span>' +
+        (c.phone ? '<span class="badge">' + esc(c.phone) + '</span>' : '') +
+        (c.email ? '<span class="app-meta">' + esc(c.email) + '</span>' : '') +
+        '<span class="badge">عناصر مرتبطة: ' + linked + '</span>' +
+        '<span class="app-actions"><button type="button" class="sec" data-del="' + c.id + '">احذف جهة الاتصال</button></span>';
+      list.appendChild(li);
+    });
+  }
+
+  function fillBoard(el, status) {
+    var arr = state.tasks.filter(function (t) { return t.status === status; });
+    el.innerHTML = '';
+    if (!arr.length) { el.innerHTML = '<li class="app-empty">لا شيء هنا.</li>'; return; }
+    arr.forEach(function (t) {
+      var buttons = Object.keys(MOVE).filter(function (k) { return k !== status; }).map(function (k) {
+        return '<button type="button" class="sec" data-move="' + t.id + '" data-status="' + k + '">' + MOVE[k] + '</button>';
+      }).join('');
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="app-title">' + esc(t.title) + '</span><span class="app-actions">' + buttons + '</span>';
+      el.appendChild(li);
+    });
+  }
+  function renderBoard() {
+    fillBoard($('boardTodo'), 'todo');
+    fillBoard($('boardDoing'), 'doing');
+    fillBoard($('boardDone'), 'done');
+  }
+
+  function refreshLinkSelects() {
+    var tc = $('taskContact'), cur = tc.value;
+    tc.innerHTML = '<option value="">بدون ربط</option>' + state.contacts.map(function (c) {
+      return '<option value="' + c.id + '">' + esc(c.name) + '</option>';
+    }).join('');
+    if (state.contacts.some(function (c) { return c.id === cur; })) tc.value = cur;
+
+    var type = $('noteLinkType').value, nl = $('noteLinkId'), old = nl.value;
+    if (type === 'task') {
+      nl.disabled = false;
+      nl.innerHTML = '<option value="">اختر مهمة</option>' + state.tasks.map(function (t) {
+        return '<option value="' + t.id + '">' + esc(t.title) + '</option>';
+      }).join('');
+    } else if (type === 'contact') {
+      nl.disabled = false;
+      nl.innerHTML = '<option value="">اختر جهة اتصال</option>' + state.contacts.map(function (c) {
+        return '<option value="' + c.id + '">' + esc(c.name) + '</option>';
+      }).join('');
+    } else {
+      nl.disabled = true;
+      nl.innerHTML = '<option value="">لا يوجد ربط</option>';
+    }
+    if (Array.prototype.some.call(nl.options, function (o) { return o.value === old; })) nl.value = old;
+  }
+
+  function renderAll() { renderStats(); renderTasks(); renderNotes(); renderContacts(); renderBoard(); refreshLinkSelects(); }
+
+  function runSearch() {
+    var q = $('searchInput').value.trim().toLowerCase();
+    var type = $('searchType').value;
+    var out = $('searchResults');
+    if (!q) { out.textContent = 'اكتب كلمة للبحث في كل العناصر.'; return; }
+    var hits = [];
+    if (type === 'all' || type === 'task') {
+      state.tasks.forEach(function (t) {
+        if ((t.title + ' ' + t.priority).toLowerCase().indexOf(q) > -1) hits.push({ t: 'مهمة', n: t.title, x: STATUS[t.status] });
+      });
+    }
+    if (type === 'all' || type === 'note') {
+      state.notes.forEach(function (n) {
+        if ((n.title + ' ' + n.body).toLowerCase().indexOf(q) > -1) hits.push({ t: 'ملاحظة', n: n.title, x: (n.body || '').slice(0, 60) });
+      });
+    }
+    if (type === 'all' || type === 'contact') {
+      state.contacts.forEach(function (c) {
+        if ((c.name + ' ' + c.phone + ' ' + c.email).toLowerCase().indexOf(q) > -1) hits.push({ t: 'جهة اتصال', n: c.name, x: c.phone || c.email || '' });
+      });
+    }
+    if (!hits.length) { out.innerHTML = '<span class="app-empty">لا نتائج مطابقة لبحثك.</span>'; return; }
+    out.innerHTML = hits.map(function (h) {
+      return '<div class="app-search-hit"><span class="badge">' + esc(h.t) + '</span> <strong>' + esc(h.n) + '</strong> <span class="app-meta">' + esc(h.x) + '</span></div>';
+    }).join('');
+  }
+
+  function bindTaskEvents() {
+    $('addTask').addEventListener('click', function () {
+      var title = $('taskTitle').value.trim();
+      if (!title) { flash('taskMsg', 'اكتب عنوان المهمة أولًا.', true); return; }
+      state.tasks.push({ id: uid(), title: title, priority: $('taskPriority').value, status: 'todo', contactId: $('taskContact').value || '', due: $('taskDue').value || '' });
+      $('taskTitle').value = ''; $('taskDue').value = '';
+      save(); renderAll(); flash('taskMsg', 'تمت إضافة المهمة.');
+    });
+    $('taskList').addEventListener('change', function (e) {
+      var id = e.target.getAttribute('data-id'); if (!id) return;
+      var t = state.tasks.filter(function (x) { return x.id === id; })[0]; if (!t) return;
+      if (e.target.type === 'checkbox') t.status = e.target.checked ? 'done' : 'todo';
+      else if (e.target.tagName === 'SELECT') t.status = e.target.value;
+      save(); renderAll();
+    });
+    $('taskList').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-del]'); if (!b) return;
+      var id = b.getAttribute('data-del');
+      state.tasks = state.tasks.filter(function (x) { return x.id !== id; });
+      state.notes.forEach(function (n) { if (n.linkType === 'task' && n.linkId === id) { n.linkType = ''; n.linkId = ''; } });
+      save(); renderAll();
+    });
+    $('taskFilter').addEventListener('change', renderTasks);
+    $('plannerBoard').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-move]'); if (!b) return;
+      var t = state.tasks.filter(function (x) { return x.id === b.getAttribute('data-move'); })[0]; if (!t) return;
+      t.status = b.getAttribute('data-status');
+      save(); renderAll();
+    });
+  }
+
+  function bindNoteEvents() {
+    $('noteLinkType').addEventListener('change', refreshLinkSelects);
+    $('addNote').addEventListener('click', function () {
+      var title = $('noteTitle').value.trim();
+      var body = $('noteBody').value.trim();
+      if (!title && !body) { flash('noteMsg', 'اكتب عنوانًا أو نصًا للملاحظة.', true); return; }
+      var type = $('noteLinkType').value;
+      state.notes.push({
+        id: uid(), title: title || 'ملاحظة بلا عنوان', body: body,
+        linkType: type, linkId: type ? ($('noteLinkId').value || '') : ''
+      });
+      $('noteTitle').value = ''; $('noteBody').value = '';
+      save(); renderAll(); flash('noteMsg', 'تمت إضافة الملاحظة.');
+    });
+    $('noteFilter').addEventListener('input', renderNotes);
+    $('noteList').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-del]'); if (!b) return;
+      var id = b.getAttribute('data-del');
+      state.notes = state.notes.filter(function (n) { return n.id !== id; });
+      save(); renderAll();
+    });
+  }
+
+  function bindContactEvents() {
+    $('addContact').addEventListener('click', function () {
+      var name = $('contactName').value.trim();
+      if (!name) { flash('contactMsg', 'اكتب اسم جهة الاتصال أولًا.', true); return; }
+      state.contacts.push({ id: uid(), name: name, phone: $('contactPhone').value.trim(), email: $('contactEmail').value.trim() });
+      $('contactName').value = ''; $('contactPhone').value = ''; $('contactEmail').value = '';
+      save(); renderAll(); flash('contactMsg', 'تمت إضافة جهة الاتصال.');
+    });
+    $('contactFilter').addEventListener('input', renderContacts);
+    $('contactList').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-del]'); if (!b) return;
+      var id = b.getAttribute('data-del');
+      state.contacts = state.contacts.filter(function (c) { return c.id !== id; });
+      state.tasks.forEach(function (t) { if (t.contactId === id) t.contactId = ''; });
+      state.notes.forEach(function (n) { if (n.linkType === 'contact' && n.linkId === id) { n.linkType = ''; n.linkId = ''; } });
+      save(); renderAll();
+    });
+  }
+
+  function bindSearchEvents() {
+    $('searchBtn').addEventListener('click', runSearch);
+    $('searchInput').addEventListener('input', runSearch);
+    $('searchType').addEventListener('change', runSearch);
+    $('clearSearch').addEventListener('click', function () {
+      $('searchInput').value = '';
+      $('searchType').value = 'all';
+      $('searchResults').textContent = 'اكتب كلمة للبحث في كل العناصر.';
+    });
+  }
+
+  function bindBackupEvents() {
+    $('exportData').addEventListener('click', function () {
+      var hasData = state.tasks.length + state.notes.length + state.contacts.length > 0;
+      if (!hasData) { flash('backupMsg', 'لا توجد بيانات لعرضها بعد.', true); return; }
+      try { $('backupBox').value = JSON.stringify(state, null, 2); flash('backupMsg', 'تم تجهيز نسخة البيانات، يمكنك نسخها.'); }
+      catch (e) { flash('backupMsg', 'تعذّر تجهيز النسخة.', true); }
+    });
+    $('importData').addEventListener('click', function () {
+      var raw = $('backupBox').value.trim();
+      if (!raw) { flash('backupMsg', 'الصق نسخة البيانات في المربع أولًا.', true); return; }
+      var data;
+      try { data = JSON.parse(raw); } catch (e) { flash('backupMsg', 'النسخة غير صالحة، تحقق من الصيغة.', true); return; }
+      if (!data || typeof data !== 'object') { flash('backupMsg', 'النسخة غير صالحة، تحقق من الصيغة.', true); return; }
+      state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      state.notes = Array.isArray(data.notes) ? data.notes : [];
+      state.contacts = Array.isArray(data.contacts) ? data.contacts : [];
+      save(); renderAll();
+      flash('backupMsg', 'تم استيراد البيانات بنجاح.');
+    });
+    $('clearAll').addEventListener('click', function () {
+      var empty = state.tasks.length + state.notes.length + state.contacts.length === 0;
+      if (empty) { flash('backupMsg', 'لا توجد بيانات لحذفها.', true); return; }
+      if (!window.confirm('هل تريد حذف كل المهام والملاحظات وجهات الاتصال؟')) return;
+      state = { tasks: [], notes: [], contacts: [] };
+      save(); renderAll(); $('backupBox').value = '';
+      flash('backupMsg', 'تم حذف كل البيانات.');
+    });
+  }
+
+  function init() {
+    load();
+    bindTaskEvents(); bindNoteEvents(); bindContactEvents(); bindSearchEvents(); bindBackupEvents();
+    renderAll();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>
