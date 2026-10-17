@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة إزالة الصوت الغنائي من ملفات الموسيقى | MDM1</title>
+<meta name="description" content="ترفع ملفًا موسيقيًا وتستخلص نسخة خالية تقريبًا من الغناء بالاعتماد على إزالة القناة الوسطى عبر WebAudio، مع معاينة وقص وتصدير WAV وحفظ الإعدادات محليًا.">
+<link rel="canonical" href="https://mdm1.org/apps/vocal-free-studio.html">
+<meta property="og:title" content="أداة إزالة الصوت الغنائي من ملفات الموسيقى">
+<meta property="og:description" content="ترفع ملفًا موسيقيًا وتستخلص نسخة خالية تقريبًا من الغناء بالاعتماد على إزالة القناة الوسطى عبر WebAudio، مع معاينة وقص وتصدير WAV وحفظ الإعدادات محليًا.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/vocal-free-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.app .card {
+  width: 100%;
+}
+.app .row {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.app input[type="file"],
+.app input[type="range"],
+.app input[type="number"],
+.app audio {
+  width: 100%;
+}
+.app input[type="number"] {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--dark);
+  color: var(--light);
+  border: 1px solid var(--gold-dim);
+}
+.app audio {
+  margin-top: 8px;
+}
+.app .badge {
+  white-space: nowrap;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "إزالة الصوت الغنائي مباشرة داخل المتصفح", "url": "https://mdm1.org/apps/vocal-free-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تعمل بالكامل داخل المتصفح بعد تحميل الصفحة، ولا ترسل أي بيانات خارج جهازك."}}, {"@type": "Question", "name": "ما نوع الملفات المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم معظم ملفات الصوت التي يفككها WebAudio مثل MP3 وWAV وOGG وAAC وفقًا لدعم المتصفح."}}, {"@type": "Question", "name": "هل يمكنني استعادة الصوت الغنائي بالكامل؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، إزالة القناة الوسطى طريقة تقريبية. تعتمد فعاليتها على توزيع الصوت في الملف، وقد يبقى جزء من الغناء أو يضعف بعض الآلات."}}, {"@type": "Question", "name": "هل يتم حفظ الملف الأصلي؟", "acceptedAnswer": {"@type": "Answer", "text": "يبقى الملف الأصلي على جهازك كما هو، ولا يتم تعديله. يتم إنشاء نسخة معالجة جديدة للتصدير فقط."}}, {"@type": "Question", "name": "هل تعمل الأداة على الهاتف المحمول؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تدعمها المتصفحات الحديثة في الهواتف، لكن قد يختلف أداء المعاينة حسب مواصفات الجهاز."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">إزالة الصوت الغنائي مباشرة داخل المتصفح</h1>
+  <p class="page-sub">ترفع ملفًا موسيقيًا وتستخلص نسخة خالية تقريبًا من الغناء بالاعتماد على إزالة القناة الوسطى عبر WebAudio، مع معاينة وقص وتصدير WAV وحفظ الإعدادات محليًا.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الجواب سريع: نعم، يمكنك رفع ملف MP3 أو WAV أو غيره من ملفات الصوت من جهازك، والحصول على نسخة خالية تقريبًا من الصوت الغنائي مباشرة داخل المتصفح دون الحاجة إلى حساب أو خادم أو أي نموذج ذكي على الإنترنت. تعتمد الأداة على تقنية إزالة القناة الوسطى المتاحة عبر WebAudio، بحيث تقلل من المكونات المشتركة بين القناتين اليسرى واليمنى، مما يضعف كثيرًا الأصوات التي تكون في المنتصف مثل الغناء، مع إبقاء الآلات الجانبية واضحة قدر الإمكان. يمكنك ضبط مستوى الإزالة بدقة، ومعاينة النتيجة قبل التصدير، واستخدام أدوات بسيطة للقص من البداية أو النهاية، ثم تصدير الملف بصيغة WAV مع الحفاظ على الإعدادات المحفوظة محليًا في متصفحك. كل هذه الخطوات تتم بالكامل على جهازك، لذا تبقى ملفاتك خاصة ولا تُرفع أبدًا خارج المتصفح.</p>
+<div class="app">
+  <div class="card" id="cardUpload">
+    <div class="label">رفع ملف موسيقي</div>
+    <input id="audioFile" type="file" accept="audio/*" />
+    <div class="row">
+      <span class="badge" id="fileName">لم يُرفع أي ملف بعد</span>
+      <span class="badge" id="fileInfo">الحجم: ٠ بايت | المدة: ٠٫٠٠ ث</span>
+    </div>
+    <div class="out" id="uploadStatus">جاهز لرفع ملف صوتي من جهازك.</div>
+  </div>
+  <div class="card" id="cardCenter">
+    <div class="label">ضبط مستوى إزالة القناة الوسطى</div>
+    <div class="row">
+      <input id="centerLevel" type="range" min="0" max="1" step="0.01" value="0.7" />
+      <span class="badge" id="centerVal">٠٫٧٠</span>
+    </div>
+    <div class="out" id="centerHelp">كلما زاد المستوى، زاد ضعف الأصوات المركزية (كالغناء)، وقد يزداد تأثير التشويش قليلًا على بعض الملفات.</div>
+  </div>
+  <div class="card" id="cardTrim">
+    <div class="label">القص والمعاينة</div>
+    <div class="row">
+      <div>
+        <div class="label">بداية القص (ثوانٍ)</div>
+        <input id="trimStart" type="number" min="0" step="0.01" value="0" />
+      </div>
+      <div>
+        <div class="label">نهاية القص (ثوانٍ)</div>
+        <input id="trimEnd" type="number" min="0" step="0.01" value="0" />
+      </div>
+      <button id="btnApplyTrim" class="button sec" type="button">تطبيق القص</button>
+      <button id="btnResetTrim" class="button sec" type="button">إعادة تعيين</button>
+    </div>
+    <div class="row">
+      <button id="btnPlay" class="button" type="button">تشغيل المعاينة</button>
+      <button id="btnStop" class="button sec" type="button">إيقاف المعاينة</button>
+      <span class="badge" id="timeInfo">٠٫٠٠ / ٠٫٠٠ ث</span>
+    </div>
+    <audio id="preview" controls preload="none"></audio>
+    <div class="out" id="trimStatus">حدد مدى القص إذا رغبت، ثم شغل المعاينة للتحقق قبل التصدير.</div>
+  </div>
+  <div class="card" id="cardExport">
+    <div class="label">التصدير بصيغة WAV</div>
+    <div class="row">
+      <button id="btnExport" class="button" type="button">تصدير ملف WAV</button>
+      <span class="badge" id="resultSize">حجم النتيجة: ٠ بايت</span>
+    </div>
+    <div class="out" id="exportStatus">لن يتم رفع أي بيانات. التصدير يتم بالكامل داخل المتصفح.</div>
+    <div class="divider"></div>
+    <div class="label">حالة المعالجة</div>
+    <div class="out" id="procStatus">في انتظار رفع الملف...</div>
+  </div>
+  <div class="card" id="cardSaved">
+    <div class="label">الإعدادات المحفوظة محليًا</div>
+    <div class="row">
+      <span class="badge" id="savedInfo">مستوى الإزالة: ٠٫٧٠ | بداية القص: ٠٫٠٠ | نهاية القص: ٠٫٠٠</span>
+      <button id="btnClearSaved" class="button sec" type="button">مسح الإعدادات المحفوظة</button>
+    </div>
+    <div class="out" id="savedStatus">يتم حفظ مستوى الإزالة ومدى القص تلقائيًا في localStorage.</div>
+  </div>
+  <div class="card" id="cardNotes">
+    <div class="label">ملاحظات عملية</div>
+    <div class="out">تعتمد إزالة القناة الوسطى على الفرق بين القناتين، لذا كلما كان الغناء مركزيًا بقوة، كان الإزالة أفضل. الملفات أحادية القناة تعالج بتقليل طفيف للحفاظ على التوازن. المعاينة والتصدير يستخدمان OfflineAudioContext لضمان توافق مع معظم المتصفحات الحديثة.</div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة دون اتصال بالإنترنت؟</h3><p>نعم، تعمل بالكامل داخل المتصفح بعد تحميل الصفحة، ولا ترسل أي بيانات خارج جهازك.</p><h3>ما نوع الملفات المدعومة؟</h3><p>تدعم معظم ملفات الصوت التي يفككها WebAudio مثل MP3 وWAV وOGG وAAC وفقًا لدعم المتصفح.</p><h3>هل يمكنني استعادة الصوت الغنائي بالكامل؟</h3><p>لا، إزالة القناة الوسطى طريقة تقريبية. تعتمد فعاليتها على توزيع الصوت في الملف، وقد يبقى جزء من الغناء أو يضعف بعض الآلات.</p><h3>هل يتم حفظ الملف الأصلي؟</h3><p>يبقى الملف الأصلي على جهازك كما هو، ولا يتم تعديله. يتم إنشاء نسخة معالجة جديدة للتصدير فقط.</p><h3>هل تعمل الأداة على الهاتف المحمول؟</h3><p>نعم، تدعمها المتصفحات الحديثة في الهواتف، لكن قد يختلف أداء المعاينة حسب مواصفات الجهاز.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  const audioFile = document.getElementById("audioFile");
+  const fileName = document.getElementById("fileName");
+  const fileInfo = document.getElementById("fileInfo");
+  const uploadStatus = document.getElementById("uploadStatus");
+  const centerLevel = document.getElementById("centerLevel");
+  const centerVal = document.getElementById("centerVal");
+  const centerHelp = document.getElementById("centerHelp");
+  const trimStart = document.getElementById("trimStart");
+  const trimEnd = document.getElementById("trimEnd");
+  const btnApplyTrim = document.getElementById("btnApplyTrim");
+  const btnResetTrim = document.getElementById("btnResetTrim");
+  const btnPlay = document.getElementById("btnPlay");
+  const btnStop = document.getElementById("btnStop");
+  const timeInfo = document.getElementById("timeInfo");
+  const preview = document.getElementById("preview");
+  const trimStatus = document.getElementById("trimStatus");
+  const btnExport = document.getElementById("btnExport");
+  const resultSize = document.getElementById("resultSize");
+  const exportStatus = document.getElementById("exportStatus");
+  const procStatus = document.getElementById("procStatus");
+  const savedInfo = document.getElementById("savedInfo");
+  const btnClearSaved = document.getElementById("btnClearSaved");
+  const savedStatus = document.getElementById("savedStatus");
+  let audioBuffer = null;
+  let trimmedBuffer = null;
+  let currentAudioUrl = null;
+  let playTimer = null;
+  let audioCtx = null;
+  function loadSaved() {
+    try {
+      const s = localStorage.getItem("vocal_remover_settings");
+      if (!s) return;
+      const obj = JSON.parse(s);
+      if (typeof obj.center === "number") {
+        centerLevel.value = Math.max(0, Math.min(1, obj.center));
+      }
+      if (typeof obj.trimStart === "number") trimStart.value = Math.max(0, obj.trimStart);
+      if (typeof obj.trimEnd === "number") trimEnd.value = Math.max(0, obj.trimEnd);
+    } catch (e) {}
+    updateCenter();
+    updateSavedInfo();
+  }
+  function saveSettings() {
+    try {
+      localStorage.setItem("vocal_remover_settings", JSON.stringify({
+        center: parseFloat(centerLevel.value || "0"),
+        trimStart: parseFloat(trimStart.value || "0"),
+        trimEnd: parseFloat(trimEnd.value || "0")
+      }));
+      updateSavedInfo();
+      savedStatus.textContent = "تم حفظ الإعدادات بنجاح.";
+    } catch (e) {
+      savedStatus.textContent = "تعذر حفظ الإعدادات في localStorage.";
+    }
+  }
+  function updateCenter() {
+    const v = parseFloat(centerLevel.value || "0");
+    centerVal.textContent = v.toFixed(2);
+    saveSettings();
+  }
+  function updateSavedInfo() {
+    savedInfo.textContent = "مستوى الإزالة: " + parseFloat(centerLevel.value||"0").toFixed(2) + " | بداية القص: " + parseFloat(trimStart.value||"0").toFixed(2) + " | نهاية القص: " + parseFloat(trimEnd.value||"0").toFixed(2);
+  }
+  function fmtBytes(b) {
+    if (b <= 0) return "٠ بايت";
+    const k = 1024, sizes = ["بايت","كيلوبايت","ميجابايت","جيجابايت"];
+    const i = Math.floor(Math.log(b)/Math.log(k));
+    return (b/Math.pow(k,i)).toFixed(1) + " " + sizes[i];
+  }
+  function fmtSec(s) {
+    if (!isFinite(s) || s < 0) s = 0;
+    return s.toFixed(2);
+  }
+  function clearUrl() {
+    if (currentAudioUrl) {
+      try { URL.revokeObjectURL(currentAudioUrl); } catch(e){}
+      currentAudioUrl = null;
+    }
+  }
+  function stopPreview() {
+    try { preview.pause(); } catch(e){}
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  }
+  function toWavBlob(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const format = 1;
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth/8;
+    const blockAlign = numChannels * bytesPerSample;
+    const dataSize = buffer.length * blockAlign;
+    const bufferSize = 44 + dataSize;
+    const arrayBuffer = new ArrayBuffer(bufferSize);
+    const view = new DataView(arrayBuffer);
+    let offset = 0;
+    function writeString(s){ for(let i=0;i<s.length;i++) view.setUint8(offset++, s.charCodeAt(i)); }
+    function writeUint32(v){ view.setUint32(offset, v, true); offset += 4; }
+    function writeUint16(v){ view.setUint16(offset, v, true); offset += 2; }
+    writeString("RIFF"); writeUint32(36 + dataSize); writeString("WAVE");
+    writeString("fmt "); writeUint32(16); writeUint16(format); writeUint16(numChannels); writeUint32(sampleRate); writeUint32(sampleRate * blockAlign); writeUint16(blockAlign); writeUint16(bitDepth);
+    writeString("data"); writeUint32(dataSize);
+    for (let i=0; i<buffer.length; i++) {
+      for (let ch=0; ch<numChannels; ch++) {
+        let v = buffer.getChannelData(ch)[i];
+        if (v > 1) v = 1; if (v < -1) v = -1;
+        view.setInt16(offset, v * 0x7FFF, true); offset += 2;
+      }
+    }
+    return new Blob([arrayBuffer], {type: "audio/wav"});
+  }
+  function removeCenterBuffer(src, level) {
+    const ch = src.numberOfChannels;
+    if (ch < 2) {
+      const len = src.length;
+      const rate = src.sampleRate;
+      const out = new AudioBuffer({length: len, numberOfChannels: 1, sampleRate: rate});
+      const s = src.getChannelData(0);
+      const d = out.getChannelData(0);
+      const a = Math.max(0, Math.min(1, level * 0.3));
+      for (let i=0; i<len; i++) d[i] = s[i] * (1 - a);
+      return out;
+    }
+    const len = src.length;
+    const rate = src.sampleRate;
+    const out = new AudioBuffer({length: len, numberOfChannels: 2, sampleRate: rate});
+    const Ls = src.getChannelData(0), Rs = src.getChannelData(1);
+    const Ld = out.getChannelData(0), Rd = out.getChannelData(1);
+    const a = Math.max(0, Math.min(1, level));
+    for (let i=0; i<len; i++) {
+      const mid = (Ls[i] + Rs[i]) * 0.5;
+      Ld[i] = Ls[i] - mid * a;
+      Rd[i] = Rs[i] - mid * a;
+    }
+    return out;
+  }
+  function trimBuffer(src, startSec, endSec) {
+    const len = src.length;
+    const rate = src.sampleRate;
+    let s = Math.max(0, startSec);
+    let e = endSec;
+    if (e <= 0 || e > len/rate) e = len/rate;
+    if (s >= e) s = 0;
+    const sIdx = Math.floor(s * rate);
+    const eIdx = Math.min(len, Math.floor(e * rate));
+    if (eIdx <= sIdx) return src;
+    const newLen = eIdx - sIdx;
+    const out = new AudioBuffer({length: newLen, numberOfChannels: src.numberOfChannels, sampleRate: rate});
+    for (let ch=0; ch<src.numberOfChannels; ch++) {
+      const sd = src.getChannelData(ch);
+      const dd = out.getChannelData(ch);
+      for (let i=0; i<newLen; i++) dd[i] = sd[sIdx + i];
+    }
+    return out;
+  }
+  audioFile.addEventListener("change", async function() {
+    stopPreview();
+    clearUrl();
+    const file = audioFile.files && audioFile.files[0];
+    if (!file) {
+      fileName.textContent = "لم يُرفع أي ملف بعد";
+      fileInfo.textContent = "الحجم: ٠ بايت | المدة: ٠٫٠٠ ث";
+      uploadStatus.textContent = "لم يتم اختيار ملف.";
+      audioBuffer = null; trimmedBuffer = null;
+      procStatus.textContent = "في انتظار رفع الملف...";
+      trimEnd.value = "0";
+      return;
+    }
+    fileName.textContent = "اسم الملف: " + file.name;
+    fileInfo.textContent = "الحجم: " + fmtBytes(file.size);
+    uploadStatus.textContent = "جاري فك تشفير الملف...";
+    procStatus.textContent = "يتم قراءة الملف وفك تشفيره...";
+    try {
+      const arrayBuf = await file.arrayBuffer();
+      if (!window.AudioContext && !window.webkitAudioContext) throw new Error("WebAudio غير مدعوم في هذا المتصفح.");
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioBuffer = await audioCtx.decodeAudioData(arrayBuf);
+      trimmedBuffer = null;
+      fileInfo.textContent = "الحجم: " + fmtBytes(file.size) + " | المدة: " + fmtSec(audioBuffer.duration) + " ث";
+      uploadStatus.textContent = "تم فك تشفير الملف بنجاح.";
+      procStatus.textContent = "جاهز. يمكنك ضبط مستوى الإزالة وتشغيل المعاينة.";
+      trimStart.value = "0";
+      trimEnd.value = fmtSec(audioBuffer.duration);
+      updateSavedInfo();
+      saveSettings();
+      updatePreview();
+    } catch (e) {
+      uploadStatus.textContent = "حدث خطأ أثناء معالجة الملف: " + e.message;
+      procStatus.textContent = "فشل المعالجة. حاول برفع ملف صوتي صالح.";
+      audioBuffer = null; trimmedBuffer = null;
+    }
+  });
+  centerLevel.addEventListener("input", function() { updateCenter(); updatePreview(); saveSettings(); });
+  trimStart.addEventListener("change", function() { saveSettings(); updatePreview(); });
+  trimEnd.addEventListener("change", function() { saveSettings(); updatePreview(); });
+  btnApplyTrim.addEventListener("click", function() {
+    if (!audioBuffer) { trimStatus.textContent = "يرجى رفع ملف أولًا."; return; }
+    let s = parseFloat(trimStart.value || "0");
+    let e = parseFloat(trimEnd.value || "0");
+    const dur = audioBuffer.duration;
+    if (e <= 0 || e > dur) e = dur;
+    if (s < 0) s = 0;
+    if (s >= e) { trimStatus.textContent = "نطاق القص غير صالح. يجب أن يكون البدء أقل من النهاية."; return; }
+    trimmedBuffer = trimBuffer(audioBuffer, s, e);
+    trimStatus.textContent = "تم تطبيق القص. المدة بعد القص: " + fmtSec(trimmedBuffer.duration) + " ث.";
+    updatePreview();
+    saveSettings();
+  });
+  btnResetTrim.addEventListener("click", function() {
+    if (!audioBuffer) { trimStatus.textContent = "يرجى رفع ملف أولًا."; return; }
+    trimmedBuffer = null;
+    trimStart.value = "0";
+    trimEnd.value = fmtSec(audioBuffer.duration);
+    trimStatus.textContent = "تمت إعادة تعيين القص إلى كامل الملف.";
+    updatePreview();
+    saveSettings();
+  });
+  function getCurrentBuffer() {
+    return trimmedBuffer || audioBuffer;
+  }
+  function updatePreview() {
+    stopPreview();
+    clearUrl();
+    const buf = getCurrentBuffer();
+    if (!buf) {
+      preview.removeAttribute("src");
+      timeInfo.textContent = "٠٫٠٠ / ٠٫٠٠ ث";
+      return;
+    }
+    const proc = removeCenterBuffer(buf, parseFloat(centerLevel.value || "0"));
+    const blob = toWavBlob(proc);
+    currentAudioUrl = URL.createObjectURL(blob);
+    preview.src = currentAudioUrl;
+    timeInfo.textContent = "٠٫٠٠ / " + fmtSec(buf.duration) + " ث";
+  }
+  btnPlay.addEventListener("click", async function() {
+    const buf = getCurrentBuffer();
+    if (!buf) { trimStatus.textContent = "يرجى رفع ملف وتشغيله بعد المعالجة."; return; }
+    stopPreview();
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") await audioCtx.resume();
+      const src = audioCtx.createBufferSource();
+      const procBuf = removeCenterBuffer(buf, parseFloat(centerLevel.value || "0"));
+      src.buffer = procBuf;
+      src.connect(audioCtx.destination);
+      src.start(0);
+      const start = audioCtx.currentTime;
+      if (playTimer) clearInterval(playTimer);
+      playTimer = setInterval(function() {
+        const t = audioCtx.currentTime - start;
+        timeInfo.textContent = fmtSec(Math.min(t, procBuf.duration)) + " / " + fmtSec(procBuf.duration) + " ث";
+        if (t >= procBuf.duration) {
+          clearInterval(playTimer); playTimer = null;
+        }
+      }, 100);
+      src.onended = function() {
+        if (playTimer) { clearInterval(playTimer); playTimer = null; }
+      };
+      trimStatus.textContent = "جاري تشغيل المعاينة.";
+    } catch (e) {
+      trimStatus.textContent = "تعذر تشغيل المعاينة: " + e.message;
+    }
+  });
+  btnStop.addEventListener("click", function() {
+    stopPreview();
+    trimStatus.textContent = "تم إيقاف المعاينة.";
+  });
+  btnExport.addEventListener("click", function() {
+    const buf = getCurrentBuffer();
+    if (!buf) { exportStatus.textContent = "لا يوجد ملف جاهز للتصدير. يرجى رفع ملف أولًا."; return; }
+    try {
+      procStatus.textContent = "جاري تجهيز ملف WAV للتصدير...";
+      const proc = removeCenterBuffer(buf, parseFloat(centerLevel.value || "0"));
+      const blob = toWavBlob(proc);
+      resultSize.textContent = "حجم النتيجة: " + fmtBytes(blob.size);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      const base = (audioFile.files && audioFile.files[0] && audioFile.files[0].name) ? audioFile.files[0].name.replace(/\.[^/.]+$/, "") : "output";
+      a.download = base + "_vocal_removed.wav";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        try { document.body.removeChild(a); } catch(e){}
+        try { URL.revokeObjectURL(url); } catch(e){}
+      }, 100);
+      exportStatus.textContent = "تم بدء تنزيل ملف WAV بنجاح.";
+      procStatus.textContent = "اكتملت المعالجة. يمكن رفع ملف آخر عند الرغبة.";
+    } catch (e) {
+      exportStatus.textContent = "حدث خطأ أثناء التصدير: " + e.message;
+      procStatus.textContent = "فشل التصدير.";
+    }
+  });
+  btnClearSaved.addEventListener("click", function() {
+    try { localStorage.removeItem("vocal_remover_settings"); } catch(e){}
+    centerLevel.value = "0.7";
+    trimStart.value = "0";
+    trimEnd.value = audioBuffer ? fmtSec(audioBuffer.duration) : "0";
+    updateCenter();
+    updateSavedInfo();
+    savedStatus.textContent = "تم مسح الإعدادات المحفوظة.";
+    updatePreview();
+  });
+  loadSaved();
+})();
+</script>
+</body>
+</html>
