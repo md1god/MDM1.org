@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مختبر ECS تفاعلي: كيانات ومكوّنات وأنظمة | MDM1</title>
+<meta name="description" content="مختبر تفاعلي في المتصفح لشرح الكيان-المكوّن-النظام (ECS) والمحاكاة: جسيمات، ذكاء جماعي، شبكة تزامن، قياس أداء، وحفظ محلي.">
+<link rel="canonical" href="https://mdm1.org/apps/systems-simulations-lab.html">
+<meta property="og:title" content="مختبر ECS تفاعلي: كيانات ومكوّنات وأنظمة">
+<meta property="og:description" content="مختبر تفاعلي في المتصفح لشرح الكيان-المكوّن-النظام (ECS) والمحاكاة: جسيمات، ذكاء جماعي، شبكة تزامن، قياس أداء، وحفظ محلي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/systems-simulations-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; display: grid; gap: 1rem; }
+.app-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.app-section { min-width: 0; }
+.app canvas { width: 100%; height: auto; display: block; border: 1px solid var(--gold-dim); border-radius: 8px; background: #050505; }
+.app-row { flex-wrap: wrap; gap: .5rem; align-items: center; }
+.app-intro { line-height: 1.7; }
+.app-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; }
+.app-metrics .out { min-height: 3rem; }
+.app-textarea { width: 100%; box-sizing: border-box; font-family: monospace; direction: ltr; }
+.app-section h2 { margin-top: 0; }
+@media (max-width: 760px) { .app-layout { grid-template-columns: 1fr; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مختبر تفاعلي لبرمجة الكيانات والمكوّنات والأنظمة", "url": "https://mdm1.org/apps/systems-simulations-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما هو نموذج الكيان-المكوّن-النظام (ECS)؟", "acceptedAnswer": {"@type": "Answer", "text": "هو نمط تصميم يفصل البيانات (المكوّنات) عن السلوك (الأنظمة)، مع كيانات كمعرّفات فقط."}}, {"@type": "Question", "name": "هل يعمل المختبر بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل المحاكاة والتخزين تتم في المتصفح باستخدام Canvas وlocalStorage."}}, {"@type": "Question", "name": "كيف أحفظ تجربتي؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل اسماً في قسم التجارب واضغط حفظ، ثم حمّلها لاحقاً من القائمة."}}, {"@type": "Question", "name": "ماذا تقيس لوحة القياس؟", "acceptedAnswer": {"@type": "Answer", "text": "الإطارات في الثانية، عدد الكيانات، تصادمات الإطار، وزمن تنفيذ الأنظمة."}}, {"@type": "Question", "name": "هل يمكن تعديل الأنظمة أثناء التشغيل؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن تفعيل/تعطيل الأنظمة وغيّر ترتيبها وتعديل المعلمات فوراً."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مختبر تفاعلي لبرمجة الكيانات والمكوّنات والأنظمة</h1>
+  <p class="page-sub">مختبر تفاعلي في المتصفح لشرح الكيان-المكوّن-النظام (ECS) والمحاكاة: جسيمات، ذكاء جماعي، شبكة تزامن، قياس أداء، وحفظ محلي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot">
+<p id="appIntro" class="app-intro">إجابة سريعة: في نموذج الكيان-المكوّن-النظام (ECS) تُخزَّن البيانات في مكوّنات خفيفة، وتُنفَّذ السلوكيات في أنظمة مستقلة، مما يسمح بمعالجة آلاف الكيانات بكفاءة. هذا المختبر يعمل بالكامل في المتصفح على Canvas، ويشرح الكيانات والمكوّنات والأنظمة والوظائف المتوازية وشبكة التزامن من خلال محاكاة جسيمات ووكلاء ذكاء اصطناعي. يمكنك تعديل المكوّنات والأنظمة، والتشغيل خطوة بخطوة أو بسرعة، وقياس الإطارات وعدد الكيانات، وحفظ التجارب في localStorage.</p>
+<div class="app-layout">
+<section class="card app-section" id="simSection">
+<h2 id="simHeading">لوحة المحاكاة</h2>
+<canvas id="simCanvas" width="640" height="360"></canvas>
+<div class="row app-row" id="playbackRow">
+<button id="btnPlay" class="button" type="button">تشغيل</button>
+<button id="btnPause" class="button sec" type="button">إيقاف</button>
+<button id="btnStep" class="button sec" type="button">خطوة</button>
+<button id="btnReset" class="button sec" type="button">إعادة ضبط</button>
+<label class="label" for="speedRange">السرعة</label>
+<input id="speedRange" type="range" min="0.25" max="4" step="0.25" value="1">
+<span id="speedValue" class="badge">1x</span>
+</div>
+<div class="row app-row" id="spawnRow">
+<button id="btnAddParticle" class="button sec" type="button">إضافة جسيم</button>
+<button id="btnAddAgent" class="button sec" type="button">إضافة وكيل</button>
+<button id="btnSpawnCluster" class="button sec" type="button">عنقود</button>
+<button id="btnClear" class="button sec" type="button">مسح الكل</button>
+<label class="label" for="entityCount">عدد مطلوب</label>
+<input id="entityCount" type="number" min="1" max="150" value="60">
+<button id="btnApplyCount" class="button sec" type="button">تطبيق</button>
+<button id="btnDeleteSelected" class="button sec" type="button">حذف المحدد</button>
+</div>
+<div class="out" id="simStatus">جاهز. اضغط تشغيل أو خطوة.</div>
+</section>
+<section class="card app-section" id="componentSection">
+<h2 id="componentHeading">المكوّنات</h2>
+<div class="row app-row" id="componentToggleRow">
+<label class="label"><input id="compPhysics" type="checkbox" checked> فيزياء</label>
+<label class="label"><input id="compCollision" type="checkbox" checked> تصادم</label>
+<label class="label"><input id="compAi" type="checkbox" checked> ذكاء</label>
+<label class="label"><input id="compNetwork" type="checkbox" checked> شبكة</label>
+</div>
+<div class="row app-row" id="paramRow">
+<label class="label" for="gravityRange">جاذبية <span id="gravityValue">0.12</span></label>
+<input id="gravityRange" type="range" min="0" max="0.5" step="0.01" value="0.12">
+<label class="label" for="restitutionRange">ارتداد <span id="restitutionValue">0.85</span></label>
+<input id="restitutionRange" type="range" min="0.5" max="1" step="0.01" value="0.85">
+<label class="label" for="frictionRange">احتكاك <span id="frictionValue">0.995</span></label>
+<input id="frictionRange" type="range" min="0.95" max="1" step="0.001" value="0.995">
+</div>
+<div class="row app-row" id="agentParamRow">
+<label class="label" for="agentSpeedRange">سرعة وكيل <span id="agentSpeedValue">2.20</span></label>
+<input id="agentSpeedRange" type="range" min="1" max="5" step="0.1" value="2.2">
+<label class="label" for="flockRadiusRange">نطاق تجمّع <span id="flockRadiusValue">90</span></label>
+<input id="flockRadiusRange" type="range" min="40" max="180" step="5" value="90">
+<label class="label" for="networkStrengthRange">تزامن <span id="networkStrengthValue">0.08</span></label>
+<input id="networkStrengthRange" type="range" min="0" max="0.3" step="0.01" value="0.08">
+</div>
+</section>
+<section class="card app-section" id="systemSection">
+<h2 id="systemHeading">الأنظمة</h2>
+<div class="row app-row" id="systemToggleRow">
+<label class="label"><input id="sysPhysics" type="checkbox" checked> نظام الفيزياء</label>
+<label class="label"><input id="sysCollision" type="checkbox" checked> نظام التصادم</label>
+<label class="label"><input id="sysAi" type="checkbox" checked> نظام الذكاء</label>
+<label class="label"><input id="sysNetwork" type="checkbox" checked> نظام الشبكة</label>
+<label class="label"><input id="sysRender" type="checkbox" checked> نظام الرسم</label>
+</div>
+<div class="row app-row" id="orderRow">
+<label class="label" for="systemOrder">ترتيب التنفيذ</label>
+<select id="systemOrder">
+<option value="physics,collision,ai,network">فيزياء → تصادم → ذكاء → شبكة</option>
+<option value="ai,physics,collision,network">ذكاء → فيزياء → تصادم → شبكة</option>
+<option value="network,ai,physics,collision">شبكة → ذكاء → فيزياء → تصادم</option>
+</select>
+</div>
+<div class="out" id="systemStatus">الأنظمة جاهزة.</div>
+</section>
+<section class="card app-section" id="lessonSection">
+<h2 id="lessonHeading">دروس تفاعلية</h2>
+<div class="row app-row" id="lessonRow">
+<label class="label" for="lessonSelect">الدرس</label>
+<select id="lessonSelect"></select>
+<button id="btnRunLesson" class="button" type="button">تشغيل الدرس</button>
+</div>
+<div class="out" id="lessonText">اختر درساً ثم اضغط تشغيل.</div>
+</section>
+<section class="card app-section" id="metricsSection">
+<h2 id="metricsHeading">القياس</h2>
+<div class="app-metrics" id="metricsGrid">
+<div class="out" id="fpsBox">إطارات/ث: <span id="fpsValue" class="big">0</span></div>
+<div class="out" id="countBox">كيانات: <span id="entityCountValue" class="big">0</span></div>
+<div class="out" id="collisionBox">تصادمات: <span id="collisionValue" class="big">0</span></div>
+<div class="out" id="timeBox">زمن: <span id="systemTimeValue">-</span></div>
+</div>
+</section>
+<section class="card app-section" id="storageSection">
+<h2 id="storageHeading">التجارب</h2>
+<div class="row app-row" id="storageRow">
+<label class="label" for="experimentName">اسم</label>
+<input id="experimentName" type="text" maxlength="40" placeholder="تجربتي">
+<button id="btnSaveExperiment" class="button" type="button">حفظ</button>
+</div>
+<div class="row app-row" id="storageLoadRow">
+<label class="label" for="experimentList">محفوظة</label>
+<select id="experimentList"></select>
+<button id="btnLoadExperiment" class="button sec" type="button">تحميل</button>
+<button id="btnDeleteExperiment" class="button sec" type="button">حذف</button>
+</div>
+<div class="out" id="storageStatus">لا توجد تجارب محفوظة.</div>
+</section>
+<section class="card app-section" id="advancedSection">
+<h2 id="advancedHeading">محرر الإعدادات</h2>
+<textarea id="configJson" rows="8" class="app-textarea"></textarea>
+<div class="row app-row" id="configRow">
+<button id="btnRefreshConfig" class="button sec" type="button">تحديث</button>
+<button id="btnApplyConfig" class="button" type="button">تطبيق</button>
+</div>
+<div class="out" id="configStatus">JSON جاهز.</div>
+</section>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما هو نموذج الكيان-المكوّن-النظام (ECS)؟</h3><p>هو نمط تصميم يفصل البيانات (المكوّنات) عن السلوك (الأنظمة)، مع كيانات كمعرّفات فقط.</p><h3>هل يعمل المختبر بدون اتصال بالإنترنت؟</h3><p>نعم، كل المحاكاة والتخزين تتم في المتصفح باستخدام Canvas وlocalStorage.</p><h3>كيف أحفظ تجربتي؟</h3><p>أدخل اسماً في قسم التجارب واضغط حفظ، ثم حمّلها لاحقاً من القائمة.</p><h3>ماذا تقيس لوحة القياس؟</h3><p>الإطارات في الثانية، عدد الكيانات، تصادمات الإطار، وزمن تنفيذ الأنظمة.</p><h3>هل يمكن تعديل الأنظمة أثناء التشغيل؟</h3><p>نعم، يمكن تفعيل/تعطيل الأنظمة وغيّر ترتيبها وتعديل المعلمات فوراً.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const STORAGE_KEY='md1_ecs_lab_experiments_v1';
+  const SETTINGS_KEY='md1_ecs_lab_settings_v1';
+  const FIXED_DT=1/60;
+  let canvas=null, ctx=null;
+  const state={ running:false, speed:1, scenario:'particles', params:{gravity:0.12,restitution:0.85,friction:0.995,agentMaxSpeed:2.2,flockRadius:90,networkStrength:0.08}, systems:{physics:true,collision:true,ai:true,network:true,render:true}, componentFlags:{physics:true,collision:true,ai:true,network:true}, systemOrder:'physics,collision,ai,network', entities:[], selectedId:null, metrics:{collisionsFrame:0,systemMs:{},lastCollisions:0}, frameTimes:[] };
+  function $(id){ return document.getElementById(id); }
+  function clamp(v,a,b){ v=+v; if(isNaN(v)) v=a; return Math.max(a,Math.min(b,v)); }
+  function uid(){ return 'e'+Math.random().toString(36).slice(2,9); }
+  function makeEntity(type){
+    const W=canvas?canvas.width:640, H=canvas?canvas.height:360;
+    const e={ id:uid(), type:type, x:Math.random()*(W-40)+20, y:Math.random()*(H-40)+20, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2, mass:type==='agent'?1.2:1, radius:type==='agent'?8:(type==='node'?7:5), color:type==='agent'?'#7bd389':(type==='node'?'#f2c14e':'#6ea8fe'), components:{physics:true,collision:type!=='node',ai:type==='agent',network:type==='node'}, groupId:type==='agent'?Math.floor(Math.random()*3):0, selected:false };
+    for(const k in state.componentFlags){ if(Object.prototype.hasOwnProperty.call(e.components,k)) e.components[k]=state.componentFlags[k]; }
+    return e;
+  }
+  function buildScenario(type,count){
+    state.scenario=type;
+    const n=clamp(parseInt(count,10)||60,1,150);
+    const W=canvas?canvas.width:640,H=canvas?canvas.height:360;
+    state.entities=[];
+    if(type==='particles'){ for(let i=0;i<n;i++) state.entities.push(makeEntity('particle')); }
+    else if(type==='agents'){ for(let i=0;i<n;i++) state.entities.push(makeEntity('agent')); }
+    else if(type==='network'){
+      const m=Math.min(n,80);
+      const cx=W/2,cy=H/2,r=Math.min(W,H)*0.35;
+      for(let i=0;i<m;i++){ const a=(i/m)*Math.PI*2; const e=makeEntity('node'); e.x=cx+Math.cos(a)*r; e.y=cy+Math.sin(a)*r; e.vx=-Math.sin(a)*0.8; e.vy=Math.cos(a)*0.8; state.entities.push(e); }
+    } else if(type==='mixed'){
+      const half=Math.floor(n/2);
+      for(let i=0;i<half;i++) state.entities.push(makeEntity('particle'));
+      for(let i=0;i<n-half;i++) state.entities.push(makeEntity('agent'));
+    } else {
+      for(let i=0;i<n;i++) state.entities.push(makeEntity('particle'));
+    }
+    state.entities.forEach(e=>{ for(const k in state.componentFlags){ if(Object.prototype.hasOwnProperty.call(e.components,k)) e.components[k]=state.componentFlags[k]; }});
+    state.metrics.collisionsFrame=0; state.metrics.lastCollisions=0; state.metrics.systemMs={};
+    const input=$('entityCount'); if(input) input.value=state.entities.length;
+  }
+  function normalizeEntity(raw){
+    const e={ id:raw.id||uid(), type:raw.type||'particle', x:+raw.x||0, y:+raw.y||0, vx:+raw.vx||0, vy:+raw.vy||0, mass:+raw.mass||1, radius:+raw.radius||5, color:raw.color||'#6ea8fe', components:{physics:true,collision:raw.type!=='node',ai:raw.type==='agent',network:raw.type==='node'}, groupId:raw.groupId||0, selected:false };
+    if(raw.components && typeof raw.components==='object'){ for(const k in raw.components) e.components[k]=!!raw.components[k]; }
+    for(const k in state.componentFlags){ if(Object.prototype.hasOwnProperty.call(e.components,k)) e.components[k]=state.componentFlags[k]; }
+    return e;
+  }
+  function serializeState(){
+    return { scenario:state.scenario, speed:state.speed, params:JSON.parse(JSON.stringify(state.params)), systems:JSON.parse(JSON.stringify(state.systems)), componentFlags:JSON.parse(JSON.stringify(state.componentFlags)), systemOrder:state.systemOrder, entities:state.entities.map(e=>JSON.parse(JSON.stringify(e))) };
+  }
+  function applyState(cfg){
+    if(!cfg || typeof cfg!=='object') return;
+    if(typeof cfg.scenario==='string') state.scenario=cfg.scenario;
+    if(cfg.params && typeof cfg.params==='object') state.params=Object.assign({},state.params,cfg.params);
+    if(cfg.systems && typeof cfg.systems==='object') state.systems=Object.assign({},state.systems,cfg.systems);
+    if(cfg.componentFlags && typeof cfg.componentFlags==='object') state.componentFlags=Object.assign({},state.componentFlags,cfg.componentFlags);
+    if(typeof cfg.systemOrder==='string') state.systemOrder=cfg.systemOrder;
+    if(typeof cfg.speed==='number') state.speed=clamp(cfg.speed,0.25,4);
+    if(Array.isArray(cfg.entities)){ state.entities=cfg.entities.map(normalizeEntity); state.entities.forEach(e=>{ for(const k in state.componentFlags){ if(Object.prototype.hasOwnProperty.call(e.components,k)) e.components[k]=state.componentFlags[k]; } }); }
+    else { buildScenario(state.scenario, ($('entityCount')&&$('entityCount').value)||60); }
+    updateControlsFromState();
+    if(!Array.isArray(cfg.entities)){ const input=$('entityCount'); if(input) input.value=state.entities.length; }
+  }
+  function updateControlsFromState(){
+    const sr=$('speedRange'); if(sr) sr.value=state.speed;
+    const sv=$('speedValue'); if(sv) sv.textContent=state.speed+'x';
+    function setSlider(sliderId,valueId,val,fmt){ const s=$(sliderId); if(s) s.value=val; const v=$(valueId); if(v) v.textContent=fmt?fmt(val):val; }
+    setSlider('gravityRange','gravityValue',state.params.gravity,v=>v.toFixed(2));
+    setSlider('restitutionRange','restitutionValue',state.params.restitution,v=>v.toFixed(2));
+    setSlider('frictionRange','frictionValue',state.params.friction,v=>v.toFixed(3));
+    setSlider('agentSpeedRange','agentSpeedValue',state.params.agentMaxSpeed,v=>v.toFixed(2));
+    setSlider('flockRadiusRange','flockRadiusValue',state.params.flockRadius,v=>String(Math.round(v)));
+    setSlider('networkStrengthRange','networkStrengthValue',state.params.networkStrength,v=>v.toFixed(2));
+    const cp=$('compPhysics'); if(cp) cp.checked=!!state.componentFlags.physics;
+    const cc=$('compCollision'); if(cc) cc.checked=!!state.componentFlags.collision;
+    const ca=$('compAi'); if(ca) ca.checked=!!state.componentFlags.ai;
+    const cn=$('compNetwork'); if(cn) cn.checked=!!state.componentFlags.network;
+    const sp=$('sysPhysics'); if(sp) sp.checked=!!state.systems.physics;
+    const sc=$('sysCollision'); if(sc) sc.checked=!!state.systems.collision;
+    const sa=$('sysAi'); if(sa) sa.checked=!!state.systems.ai;
+    const sn=$('sysNetwork'); if(sn) sn.checked=!!state.systems.network;
+    const sr2=$('sysRender'); if(sr2) sr2.checked=!!state.systems.render;
+    const so=$('systemOrder'); if(so) so.value=state.systemOrder;
+  }
+  function setComponentGlobal(name,value){
+    state.componentFlags[name]=value;
+    state.entities.forEach(e=>{ if(Object.prototype.hasOwnProperty.call(e.components,name)) e.components[name]=value; });
+  }
+  function physicsSystem(entities,dt,params,metrics){
+    const s=dt*60;
+    const W=canvas?canvas.width:640,H=canvas?canvas.height:360;
+    for(const e of entities){
+      if(!e.components.physics) continue;
+      e.vy += params.gravity*s;
+      e.vx *= params.friction;
+      e.vy *= params.friction;
+      e.x += e.vx*s;
+      e.y += e.vy*s;
+      if(e.x<e.radius){ e.x=e.radius; e.vx=Math.abs(e.vx)*params.restitution; }
+      if(e.x>W-e.radius){ e.x=W-e.radius; e.vx=-Math.abs(e.vx)*params.restitution; }
+      if(e.y<e.radius){ e.y=e.radius; e.vy=Math.abs(e.vy)*params.restitution; }
+      if(e.y>H-e.radius){ e.y=H-e.radius; e.vy=-Math.abs(e.vy)*params.restitution; }
+    }
+  }
+  function collisionSystem(entities,dt,params,metrics){
+    let count=0;
+    for(let i=0;i<entities.length;i++){
+      const a=entities[i];
+      if(!a.components.collision) continue;
+      for(let j=i+1;j<entities.length;j++){
+        const b=entities[j];
+        if(!b.components.collision) continue;
+        const dx=b.x-a.x, dy=b.y-a.y;
+        const dist=Math.hypot(dx,dy);
+        const min=a.radius+b.radius;
+        if(dist>0 && dist<min){
+          count++;
+          const nx=dx/dist, ny=dy/dist;
+          const overlap=min-dist;
+          const totalMass=a.mass+b.mass;
+          a.x -= nx*overlap*(b.mass/totalMass);
+          a.y -= ny*overlap*(b.mass/totalMass);
+          b.x += nx*overlap*(a.mass/totalMass);
+          b.y += ny*overlap*(a.mass/totalMass);
+          const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
+          const velAlong=rvx*nx+rvy*ny;
+          if(velAlong<0){
+            const e=params.restitution;
+            const impulse=-(1+e)*velAlong/(1/a.mass+1/b.mass);
+            a.vx -= impulse*nx/a.mass;
+            a.vy -= impulse*ny/a.mass;
+            b.vx += impulse*nx/b.mass;
+            b.vy += impulse*ny/b.mass;
+          }
+        }
+      }
+    }
+    metrics.collisionsFrame=count;
+  }
+  function aiSystem(entities,dt,params,metrics){
+    const agents=entities.filter(e=>e.type==='agent' && e.components.ai);
+    const s=dt*60;
+    for(const a of agents){
+      let anx=0,any=0,anc=0,cx=0,cy=0,cn=0,sx=0,sy=0;
+      for(const b of agents){
+        if(a===b) continue;
+        const dx=b.x-a.x, dy=b.y-a.y;
+        const d=Math.hypot(dx,dy);
+        if(d>0 && d<params.flockRadius){
+          if(d<params.flockRadius*0.35){ sx -= dx/d; sy -= dy/d; }
+          anx += b.vx; any += b.vy; anc++;
+          cx += b.x; cy += b.y; cn++;
+        }
+      }
+      let ax=0,ay=0;
+      if(anc>0){ ax += (anx/anc - a.vx)*params.alignment*0.05; ay += (any/anc - a.vy)*params.alignment*0.05; }
+      if(cn>0){ const tx=cx/cn-a.x, ty=cy/cn-a.y; const td=Math.hypot(tx,ty)||1; ax += (tx/td)*params.cohesion*0.05; ay += (ty/td)*params.cohesion*0.05; }
+      ax += sx*params.separation*0.1;
+      ay += sy*params.separation*0.1;
+      ax += (Math.random()-0.5)*0.02;
+      ay += (Math.random()-0.5)*0.02;
+      a.vx += ax*s;
+      a.vy += ay*s;
+      const sp=Math.hypot(a.vx,a.vy);
+      if(sp>params.agentMaxSpeed){ a.vx=a.vx/sp*params.agentMaxSpeed; a.vy=a.vy/sp*params.agentMaxSpeed; }
+    }
+  }
+  function networkSystem(entities,dt,params,metrics){
+    const nodes=entities.filter(e=>e.type==='node' && e.components.network);
+    if(nodes.length<2) return;
+    const s=dt*60;
+    let cx=0,cy=0,vx=0,vy=0;
+    for(const n of nodes){ cx+=n.x; cy+=n.y; vx+=n.vx; vy+=n.vy; }
+    cx/=nodes.length; cy/=nodes.length; vx/=nodes.length; vy/=nodes.length;
+    for(const n of nodes){
+      n.vx += (cx-n.x)*params.networkStrength*s;
+      n.vy += (cy-n.y)*params.networkStrength*s;
+      n.vx += (vx-n.vx)*0.03*s;
+      n.vy += (vy-n.vy)*0.03*s;
+    }
+  }
+  function render(){
+    if(!ctx) return;
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    for(let x=0;x<W;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=0;y<H;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    const nodes=state.entities.filter(e=>e.type==='node' && e.components.network);
+    if(nodes.length>1){
+      ctx.strokeStyle='rgba(242,193,78,0.25)';
+      ctx.beginPath();
+      for(let i=0;i<nodes.length;i++){ for(let j=i+1;j<nodes.length;j++){ ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y); } }
+      ctx.stroke();
+    }
+    if(!state.systems.render){ ctx.fillStyle='#999'; ctx.fillText('نظام الرسم متوقف',12,20); return; }
+    for(const e of state.entities){
+      ctx.beginPath();
+      ctx.fillStyle=e.color;
+      ctx.arc(e.x,e.y,e.radius,0,Math.PI*2);
+      ctx.fill();
+      if(e.id===state.selectedId){ ctx.strokeStyle='#ffffff'; ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1; }
+    }
+  }
+  function stepSimulation(dt){
+    state.metrics.collisionsFrame=0;
+    state.metrics.systemMs={};
+    const order=state.systemOrder.split(',').map(s=>s.trim()).filter(Boolean);
+    for(const sys of order){
+      if(!state.systems[sys]) continue;
+      const tt=performance.now();
+      if(sys==='physics') physicsSystem(state.entities,dt,state.params,state.metrics);
+      else if(sys==='collision') collisionSystem(state.entities,dt,state.params,state.metrics);
+      else if(sys==='ai') aiSystem(state.entities,dt,state.params,state.metrics);
+      else if(sys==='network') networkSystem(state.entities,dt,state.params,state.metrics);
+      state.metrics.systemMs[sys]=(performance.now()-tt).toFixed(2);
+    }
+    state.metrics.lastCollisions=state.metrics.collisionsFrame;
+  }
+  let lastTs=0, accumulator=0;
+  function frame(ts){
+    if(!lastTs) lastTs=ts;
+    const delta=Math.min((ts-lastTs)/1000,0.1);
+    lastTs=ts;
+    if(state.running){
+      accumulator += delta*state.speed;
+      let guard=0;
+      while(accumulator>=FIXED_DT && guard<10){ stepSimulation(FIXED_DT); accumulator -= FIXED_DT; guard++; }
+    }
+    render();
+    updateMetrics(ts);
+    const raf=typeof requestAnimationFrame==='function'?requestAnimationFrame:(cb)=>setTimeout(()=>cb(Date.now()),16);
+    raf(frame);
+  }
+  function updateMetrics(ts){
+    state.frameTimes.push(ts);
+    while(state.frameTimes.length && ts-state.frameTimes[0]>1000) state.frameTimes.shift();
+    const fps=state.frameTimes.length;
+    const fpsEl=$('fpsValue'); if(fpsEl) fpsEl.textContent=String(fps);
+    const countEl=$('entityCountValue'); if(countEl) countEl.textContent=String(state.entities.length);
+    const colEl=$('collisionValue'); if(colEl) colEl.textContent=String(state.metrics.lastCollisions);
+    const timeEl=$('systemTimeValue'); if(timeEl){ const parts=Object.keys(state.metrics.systemMs).map(k=>k+':'+state.metrics.systemMs[k]); timeEl.textContent=parts.length?parts.join(' | '):'-'; }
+  }
+  function saveSettings(){
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({scenario:state.scenario,speed:state.speed,params:state.params,systems:state.systems,componentFlags:state.componentFlags,systemOrder:state.systemOrder})); } catch(e){}
+  }
+  function loadSettings(){
+    try {
+      const raw=localStorage.getItem(SETTINGS_KEY);
+      if(!raw) return;
+      const cfg=JSON.parse(raw);
+      if(cfg && typeof cfg==='object') applyState(Object.assign({},cfg,{entities:undefined}));
+    } catch(e){}
+  }
+  function loadExperiments(){ try { const raw=localStorage.getItem(STORAGE_KEY); const v=raw?JSON.parse(raw):{}; return v && typeof v==='object' && !Array.isArray(v)?v:{}; } catch(e){ return {}; } }
+  function saveExperiments(obj){ try { localStorage.setItem(STORAGE_KEY,JSON.stringify(obj)); return true; } catch(e){ return false; } }
+  function refreshExperimentSelect(){
+    const sel=$('experimentList'); if(!sel) return;
+    const keys=Object.keys(loadExperiments()).sort();
+    sel.innerHTML='';
+    if(!keys.length){ sel.add(new Option('لا توجد تجارب','')); return; }
+    keys.forEach(k=>sel.add(new Option(k,k)));
+  }
+  const lessons={
+    ecs:{ title:'الكيانات والمكوّنات', scenario:'particles', count:70, params:{gravity:0.12}, text:'الكيان هو معرّف (ID) فقط، والمكوّنات هي بيانات خفيفة مثل الموقع والسرعة. تغيير المكوّنات (فيزياء/تصادم/ذكاء/شبكة) يغيّر سلوك كل كيان دون تغيير الكود. شاهد كيف تؤثر إزالة مكوّن الفيزياء على الحركة.' },
+    systems:{ title:'الأنظمة', scenario:'mixed', count:80, params:{gravity:0.1}, text:'الأنظمة هي functions تعمل على مجموعات الكيانات that have required components. تفعيل/تعطيل نظام أو تغيير ترتيبه يوضح التبعيات: الفيزياء تحرك، التصادم يصحح، الذكاء يوجّه، والشبكة تزامن.' },
+    parallel:{ title:'الوظائف المتوازية', scenario:'agents', count:60, params:{gravity:0.05}, text:'كل نظام function مستقلة can be scheduled separately. هنا وكلاء الذكاء يحسبون جيرانهم then تحديث السرعة، بينما الفيزياء تطبق الحركة. قارن الترتيب different execution orders.' },
+    network:{ title:'شبكة التزامن', scenario:'network', count:48, params:{gravity:0.02,networkStrength:0.12}, text:'شبكة التزامن تمثل nodes exchanging state. نظام الشبكة ي drew nodes toward shared center and average velocity، reducing desync. عطّل الشبكة to see divergence.' }
+  };
+  function init(){
+    canvas=$('simCanvas');
+    if(canvas && typeof canvas.getContext==='function') ctx=canvas.getContext('2d');
+    const ls=$('lessonSelect');
+    if(ls){ Object.keys(lessons).forEach(k=>ls.add(new Option(lessons[k].title,k))); ls.value='ecs'; }
+    loadSettings();
+    if(!state.entities.length) buildScenario(state.scenario, ($('entityCount')&&$('entityCount').value)||60);
+    updateControlsFromState();
+    refreshExperimentSelect();
+    const bind=(id,evt,fn)=>{const el=$(id); if(el) el.addEventListener(evt,fn);};
+    bind('btnPlay','click',()=>{state.running=true;});
+    bind('btnPause','click',()=>{state.running=false;});
+    bind('btnStep','click',()=>{ stepSimulation(FIXED_DT); render(); updateMetrics(performance.now()); });
+    bind('btnReset','click',()=>{ buildScenario(state.scenario, ($('entityCount')&&$('entityCount').value)||state.entities.length||60); updateControlsFromState(); state.running=false; });
+    bind('btnAddParticle','click',()=>{ state.entities.push(makeEntity('particle')); if(state.entities.length>150) state.entities.shift(); updateEntityCountInput(); });
+    bind('btnAddAgent','click',()=>{ state.entities.push(makeEntity('agent')); if(state.entities.length>150) state.entities.shift(); updateEntityCountInput(); });
+    bind('btnSpawnCluster','click',()=>{ const W=canvas?canvas.width:640,H=canvas?canvas.height:360; for(let i=0;i<20;i++){ const e=makeEntity('particle'); e.x=W/2+(Math.random()-0.5)*80; e.y=H/2+(Math.random()-0.5)*80; state.entities.push(e);} if(state.entities.length>150) state.entities=state.entities.slice(-150); updateEntityCountInput(); });
+    bind('btnClear','click',()=>{ state.entities=[]; state.selectedId=null; updateEntityCountInput(); });
+    bind('btnApplyCount','click',()=>{ buildScenario(state.scenario, ($('entityCount')&&$('entityCount').value)||60); updateControlsFromState(); });
+    bind('btnDeleteSelected','click',()=>{ if(state.selectedId){ state.entities=state.entities.filter(e=>e.id!==state.selectedId); state.selectedId=null; updateEntityCountInput(); } });
+    function updateEntityCountInput(){ const input=$('entityCount'); if(input) input.value=state.entities.length; }
+    function compHandler(id,name){ const el=$(id); if(!el) return; el.addEventListener('change',()=>{ setComponentGlobal(name,el.checked); saveSettings(); }); }
+    compHandler('compPhysics','physics'); compHandler('compCollision','collision'); compHandler('compAi','ai'); compHandler('compNetwork','network');
+    function sysHandler(id,name){ const el=$(id); if(!el) return; el.addEventListener('change',()=>{ state.systems[name]=el.checked; saveSettings(); }); }
+    sysHandler('sysPhysics','physics'); sysHandler('sysCollision','collision'); sysHandler('sysAi','ai'); sysHandler('sysNetwork','network'); sysHandler('sysRender','render');
+    function sliderHandler(sliderId,valueId,param,fmt){ const el=$(sliderId); if(!el) return; el.addEventListener('input',()=>{ state.params[param]=+el.value; const v=$(valueId); if(v) v.textContent=fmt(+el.value); saveSettings(); }); }
+    sliderHandler('gravityRange','gravityValue','gravity',v=>v.toFixed(2));
+    sliderHandler('restitutionRange','restitutionValue','restitution',v=>v.toFixed(2));
+    sliderHandler('frictionRange','frictionValue','friction',v=>v.toFixed(3));
+    sliderHandler('agentSpeedRange','agentSpeedValue','agentMaxSpeed',v=>v.toFixed(2));
+    sliderHandler('flockRadiusRange','flockRadiusValue','flockRadius',v=>String(Math.round(v)));
+    sliderHandler('networkStrengthRange','networkStrengthValue','networkStrength',v=>v.toFixed(2));
+    bind('speedRange','input',()=>{ const el=$('speedRange'); state.speed=+el.value; const v=$('speedValue'); if(v) v.textContent=state.speed+'x'; saveSettings(); });
+    bind('systemOrder','change',()=>{ const el=$('systemOrder'); state.systemOrder=el.value; saveSettings(); });
+    bind('btnRunLesson','click',()=>{ const id=$('lessonSelect')&&$('lessonSelect').value; const L=lessons[id]; if(!L) return; state.scenario=L.scenario; buildScenario(L.scenario,L.count); state.params=Object.assign({},state.params,L.params||{}); updateControlsFromState(); const t=$('lessonText'); if(t) t.textContent=L.text; saveSettings(); });
+    bind('btnSaveExperiment','click',()=>{
+      const name=($('experimentName')&&$('experimentName').value.trim())||('تجربة '+Date.now());
+      const all=loadExperiments();
+      all[name]=serializeState();
+      if(saveExperiments(all)){ refreshExperimentSelect(); const sel=$('experimentList'); if(sel) sel.value=name; const st=$('storageStatus'); if(st) st.textContent='تم حفظ '+name; }
+      else { const st=$('storageStatus'); if(st) st.textContent='تعذّر الحفظ (localStorage).'; }
+    });
+    bind('btnLoadExperiment','click',()=>{
+      const sel=$('experimentList'); const name=sel?sel.value:'';
+      const all=loadExperiments();
+      if(!all[name]){ const st=$('storageStatus'); if(st) st.textContent='لا توجد تجربة محددة.'; return; }
+      applyState(all[name]); updateControlsFromState(); const st=$('storageStatus'); if(st) st.textContent='تم تحميل '+name; saveSettings();
+    });
+    bind('btnDeleteExperiment','click',()=>{
+      const sel=$('experimentList'); const name=sel?sel.value:'';
+      const all=loadExperiments();
+      if(all[name]){ delete all[name]; saveExperiments(all); refreshExperimentSelect(); const st=$('storageStatus'); if(st) st.textContent='تم حذف '+name; }
+      else { const st=$('storageStatus'); if(st) st.textContent='لا توجد تجربة محددة.'; }
+    });
+    bind('btnRefreshConfig','click',()=>{ const ta=$('configJson'); if(ta) ta.value=JSON.stringify(serializeState(),null,2); const st=$('configStatus'); if(st) st.textContent='تم تحديث JSON.'; });
+    bind('btnApplyConfig','click',()=>{ const ta=$('configJson'); try { const cfg=JSON.parse(ta.value); applyState(cfg); updateControlsFromState(); const st=$('configStatus'); if(st) st.textContent='تم تطبيق الإعدادات.'; saveSettings(); } catch(err){ const st=$('configStatus'); if(st) st.textContent='خطأ JSON: '+err.message; } });
+    if(canvas){ canvas.addEventListener('click',e=>{
+      const rect=canvas.getBoundingClientRect();
+      const x=(e.clientX-rect.left)*(canvas.width/rect.width);
+      const y=(e.clientY-rect.top)*(canvas.height/rect.height);
+      let best=null,bestD=14;
+      for(const ent of state.entities){ const d=Math.hypot(ent.x-x,ent.y-y); if(d<bestD){bestD=d;best=ent;} }
+      state.entities.forEach(e=>e.selected=false);
+      if(best){ best.selected=true; state.selectedId=best.id; } else state.selectedId=null;
+    });}
+    const raf=typeof requestAnimationFrame==='function'?requestAnimationFrame:(cb)=>setTimeout(()=>cb(Date.now()),16);
+    raf(frame);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+})();
+</script>
+</body>
+</html>
