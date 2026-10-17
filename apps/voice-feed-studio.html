@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مختبر إدارة حسابات اجتماعية: تحرير وجدولة وتحليل محلي | MDM1</title>
+<meta name="description" content="مختبر عربي يعمل داخل المتصفح لبناء منشورات بنبرتك عبر قوالب ومحرك قواعد محلي، مع اقتراح وسوم وجدول نشر تفاعلي ورسوم تحليلية على canvas دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/voice-feed-studio.html">
+<meta property="og:title" content="مختبر إدارة حسابات اجتماعية: تحرير وجدولة وتحليل محلي">
+<meta property="og:description" content="مختبر عربي يعمل داخل المتصفح لبناء منشورات بنبرتك عبر قوالب ومحرك قواعد محلي، مع اقتراح وسوم وجدول نشر تفاعلي ورسوم تحليلية على canvas دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/voice-feed-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:16px}
+.app-panel{padding:16px}
+.app-panel h2{margin:0 0 10px;font-size:1.05rem;color:var(--gold-bright)}
+.app .row{flex-wrap:wrap;align-items:flex-end;gap:10px}
+.app .row>*{flex:0 1 auto;max-width:100%}
+.app .out{white-space:pre-wrap;max-height:300px;overflow:auto;line-height:1.9}
+.app .big{color:var(--gold-bright)}
+.app canvas{width:100%;height:auto;margin-top:12px;border-radius:10px;border:1px solid var(--gold-dim);background:#0f1115;display:block}
+.app-chat{display:flex;flex-direction:column;gap:8px;min-height:120px}
+.app-msg{padding:8px 12px;border-radius:10px;max-width:90%;white-space:pre-wrap;line-height:1.8;font-size:.92rem}
+.app-msg.user{align-self:flex-start;background:rgba(245,208,97,.16);border:1px solid var(--gold-dim)}
+.app-msg.bot{align-self:flex-end;background:rgba(255,255,255,.05);border:1px solid var(--gold-dim)}
+.app-msg.system{align-self:center;color:var(--gold-dim);font-size:.82rem}
+.app-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--gold-dim)}
+.app-item span{flex:1;word-break:break-word}
+.app-tags{display:flex;flex-wrap:wrap;gap:8px}
+.app-tag{display:inline-flex;align-items:center;gap:6px}
+.app-tag button{padding:2px 8px;font-size:.72rem}
+.app-note{color:var(--gold-dim);font-size:.84rem;margin:10px 0 0}
+@media(max-width:600px){
+.app .row>*{flex:1 1 100%}
+.app-msg{max-width:100%}
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مختبر إدارة الحسابات الاجتماعية داخل المتصفح", "url": "https://mdm1.org/apps/voice-feed-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الحسابات والقوالب ومحرك القواعد تعمل محليًا في المتصفح، ولا يُرسل أي طلب شبكي إطلاقًا."}}, {"@type": "Question", "name": "أين تُخزَّن الوسوم وجدول النشر؟", "acceptedAnswer": {"@type": "Answer", "text": "تُخزَّن في ذاكرة المتصفح المحلية (localStorage) ضمن محاولة آمنة، وتبقى بياناتك على جهازك ولا تغادره."}}, {"@type": "Question", "name": "كيف أقترح منشورات متعددة بسرعة؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب في المحادثة «اقترح 5 منشورات» أو اضغط زر «اقترح 5 منشورات» لتوليد محتوى بقالب مختلف لكل منشور."}}, {"@type": "Question", "name": "ما وظيفة وضع الأتمتة؟", "acceptedAnswer": {"@type": "Answer", "text": "ينفّذ خطوات متتابعة محليًا: توليد منشورات، اقتراح وسوم، جدولة مواعيد، ثم تحديث الرسوم التحليلية وحفظ الحالة."}}, {"@type": "Question", "name": "هل تدعم الرسوم التحليلية حالات الجدول الفارغ؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعرض الرسم على canvas رسالة واضحة «لا توجد بيانات جدولة بعد» حتى تضيف أول موعد نشر."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مختبر إدارة الحسابات الاجتماعية داخل المتصفح</h1>
+  <p class="page-sub">مختبر عربي يعمل داخل المتصفح لبناء منشورات بنبرتك عبر قوالب ومحرك قواعد محلي، مع اقتراح وسوم وجدول نشر تفاعلي ورسوم تحليلية على canvas دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك إدارة حساباتك الاجتماعية بالكامل من داخل متصفحك دون أي خادم أو اتصال بالإنترنت. هذا المختبر تطبيق عربي يعمل من اليمين إلى اليسار، يبني لك محتوى منشورات بنبرتك المختارة عبر قوالب جاهزة ومحرك قواعد محلي يحسب الصياغة ووسوم النشر. يخزّن وسومك وصيحاتك محليًا في متصفحك ثم يقترحها عليك حسب المنصة والموضوع. كما يوفّر جدول نشر تفاعليًا تضيف إليه المواعيد والمنصات والنصوص، ويعرض رسومًا تحليلية على canvas توضح توزّع منشوراتك بين القنوات. وتجد محادثة تفهم أوامر مثل «اقترح 5 منشورات» أو «اقترح وسوم»، إضافة إلى وضع أتمتة ينفّذ خطوات التحسين وفق قواعد محسوبة محليًا، كل ذلك بسرعة وبخصوصية كاملة لأن بياناتك لا تغادر جهازك أبدًا.</p>
+
+<div class="app">
+  <section class="card app-panel">
+    <h2>هوية العلامة والنبرة</h2>
+    <div class="row">
+      <label for="brandName">اسم العلامة</label>
+      <input id="brandName" type="text" placeholder="مثال: متجر النخبة" />
+      <label for="toneSelect">نبرة الكتابة</label>
+      <select id="toneSelect"></select>
+      <label for="platformSelect">المنصة</label>
+      <select id="platformSelect"></select>
+    </div>
+    <p class="app-note">تُملأ القوائم تلقائيًا من محرك القواعد المحلي وتستخدم في كل الأقسام.</p>
+  </section>
+
+  <section class="card app-panel">
+    <h2>منشئ المحتوى</h2>
+    <div class="row">
+      <label for="topicInput">الموضوع</label>
+      <input id="topicInput" type="text" placeholder="مثال: إطلاق منتج جديد" />
+      <label for="templateSelect">القالب</label>
+      <select id="templateSelect"></select>
+      <button id="generateBtn">توليد منشور واحد</button>
+      <button id="generateFiveBtn" class="sec">اقترح 5 منشورات</button>
+    </div>
+    <div id="contentOut" class="out">اكتب موضوعًا ثم اضغط «توليد منشور واحد» أو «اقترح 5 منشورات».</div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>الوسوم والصيحات</h2>
+    <div class="row">
+      <label for="tagInput">وسم جديد</label>
+      <input id="tagInput" type="text" placeholder="مثال: تسويق_رقمي" />
+      <button id="addTagBtn">إضافة وسم</button>
+      <button id="suggestTagsBtn" class="sec">اقترح وسوم</button>
+    </div>
+    <div id="tagsOut" class="out"></div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>جدول النشر التفاعلي</h2>
+    <div class="row">
+      <label for="postDate">التاريخ والوقت</label>
+      <input id="postDate" type="datetime-local" />
+      <label for="postPlatform">منصة النشر</label>
+      <select id="postPlatform"></select>
+      <label for="postText">نص المنشور</label>
+      <input id="postText" type="text" placeholder="نص قصير للمنشور" />
+      <button id="addScheduleBtn">أضف إلى الجدول</button>
+    </div>
+    <div id="scheduleOut" class="out"></div>
+    <div class="row">
+      <button id="drawChartBtn">حدّث الرسوم التحليلية</button>
+      <button id="clearScheduleBtn" class="sec">احذف كل الجدول</button>
+    </div>
+    <canvas id="chartCanvas" width="640" height="240"></canvas>
+  </section>
+
+  <section class="card app-panel">
+    <h2>محادثة الأوامر</h2>
+    <div id="chatOut" class="out app-chat"></div>
+    <div class="row">
+      <label for="chatInput">اكتب أمرًا</label>
+      <input id="chatInput" type="text" placeholder="اقترح 5 منشورات" />
+      <button id="sendChatBtn">أرسل الأمر</button>
+    </div>
+  </section>
+
+  <section class="card app-panel">
+    <h2>وضع الأتمتة</h2>
+    <div class="row">
+      <button id="runAutomationBtn">شغّل خطوات الأتمتة</button>
+      <button id="loadDemoBtn" class="sec">حمّل بيانات تجريبية</button>
+    </div>
+    <div id="automationOut" class="out">لم يُشغَّل الأتمتة بعد. اضغط الزر لتنفيذ خطوات التحسين المحسوبة محليًا.</div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، كل الحسابات والقوالب ومحرك القواعد تعمل محليًا في المتصفح، ولا يُرسل أي طلب شبكي إطلاقًا.</p><h3>أين تُخزَّن الوسوم وجدول النشر؟</h3><p>تُخزَّن في ذاكرة المتصفح المحلية (localStorage) ضمن محاولة آمنة، وتبقى بياناتك على جهازك ولا تغادره.</p><h3>كيف أقترح منشورات متعددة بسرعة؟</h3><p>اكتب في المحادثة «اقترح 5 منشورات» أو اضغط زر «اقترح 5 منشورات» لتوليد محتوى بقالب مختلف لكل منشور.</p><h3>ما وظيفة وضع الأتمتة؟</h3><p>ينفّذ خطوات متتابعة محليًا: توليد منشورات، اقتراح وسوم، جدولة مواعيد، ثم تحديث الرسوم التحليلية وحفظ الحالة.</p><h3>هل تدعم الرسوم التحليلية حالات الجدول الفارغ؟</h3><p>نعم، يعرض الرسم على canvas رسالة واضحة «لا توجد بيانات جدولة بعد» حتى تضيف أول موعد نشر.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  function $(id){return document.getElementById(id);}
+  function uid(){return Math.random().toString(36).slice(2,7)+Date.now().toString(36).slice(-4);}
+
+  var TONES=['احترافية','ودّية','حماسية','تعليمية','رسمية'];
+  var PLATFORMS=['انستغرام','إكس','لينكدإن','تيك توك','فيسبوك'];
+  var TEMPLATES=['منشور قصير','منشور تعليمي','إعلان','سؤال تفاعلي','قصة نجاح'];
+
+  var toneData={
+    'احترافية':{prefix:'تحليل موجز لعلامتك:',cta:'اطّلعوا على التفاصيل الكاملة.'},
+    'ودّية':{prefix:'أهلاً بكم! حديث اليوم:',cta:'شاركونا تجربتكم في التعليقات.'},
+    'حماسية':{prefix:'خبر مميز!',cta:'لا تفوّتوا الفرصة وكونوا أول المشاركين!'},
+    'تعليمية':{prefix:'درس سريع من مختبرنا:',cta:'احفظ المنشور لتعود إليه لاحقًا.'},
+    'رسمية':{prefix:'بيان موجز:',cta:'للاستفسار يمكنكم التواصل معنا.'}
+  };
+
+  var templateData={
+    'منشور قصير':function(t){return t+' في سطور قليلة وعبارة واضحة.';},
+    'منشور تعليمي':function(t){return 'ثلاث خطوات عملية لتحسين '+t+': ابدأ، ثم قِس النتيجة، ثم طوّر.';},
+    'إعلان':function(t){return 'نقدّم حلًّا متكاملًا في '+t+' بجودة عالية وسعر مناسب.';},
+    'سؤال تفاعلي':function(t){return 'سؤال اليوم: ما رأيك في '+t+'؟';},
+    'قصة نجاح':function(t){return 'من تحدٍّ بسيط في '+t+' إلى نتيجة نلمسها اليوم.';}
+  };
+
+  var platformTags={
+    'انستغرام':['#تصميم_يومي','#إلهام','#ريادة_الأعمال','#محتوى_إبداعي','#ستوري'],
+    'إكس':['#تسويق_رقمي','#تقنية','#خيط_معلوماتي','#رأي_اليوم','#أخبار'],
+    'لينكدإن':['#ريادة_الأعمال','#تطوير_مهني','#قيادة','#إنتاجية','#سوق_العمل'],
+    'تيك توك':['#فيديو_قصير','#ترند','#نصائح_سريعة','#تحدي','#إبداع'],
+    'فيسبوك':['#مجتمعنا','#قصة_نجاح','#عرض_خاص','#تفاعل','#محتوى_مفيد']
+  };
+
+  var KEY='md1_lab_state_v1';
+  var state={tags:[],schedule:[],brand:''};
+
+  function load(){
+    try{
+      var r=localStorage.getItem(KEY);
+      if(!r) return;
+      var p=JSON.parse(r);
+      if(p&&typeof p==='object'){
+        if(Array.isArray(p.tags)) state.tags=p.tags;
+        if(Array.isArray(p.schedule)) state.schedule=p.schedule;
+        if(typeof p.brand==='string') state.brand=p.brand;
+      }
+    }catch(e){}
+  }
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+  function fillSelect(el,arr,def){
+    el.innerHTML='';
+    arr.forEach(function(v){
+      var o=document.createElement('option');
+      o.value=v;o.textContent=v;el.appendChild(o);
+    });
+    if(def) el.value=def;
+  }
+
+  function suggestTags(platform,topic,n,seed){
+    var pool=(platformTags[platform]||[]).slice();
+    var words=String(topic||'').trim().split(/\s+/).filter(function(w){return w.length>2;}).slice(0,3);
+    words.forEach(function(w){pool.unshift('#'+w.replace(/[#\s]+/g,''));});
+    state.tags.forEach(function(t){pool.push(t);});
+    var out=[],len=pool.length;
+    if(!len) return ['#عام','#محتوى','#اجتماعي'].slice(0,n);
+    var start=(seed||0)%len;
+    for(var i=0;i<len&&out.length<n;i++){
+      var t=pool[(start+i)%len];
+      if(t&&out.indexOf(t)===-1) out.push(t);
+    }
+    return out;
+  }
+
+  function buildPost(topic,tone,platform,template,seed){
+    topic=String(topic||'').trim()||'محتوى علامتك';
+    var tn=toneData[tone]||toneData['احترافية'];
+    var tpl=templateData[template]||templateData['منشور قصير'];
+    var tags=suggestTags(platform,topic,3,seed);
+    return tn.prefix+' '+tpl(topic)+'\n'+tn.cta+'\n'+tags.join(' ');
+  }
+
+  function showPosts(arr){$('contentOut').textContent=arr.join('\n\n———\n\n');}
+
+  function renderTags(){
+    var box=$('tagsOut');box.innerHTML='';
+    if(!state.tags.length){box.textContent='لا توجد وسوم محفوظة بعد. أضف وسمًا أو اطلب اقتراحًا.';return;}
+    var wrap=document.createElement('div');wrap.className='app-tags';
+    state.tags.forEach(function(t,i){
+      var s=document.createElement('span');s.className='app-tag badge';s.textContent=t;
+      var b=document.createElement('button');b.className='sec';b.textContent='إزالة';b.id='rmTag'+i;
+      b.addEventListener('click',function(){state.tags.splice(i,1);save();renderTags();});
+      s.appendChild(b);wrap.appendChild(s);
+    });
+    box.appendChild(wrap);
+  }
+
+  function renderSchedule(){
+    var box=$('scheduleOut');box.innerHTML='';
+    if(!state.schedule.length){box.textContent='الجدول فارغ. أضف منشورًا بموعد ومنصة أعلاه.';return;}
+    var list=state.schedule.slice().sort(function(a,b){
+      return String(a.raw||a.date).localeCompare(String(b.raw||b.date));
+    });
+    list.forEach(function(e){
+      var item=document.createElement('div');item.className='app-item';
+      var span=document.createElement('span');
+      span.textContent=(e.date||'')+' • '+e.platform+' • '+e.text;
+      var b=document.createElement('button');b.className='sec';b.textContent='حذف';b.id='delTask'+e.id;
+      b.addEventListener('click',function(){
+        state.schedule=state.schedule.filter(function(x){return x.id!==e.id;});
+        save();renderSchedule();drawChart();
+      });
+      item.appendChild(span);item.appendChild(b);box.appendChild(item);
+    });
+  }
+
+  function drawChart(){
+    var c=$('chartCanvas');
+    if(!c||!c.getContext) return;
+    var ctx=c.getContext('2d'),W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0f1115';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(212,175,55,.3)';ctx.strokeRect(.5,.5,W-1,H-1);
+    var counts={};
+    state.schedule.forEach(function(e){var k=e.platform||'غير محدد';counts[k]=(counts[k]||0)+1;});
+    var keys=Object.keys(counts);
+    if(!keys.length){
+      ctx.fillStyle='#c9b26b';ctx.font='16px sans-serif';ctx.textAlign='center';
+      ctx.fillText('لا توجد بيانات جدولة بعد',W/2,H/2);return;
+    }
+    var max=0;keys.forEach(function(k){if(counts[k]>max)max=counts[k];});
+    var pad=42,bw=(W-pad*2)/keys.length;
+    keys.forEach(function(k,i){
+      var h=(counts[k]/max)*(H-pad*2);
+      var x=pad+i*bw+bw*0.15,y=H-pad-h,w=bw*0.7;
+      var g=ctx.createLinearGradient(0,y,0,H-pad);
+      g.addColorStop(0,'#f5d061');g.addColorStop(1,'#a8791b');
+      ctx.fillStyle=g;ctx.fillRect(x,y,w,h);
+      ctx.fillStyle='#e7e9ee';ctx.font='12px sans-serif';ctx.textAlign='center';
+      ctx.fillText(k,x+w/2,H-pad+18);
+      ctx.fillText(String(counts[k]),x+w/2,y-5);
+    });
+  }
+
+  function addMsg(kind,text){
+    var box=$('chatOut');
+    var d=document.createElement('div');
+    d.className='app-msg '+kind;d.textContent=text;
+    box.appendChild(d);box.scrollTop=box.scrollHeight;
+  }
+
+  function generateOne(){
+    var post=buildPost($('topicInput').value,$('toneSelect').value,$('platformSelect').value,$('templateSelect').value,0);
+    showPosts([post]);
+  }
+
+  function generateFive(){
+    var topic=$('topicInput').value,tone=$('toneSelect').value,platform=$('platformSelect').value;
+    var out=[];
+    for(var i=0;i<5;i++){out.push(buildPost(topic,tone,platform,TEMPLATES[i%TEMPLATES.length],i+1));}
+    showPosts(out);
+  }
+
+  function addTag(){
+    var v=$('tagInput').value.trim();
+    if(!v){$('contentOut').textContent='اكتب وسمًا قبل الإضافة.';return;}
+    if(v.charAt(0)!=='#') v='#'+v.replace(/\s+/g,'_');
+    if(state.tags.indexOf(v)===-1) state.tags.push(v);
+    $('tagInput').value='';save();renderTags();
+  }
+
+  function suggestTagsUI(){
+    var platform=$('platformSelect').value;
+    var arr=suggestTags(platform,$('topicInput').value,5,1);
+    arr.forEach(function(t){if(state.tags.indexOf(t)===-1)state.tags.push(t);});
+    save();renderTags();
+    $('contentOut').textContent='وسوم مقترحة لمنصة '+platform+':\n'+arr.join('  ');
+  }
+
+  function addSchedule(){
+    var date=$('postDate').value,platform=$('postPlatform').value,text=$('postText').value.trim();
+    if(!date||!text){$('contentOut').textContent='أدخل موعدًا ونصًّا لإضافة المنشور للجدول.';return;}
+    state.schedule.push({id:uid(),date:date.replace('T',' '),raw:date,platform:platform,text:text});
+    save();renderSchedule();drawChart();
+    $('postText').value='';
+    $('contentOut').textContent='تمت إضافة المنشور إلى جدول النشر ('+state.schedule.length+' إجمالًا).';
+  }
+
+  function normalize(s){
+    return String(s)
+      .replace(/[٠-٩]/g,function(d){return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d));})
+      .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي');
+  }
+
+  function extractNumber(s){
+    var m=String(s).match(/\d+/);
+    if(m){var v=parseInt(m[0],10);if(v>0&&v<=20)return v;}
+    var w={'واحد':1,'اثنين':2,'ثلاث':3,'ثلاثة':3,'اربع':4,'اربعة':4,'خمس':5,'خمسة':5,'ست':6,'ستة':6};
+    for(var k in w){if(s.indexOf(k)>-1)return w[k];}
+    return 0;
+  }
+
+  function sendChat(){
+    var inp=$('chatInput');
+    var raw=inp.value.trim();
+    if(!raw){addMsg('system','اكتب أمرًا مثل: اقترح 5 منشورات');return;}
+    addMsg('user',raw);inp.value='';
+    var c=normalize(raw);
+    if(c.indexOf('اقترح')>-1&&(c.indexOf('وسم')>-1||c.indexOf('هاشتاق')>-1)){
+      var t=suggestTags($('platformSelect').value,$('topicInput').value.trim(),5,1);
+      t.forEach(function(x){if(state.tags.indexOf(x)===-1)state.tags.push(x);});
+      save();renderTags();
+      addMsg('bot','وسوم مقترحة:\n'+t.join('  '));
+    }else if(c.indexOf('اقترح')>-1||c.indexOf('منشور')>-1){
+      var n=extractNumber(c)||5;
+      var out=[];
+      for(var i=0;i<n;i++){
+        out.push(buildPost($('topicInput').value,$('toneSelect').value,$('platformSelect').value,TEMPLATES[i%TEMPLATES.length],i+1));
+      }
+      showPosts(out);
+      addMsg('bot','إليك '+n+' منشورات مقترحة:\n\n'+out.join('\n\n———\n\n'));
+    }else if(c.indexOf('جدول')>-1||c.indexOf('لخص')>-1){
+      if(!state.schedule.length){addMsg('bot','جدول النشر فارغ حاليًا.');}
+      else{
+        var lines=state.schedule.map(function(e){return e.date+' • '+e.platform+' • '+e.text;});
+        addMsg('bot','لديك '+state.schedule.length+' منشورات مجدولة:\n'+lines.join('\n'));
+      }
+    }else if(c.indexOf('اتمت')>-1||c.indexOf('تحسين')>-1){
+      runAutomation();
+    }else{
+      addMsg('bot','أوامر متاحة: «اقترح 5 منشورات»، «اقترح وسوم»، «لخّص الجدول»، «شغّل الأتمتة».');
+    }
+  }
+
+  function runAutomation(){
+    $('automationOut').textContent='جارٍ التنفيذ...';
+    var log=[];
+    var topic=$('topicInput').value.trim()||'محتوى علامتك';
+    var platform=$('platformSelect').value;
+    var tone=$('toneSelect').value;
+    var posts=[];
+    for(var i=0;i<3;i++){posts.push(buildPost(topic,tone,platform,TEMPLATES[i%TEMPLATES.length],i+1));}
+    log.push('١) توليد ٣ منشورات محسّنة بنبرة '+tone+'.');
+    var tags=suggestTags(platform,topic,5,2);
+    tags.forEach(function(t){if(state.tags.indexOf(t)===-1)state.tags.push(t);});
+    log.push('٢) اقتراح ٥ وسوم لمنصة '+platform+' وإضافتها لمكتبتك المحلية.');
+    var base=Date.now();
+    posts.forEach(function(p,idx){
+      var d=new Date(base+(idx+1)*86400000);
+      var raw=d.toISOString().slice(0,16);
+      state.schedule.push({id:uid(),date:raw.replace('T',' '),raw:raw,platform:platform,text:p.split('\n')[0].slice(0,90)});
+    });
+    log.push('٣) جدولة ٣ منشورات على '+platform+' خلال الأيام القادمة.');
+    save();renderTags();renderSchedule();drawChart();showPosts(posts);
+    log.push('٤) تحديث الرسوم التحليلية على canvas حسب توزّع المنصات.');
+    log.push('٥) حفظ الحالة محليًا في المتصفح دون أي اتصال.');
+    $('automationOut').textContent=log.join('\n');
+    addMsg('bot','اكتملت الأتمتة: ٣ منشورات، ٥ وسوم، و٣ مواعيد نشر.');
+  }
+
+  function loadDemo(){
+    state.tags=['#محتوى_إبداعي','#تسويق_رقمي','#ريادة_الأعمال'];
+    state.schedule=[];
+    var base=Date.now();
+    var pl=['انستغرام','إكس','لينكدإن'];
+    var tx=['إطلاق منتج جديد','خيط عن الإنتاجية','درس في التسويق'];
+    for(var i=0;i<3;i++){
+      var d=new Date(base+i*86400000);
+      var raw=d.toISOString().slice(0,16);
+      state.schedule.push({id:uid(),date:raw.replace('T',' '),raw:raw,platform:pl[i],text:tx[i]});
+    }
+    save();renderTags();renderSchedule();drawChart();
+    $('automationOut').textContent='تم تحميل بيانات تجريبية: ٣ مواعيد و٣ وسوم.';
+  }
+
+  function init(){
+    fillSelect($('toneSelect'),TONES,'احترافية');
+    fillSelect($('platformSelect'),PLATFORMS,'انستغرام');
+    fillSelect($('templateSelect'),TEMPLATES,'منشور قصير');
+    fillSelect($('postPlatform'),PLATFORMS,'انستغرام');
+    load();
+    $('brandName').value=state.brand||'';
+    renderTags();renderSchedule();drawChart();
+    $('postDate').value=new Date(Date.now()+3600000).toISOString().slice(0,16);
+
+    $('generateBtn').addEventListener('click',generateOne);
+    $('generateFiveBtn').addEventListener('click',generateFive);
+    $('addTagBtn').addEventListener('click',addTag);
+    $('suggestTagsBtn').addEventListener('click',suggestTagsUI);
+    $('addScheduleBtn').addEventListener('click',addSchedule);
+    $('drawChartBtn').addEventListener('click',function(){
+      drawChart();$('contentOut').textContent='تم تحديث الرسم التحليلي حسب الجدول الحالي.';
+    });
+    $('clearScheduleBtn').addEventListener('click',function(){
+      state.schedule=[];save();renderSchedule();drawChart();
+      $('contentOut').textContent='تم حذف كل مواعيد الجدول.';
+    });
+    $('sendChatBtn').addEventListener('click',sendChat);
+    $('chatInput').addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();sendChat();}});
+    $('runAutomationBtn').addEventListener('click',runAutomation);
+    $('loadDemoBtn').addEventListener('click',loadDemo);
+    $('brandName').addEventListener('input',function(){state.brand=$('brandName').value;save();});
+
+    addMsg('system','مرحبًا! اكتب أمرًا مثل: اقترح 5 منشورات');
+  }
+
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}
+  else{init();}
+})();
+</script>
+</body>
+</html>
