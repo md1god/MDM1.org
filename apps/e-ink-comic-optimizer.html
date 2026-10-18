@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معالج صور المانجا للشاشات الإلكترونية | تحسين وعرض | MDM1</title>
+<meta name="description" content="أداة متصفح لمعالجة صور المانجا: تصغير الدقة، إصلاح السواد، تقسيم الصفحات، تنقية 4-بت. سحب مجلدات، معاينة فورية، تصدير CBZ.">
+<link rel="canonical" href="https://mdm1.org/apps/e-ink-comic-optimizer.html">
+<meta property="og:title" content="معالج صور المانجا للشاشات الإلكترونية | تحسين وعرض">
+<meta property="og:description" content="أداة متصفح لمعالجة صور المانجا: تصغير الدقة، إصلاح السواد، تقسيم الصفحات، تنقية 4-بت. سحب مجلدات، معاينة فورية، تصدير CBZ.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/e-ink-comic-optimizer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction:rtl; font-family:inherit; }
+.app .row { align-items:center; flex-wrap:wrap; gap:8px; margin:8px 0; }
+.app .row > * { flex:1 1 auto; min-width:140px; }
+.app #dropZone { padding:1.5rem; text-align:center; border:2px dashed var(--gold-dim); border-radius:8px; cursor:pointer; transition:border-color .2s, background .2s; width:100%; }
+.app #dropZone:hover, .app #dropZone.drag { border-color:var(--gold); background:rgba(212,175,55,.08); }
+.app #previewWrap { animation:fadeIn .3s; }
+.app #pageGrid { display:flex; flex-wrap:wrap; gap:8px; }
+.app .page-item { position:relative; width:120px; cursor:grab; border:2px solid transparent; border-radius:6px; transition:border-color .2s, transform .1s; user-select:none; }
+.app .page-item.dragging { opacity:.5; transform:scale(1.02); z-index:10; }
+.app .page-item.drag-over { border-color:var(--gold); }
+.app .page-item img { width:100%; height:auto; display:block; border-radius:4px; background:var(--dark); }
+.app .page-item .page-num { position:absolute; top:4px; left:4px; background:rgba(0,0,0,.7); color:var(--gold); padding:2px 6px; border-radius:3px; font-size:.75rem; font-weight:bold; }
+.app .page-item .page-name { position:absolute; bottom:4px; left:4px; right:4px; background:rgba(0,0,0,.7); color:var(--light); padding:2px 4px; border-radius:3px; font-size:.65rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.app #status { min-height:1.5rem; }
+.app button:disabled { opacity:.5; cursor:not-allowed; }
+@keyframes fadeIn { from {opacity:0; transform:translateY(8px);} to {opacity:1; transform:none;} }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "معالج المانجا والكوميك للشاشات الإلكترونية", "url": "https://mdm1.org/apps/e-ink-comic-optimizer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يدعم التطبيق مجلدات متداخلة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك سحب مجلد رئيسي يحتوي على مجلدات فرعية وسيتم قراءة جميع الصور بترتيب أبجدي رقمي."}}, {"@type": "Question", "name": "ماذا يعني \"تقسيم قبل/بعد المعالجة\"؟", "acceptedAnswer": {"@type": "Answer", "text": "\"قبل\" يقسم الصورة الأصلية إلى نصفين ثم يعالج كل نصف. \"بعد\" يعالج الصفحة كاملة ثم يقسم الناتج — مفيد للصفحات المزدوجة التي تمتد فيها الرسومات عبر المنتصف."}}, {"@type": "Question", "name": "هل يتم رفع الصور إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل المعالجة تتم محليًا في متصفحك باستخدام Canvas API و File API. لا توجد أي طلبات شبكة."}}, {"@type": "Question", "name": "لماذا تظهر الصفحة المقلوبة بعد التصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "تأكد من ترتيب الصفحات في المعاينة قبل التصدير. يمكنك سحب الصفحات لإعادة ترتيبها، وسيحترم التصدير الترتيب المعروض."}}, {"@type": "Question", "name": "ما تنسيق الملفات المصدرة؟", "acceptedAnswer": {"@type": "Answer", "text": "الصور تُصدّر كـ PNG داخل أرشيف ZIP (أو CBZ وهو ZIP بامتداد مختلف). PNG يحافظ على الجودة بلا فقدان."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">معالج المانجا والكوميك للشاشات الإلكترونية</h1>
+  <p class="page-sub">أداة متصفح لمعالجة صور المانجا: تصغير الدقة، إصلاح السواد، تقسيم الصفحات، تنقية 4-بت. سحب مجلدات، معاينة فورية، تصدير CBZ.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>حوّل مجلدات صور المانجا والكوميك لتناسب شاشات الحبر الإلكتروني في ثوانٍ: اختر موديل جهازك لضبط الدقة تلقائيًا، أصلح مستويات السواد لتحويل الرمادي الداكن إلى أسود حقيقي، فصل الصفحات المزدوجة قبل الدمج أو بعده، وطبّق تنقية 4-بت لتخفيض حجم الملفات إلى النصف مع الحفاظ على التفاصيل. اسحب مجلد الصور أو حدده، راقب المعاينة الفورية، رتّب الصفحات بالسحب، ثم صدّر مجلد صور مضغوط أو أرشيف CBZ جاهز للنقل إلى قارئك دون أي خادم.</p>
+
+<div class="app card">
+  <div class="row">
+    <label for="deviceSelect">موديل الجهاز:</label>
+    <select id="deviceSelect">
+      <option value="custom">مخصص…</option>
+      <option value="kindle-pw" data-w="1072" data-h="1448" data-dpi="300">Kindle Paperwhite (1072×1448)</option>
+      <option value="kindle-oasis" data-w="1264" data-h="1680" data-dpi="300">Kindle Oasis (1264×1680)</option>
+      <option value="kobo-clara" data-w="1072" data-h="1448" data-dpi="300">Kobo Clara (1072×1448)</option>
+      <option value="kobo-libra" data-w="1264" data-h="1680" data-dpi="300">Kobo Libra (1264×1680)</option>
+      <option value="remarkable" data-w="1404" data-h="1872" data-dpi="226">reMarkable (1404×1872)</option>
+      <option value="boox-nova" data-w="1404" data-h="1872" data-dpi="300">BOOX Nova (1404×1872)</option>
+    </select>
+  </div>
+
+  <div class="row" id="customDims" style="display:none;">
+    <label for="customW">العرض (بكسل):</label>
+    <input type="number" id="customW" min="100" max="5000" placeholder="1072">
+    <label for="customH">الارتفاع (بكسل):</label>
+    <input type="number" id="customH" min="100" max="5000" placeholder="1448">
+  </div>
+
+  <div class="row">
+    <label for="blackLevel">مستوى السواد (0–255):</label>
+    <input type="range" id="blackLevel" min="0" max="255" value="32">
+    <output id="blackLevelVal">32</output>
+  </div>
+
+  <div class="row">
+    <label for="splitMode">تقسيم الصفحات المزدوجة:</label>
+    <select id="splitMode">
+      <option value="none">لا تقسيم</option>
+      <option value="before">قبل المعالجة</option>
+      <option value="after">بعد المعالجة</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label><input type="checkbox" id="dither4bit" checked> تنقية 4-بت (تخفيض 50%)</label>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <button id="dropZone" class="sec" type="button" aria-label="سحب مجلد الصور أو النقر للاختيار">
+      📁 اسحب مجلد الصور هنا أو انقر للاختيار
+    </button>
+    <input type="file" id="fileInput" webkitdirectory directory multiple hidden accept="image/*">
+  </div>
+
+  <div id="status" class="out" style="min-height:2.5rem;"></div>
+
+  <div class="divider"></div>
+
+  <div id="previewWrap" style="display:none;">
+    <div class="row">
+      <label for="pageSearch">بحث الصفحة:</label>
+      <input type="search" id="pageSearch" placeholder="اكتب رقم الصفحة أو الاسم…">
+      <span id="pageCount" class="badge">0 صفحات</span>
+    </div>
+    <div id="pageGrid" class="row" style="flex-wrap:wrap; gap:8px; max-height:400px; overflow:auto;"></div>
+  </div>
+
+  <div class="divider" id="exportDivider" style="display:none;"></div>
+
+  <div class="row" id="exportRow" style="display:none; justify-content:center; gap:12px;">
+    <button id="exportImages" type="button">⬇ تصدير مجلد صور (ZIP)</button>
+    <button id="exportCBZ" type="button" class="sec">📚 تصدير CBZ</button>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يدعم التطبيق مجلدات متداخلة؟</h3><p>نعم، يمكنك سحب مجلد رئيسي يحتوي على مجلدات فرعية وسيتم قراءة جميع الصور بترتيب أبجدي رقمي.</p><h3>ماذا يعني &quot;تقسيم قبل/بعد المعالجة&quot;؟</h3><p>&quot;قبل&quot; يقسم الصورة الأصلية إلى نصفين ثم يعالج كل نصف. &quot;بعد&quot; يعالج الصفحة كاملة ثم يقسم الناتج — مفيد للصفحات المزدوجة التي تمتد فيها الرسومات عبر المنتصف.</p><h3>هل يتم رفع الصور إلى أي خادم؟</h3><p>لا، كل المعالجة تتم محليًا في متصفحك باستخدام Canvas API و File API. لا توجد أي طلبات شبكة.</p><h3>لماذا تظهر الصفحة المقلوبة بعد التصدير؟</h3><p>تأكد من ترتيب الصفحات في المعاينة قبل التصدير. يمكنك سحب الصفحات لإعادة ترتيبها، وسيحترم التصدير الترتيب المعروض.</p><h3>ما تنسيق الملفات المصدرة؟</h3><p>الصور تُصدّر كـ PNG داخل أرشيف ZIP (أو CBZ وهو ZIP بامتداد مختلف). PNG يحافظ على الجودة بلا فقدان.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const deviceSelect = $('deviceSelect');
+  const customDims = $('customDims');
+  const customW = $('customW');
+  const customH = $('customH');
+  const blackLevel = $('blackLevel');
+  const blackLevelVal = $('blackLevelVal');
+  const splitMode = $('splitMode');
+  const dither4bit = $('dither4bit');
+  const dropZone = $('dropZone');
+  const fileInput = $('fileInput');
+  const status = $('status');
+  const previewWrap = $('previewWrap');
+  const pageSearch = $('pageSearch');
+  const pageCount = $('pageCount');
+  const pageGrid = $('pageGrid');
+  const exportDivider = $('exportDivider');
+  const exportRow = $('exportRow');
+  const exportImages = $('exportImages');
+  const exportCBZ = $('exportCBZ');
+
+  let pages = [];
+  let processedPages = [];
+  let dragSrc = null;
+
+  const DEVICE_PRESETS = {
+    'kindle-pw': {w:1072, h:1448, dpi:300},
+    'kindle-oasis': {w:1264, h:1680, dpi:300},
+    'kobo-clara': {w:1072, h:1448, dpi:300},
+    'kobo-libra': {w:1264, h:1680, dpi:300},
+    'remarkable': {w:1404, h:1872, dpi:226},
+    'boox-nova': {w:1404, h:1872, dpi:300}
+  };
+
+  function setStatus(msg, isError=false) {
+    status.textContent = msg;
+    status.style.color = isError ? 'var(--gold-bright)' : 'var(--light)';
+  }
+
+  deviceSelect.addEventListener('change', () => {
+    const val = deviceSelect.value;
+    if (val === 'custom') {
+      customDims.style.display = 'flex';
+    } else {
+      customDims.style.display = 'none';
+      const preset = DEVICE_PRESETS[val];
+      if (preset) {
+        customW.value = preset.w;
+        customH.value = preset.h;
+      }
+    }
+  });
+
+  blackLevel.addEventListener('input', () => {
+    blackLevelVal.textContent = blackLevel.value;
+  });
+
+  function handleFiles(files) {
+    const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (!imageFiles.length) {
+      setStatus('لم يتم العثور على صور صالحة في المجلد المحدد.', true);
+      return;
+    }
+    imageFiles.sort((a,b) => a.name.localeCompare(b.name, 'ar', {numeric:true}));
+    setStatus(`جاري قراءة ${imageFiles.length} صورة…`);
+    loadImages(imageFiles);
+  }
+
+  function loadImages(files) {
+    pages = [];
+    let loaded = 0;
+    files.forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          pages[idx] = {
+            file,
+            name: file.name,
+            width: img.width,
+            height: img.height,
+            blob: e.target.result
+          };
+          loaded++;
+          if (loaded === files.length) {
+            pages = pages.filter(Boolean);
+            processAllPages();
+          }
+        };
+        img.onerror = () => { loaded++; if (loaded === files.length) processAllPages(); };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function getTargetDimensions() {
+    const val = deviceSelect.value;
+    if (val === 'custom') {
+      const w = parseInt(customW.value) || 1072;
+      const h = parseInt(customH.value) || 1448;
+      return {w, h};
+    }
+    const preset = DEVICE_PRESETS[val];
+    return preset ? {w: preset.w, h: preset.h} : {w: 1072, h: 1448};
+  }
+
+  function applyBlackLevel(ctx, w, h, threshold) {
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const gray = (data[i] + data[i+1] + data[i+2]) / 3;
+      if (gray < threshold) {
+        data[i] = data[i+1] = data[i+2] = 0;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  function applyDither4bit(ctx, w, h) {
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    const levels = [0, 36, 73, 109, 146, 182, 219, 255];
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = (y * w + x) * 4;
+        const gray = (data[idx] + data[idx+1] + data[idx+2]) / 3;
+        let best = 0, bestDist = 256;
+        for (let l = 0; l < levels.length; l++) {
+          const dist = Math.abs(gray - levels[l]);
+          if (dist < bestDist) { bestDist = dist; best = l; }
+        }
+        const val = levels[best];
+        data[idx] = data[idx+1] = data[idx+2] = val;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  function resizeCanvas(canvas, targetW, targetH) {
+    const srcW = canvas.width, srcH = canvas.height;
+    const scale = Math.min(targetW / srcW, targetH / srcH);
+    const newW = Math.round(srcW * scale);
+    const newH = Math.round(srcH * scale);
+    const out = document.createElement('canvas');
+    out.width = targetW;
+    out.height = targetH;
+    const ctx = out.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, targetW, targetH);
+    ctx.drawImage(canvas, (targetW - newW) / 2, (targetH - newH) / 2, newW, newH);
+    return out;
+  }
+
+  function splitDoublePage(canvas) {
+    const w = canvas.width, h = canvas.height;
+    if (w <= h * 1.2) return [canvas];
+    const left = document.createElement('canvas');
+    const right = document.createElement('canvas');
+    left.width = right.width = Math.floor(w / 2);
+    left.height = right.height = h;
+    const ctxL = left.getContext('2d');
+    const ctxR = right.getContext('2d');
+    ctxL.drawImage(canvas, 0, 0, Math.floor(w/2), h, 0, 0, Math.floor(w/2), h);
+    ctxR.drawImage(canvas, Math.ceil(w/2), 0, Math.floor(w/2), h, 0, 0, Math.floor(w/2), h);
+    return [left, right];
+  }
+
+  function processPage(page, targetW, targetH) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const mode = splitMode.value;
+        let canvases = [canvas];
+        if (mode === 'before') canvases = splitDoublePage(canvas);
+
+        const processed = canvases.map(c => {
+          const resized = resizeCanvas(c, targetW, targetH);
+          const rctx = resized.getContext('2d');
+          applyBlackLevel(rctx, targetW, targetH, parseInt(blackLevel.value));
+          if (dither4bit.checked) applyDither4bit(rctx, targetW, targetH);
+          return resized;
+        });
+
+        if (mode === 'after' && processed.length === 1) {
+          const split = splitDoublePage(processed[0]);
+          resolve(split.map(c => c.toDataURL('image/png')));
+        } else {
+          resolve(processed.map(c => c.toDataURL('image/png')));
+        }
+      };
+      img.src = page.blob;
+    });
+  }
+
+  async function processAllPages() {
+    const {w: targetW, h: targetH} = getTargetDimensions();
+    setStatus(`جاري معالجة ${pages.length} صفحة…`);
+    processedPages = [];
+    for (let i = 0; i < pages.length; i++) {
+      const results = await processPage(pages[i], targetW, targetH);
+      results.forEach((dataUrl, j) => {
+        processedPages.push({
+          name: pages[i].name.replace(/\.[^.]+$/, '') + (results.length > 1 ? `_${j+1}` : ''),
+          dataUrl,
+          originalIndex: i,
+          splitIndex: j
+        });
+      });
+      setStatus(`تم معالجة ${i+1}/${pages.length}…`);
+    }
+    renderPreview();
+    setStatus(`اكتمل! ${processedPages.length} صفحة جاهزة للتصدير.`);
+    exportDivider.style.display = 'block';
+    exportRow.style.display = 'flex';
+  }
+
+  function renderPreview(filter='') {
+    pageGrid.innerHTML = '';
+    const filtered = processedPages.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+    pageCount.textContent = `${filtered.length} من ${processedPages.length} صفحة`;
+    filtered.forEach((page, idx) => {
+      const div = document.createElement('div');
+      div.className = 'page-item';
+      div.draggable = true;
+      div.dataset.index = processedPages.indexOf(page);
+      div.innerHTML = `
+        <span class="page-num">${idx+1}</span>
+        <img src="${page.dataUrl}" alt="${page.name}" loading="lazy">
+        <span class="page-name">${page.name}</span>
+      `;
+      div.addEventListener('dragstart', onDragStart);
+      div.addEventListener('dragend', onDragEnd);
+      div.addEventListener('dragover', onDragOver);
+      div.addEventListener('dragleave', onDragLeave);
+      div.addEventListener('drop', onDrop);
+      pageGrid.appendChild(div);
+    });
+  }
+
+  pageSearch.addEventListener('input', (e) => renderPreview(e.target.value));
+
+  function onDragStart(e) {
+    dragSrc = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', this.dataset.index);
+  }
+
+  function onDragEnd(e) {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.page-item').forEach(el => el.classList.remove('drag-over'));
+    dragSrc = null;
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (this !== dragSrc) this.classList.add('drag-over');
+  }
+
+  function onDragLeave(e) {
+    this.classList.remove('drag-over');
+  }
+
+  function onDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    if (this === dragSrc) return;
+    const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+    const toIdx = parseInt(this.dataset.index);
+    if (isNaN(fromIdx) || isNaN(toIdx) || fromIdx === toIdx) return;
+    const [moved] = processedPages.splice(fromIdx, 1);
+    processedPages.splice(toIdx, 0, moved);
+    renderPreview(pageSearch.value);
+  }
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag');
+    const items = e.dataTransfer.items;
+    if (items && items[0] && items[0].webkitGetAsEntry) {
+      const entry = items[0].webkitGetAsEntry();
+      if (entry && entry.isDirectory) {
+        readDirectory(entry);
+        return;
+      }
+    }
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+  function readDirectory(dirEntry) {
+    const reader = dirEntry.createReader();
+    const entries = [];
+    function readNext() {
+      reader.readEntries((batch) => {
+        if (!batch.length) {
+          processEntries(entries);
+        } else {
+          entries.push(...batch);
+          readNext();
+        }
+      });
+    }
+    readNext();
+  }
+
+  function processEntries(entries) {
+    const files = [];
+    let pending = 0;
+    entries.forEach(entry => {
+      if (entry.isFile && entry.name.match(/\.(jpg|jpeg|png|webp|gif|bmp)$/i)) {
+        pending++;
+        entry.file(f => { files.push(f); if (--pending === 0) handleFiles(files); });
+      } else if (entry.isDirectory) {
+        pending++;
+        readDirectory(entry).then(() => { if (--pending === 0) handleFiles(files); });
+      }
+    });
+    if (pending === 0) handleFiles(files);
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const parts = dataUrl.split(',');
+    const mime = parts[0].match(/:(.*?);/)[1];
+    const bstr = atob(parts[1]);
+    const n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+    return new Blob([u8arr], {type: mime});
+  }
+
+  function createZipBlob(entries) {
+    return new Promise((resolve) => {
+      const zipData = [];
+      let offset = 0;
+      const encoder = new TextEncoder();
+      entries.forEach((entry, i) => {
+        const name = encoder.encode(entry.name);
+        const content = entry.blob;
+        const header = new Uint8Array(30 + name.length);
+        const view = new DataView(header.buffer);
+        view.setUint32(0, 0x04034b50, true);
+        view.setUint16(4, 20, true);
+        view.setUint16(6, 0, true);
+        view.setUint16(8, 0, true);
+        view.setUint16(10, 0, true);
+        view.setUint16(12, 0, true);
+        view.setUint32(14, 0, true);
+        view.setUint32(18, content.size, true);
+        view.setUint32(22, content.size, true);
+        view.setUint16(26, name.length, true);
+        view.setUint16(28, 0, true);
+        header.set(name, 30);
+        zipData.push(header);
+        zipData.push(new Uint8Array(content));
+        offset += 30 + name.length + content.size;
+      });
+      const centralDir = [];
+      let centralOffset = 0;
+      entries.forEach((entry, i) => {
+        const name = encoder.encode(entry.name);
+        const header = new Uint8Array(46 + name.length);
+        const view = new DataView(header.buffer);
+        view.setUint32(0, 0x02014b50, true);
+        view.setUint16(4, 20, true);
+        view.setUint16(6, 20, true);
+        view.setUint16(8, 0, true);
+        view.setUint16(10, 0, true);
+        view.setUint16(12, 0, true);
+        view.setUint32(14, 0, true);
+        view.setUint32(16, entry.blob.size, true);
+        view.setUint32(20, entry.blob.size, true);
+        view.setUint16(24, name.length, true);
+        view.setUint16(26, 0, true);
+        view.setUint16(28, 0, true);
+        view.setUint16(30, 0, true);
+        view.setUint16(32, 0, true);
+        view.setUint32(34, 0, true);
+        view.setUint32(42, centralOffset, true);
+        header.set(name, 46);
+        centralDir.push(header);
+        centralOffset += 46 + name.length;
+      });
+      const endRecord = new Uint8Array(22);
+      const ev = new DataView(endRecord.buffer);
+      ev.setUint32(0, 0x06054b50, true);
+      ev.setUint16(4, 0, true);
+      ev.setUint16(6, 0, true);
+      ev.setUint16(8, entries.length, true);
+      ev.setUint16(10, entries.length, true);
+      ev.setUint32(12, centralOffset, true);
+      ev.setUint32(16, offset, true);
+      ev.setUint16(20, 0, true);
+      const all = new Uint8Array(offset + centralOffset + 22);
+      let pos = 0;
+      zipData.forEach(chunk => { all.set(chunk, pos); pos += chunk.length; });
+      centralDir.forEach(chunk => { all.set(chunk, pos); pos += chunk.length; });
+      all.set(endRecord, pos);
+      resolve(new Blob([all], {type: 'application/zip'}));
+    });
+  }
+
+  async function exportArchive(asCBZ) {
+    if (!processedPages.length) return;
+    setStatus('جاري إنشاء الأرشيف…');
+    const entries = processedPages.map((p, i) => ({
+      name: `${String(i+1).padStart(3,'0')}_${p.name}.png`,
+      blob: dataUrlToBlob(p.dataUrl)
+    }));
+    const zipBlob = await createZipBlob(entries);
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `manga_${Date.now()}.${asCBZ ? 'cbz' : 'zip'}`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatus('تم التحميل بنجاح!');
+  }
+
+  exportImages.addEventListener('click', () => exportArchive(false));
+  exportCBZ.addEventListener('click', () => exportArchive(true));
+})();
+</script>
+</body>
+</html>
