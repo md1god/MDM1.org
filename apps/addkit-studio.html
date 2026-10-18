@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر إضافات المتصفح — بناء ومعاينة وتصدير ZIP | MDM1</title>
+<meta name="description" content="أنشئ نافذة منبثقة وصفحة خيارات وسكربتات محتوى وعامل خلفية من قوالب جاهزة، مع معاينة حية وتصدير ZIP قابل للتثبيت دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/addkit-studio.html">
+<meta property="og:title" content="محرر إضافات المتصفح — بناء ومعاينة وتصدير ZIP">
+<meta property="og:description" content="أنشئ نافذة منبثقة وصفحة خيارات وسكربتات محتوى وعامل خلفية من قوالب جاهزة، مع معاينة حية وتصدير ZIP قابل للتثبيت دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/addkit-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: grid; gap: 12px; }
+.app .app-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.app .app-card { padding: 14px; }
+.app .app-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+.app .app-preview { border: 1px solid var(--gold-dim); border-radius: 8px; padding: 12px; min-height: 180px; background: rgba(0,0,0,.25); }
+.app .app-code { white-space: pre-wrap; word-break: break-word; max-height: 360px; overflow: auto; border: 1px solid var(--gold-dim); padding: 10px; border-radius: 8px; font-size: 12px; line-height: 1.5; }
+.app .app-popup-preview { display: grid; gap: 8px; }
+@media (max-width: 720px) { .app .app-layout { grid-template-columns: 1fr; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر إضافات المتصفح محليًا", "url": "https://mdm1.org/apps/addkit-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل التوليد والمعاينة والتصدير يتم في المتصفح دون أي طلب شبكة."}}, {"@type": "Question", "name": "كيف أثبت الإضافة؟", "acceptedAnswer": {"@type": "Answer", "text": "صدّر ZIP، فك ضغطه، ثم في Chrome/Edge فعّل وضع المطور واختر \"تحميل غير معبأ\"."}}, {"@type": "Question", "name": "هل تُرسل بياناتي إلى خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الاسم والوصف والملفات تبقى في متصفحك، والحفظ يتم في localStorage."}}, {"@type": "Question", "name": "ماذا لو لم أفعّل أي مكون؟", "acceptedAnswer": {"@type": "Answer", "text": "يظهر خطأ واضح ويُطلب تفعيل مكون واحد على الأقل قبل التوليد."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر إضافات المتصفح محليًا</h1>
+  <p class="page-sub">أنشئ نافذة منبثقة وصفحة خيارات وسكربتات محتوى وعامل خلفية من قوالب جاهزة، مع معاينة حية وتصدير ZIP قابل للتثبيت دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot">
+<p id="introText">هذا المحرر يتيح لك إنشاء إضافة متصفح كاملة داخل المتصفح: اختر قالبًا، عدّل الاسم والوصف والصلاحيات، فعّل المكونات (نافذة منبثقة، صفحة خيارات، سكربت محتوى، عامل خلفية)، شاهد المعاينة، ثم صدّر ملف ZIP قابل للتثبيت. لا خادم ولا حساب: كل الملفات تُولَّد محليًا، والمعاينة تتحدث فورًا. يمكنك حفظ المشروع في المتصفح والعودة إليه لاحقًا. تحقق من الأخطاء قبل التصدير، وثبّت الحزمة في Chrome أو Edge عبر وضع المطور. القوالب الجاهزة تشمل عدّادًا ومحرر ملاحظات ومغيّر ألوان ومشروعًا أساسيًا، وكلها قابلة للتعديل. يمكنك اختيار الصلاحيات (التخزين، التبويب النشط، البرمجة، التبويبات، الإشعارات) وتفعيل المكونات المطلوبة. يتم التحقق من الاسم والنسخة والمكونات قبل التصدير، وتظهر رسائل خطأ واضحة. تُحفظ البيانات في متصفحك ولا تُرسل إلى أي خادم.</p>
+<div class="app-layout" id="appLayout">
+<div class="card app-card" id="builderCard">
+<p><b id="builderTitle">بيانات الإضافة</b></p>
+<div class="row">
+<label for="extName">اسم الإضافة</label>
+<input id="extName" class="input" type="text" maxlength="80" placeholder="مثال: عداد القراءة">
+</div>
+<div class="row">
+<label for="extVersion">الإصدار</label>
+<input id="extVersion" class="input" type="text" value="1.0.0" maxlength="20">
+</div>
+<div class="row">
+<label for="extDescription">الوصف</label>
+<textarea id="extDescription" class="textarea" rows="3" placeholder="وصف مختصر للإضافة"></textarea>
+</div>
+<div class="row">
+<label for="templateSelect">قالب البداية</label>
+<select id="templateSelect" class="select">
+<option value="basic">أساسي (بدون واجهة)</option>
+<option value="counter">عداد في النافذة</option>
+<option value="notes">ملاحظات سريعة</option>
+<option value="color">مغيّر لون الخلفية</option>
+</select>
+</div>
+<div class="row app-grid2" id="componentsRow">
+<label><input id="compPopup" type="checkbox" checked> نافذة منبثقة</label>
+<label><input id="compOptions" type="checkbox" checked> صفحة خيارات</label>
+<label><input id="compContent" type="checkbox" checked> سكربت محتوى</label>
+<label><input id="compBackground" type="checkbox" checked> عامل خلفية</label>
+</div>
+<div class="row app-grid2" id="permissionsRow">
+<label><input id="permStorage" type="checkbox" checked> تخزين</label>
+<label><input id="permActiveTab" type="checkbox"> تبويب نشط</label>
+<label><input id="permScripting" type="checkbox"> برمجة</label>
+<label><input id="permTabs" type="checkbox"> تبويبات</label>
+<label><input id="permNotifications" type="checkbox"> إشعارات</label>
+</div>
+<div class="row" id="builderActions">
+<button id="generateBtn" class="button" type="button">توليد الملفات</button>
+<button id="previewBtn" class="button sec" type="button">تحديث المعاينة</button>
+<button id="exportBtn" class="button sec" type="button">تصدير ZIP</button>
+<button id="resetBtn" class="button sec" type="button">إعادة تعيين</button>
+</div>
+<div class="row" id="storageActions">
+<button id="saveBtn" class="button sec" type="button">حفظ محليًا</button>
+<button id="loadBtn" class="button sec" type="button">تحميل المحفوظ</button>
+<button id="copyBtn" class="button sec" type="button">نسخ الملف</button>
+</div>
+<div id="statusOut" class="out" style="display:none"></div>
+</div>
+<div class="card app-card" id="previewCard">
+<p><b id="previewTitle">معاينة حية</b></p>
+<div id="livePreview" class="app-preview"></div>
+<div class="row">
+<label for="previewFileSelect">ملف للمعاينة</label>
+<select id="previewFileSelect" class="select">
+<option value="manifest.json">manifest.json</option>
+<option value="popup.html">popup.html</option>
+<option value="options.html">options.html</option>
+<option value="content.js">content.js</option>
+<option value="background.js">background.js</option>
+<option value="README.txt">README.txt</option>
+</select>
+</div>
+<div id="codePreview" class="app-code"></div>
+<div id="fileListOut" class="out" style="display:none"></div>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل بدون إنترنت؟</h3><p>نعم، كل التوليد والمعاينة والتصدير يتم في المتصفح دون أي طلب شبكة.</p><h3>كيف أثبت الإضافة؟</h3><p>صدّر ZIP، فك ضغطه، ثم في Chrome/Edge فعّل وضع المطور واختر &quot;تحميل غير معبأ&quot;.</p><h3>هل تُرسل بياناتي إلى خادم؟</h3><p>لا، الاسم والوصف والملفات تبقى في متصفحك، والحفظ يتم في localStorage.</p><h3>ماذا لو لم أفعّل أي مكون؟</h3><p>يظهر خطأ واضح ويُطلب تفعيل مكون واحد على الأقل قبل التوليد.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const STORAGE_KEY = "md1-extension-editor-v1";
+function $(id){ return document.getElementById(id); }
+function esc(v){ return String(v == null ? "" : v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function showStatus(msg, isError){
+ const el = $("statusOut");
+ if (!el) return;
+ el.style.display = "block";
+ el.textContent = msg;
+ el.style.borderColor = isError ? "#b94a48" : "var(--gold-dim)";
+}
+let files = [];
+let currentFile = "manifest.json";
+function val(id){ const e = $(id); return e ? String(e.value || "").trim() : ""; }
+function checked(id){ const e = $(id); return !!(e && e.checked); }
+function selectedTemplate(){ return val("templateSelect") || "basic"; }
+function components(){
+ const list = [];
+ if (checked("compPopup")) list.push("popup");
+ if (checked("compOptions")) list.push("options");
+ if (checked("compContent")) list.push("content");
+ if (checked("compBackground")) list.push("background");
+ return list;
+}
+function permissions(){
+ const list = [];
+ if (checked("permStorage")) list.push("storage");
+ if (checked("permActiveTab")) list.push("activeTab");
+ if (checked("permScripting")) list.push("scripting");
+ if (checked("permTabs")) list.push("tabs");
+ if (checked("permNotifications")) list.push("notifications");
+ const comps = components();
+ if (comps.indexOf("options") >= 0 && list.indexOf("storage") < 0) list.push("storage");
+ return list;
+}
+function validate(){
+ const errs = [];
+ if (!val("extName")) errs.push("أدخل اسم الإضافة");
+ const v = val("extVersion");
+ if (!/^\d+(\.\d+){0,2}$/.test(v)) errs.push("أدخل إصدارًا مثل 1.0.0");
+ if (!components().length) errs.push("فعّل مكونًا واحدًا على الأقل");
+ return errs;
+}
+function jsStr(v){ return JSON.stringify(String(v == null ? "" : v)); }
+function templateBody(tpl){
+ if (tpl === "counter") return '<button id="inc" type="button">زيادة</button> <span id="count">0</span>';
+ if (tpl === "notes") return '<textarea id="note" rows="4"></textarea><button id="saveNote" type="button">حفظ</button><p id="noteStatus"></p>';
+ if (tpl === "color") return '<button id="colorBtn" type="button">تغيير اللون</button>';
+ return '<p>ابدأ هنا.</p>';
+}
+function templateScript(tpl){
+ if (tpl === "counter") return 'const n=document.getElementById("count");let c=Number(localStorage.getItem("count")||0);n.textContent=c;document.getElementById("inc").addEventListener("click",()=>{c+=1;n.textContent=c;localStorage.setItem("count",String(c));});';
+ if (tpl === "notes") return 'const ta=document.getElementById("note");const st=document.getElementById("noteStatus");ta.value=localStorage.getItem("note")||"";document.getElementById("saveNote").addEventListener("click",()=>{localStorage.setItem("note",ta.value);st.textContent="تم الحفظ";});';
+ if (tpl === "color") return 'document.getElementById("colorBtn").addEventListener("click",()=>{document.body.style.background="#"+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,"0");});';
+ return "";
+}
+function buildManifest(){
+ const manifest = {
+  manifest_version: 3,
+  name: val("extName") || "إضافة neue",
+  version: val("extVersion") || "1.0.0",
+  description: val("extDescription") || "إضافة متصفح",
+  permissions: permissions()
+ };
+ const comps = components();
+ if (comps.indexOf("popup") >= 0) manifest.action = { default_popup: "popup.html", default_title: val("extName") || "إضافة" };
+ if (comps.indexOf("options") >= 0) manifest.options_page = "options.html";
+ if (comps.indexOf("background") >= 0) manifest.background = { service_worker: "background.js", type: "module" };
+ if (comps.indexOf("content") >= 0) manifest.content_scripts = [{ matches: ["<all_urls>"], js: ["content.js"], run_at: "document_idle" }];
+ return JSON.stringify(manifest, null, 2);
+}
+function buildPopup(){
+ const name = val("extName") || "إضافة neue";
+ const desc = val("extDescription") || "وصف الإضافة";
+ const tpl = selectedTemplate();
+ const body = templateBody(tpl);
+ const script = templateScript(tpl);
+ return '<!doctype html>\n<html lang="ar" dir="rtl">\n<head>\n<meta charset="utf-8">\n<title>' + esc(name) + '</title>\n<style>\nbody{font-family:system-ui;padding:12px;min-width:220px}\nbutton{padding:6px 10px}\n</style>\n</head>\n<body>\n<h1>' + esc(name) + '</h1>\n<p>' + esc(desc) + '</p>\n' + body + '\n' + (script ? '<script>' + script + '<\/script>' : '') + '\n</body>\n</html>';
+}
+function buildOptions(){
+ const name = val("extName") || "إضافة neue";
+ return '<!doctype html>\n<html lang="ar" dir="rtl">\n<head>\n<meta charset="utf-8">\n<title>' + esc(name) + ' - خيارات</title>\n<style>\nbody{font-family:system-ui;padding:16px;max-width:480px}\nlabel{display:block;margin:8px 0 4px}\ninput{width:100%;padding:6px}\nbutton{padding:6px 10px;margin-top:8px}\n</style>\n</head>\n<body>\n<h1>خيارات ' + esc(name) + '</h1>\n<label for="greeting">تحية</label>\n<input id="greeting" type="text">\n<button id="save" type="button">حفظ</button>\n<p id="status"></p>\n<script>\nconst status=document.getElementById("status");\nfunction load(){chrome.storage.local.get(["settings"],(r)=>{const s=r.settings||{};document.getElementById("greeting").value=s.greeting||"";});}\nfunction save(){chrome.storage.local.set({settings:{greeting:document.getElementById("greeting").value}},()=>{status.textContent="تم الحفظ";});}\ndocument.getElementById("save").addEventListener("click",save);\nload();\n<\/script>\n</body>\n</html>';
+}
+function buildContent(){
+ const name = val("extName") || "إضافة neue";
+ return '(() => {\n console.log(' + jsStr("content script: " + name) + ');\n const marker=document.createElement("div");\n marker.textContent=' + jsStr(name + " — إضافة نشطة") + ';\n marker.style.cssText="position:fixed;bottom:8px;left:8px;z-index:2147483647;background:#111;color:#ffd700;padding:6px 8px;border-radius:6px;font-size:12px;";\n document.documentElement.appendChild(marker);\n setTimeout(()=>marker.remove(),3000);\n})();';
+}
+function buildBackground(){
+ const name = val("extName") || "إضافة neue";
+ return 'chrome.runtime.onInstalled.addListener(() => {\n console.log(' + jsStr(name + " installed") + ');\n});';
+}
+function buildReadme(){
+ const name = val("extName") || "إضافة neue";
+ return '# ' + name + '\n\nإضافة متصفح (Manifest V3).\n\nالتثبيت في Chrome/Edge:\n1. افتح chrome://extensions\n2. فعّل وضع المطور\n3. اضغط "تحميل غير معبأ"\n4. اختر مجلد الملفات المفكوك من ZIP\n';
+}
+function templateLabel(tpl){
+ if (tpl === "counter") return "عداد";
+ if (tpl === "notes") return "ملاحظات";
+ if (tpl === "color") return "مغيّر لون";
+ return "أساسي";
+}
+function renderFileSelect(){
+ const sel = $("previewFileSelect");
+ if (!sel) return;
+ sel.innerHTML = files.map(f => '<option value="' + esc(f.path) + '">' + esc(f.path) + '</option>').join("");
+ if (files.some(f => f.path === currentFile)) sel.value = currentFile;
+}
+function showFile(path){
+ if (path) currentFile = path;
+ const f = files.find(x => x.path === currentFile);
+ const el = $("codePreview");
+ if (el) el.textContent = f ? f.content : "لا توجد ملفات بعد. اضغط «توليد الملفات».";
+ const sel = $("previewFileSelect");
+ if (sel && files.some(x => x.path === currentFile)) sel.value = currentFile;
+}
+function renderFileList(){
+ const el = $("fileListOut");
+ if (!el) return;
+ if (!files.length){ el.style.display = "none"; return; }
+ el.style.display = "block";
+ el.textContent = "الملفات:\n" + files.map(f => "- " + f.path).join("\n");
+}
+function renderLivePreview(){
+ const name = val("extName") || "إضافة neue";
+ const desc = val("extDescription") || "وصف الإضافة";
+ const tpl = selectedTemplate();
+ let extra = "";
+ if (tpl === "counter") extra = '<div class="app-preview-actions"><button type="button">زيادة</button> <span>0</span></div>';
+ if (tpl === "notes") extra = '<textarea rows="3" placeholder="ملاحظة"></textarea>';
+ if (tpl === "color") extra = '<button type="button">تغيير اللون</button>';
+ const comps = components().join("، ") || "لا شيء";
+ const el = $("livePreview");
+ if (el) el.innerHTML = '<div class="app-popup-preview"><strong>' + esc(name) + '</strong><p>' + esc(desc) + '</p>' + extra + '<small>المكونات: ' + esc(comps) + ' · القالب: ' + esc(templateLabel(tpl)) + '</small></div>';
+}
+function generate(){
+ const errs = validate();
+ if (errs.length){ showStatus(errs.join("، "), true); renderLivePreview(); return; }
+ files = buildFiles();
+ currentFile = files.length ? files[0].path : "manifest.json";
+ renderFileSelect();
+ showFile(currentFile);
+ renderFileList();
+ renderLivePreview();
+ showStatus("تم توليد " + files.length + " ملفًا.", false);
+}
+function resetProject(){
+ $("extName").value = "";
+ $("extVersion").value = "1.0.0";
+ $("extDescription").value = "";
+ $("templateSelect").value = "basic";
+ ["compPopup","compOptions","compContent","compBackground"].forEach(id => { const e = $(id); if (e) e.checked = true; });
+ ["permStorage","permActiveTab","permScripting","permTabs","permNotifications"].forEach(id => { const e = $(id); if (e) e.checked = (id === "permStorage"); });
+ files = [];
+ currentFile = "manifest.json";
+ renderFileSelect();
+ const code = $("codePreview");
+ if (code) code.textContent = "لا توجد ملفات بعد. اضغط «توليد الملفات».";
+ renderFileList();
+ renderLivePreview();
+ showStatus("تمت إعادة التعيين.", false);
+}
+function saveProject(){
+ const data = {
+  extName: val("extName"),
+  extVersion: val("extVersion"),
+  extDescription: val("extDescription"),
+  templateSelect: selectedTemplate(),
+  compPopup: checked("compPopup"),
+  compOptions: checked("compOptions"),
+  compContent: checked("compContent"),
+  compBackground: checked("compBackground"),
+  permStorage: checked("permStorage"),
+  permActiveTab: checked("permActiveTab"),
+  permScripting: checked("permScripting"),
+  permTabs: checked("permTabs"),
+  permNotifications: checked("permNotifications")
+ };
+ try {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showStatus("تم حفظ المشروع في المتصفح.", false);
+ } catch (e) {
+  showStatus("تعذر الحفظ: " + (e && e.message ? e.message : ""), true);
+ }
+}
+function loadProject(){
+ try {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw){ showStatus("لا يوجد مشروع محفوظ.", true); return; }
+  const data = JSON.parse(raw);
+  if (typeof data.extName === "string") $("extName").value = data.extName;
+  if (typeof data.extVersion === "string") $("extVersion").value = data.extVersion;
+  if (typeof data.extDescription === "string") $("extDescription").value = data.extDescription;
+  if (typeof data.templateSelect === "string") $("templateSelect").value = data.templateSelect;
+  ["compPopup","compOptions","compContent","compBackground"].forEach(id => { const e = $(id); if (e && typeof data[id] === "boolean") e.checked = data[id]; });
+  ["permStorage","permActiveTab","permScripting","permTabs","permNotifications"].forEach(id => { const e = $(id); if (e && typeof data[id] === "boolean") e.checked = data[id]; });
+  renderLivePreview();
+  showStatus("تم تحميل المشروع.", false);
+ } catch (e) {
+  showStatus("تعذر التحميل.", true);
+ }
+}
+const CRC_TABLE = (function(){
+ const t = new Uint32Array(256);
+ for (let i = 0; i < 256; i++){
+  let c = i;
+  for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+  t[i] = c >>> 0;
+ }
+ return t;
+})();
+function crc32(bytes){
+ let crc = 0xFFFFFFFF;
+ for (let i = 0; i < bytes.length; i++) crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+ return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function createZip(fileList){
+ const encoder = new TextEncoder();
+ const chunks = [];
+ const central = [];
+ let offset = 0;
+ for (let i = 0; i < fileList.length; i++){
+  const file = fileList[i];
+  const nameBytes = encoder.encode(file.path);
+  const data = encoder.encode(file.content);
+  const crc = crc32(data);
+  const local = new Uint8Array(30 + nameBytes.length);
+  const lv = new DataView(local.buffer);
+  lv.setUint32(0, 0x04034b50, true);
+  lv.setUint16(4, 20, true);
+  lv.setUint16(6, 0, true);
+  lv.setUint16(8, 0, true);
+  lv.setUint16(10, 0, true);
+  lv.setUint16(12, 0, true);
+  lv.setUint32(14, crc, true);
+  lv.setUint32(18, data.length, true);
+  lv.setUint32(22, data.length, true);
+  lv.setUint16(26, nameBytes.length, true);
+  lv.setUint16(28, 0, true);
+  local.set(nameBytes, 30);
+  chunks.push(local);
+  chunks.push(data);
+  const ch = new Uint8Array(46 + nameBytes.length);
+  const cv = new DataView(ch.buffer);
+  cv.setUint32(0, 0x02014b50, true);
+  cv.setUint16(4, 20, true);
+  cv.setUint16(6, 20, true);
+  cv.setUint16(8, 0, true);
+  cv.setUint16(10, 0, true);
+  cv.setUint16(12, 0, true);
+  cv.setUint16(14, 0, true);
+  cv.setUint32(16, crc, true);
+  cv.setUint32(20, data.length, true);
+  cv.setUint32(24, data.length, true);
+  cv.setUint16(28, nameBytes.length, true);
+  cv.setUint16(30, 0, true);
+  cv.setUint16(32, 0, true);
+  cv.setUint16(34, 0, true);
+  cv.setUint16(36, 0, true);
+  cv.setUint32(38, 0, true);
+  cv.setUint32(42, offset, true);
+  ch.set(nameBytes, 46);
+  central.push(ch);
+  offset += local.length + data.length;
+ }
+ let centralSize = 0;
+ for (let i = 0; i < central.length; i++) centralSize += central[i].length;
+ const end = new Uint8Array(22);
+ const ev = new DataView(end.buffer);
+ ev.setUint32(0, 0x06054b50, true);
+ ev.setUint16(4, 0, true);
+ ev.setUint16(6, 0, true);
+ ev.setUint16(8, central.length, true);
+ ev.setUint16(10, central.length, true);
+ ev.setUint32(12, centralSize, true);
+ ev.setUint32(16, offset, true);
+ ev.setUint16(20, 0, true);
+ const all = chunks.concat(central, [end]);
+ return new Blob(all, { type: "application/zip" });
+}
+async function exportZip(){
+ const errs = validate();
+ if (errs.length){ showStatus(errs.join("، "), true); return; }
+ if (!files.length) files = buildFiles();
+ const blob = createZip(files);
+ const a = document.createElement("a");
+ const url = URL.createObjectURL(blob);
+ a.href = url;
+ const safeName = (val("extName") || "extension").replace(/[\\/:*?"<>|]/g, "-").trim() || "extension";
+ a.download = safeName + ".zip";
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+ showStatus("تم تصدير ملف ZIP.", false);
+}
+async function copyCurrent(){
+ const f = files.find(x => x.path === currentFile);
+ if (!f){ showStatus("لا يوجد ملف للنسخ.", true); return; }
+ try {
+  if (navigator.clipboard && navigator.clipboard.writeText){
+   await navigator.clipboard.writeText(f.content);
+  } else {
+   const ta = document.createElement("textarea");
+   ta.value = f.content;
+   document.body.appendChild(ta);
+   ta.select();
+   document.execCommand("copy");
+   ta.remove();
+  }
+  showStatus("تم نسخ محتوى الملف.", false);
+ } catch (e) {
+  showStatus("تعذر النسخ.", true);
+ }
+}
+function init(){
+ if (!$("extVersion").value) $("extVersion").value = "1.0.0";
+ $("generateBtn").addEventListener("click", generate);
+ $("previewBtn").addEventListener("click", function(){ renderLivePreview(); showStatus("تم تحديث المعاينة.", false); });
+ $("exportBtn").addEventListener("click", exportZip);
+ $("resetBtn").addEventListener("click", resetProject);
+ $("saveBtn").addEventListener("click", saveProject);
+ $("loadBtn").addEventListener("click", loadProject);
+ $("copyBtn").addEventListener("click", copyCurrent);
+ const sel = $("previewFileSelect");
+ if (sel) sel.addEventListener("change", function(e){ showFile(e.target.value); });
+ ["extName","extVersion","extDescription","templateSelect"].forEach(function(id){
+  const e = $(id); if (!e) return;
+  e.addEventListener("input", renderLivePreview);
+  e.addEventListener("change", renderLivePreview);
+ });
+ ["compPopup","compOptions","compContent","compBackground","permStorage","permActiveTab","permScripting","permTabs","permNotifications"].forEach(function(id){
+  const e = $(id); if (!e) return;
+  e.addEventListener("change", renderLivePreview);
+ });
+ renderFileSelect();
+ showFile(currentFile);
+ renderFileList();
+ renderLivePreview();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+</script>
+</body>
+</html>
