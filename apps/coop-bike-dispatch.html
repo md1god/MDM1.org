@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق إدارة طلبات توصيل الدراجات للتعاونيات | MDM1</title>
+<meta name="description" content="تطبيق عربي محلي لإدارة طلبات توصيل الطعام بالدراجات: أضف الطلبات، أسندها للسائقين تلقائيًا أو يدويًا، حسّن المسارات على خريطة كانفس، تابع الحالات ووزّع الأرباح وسائقي الدراجات والمنصة.">
+<link rel="canonical" href="https://mdm1.org/apps/coop-bike-dispatch.html">
+<meta property="og:title" content="تطبيق إدارة طلبات توصيل الدراجات للتعاونيات">
+<meta property="og:description" content="تطبيق عربي محلي لإدارة طلبات توصيل الطعام بالدراجات: أضف الطلبات، أسندها للسائقين تلقائيًا أو يدويًا، حسّن المسارات على خريطة كانفس، تابع الحالات ووزّع الأرباح وسائقي الدراجات والمنصة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/coop-bike-dispatch.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-app{margin-top:14px;padding:14px;border:1px solid var(--gold-dim);border-radius:10px;background:color-mix(in srgb,var(--dark) 88%,var(--gold-dim))}
+.app-app h2{color:var(--gold-bright);margin:0 0 10px;font-size:1.15rem}
+.app-app .row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:10px}
+.app-app .row label{color:var(--light);min-width:110px}
+.app-app input,.app-app select,.app-app textarea{background:var(--dark);color:var(--light);border:1px solid var(--gold-dim);border-radius:6px;padding:8px}
+.app-app input[type=number]{width:100px}
+.app-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.app-item{border:1px solid var(--gold-dim);border-radius:8px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:var(--dark)}
+.app-item .app-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:var(--light)}
+.app-canvas{width:100%;max-width:640px;height:360px;border:1px solid var(--gold);border-radius:8px;background:#10131a;display:block;margin:8px auto}
+.app-badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.8rem;border:1px solid var(--gold-dim);color:var(--gold-bright)}
+.app-badge.ok{border-color:var(--gold);color:var(--gold)}
+.app-badge.warn{border-color:#c9a227;color:#e6c35c}
+.app-actions{display:flex;gap:6px;flex-wrap:wrap}
+.app-actions select{max-width:140px}
+.app-err{color:#ffb4b4}
+.app-succ{color:var(--gold-bright)}
+.app-empty{color:var(--gold-dim);text-align:center;padding:10px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "نظام إدارة طلبات التوصيل بالدراجات للتعاونيات المحلية", "url": "https://mdm1.org/apps/coop-bike-dispatch.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى إنترنت أو حساب مستخدم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل التطبيق محليًا بالكامل داخل متصفحك ويخزن كل الطلبات والسائقين في localStorage دون أي اتصال بالشبكة أو تسجيل دخول."}}, {"@type": "Question", "name": "كيف يتم الإسناد التلقائي للسائقين؟", "acceptedAnswer": {"@type": "Answer", "text": "يختار النظام السائق صاحب أقل عدد من الطلبات النشطة، ويمكنك تغيير السائق يدويًا أو إعادة الإسناد لطلب واحد في أي وقت."}}, {"@type": "Question", "name": "كيف تُحسب وتُوزَّع الأرباح؟", "acceptedAnswer": {"@type": "Answer", "text": "تُخصم نسبة المنصة من قيمة الطلبات المسلّمة، ويُوزَّع الباقي على السائقين حسب نسبهم المُدخلة لكل منهم، مع عرض تفصيل في صندوق الأرباح."}}, {"@type": "Question", "name": "ماذا يحدث عند مسح البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "زر «مسح كل البيانات» يحذف الطلبات والسائقين والإعدادات من التخزين المحلي بعد تأكيد، ولا يمكن استرجاعها إلا بإعادة الإدخال يدويًا."}}, {"@type": "Question", "name": "هل يمكن تحسين مسار التوصيل على الخريطة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر «تحسين المسار المختار» يعيد ترتيب نقاط كل سائق بأقرب جار انطلاقًا من مركز التوزيع ثم يعيد رسم مساراتها على كانفس."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">نظام إدارة طلبات التوصيل بالدراجات للتعاونيات المحلية</h1>
+  <p class="page-sub">تطبيق عربي محلي لإدارة طلبات توصيل الطعام بالدراجات: أضف الطلبات، أسندها للسائقين تلقائيًا أو يدويًا، حسّن المسارات على خريطة كانفس، تابع الحالات ووزّع الأرباح وسائقي الدراجات والمنصة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذا التطبيق المحلي بالكامل يساعد تعاونيات العاملين على إدارة طلبات التوصيل من مطاعم الحي دون خادم أو حسابات — تضيف الطلب وتختار المطعم والعنوان والمبلغ، ثم يُسند تلقائيًا لأقرب سائق دراجة متاح مع تحسين مساره على خريطة كانفس، وتتابع الحالة من «جديد» إلى «تم التسليم»، ويوزّع النظام الأرباح آليًا بين السائق والمنصة بنسبة قابلة للتعديل، وكل شيء يُحفظ في متصفحك عبر localStorage. تتيح لك اللوحة تسجيل السائقين ومتابعة أرباحهم، وحذف أو تعديل أي عنصر، مع حالات واضحة عند القوائم الفارغة وأثناء عمليات التوزيع والحساب.</p>
+<div class="card app-app">
+  <h2>الإعدادات والنسب</h2>
+  <div class="row">
+    <label for="inpPlatformPct">نسبة المنصة من كل طلب (%)</label>
+    <input id="inpPlatformPct" type="number" min="0" max="90" step="0.5" value="15">
+    <button id="btnSaveSettings" type="button">حفظ الإعدادات</button>
+    <span id="msgSettings" class="badge" aria-live="polite"></span>
+  </div>
+  <div class="divider"></div>
+  <h2>إضافة طلب توصيل</h2>
+  <div class="row">
+    <label for="inpRestaurant">اسم المطعم</label>
+    <input id="inpRestaurant" type="text" placeholder="مثال: مطعم الشام" maxlength="60">
+  </div>
+  <div class="row">
+    <label for="inpCustomer">اسم الزبون</label>
+    <input id="inpCustomer" type="text" placeholder="مثال: أحمد" maxlength="60">
+  </div>
+  <div class="row">
+    <label for="inpAddress">عنوان التسليم</label>
+    <input id="inpAddress" type="text" placeholder="شارع أو بناية الحي" maxlength="80">
+  </div>
+  <div class="row">
+    <label for="inpAmount">قيمة الطلب (ر.س)</label>
+    <input id="inpAmount" type="number" min="1" step="0.5" placeholder="50">
+  </div>
+  <div class="row">
+    <label for="inpX">إحداثي الخريطة أفقي (0-100)</label>
+    <input id="inpX" type="number" min="0" max="100" step="1" value="50">
+    <label for="inpY">إحداثي الخريطة عمودي (0-100)</label>
+    <input id="inpY" type="number" min="0" max="100" step="1" value="50">
+  </div>
+  <div class="row">
+    <button id="btnAddOrder" type="button">إضافة الطلب</button>
+    <button id="btnAutoAssignAll" type="button" class="sec">إسناد تلقائي لكل الطلبات الجديدة</button>
+  </div>
+  <div id="msgOrders" class="out" aria-live="polite"></div>
+</div>
+<div class="card app-app">
+  <h2>السائقون</h2>
+  <div class="row">
+    <label for="inpDriverName">اسم السائق</label>
+    <input id="inpDriverName" type="text" placeholder="مثال: سالم" maxlength="40">
+    <label for="inpDriverRate">نسبة السائق (%)</label>
+    <input id="inpDriverRate" type="number" min="10" max="80" step="0.5" value="50">
+    <button id="btnAddDriver" type="button">إضافة السائق</button>
+  </div>
+  <ul id="listDrivers" class="app-list"></ul>
+  <div id="msgDrivers" class="out" aria-live="polite"></div>
+</div>
+<div class="card app-app">
+  <h2>الطلبات وإسنادها</h2>
+  <div class="row">
+    <label for="selFilterStatus">تصفية حسب الحالة</label>
+    <select id="selFilterStatus">
+      <option value="all">كل الحالات</option>
+      <option value="new">جديد</option>
+      <option value="assigned">مُسند</option>
+      <option value="preparing">قيد التحضير</option>
+      <option value="onroad">في الطريق</option>
+      <option value="delivered">تم التسليم</option>
+      <option value="cancelled">ملغي</option>
+    </select>
+  </div>
+  <ul id="listOrders" class="app-list"></ul>
+  <div id="msgEmptyOrders" class="out"></div>
+</div>
+<div class="card app-app">
+  <h2>خريطة المسارات (كانفس)</h2>
+  <div class="row">
+    <label for="selMapDriver">عرض مسار سائق</label>
+    <select id="selMapDriver"><option value="all">الكل</option></select>
+    <button id="btnOptimize" type="button">تحسين المسار المختار</button>
+    <button id="btnRedrawMap" type="button" class="sec">إعادة رسم الخريطة</button>
+  </div>
+  <canvas id="mapCanvas" class="app-canvas" width="640" height="360" aria-label="خريطة توصيل الدراجات"></canvas>
+  <div id="msgMap" class="out" aria-live="polite"></div>
+</div>
+<div class="card app-app">
+  <h2>حساب الأرباح</h2>
+  <div class="row">
+    <button id="btnCalcProfits" type="button">حساب وتوزيع الأرباح</button>
+    <button id="btnClearDelivered" type="button" class="sec">حذف الطلبات المسلّمة</button>
+    <button id="btnResetAll" type="button" class="sec">مسح كل البيانات</button>
+  </div>
+  <div id="msgProfits" class="out big"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى إنترنت أو حساب مستخدم؟</h3><p>لا، يعمل التطبيق محليًا بالكامل داخل متصفحك ويخزن كل الطلبات والسائقين في localStorage دون أي اتصال بالشبكة أو تسجيل دخول.</p><h3>كيف يتم الإسناد التلقائي للسائقين؟</h3><p>يختار النظام السائق صاحب أقل عدد من الطلبات النشطة، ويمكنك تغيير السائق يدويًا أو إعادة الإسناد لطلب واحد في أي وقت.</p><h3>كيف تُحسب وتُوزَّع الأرباح؟</h3><p>تُخصم نسبة المنصة من قيمة الطلبات المسلّمة، ويُوزَّع الباقي على السائقين حسب نسبهم المُدخلة لكل منهم، مع عرض تفصيل في صندوق الأرباح.</p><h3>ماذا يحدث عند مسح البيانات؟</h3><p>زر «مسح كل البيانات» يحذف الطلبات والسائقين والإعدادات من التخزين المحلي بعد تأكيد، ولا يمكن استرجاعها إلا بإعادة الإدخال يدويًا.</p><h3>هل يمكن تحسين مسار التوصيل على الخريطة؟</h3><p>نعم، زر «تحسين المسار المختار» يعيد ترتيب نقاط كل سائق بأقرب جار انطلاقًا من مركز التوزيع ثم يعيد رسم مساراتها على كانفس.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var KEY="coop_bike_v1";
+var STATUS_AR={new:"جديد",assigned:"مُسند",preparing:"قيد التحضير",onroad:"في الطريق",delivered:"تم التسليم",cancelled:"ملغي"};
+var state={platformPct:15,orders:[],drivers:[],seqOrder:1,seqDriver:1};
+function $(id){return document.getElementById(id);}
+function load(){try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&typeof o==="object"){state.platformPct=Number(o.platformPct)||15;state.orders=Array.isArray(o.orders)?o.orders:[];state.drivers=Array.isArray(o.drivers)?o.drivers:[];state.seqOrder=Number(o.seqOrder)||state.orders.length+1||1;state.seqDriver=Number(o.seqDriver)||state.drivers.length+1||1;}}}catch(e){state={platformPct:15,orders:[],drivers:[],seqOrder:1,seqDriver:1};}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true;}catch(e){return false;}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function money(n){return (Math.round(Number(n)*100)/100).toFixed(2);}
+function toast(el,msg,ok){if(!el)return;el.textContent=msg;el.className=ok?"out app-succ":"out app-err";}
+function driverById(id){for(var i=0;i<state.drivers.length;i++){if(state.drivers[i].id===id)return state.drivers[i];}return null;}
+function ordersOfDriver(id){return state.orders.filter(function(o){return o.driverId===id&&o.status!=="cancelled"&&o.status!=="delivered";});}
+function renderSettings(){$("inpPlatformPct").value=state.platformPct;}
+function renderDrivers(){
+  var ul=$("listDrivers");ul.innerHTML="";
+  if(!state.drivers.length){ul.innerHTML='<li class="app-empty">لا يوجد سائقون بعد. أضف أول سائق.</li>';return;}
+  state.drivers.forEach(function(d){
+    var li=document.createElement("li");li.className="app-item";
+    var load=ordersOfDriver(d.id).length;
+    li.innerHTML='<div class="app-meta"><span class="app-badge ok">'+esc(d.name)+'</span><span class="app-badge">نسبة '+d.rate+'%</span><span class="app-badge">طلبات نشطة: '+load+'</span></div><div class="app-actions"><button type="button" class="sec" data-act="delDriver" data-id="'+d.id+'">حذف السائق</button></div>';
+    ul.appendChild(li);
+  });
+  var sel=$("selMapDriver");var prev=sel.value;sel.innerHTML='<option value="all">الكل</option>';
+  state.drivers.forEach(function(d){var o=document.createElement("option");o.value=String(d.id);o.textContent=d.name;sel.appendChild(o);});
+  sel.value=prev&&Array.prototype.some.call(sel.options,function(op){return op.value===prev;})?prev:"all";
+}
+function statusSel(cur){
+  var opts=["new","assigned","preparing","onroad","delivered","cancelled"];
+  var h='<select data-act="setStatus">';
+  opts.forEach(function(s){h+='<option value="'+s+'"'+(s===cur?" selected":"")+'">'+STATUS_AR[s]+'</option>';});
+  return h+"</select>";
+}
+function assignSel(cur){
+  var h='<select data-act="assign"><option value="">اختر السائق</option>';
+  state.drivers.forEach(function(d){h+='<option value="'+d.id+'"'+(String(cur)===String(d.id)?" selected":"")+'>'+esc(d.name)+'</option>';});
+  return h+"</select>";
+}
+function renderOrders(){
+  var ul=$("listOrders");ul.innerHTML="";
+  var f=$("selFilterStatus").value;
+  var list=state.orders.filter(function(o){return f==="all"||o.status===f;});
+  if(!list.length){$("msgEmptyOrders").textContent=state.orders.length?"لا توجد طلبات بهذه الحالة.":"لا توجد طلبات بعد. ابدأ بإضافة طلب من الأعلى.";$("msgEmptyOrders").className="out app-empty";return;}
+  $("msgEmptyOrders").textContent="";
+  list.forEach(function(o){
+    var d=driverById(o.driverId);
+    var li=document.createElement("li");li.className="app-item";
+    li.innerHTML='<div class="app-meta"><span class="app-badge ok">#'+o.id+'</span><span class="app-badge">'+esc(o.restaurant)+'</span><span class="app-badge">زبون: '+esc(o.customer)+'</span><span class="app-badge">'+esc(o.address)+'</span><span class="app-badge">'+money(o.amount)+' ر.س</span><span class="app-badge warn">'+STATUS_AR[o.status]+'</span><span class="app-badge">السائق: '+(d?esc(d.name):"—")+'</span></div><div class="app-actions">'+statusSel(o.status)+assignSel(o.driverId)+'<button type="button" class="sec" data-act="autoAssignOne" data-id="'+o.id+'">إسناد تلقائي</button><button type="button" class="sec" data-act="delOrder" data-id="'+o.id+'">حذف الطلب</button></div>';
+    ul.appendChild(li);
+  });
+}
+function autoAssign(order){
+  if(!state.drivers.length)return false;
+  var best=null,bestLoad=Infinity;
+  state.drivers.forEach(function(d){var l=ordersOfDriver(d.id).length;if(l<bestLoad){bestLoad=l;best=d;}});
+  if(!best)return false;
+  order.driverId=best.id;
+  if(order.status==="new")order.status="assigned";
+  return true;
+}
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy);}
+function nearestNeighbor(points,start){
+  if(!points.length)return[];
+  var rest=points.slice(),route=[],cur=start;
+  while(rest.length){var bi=0,bd=Infinity;for(var i=0;i<rest.length;i++){var d=dist(cur,rest[i]);if(d<bd){bd=d;bi=i;}}cur=rest[bi];route.push(cur);rest.splice(bi,1);}
+  return route;
+}
+function drawMap(){
+  var cv=$("mapCanvas"),ctx=cv.getContext("2d");
+  if(!ctx)return;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle="#10131a";ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.strokeStyle="rgba(212,175,55,0.25)";
+  for(var g=0;g<=10;g++){
+    var x=g*(cv.width/10),y=g*(cv.height/10);
+    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();
+  }
+  var sel=$("selMapDriver").value;
+  var hub={x:50,y:50};
+  function px(p){return{x:p.x/100*cv.width,y:p.y/100*cv.height};}
+  var colors=["#d4af37","#7ec8e3","#c97b63","#8fce8f","#c39bd3","#f0c27f"];
+  var active=state.orders.filter(function(o){return o.status!=="cancelled"&&o.status!=="delivered"&&o.driverId!=null;});
+  if(!active.length){
+    ctx.fillStyle="rgba(212,175,55,0.7)";ctx.font="16px sans-serif";ctx.textAlign="center";
+    ctx.fillText("لا توجد طلبات نشطة لعرضها",cv.width/2,cv.height/2);
+    var pend=state.orders.filter(function(o){return o.status!=="cancelled"&&o.status!=="delivered"&&o.driverId==null;});
+    pend.forEach(function(o){var p=px(o);ctx.fillStyle="#e6c35c";ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();});
+    $("msgMap").textContent=pend.length?"يوجد "+pend.length+" طلب بلا سائق. أسندها لتظهر مساراتها.":"الخريطة جاهزة. أضف طلباتًا وأسندها لسائقي الدراجات.";
+    return;
+  }
+  var groups={};
+  active.forEach(function(o){var k=String(o.driverId);if(!groups[k])groups[k]=[];groups[k].push(o);});
+  var idx=0;
+  Object.keys(groups).forEach(function(k){
+    if(sel!=="all"&&sel!==k)return;
+    var pts=groups[k].map(function(o){return{x:o.x,y:o.y,id:o.id};});
+    var route=nearestNeighbor(pts,hub);
+    var col=colors[idx%colors.length];idx++;
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2;
+    ctx.beginPath();var hp=px(hub);ctx.moveTo(hp.x,hp.y);
+    route.forEach(function(pt){var pp=px(pt);ctx.lineTo(pp.x,pp.y);});
+    ctx.stroke();
+    route.forEach(function(pt){var pp=px(pt);ctx.beginPath();ctx.arc(pp.x,pp.y,5,0,Math.PI*2);ctx.fill();ctx.font="11px sans-serif";ctx.fillText("#"+pt.id,pp.x+7,pp.y-7);});
+    ctx.fillStyle=col;ctx.fillRect(8,8+idx*16,10,10);ctx.fillText("سائق "+k+" ("+route.length+")",24,17+idx*16);
+  });
+  ctx.fillStyle="#d4af37";ctx.beginPath();var cp=px(hub);ctx.arc(cp.x,cp.y,7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#10131a";ctx.font="10px sans-serif";ctx.fillText("مركز",cp.x-10,cp.y+3);
+  $("msgMap").textContent="عرض المسارات مع ترتيب التوصيل بالمسافة القصيرة من مركز التوزيع.";
+}
+function calcProfits(){
+  var pct=Number(state.platformPct)||0;
+  var delivered=state.orders.filter(function(o){return o.status==="delivered";});
+  if(!delivered.length){$("msgProfits").textContent="لا توجد طلبات مسلّمة بعد لحساب الأرباح.";return;}
+  var sum=function(f){return delivered.reduce(function(a,o){return a+f(o);},0);};
+  var total= sum(function(o){return Number(o.amount)||0;});
+  var plat= total*pct/100;
+  var rest= total-plat;
+  var byDriver={};
+  delivered.forEach(function(o){
+    var d=driverById(o.driverId);
+    var rate=d?Number(d.rate):50;
+    var share=rest*rate/100;
+    var k=d?d.id:0;
+    if(!byDriver[k])byDriver[k]={name:d?d.name:"بدون سائق",rate:rate,share:0,count:0};
+    byDriver[k].share+=share;byDriver[k].count+=1;
+  });
+  var lines=["الإجمالي المُسلّم: "+money(total)+" ر.س | نسبة المنصة ("+pct+"%): "+money(plat)+" ر.س | باقي الموزّع على السائقين: "+money(rest)+" ر.س",""];
+  Object.keys(byDriver).forEach(function(k){var b=byDriver[k];lines.push(b.name+" — طلبات: "+b.count+" — نصيبه ("+b.rate+"%): "+money(b.share)+" ر.س");});
+  $("msgProfits").textContent=lines.join("\n");
+}
+function bind(){
+  $("btnSaveSettings").addEventListener("click",function(){
+    var v=Number($("inpPlatformPct").value);
+    if(isNaN(v)||v<0||v>90){toast($("msgSettings"),"أدخل نسبة صحيحة بين 0 و90",false);return;}
+    state.platformPct=v;var ok=save();toast($("msgSettings"),ok?"تم حفظ الإعدادات.":"تعذّر الحفظ في المتصفح.",ok);
+  });
+  $("btnAddOrder").addEventListener("click",function(){
+    var r=$("inpRestaurant").value.trim(),c=$("inpCustomer").value.trim(),a=$("inpAddress").value.trim();
+    var amt=Number($("inpAmount").value),x=Number($("inpX").value),y=Number($("inpY").value);
+    if(!r||!c||!a){toast($("msgOrders"),"املأ اسم المطعم والزبون والعنوان.",false);return;}
+    if(isNaN(amt)||amt<=0){toast($("msgOrders"),"قيمة الطلب يجب أن تكون أكبر من صفر.",false);return;}
+    if(isNaN(x)||x<0||x>100||isNaN(y)||y<0||y>100){toast($("msgOrders"),"إحداثيات الخريطة بين 0 و100.",false);return;}
+    var o={id:state.seqOrder++,restaurant:r,customer:c,address:a,amount:amt,x:x,y:y,status:"new",driverId:null,created:Date.now()};
+    state.orders.push(o);var ok=save();
+    $("inpRestaurant").value="";$("inpCustomer").value="";$("inpAddress").value="";$("inpAmount").value="";
+    renderOrders();drawMap();
+    toast($("msgOrders"),ok?"تمت إضافة الطلب #"+o.id+" بحالة جديد.":"تعذّر الحفظ، لكن الطلب أضيف لهذه الجلسة.",true);
+  });
+  $("btnAddDriver").addEventListener("click",function(){
+    var n=$("inpDriverName").value.trim(),r=Number($("inpDriverRate").value);
+    if(!n){toast($("msgDrivers"),"اكتب اسم السائق أولًا.",false);return;}
+    if(isNaN(r)||r<10||r>80){toast($("msgDrivers"),"نسبة السائق بين 10 و80%.",false);return;}
+    state.drivers.push({id:state.seqDriver++,name:n,rate:r,created:Date.now()});
+    var ok=save();$("inpDriverName").value="";
+    renderDrivers();toast($("msgDrivers"),ok?"تمت إضافة السائق "+n+".":"تعذّر الحفظ.",ok);
+  });
+  $("btnAutoAssignAll").addEventListener("click",function(){
+    if(!state.drivers.length){toast($("msgOrders"),"أضف سائقين أولًا للإسناد التلقائي.",false);return;}
+    var n=0;
+    state.orders.forEach(function(o){if(o.driverId==null&&o.status!=="cancelled"&&o.status!=="delivered"){if(autoAssign(o))n++;}});
+    var ok=save();renderOrders();renderDrivers();drawMap();
+    toast($("msgOrders"),ok?"تم إسناد "+n+" طلب لأقل السائقين حملًا.":"تعذّر الحفظ بعد الإسناد.",ok);
+  });
+  $("btnCalcProfits").addEventListener("click",calcProfits);
+  $("btnClearDelivered").addEventListener("click",function(){
+    var before=state.orders.length;
+    state.orders=state.orders.filter(function(o){return o.status!=="delivered";});
+    var ok=save();renderOrders();drawMap();
+    toast($("msgProfits"),ok?"حُذف "+(before-state.orders.length)+" طلب مُسلّم.":"تعذّر الحفظ.",ok);
+  });
+  $("btnResetAll").addEventListener("click",function(){
+    if(!confirm("سيتم مسح كل الطلبات والسائقين. متابعة؟"))return;
+    state={platformPct:15,orders:[],drivers:[],seqOrder:1,seqDriver:1};
+    try{localStorage.removeItem(KEY);}catch(e){}
+    renderSettings();renderDrivers();renderOrders();drawMap();
+    $("msgProfits").textContent="تم مسح كل البيانات.";
+  });
+  $("btnOptimize").addEventListener("click",function(){
+    var sel=$("selMapDriver").value;
+    var driverId=sel==="all"?null:Number(sel);
+    var groups={};
+    state.orders.filter(function(o){return o.driverId!=null&&o.status!=="cancelled"&&o.status!=="delivered"&&(driverId==null||o.driverId===driverId);}).forEach(function(o){
+      var k=String(o.driverId);if(!groups[k])groups[k]=[];groups[k].push({x:o.x,y:o.y,id:o.id});
+    });
+    var keys=Object.keys(groups);
+    if(!keys.length){$("msgMap").textContent="لا توجد مسارات نشطة لتحسينها.";return;}
+    keys.forEach(function(k){
+      var pts=nearestNeighbor(groups[k],{x:50,y:50});
+      var byId={};pts.forEach(function(p,i){byId[p.id]=i;});
+      state.orders.forEach(function(o){if(byId[o.id]!=null)o.seq=byId[o.id];});
+    });
+    save();drawMap();
+    $("msgMap").textContent="تم تحسين المسارات بأقرب جار لكل سائق محدد.";
+  });
+  $("btnRedrawMap").addEventListener("click",function(){drawMap();$("msgMap").textContent="تمت إعادة رسم الخريطة.";});
+  $("selFilterStatus").addEventListener("change",renderOrders);
+  $("selMapDriver").addEventListener("change",function(){drawMap();});
+  $("listOrders").addEventListener("change",function(ev){
+    var t=ev.target;var li=t.closest("li");if(!li)return;
+    var btns=li.querySelector("[data-act=delOrder]");if(!btns)return;
+    var id=Number(btns.getAttribute("data-id"));
+    var o=state.orders.filter(function(x){return x.id===id;})[0];if(!o)return;
+    if(t.getAttribute("data-act")==="setStatus"){o.status=t.value;save();renderOrders();renderDrivers();drawMap();}
+    if(t.getAttribute("data-act")==="assign"){var v=t.value;o.driverId=v?Number(v):null;if(o.driverId!=null&&o.status==="new")o.status="assigned";save();renderOrders();renderDrivers();drawMap();}
+  });
+  $("listOrders").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-act]");if(!b)return;
+    var act=b.getAttribute("data-act"),id=Number(b.getAttribute("data-id"));
+    if(act==="delOrder"){state.orders=state.orders.filter(function(o){return o.id!==id;});save();renderOrders();renderDrivers();drawMap();toast($("msgOrders"),"تم حذف الطلب #"+id+".",true);}
+    if(act==="autoAssignOne"){
+      var o=state.orders.filter(function(x){return x.id===id;})[0];if(!o)return;
+      if(!state.drivers.length){toast($("msgOrders"),"لا يوجد سائقون.",false);return;}
+      autoAssign(o);save();renderOrders();renderDrivers();drawMap();toast($("msgOrders"),"تم إسناد الطلب #"+id+" تلقائيًا.",true);
+    }
+  });
+  $("listDrivers").addEventListener("click",function(ev){
+    var b=ev.target.closest("button[data-act]");if(!b)return;
+    var id=Number(b.getAttribute("data-id"));
+    if(b.getAttribute("data-act")==="delDriver"){
+      state.drivers=state.drivers.filter(function(d){return d.id!==id;});
+      state.orders.forEach(function(o){if(o.driverId===id)o.driverId=null;});
+      save();renderDrivers();renderOrders();drawMap();toast($("msgDrivers"),"تم حذف السائق وفراغ طلباته.",true);
+    }
+  });
+}
+load();bind();renderSettings();renderDrivers();renderOrders();drawMap();
+})();
+</script>
+</body>
+</html>
