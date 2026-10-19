@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدير إعدادات مشغّل Minecraft - نسخ، تعديلات، ذاكرة، إصدارات | MDM1</title>
+<meta name="description" content="تطبيق عربي يعمل في المتصفح لإدارة نسخ Minecraft: إنشاء ملفات نسخ، ربط إصدارات اللعبة ومسارات Java وحصص الذاكرة، ترتيب التعديلات مع التفعيل والتوافق، تسجيل تحديثات الإصدارات، وتصدير/استيراد JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/minecraft-launcher-config-manager.html">
+<meta property="og:title" content="مدير إعدادات مشغّل Minecraft - نسخ، تعديلات، ذاكرة، إصدارات">
+<meta property="og:description" content="تطبيق عربي يعمل في المتصفح لإدارة نسخ Minecraft: إنشاء ملفات نسخ، ربط إصدارات اللعبة ومسارات Java وحصص الذاكرة، ترتيب التعديلات مع التفعيل والتوافق، تسجيل تحديثات الإصدارات، وتصدير/استيراد JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/minecraft-launcher-config-manager.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; }
+.app .card { margin-bottom: 14px; }
+.app .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 10px; }
+.app .row > * { flex: 1 1 180px; min-width: 150px; }
+.app label { font-weight: 600; margin-bottom: 4px; display: block; }
+.app input, .app select, .app textarea { width: 100%; padding: 8px 10px; background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); border-radius: 4px; }
+.app button { padding: 8px 14px; white-space: nowrap; }
+.app .out { background: rgba(0,0,0,0.2); border: 1px solid var(--gold-dim); border-radius: 4px; padding: 10px; min-height: 50px; }
+.app .empty { text-align: center; color: var(--gold-dim); padding: 16px; }
+.app .instance-item { display: flex; justify-content: space-between; gap: 10px; padding: 10px; margin: 6px 0; background: rgba(255,215,0,0.05); border: 1px solid var(--gold-dim); border-radius: 4px; }
+.app .instance-name { font-weight: 600; }
+.app .instance-meta { font-size: 0.85em; color: var(--gold-dim); }
+.app .mod-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px; margin: 6px 0; background: rgba(0,0,0,0.2); border: 1px solid var(--gold-dim); border-radius: 4px; }
+.app .mod-main { display: flex; flex-direction: column; gap: 2px; }
+.app .mod-meta { font-size: 0.85em; color: var(--gold-dim); }
+.app .mod-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.app .mod-actions button { padding: 4px 8px; font-size: 0.8em; }
+.app .badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75em; font-weight: 600; border: 1px solid var(--gold-dim); }
+.app .badge-on { background: rgba(0,128,0,0.25); color: #4ade80; border-color: #4ade80; }
+.app .badge-off { background: rgba(128,0,0,0.25); color: #f87171; border-color: #f87171; }
+.app .badge-ok { background: rgba(0,100,200,0.25); color: #60a5fa; border-color: #60a5fa; }
+.app .badge-bad { background: rgba(200,100,0,0.25); color: #fbbf24; border-color: #fbbf24; }
+.app .status-ok { color: #4ade80; }
+.app .status-err { color: #f87171; }
+@media (max-width: 640px) { .app .row > * { flex: 1 1 100%; } .app .mod-item { grid-template-columns: 1fr; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مدير إعدادات مشغّل Minecraft", "url": "https://mdm1.org/apps/minecraft-launcher-config-manager.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أنشئ نسخة Minecraft جديدة؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط \"إضافة نسخة جديدة\"، ثم املأ اسم النسخة وإصدار اللعبة ومسار Java والذاكرة، ثم اضغط \"حفظ النسخة\"."}}, {"@type": "Question", "name": "كيف أرتّب التعديلات (Mods)؟", "acceptedAnswer": {"@type": "Answer", "text": "داخل تفاصيل النسخة استخدم أزرار ▲ و ▼ بجانب كل تعديل لتغيير ترتيبه، وأزرار التفعيل/التوافق لتغيير حالته."}}, {"@type": "Question", "name": "كيف أسجّل تحديث إصدار؟", "acceptedAnswer": {"@type": "Answer", "text": "في قسم \"سجل تحديثات الإصدارات\" اضغط \"إضافة تحديث\"، اختر الإصدار والتاريخ وأضف ملاحظات، ثم احفظ."}}, {"@type": "Question", "name": "كيف أنقل البيانات إلى جهاز آخر؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط \"تصدير جميع البيانات (JSON)\"، انسخ النص من الحقل، ثم في الجهاز الآخر استخدم \"استيراد من ملف JSON\" بعد حفظ النص كملف JSON."}}, {"@type": "Question", "name": "أين تُحفظ البيانات وما مدى أمانها؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في localStorage في متصفحك فقط، ولا تُرسل لأي خادم. يمكنك مسحها بزر \"مسح جميع البيانات\"."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مدير إعدادات مشغّل Minecraft</h1>
+  <p class="page-sub">تطبيق عربي يعمل في المتصفح لإدارة نسخ Minecraft: إنشاء ملفات نسخ، ربط إصدارات اللعبة ومسارات Java وحصص الذاكرة، ترتيب التعديلات مع التفعيل والتوافق، تسجيل تحديثات الإصدارات، وتصدير/استيراد JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p dir="rtl">إجابة سريعة: هذا التطبيق يدير إعدادات مشغّل Minecraft بالكامل داخل المتصفح، إذ يمكنك إنشاء ملفات نسخ (Instances) وربطها بإصدارات اللعبة ومسارات Java وحصص الذاكرة، وترتيب قوائم التعديلات (Mods) مع حالات التفعيل والتوافق، وتسجيل آخر تحديثات الإصدارات محليًا. تُحفظ جميع البيانات في localStorage مع إمكانية تصدير واستيراد كامل كملفات JSON، وواجهة عربية مع دعم تعدد اللغات.</p>
+
+<div class="app" dir="rtl" id="app-root">
+  <div class="card">
+    <div class="row">
+      <h2 id="h-instances">إدارة النسخ (Instances)</h2>
+      <button id="btn-add-instance" class="button">إضافة نسخة جديدة</button>
+    </div>
+    <div id="instance-list" class="out" aria-live="polite"></div>
+  </div>
+
+  <div class="card" id="instance-detail" hidden>
+    <div class="row">
+      <h2 id="h-instance-detail">تفاصيل النسخة: <span id="detail-instance-name"></span></h2>
+      <button id="btn-close-detail" class="button sec">إغلاق</button>
+    </div>
+    <div class="row">
+      <label for="inst-name" id="lbl-inst-name">اسم النسخة</label>
+      <input type="text" id="inst-name" placeholder="مثال: survival-1.20.1">
+    </div>
+    <div class="row">
+      <label for="inst-version" id="lbl-inst-version">إصدار اللعبة</label>
+      <select id="inst-version"></select>
+    </div>
+    <div class="row">
+      <label for="inst-java-path" id="lbl-inst-java">مسار Java التنفيذي</label>
+      <input type="text" id="inst-java-path" placeholder="مثال: /usr/lib/jvm/java-21/bin/java">
+    </div>
+    <div class="row">
+      <label for="inst-min-mem" id="lbl-inst-min">الذاكرة الدنيا (MB)</label>
+      <input type="number" id="inst-min-mem" min="256" max="32768" step="256" value="1024">
+    </div>
+    <div class="row">
+      <label for="inst-max-mem" id="lbl-inst-max">الذاكرة القصوى (MB)</label>
+      <input type="number" id="inst-max-mem" min="512" max="32768" step="256" value="4096">
+    </div>
+    <div class="row">
+      <label for="inst-jvm-args" id="lbl-inst-args">وسائط JVM إضافية</label>
+      <textarea id="inst-jvm-args" rows="3" placeholder="-XX:+UseG1GC"></textarea>
+    </div>
+    <div class="row">
+      <button id="btn-save-instance" class="button">حفظ النسخة</button>
+      <button id="btn-delete-instance" class="button sec">حذف النسخة</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="row">
+      <h3 id="h-mods" style="margin:0;">التعديلات (Mods)</h3>
+      <button id="btn-add-mod" class="button">إضافة تعديل</button>
+    </div>
+    <div id="mod-form" hidden>
+      <div class="row">
+        <label for="mod-name" id="lbl-mod-name">اسم التعديل</label>
+        <input type="text" id="mod-name" placeholder="Sodium">
+      </div>
+      <div class="row">
+        <label for="mod-version" id="lbl-mod-version">إصدار التعديل</label>
+        <input type="text" id="mod-version" placeholder="0.5.8">
+      </div>
+      <div class="row">
+        <label for="mod-author" id="lbl-mod-author">المؤلف</label>
+        <input type="text" id="mod-author" placeholder="CaffeineMC">
+      </div>
+      <div class="row">
+        <label for="mod-enabled" id="lbl-mod-enabled">مفعّل</label>
+        <input type="checkbox" id="mod-enabled" checked>
+      </div>
+      <div class="row">
+        <label for="mod-compatible" id="lbl-mod-compatible">متوافق</label>
+        <input type="checkbox" id="mod-compatible" checked>
+      </div>
+      <div class="row">
+        <label for="mod-compat-versions" id="lbl-mod-compat-versions">إصدارات متوافقة (مفصولة بفواصل)</label>
+        <input type="text" id="mod-compat-versions" placeholder="1.20.1,1.20.2">
+      </div>
+      <div class="row">
+        <label for="mod-notes" id="lbl-mod-notes">ملاحظات</label>
+        <textarea id="mod-notes" rows="2"></textarea>
+      </div>
+      <div class="row">
+        <button id="btn-save-mod" class="button">حفظ التعديل</button>
+        <button id="btn-cancel-mod" class="button sec">إلغاء</button>
+      </div>
+    </div>
+    <div id="mod-list" class="out"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <h2 id="h-versions">الإصدارات (Versions)</h2>
+      <button id="btn-add-version" class="button">إضافة إصدار</button>
+    </div>
+    <div id="version-form" hidden>
+      <div class="row">
+        <label for="ver-id" id="lbl-ver-id">معرف الإصدار</label>
+        <input type="text" id="ver-id" placeholder="1.20.1">
+      </div>
+      <div class="row">
+        <label for="ver-type" id="lbl-ver-type">النوع</label>
+        <select id="ver-type">
+          <option value="release">رسمي</option>
+          <option value="snapshot">تطوير</option>
+          <option value="modded">معدل</option>
+          <option value="old_beta">Beta قديم</option>
+          <option value="old_alpha">Alpha قديم</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="ver-date" id="lbl-ver-date">تاريخ الإصدار</label>
+        <input type="date" id="ver-date">
+      </div>
+      <div class="row">
+        <label for="ver-notes" id="lbl-ver-notes">ملاحظات</label>
+        <textarea id="ver-notes" rows="2"></textarea>
+      </div>
+      <div class="row">
+        <button id="btn-save-version" class="button">حفظ الإصدار</button>
+        <button id="btn-cancel-version" class="button sec">إلغاء</button>
+      </div>
+    </div>
+    <div id="version-list" class="out"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <h2 id="h-updates">سجل تحديثات الإصدارات</h2>
+      <button id="btn-add-update" class="button">إضافة تحديث</button>
+    </div>
+    <div id="update-form" hidden>
+      <div class="row">
+        <label for="upd-version" id="lbl-upd-version">الإصدار</label>
+        <select id="upd-version"></select>
+      </div>
+      <div class="row">
+        <label for="upd-date" id="lbl-upd-date">تاريخ التحديث</label>
+        <input type="date" id="upd-date">
+      </div>
+      <div class="row">
+        <label for="upd-notes" id="lbl-upd-notes">ملاحظات</label>
+        <textarea id="upd-notes" rows="2"></textarea>
+      </div>
+      <div class="row">
+        <button id="btn-save-update" class="button">حفظ التحديث</button>
+        <button id="btn-cancel-update" class="button sec">إلغاء</button>
+      </div>
+    </div>
+    <div id="update-list" class="out"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <h2 id="h-backup">النسخ الاحتياطي والاستعادة</h2>
+    </div>
+    <div class="row">
+      <button id="btn-export-all" class="button">تصدير جميع البيانات (JSON)</button>
+      <button id="btn-copy-export" class="button sec">نسخ JSON</button>
+      <button id="btn-import-trigger" class="button sec">استيراد من ملف JSON</button>
+      <input type="file" id="import-file" accept="application/json,.json" hidden>
+      <button id="btn-clear-all" class="button sec">مسح جميع البيانات</button>
+    </div>
+    <textarea id="export-data" rows="8" placeholder="سيظهر JSON هنا بعد التصدير"></textarea>
+    <div id="backup-status" class="out" aria-live="polite"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <label for="lang-select" id="lbl-lang">اللغة</label>
+      <select id="lang-select">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+  <div id="app-status" class="out" aria-live="polite"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أنشئ نسخة Minecraft جديدة؟</h3><p>اضغط &quot;إضافة نسخة جديدة&quot;، ثم املأ اسم النسخة وإصدار اللعبة ومسار Java والذاكرة، ثم اضغط &quot;حفظ النسخة&quot;.</p><h3>كيف أرتّب التعديلات (Mods)؟</h3><p>داخل تفاصيل النسخة استخدم أزرار ▲ و ▼ بجانب كل تعديل لتغيير ترتيبه، وأزرار التفعيل/التوافق لتغيير حالته.</p><h3>كيف أسجّل تحديث إصدار؟</h3><p>في قسم &quot;سجل تحديثات الإصدارات&quot; اضغط &quot;إضافة تحديث&quot;، اختر الإصدار والتاريخ وأضف ملاحظات، ثم احفظ.</p><h3>كيف أنقل البيانات إلى جهاز آخر؟</h3><p>اضغط &quot;تصدير جميع البيانات (JSON)&quot;، انسخ النص من الحقل، ثم في الجهاز الآخر استخدم &quot;استيراد من ملف JSON&quot; بعد حفظ النص كملف JSON.</p><h3>أين تُحفظ البيانات وما مدى أمانها؟</h3><p>تُحفظ في localStorage في متصفحك فقط، ولا تُرسل لأي خادم. يمكنك مسحها بزر &quot;مسح جميع البيانات&quot;.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const KEY = 'mcLaunchMgr:v1';
+  const I18N = {
+    ar: { addInst:'إضافة نسخة جديدة', close:'إغلاق', name:'اسم النسخة', version:'إصدار اللعبة', none:'-- لا يوجد --', java:'مسار Java التنفيذي', minMem:'الذاكرة الدنيا (MB)', maxMem:'الذاكرة القصوى (MB)', args:'وسائط JVM إضافية', saveInst:'حفظ النسخة', delInst:'حذف النسخة', mods:'التعديلات (Mods)', addMod:'إضافة تعديل', saveMod:'حفظ التعديل', cancel:'إلغاء', modName:'اسم التعديل', modVer:'إصدار التعديل', author:'المؤلف', enabled:'مفعّل', compatible:'متوافق', compatVersions:'إصدارات متوافقة (مفصولة بفواصل)', notes:'ملاحظات', versions:'الΉصدارات (Versions)', addVer:'إضافة إصدار', verId:'معرف الإصدار', verType:'النوع', verDate:'تاريخ الإصدار', updates:'سجل تحديثات الإصدارات', addUpd:'إضافة تحديث', updVer:'الإصدار', updDate:'تاريخ التحديث', backup:'النسخ الاحتياطي والاستعادة', exportAll:'تصدير جميع البيانات (JSON)', copy:'نسخ JSON', importFile:'استيراد من ملف JSON', clearAll:'مسح جميع البيانات', lang:'اللغة', noInst:'لا توجد نسخ. اضغط "إضافة نسخة جديدة".', noMods:'لا توجد تعديلات.', noVer:'لا توجد إصدارات.', noUpd:'لا توجد تحديثات.', instSaved:'تم حفظ النسخة.', instDeleted:'تم حذف النسخة.', instAdded:'تمت إضافة نسخة.', modSaved:'تم حفظ التعديل.', modDeleted:'تم حذف التعديل.', verSaved:'تم حفظ الإصدار.', verDeleted:'تم حذف الإصدار.', updSaved:'تم حفظ التحديث.', updDeleted:'تم حذف التحديث.', exported:'تم التصدير إلى الحقل.', copied:'تم النسخ.', imported:'تم الاستيراد بنجاح.', cleared:'تم مسح جميع البيانات.', needName:'أدخل اسم النسخة.', needModName:'أدخل اسم التعديل.', needVerId:'أدخل معرف الإصدار.', needUpdVer:'اختر إصدارًا.', badMem:'الذاكرة يجب أن تكون أرقامًا صحيحة (256-32768).', badJson:'JSON غير صالح.', confirmDelInst:'حذف هذه النسخة؟', confirmDelMod:'حذف هذا التعديل؟', confirmDelVer:'حذف هذا الإصدار؟', confirmDelUpd:'حذف هذا التحديث؟', confirmImport:'استبدال جميع البيانات بالبيانات المستوردة؟', confirmClear:'مسح جميع البيانات (نسخ، تعديلات، إصدارات، تحديثات)؟', open:'فتح', up:'▲', down:'▼', edit:'تعديل', del:'حذف', on:'مفعّل', off:'معطّل', ok:'متوافق', bad:'تعارض', unknown:'غير محدد', release:'رسمي', snapshot:'تطوير', modded:'معدل', oldBeta:'Beta قديم', oldAlpha:'Alpha قديم', detail:'تفاصيل النسخة: ', selectVer:'-- اختر إصدارًا --', exportPh:'سيظهر JSON هنا بعد التصدير' },
+    en: { addInst:'Add Instance', close:'Close', name:'Instance Name', version:'Game Version', none:'-- None --', java:'Java Executable Path', minMem:'Min Memory (MB)', maxMem:'Max Memory (MB)', args:'Extra JVM Arguments', saveInst:'Save Instance', delInst:'Delete Instance', mods:'Mods', addMod:'Add Mod', saveMod:'Save Mod', cancel:'Cancel', modName:'Mod Name', modVer:'Mod Version', author:'Author', enabled:'Enabled', compatible:'Compatible', compatVersions:'Compatible Versions (comma separated)', notes:'Notes', versions:'Versions', addVer:'Add Version', verId:'Version ID', verType:'Type', verDate:'Release Date', updates:'Version Update Log', addUpd:'Add Update', updVer:'Version', updDate:'Update Date', backup:'Backup and Restore', exportAll:'Export All Data (JSON)', copy:'Copy JSON', importFile:'Import from JSON File', clearAll:'Clear All Data', lang:'Language', noInst:'No instances. Click "Add Instance".', noMods:'No mods.', noVer:'No versions.', noUpd:'No updates.', instSaved:'Instance saved.', instDeleted:'Instance deleted.', instAdded:'Instance added.', modSaved:'Mod saved.', modDeleted:'Mod deleted.', verSaved:'Version saved.', verDeleted:'Version deleted.', updSaved:'Update saved.', updDeleted:'Update deleted.', exported:'Exported to field.', copied:'Copied.', imported:'Imported successfully.', cleared:'All data cleared.', needName:'Enter instance name.', needModName:'Enter mod name.', needVerId:'Enter version ID.', needUpdVer:'Select a version.', badMem:'Memory must be valid numbers (256-32768).', badJson:'Invalid JSON.', confirmDelInst:'Delete this instance?', confirmDelMod:'Delete this mod?', confirmDelVer:'Delete this version?', confirmDelUpd:'Delete this update?', confirmImport:'Replace all data with imported data?', confirmClear:'Clear all data (instances, mods, versions, updates)?', open:'Open', up:'▲', down:'▼', edit:'Edit', del:'Delete', on:'Enabled', off:'Disabled', ok:'Compatible', bad:'Conflict', unknown:'Unknown', release:'Release', snapshot:'Snapshot', modded:'Modded', oldBeta:'Old Beta', oldAlpha:'Old Alpha', detail:'Instance details: ', selectVer:'-- Select version --', exportPh:'JSON will appear here after export' }
+  };
+
+  let state = { lang: 'ar', instances: [], versions: [], updates: [], selected: null };
+  let editingModId = null;
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => { const d = document.createElement('div'); d.textContent = v == null ? '' : String(v); return d.innerHTML; };
+  const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || I18N.ar[k] || k;
+  const uid = (p) => p + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { setStatus(t('badJson'), true); }
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        state.lang = p.lang || 'ar';
+        state.instances = Array.isArray(p.instances) ? p.instances : [];
+        state.versions = Array.isArray(p.versions) ? p.versions : [];
+        state.updates = Array.isArray(p.updates) ? p.updates : [];
+        state.selected = p.selected || null;
+      }
+    } catch (e) { state = { lang: 'ar', instances: [], versions: [], updates: [], selected: null }; }
+  }
+
+  function setStatus(msg, err) {
+    const el = $('app-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'out ' + (err ? 'status-err' : 'status-ok');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(() => { el.textContent = ''; el.className = 'out'; }, 3000);
+  }
+  function setBackupStatus(msg, err) { const el = $('backup-status'); if (!el) return; el.textContent = msg; el.className = 'out ' + (err ? 'status-err' : 'status-ok'); }
+
+  function applyLang() {
+    document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = state.lang;
+    $('h-instances').textContent = t('versions') === t('versions') ? 'إدارة النسخ (Instances)' : 'Instances';
+    // labels
+    $('lbl-inst-name').textContent = t('name');
+    $('inst-name').placeholder = t('name');
+    $('lbl-inst-version').textContent = t('version');
+    $('lbl-inst-java').textContent = t('java');
+    $('inst-java-path').placeholder = t('java');
+    $('lbl-inst-min').textContent = t('minMem');
+    $('lbl-inst-max').textContent = t('maxMem');
+    $('lbl-inst-args').textContent = t('args');
+    $('inst-jvm-args').placeholder = t('args');
+    $('btn-save-instance').textContent = t('saveInst');
+    $('btn-delete-instance').textContent = t('delInst');
+    $('btn-close-detail').textContent = t('close');
+    $('h-mods').textContent = t('mods');
+    $('btn-add-mod').textContent = t('addMod');
+    $('lbl-mod-name').textContent = t('modName');
+    $('mod-name').placeholder = t('modName');
+    $('lbl-mod-version').textContent = t('modVer');
+    $('mod-version').placeholder = t('modVer');
+    $('lbl-mod-author').textContent = t('author');
+    $('mod-author').placeholder = t('author');
+    $('lbl-mod-enabled').textContent = t('enabled');
+    $('lbl-mod-compatible').textContent = t('compatible');
+    $('lbl-mod-compat-versions').textContent = t('compatVersions');
+    $('mod-compat-versions').placeholder = t('compatVersions');
+    $('lbl-mod-notes').textContent = t('notes');
+    $('btn-save-mod').textContent = t('saveMod');
+    $('btn-cancel-mod').textContent = t('cancel');
+    $('h-versions').textContent = t('versions');
+    $('btn-add-version').textContent = t('addVer');
+    $('lbl-ver-id').textContent = t('verId');
+    $('ver-id').placeholder = t('verId');
+    $('lbl-ver-type').textContent = t('verType');
+    $('lbl-ver-date').textContent = t('verDate');
+    $('lbl-ver-notes').textContent = t('notes');
+    $('btn-save-version').textContent = t('saveMod') === t('saveMod') ? t('saveInst').replace('نسخة','إصدار') : t('saveInst');
+    $('btn-cancel-version').textContent = t('cancel');
+    $('h-updates').textContent = t('updates');
+    $('btn-add-update').textContent = t('addUpd');
+    $('lbl-upd-version').textContent = t('updVer');
+    $('lbl-upd-date').textContent = t('updDate');
+    $('lbl-upd-notes').textContent = t('notes');
+    $('btn-save-update').textContent = t('saveInst').replace('نسخة','تحديث');
+    $('btn-cancel-update').textContent = t('cancel');
+    $('h-backup').textContent = t('backup');
+    $('btn-export-all').textContent = t('exportAll');
+    $('btn-copy-export').textContent = t('copy');
+    $('btn-import-trigger').textContent = t('importFile');
+    $('btn-clear-all').textContent = t('clearAll');
+    $('export-data').placeholder = t('exportPh');
+    $('lbl-lang').textContent = t('lang');
+    $('btn-add-instance').textContent = t('addInst');
+    // fix headings properly
+    $('h-instances').textContent = state.lang === 'ar' ? 'إدارة النسخ (Instances)' : 'Instances';
+    $('h-versions').textContent = state.lang === 'ar' ? 'الإصدارات (Versions)' : 'Versions';
+    $('h-updates').textContent = state.lang === 'ar' ? 'سجل تحديثات الإصدارات' : 'Version Update Log';
+    $('h-backup').textContent = state.lang === 'ar' ? 'النسخ الاحتياطي والاستعادة' : 'Backup and Restore';
+    $('btn-save-version').textContent = state.lang === 'ar' ? 'حفظ الإصدار' : 'Save Version';
+    $('btn-save-update').textContent = state.lang === 'ar' ? 'حفظ التحديث' : 'Save Update';
+    $('btn-add-version').textContent = t('addVer');
+    $('btn-add-update').textContent = t('addUpd');
+    $('detail-instance-name').parentElement && ($('h-instance-detail').firstChild.textContent = t('detail'));
+  }
+
+  function renderInstances() {
+    const c = $('instance-list');
+    if (!state.instances.length) { c.innerHTML = `<div class="empty">${esc(t('noInst'))}</div>`; return; }
+    c.innerHTML = state.instances.map((inst) => `
+      <div class="instance-item" id="inst-row-${esc(inst.id)}">
+        <div>
+          <div class="instance-name">${esc(inst.name)}</div>
+          <div class="instance-meta">${esc(inst.versionId || t('unknown'))} · ${esc(inst.minMem || 0)}-${esc(inst.maxMem || 0)}MB · ${new Date(inst.updated || inst.created || Date.now()).toLocaleString(state.lang)}</div>
+        </div>
+        <div><button class="button sec" id="inst-open-${esc(inst.id)}">${esc(t('open'))}</button></div>
+      </div>
+    `).join('');
+    state.instances.forEach((inst) => {
+      const b = $('inst-open-' + inst.id);
+      if (b) b.addEventListener('click', () => selectInstance(inst.id));
+    });
+  }
+
+  function selectInstance(id) {
+    state.selected = id;
+    save();
+    renderAll();
+    const d = $('instance-detail');
+    d.hidden = false;
+    try { d.scrollIntoView({ behavior: 'smooth' }); } catch (e) {}
+  }
+
+  function renderDetail() {
+    const d = $('instance-detail');
+    const inst = state.instances.find((x) => x.id === state.selected);
+    if (!inst) { d.hidden = true; return; }
+    d.hidden = false;
+    $('detail-instance-name').textContent = inst.name;
+    $('inst-name').value = inst.name || '';
+    // version select
+    const vs = $('inst-version');
+    const current = inst.versionId || '';
+    vs.innerHTML = `<option value="">${esc(t('selectVer'))}</option>` + state.versions.map((v) => `<option value="${esc(v.id)}">${esc(v.id)} (${esc(typeLabel(v.type))})</option>`).join('');
+    vs.value = current;
+    $('inst-java-path').value = inst.javaPath || '';
+    $('inst-min-mem').value = inst.minMem || 1024;
+    $('inst-max-mem').value = inst.maxMem || 4096;
+    $('inst-jvm-args').value = inst.jvmArgs || '';
+    renderMods(inst);
+  }
+
+  function typeLabel(type) {
+    const map = { release: t('release'), snapshot: t('snapshot'), modded: t('modded'), old_beta: t('oldBeta'), old_alpha: t('oldAlpha') };
+    return map[type] || type || '';
+  }
+
+  function saveInstance() {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    if (!inst) return;
+    const name = $('inst-name').value.trim();
+    if (!name) { setStatus(t('needName'), true); return; }
+    const minM = parseInt($('inst-min-mem').value, 10);
+    const maxM = parseInt($('inst-max-mem').value, 10);
+    if (isNaN(minM) || isNaN(maxM) || minM < 256 || maxM > 32768 || minM > maxM) { setStatus(t('badMem'), true); return; }
+    inst.name = name;
+    inst.versionId = $('inst-version').value;
+    inst.javaPath = $('inst-java-path').value.trim();
+    inst.minMem = minM;
+    inst.maxMem = maxM;
+    inst.jvmArgs = $('inst-jvm-args').value.trim();
+    inst.updated = Date.now();
+    save();
+    renderAll();
+    setStatus(t('instSaved'), false);
+  }
+
+  function deleteInstance() {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    if (!inst) return;
+    if (!confirm(t('confirmDelInst'))) return;
+    state.instances = state.instances.filter((x) => x.id !== state.selected);
+    state.selected = null;
+    save();
+    renderAll();
+    setStatus(t('instDeleted'), false);
+  }
+
+  function addInstance() {
+    const inst = { id: uid('inst'), name: t('addInst'), versionId: '', javaPath: '', minMem: 1024, maxMem: 4096, jvmArgs: '', mods: [], created: Date.now(), updated: Date.now() };
+    state.instances.push(inst);
+    state.selected = inst.id;
+    save();
+    renderAll();
+    setStatus(t('instAdded'), false);
+  }
+
+  function renderMods(inst) {
+    const c = $('mod-list');
+    const mods = inst.mods || [];
+    if (!mods.length) { c.innerHTML = `<div class="empty">${esc(t('noMods'))}</div>`; return; }
+    c.innerHTML = mods.map((m, i) => `
+      <div class="mod-item" id="mod-row-${esc(m.id)}">
+        <div class="mod-main">
+          <strong>${esc(m.name)}</strong>
+          <span class="mod-meta">${esc(m.version || '')} · ${esc(m.author || '')}</span>
+          <span class="mod-meta">${esc(m.compatVersions || '')}</span>
+        </div>
+        <div class="mod-actions">
+          <button class="button sec" id="mod-up-${esc(m.id)}">${esc(t('up'))}</button>
+          <button class="button sec" id="mod-down-${esc(m.id)}">${esc(t('down'))}</button>
+          <button class="button sec" id="mod-toggle-${esc(m.id)}">${m.enabled ? esc(t('on')) : esc(t('off'))}</button>
+          <span class="badge ${m.compatible ? 'badge-ok' : 'badge-bad'}" id="mod-badge-${esc(m.id)}">${m.compatible ? esc(t('ok')) : esc(t('bad'))}</span>
+          <button class="button sec" id="mod-edit-${esc(m.id)}">${esc(t('edit'))}</button>
+          <button class="button sec" id="mod-del-${esc(m.id)}">${esc(t('del'))}</button>
+        </div>
+      </div>
+    `).join('');
+    mods.forEach((m, i) => {
+      const up = $('mod-up-' + m.id); if (up) up.addEventListener('click', () => moveMod(m.id, -1));
+      const down = $('mod-down-' + m.id); if (down) down.addEventListener('click', () => moveMod(m.id, 1));
+      const tog = $('mod-toggle-' + m.id); if (tog) tog.addEventListener('click', () => toggleMod(m.id, 'enabled'));
+      const badge = $('mod-badge-' + m.id); if (badge) badge.addEventListener('click', () => toggleMod(m.id, 'compatible'));
+      const ed = $('mod-edit-' + m.id); if (ed) ed.addEventListener('click', () => editMod(m.id));
+      const dl = $('mod-del-' + m.id); if (dl) dl.addEventListener('click', () => deleteMod(m.id));
+    });
+  }
+
+  function moveMod(id, delta) {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    if (!inst || !inst.mods) return;
+    const idx = inst.mods.findIndex((m) => m.id === id);
+    if (idx < 0) return;
+    const ni = idx + delta;
+    if (ni < 0 || ni >= inst.mods.length) return;
+    const tmp = inst.mods[idx]; inst.mods[idx] = inst.mods[ni]; inst.mods[ni] = tmp;
+    inst.updated = Date.now();
+    save();
+    renderDetail();
+  }
+
+  function toggleMod(id, field) {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    const mod = inst && inst.mods ? inst.mods.find((m) => m.id === id) : null;
+    if (!mod) return;
+    mod[field] = !mod[field];
+    inst.updated = Date.now();
+    save();
+    renderDetail();
+  }
+
+  function editMod(id) {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    const mod = inst && inst.mods ? inst.mods.find((m) => m.id === id) : null;
+    if (!mod) return;
+    editingModId = id;
+    $('mod-name').value = mod.name || '';
+    $('mod-version').value = mod.version || '';
+    $('mod-author').value = mod.author || '';
+    $('mod-enabled').checked = !!mod.enabled;
+    $('mod-compatible').checked = !!mod.compatible;
+    $('mod-compat-versions').value = mod.compatVersions || '';
+    $('mod-notes').value = mod.notes || '';
+    $('mod-form').hidden = false;
+  }
+
+  function resetModForm() {
+    editingModId = null;
+    $('mod-name').value = '';
+    $('mod-version').value = '';
+    $('mod-author').value = '';
+    $('mod-enabled').checked = true;
+    $('mod-compatible').checked = true;
+    $('mod-compat-versions').value = '';
+    $('mod-notes').value = '';
+    $('mod-form').hidden = true;
+  }
+
+  function saveMod() {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    if (!inst) return;
+    const name = $('mod-name').value.trim();
+    if (!name) { setStatus(t('needModName'), true); return; }
+    if (!inst.mods) inst.mods = [];
+    const data = {
+      id: editingModId || uid('mod'),
+      name,
+      version: $('mod-version').value.trim(),
+      author: $('mod-author').value.trim(),
+      enabled: $('mod-enabled').checked,
+      compatible: $('mod-compatible').checked,
+      compatVersions: $('mod-compat-versions').value.trim(),
+      notes: $('mod-notes').value.trim()
+    };
+    if (editingModId) {
+      const idx = inst.mods.findIndex((m) => m.id === editingModId);
+      if (idx >= 0) inst.mods[idx] = data;
+    } else {
+      inst.mods.push(data);
+    }
+    inst.updated = Date.now();
+    save();
+    resetModForm();
+    renderDetail();
+    setStatus(t('modSaved'), false);
+  }
+
+  function deleteMod(id) {
+    const inst = state.instances.find((x) => x.id === state.selected);
+    if (!inst || !inst.mods) return;
+    if (!confirm(t('confirmDelMod'))) return;
+    inst.mods = inst.mods.filter((m) => m.id !== id);
+    inst.updated = Date.now();
+    save();
+    renderDetail();
+    setStatus(t('modDeleted'), false);
+  }
+
+  function renderVersions() {
+    const c = $('version-list');
+    if (!state.versions.length) { c.innerHTML = `<div class="empty">${esc(t('noVer'))}</div>`; return; }
+    c.innerHTML = state.versions.map((v) => `
+      <div class="instance-item" id="ver-row-${esc(v.id)}">
+        <div>
+          <div class="instance-name">${esc(v.id)}</div>
+          <div class="instance-meta">${esc(typeLabel(v.type))} · ${esc(v.releaseDate || '')} · ${esc(v.notes || '')}</div>
+        </div>
+        <div><button class="button sec" id="ver-del-${esc(v.id)}">${esc(t('del'))}</button></div>
+      </div>
+    `).join('');
+    state.versions.forEach((v) => {
+      const b = $('ver-del-' + v.id);
+      if (b) b.addEventListener('click', () => deleteVersion(v.id));
+    });
+  }
+
+  function deleteVersion(id) {
+    if (!confirm(t('confirmDelVer'))) return;
+    state.versions = state.versions.filter((v) => v.id !== id);
+    save();
+    renderAll();
+    setStatus(t('verDeleted'), false);
+  }
+
+  function renderUpdates() {
+    const c = $('update-list');
+    if (!state.updates.length) { c.innerHTML = `<div class="empty">${esc(t('noUpd'))}</div>`; return; }
+    c.innerHTML = state.updates.map((u) => `
+      <div class="instance-item" id="upd-row-${esc(u.id)}">
+        <div>
+          <div class="instance-name">${esc(u.versionId)}</div>
+          <div class="instance-meta">${esc(u.date || '')} · ${esc(u.notes || '')}</div>
+        </div>
+        <div><button class="button sec" id="upd-del-${esc(u.id)}">${esc(t('del'))}</button></div>
+      </div>
+    `).join('');
+    state.updates.forEach((u) => {
+      const b = $('upd-del-' + u.id);
+      if (b) b.addEventListener('click', () => deleteUpdate(u.id));
+    });
+  }
+
+  function deleteUpdate(id) {
+    if (!confirm(t('confirmDelUpd'))) return;
+    state.updates = state.updates.filter((u) => u.id !== id);
+    save();
+    renderAll();
+    setStatus(t('updDeleted'), false);
+  }
+
+  function populateUpdateVersions() {
+    const s = $('upd-version');
+    const cur = s.value;
+    s.innerHTML = `<option value="">${esc(t('selectVer'))}</option>` + state.versions.map((v) => `<option value="${esc(v.id)}">${esc(v.id)}</option>`).join('');
+    s.value = cur;
+  }
+
+  function renderAll() {
+    renderInstances();
+    renderDetail();
+    renderVersions();
+    renderUpdates();
+    applyLang();
+    populateUpdateVersions();
+  }
+
+  function init() {
+    load();
+    // bind
+    $('btn-add-instance').addEventListener('click', addInstance);
+    $('btn-close-detail').addEventListener('click', () => { state.selected = null; save(); renderAll(); });
+    $('btn-save-instance').addEventListener('click', saveInstance);
+    $('btn-delete-instance').addEventListener('click', deleteInstance);
+    $('btn-add-mod').addEventListener('click', () => { resetModForm(); $('mod-form').hidden = false; });
+    $('btn-save-mod').addEventListener('click', saveMod);
+    $('btn-cancel-mod').addEventListener('click', resetModForm);
+    $('btn-add-version').addEventListener('click', () => { $('ver-id').value=''; $('ver-type').value='release'; $('ver-date').value=''; $('ver-notes').value=''; $('version-form').hidden = false; });
+    $('btn-save-version').addEventListener('click', () => {
+      const id = $('ver-id').value.trim();
+      if (!id) { setStatus(t('needVerId'), true); return; }
+      if (state.versions.some((v) => v.id === id)) { setStatus(t('needVerId'), true); return; }
+      state.versions.unshift({ id, type: $('ver-type').value, releaseDate: $('ver-date').value, notes: $('ver-notes').value.trim(), added: Date.now() });
+      save();
+      $('version-form').hidden = true;
+      renderAll();
+      setStatus(t('verSaved'), false);
+    });
+    $('btn-cancel-version').addEventListener('click', () => { $('version-form').hidden = true; });
+    $('btn-add-update').addEventListener('click', () => { $('upd-date').value = new Date().toISOString().slice(0,10); $('upd-notes').value=''; populateUpdateVersions(); $('update-form').hidden = false; });
+    $('btn-save-update').addEventListener('click', () => {
+      const vid = $('upd-version').value;
+      if (!vid) { setStatus(t('needUpdVer'), true); return; }
+      state.updates.unshift({ id: uid('upd'), versionId: vid, date: $('upd-date').value, notes: $('upd-notes').value.trim(), created: Date.now() });
+      save();
+      $('update-form').hidden = true;
+      renderAll();
+      setStatus(t('updSaved'), false);
+    });
+    $('btn-cancel-update').addEventListener('click', () => { $('update-form').hidden = true; });
+    $('btn-export-all').addEventListener('click', () => {
+      $('export-data').value = JSON.stringify(state, null, 2);
+      setBackupStatus(t('exported'), false);
+    });
+    $('btn-copy-export').addEventListener('click', async () => {
+      const txt = $('export-data').value;
+      try { if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(txt); setBackupStatus(t('copied'), false); }
+      catch (e) { $('export-data').select(); try { document.execCommand('copy'); setBackupStatus(t('copied'), false); } catch (err) { setBackupStatus(t('badJson'), true); } }
+    });
+    $('btn-import-trigger').addEventListener('click', () => $('import-file').click());
+    $('import-file').addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try {
+          const p = JSON.parse(ev.target.result);
+          if (!p || typeof p !== 'object' || !Array.isArray(p.instances) || !Array.isArray(p.versions)) throw new Error('bad');
+          if (!confirm(t('confirmImport'))) { e.target.value=''; return; }
+          state.lang = p.lang || state.lang;
+          state.instances = p.instances;
+          state.versions = p.versions;
+          state.updates = Array.isArray(p.updates) ? p.updates : [];
+          state.selected = null;
+          save();
+          renderAll();
+          setBackupStatus(t('imported'), false);
+        } catch (err) {
+          setBackupStatus(t('badJson'), true);
+        }
+        e.target.value = '';
+      };
+      r.readAsText(f);
+    });
+    $('btn-clear-all').addEventListener('click', () => {
+      if (!confirm(t('confirmClear'))) return;
+      state = { lang: state.lang, instances: [], versions: [], updates: [], selected: null };
+      save();
+      renderAll();
+      setBackupStatus(t('cleared'), false);
+    });
+    $('lang-select').value = state.lang;
+    $('lang-select').addEventListener('change', (e) => {
+      state.lang = e.target.value;
+      save();
+      renderAll();
+      setBackupStatus(state.lang === 'ar' ? 'تم تغيير اللغة.' : 'Language changed.', false);
+    });
+
+    renderAll();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>
