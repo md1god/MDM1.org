@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة إملاء صوتي تنظّف النص وتعلم تصحيحاتك محليًا | MDM1</title>
+<meta name="description" content="أداة إملاء صوتي عربية تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم، تتعلم تصحيحاتك وتترجم من مسرد مدمج دون إنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/polished-dictation-desk.html">
+<meta property="og:title" content="أداة إملاء صوتي تنظّف النص وتعلم تصحيحاتك محليًا">
+<meta property="og:description" content="أداة إملاء صوتي عربية تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم، تتعلم تصحيحاتك وتترجم من مسرد مدمج دون إنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/polished-dictation-desk.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:14px}
+.app .card{display:flex;flex-direction:column;gap:10px}
+.app .row{flex-wrap:wrap;gap:10px;align-items:center}
+.app .hint{color:var(--gold-dim);line-height:1.9;margin:0;font-size:.95rem}
+.app textarea{width:100%;min-height:120px;resize:vertical;font-family:inherit;line-height:1.9}
+.app .out{min-height:150px;white-space:pre-wrap;border-color:var(--gold-dim);color:var(--light)}
+.app label{display:flex;align-items:center;gap:6px;color:var(--gold);font-weight:600}
+.app .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.app .grid2>div{display:flex;flex-direction:column;gap:6px}
+.app .stats{display:flex;gap:10px;width:100%}
+.app .stat{flex:1;min-width:100px;text-align:center;padding:10px 6px;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(0,0,0,.25)}
+.app .stat .big{display:block;color:var(--gold-bright);font-size:1.7rem;font-weight:700}
+.app .stat .lbl{display:block;font-size:.85rem;color:var(--light);opacity:.85;margin-top:4px}
+.app .badge{background:rgba(0,0,0,.3);border:1px solid var(--gold-dim);border-radius:20px;padding:5px 12px;color:var(--gold-bright);font-size:.85rem}
+.app h2{margin:0;color:var(--gold-bright);font-size:1.15rem}
+.app input[type=text]{width:100%}
+.app button{white-space:nowrap}
+@media(max-width:640px){.app .grid2{grid-template-columns:1fr}.app .stats{flex-wrap:wrap}.app .stat{min-width:45%}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة الإملاء الصوتي العربية الذكية — نظيف، مرتّب، ومحلي بالكامل", "url": "https://mdm1.org/apps/polished-dictation-desk.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يرفع هذا التطبيق صوتي أو نصوصي إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل شيء يعمل داخل متصفّحك. التعرّف الصوتي إن وُجد يمرّ عبر واجهة المتصفح المدمجة، والنصوص والتصحيحات تُخزَّن في localStorage محليًا فقط ويمكنك حذفها في أي لحظة بزر «حذف كل التصحيحات» أو «مسح الكل»."}}, {"@type": "Question", "name": "ماذا يحدث إذا لم يدعم متصفّجي التعرّف الصوتي؟", "acceptedAnswer": {"@type": "Answer", "text": "يظهر تنبيه فوري ويتعطّل زر البدء، وستجد مربع نصّ بديلًا للكتابة أو اللصق. بعد الضغط على «تنظيف النص تلقائيًا» تحصل على النتيجة ذاتها تمامًا: حذف الحشو والتكرار وترتيب الترقيم."}}, {"@type": "Question", "name": "كيف تتعلّم الأداة تصحيحاتي وتستخدمها لاحقًا؟", "acceptedAnswer": {"@type": "Answer", "text": "بعد تنظيف النص عدّل النتيجة يدويًا ثم اضغط «تعلّم من تعديلي الحالي»، فتقارن الأداة النص الأصلي بتعديلك وتستخرج الكلمات المستبدلة وتحفظها. تُطبَّق هذه التصحيحات تلقائيًا قبل التنظيف في كل مرة قادمة."}}, {"@type": "Question", "name": "ما هي كلمات الحشو التي تُحذف تلقائيًا؟", "acceptedAnswer": {"@type": "Answer", "text": "كلمات شائعة في الكلام المنطوق مثل «يعني» و«أه» و«بصراحة» و«في الحقيقة» و«الله» المتكرّرة غير مقصدية، إضافة إلى الكلمات المكرّرة مرتين والجمل المكرّرة وعلامات الترقيم المتراكمة. يمكنك إيقاف أي فئة من خلال مربّعات الاختيار."}}, {"@type": "Question", "name": "هل الترجمة تعمل بدون إنترنت وهل هي دقيقة؟", "acceptedAnswer": {"@type": "Answer", "text": "الترجمة تعمل بالكامل دون إنترنت لأنها تعتمد على مسرد ثنائي اللغة مدمّج داخل الصفحة، وتتم كلمة بكلمة مع إبقاء الكلمات غير الموجودة كما هي مع عدّاد يوضح عدد الناجح والفائت، فهي مناسبة للكلمات والعبارات الشائعة لا للنصوص الطويلة المعقدة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة الإملاء الصوتي العربية الذكية — نظيف، مرتّب، ومحلي بالكامل</h1>
+  <p class="page-sub">أداة إملاء صوتي عربية تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم، تتعلم تصحيحاتك وتترجم من مسرد مدمج دون إنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: نعم، يمكنك إملاء كلامك بالعربية والحصول على نصٍّ نظيف فورًا بضغطة زر واحدة، دون أي اتصال بخادم وبكامل خصوصيتك داخل جهازك. هذه الأداة تعمل بالكامل داخل متصفّحك، فهي تستخدم واجهة Web Speech API لتحويل الصوت إلى نص متى كان مدعومًا في متصفّحك، وإن لم يكن مدعومًا وفّرت لك مربع نصّ بديلًا تكتب فيه أو تلصق فيه ما سمعته حرفيًا. بعد ذلك يقوم التنظيف التلقائي بحذف كلمات الحشو الشائعة مثل «يعني» و«أه» و«بصراحة» و«في الحقيقة»، وإزالة الكلمات المكرّرة مرتين متتاليتين، ودمج الجمل المكرّرة، وترتيب علامات الترقيم الفوضوية التي تتراكم في نهاية الجمل ووسط النص. والأهم أن الأداة تتعلّم من تصحيحاتك الشخصية: كل تبديل تحفظه يُخزَّن في ذاكرة المتصفّح المحلية ويُطبَّق تلقائيًا في المرات القادمة قبل التنظيف، ولا يغادر أي نص جهازك أبدًا. وإلى جانب ذلك يوفّر مسرد ثنائي اللغة مدمّج يعمل دون إنترنت لترجمة سريعة من العربية إلى الإنجليزيّة والعكس، مع عدّادات واضحة للكلمات والأحرف وعدد كلمات الحشو المحذوفة والتصحيحات المحفوظة، وزر لنسخ النتيجة، وخيار لاستعادة النص الأصلية إن أردت المقارنة.</p>
+
+<div class="app">
+  <div class="card">
+    <div class="row">
+      <label for="speechLang">لغة التعرّف الصوتي</label>
+      <select id="speechLang">
+        <option value="ar-EG">العربية (مصر)</option>
+        <option value="ar-SA">العربية (السعودية)</option>
+        <option value="ar-AE">العربية (الإمارات)</option>
+        <option value="en-US">الإنجليزية</option>
+      </select>
+      <button id="startBtn" type="button">بدء الإملاء الصوتي</button>
+      <button id="stopBtn" class="sec" type="button">إيقاف الإملاء</button>
+      <span class="badge" id="statusBadge">جاهز للعمل</span>
+    </div>
+    <p class="hint" id="supportHint">إن لم يدعم متصفّحك التعرّف الصوتي فاستخدم مربع النص البديل بالأسفل، ستحصل على نتيجة مطابقة بعد الضغط على زر التنظيف.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <label for="transcriptInput">النص المُملى أو المُدخل (النص الأصلي)</label>
+    <textarea id="transcriptInput" placeholder="اكتب أو الصق النص هنا، أو ابدأ الإملاء الصوتي أعلاه..."></textarea>
+    <div class="row">
+      <button id="cleanBtn" type="button">تنظيف النص تلقائيًا</button>
+      <button id="restoreBtn" class="sec" type="button">استعادة النص الأصلي</button>
+      <button id="copyBtn" class="sec" type="button">نسخ النتيجة</button>
+      <button id="clearBtn" class="sec" type="button">مسح الكل</button>
+      <label for="removeFillers"><input type="checkbox" id="removeFillers" checked> حذف كلمات الحشو</label>
+      <label for="dedupeWords"><input type="checkbox" id="dedupeWords" checked> حذف التكرار</label>
+      <label for="fixPunct"><input type="checkbox" id="fixPunct" checked> ترتيب الترقيم</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <label for="resultEdit">النتيجة بعد التنظيف (يمكنك تعديلها يدويًا ثم تعلّم الأداة تصحيحك)</label>
+    <textarea id="resultEdit" class="out" placeholder="ستظهر النتيجة النظيفة هنا بعد الضغط على زر التنظيف..."></textarea>
+    <div class="row stats">
+      <div class="stat"><span class="big" id="statWords">0</span><span class="lbl">كلمة</span></div>
+      <div class="stat"><span class="big" id="statChars">0</span><span class="lbl">حرف</span></div>
+      <div class="stat"><span class="big" id="statFillers">0</span><span class="lbl">حشو مُحذوف</span></div>
+      <div class="stat"><span class="big" id="statCorrs">0</span><span class="lbl">تصحيح محفوظ</span></div>
+    </div>
+    <div class="row">
+      <button id="learnBtn" type="button">تعلّم من تعديلي الحالي</button>
+      <span class="badge" id="learnMsg">لم تُحفظ أي مشاركة بعد</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>تصحيحاتك الشخصية (تُطبَّق تلقائيًا)</h2>
+    <div class="row grid2">
+      <div>
+        <label for="corrFrom">الشكل الخاطئ كما سُمع</label>
+        <input id="corrFrom" type="text" placeholder="مثال: إن شاء اللهumn">
+      </div>
+      <div>
+        <label for="corrTo">الشكل الصحيح المطلوب</label>
+        <input id="corrTo" type="text" placeholder="مثال: إن شاء الله">
+      </div>
+    </div>
+    <div class="row">
+      <button id="saveCorrBtn" type="button">حفظ التصحيح</button>
+      <select id="corrSelect" aria-label="التصحيحات المحفوظة"></select>
+      <button id="delCorrBtn" class="sec" type="button">حذف التصحيح المحدد</button>
+      <button id="clearCorrBtn" class="sec" type="button">حذف كل التصحيحات</button>
+      <span class="badge" id="corrMsg">لا توجد تصحيحات محفوظة</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>ترجمة نصية ثنائية اللغة (مسرد مدمّج يعمل دون إنترنت)</h2>
+    <div class="row">
+      <label for="trDir">اتجاه الترجمة</label>
+      <select id="trDir">
+        <option value="ar2en">من العربية إلى الإنجليزية</option>
+        <option value="en2ar">من الإنجليزية إلى العربية</option>
+      </select>
+      <button id="translateBtn" type="button">ترجمة النص</button>
+      <button id="clearTrBtn" class="sec" type="button">مسح الترجمة</button>
+    </div>
+    <label for="trSource">النص المراد ترجمته</label>
+    <textarea id="trSource" placeholder="اكتب نصًا للترجمة من المسرد المدمج..."></textarea>
+    <label for="trResult">الترجمة الناتجة</label>
+    <textarea id="trResult" class="out" readonly placeholder="ستظهر الترجمة هنا..."></textarea>
+    <span class="badge" id="trMsg">الترجمة تتم كلمة بكلمة من مسرد محلي</span>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يرفع هذا التطبيق صوتي أو نصوصي إلى أي خادم؟</h3><p>لا، كل شيء يعمل داخل متصفّحك. التعرّف الصوتي إن وُجد يمرّ عبر واجهة المتصفح المدمجة، والنصوص والتصحيحات تُخزَّن في localStorage محليًا فقط ويمكنك حذفها في أي لحظة بزر «حذف كل التصحيحات» أو «مسح الكل».</p><h3>ماذا يحدث إذا لم يدعم متصفّجي التعرّف الصوتي؟</h3><p>يظهر تنبيه فوري ويتعطّل زر البدء، وستجد مربع نصّ بديلًا للكتابة أو اللصق. بعد الضغط على «تنظيف النص تلقائيًا» تحصل على النتيجة ذاتها تمامًا: حذف الحشو والتكرار وترتيب الترقيم.</p><h3>كيف تتعلّم الأداة تصحيحاتي وتستخدمها لاحقًا؟</h3><p>بعد تنظيف النص عدّل النتيجة يدويًا ثم اضغط «تعلّم من تعديلي الحالي»، فتقارن الأداة النص الأصلي بتعديلك وتستخرج الكلمات المستبدلة وتحفظها. تُطبَّق هذه التصحيحات تلقائيًا قبل التنظيف في كل مرة قادمة.</p><h3>ما هي كلمات الحشو التي تُحذف تلقائيًا؟</h3><p>كلمات شائعة في الكلام المنطوق مثل «يعني» و«أه» و«بصراحة» و«في الحقيقة» و«الله» المتكرّرة غير مقصدية، إضافة إلى الكلمات المكرّرة مرتين والجمل المكرّرة وعلامات الترقيم المتراكمة. يمكنك إيقاف أي فئة من خلال مربّعات الاختيار.</p><h3>هل الترجمة تعمل بدون إنترنت وهل هي دقيقة؟</h3><p>الترجمة تعمل بالكامل دون إنترنت لأنها تعتمد على مسرد ثنائي اللغة مدمّج داخل الصفحة، وتتم كلمة بكلمة مع إبقاء الكلمات غير الموجودة كما هي مع عدّاد يوضح عدد الناجح والفائت، فهي مناسبة للكلمات والعبارات الشائعة لا للنصوص الطويلة المعقدة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id);};
+var KEY='arabic_dictation_tool_v1';
+var state={corrections:{},original:'',fillersRemoved:0};
+var FILLERS=['يعني','يعني','أه','آه','اه','أمم','امم','مم','بصراحة','بصراحته','في الحقيقة','بالحقيقة','الحقيقة','هكذا','نوعًا ما','نوعا ما','أنا أعتقد','أعتقد','اعتقد','تعرف','تعرفين','والله','إيه','ايوه','يعني هو','يعني أنا','كما نقول','بشكل عام','فعليًا','فعليا','خلونا','خلنا','طيب','هذا الشيء','يعني يعني','بالتالي','إذن','أيضاً','كمان','صار','صارت','بيكون','مش كده','يعني تمام'];
+function setStatus(el,msg,color){var n=$(el);if(!n)return;n.textContent=msg;if(color)n.style.borderColor=color;}
+function bare(w){return String(w).replace(/^[^\u0621-\u064A\u0671A-Za-z0-9]+|[^\u0621-\u064A\u0671A-Za-z0-9]+$/g,'');}
+function load(){try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&typeof o==='object'){state.corrections=o.corrections||{};}}}catch(e){state.corrections={};}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({corrections:state.corrections}));return true;}catch(e){return false;}}
+function escapeRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function applyCorrections(t){
+  var keys=Object.keys(state.corrections);
+  for(var i=0;i<keys.length;i++){
+    var f=keys[i],r=state.corrections[f];
+    if(!f||f===r)continue;
+    try{
+      var re=new RegExp('(^|[^\\p{L}\\p{N}])('+escapeRe(f)+')(?=[^\\p{L}\\p{N}]|$)','gu');
+      t=t.replace(re,function(m,a){return a+r;});
+    }catch(e){t=t.split(f).join(r);}
+  }
+  return t;
+}
+function splitSents(t){var out=[],cur='';for(var i=0;i<t.length;i++){cur+=t[i];if('.؟!'.indexOf(t[i])>-1){if(cur.trim())out.push(cur);cur='';}}if(cur.trim())out.push(cur);return out;}
+function cleanText(src){
+  var removed=0;
+  var t=src.replace(/\r/g,'').trim();
+  t=applyCorrections(t);
+  if($('removeFillers').checked){
+    var toks=t.split(/\s+/);
+    var kept=[];
+    for(var i=0;i<toks.length;i++){
+      var b=bare(toks[i]);
+      var hit=false;
+      for(var j=0;j<FILLERS.length;j++){if(b===FILLERS[j]){hit=true;break;}}
+      if(hit){removed++;}else{kept.push(toks[i]);}
+    }
+    t=kept.join(' ');
+    t=t.replace(/^[،,.؛:!؟\s]+/,'');
+  }
+  if($('dedupeWords').checked){
+    var w=t.split(/\s+/),out=[];
+    for(var k=0;k<w.length;k++){
+      if(out.length&&bare(w[k])&&bare(w[k])===bare(out[out.length-1])&&bare(w[k]).length>2){removed++;continue;}
+      out.push(w[k]);
+    }
+    t=out.join(' ');
+    var sents=splitSents(t),seen={},uniq=[];
+    for(var s=0;s<sents.length;s++){
+      var norm=sents[s].replace(/[.؟!،]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+      if(norm.length>4&&seen[norm]){removed++;continue;}
+      if(norm.length>4)seen[norm]=1;
+      uniq.push(sents[s].trim());
+    }
+    t=uniq.join(' ');
+  }
+  if($('fixPunct').checked){
+    t=t.replace(/([.؟!،:؛])\1+/g,'$1');
+    t=t.replace(/\s+([.؟!،:؛])/g,'$1');
+    t=t.replace(/([.؟!])\s*(?=[^\s])/g,'$1 ');
+    t=t.replace(/[ \t]{2,}/g,' ');
+    t=t.replace(/\n{3,}/g,'\n\n');
+    t=t.replace(/([.؟!،:؛])(?=[^\s.؟!،:؛])/g,'$1 ');
+    t=t.replace(/\s{2,}/g,' ');
+  }
+  state.fillersRemoved=removed;
+  return t.trim();
+}
+function updateStats(text){
+  var words=text.trim()?text.trim().split(/\s+/).length:0;
+  $('statWords').textContent=words;
+  $('statChars').textContent=text.length;
+  $('statFillers').textContent=state.fillersRemoved;
+  $('statCorrs').textContent=Object.keys(state.corrections).length;
+}
+function refreshCorrSelect(){
+  var sel=$('corrSelect');sel.innerHTML='';
+  var keys=Object.keys(state.corrections);
+  if(!keys.length){
+    var o=document.createElement('option');o.value='';o.textContent='لا توجد تصحيحات محفوظة';sel.appendChild(o);
+    setStatus('corrMsg','لا توجد تصحيحات محفوظة');
+    return;
+  }
+  for(var i=0;i<keys.length;i++){
+    var op=document.createElement('option');
+    op.value=keys[i];
+    op.textContent=keys[i]+' ← '+state.corrections[keys[i]];
+    sel.appendChild(op);
+  }
+  setStatus('corrMsg',keys.length+' تصحيحًا محفوظًا محليًا');
+}
+function words(s){return s.trim()?s.trim().split(/\s+/):[];}
+function diffPairs(a,b){
+  var A=words(a),B=words(b),n=A.length,m=B.length;
+  var dp=[];for(var i=0;i<=n;i++){dp.push(new Array(m+1).fill(0));}
+  for(i=n-1;i>=0;i--){for(var j=m-1;j>=0;j--){dp[i][j]=A[i]===B[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);}}
+  var x=0,y=0,del=[],ins=[],pairs=[];
+  function flush(){if(del.length&&ins.length){pairs.push([del.join(' '),ins.join(' ')]);}del=[];ins=[];}
+  while(x<n&&y<m){
+    if(A[x]===B[y]){flush();x++;y++;}
+    else if(dp[x+1][y]>=dp[x][y+1]){del.push(A[x]);x++;}
+    else{ins.push(B[y]);y++;}
+  }
+  while(x<n){del.push(A[x]);x++;}
+  while(y<m){ins.push(B[y]);y++;}
+  flush();
+  return pairs;
+}
+$('cleanBtn').addEventListener('click',function(){
+  var src=$('transcriptInput').value;
+  if(!src.trim()){
+    setStatus('learnMsg','لا يوجد نص لتنظيفه، اكتب أو أملى النص أولًا');
+    $('resultEdit').value='';
+    updateStats('');
+    return;
+  }
+  if(!state.original)state.original=src;
+  var out=cleanText(src);
+  $('resultEdit').value=out;
+  updateStats(out);
+  setStatus('learnMsg',state.fillersRemoved?('حُذف '+state.fillersRemoved+' عنصرًا: حشو أو تكرار'):'النص نظيف، لا حشو ولا تكرار');
+});
+$('restoreBtn').addEventListener('click',function(){
+  if(!state.original){setStatus('learnMsg','لا يوجد نص أصلي لاستعادته');return;}
+  $('transcriptInput').value=state.original;
+  $('resultEdit').value='';
+  state.fillersRemoved=0;
+  updateStats('');
+  setStatus('learnMsg','تمت استعادة النص الأصلي');
+});
+$('learnBtn').addEventListener('click',function(){
+  var a=$('transcriptInput').value,b=$('resultEdit').value;
+  if(!a.trim()||!b.trim()){setStatus('learnMsg','لا يوجد نص كافٍ للتعلّم');return;}
+  var pairs=diffPairs(a,b),added=0;
+  for(var i=0;i<pairs.length;i++){
+    var f=pairs[i][0],r=pairs[i][1];
+    if(!f||!r||f===r||bare(f).length<2)continue;
+    if(state.corrections[f]===r)continue;
+    state.corrections[f]=r;added++;
+  }
+  var ok=save();
+  refreshCorrSelect();updateStats($('resultEdit').value);
+  if(!added)setStatus('learnMsg','لا توجد تعديلات جديدة تعلّمها');
+  else setStatus('learnMsg',ok?('تم حفظ '+added+' تصحيحًا وسيُطبَّق تلقائيًا'):'تعذّر الحفظ في التخزين المحلي');
+});
+$('saveCorrBtn').addEventListener('click',function(){
+  var f=$('corrFrom').value.trim(),r=$('corrTo').value.trim();
+  if(!f||!r){setStatus('corrMsg','أدخل الشكل الخاطئ والشكل الصحيح معًا');return;}
+  if(f===r){setStatus('corrMsg','الشكلان متطابقان، لا فائدة من التصحيح');return;}
+  state.corrections[f]=r;
+  var ok=save();
+  $('corrFrom').value='';$('corrTo').value='';
+  refreshCorrSelect();updateStats($('resultEdit').value);
+  setStatus('corrMsg',ok?'تم حفظ التصحيح محليًا':'تعذّر الحفظ: التخزين المحلي معطّل');
+});
+$('delCorrBtn').addEventListener('click',function(){
+  var k=$('corrSelect').value;
+  if(!k||!state.corrections[k]){setStatus('corrMsg','لا يوجد تصحيح محدد للحذف');return;}
+  delete state.corrections[k];
+  save();refreshCorrSelect();updateStats($('resultEdit').value);
+  setStatus('corrMsg','تم حذف التصحيح المحدد');
+});
+$('clearCorrBtn').addEventListener('click',function(){
+  state.corrections={};save();refreshCorrSelect();updateStats($('resultEdit').value);
+  setStatus('corrMsg','تم حذف كل التصحيحات المحفوظة');
+});
+$('copyBtn').addEventListener('click',function(){
+  var v=$('resultEdit').value;
+  if(!v.trim()){setStatus('learnMsg','لا توجد نتيجة لنسخها');return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(v).then(function(){setStatus('learnMsg','تم نسخ النتيجة');},function(){setStatus('learnMsg','تعذّر النسخ تلقائيًا، حدّد النص وانسخه يدويًا');});
+  }else{setStatus('learnMsg','النسخ التلقائي غير متاح، حدّد النص وانسخه يدويًا');}
+});
+$('clearBtn').addEventListener('click',function(){
+  $('transcriptInput').value='';$('resultEdit').value='';
+  $('trSource').value='';$('trResult').value='';
+  state.original='';state.fillersRemoved=0;
+  updateStats('');
+  setStatus('learnMsg','تم مسح كل الحقول');
+  setStatus('trMsg','الترجمة تتم كلمة بكلمة من مسرد محلي');
+});
+var AR_EN={'مرحبا':'hello','مرحباً':'hello','السلام':'peace','عليكم':'upon','الله':'god','صباح':'morning','مساء':'evening','نهار':'day','ليل':'night','كتاب':'book','قلم':'pen','باب':'door','بيت':'house','منزل':'home','مدرسة':'school','عمل':'work','وقت':'time','يوم':'day','أسبوع':'week','شهر':'month','سنة':'year','صديق':'friend','عائلة':'family','أب':'father','أم':'mother','أخ':'brother','أخت':'sister','ماء':'water','طعام':'food','شمس':'sun','قمر':'moon','天空':'sky','سماء':'sky','أرض':'earth','بحر':'sea','جبل':'mountain','مدينة':'city','بلد':'country','طريق':'road','سيارة':'car','طائرة':'plane','قطار':'train','هاتف':'phone','حاسوب':'computer','شاشة':'screen','عملة':'money','سوق':'market','متجر':'store','مستشفى':'hospital','طبيب':'doctor','مهندس':'engineer','معلم':'teacher','طالب':'student','درس':'lesson','امتحان':'exam','جامعة':'university','لغة':'language','كلمة':'word','جملة':'sentence','نص':'text','صوت':'voice','رسالة':'message','بريد':'mail','اسم':'name','عمر':'age','حياة':'life','موت':'death','حب':'love','سعادة':'happiness','حزن':'sadness','فرح':'joy','قوة':'power','حلم':'dream','فكرة':'idea','سؤال':'question','جواب':'answer','problem':'مشكلة','مشكلة':'problem','حل':'solution','طريقة':'way','مثال':'example','سبب':'reason','نتيجة':'result','أنا':'I','أنت':'you','هو':'he','هي':'she','نحن':'we','هم':'they','هذا':'this','هذه':'this','الذي':'which','التي':'which','من':'from','إلى':'to','في':'in','على':'on','مع':'with','عن':'about','بعد':'after','قبل':'before','الآن':'now','هنا':'here','هناك':'there','نعم':'yes','لا':'no','كبير':'big','صغير':'small','جديد':'new','قديم':'old','جيد':'good','سيء':'bad','سريع':'fast','بطيء':'slow','افتح':'open','أغلق':'close','اكتب':'write','اقرأ':'read','تحدث':'speak','اسمع':'hear','أحب':'love','تريد':'want','يستطيع':'can','يجب':'must','لأن':'because','إذا':'if','لكن':'but','أو':'or','و':'and','حين':'when','أين':'where','متى':'when','لماذا':'why','كيف':'how'};
+var EN_AR={};(function(){for(var k in AR_EN){if(Object.prototype.hasOwnProperty.call(AR_EN,k))EN_AR[AR_EN[k]]=k;}})();
+function stripDiacritics(s){return s.replace(/[\u064B-\u0652\u0670\u0640]/g,'');}
+function lookup(word,dir){
+  var g=dir==='ar2en'?AR_EN:EN_AR;
+  var w=dir==='ar2en'?stripDiacritics(word):word;
+  var key=dir==='ar2en'?w:w.toLowerCase();
+  if(g[key]!==undefined)return g[key];
+  if(dir==='ar2en'&&key.indexOf('ال')===0&&g[key.slice(2)]!==undefined)return g[key.slice(2)];
+  if(dir==='ar2en'&&g['ال'+key]!==undefined)return g['ال'+key];
+  return null;
+}
+$('translateBtn').addEventListener('click',function(){
+  var src=$('trSource').value;
+  if(!src.trim()){$('trResult').value='';setStatus('trMsg','لا يوجد نص للترجمة');return;}
+  var dir=$('trDir').value;
+  var re=dir==='ar2en'?/[\u0621-\u064A\u0671\u0640]+/g:/[A-Za-z']+/g;
+  var miss=0,hit=0;
+  var out=src.replace(re,function(w){
+    var r=lookup(w,dir);
+    if(r===null){miss++;return w;}
+    hit++;return r;
+  });
+  $('trResult').value=out;
+  if(hit===0)setStatus('trMsg','لا توجد كلمات مطابقة في المسرد المدمج');
+  else setStatus('trMsg','تُرجمت '+hit+' كلمة، و'+miss+' كلمة غير موجودة في المسرد');
+});
+$('clearTrBtn').addEventListener('click',function(){
+  $('trSource').value='';$('trResult').value='';
+  setStatus('trMsg','الترجمة تتم كلمة بكلمة من مسرد محلي');
+});
+var recognition=null,supported=false;
+var SR=null;
+try{SR=window.SpeechRecognition||window.webkitSpeechRecognition;}catch(e){SR=null;}
+if(SR){supported=true;setStatus('statusBadge','الإملاء الصوتي متاح');}
+else{setStatus('statusBadge','التعرّف الصوتي غير مدعوم');$('startBtn').disabled=true;
+  $('supportHint').textContent='متصفّحك لا يدعم Web Speech API، لذا استخدم مربع النص البديل بالأسفل؛ ستحصل على نفس نتيجة التنظيف تمامًا.';}
+$('startBtn').addEventListener('click',function(){
+  if(!supported){setStatus('statusBadge','المتصفح لا يدعم التعرّف الصوتي');return;}
+  try{
+    if(recognition){try{recognition.stop();}catch(e){}}
+    recognition=new SR();
+    recognition.lang=$('speechLang').value;
+    recognition.continuous=true;
+    recognition.interimResults=false;
+    recognition.onstart=function(){setStatus('statusBadge','جارٍ الاستماع... تحدّث الآن');};
+    recognition.onresult=function(ev){
+      var txt='';
+      for(var i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)txt+=ev.results[i][0].transcript+' ';}
+      if(txt){
+        var box=$('transcriptInput');
+        box.value=(box.value?box.value+' ':'')+txt.trim();
+        if(!state.original)state.original=box.value;
+      }
+    };
+    recognition.onerror=function(ev){
+      var m=ev&&ev.error==='not-allowed'?'رُفض إذن الميكروفون، فعّله ثم أعد المحاولة':(ev&&ev.error==='no-speech'?'لم يُسمع أي صوت، حاول مجددًا':'تعذّر التعرّف على الصوت');
+      setStatus('statusBadge',m);
+    };
+    recognition.onend=function(){setStatus('statusBadge','توقّف الاستماع');};
+    recognition.start();
+  }catch(e){setStatus('statusBadge','تعذّر تشغيل الميكروفون في هذا المتصفح');}
+});
+$('stopBtn').addEventListener('click',function(){
+  if(recognition){try{recognition.stop();}catch(e){}setStatus('statusBadge','تم إيقاف الإملاء');}
+  else setStatus('statusBadge','لا يوجد إملاء نشط');
+});
+$('transcriptInput').addEventListener('input',function(){
+  if(!state.original)state.original=$('transcriptInput').value;
+});
+load();refreshCorrSelect();updateStats('');
+})();
+</script>
+</body>
+</html>
