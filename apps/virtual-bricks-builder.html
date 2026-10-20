@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بناء نماذج مكعبات تركيب ثلاثية الأبعاد في المتصفح | MDM1</title>
+<meta name="description" content="تطبيق ويب عربي لبناء نماذج مكعبات تركيب ثلاثية الأبعاد بالسحب والإفلات، مع تدوير وتكبير وحفظ تلقائي وتصدير صور وJSON دون إنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/virtual-bricks-builder.html">
+<meta property="og:title" content="بناء نماذج مكعبات تركيب ثلاثية الأبعاد في المتصفح">
+<meta property="og:description" content="تطبيق ويب عربي لبناء نماذج مكعبات تركيب ثلاثية الأبعاد بالسحب والإفلات، مع تدوير وتكبير وحفظ تلقائي وتصدير صور وJSON دون إنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/virtual-bricks-builder.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .app-layout { display: grid; grid-template-columns: 220px 1fr 200px; gap: 12px; align-items: start; }
+.app .app-palette, .app .app-info { display: flex; flex-direction: column; gap: 8px; }
+.app .app-shapes { display: flex; flex-wrap: wrap; gap: 6px; }
+.app .app-shape { padding: 6px 10px; border: 1px solid var(--gold-dim); border-radius: 6px; cursor: grab; user-select: none; }
+.app .app-shape.app-active { background: var(--gold); color: var(--dark); }
+.app .app-colors { display: flex; flex-wrap: wrap; gap: 6px; }
+.app .app-color { width: 28px; height: 28px; border: 2px solid transparent; border-radius: 50%; cursor: pointer; }
+.app .app-color.app-active { border-color: var(--gold-bright); }
+.app .app-canvasWrap { display: flex; flex-direction: column; gap: 8px; }
+.app #view3d { width: 100%; max-width: 800px; height: auto; border: 1px solid var(--gold-dim); border-radius: 8px; touch-action: none; }
+.app .app-toolbar { flex-wrap: wrap; gap: 6px; }
+.app .app-intro { margin-bottom: 12px; line-height: 1.7; }
+.app textarea { width: 100%; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "بناء نماذج مكعبات تركيب افتراضية", "url": "https://mdm1.org/apps/virtual-bricks-builder.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أضع قطعة على الشبكة؟", "acceptedAnswer": {"@type": "Answer", "text": "اسحب قطعة من مكتبة الأشكال وأفلتها على لوحة الرسم، أو انقر على شكل ثم على الشبكة. يتم وضعها تلقائيًا على أعلى مستوى."}}, {"@type": "Question", "name": "هل يمكن حفظ النموذج؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يُحفظ تلقائيًا في متصفحك، ويمكن تصديره بصيغة JSON أو كصورة PNG."}}, {"@type": "Question", "name": "كيف أدير الكاميرا؟", "acceptedAnswer": {"@type": "Answer", "text": "اسحب على لوحة الرسم بزر الفأرة، أو استخدم أزرار الأسهم، وعجلة التمرير للتكبير والتصغير."}}, {"@type": "Question", "name": "هل يعمل بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، التطبيق يعمل بالكامل في المتصفح دون خادم أو اتصال."}}, {"@type": "Question", "name": "كيف أستورد نموذج سابق؟", "acceptedAnswer": {"@type": "Answer", "text": "الصق JSON في مربع النص ثم اضغط استيراد JSON."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">بناء نماذج مكعبات تركيب افتراضية</h1>
+  <p class="page-sub">تطبيق ويب عربي لبناء نماذج مكعبات تركيب ثلاثية الأبعاد بالسحب والإفلات، مع تدوير وتكبير وحفظ تلقائي وتصدير صور وJSON دون إنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">هذا التطبيق يتيح لك بناء نماذج مكعبات تركيب ثلاثية الأبعاد بالكامل داخل المتصفح: اسحب قطعة من مكتبة الأشكال والألوان وأفلتها على الشبكة، ثم دور النموذج، وقرّب أو أبعِد الكاميرا، واحفظ تلقائيًا، وصدّر صورة أو ملف JSON. لا يحتاج خادم أو اتصال بالإنترنت، وكل البيانات تُخزَّن محليًا في متصفحك. يمكنك تدوير القطع قبل وضعها، وحذفها، والتراجع عن آخر إجراء، وإعادة ضبط الكاميرا، واستيراد نموذج من JSON. الشبكة تلتقط الموضع تلقائيًا، وتدعم التكديس على عدة مستويات. ابدأ بسحب أول قطعة من اللوحة اليسرى.</p>
+<div class="app">
+  <div class="app-layout">
+    <aside class="app-palette">
+      <h3>مكتبة القطع</h3>
+      <div class="app-shapes" id="shapeList"></div>
+      <div class="app-colors" id="colorList"></div>
+      <div class="row">
+        <button id="rotateLeft">تدوير يسار</button>
+        <button id="rotateRight">تدوير يمين</button>
+      </div>
+      <div class="row">
+        <button id="clearAll" class="sec">مسح الكل</button>
+        <button id="undoBtn" class="sec">تراجع</button>
+      </div>
+    </aside>
+    <main class="app-canvasWrap">
+      <canvas id="view3d" width="800" height="520"></canvas>
+      <div class="row app-toolbar">
+        <button id="camLeft">◀</button>
+        <button id="camRight">▶</button>
+        <button id="camUp">▲</button>
+        <button id="camDown">▼</button>
+        <button id="camReset" class="sec">إعادة الكاميرا</button>
+        <button id="zoomIn">+</button>
+        <button id="zoomOut">-</button>
+      </div>
+      <div class="row">
+        <button id="exportImg">تصدير صورة</button>
+        <button id="exportJson">تصدير JSON</button>
+        <button id="importJson">استيراد JSON</button>
+      </div>
+      <textarea id="jsonBox" rows="4" placeholder="الصق JSON هنا للاستيراد أو انسخه للتصدير"></textarea>
+    </main>
+    <aside class="app-info">
+      <div class="card">
+        <p id="statusMsg">جاهز</p>
+        <p id="blockCount" class="big">0 مكعب</p>
+      </div>
+      <div class="card">
+        <label>وضع الحذف</label>
+        <button id="deleteToggle" class="sec">إيقاف</button>
+      </div>
+    </aside>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أضع قطعة على الشبكة؟</h3><p>اسحب قطعة من مكتبة الأشكال وأفلتها على لوحة الرسم، أو انقر على شكل ثم على الشبكة. يتم وضعها تلقائيًا على أعلى مستوى.</p><h3>هل يمكن حفظ النموذج؟</h3><p>نعم، يُحفظ تلقائيًا في متصفحك، ويمكن تصديره بصيغة JSON أو كصورة PNG.</p><h3>كيف أدير الكاميرا؟</h3><p>اسحب على لوحة الرسم بزر الفأرة، أو استخدم أزرار الأسهم، وعجلة التمرير للتكبير والتصغير.</p><h3>هل يعمل بدون إنترنت؟</h3><p>نعم، التطبيق يعمل بالكامل في المتصفح دون خادم أو اتصال.</p><h3>كيف أستورد نموذج سابق؟</h3><p>الصق JSON في مربع النص ثم اضغط استيراد JSON.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('view3d');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const FOV = 500;
+  const STORAGE_KEY = 'cubeBuilder_v1';
+  const SHAPES = {
+    cube: [[0,0,0]],
+    brick: [[0,0,0],[1,0,0]],
+    plate: [[0,0,0],[1,0,0],[0,0,1],[1,0,1]],
+    pillar: [[0,0,0],[0,1,0],[0,2,0]],
+    L: [[0,0,0],[1,0,0],[0,0,1]],
+    T: [[0,0,0],[1,0,0],[-1,0,0],[0,0,1]]
+  };
+  const SHAPE_NAMES = {cube:'مكعب',brick:'طوبة',plate:'لوحة',pillar:'عمود',L:'شكل L',T:'شكل T'};
+  const COLORS = ['#c9a227','#f0d060','#8b6914','#e0e0e0','#ff6b6b','#4ecdc4','#45b7d1','#96ceb4'];
+  let blocks = [];
+  let history = [];
+  let az = 0.7, el = 0.5, dist = 14;
+  const center = {x:0,y:1,z:0};
+  let currentShape = 'cube';
+  let currentColor = COLORS[0];
+  let currentRot = 0;
+  let deleteMode = false;
+  let mouseDown=false, isOrbit=false, lastX=0, lastY=0;
+
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function rotOff(o,r){ let x=o[0],y=o[1],z=o[2]; for(let i=0;i<r;i++){ const nx=z, nz=-x; x=nx; z=nz; } return [x,y,z]; }
+  function topAt(x,z){ let m=-1; for(const b of blocks) if(b.x===x&&b.z===z&&b.y>m) m=b.y; return m; }
+
+  function worldToCamVec(x,y,z){
+    const cosA=Math.cos(az), sinA=Math.sin(az);
+    const rx=x*cosA+z*sinA;
+    const rz=-x*sinA+z*cosA;
+    const cosE=Math.cos(el), sinE=Math.sin(el);
+    const ry=y*cosE - rz*sinE;
+    const rz2=y*sinE + rz*cosE;
+    return {x:rx,y:ry,z:rz2};
+  }
+  function worldToCamPoint(x,y,z){
+    return worldToCamVec(x-center.x,y-center.y,z-center.z);
+  }
+  function camDirToWorld(rx,ry,rz){
+    const cosE=Math.cos(el), sinE=Math.sin(el);
+    const Yc=ry*cosE + rz*sinE;
+    const rz1=-ry*sinE + rz*cosE;
+    const cosA=Math.cos(az), sinA=Math.sin(az);
+    const X=rx*cosA - rz1*sinA;
+    const Z=rx*sinA + rz1*cosA;
+    return {x:X,y:Yc,z:Z};
+  }
+
+  function projectCam(c){
+    const s=FOV/(dist+c.z);
+    return {x: W/2 + c.x*s, y: H/2 - c.y*s};
+  }
+
+  function shadeColor(hex,shade){
+    const r=parseInt(hex.slice(1,3),16);
+    const g=parseInt(hex.slice(3,5),16);
+    const b=parseInt(hex.slice(5,7),16);
+    const f=shade;
+    return 'rgb('+Math.round(r*f)+','+Math.round(g*f)+','+Math.round(b*f)+')';
+  }
+
+  const FACE_DEFS = [
+    {verts:[[1,0,0],[1,1,0],[1,1,1],[1,0,1]], n:[1,0,0]},
+    {verts:[[0,0,1],[0,1,1],[0,1,0],[0,0,0]], n:[-1,0,0]},
+    {verts:[[0,1,0],[0,1,1],[1,1,1],[1,1,0]], n:[0,1,0]},
+    {verts:[[0,0,1],[0,0,0],[1,0,0],[1,0,1]], n:[0,-1,0]},
+    {verts:[[0,0,1],[1,0,1],[1,1,1],[0,1,1]], n:[0,0,1]},
+    {verts:[[1,0,0],[0,0,0],[0,1,0],[1,1,0]], n:[0,0,-1]}
+  ];
+
+  function addCubeFaces(b,faces){
+    for(const fd of FACE_DEFS){
+      const nc = worldToCamVec(fd.n[0],fd.n[1],fd.n[2]);
+      if(nc.z <= 0.01) continue;
+      const vs = fd.verts.map(v=>({x:b.x+v[0],y:b.y+v[1],z:b.z+v[2]}));
+      let depth=0; let skip=false;
+      const pts = vs.map(v=>{
+        const c = worldToCamPoint(v.x,v.y,v.z);
+        if(dist+c.z <= 1) skip=true;
+        depth += c.z;
+        return {cam:c, scr:projectCam(c)};
+      });
+      if(skip) continue;
+      depth/=4;
+      const len=Math.sqrt(0.4*0.4+0.9*0.9+0.3*0.3);
+      const shade = Math.max(0.28, (nc.x*0.4+nc.y*0.9+nc.z*0.3)/len*0.7+0.3);
+      faces.push({pts,color:b.color,shade,depth});
+    }
+  }
+
+  function drawGrid(){
+    ctx.strokeStyle='rgba(201,162,39,0.15)';
+    ctx.lineWidth=1;
+    for(let i=-6;i<=6;i++){
+      const a=worldToCamPoint(-6,0,i), bb=worldToCamPoint(6,0,i);
+      if(dist+a.z<=1||dist+bb.z<=1) continue;
+      ctx.beginPath();
+      const pa=projectCam(a), pb=projectCam(bb);
+      ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y); ctx.stroke();
+      const c=worldToCamPoint(i,0,-6), d=worldToCamPoint(i,0,6);
+      if(dist+c.z<=1||dist+d.z<=1) continue;
+      ctx.beginPath();
+      const pc=projectCam(c), pd=projectCam(d);
+      ctx.moveTo(pc.x,pc.y); ctx.lineTo(pd.x,pd.y); ctx.stroke();
+    }
+  }
+
+  function render(){
+    ctx.fillStyle='#121212';
+    ctx.fillRect(0,0,W,H);
+    const faces=[];
+    for(const b of blocks) addCubeFaces(b,faces);
+    faces.sort((a,b)=>b.depth-a.depth);
+    for(const f of faces){
+      ctx.beginPath();
+      ctx.moveTo(f.pts[0].scr.x,f.pts[0].scr.y);
+      for(let i=1;i<f.pts.length;i++) ctx.lineTo(f.pts[i].scr.x,f.pts[i].scr.y);
+      ctx.closePath();
+      ctx.fillStyle=shadeColor(f.color,f.shade);
+      ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,0.3)';
+      ctx.lineWidth=0.5;
+      ctx.stroke();
+    }
+    drawGrid();
+    if(blocks.length===0){
+      ctx.fillStyle='rgba(255,255,255,0.5)';
+      ctx.font='18px sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('ابدأ بسحب قطعة من المكتبة وإفلاتها هنا', W/2, H/2);
+    }
+  }
+
+  function screenToGrid(mx,my){
+    const ndcX=(mx-W/2)/FOV;
+    const ndcY=(H/2-my)/FOV;
+    const dcam={x:ndcX,y:ndcY,z:1};
+    const len=Math.sqrt(dcam.x*dcam.x+dcam.y*dcam.y+dcam.z*dcam.z);
+    dcam.x/=len; dcam.y/=len; dcam.z/=len;
+    const dir=camDirToWorld(dcam.x,dcam.y,dcam.z);
+    const dlen=Math.sqrt(dir.x*dir.x+dir.y*dir.y+dir.z*dir.z);
+    dir.x/=dlen; dir.y/=dlen; dir.z/=dlen;
+    const cp=camDirToWorld(0,0,dist);
+    const camPos={x:center.x+cp.x,y:center.y+cp.y,z:center.z+cp.z};
+    if(Math.abs(dir.y)<1e-6) return null;
+    const t=-camPos.y/dir.y;
+    if(t<0) return null;
+    const px=camPos.x + dir.x*t;
+    const pz=camPos.z + dir.z*t;
+    const gx=Math.round(px);
+    const gz=Math.round(pz);
+    if(gx<-6||gx>6||gz<-6||gz>6) return null;
+    return {x:gx,z:gz};
+  }
+
+  function pushHistory(){
+    history.push(JSON.stringify(blocks));
+    if(history.length>30) history.shift();
+  }
+
+  function placePiece(mx,my,shapeKey,color,rot){
+    const cell=screenToGrid(mx,my);
+    if(!cell) return;
+    const offsets=SHAPES[shapeKey].map(o=>rotOff(o,rot));
+    for(const o of offsets){
+      const tx=cell.x+o[0], tz=cell.z+o[2];
+      if(tx<-6||tx>6||tz<-6||tz>6){ setStatus('خارج الشبكة'); return; }
+    }
+    let baseY=0;
+    for(const o of offsets){
+      const tx=cell.x+o[0], tz=cell.z+o[2];
+      const top=topAt(tx,tz);
+      const cand=top+1-o[1];
+      if(cand>baseY) baseY=cand;
+    }
+    if(baseY<0) baseY=0;
+    if(baseY+3>12){ setStatus('تجاوز الحد الأقصى للارتفاع'); return; }
+    pushHistory();
+    const gid=Date.now()+Math.floor(Math.random()*1000);
+    for(const o of offsets){
+      blocks.push({x:cell.x+o[0], y:baseY+o[1], z:cell.z+o[2], color, group:gid});
+    }
+    save(); render(); updateStatus(); setStatus('تمت الإضافة');
+  }
+
+  function deleteTopAt(mx,my){
+    const cell=screenToGrid(mx,my);
+    if(!cell) return;
+    let idx=-1, maxY=-1;
+    for(let i=0;i<blocks.length;i++){
+      const b=blocks[i];
+      if(b.x===cell.x && b.z===cell.z && b.y>maxY){ maxY=b.y; idx=i; }
+    }
+    if(idx>=0){
+      pushHistory();
+      blocks.splice(idx,1);
+      save(); render(); updateStatus(); setStatus('تم الحذف');
+    } else {
+      setStatus('لا توجد قطعة هنا');
+    }
+  }
+
+  function save(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(blocks)); }catch(err){}
+  }
+  function load(){
+    try{
+      const raw=localStorage.getItem(STORAGE_KEY);
+      if(raw){ const arr=JSON.parse(raw); if(Array.isArray(arr)) blocks=arr.filter(b=>typeof b.x==='number'&&typeof b.y==='number'&&typeof b.z==='number'&&typeof b.color==='string'); }
+    }catch(err){ blocks=[]; }
+  }
+
+  const shapeList=document.getElementById('shapeList');
+  for(const key of Object.keys(SHAPES)){
+    const el=document.createElement('div');
+    el.className='app-shape';
+    el.id='shape_'+key;
+    el.draggable=true;
+    el.textContent=SHAPE_NAMES[key];
+    el.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('text/plain', JSON.stringify({shape:key,color:currentColor}));
+    });
+    el.addEventListener('click', ()=>{
+      currentShape=key;
+      document.querySelectorAll('.app-shape').forEach(s=>s.classList.remove('app-active'));
+      el.classList.add('app-active');
+      setStatus('الشكل: '+SHAPE_NAMES[key]);
+    });
+    shapeList.appendChild(el);
+  }
+  const firstShape=document.getElementById('shape_cube');
+  if(firstShape) firstShape.classList.add('app-active');
+
+  const colorList=document.getElementById('colorList');
+  COLORS.forEach((c,i)=>{
+    const el=document.createElement('button');
+    el.className='app-color';
+    el.id='color_'+i;
+    el.style.background=c;
+    el.addEventListener('click', ()=>{
+      currentColor=c;
+      document.querySelectorAll('.app-color').forEach(s=>s.classList.remove('app-active'));
+      el.classList.add('app-active');
+      setStatus('اللون محدّد');
+    });
+    colorList.appendChild(el);
+  });
+  const firstColor=document.getElementById('color_0');
+  if(firstColor) firstColor.classList.add('app-active');
+
+  function byId(id){ return document.getElementById(id); }
+  byId('rotateLeft').addEventListener('click', ()=>{ currentRot=(currentRot+3)%4; setStatus('تدوير '+(currentRot*90)%360+'°'); });
+  byId('rotateRight').addEventListener('click', ()=>{ currentRot=(currentRot+1)%4; setStatus('تدوير '+(currentRot*90)%360+'°'); });
+  byId('clearAll').addEventListener('click', ()=>{
+    if(blocks.length===0){ setStatus('لا توجد قطع'); return; }
+    pushHistory();
+    blocks=[];
+    save(); render(); updateStatus(); setStatus('تم المسح');
+  });
+  byId('undoBtn').addEventListener('click', ()=>{
+    if(history.length===0){ setStatus('لا تراجع'); return; }
+    const prev=history.pop();
+    try{ blocks=JSON.parse(prev); }catch(e){ blocks=[]; }
+    save(); render(); updateStatus(); setStatus('تراجع');
+  });
+
+  byId('camLeft').addEventListener('click', ()=>{ az-=0.3; render(); });
+  byId('camRight').addEventListener('click', ()=>{ az+=0.3; render(); });
+  byId('camUp').addEventListener('click', ()=>{ el=clamp(el+0.2,-1.2,1.2); render(); });
+  byId('camDown').addEventListener('click', ()=>{ el=clamp(el-0.2,-1.2,1.2); render(); });
+  byId('camReset').addEventListener('click', ()=>{ az=0.7; el=0.5; dist=14; render(); });
+  byId('zoomIn').addEventListener('click', ()=>{ dist=clamp(dist-1,6,30); render(); });
+  byId('zoomOut').addEventListener('click', ()=>{ dist=clamp(dist+1,6,30); render(); });
+
+  const delBtn=byId('deleteToggle');
+  delBtn.addEventListener('click', ()=>{
+    deleteMode=!deleteMode;
+    delBtn.textContent = deleteMode ? 'تفعيل (حذف)' : 'إيقاف';
+    setStatus(deleteMode?'وضع الحذف مفعل':'وضع الحذف متوقف');
+  });
+
+  byId('exportImg').addEventListener('click', ()=>{
+    try{
+      const url=canvas.toDataURL('image/png');
+      const a=document.createElement('a');
+      a.href=url; a.download='model.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setStatus('تم تصدير الصورة');
+    }catch(e){ setStatus('فشل تصدير الصورة'); }
+  });
+  byId('exportJson').addEventListener('click', ()=>{
+    try{
+      const json=JSON.stringify(blocks,null,2);
+      byId('jsonBox').value=json;
+      const blob=new Blob([json],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download='model.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      setStatus('تم تصدير JSON');
+    }catch(e){ setStatus('فشل التصدير'); }
+  });
+  byId('importJson').addEventListener('click', ()=>{
+    try{
+      const arr=JSON.parse(byId('jsonBox').value);
+      if(!Array.isArray(arr)) throw new Error('bad');
+      const cleaned=arr.filter(b=>typeof b.x==='number'&&typeof b.y==='number'&&typeof b.z==='number'&&typeof b.color==='string');
+      pushHistory();
+      blocks=cleaned;
+      save(); render(); updateStatus(); setStatus('تم الاستيراد: '+blocks.length);
+    }catch(e){ setStatus('JSON غير صالح'); }
+  });
+
+  canvas.addEventListener('mousedown', e=>{ mouseDown=true; isOrbit=false; lastX=e.clientX; lastY=e.clientY; });
+  window.addEventListener('mousemove', e=>{
+    if(!mouseDown) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    if(Math.abs(dx)+Math.abs(dy)>3){
+      isOrbit=true;
+      az -= dx*0.01;
+      el = clamp(el + dy*0.01, -1.2, 1.2);
+      lastX=e.clientX; lastY=e.clientY;
+      render();
+    }
+  });
+  window.addEventListener('mouseup', e=>{
+    if(mouseDown && !isOrbit){
+      const rect=canvas.getBoundingClientRect();
+      const mx=(e.clientX-rect.left)*(W/rect.width);
+      const my=(e.clientY-rect.top)*(H/rect.height);
+      if(deleteMode) deleteTopAt(mx,my); else if(currentShape) placePiece(mx,my,currentShape,currentColor,currentRot);
+    }
+    mouseDown=false; isOrbit=false;
+  });
+  canvas.addEventListener('wheel', e=>{
+    e.preventDefault();
+    dist=clamp(dist + (e.deltaY>0?1:-1),6,30);
+    render();
+  },{passive:false});
+
+  canvas.addEventListener('dragover', e=>{ e.preventDefault(); });
+  canvas.addEventListener('drop', e=>{
+    e.preventDefault();
+    let data;
+    try{ data=JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width);
+    const my=(e.clientY-rect.top)*(H/rect.height);
+    if(data && data.shape) placePiece(mx,my,data.shape,data.color||currentColor,currentRot);
+  });
+
+  function updateStatus(){ byId('blockCount').textContent = blocks.length + ' مكعب'; }
+  function setStatus(msg){ const el=byId('statusMsg'); if(el) el.textContent=msg; }
+
+  load(); render(); updateStatus();
+  setStatus('جاهز. اسحب قطعة أو انقر للوضع.');
+})();
+</script>
+</body>
+</html>
