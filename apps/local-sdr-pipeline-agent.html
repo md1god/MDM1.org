@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة مبيعات محلية: رسائل مخصصة ومواعيد وصفقات دون إنترنت | MDM1</title>
+<meta name="description" content="منصة عربية داخل المتصفح لإدارة العملاء المحتملين، توليد رسائل مخصصة دون إنترنت، محاكاة الردود، حجز الاجتماعات، وإغلاق الصفقات الصغيرة بحفظ محلي.">
+<link rel="canonical" href="https://mdm1.org/apps/local-sdr-pipeline-agent.html">
+<meta property="og:title" content="منصة مبيعات محلية: رسائل مخصصة ومواعيد وصفقات دون إنترنت">
+<meta property="og:description" content="منصة عربية داخل المتصفح لإدارة العملاء المحتملين، توليد رسائل مخصصة دون إنترنت، محاكاة الردود، حجز الاجتماعات، وإغلاق الصفقات الصغيرة بحفظ محلي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-sdr-pipeline-agent.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:16px}
+.app .out{white-space:pre-wrap;line-height:1.7}
+.app-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+.app-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.app-stats .card{text-align:center;padding:12px}
+.app-toolbar{flex-wrap:wrap;align-items:flex-end;gap:8px}
+.app-field{flex:1 1 180px;min-width:0}
+.app-form{display:grid;gap:10px}
+.app-form label{display:block;margin-bottom:4px}
+.app-list{display:grid;gap:8px;margin-top:10px}
+.app-meeting{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--gold-dim);padding:6px 0;font-size:.9rem}
+.app-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
+.app-cal-head{text-align:center;color:var(--gold);font-size:.78rem;padding:4px}
+.app-day{min-height:50px;border:1px solid var(--gold-dim);border-radius:6px;background:transparent;color:var(--light);cursor:pointer;padding:4px}
+.app-day:hover,.app-day:focus-visible{border-color:var(--gold-bright)}
+.app-day.is-selected{border-color:var(--gold-bright);box-shadow:0 0 0 2px var(--gold-dim)}
+.app-day.has-meeting{background:rgba(212,175,55,.14)}
+.app-day.is-empty{border:0;visibility:hidden}
+.app-stagebar{display:flex;gap:4px;margin:10px 0}
+.app-stage{flex:1;text-align:center;padding:6px 3px;border:1px solid var(--gold-dim);border-radius:5px;background:rgba(255,255,255,.04);font-size:.72rem}
+.app-stage.is-done{background:var(--gold-dim);color:var(--dark)}
+.app-stage.is-current{border-color:var(--gold-bright);color:var(--gold-bright)}
+.app-log{display:grid;gap:6px;max-height:190px;overflow:auto;font-size:.86rem}
+.app-msg{min-height:96px}
+.app-hint{font-size:.82rem;color:var(--gold-dim)}
+.app-actions{flex-wrap:wrap;gap:8px}
+.app-hidden{display:none!important}
+@media(max-width:800px){.app-grid{grid-template-columns:1fr}.app-stats{grid-template-columns:repeat(2,1fr)}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منصة إدارة المبيعات الذكية دون اتصال", "url": "https://mdm1.org/apps/local-sdr-pipeline-agent.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل المنصة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل القواعد والتفاعل والحفظ يعمل محليًا داخل المتصفح دون أي طلبات شبكة."}}, {"@type": "Question", "name": "أين تُحفظ بيانات العملاء والاجتماعات؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في localStorage على جهازك، ويظهر مؤشر الحالة أعلى التطبيق إذا تعذر الحفظ."}}, {"@type": "Question", "name": "كيف يولّد الوكيل الرسائل المخصصة؟", "acceptedAnswer": {"@type": "Answer", "text": "يستخدم قواعد محلية تجمع اسم الشركة والقطاع والاحتياج والنبرة وقيمة الصفقة لصياغة رسالة قابلة للنسخ."}}, {"@type": "Question", "name": "هل ترسل المنصة رسائل فعلية أو تحجز مواعيد خارجية؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الرسائل والردود والاجتماعات كلها محاكاة محلية داخل التطبيق فقط."}}, {"@type": "Question", "name": "هل يمكن تبديل لغة الواجهة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، من قائمة اللغة أعلى التطبيق بين العربية والإنجليزية، مع بقاء بياناتك كما هي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منصة إدارة المبيعات الذكية دون اتصال</h1>
+  <p class="page-sub">منصة عربية داخل المتصفح لإدارة العملاء المحتملين، توليد رسائل مخصصة دون إنترنت، محاكاة الردود، حجز الاجتماعات، وإغلاق الصفقات الصغيرة بحفظ محلي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك إدارة دورة مبيعات كاملة لعميل محتمل داخل المتصفح دون خادم أو اتصال بالإنترنت. أضف الشركة وبيانات التواصل، ثم يزودك وكيل قواعد محلي برسالة مخصصة حسب القطاع والاحتياج والنبرة، ويحاكي رد العميل، ويقترح الخطوة التالية، ويحجز اجتماعًا على تقويم تفاعلي، ويدفع الصفقة منخفضة القيمة عبر مراحلها حتى الإغلاق. تُحفظ الشركات والاجتماعات وسجل النشاط في localStorage، ويمكن تبديل لغة الواجهة بين العربية والإنجليزية في أي وقت. كل التفاعل هنا محاكاة تدريبية محلية؛ لا تُرسل رسائل فعلية ولا تُنقل البيانات خارج جهازك.</p>
+<div class="app" id="salesApp" dir="rtl" lang="ar">
+  <div class="row app-toolbar">
+    <div class="app-field">
+      <label for="langSelect" data-i18n="lang">اللغة</label>
+      <select id="langSelect" class="select" data-i18n-aria="langAria" aria-label="لغة الواجهة">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <button type="button" class="sec" id="sampleBtn" data-i18n="sample">تحميل مثال</button>
+    <button type="button" class="sec" id="resetBtn" data-i18n="reset">مسح البيانات</button>
+    <span class="badge" id="storageBadge">حفظ محلي مفعّل</span>
+  </div>
+  <div class="app-stats">
+    <div class="card"><div class="big" id="statLeads">0</div><span class="app-hint" data-i18n="statLeads">عميل محتمل</span></div>
+    <div class="card"><div class="big" id="statMeetings">0</div><span class="app-hint" data-i18n="statMeetings">اجتماع محجوز</span></div>
+    <div class="card"><div class="big" id="statWon">0</div><span class="app-hint" data-i18n="statWon">صفقة مغلقة</span></div>
+    <div class="card"><div class="big" id="statValue">0 ر.س</div><span class="app-hint" data-i18n="statValue">قيمة الصفقات المغلقة</span></div>
+  </div>
+  <div class="app-grid">
+    <section class="card" aria-labelledby="addLeadTitle">
+      <h2 id="addLeadTitle" data-i18n="addLead">إضافة عميل محتمل</h2>
+      <form id="leadForm" class="app-form" novalidate>
+        <div class="row">
+          <div class="app-field">
+            <label for="companyName" data-i18n="company">اسم الشركة</label>
+            <input id="companyName" class="input" type="text" maxlength="80" autocomplete="organization" placeholder="مثال: شركة أفق" data-i18n-ph="companyPh">
+          </div>
+          <div class="app-field">
+            <label for="contactName" data-i18n="contact">اسم جهة الاتصال</label>
+            <input id="contactName" class="input" type="text" maxlength="60" autocomplete="name" placeholder="مثال: سارة العتيبي" data-i18n-ph="contactPh">
+          </div>
+        </div>
+        <div class="row">
+          <div class="app-field">
+            <label for="sectorSelect" data-i18n="sector">القطاع</label>
+            <select id="sectorSelect" class="select">
+              <option value="tech" data-i18n="sector_tech">تقنية</option>
+              <option value="retail" data-i18n="sector_retail">تجزئة</option>
+              <option value="services" data-i18n="sector_services">خدمات</option>
+              <option value="industry" data-i18n="sector_industry">صناعة</option>
+              <option value="health" data-i18n="sector_health">صحة</option>
+              <option value="education" data-i18n="sector_education">تعليم</option>
+              <option value="other" data-i18n="sector_other">أخرى</option>
+            </select>
+          </div>
+          <div class="app-field">
+            <label for="leadValue" data-i18n="value">قيمة الصفقة (ر.س)</label>
+            <input id="leadValue" class="input" type="number" min="100" max="5000" step="100" value="2500" inputmode="numeric">
+          </div>
+        </div>
+        <div class="app-field">
+          <label for="painPoint" data-i18n="pain">الاحتياج أو التحدي</label>
+          <textarea id="painPoint" class="textarea" rows="3" maxlength="240" placeholder="اكتب التحدي الذي يواجه العميل" data-i18n-ph="painPh"></textarea>
+        </div>
+        <div class="row app-toolbar">
+          <button type="submit" id="addLeadBtn" data-i18n="add">إضافة العميل إلى القائمة</button>
+          <span class="app-hint" data-i18n="lowNote">المسار السريع مخصص للصفقات حتى 5000 ر.س.</span>
+        </div>
+        <div class="out" id="formError" role="alert" hidden></div>
+      </form>
+      <div class="divider"></div>
+      <label for="leadSelect" data-i18n="leadSelect">العميل النشط</label>
+      <select id="leadSelect" class="select"></select>
+      <div class="out" id="emptyLeads" hidden></div>
+    </section>
+    <section class="card" aria-labelledby="agentTitle">
+      <h2 id="agentTitle" data-i18n="agentTitle">وكيل التواصل الذكي</h2>
+      <div class="row">
+        <div class="app-field">
+          <strong id="activeLeadName">لا عميل نشط</strong>
+          <div class="app-hint" id="activeLeadMeta">اختر عميلًا أو أضف عميلًا جديدًا لعرض ملفه وتوليد رسالة.</div>
+        </div>
+        <span class="badge" id="activeBadge" hidden></span>
+      </div>
+      <div class="row app-toolbar">
+        <div class="app-field">
+          <label for="toneSelect" data-i18n="tone">نبرة الرسالة</label>
+          <select id="toneSelect" class="select">
+            <option value="formal" data-i18n="toneFormal">رسمية</option>
+            <option value="warm" data-i18n="toneWarm">ودّية</option>
+            <option value="direct" data-i18n="toneDirect">مباشرة</option>
+            <option value="brief" data-i18n="toneBrief">مختصرة</option>
+          </select>
+        </div>
+        <button type="button" id="generateMsgBtn" data-i18n="generate">توليد رسالة مخصصة</button>
+        <button type="button" class="sec" id="copyMsgBtn" data-i18n="copy">نسخ الرسالة</button>
+        <span class="app-hint" id="copyStatus" aria-live="polite"></span>
+      </div>
+      <div class="out app-msg" id="messageOut" aria-live="polite">لم تُولّد رسالة لهذا العميل بعد.</div>
+      <div class="row app-toolbar">
+        <div class="app-field">
+          <label for="replyType" data-i18n="replyType">نوع الرد</label>
+          <select id="replyType" class="select">
+            <option value="interested" data-i18n="replyInterested">مهتم ويطلب تفاصيل</option>
+            <option value="price" data-i18n="replyPrice">يسأل عن السعر</option>
+            <option value="later" data-i18n="replyLater">مشغول الآن</option>
+            <option value="no" data-i18n="replyNo">غير مهتم</option>
+          </select>
+        </div>
+        <button type="button" class="sec" id="simulateReplyBtn" data-i18n="simulate">محاكاة رد العميل</button>
+      </div>
+      <div class="out" id="replyOut" aria-live="polite">ولّد رسالة أولًا ثم حاكِ رد العميل.</div>
+      <div class="out" id="nextStepOut" aria-live="polite">ستظهر هنا الخطوة التالية المقترحة.</div>
+    </section>
+  </div>
+  <div class="app-grid">
+    <section class="card" aria-labelledby="calTitle">
+      <h2 id="calTitle" data-i18n="calendarTitle">تقويم الاجتماعات</h2>
+      <div class="app-hint" id="selectedDateLabel"></div>
+      <div class="row app-toolbar">
+        <button type="button" class="sec" id="prevMonthBtn" data-i18n-aria="prevMonth" aria-label="الشهر السابق">‹</button>
+        <strong id="calLabel"></strong>
+        <button type="button" class="sec" id="nextMonthBtn" data-i18n-aria="nextMonth" aria-label="الشهر التالي">›</button>
+        <div class="app-field">
+          <label for="meetingTime" data-i18n="meetingTime">وقت الاجتماع</label>
+          <select id="meetingTime" class="select">
+            <option value="08:00">08:00</option>
+            <option value="09:00">09:00</option>
+            <option value="10:00" selected>10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+          </select>
+        </div>
+        <button type="button" id="bookMeetingBtn" data-i18n="book">حجز الاجتماع</button>
+      </div>
+      <div class="app-calendar" id="calendarGrid"></div>
+      <div class="out" id="calendarMsg" role="status" hidden></div>
+      <div class="app-list" id="meetingList"></div>
+      <div class="out" id="meetingEmpty">لا توجد اجتماعات محجوزة بعد.</div>
+    </section>
+    <section class="card" aria-labelledby="dealTitle">
+      <h2 id="dealTitle" data-i18n="dealTitle">مسار الصفقة</h2>
+      <div class="app-stagebar" id="dealStageBar"></div>
+      <div class="app-hint" id="dealSummary">أضف عميلًا لعرض مسار الصفقة.</div>
+      <div class="row app-actions">
+        <button type="button" id="advanceStageBtn" data-i18n="advance">المرحلة التالية</button>
+        <button type="button" class="sec" id="wonBtn" data-i18n="won">إغلاق ناجح</button>
+        <button type="button" class="sec" id="lostBtn" data-i18n="lost">إغلاق خاسر</button>
+      </div>
+      <div class="out" id="dealNote">أضف عميلًا لعرض مسار الصفقة.</div>
+    </section>
+  </div>
+  <section class="card" aria-labelledby="activityTitle">
+    <h2 id="activityTitle" data-i18n="activityTitle">سجل النشاط</h2>
+    <div class="app-log" id="activityLog"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل المنصة دون اتصال بالإنترنت؟</h3><p>نعم، كل القواعد والتفاعل والحفظ يعمل محليًا داخل المتصفح دون أي طلبات شبكة.</p><h3>أين تُحفظ بيانات العملاء والاجتماعات؟</h3><p>تُحفظ في localStorage على جهازك، ويظهر مؤشر الحالة أعلى التطبيق إذا تعذر الحفظ.</p><h3>كيف يولّد الوكيل الرسائل المخصصة؟</h3><p>يستخدم قواعد محلية تجمع اسم الشركة والقطاع والاحتياج والنبرة وقيمة الصفقة لصياغة رسالة قابلة للنسخ.</p><h3>هل ترسل المنصة رسائل فعلية أو تحجز مواعيد خارجية؟</h3><p>لا، الرسائل والردود والاجتماعات كلها محاكاة محلية داخل التطبيق فقط.</p><h3>هل يمكن تبديل لغة الواجهة؟</h3><p>نعم، من قائمة اللغة أعلى التطبيق بين العربية والإنجليزية، مع بقاء بياناتك كما هي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+const KEY='md_sales_local_v1', LOW=5000;
+const SECTORS=['tech','retail','services','industry','health','education','other'];
+const STAGES=['new','qualified','proposal','negotiation','won'];
+const $=function(id){return document.getElementById(id);};
+const pad=function(n){return String(n).padStart(2,'0');};
+const D={
+ar:{
+lang:'اللغة',langAria:'لغة الواجهة',sample:'تحميل مثال',reset:'مسح البيانات',storageOk:'حفظ محلي مفعّل',storageFail:'تعذر الحفظ المحلي',
+statLeads:'عميل محتمل',statMeetings:'اجتماع محجوز',statWon:'صفقة مغلقة',statValue:'قيمة الصفقات المغلقة',
+addLead:'إضافة عميل محتمل',company:'اسم الشركة',contact:'اسم جهة الاتصال',sector:'القطاع',value:'قيمة الصفقة (ر.س)',pain:'الاحتياج أو التحدي',companyPh:'مثال: شركة أفق',contactPh:'مثال: سارة العتيبي',painPh:'اكتب التحدي الذي يواجه العميل',add:'إضافة العميل إلى القائمة',lowNote:'المسار السريع مخصص للصفقات حتى 5000 ر.س.',
+leadSelect:'العميل النشط',noLeadsOption:'لا يوجد عملاء',emptyLeads:'لا يوجد عملاء بعد. أضف أول عميل أو حمّل بيانات تجريبية.',
+agentTitle:'وكيل التواصل الذكي',noActiveTitle:'لا عميل نشط',noActive:'اختر عميلًا أو أضف عميلًا جديدًا لعرض ملفه وتوليد رسالة.',
+tone:'نبرة الرسالة',toneFormal:'رسمية',toneWarm:'ودّية',toneDirect:'مباشرة',toneBrief:'مختصرة',generate:'توليد رسالة مخصصة',copy:'نسخ الرسالة',messageEmpty:'لم تُولّد رسالة لهذا العميل بعد.',copyOk:'نُسخت الرسالة.',copyFail:'تعذر النسخ؛ حدد النص يدويًا.',
+replyType:'نوع الرد',replyInterested:'مهتم ويطلب تفاصيل',replyPrice:'يسأل عن السعر',replyLater:'مشغول الآن',replyNo:'غير مهتم',simulate:'محاكاة رد العميل',replyEmpty:'ولّد رسالة أولًا ثم حاكِ رد العميل.',planEmpty:'ستظهر هنا الخطوة التالية المقترحة.',
+calendarTitle:'تقويم الاجتماعات',prevMonth:'الشهر السابق',nextMonth:'الشهر التالي',meetingTime:'وقت الاجتماع',book:'حجز الاجتماع',selectedDate:'التاريخ المختار: {date}',meetingEmpty:'لا توجد اجتماعات محجوزة بعد.',meetingsCount:'{n} اجتماع',cancel:'إلغاء',
+dealTitle:'مسار الصفقة',dealValue:'القيمة',dealStage:'المرحلة',fastOn:'مسار سريع',fastOff:'فوق حد المسار السريع',advance:'المرحلة التالية',advanceWait:'أغلق الصفقة بالأزرار أدناه',won:'إغلاق ناجح',lost:'إغلاق خاسر',dealNoLead:'أضف عميلًا لعرض مسار الصفقة.',meetingsCountShort:'{n} اجتماع',
+activityTitle:'سجل النشاط',activityEmpty:'لا نشاط مسجل بعد.',
+sector_tech:'تقنية',sector_retail:'تجزئة',sector_services:'خدمات',sector_industry:'صناعة',sector_health:'صحة',sector_education:'تعليم',sector_other:'أخرى',
+stage_new:'جديد',stage_qualified:'مؤهل',stage_proposal:'عرض',stage_negotiation:'تفاوض',stage_won:'مغلق ناجح',stage_lost:'مغلق خاسر',
+sar:'ر.س',selectFirst:'اختر عميلًا نشطًا أولًا.',needMessage:'ولّد رسالة أولًا قبل محاكاة الرد.',invalidCompany:'اكتب اسم شركة من حرفين على الأقل.',invalidContact:'اكتب اسم جهة اتصال من حرفين على الأقل.',invalidValue:'أدخل قيمة بين 100 و5000 ر.س.',invalidPain:'اكتب الاحتياج في خمسة أحرف على الأقل.',errorFix:'راجع الحقول المطلوبة ثم أعد المحاولة.',
+meetingBooked:'حُجز الاجتماع يوم {date} الساعة {time}.',meetingDuplicate:'يوجد اجتماع لهذا العميل في التاريخ والوقت نفسه.',pastDate:'اختر تاريخ اليوم أو تاريخًا لاحقًا.',meetingCancelled:'أُلغي الاجتماع.',wonDone:'أُغلقت الصفقة ناجحة. يمكنك مراجعة السجل.',lostDone:'أُغلقت الصفقة خاسرة.',confirmLost:'هل تريد إغلاق هذه الصفقة كخاسرة؟',confirmReset:'هل تريد مسح كل البيانات المحلية؟ لا يمكن التراجع.',
+dealLow:'صفقة منخفضة القيمة: استخدم المراحل ثم أغلقها ناجحة أو خاسرة.',dealHigh:'قيمة الصفقة أعلى من حد المسار السريع (5000 ر.س).',
+logAdded:'أُضيف {name}.',logMessage:'وُلّدت رسالة لـ {name}.',logReply:'حُوكي رد {name}.',logBooked:'حُجز اجتماع مع {name} يوم {date} الساعة {time}.',logCancelled:'أُلغي اجتماع مع {name}.',logStage:'انتقلت صفقة {name} إلى مرحلة {stage}.',logWon:'أُغلقت صفقة {name} ناجحة بقيمة {value}.',logLost:'أُغلقت صفقة {name} خاسرة.',logSample:'حُمّلت بيانات تجريبية.',logReset:'مُسحت جميع البيانات.'
+},
+en:{
+lang:'Language',langAria:'Interface language',sample:'Load sample',reset:'Clear data',storageOk:'Local saving on',storageFail:'Local saving unavailable',
+statLeads:'Leads',statMeetings:'Booked meetings',statWon:'Won deals',statValue:'Won value',
+addLead:'Add a lead',company:'Company name',contact:'Contact name',sector:'Sector',value:'Deal value (SAR)',pain:'Need or challenge',companyPh:'Example: Horizon Ltd',contactPh:'Example: Sara Ali',painPh:'Describe the customer challenge',add:'Add lead to list',lowNote:'Fast track is designed for deals up to SAR 5,000.',
+leadSelect:'Active lead',noLeadsOption:'No leads yet',emptyLeads:'No leads yet. Add your first lead or load sample data.',
+agentTitle:'Smart outreach agent',noActiveTitle:'No active lead',noActive:'Select a lead or add a new one to view its profile and generate a message.',
+tone:'Message tone',toneFormal:'Formal',toneWarm:'Warm',toneDirect:'Direct',toneBrief:'Brief',generate:'Generate tailored message',copy:'Copy message',messageEmpty:'No message has been generated for this lead yet.',copyOk:'Message copied.',copyFail:'Copy failed; select the text manually.',
+replyType:'Reply type',replyInterested:'Interested and asks for details',replyPrice:'Asks about price',replyLater:'Busy right now',replyNo:'Not interested',simulate:'Simulate customer reply',replyEmpty:'Generate a message first, then simulate a reply.',planEmpty:'The suggested next step will appear here.',
+calendarTitle:'Meeting calendar',prevMonth:'Previous month',nextMonth:'Next month',meetingTime:'Meeting time',book:'Book meeting',selectedDate:'Selected date: {date}',meetingEmpty:'No meetings booked yet.',meetingsCount:'{n} meeting(s)',cancel:'Cancel',
+dealTitle:'Deal pipeline',dealValue:'Value',dealStage:'Stage',fastOn:'Fast track',fastOff:'Above fast-track limit',advance:'Next stage',advanceWait:'Close the deal with the buttons below',won:'Mark won',lost:'Mark lost',dealNoLead:'Add a lead to view the deal pipeline.',meetingsCountShort:'{n} meetings',
+activityTitle:'Activity log',activityEmpty:'No activity recorded yet.',
+sector_tech:'Technology',sector_retail:'Retail',sector_services:'Services',sector_industry:'Industry',sector_health:'Healthcare',sector_education:'Education',sector_other:'Other',
+stage_new:'New',stage_qualified:'Qualified',stage_proposal:'Proposal',stage_negotiation:'Negotiation',stage_won:'Won',stage_lost:'Lost',
+sar:'SAR',selectFirst:'Select an active lead first.',needMessage:'Generate a message before simulating a reply.',invalidCompany:'Enter a company name of at least two characters.',invalidContact:'Enter a contact name of at least two characters.',invalidValue:'Enter a value between 100 and 5,000 SAR.',invalidPain:'Describe the need in at least five characters.',errorFix:'Review the required fields and try again.',
+meetingBooked:'Meeting booked on {date} at {time}.',meetingDuplicate:'This lead already has a meeting at that date and time.',pastDate:'Choose today or a later date.',meetingCancelled:'Meeting cancelled.',wonDone:'Deal marked as won. Check the activity log.',lostDone:'Deal marked as lost.',confirmLost:'Mark this deal as lost?',confirmReset:'Clear all locally saved data? This cannot be undone.',
+dealLow:'Low-value deal: move through the stages, then mark it won or lost.',dealHigh:'Deal value is above the fast-track limit (SAR 5,000).',
+logAdded:'Added {name}.',logMessage:'Generated a message for {name}.',logReply:'Simulated a reply from {name}.',logBooked:'Booked a meeting with {name} on {date} at {time}.',logCancelled:'Cancelled a meeting with {name}.',logStage:'Moved {name} to the {stage} stage.',logWon:'Closed {name} as won for {value}.',logLost:'Closed {name} as lost.',logSample:'Loaded sample data.',logReset:'Cleared all data.'
+}
+};
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function parseYmd(s){const a=String(s).split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);}
+function todayYmd(){return ymd(new Date());}
+function addDays(s,n){const d=parseYmd(s);d.setDate(d.getDate()+n);return ymd(d);}
+function defaultState(){
+ const d=new Date();
+ return {lang:'ar',leads:[],meetings:[],activeId:null,selectedDate:ymd(d),viewDate:d.getFullYear()+'-'+pad(d.getMonth()+1),seq:1,logs:[]};
+}
+let state=defaultState();
+let storageOk=true;
+function t(k,p){
+ const dict=D[state.lang]||D.ar;
+ let s=dict[k]!==undefined?dict[k]:(D.ar[k]!==undefined?D.ar[k]:k);
+ return String(s).replace(/\{(\w+)\}/g,function(_,key){return p&&p[key]!==undefined?p[key]:'';});
+}
+function money(v){const n=Number(v)||0;return n.toLocaleString(state.lang==='ar'?'ar-EG':'en-US',{maximumFractionDigits:0})+' '+t('sar');}
+function fmtDate(s,short){const d=parseYmd(s);return new Intl.DateTimeFormat(state.lang==='ar'?'ar-EG':'en-GB',short?{day:'numeric',month:'short'}:{weekday:'long',day:'numeric',month:'long'}).format(d);}
+function timeOf(iso){try{return new Intl.DateTimeFormat(state.lang==='ar'?'ar-EG':'en-GB',{hour:'2-digit',minute:'2-digit'}).format(new Date(iso));}catch(e){return '';}}
+function activeLead(){return state.leads.find(function(l){return l.id===state.activeId;})||null;}
+function stageName(s){return t('stage_'+s);}
+function sectorName(s){return t('sector_'+(SECTORS.indexOf(s)>=0?s:'other'));}
+function suggestDate(){
+ const today=todayYmd();
+ let d=state.selectedDate;
+ if(!d||!/^\d{4}-\d{2}-\d{2}$/.test(d)||d<today) d=addDays(today,2);
+ return d;
+}
+function addLog(key,params){state.logs.unshift({key:key,params:params||{},at:new Date().toISOString()});state.logs=state.logs.slice(0,40);}
+function updateStorage(){const b=$('storageBadge');if(b)b.textContent=storageOk?t('storageOk'):t('storageFail');}
+function persist(){
+ try{localStorage.setItem(KEY,JSON.stringify(state));storageOk=true;}
+ catch(e){storageOk=false;}
+ updateStorage();
+}
+function applyText(){
+ const app=$('salesApp');if(!app)return;
+ app.lang=state.lang;app.dir=state.lang==='ar'?'rtl':'ltr';
+ app.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=t(el.getAttribute('data-i18n'));});
+ app.querySelectorAll('[data-i18n-ph]').forEach(function(el){el.setAttribute('placeholder',t(el.getAttribute('data-i18n-ph')));});
+ app.querySelectorAll('[data-i18n-aria]').forEach(function(el){el.setAttribute('aria-label',t(el.getAttribute('data-i18n-aria')));});
+ $('langSelect').value=state.lang;
+ updateStorage();
+}
+function renderLeads(){
+ const sel=$('leadSelect');if(!sel)return;
+ if(state.leads.length&&!state.leads.some(function(l){return l.id===state.activeId;})) state.activeId=state.leads[0].id;
+ sel.innerHTML='';
+ if(!state.leads.length){
+  const o=document.createElement('option');o.value='';o.id='leadOptionEmpty';o.textContent=t('noLeadsOption');sel.appendChild(o);sel.disabled=true;
+  $('emptyLeads').textContent=t('emptyLeads');$('emptyLeads').hidden=false;return;
+ }
+ sel.disabled=false;
+ state.leads.forEach(function(l){
+  const o=document.createElement('option');o.value=l.id;o.id='leadOption-'+l.id;o.textContent=l.company+' — '+l.contact;
+  if(l.id===state.activeId)o.selected=true;
+  sel.appendChild(o);
+ });
+ $('emptyLeads').hidden=true;
+}
+function renderStats(){
+ const won=state.leads.filter(function(l){return l.status==='won';});
+ $('statLeads').textContent=state.leads.length;
+ $('statMeetings').textContent=state.meetings.length;
+ $('statWon').textContent=won.length;
+ $('statValue').textContent=money(won.reduce(function(s,l){return s+(Number(l.value)||0);},0));
+}
+function renderAgent(){
+ const l=activeLead(),tone=$('toneSelect'),reply=$('replyType');
+ $('copyStatus').textContent='';
+ if(!l){
+  $('activeLeadName').textContent=t('noActiveTitle');$('activeLeadMeta').textContent=t('noActive');$('activeBadge').hidden=true;
+  $('messageOut').textContent=t('messageEmpty');$('replyOut').textContent=t('replyEmpty');$('nextStepOut').textContent=t('planEmpty');
+  tone.disabled=true;reply.disabled=true;$('generateMsgBtn').disabled=true;$('copyMsgBtn').disabled=true;$('simulateReplyBtn').disabled=true;return;
+ }
+ $('activeLeadName').textContent=l.company;
+ $('activeLeadMeta').textContent=l.contact+' • '+sectorName(l.sector)+' • '+money(l.value);
+ const badge=$('activeBadge');badge.hidden=false;badge.textContent=stageName(l.status);
+ tone.disabled=false;reply.disabled=false;
+ const tones=['formal','warm','direct','brief'];tone.value=tones.indexOf(l.tone)>=0?l.tone:'formal';
+ const kinds=['interested','price','later','no'];reply.value=kinds.indexOf(l.replyKind)>=0?l.replyKind:'interested';
+ $('messageOut').textContent=l.message||t('messageEmpty');
+ $('replyOut').textContent=l.reply||t('replyEmpty');
+ $('nextStepOut').textContent=l.plan||t('planEmpty');
+ $('generateMsgBtn').disabled=false;$('copyMsgBtn').disabled=!l.message;$('simulateReplyBtn').disabled=!l.message;
+}
+function renderCalendar(){
+ const parts=state.viewDate.split('-').map(Number),y=parts[0],m=parts[1];
+ $('calLabel').textContent=new Intl.DateTimeFormat(state.lang==='ar'?'ar-EG':'en-GB',{month:'long',year:'numeric'}).format(new Date(y,m-1,1));
+ $('selectedDateLabel').textContent=t('selectedDate',{date:fmtDate(state.selectedDate)});
+ const grid=$('calendarGrid');grid.innerHTML='';
+ const locale=state.lang==='ar'?'ar-EG':'en-GB';
+ for(let i=0;i<7;i++){
+  const h=document.createElement('div');h.className='app-cal-head';h.textContent=new Intl.DateTimeFormat(locale,{weekday:'short'}).format(new Date(2024,0,7+i));grid.appendChild(h);
+ }
+ const first=new Date(y,m-1,1).getDay(),days=new Date(y,m,0).getDate();
+ for(let i=0;i<first;i++){const e=document.createElement('div');e.className='app-day is-empty';e.setAttribute('aria-hidden','true');grid.appendChild(e);}
+ for(let d=1;d<=days;d++){
+  const ds=y+'-'+pad(m)+'-'+pad(d);
+  const btn=document.createElement('button');btn.type='button';btn.className='app-day';btn.id='calendar-day-'+ds;btn.dataset.date=ds;btn.textContent=String(d);
+  const count=state.meetings.filter(function(x){return x.date===ds;}).length;
+  if(count){btn.classList.add('has-meeting');btn.appendChild(document.createTextNode(' '));const b=document.createElement('span');b.className='badge';b.textContent=count;btn.appendChild(b);}
+  if(ds===state.selectedDate)btn.classList.add('is-selected');
+  btn.setAttribute('aria-label',fmtDate(ds)+(count?' — '+t('meetingsCount',{n:count}):''));
+  grid.appendChild(btn);
+ }
+ const ml=$('meetingList');ml.innerHTML='';
+ const sorted=state.meetings.slice().sort(function(a,b){return (a.date+' '+a.time).localeCompare(b.date+' '+b.time);});
+ $('meetingEmpty').hidden=!!sorted.length;
+ $('meetingEmpty').textContent=t('meetingEmpty');
+ sorted.forEach(function(m){
+  const lead=state.leads.find(function(x){return x.id===m.leadId;});
+  const row=document.createElement('div');row.className='app-meeting';
+  const info=document.createElement('span');info.textContent=(lead?lead.company:'—')+' • '+fmtDate(m.date,true)+' • '+m.time;
+  const b=document.createElement('button');b.type='button';b.className='sec';b.id='cancel-meeting-'+m.id;b.dataset.meeting=m.id;b.textContent=t('cancel');
+  row.appendChild(info);row.appendChild(b);ml.appendChild(row);
+ });
+}
+function renderDeal(){
+ const l=activeLead(),bar=$('dealStageBar'),sum=$('dealSummary'),note=$('dealNote'),adv=$('advanceStageBtn'),won=$('wonBtn'),lost=$('lostBtn');
+ bar.innerHTML='';
+ STAGES.forEach(function(s){
+  const el=document.createElement('div');el.className='app-stage';el.textContent=stageName(s);bar.appendChild(el);
+ });
+ if(!l){sum.textContent=t('dealNoLead');note.textContent=t('dealNoLead');adv.disabled=true;won.disabled=true;lost.disabled=true;return;}
+ const idx=STAGES.indexOf(l.status);
+ Array.prototype.forEach.call(bar.children,function(el,i){if(idx>=0){if(i<idx)el.classList.add('is-done');if(i===idx)el.classList.add('is-current');}});
+ const count=state.meetings.filter(function(m){return m.leadId===l.id;}).length;
+ sum.textContent=t('dealValue')+': '+money(l.value)+' • '+t('dealStage')+': '+stageName(l.status)+' • '+t('meetingsCountShort',{n:count})+' • '+(Number(l.value)<=LOW?t('fastOn'):t('fastOff'));
+ const terminal=l.status==='won'||l.status==='lost';
+ adv.disabled=terminal||l.status==='negotiation';won.disabled=terminal;lost.disabled=terminal;
+ adv.textContent=l.status==='negotiation'?t('advanceWait'):t('advance');
+ note.textContent=terminal?(l.status==='won'?t('wonDone'):t('lostDone')):(Number(l.value)<=LOW?t('dealLow'):t('dealHigh'));
+}
+function renderLog(){
+ const box=$('activityLog');box.innerHTML='';
+ if(!state.logs.length){box.textContent=t('activityEmpty');return;}
+ state.logs.forEach(function(item){
+  const row=document.createElement('div');row.textContent=timeOf(item.at)+' — '+t(item.key,item.params||{});box.appendChild(row);
+ });
+}
+function refresh(){applyText();renderLeads();renderStats();renderAgent();renderCalendar();renderDeal();renderLog();}
+function buildMessage(l){
+ const sec=sectorName(l.sector),date=fmtDate(suggestDate(),true),cash=money(l.value),tone=l.tone||'formal';
+ if(state.lang==='ar'){
+  const map={
+   formal:'السلام عليكم '+l.contact+'،\nأكتب إليك بخصوص '+l.company+' في قطاع '+sec+'. لاحظت أن أبرز تحدٍ لديكم هو '+l.pain+'. يمكننا تقديم حل عملي يقلل الخطوات المكررة ويوضح الأولويات دون التزام طويل، وبقيمة تقديرية '+cash+'.\nأقترح جلسة قصيرة مدتها 15 دقيقة يوم '+date+' لمناقشة الملاءمة. هل يناسبكم ذلك؟\nمع التقدير، فريق تطوير الأعمال',
+   warm:'مرحبًا '+l.contact+'،\nأتمنى أن يكون يومك جيدًا. أتابع '+l.company+' في قطاع '+sec+'، ولفت انتباهي تركيزكم على '+l.pain+'. أعتقد أن لدينا طريقة بسيطة تساعدكم على ترتيب الأولويات وتوفير الوقت، ضمن نطاق '+cash+'.\nهل نلتقي 15 دقيقة يوم '+date+' لنرى إن كانت الفكرة مفيدة لكم؟\nشكرًا لك، فريق تطوير الأعمال',
+   direct:l.contact+'،\nسأدخل في الموضوع مباشرة: '+l.company+' تحتاج إلى معالجة '+l.pain+' دون تعقيد. لدينا مسار عملي بقيمة '+cash+' يمكن تجربته سريعًا.\nهل يناسبك اجتماع 15 دقيقة يوم '+date+'؟\nفريق تطوير الأعمال',
+   brief:'مرحبًا '+l.contact+'،\n'+l.company+' • '+sec+' • '+l.pain+'. لدينا حل عملي بقيمة '+cash+'. هل يناسبك 15 دقيقة يوم '+date+'؟\nفريق تطوير الأعمال'
+  };
+  return map[tone]||map.formal;
+ }
+ const map={
+  formal:'Hello '+l.contact+',\nI am reaching out about '+l.company+' in the '+sec+' sector. I understand your main challenge is '+l.pain+'. We can offer a practical solution that reduces repetitive steps and clarifies priorities without a long commitment, with an estimated value of '+cash+'.\nWould a 15-minute meeting on '+date+' work to discuss the fit?\nBest regards,\nBusiness Development Team',
+  warm:'Hi '+l.contact+',\nI hope your day is going well. I follow '+l.company+' in the '+sec+' sector, and your focus on '+l.pain+' caught my attention. We have a simple way to help organize priorities and save time within a '+cash+' range.\nCould we meet for 15 minutes on '+date+' to see if this is useful?\nThanks,\nBusiness Development Team',
+  direct:l.contact+',\nStraight to the point: '+l.company+' needs to address '+l.pain+' without extra complexity. We have a practical path at '+cash+' that can be tested quickly.\nDoes a 15-minute meeting on '+date+' work?\nBusiness Development Team',
+  brief:'Hi '+l.contact+',\n'+l.company+' • '+sec+' • '+l.pain+'. We have a practical option at '+cash+'. Does 15 minutes on '+date+' work?\nBusiness Development Team'
+ };
+ return map[tone]||map.formal;
+}
+function buildReply(l,kind){
+ const date=fmtDate(suggestDate(),true),cash=money(l.value);
+ if(state.lang==='ar'){
+  if(kind==='interested')return 'نعم، الفكرة تهمّني. أريد معرفة الخطوات الأولى بوضوح، وهل يمكن أن نلتقي '+date+'؟';
+  if(kind==='price')return 'قبل الاجتماع، ما السعر النهائي وما الذي يشمله؟ نحتاج إلى نطاق واضح لا يتجاوز '+cash+'.';
+  if(kind==='later')return 'أنا مشغول هذا الأسبوع. أرسل لي ملخصًا قصيرًا وأعد التواصل بعد خمسة أيام.';
+  return 'شكرًا، لسنا مهتمين حاليًا. لدينا أولويات أخرى هذا الربع.';
+ }
+ if(kind==='interested')return 'Yes, this sounds relevant. I want to understand the first steps, and can we meet on '+date+'?';
+ if(kind==='price')return 'Before we meet, what is the final price and what does it include? We need a clear scope under '+cash+'.';
+ if(kind==='later')return 'I am busy this week. Send a short summary and follow up in five days.';
+ return 'Thanks, we are not interested right now. We have other priorities this quarter.';
+}
+function buildPlan(l,kind){
+ const date=fmtDate(suggestDate(),true),cash=money(l.value);
+ if(state.lang==='ar'){
+  if(kind==='interested')return 'احجز اجتماعًا يوم '+date+' من التقويم، ثم أرسل جدولًا من ثلاث نقاط قبل اللقاء.';
+  if(kind==='price')return 'أرسل عرضًا واضحًا يحدد النطاق والسعر '+cash+' دون إضافات مبهمة، ثم انقل الصفقة إلى مرحلة العرض.';
+  if(kind==='later')return 'أنشئ متابعة بعد خمسة أيام برسالة قصيرة تركز على فائدة واحدة قابلة للقياس.';
+  return 'لا تضغط. أغلق الصفقة كخاسرة إن كان الرفض نهائيًا، أو أعد المحاولة بزاوية مختلفة بعد 30 يومًا.';
+ }
+ if(kind==='interested')return 'Book the meeting on '+date+' from the calendar, then send a three-point agenda before the call.';
+ if(kind==='price')return 'Send a clear proposal with the scope and the '+cash+' price, then move the deal to the proposal stage.';
+ if(kind==='later')return 'Create a follow-up in five days with a short message focused on one measurable benefit.';
+ return 'Do not push. Mark the deal lost if the rejection is final, or retry with a different angle after 30 days.';
+}
+function showCal(msg){const el=$('calendarMsg');el.textContent=msg;el.hidden=false;}
+function addLead(){
+ const company=$('companyName').value.trim(),contact=$('contactName').value.trim(),pain=$('painPoint').value.trim();
+ const value=Math.round(Number($('leadValue').value)),sector=$('sectorSelect').value;
+ let err='';
+ if(company.length<2)err=t('invalidCompany');
+ else if(contact.length<2)err=t('invalidContact');
+ else if(!Number.isFinite(value)||value<100||value>LOW)err=t('invalidValue');
+ else if(pain.length<5)err=t('invalidPain');
+ const box=$('formError');
+ if(err){box.textContent=err+' '+t('errorFix');box.hidden=false;return;}
+ box.hidden=true;box.textContent='';
+ const lead={id:'L'+(state.seq++),company:company,contact:contact,sector:sector,value:value,pain:pain,status:'new',message:'',reply:'',replyKind:'',plan:'',tone:'formal',createdAt:new Date().toISOString()};
+ state.leads.push(lead);state.activeId=lead.id;
+ $('leadForm').reset();
+ addLog('logAdded',{name:company});
+ persist();refresh();
+ $('companyName').focus();
+}
+function generateMessage(){
+ const l=activeLead();
+ if(!l){$('messageOut').textContent=t('noActive');return;}
+ l.tone=$('toneSelect').value;
+ l.message=buildMessage(l);
+ addLog('logMessage',{name:l.company});
+ persist();refresh();
+}
+function simulateReply(){
+ const l=activeLead();
+ if(!l){$('replyOut').textContent=t('noActive');return;}
+ if(!l.message){$('replyOut').textContent=t('needMessage');return;}
+ const kind=$('replyType').value;
+ l.replyKind=kind;l.reply=buildReply(l,kind);l.plan=buildPlan(l,kind);
+ if(kind==='interested'&&(l.status==='new'||l.status==='qualified'))l.status='qualified';
+ if(kind==='price'&&(l.status==='new'||l.status==='qualified'))l.status='proposal';
+ addLog('logReply',{name:l.company});
+ persist();refresh();
+}
+function copyText(text){
+ if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(text);
+ return new Promise(function(resolve,reject){
+  const ta=document.createElement('textarea');ta.id='copyBuffer';ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy')?resolve():reject(new Error('copy'));}catch(e){reject(e);}finally{ta.remove();}
+ });
+}
+function copyMessage(){
+ const l=activeLead();
+ if(!l||!l.message){$('copyStatus').textContent=t('copyFail');return;}
+ copyText(l.message).then(function(){$('copyStatus').textContent=t('copyOk');}).catch(function(){$('copyStatus').textContent=t('copyFail');});
+}
+function shiftMonth(delta){
+ const a=state.viewDate.split('-').map(Number),d=new Date(a[0],a[1]-1+delta,1);
+ state.viewDate=d.getFullYear()+'-'+pad(d.getMonth()+1);
+ persist();renderCalendar();
+}
+function bookMeeting(){
+ const l=activeLead();
+ if(!l){showCal(t('selectFirst'));return;}
+ const date=state.selectedDate,time=$('meetingTime').value;
+ if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date)){showCal(t('selectFirst'));return;}
+ if(date<todayYmd()){showCal(t('pastDate'));return;}
+ if(state.meetings.some(function(m){return m.leadId===l.id&&m.date===date&&m.time===time;})){showCal(t('meetingDuplicate'));return;}
+ state.meetings.push({id:'M'+(state.seq++),leadId:l.id,date:date,time:time,createdAt:new Date().toISOString()});
+ if(l.status==='new')l.status='qualified';
+ addLog('logBooked',{name:l.company,date:fmtDate(date,true),time:time});
+ persist();refresh();showCal(t('meetingBooked',{date:fmtDate(date),time:time}));
+}
+function cancelMeeting(id){
+ const m=state.meetings.find(function(x){return x.id===id;});if(!m)return;
+ const lead=state.leads.find(function(x){return x.id===m.leadId;});
+ state.meetings=state.meetings.filter(function(x){return x.id!==id;});
+ addLog('logCancelled',{name:lead?lead.company:'—'});
+ persist();refresh();showCal(t('meetingCancelled'));
+}
+function advanceDeal(){
+ const l=activeLead();if(!l)return;
+ if(l.status==='negotiation'||l.status==='won'||l.status==='lost')return;
+ const i=STAGES.indexOf(l.status);
+ if(i>=0&&i<3){l.status=STAGES[i+1];addLog('logStage',{name:l.company,stage:stageName(l.status)});persist();refresh();}
+}
+function winDeal(){
+ const l=activeLead();if(!l||l.status==='won'||l.status==='lost')return;
+ l.status='won';l.closedAt=new Date().toISOString();
+ addLog('logWon',{name:l.company,value:money(l.value)});persist();refresh();
+}
+function loseDeal(){
+ const l=activeLead();if(!l||l.status==='won'||l.status==='lost')return;
+ if(!window.confirm(t('confirmLost')))return;
+ l.status='lost';l.closedAt=new Date().toISOString();
+ addLog('logLost',{name:l.company});persist();refresh();
+}
+function loadSample(){
+ const samples=[
+  {company:'شركة أفق التقنية',contact:'سارة العتيبي',sector:'tech',value:3200,pain:'تشتت بيانات العملاء بين أدوات متعددة'},
+  {company:'متجر رواق',contact:'خالد الحربي',sector:'retail',value:4800,pain:'ضعف متابعة السلات المتروكة'}
+ ];
+ let added=0;
+ samples.forEach(function(s){
+  if(state.leads.some(function(l){return l.company===s.company;}))return;
+  const lead={id:'L'+(state.seq++),company:s.company,contact:s.contact,sector:s.sector,value:s.value,pain:s.pain,status:'new',message:'',reply:'',replyKind:'',plan:'',tone:'formal',createdAt:new Date().toISOString()};
+  state.leads.push(lead);if(!added)state.activeId=lead.id;added++;
+ });
+ if(added){
+  const first=state.leads.find(function(l){return l.company===samples[0].company;});
+  if(first){
+   const date=addDays(todayYmd(),1);
+   if(!state.meetings.some(function(m){return m.leadId===first.id&&m.date===date;})){
+    state.meetings.push({id:'M'+(state.seq++),leadId:first.id,date:date,time:'10:00',createdAt:new Date().toISOString()});
+    first.status='qualified';
+   }
+  }
+  addLog('logSample');
+ }
+ persist();refresh();
+}
+function resetAll(){
+ if(!window.confirm(t('confirmReset')))return;
+ const lang=state.lang;
+ state=defaultState();state.lang=lang;
+ try{localStorage.removeItem(KEY);storageOk=true;}catch(e){storageOk=false;}
+ $('leadForm').reset();$('formError').hidden=true;$('calendarMsg').hidden=true;
+ refresh();
+}
+function hydrate(s){
+ state.lang=s.lang==='en'?'en':'ar';
+ state.leads=Array.isArray(s.leads)?s.leads.filter(function(l){return l&&l.id&&l.company;}).map(function(l){
+  return {id:String(l.id),company:String(l.company),contact:String(l.contact||''),sector:SECTORS.indexOf(l.sector)>=0?l.sector:'other',value:Math.max(0,Number(l.value)||0),pain:String(l.pain||''),status:(STAGES.indexOf(l.status)>=0||l.status==='lost')?l.status:'new',message:String(l.message||''),reply:String(l.reply||''),replyKind:String(l.replyKind||''),plan:String(l.plan||''),tone:String(l.tone||'formal'),createdAt:l.createdAt||new Date().toISOString(),closedAt:l.closedAt||null};
+ }):[];
+ state.meetings=Array.isArray(s.meetings)?s.meetings.filter(function(m){return m&&m.id&&/^\d{4}-\d{2}-\d{2}$/.test(m.date||'');}).map(function(m){
+  return {id:String(m.id),leadId:String(m.leadId||''),date:String(m.date),time:String(m.time||'10:00'),createdAt:m.createdAt||new Date().toISOString()};
+ }):[];
+ state.activeId=s.activeId?String(s.activeId):null;
+ state.selectedDate=typeof s.selectedDate==='string'?s.selectedDate:'';
+ state.viewDate=typeof s.viewDate==='string'?s.viewDate:'';
+ state.seq=Math.max(1,Number(s.seq)||1);
+ state.leads.forEach(function(l){const n=parseInt(String(l.id).replace(/\D/g,''),10);if(n>=state.seq)state.seq=n+1;});
+ state.meetings.forEach(function(m){const n=parseInt(String(m.id).replace(/\D/g,''),10);if(n>=state.seq)state.seq=n+1;});
+ state.logs=Array.isArray(s.logs)?s.logs.filter(function(x){return x&&x.key;}).slice(0,40):[];
+}
+function init(){
+ let saved=null;
+ try{const raw=localStorage.getItem(KEY);if(raw){try{saved=JSON.parse(raw);}catch(e){}}}catch(e){storageOk=false;}
+ if(saved)hydrate(saved);
+ const today=todayYmd();
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(state.selectedDate||''))state.selectedDate=today;
+ if(!/^\d{4}-\d{2}$/.test(state.viewDate||''))state.viewDate=today.slice(0,7);
+ if(state.leads.length&&!state.leads.some(function(l){return l.id===state.activeId;}))state.activeId=state.leads[0].id;
+ $('leadForm').addEventListener('submit',function(e){e.preventDefault();addLead();});
+ $('leadSelect').addEventListener('change',function(e){state.activeId=e.target.value;persist();refresh();});
+ $('langSelect').addEventListener('change',function(e){state.lang=e.target.value==='en'?'en':'ar';persist();refresh();});
+ $('sampleBtn').addEventListener('click',loadSample);
+ $('resetBtn').addEventListener('click',resetAll);
+ $('generateMsgBtn').addEventListener('click',generateMessage);
+ $('copyMsgBtn').addEventListener('click',copyMessage);
+ $('simulateReplyBtn').addEventListener('click',simulateReply);
+ $('prevMonthBtn').addEventListener('click',function(){shiftMonth(-1);});
+ $('nextMonthBtn').addEventListener('click',function(){shiftMonth(1);});
+ $('bookMeetingBtn').addEventListener('click',bookMeeting);
+ $('calendarGrid').addEventListener('click',function(e){
+  const b=e.target.closest?e.target.closest('button[data-date]'):null;if(!b)return;
+  state.selectedDate=b.getAttribute('data-date');persist();renderCalendar();
+ });
+ $('meetingList').addEventListener('click',function(e){
+  const b=e.target.closest?e.target.closest('button[data-meeting]'):null;if(!b)return;
+  cancelMeeting(b.getAttribute('data-meeting'));
+ });
+ $('advanceStageBtn').addEventListener('click',advanceDeal);
+ $('wonBtn').addEventListener('click',winDeal);
+ $('lostBtn').addEventListener('click',loseDeal);
+ refresh();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
