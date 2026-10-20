@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة بناء وكيل مكالمة صوتي بدون كود للمشاريع الصغيرة | MDM1</title>
+<meta name="description" content="اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/voice-agent-studio.html">
+<meta property="og:title" content="أداة بناء وكيل مكالمة صوتي بدون كود للمشاريع الصغيرة">
+<meta property="og:description" content="اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/voice-agent-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-container {font-family:inherit}
+.app-container .card {background:var(--dark);border:1px solid var(--gold-dim);border-radius:8px;padding:1.5rem;margin-bottom:1rem}
+.app-container .row {display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap}
+.app-container .button {background:var(--gold);color:var(--dark);border:none;padding:0.6rem 1.2rem;border-radius:4px;cursor:pointer;font-weight:600}
+.app-container .button:hover {background:var(--gold-bright)}
+.app-container .button.sec {background:transparent;border:1px solid var(--gold);color:var(--gold)}
+.app-container .button.sec:hover {background:var(--gold-dim)}
+.app-container .button.active {background:var(--gold-bright);box-shadow:0 0 0 2px var(--gold)}
+.app-container label {display:flex;align-items:center;gap:0.4rem;font-size:0.9rem}
+.app-container input, .app-container select, .app-container textarea {background:var(--dark);border:1px solid var(--gold-dim);color:var(--light);padding:0.5rem;border-radius:4px;font-family:inherit}
+.app-container input:focus, .app-container select:focus, .app-container textarea:focus {outline:none;border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-dim)}
+.app-container .out {background:rgba(0,0,0,0.2);border:1px solid var(--gold-dim);border-radius:4px;padding:1rem}
+.app-container .badge {display:inline-block;background:var(--gold-dim);color:var(--dark);padding:0.2rem 0.5rem;border-radius:3px;font-size:0.8rem;margin:0.2rem}
+.app-container .divider {border-top:1px solid var(--gold-dim)}
+.app-container #flow-canvas .flow-node {background:var(--dark);border:1px solid var(--gold);border-radius:6px;padding:0.75rem;margin:0.5rem 0;cursor:grab;display:flex;align-items:center;gap:0.5rem}
+.app-container #flow-canvas .flow-node.dragging {opacity:0.5;border-color:var(--gold-bright)}
+.app-container #flow-canvas .flow-node .node-type {background:var(--gold);color:var(--dark);padding:0.1rem 0.5rem;border-radius:3px;font-size:0.75rem}
+.app-container #sim-chat .msg {margin:0.5rem 0;padding:0.75rem;border-radius:8px;max-width:80%}
+.app-container #sim-chat .msg.agent {background:var(--gold-dim);color:var(--dark);margin-left:auto}
+.app-container #sim-chat .msg.customer {background:#333;border:1px solid var(--gold-dim);margin-right:auto}
+.app-container #sim-chat .msg.system {color:var(--gold-dim);font-size:0.85rem;text-align:center;max-width:100%}
+.app-container #cust-list .cust-card, #cal-list .cal-item, #resp-list .resp-item, #rule-list .rule-item {background:rgba(0,0,0,0.2);border:1px solid var(--gold-dim);border-radius:6px;padding:1rem;margin:0.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem}
+.app-container .cust-info, .cal-info, .resp-info, .rule-info {flex:1;min-width:200px}
+.app-container .cust-score {font-size:1.5rem;font-weight:bold;color:var(--gold)}
+.app-container .cust-actions, .cal-actions, .resp-actions, .rule-actions {display:flex;gap:0.3rem}
+.app-container .btn-sm {padding:0.3rem 0.6rem;font-size:0.8rem}
+.app-container pre {direction:ltr;text-align:left}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "بناء وكيل مكالمة صوتي بالسحب والإفلات", "url": "https://mdm1.org/apps/voice-agent-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج لاتصال بالإنترنت ليعمل التطبيق؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل كلياً دون اتصال (offline) ويحفظ البيانات في متصفحك عبر localStorage."}}, {"@type": "Question", "name": "كيف أختبر وكيل المكالمة قبل استخدامه حقيقياً؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم تبويب \"محاكاة المكالمة\"، أدخل اسم عميل وهمي ورقم هاتف، ثم ابدأ المحاكاة وتفاعل مع الوكيل كأنك عميل."}}, {"@type": "Question", "name": "هل يمكن تصدير بيانات العملاء والمواعيد؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، من تبويب \"البيانات\" اضغط \"تصدير JSON\" لتحميل نسخة احتياطية، ويمكن استعادتها لاحقاً بـ \"استيراد JSON\"."}}, {"@type": "Question", "name": "ماذا يحدث عند طلب العميل التحدث مع موظف بشري؟", "acceptedAnswer": {"@type": "Answer", "text": "القواعد تكتشف كلمات مثل \"موظف\" أو \"بشري\" أو \"تحويل\" وتحول المحادثة تلقائياً مع عرض رسالة التحويل المخصصة."}}, {"@type": "Question", "name": "هل تدعم الأداة المتغيرات الديناميكية في الردود؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم {name}، {phone}، {date} في نصوص الردود وسيتم استبدالها ببيانات العميل الحالية أثناء المحاكاة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">بناء وكيل مكالمة صوتي بالسحب والإفلات</h1>
+  <p class="page-sub">اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك بناء وكيل مكالمة صوتي كامل لمشروعك الصغير دون كتابة سطر كود واحد. هذه الأداة تعمل كلياً داخل متصفحك وتتيح لك تصميم مسار المكالمة بالسحب والإفلات، وكتابة ردود الوكيل وأسئلة تأهيل العملاء المحتملين، ومحاكاة المكالمة في محادثة تفاعلية واقعية. تتضمن الأداة تقويماً لحجز المواعيد، وقاعدة عملاء محلية مع درجة تأهيل وسجل مكالمات لكل عميل، وقواعد تحويل تلقائي للموظف البشري عند طلب المستخدم، مع حفظ كل البيانات في localStorage دون الحاجة لخادم أو حسابات.</p>
+
+<div class="app-container" dir="rtl">
+  <div class="row" style="gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+    <button id="tab-flow" class="button active">مسار المكالمة</button>
+    <button id="tab-responses" class="button sec">الردود والأسئلة</button>
+    <button id="tab-sim" class="button sec">محاكاة المكالمة</button>
+    <button id="tab-cal" class="button sec">التقويم</button>
+    <button id="tab-customers" class="button sec">العملاء</button>
+    <button id="tab-rules" class="button sec">قواعد التحويل</button>
+    <button id="tab-data" class="button sec">البيانات</button>
+  </div>
+
+  <div class="card" id="panel-flow">
+    <h3>مصمم مسار المكالمة</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem">
+      <input type="text" id="node-name" placeholder="اسم الخطوة (مثال: ترحيب، تأهيل، حجز)" style="flex:1">
+      <select id="node-type" style="width:auto">
+        <option value="greeting">ترحيب</option>
+        <option value="question">سؤال تأهيل</option>
+        <option value="info">معلومات</option>
+        <option value="booking">حجز موعد</option>
+        <option value="transfer">تحويل بشري</option>
+        <option value="end">إنهاء</option>
+      </select>
+      <button id="add-node" class="button">إضافة خطوة</button>
+    </div>
+    <div id="flow-canvas" class="out" style="min-height:300px;border:2px dashed var(--gold-dim);border-radius:8px;padding:1rem;position:relative">
+      <p style="color:var(--gold-dim);text-align:center;margin-top:3rem">اسحب الخطوات لترتيب المسار</p>
+    </div>
+    <div class="row" style="margin-top:1rem;justify-content:space-between">
+      <button id="save-flow" class="button">حفظ المسار</button>
+      <button id="load-flow" class="button sec">تحميل المسار</button>
+      <button id="clear-flow" class="button sec">مسح الكل</button>
+    </div>
+  </div>
+
+  <div class="card" id="panel-responses" style="display:none">
+    <h3>ردود الوكيل وأسئلة التأهيل</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+      <select id="resp-node" style="flex:1;min-width:200px"></select>
+      <select id="resp-type" style="width:auto">
+        <option value="text">نص ثابت</option>
+        <option value="dynamic">ديناميكي (متغير)</option>
+      </select>
+    </div>
+    <label>نص الرد أو السؤال</label>
+    <textarea id="resp-text" rows="4" placeholder="اكتب رد الوكيل هنا... استخدم {name}، {phone}، {date} للمتغيرات"></textarea>
+    <div class="row" style="margin-top:0.5rem;gap:0.5rem">
+      <label style="flex:1"><input type="checkbox" id="resp-required"> حقل مطلوب (للأسئلة)</label>
+      <label style="flex:1"><input type="checkbox" id="resp-score"> Adds qualification score</label>
+    </div>
+    <input type="number" id="resp-score-val" placeholder="نقاط التأهيل" style="width:auto;margin-top:0.5rem" min="0" max="100">
+    <div class="row" style="margin-top:1rem;gap:0.5rem">
+      <button id="save-resp" class="button">حفظ الرد</button>
+      <button id="clear-resp" class="button sec">مسح</button>
+    </div>
+    <div id="resp-list" class="out" style="margin-top:1rem;max-height:300px;overflow:auto"></div>
+  </div>
+
+  <div class="card" id="panel-sim" style="display:none">
+    <h3>محاكاة المكالمة</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem">
+      <input type="text" id="sim-customer" placeholder="اسم العميل للاختبار" style="flex:1">
+      <input type="text" id="sim-phone" placeholder="رقم الهاتف" style="flex:1">
+      <button id="sim-start" class="button">بدء محاكاة</button>
+    </div>
+    <div id="sim-chat" class="out" style="min-height:300px;max-height:400px;overflow:auto;direction:rtl"></div>
+    <div class="row" style="margin-top:1rem;gap:0.5rem">
+      <input type="text" id="sim-input" placeholder="رد العميل..." style="flex:1" disabled>
+      <button id="sim-send" class="button" disabled>إرسال</button>
+      <button id="sim-reset" class="button sec" disabled>إعادة تعيين</button>
+    </div>
+    <div id="sim-result" class="out" style="margin-top:1rem;display:none"></div>
+  </div>
+
+  <div class="card" id="panel-cal" style="display:none">
+    <h3>تقويم حجز المواعيد</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+      <input type="date" id="cal-date" style="flex:1;min-width:150px">
+      <input type="time" id="cal-time" style="width:auto">
+      <input type="text" id="cal-customer" placeholder="اسم العميل" style="flex:1;min-width:150px">
+      <input type="text" id="cal-notes" placeholder="ملاحظات" style="flex:1;min-width:150px">
+      <button id="cal-add" class="button">حجز</button>
+    </div>
+    <div id="cal-list" class="out" style="max-height:300px;overflow:auto"></div>
+  </div>
+
+  <div class="card" id="panel-customers" style="display:none">
+    <h3>قاعدة العملاء</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+      <input type="text" id="cust-name" placeholder="الاسم" style="flex:1;min-width:150px">
+      <input type="text" id="cust-phone" placeholder="الهاتف" style="flex:1;min-width:150px">
+      <input type="email" id="cust-email" placeholder="البريد الإلكتروني" style="flex:1;min-width:150px">
+      <select id="cust-status" style="width:auto">
+        <option value="new">جديد</option>
+        <option value="qualified">مؤهل</option>
+        <option value="booked">محجوز</option>
+        <option value="closed">مغلق</option>
+      </select>
+      <button id="cust-add" class="button">إضافة</button>
+    </div>
+    <div class="row" style="gap:0.5rem;margin-bottom:1rem">
+      <input type="text" id="cust-search" placeholder="بحث بالاسم أو الهاتف..." style="flex:1">
+    </div>
+    <div id="cust-list" class="out" style="max-height:400px;overflow:auto"></div>
+  </div>
+
+  <div class="card" id="panel-rules" style="display:none">
+    <h3>قواعد التحويل للموظف البشري</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+      <select id="rule-trigger" style="flex:1;min-width:200px">
+        <option value="keyword">كلمة مفتاحية</option>
+        <option value="score_low">درجة تأهيل منخفضة</option>
+        <option value="explicit">طلب صريح</option>
+        <option value="failed_attempts">محاولات فاشلة</option>
+      </select>
+      <input type="text" id="rule-value" placeholder="القيمة (كلمة، رقم، عدد)" style="flex:1;min-width:150px">
+      <button id="rule-add" class="button">إضافة قاعدة</button>
+    </div>
+    <div id="rule-list" class="out" style="max-height:300px;overflow:auto"></div>
+    <div class="divider" style="margin:1rem 0"></div>
+    <label>رسالة التحويل</label>
+    <textarea id="transfer-msg" rows="3" placeholder="رسالة تُعرض عند التحويل للموظف البشري"></textarea>
+    <button id="save-transfer" class="button" style="margin-top:0.5rem">حفظ رسالة التحويل</button>
+  </div>
+
+  <div class="card" id="panel-data" style="display:none">
+    <h3>إدارة البيانات</h3>
+    <div class="row" style="gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+      <button id="export-data" class="button">تصدير JSON</button>
+      <button id="import-data" class="button sec">استيراد JSON</button>
+      <button id="clear-all" class="button sec" style="background:#c00">مسح كل البيانات</button>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none">
+    <div id="data-status" class="out"></div>
+    <details style="margin-top:1rem">
+      <summary style="cursor:pointer;color:var(--gold)">عرض البيانات الخام</summary>
+      <pre id="raw-data" class="out" style="max-height:300px;overflow:auto;white-space:pre-wrap;direction:ltr;font-size:0.8rem"></pre>
+    </details>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل أحتاج لاتصال بالإنترنت ليعمل التطبيق؟</h3><p>لا، التطبيق يعمل كلياً دون اتصال (offline) ويحفظ البيانات في متصفحك عبر localStorage.</p><h3>كيف أختبر وكيل المكالمة قبل استخدامه حقيقياً؟</h3><p>استخدم تبويب &quot;محاكاة المكالمة&quot;، أدخل اسم عميل وهمي ورقم هاتف، ثم ابدأ المحاكاة وتفاعل مع الوكيل كأنك عميل.</p><h3>هل يمكن تصدير بيانات العملاء والمواعيد؟</h3><p>نعم، من تبويب &quot;البيانات&quot; اضغط &quot;تصدير JSON&quot; لتحميل نسخة احتياطية، ويمكن استعادتها لاحقاً بـ &quot;استيراد JSON&quot;.</p><h3>ماذا يحدث عند طلب العميل التحدث مع موظف بشري؟</h3><p>القواعد تكتشف كلمات مثل &quot;موظف&quot; أو &quot;بشري&quot; أو &quot;تحويل&quot; وتحول المحادثة تلقائياً مع عرض رسالة التحويل المخصصة.</p><h3>هل تدعم الأداة المتغيرات الديناميكية في الردود؟</h3><p>نعم، استخدم {name}، {phone}، {date} في نصوص الردود وسيتم استبدالها ببيانات العميل الحالية أثناء المحاكاة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const STATE_KEY = 'voice_agent_data';
+  let state = {flow:[], responses:{}, calendar:[], customers:[], rules:[], transferMsg:'', sim:null};
+  function load(){
+    try{const s=localStorage.getItem(STATE_KEY);if(s)state=JSON.parse(s);}catch(e){console.error(e)}
+    renderAll();
+  }
+  function save(){
+    try{localStorage.setItem(STATE_KEY,JSON.stringify(state));}catch(e){console.error(e)}
+  }
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function renderAll(){
+    renderTabs(); renderFlow(); renderRespNodeSelect(); renderRespList(); renderCal(); renderCustomers(); renderRules(); renderDataStatus(); renderRaw();
+  }
+  function renderTabs(){
+    ['flow','responses','sim','cal','customers','rules','data'].forEach(t=>{
+      const p=$('panel-'+t), b=$('tab-'+t);
+      if(p&&b){p.style.display=t==='flow'?'block':'none';b.classList.toggle('active',t==='flow')}
+    });
+    document.querySelectorAll('#tab-flow,#tab-responses,#tab-sim,#tab-cal,#tab-customers,#tab-rules,#tab-data').forEach(btn=>{
+      btn.onclick=()=>switchTab(btn.id.replace('tab-',''));
+    });
+  }
+  function switchTab(t){
+    ['flow','responses','sim','cal','customers','rules','data'].forEach(x=>{
+      const p=$( 'panel-'+x), b=$( 'tab-'+x);
+      if(p)p.style.display=x===t?'block':'none';
+      if(b)b.classList.toggle('active',x===t);
+    });
+    if(t==='sim')renderSimChat();
+  }
+  function renderFlow(){
+    const c=$('flow-canvas');
+    if(!state.flow.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center;margin-top:3rem">لا توجد خطوات. أضف خطوات من الأعلى.</p>';return}
+    c.innerHTML=state.flow.map((n,i)=>`<div class="flow-node" draggable="true" data-id="${n.id}" data-idx="${i}"><span class="node-type">${nodeTypeLabel(n.type)}</span><span>${escapeHtml(n.name)}</span><button class="button btn-sm" onclick="deleteNode('${n.id}')">حذف</button></div>`).join('');
+    c.querySelectorAll('.flow-node').forEach(el=>{el.ondragstart=e=>{e.dataTransfer.setData('text/plain',el.dataset.idx);el.classList.add('dragging')};el.ondragend=e=>el.classList.remove('dragging')});
+    c.ondragover=e=>e.preventDefault();
+    c.ondrop=e=>{e.preventDefault();const from=e.dataTransfer.getData('text/plain'), to=[...c.querySelectorAll('.flow-node')].indexOf(e.target.closest('.flow-node'));if(from!==''&&to!==-1&&from!=to){const [m]=state.flow.splice(from,1);state.flow.splice(to,0,m);save();renderFlow()}};
+  }
+  function nodeTypeLabel(t){const m={greeting:'ترحيب',question:'سؤال',info:'معلومة',booking:'حجز',transfer:'تحويل',end:'إنهاء'};return m[t]||t}
+  window.deleteNode=id=>{state.flow=state.flow.filter(n=>n.id!==id);save();renderFlow()};
+  $('add-node').onclick=()=>{const name=$('node-name').value.trim(), type=$('node-type').value;if(!name)return alert('أدخل اسم الخطوة');state.flow.push({id:uid(),name,type});$('node-name').value='';save();renderFlow()};
+  $('save-flow').onclick=()=>{save();alert('تم حفظ المسار')};
+  $('load-flow').onclick=()=>{renderFlow();alert('تم التحميل')};
+  $('clear-flow').onclick=()=>{if(confirm('مسح كل الخطوات؟')){state.flow=[];save();renderFlow()}};
+  function renderRespNodeSelect(){
+    const s=$('resp-node');s.innerHTML=state.flow.filter(n=>n.type!=='end').map(n=>`<option value="${n.id}">${escapeHtml(n.name)}</option>`).join('')||'<option value="">لا توجد خطوات</option>';
+  }
+  function renderRespList(){
+    const c=$('resp-list');const entries=Object.entries(state.responses);
+    if(!entries.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا توجد ردود محفوظة</p>';return}
+    c.innerHTML=entries.map(([nodeId,res])=>`<div class="resp-item"><div class="resp-info"><strong>${escapeHtml(state.flow.find(f=>f.id===nodeId)?.name||nodeId)}</strong><br><small>${escapeHtml(res.text.slice(0,80))}${res.text.length>80?'...':''}</small><br><span class="badge">${res.type==='dynamic'?'ديناميكي':'ثابت'}</span>${res.required?'<span class="badge">مطلوب</span>':''}${res.score?'<span class="badge">+' + res.score + ' نقطة</span>':''}</div><div class="resp-actions"><button class="button btn-sm sec" onclick="editResp('${nodeId}')">تعديل</button><button class="button btn-sm" style="background:#c00" onclick="deleteResp('${nodeId}')">حذف</button></div></div>`).join('');
+  }
+  window.editResp=id=>{const r=state.responses[id];if(!r)return;$('resp-node').value=id;$('resp-type').value=r.type;$('resp-text').value=r.text;$('resp-required').checked=!!r.required;$('resp-score').checked=!!r.score;$('resp-score-val').value=r.score||''};
+  window.deleteResp=id=>{if(confirm('حذف هذا الرد؟')){delete state.responses[id];save();renderRespList()}};
+  $('save-resp').onclick=()=>{const nodeId=$('resp-node').value;if(!nodeId)return alert('اختر خطوة');const text=$('resp-text').value.trim();if(!text)return alert('اكتب الرد');state.responses[nodeId]={type:$('resp-type').value,text,required:$('resp-required').checked,score:parseInt($('resp-score-val').value)||0};save();renderRespList();$('resp-text').value='';$('resp-required').checked=false;$('resp-score').checked=false;$('resp-score-val').value=''};
+  $('clear-resp').onclick=()=>{$('resp-text').value='';$('resp-required').checked=false;$('resp-score').checked=false;$('resp-score-val').value=''};
+  function renderCal(){
+    const c=$('cal-list');const sorted=[...state.calendar].sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
+    if(!sorted.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا توجد مواعيد محجوة</p>';return}
+    c.innerHTML=sorted.map(e=>`<div class="cal-item"><div class="cal-info"><strong>${escapeHtml(e.customer)}</strong><br><span class="badge">${e.date}</span><span class="badge">${e.time}</span>${e.notes?'<br><small>'+escapeHtml(e.notes)+'</small>':''}</div><div class="cal-actions"><button class="button btn-sm" style="background:#c00" onclick="deleteCal('${e.id}')">إلغاء</button></div></div>`).join('');
+  }
+  window.deleteCal=id=>{if(confirm('إلغاء هذا الموعد؟')){state.calendar=state.calendar.filter(c=>c.id!==id);save();renderCal()}};
+  $('cal-add').onclick=()=>{const date=$('cal-date').value,time=$('cal-time').value,customer=$('cal-customer').value.trim(),notes=$('cal-notes').value.trim();if(!date||!time||!customer)return alert('أكمل الحقول المطلوبة');state.calendar.push({id:uid(),date,time,customer,notes});$('cal-date').value='';$('cal-time').value='';$('cal-customer').value='';$('cal-notes').value='';save();renderCal()};
+  function renderCustomers(){
+    const c=$('cust-list'), q=$('cust-search').value.toLowerCase();
+    let list=state.customers.filter(c=>c.name.toLowerCase().includes(q)||c.phone.includes(q)||c.email.toLowerCase().includes(q));
+    list.sort((a,b)=>b.score-a.score);
+    if(!list.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا يوجد عملاء</p>';return}
+    c.innerHTML=list.map(u=>`<div class="cust-card"><div class="cust-info"><strong>${escapeHtml(u.name)}</strong><br><small>${escapeHtml(u.phone)}</small>${u.email?'<br><small>'+escapeHtml(u.email)+'</small>':''}<br><span class="badge">${u.status}</span></div><div style="text-align:center"><div class="cust-score">${u.score}</div><small>درجة التأهيل</small></div><div class="cust-actions"><button class="button btn-sm sec" onclick="editCust('${u.id}')">تعديل</button><button class="button btn-sm" style="background:#c00" onclick="deleteCust('${u.id}')">حذف</button></div></div>`).join('');
+  }
+  window.editCust=id=>{const u=state.customers.find(c=>c.id===id);if(!u)return;$('cust-name').value=u.name;$('cust-phone').value=u.phone;$('cust-email').value=u.email;$('cust-status').value=u.status;state.customers=state.customers.filter(c=>c.id!==id);save();renderCustomers()};
+  window.deleteCust=id=>{if(confirm('حذف هذا العميل؟')){state.customers=state.customers.filter(c=>c.id!==id);save();renderCustomers()}};
+  $('cust-add').onclick=()=>{const name=$('cust-name').value.trim(),phone=$('cust-phone').value.trim(),email=$('cust-email').value.trim(),status=$('cust-status').value;if(!name||!phone)return alert('الاسم والهاتف مطلوبان');state.customers.push({id:uid(),name,phone,email,status,score:0,history:[]});$('cust-name').value='';$('cust-phone').value='';$('cust-email').value='';save();renderCustomers()};
+  $('cust-search').oninput=renderCustomers;
+  function renderRules(){
+    const c=$('rule-list');if(!state.rules.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا توجد قواعد تحويل</p>';return}
+    c.innerHTML=state.rules.map((r,i)=>`<div class="rule-item"><div class="rule-info"><span class="badge">${ruleTriggerLabel(r.trigger)}</span> <strong>${escapeHtml(r.value)}</strong></div><div class="rule-actions"><button class="button btn-sm" style="background:#c00" onclick="deleteRule(${i})">حذف</button></div></div>`).join('');
+    $('transfer-msg').value=state.transferMsg||'';
+  }
+  function ruleTriggerLabel(t){const m={keyword:'كلمة مفتاحية',score_low:'درجة منخفضة',explicit:'طلب صريح',failed_attempts:'محاولات فاشلة'};return m[t]||t}
+  window.deleteRule=i=>{if(confirm('حذف القاعدة؟')){state.rules.splice(i,1);save();renderRules()}};
+  $('rule-add').onclick=()=>{const trigger=$('rule-trigger').value,value=$('rule-value').value.trim();if(!value)return alert('أدخل القيمة');state.rules.push({trigger,value});$('rule-value').value='';save();renderRules()};
+  $('save-transfer').onclick=()=>{state.transferMsg=$('transfer-msg').value.trim();save();alert('تم حفظ رسالة التحويل')};
+  let simState=null;
+  function renderSimChat(){
+    const c=$('sim-chat');if(!simState){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">اضغط "بدء محاكاة" للبدء</p>';$('sim-input').disabled=true;$('sim-send').disabled=true;$('sim-reset').disabled=true;$('sim-result').style.display='none';return}
+    c.innerHTML=simState.messages.map(m=>`<div class="msg ${m.role}">${escapeHtml(m.text)}</div>`).join('');
+    c.scrollTop=c.scrollHeight;
+    $('sim-input').disabled=false;$('sim-send').disabled=false;$('sim-reset').disabled=false;
+  }
+  $('sim-start').onclick=()=>{const name=$('sim-customer').value.trim(),phone=$('sim-phone').value.trim();if(!name||!phone)return alert('أدخل الاسم والهاتف');simState={customer:{name,phone},step:0,messages:[{role:'system',text:'--- بدء المحاكاة ---'},{role:'agent',text:getNodeText(state.flow[0])}]};saveSimCustomer(name,phone);renderSimChat()};
+  function saveSimCustomer(name,phone){let c=state.customers.find(x=>x.phone===phone);if(!c){c={id:uid(),name,phone,email:'',status:'new',score:0,history:[]};state.customers.push(c)}c.history.push({date:new Date().toISOString(),type:'simulation'});save()}
+  function getNodeText(node){if(!node)return 'انتهت المكالمة';const r=state.responses[node.id];return r?r.text.replace('{name}',simState.customer.name).replace('{phone}',simState.customer.phone):'[لا يوجد رد مسجل لهذه الخطوة]'}
+  function checkTransfer(input){const lower=input.toLowerCase();for(const r of state.rules){if(r.trigger==='keyword'&&lower.includes(r.value.toLowerCase()))return true;if(r.trigger==='explicit'&&(lower.includes('بشري')||lower.includes('موظف')||lower.includes('تحويل')))return true;if(r.trigger==='score_low'&&simState.customer.score<parseInt(r.value))return true}return false}
+  $('sim-send').onclick=()=>{const input=$('sim-input').value.trim();if(!input)return;simState.messages.push({role:'customer',text:input});const curr=state.flow[simState.step];const r=state.responses[curr?.id];if(r&&r.score)simState.customer.score=(simState.customer.score||0)+r.score;if(checkTransfer(input)){simState.messages.push({role:'system',text:'--- تحويل لموظف بشري ---'},{role:'agent',text:state.transferMsg||'سيتواصل معكم موظف بشري قريباً'});endSim();renderSimChat();return}simState.step++;if(simState.step>=state.flow.length){simState.messages.push({role:'system',text:'--- انتهت المكالمة ---'});endSim();}else{simState.messages.push({role:'agent',text:getNodeText(state.flow[simState.step])})}renderSimChat();$('sim-input').value=''};
+  function endSim(){$('sim-input').disabled=true;$('sim-send').disabled=true;const c=state.customers.find(x=>x.phone===simState.customer.phone);if(c){c.score=simState.customer.score||0;c.status=c.score>50?'qualified':'new';c.history.push({date:new Date().toISOString(),type:'call',score:c.score});save();renderCustomers()}$('sim-result').style.display='block';$('sim-result').innerHTML=`<strong>نتيجة المكالمة:</strong> درجة التأهيل ${simState.customer.score||0}${simState.customer.score>50?' <span class="badge">مؤهل</span>':' <span class="badge">غير مؤهل</span>'}`;}
+  $('sim-reset').onclick=()=>{simState=null;renderSimChat();$('sim-result').style.display='none'};
+  function renderDataStatus(){const c=$('data-status');c.innerHTML=`<strong>إحصائيات:</strong> ${state.flow.length} خطوة، ${Object.keys(state.responses).length} رد، ${state.calendar.length} موعد، ${state.customers.length} عميل، ${state.rules.length} قاعدة تحويل`;}
+  function renderRaw(){$('raw-data').textContent=JSON.stringify(state,null,2)}
+  $('export-data').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='voice_agent_backup.json';a.click();URL.revokeObjectURL(url)};
+  $('import-data').onclick=()=>$('import-file').click();
+  $('import-file').onchange=e=>{const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=ev=>{try{state=JSON.parse(ev.target.result);save();renderAll();alert('تم الاستيراد بنجاح')}catch{alert('ملف غير صالح')}};reader.readAsText(f);e.target.value=''};
+  $('clear-all').onclick=()=>{if(confirm('تحذير: سيحذف كل البيانات نهائياً. هل أنت متأكد؟')&&confirm('تأكيد نهائي: لا يمكن التراجع.')){state={flow:[],responses:{},calendar:[],customers:[],rules:[],transferMsg:'',sim:null};save();renderAll();alert('تم مسح كل البيانات')}};
+  load();
+})();
+</script>
+</body>
+</html>
