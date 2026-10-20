@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة بناء النماذج الديناميكية | MDM1</title>
+<meta name="description" content="أداة بسيطة لبناء وإدارة نماذج ديناميكية مع حقول وأنواع وقواعد تحقق وحفظ محلي في المتصفح دون إعادة تحميل أو اتصال بالإنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/form-field-mapper.html">
+<meta property="og:title" content="أداة بناء النماذج الديناميكية">
+<meta property="og:description" content="أداة بسيطة لبناء وإدارة نماذج ديناميكية مع حقول وأنواع وقواعد تحقق وحفظ محلي في المتصفح دون إعادة تحميل أو اتصال بالإنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/form-field-mapper.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { max-width: 900px; margin: 0 auto; }
+.app .card { margin: 16px 0; }
+.app .row { gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.app .row > div { flex: 1 1 200px; min-width: 200px; }
+.app input, .app select, .app textarea { width: 100%; box-sizing: border-box; }
+.app #preview form { display: flex; flex-direction: column; gap: 12px; }
+.app #preview .field { display: flex; flex-direction: column; gap: 6px; }
+.app #preview .field.check { flex-direction: row; align-items: center; }
+.app #preview .err { color: var(--gold-bright); font-size: 0.9em; }
+.app #fieldsList .item { padding: 6px 0; border-bottom: 1px solid var(--gold-dim); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة لبناء نماذج ديناميكية في المتصفح", "url": "https://mdm1.org/apps/form-field-mapper.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تبقى النماذج محفوظة بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم حفظ النماذج في localStorage الخاص بالمتصفح، وتبقى موجودة حتى تحذفها أو تمسح بيانات المتصفح."}}, {"@type": "Question", "name": "هل أحتاج إلى اتصال بالإنترنت لاستخدام الأداة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تعمل الأداة بالكامل داخل المتصفح بدون أي اتصال بالشبكة أو خوادم خارجية."}}, {"@type": "Question", "name": "هل يمكنني استخدام أنماط تحقق مخصصة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك إضافة تعبير عادي في حقل نمط التحقق، وسيتم تطبيقه عند التحقق من النموذج في المعاينة."}}, {"@type": "Question", "name": "هل تدعم الأداة التحقق من أرقام الهاتف أو رموز محددة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، عبر إدخال تعبير عادي مناسب في حقل نمط التحقق، أو باستخدام قواعد الحد الأدنى والأقصى للحقول الرقمية."}}, {"@type": "Question", "name": "هل يمكنني تعديل حقل بعد إضافته؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يدعم الإصدار الحالي إضافة وحذف الحقول فقط، ويمكنك حذف جميع الحقول وإعادة بنائها من جديد."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة لبناء نماذج ديناميكية في المتصفح</h1>
+  <p class="page-sub">أداة بسيطة لبناء وإدارة نماذج ديناميكية مع حقول وأنواع وقواعد تحقق وحفظ محلي في المتصفح دون إعادة تحميل أو اتصال بالإنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بسرعة يمكنك بناء نموذج ديناميكي مخصص بالكامل داخل متصفحك دون الحاجة لأي خوادم أو اتصالات خارجية، إذ تتيح لك هذه الأداة إضافة الحقول بأنواعها المختلفة وتحديد قواعد التحقق المطلوبة لكل حقل ثم معاينة النموذج فورًا قبل استخدامه، كما يمكنك حفظ النماذج التي تبنيها في تخزين المتصفح واستعادتها لاحقًا بكل سهولة، وكل ما تقوم به يبقى محفوظًا محليًا على جهازك فقط دون إرسال أي بيانات إلى أي مكان.</p>
+<div class="app">
+  <div class="card">
+    <h2>إضافة حقل جديد</h2>
+    <div class="row">
+      <div>
+        <label for="fieldLabel">عنوان الحقل</label>
+        <input id="fieldLabel" type="text" placeholder="مثال: الاسم الكامل">
+      </div>
+      <div>
+        <label for="fieldType">نوع الحقل</label>
+        <select id="fieldType">
+          <option value="text">نص</option>
+          <option value="email">بريد إلكتروني</option>
+          <option value="number">رقم</option>
+          <option value="textarea">نص طويل</option>
+          <option value="select">قائمة خيارات</option>
+          <option value="checkbox">مربع اختيار</option>
+        </select>
+      </div>
+    </div>
+    <div id="selectOptionsWrap" style="display:none">
+      <label for="selectOptions">خيارات القائمة (افصل بفاصلة)</label>
+      <input id="selectOptions" type="text" placeholder="خيار1، خيار2، خيار3">
+    </div>
+    <div class="row">
+      <div>
+        <label for="fieldRequired">إلزامي</label>
+        <select id="fieldRequired">
+          <option value="no">لا</option>
+          <option value="yes">نعم</option>
+        </select>
+      </div>
+      <div>
+        <label for="fieldMin">الحد الأدنى للطول/القيمة</label>
+        <input id="fieldMin" type="number" placeholder="اتركه فارغًا إن لم يُطلب">
+      </div>
+      <div>
+        <label for="fieldMax">الحد الأقصى للطول/القيمة</label>
+        <input id="fieldMax" type="number" placeholder="اتركه فارغًا إن لم يُطلب">
+      </div>
+    </div>
+    <div>
+      <label for="fieldPattern">نمط تحقق (تعبير عادي اختياري)</label>
+      <input id="fieldPattern" type="text" placeholder="مثال: ^[ء-ي\s]+$">
+    </div>
+    <div class="row">
+      <button id="addFieldBtn">إضافة الحقل</button>
+      <button id="clearBuilderBtn" class="sec">مسح البنّاء</button>
+    </div>
+    <p id="builderMsg" class="out" style="display:none"></p>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <h2>قائمة الحقول</h2>
+    <div id="fieldsList" class="out">لا توجد حقول مضافة بعد.</div>
+    <div class="row">
+      <button id="removeLastBtn" class="sec">حذف آخر حقل</button>
+      <button id="clearFieldsBtn" class="sec">حذف جميع الحقول</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <h2>معاينة النموذج</h2>
+    <div id="preview" class="out">أضف حقولًا لعرض المعاينة هنا.</div>
+    <p id="previewMsg" class="out" style="display:none"></p>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <h2>حفظ واستعادة</h2>
+    <div class="row">
+      <input id="formName" type="text" placeholder="اسم النموذج للحفظ">
+      <button id="saveFormBtn">حفظ النموذج محليًا</button>
+    </div>
+    <div class="row">
+      <select id="savedFormsList">
+        <option value="">اختر نموذجًا محفوظًا</option>
+      </select>
+      <button id="loadFormBtn" class="sec">استعادة النموذج</button>
+      <button id="deleteFormBtn" class="sec">حذف النموذج</button>
+    </div>
+    <p id="storageMsg" class="out" style="display:none"></p>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تبقى النماذج محفوظة بعد إغلاق المتصفح؟</h3><p>نعم، يتم حفظ النماذج في localStorage الخاص بالمتصفح، وتبقى موجودة حتى تحذفها أو تمسح بيانات المتصفح.</p><h3>هل أحتاج إلى اتصال بالإنترنت لاستخدام الأداة؟</h3><p>لا، تعمل الأداة بالكامل داخل المتصفح بدون أي اتصال بالشبكة أو خوادم خارجية.</p><h3>هل يمكنني استخدام أنماط تحقق مخصصة؟</h3><p>نعم، يمكنك إضافة تعبير عادي في حقل نمط التحقق، وسيتم تطبيقه عند التحقق من النموذج في المعاينة.</p><h3>هل تدعم الأداة التحقق من أرقام الهاتف أو رموز محددة؟</h3><p>نعم، عبر إدخال تعبير عادي مناسب في حقل نمط التحقق، أو باستخدام قواعد الحد الأدنى والأقصى للحقول الرقمية.</p><h3>هل يمكنني تعديل حقل بعد إضافته؟</h3><p>لا، يدعم الإصدار الحالي إضافة وحذف الحقول فقط، ويمكنك حذف جميع الحقول وإعادة بنائها من جديد.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var fields = [];
+  function byId(id){ return document.getElementById(id); }
+  function show(el, msg){ el.textContent = msg; el.style.display = 'block'; }
+  function hide(el){ el.style.display = 'none'; }
+  function escapeHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  byId('fieldType').addEventListener('change', function(){
+    if(this.value==='select'){ byId('selectOptionsWrap').style.display='block'; } else { byId('selectOptionsWrap').style.display='none'; }
+  });
+  byId('addFieldBtn').addEventListener('click', function(){
+    var label = byId('fieldLabel').value.trim();
+    var type = byId('fieldType').value;
+    if(label===''){ show(byId('builderMsg'), 'يرجى إدخال عنوان الحقل.'); return; }
+    var field = { id: 'f_'+Date.now()+'_'+Math.floor(Math.random()*1000), label: label, type: type, required: byId('fieldRequired').value==='yes', min: byId('fieldMin').value, max: byId('fieldMax').value, pattern: byId('fieldPattern').value.trim() };
+    if(type==='select'){ var opts = byId('selectOptions').value.split(',').map(function(x){return x.trim();}).filter(function(x){return x!=='';}); if(opts.length===0){ show(byId('builderMsg'), 'يرجى إدخال خيارات للقائمة.'); return; } field.options = opts; }
+    fields.push(field);
+    byId('fieldLabel').value=''; byId('selectOptions').value=''; byId('fieldMin').value=''; byId('fieldMax').value=''; byId('fieldPattern').value='';
+    hide(byId('builderMsg'));
+    renderFieldsList();
+    renderPreview();
+  });
+  byId('clearBuilderBtn').addEventListener('click', function(){
+    byId('fieldLabel').value=''; byId('fieldType').value='text'; byId('selectOptionsWrap').style.display='none'; byId('selectOptions').value=''; byId('fieldRequired').value='no'; byId('fieldMin').value=''; byId('fieldMax').value=''; byId('fieldPattern').value=''; hide(byId('builderMsg'));
+  });
+  byId('removeLastBtn').addEventListener('click', function(){ if(fields.length===0)return; fields.pop(); renderFieldsList(); renderPreview(); });
+  byId('clearFieldsBtn').addEventListener('click', function(){ fields=[]; renderFieldsList(); renderPreview(); });
+  function renderFieldsList(){
+    var list = byId('fieldsList');
+    if(fields.length===0){ list.textContent='لا توجد حقول مضافة بعد.'; return; }
+    list.innerHTML='';
+    fields.forEach(function(f, idx){
+      var div = document.createElement('div');
+      div.className='item';
+      div.textContent = (idx+1)+'. '+f.label+' ['+f.type+']'+(f.required?' *':'');
+      list.appendChild(div);
+    });
+  }
+  function renderPreview(){
+    var prev = byId('preview');
+    if(fields.length===0){ prev.textContent='أضف حقولًا لعرض المعاينة هنا.'; return; }
+    prev.innerHTML='';
+    var form = document.createElement('form');
+    form.id='dynForm';
+    form.addEventListener('submit', function(e){ e.preventDefault(); validateAndShow(); });
+    fields.forEach(function(f){
+      var wrap = document.createElement('div');
+      wrap.className='field'+(f.type==='checkbox'?' check':'');
+      var lab = document.createElement('label');
+      lab.setAttribute('for', f.id);
+      lab.textContent = f.label + (f.required?' *':'');
+      wrap.appendChild(lab);
+      if(f.type==='textarea'){
+        var ta = document.createElement('textarea');
+        ta.id=f.id; ta.name=f.id;
+        if(f.min) ta.minLength=parseInt(f.min); if(f.max) ta.maxLength=parseInt(f.max);
+        wrap.appendChild(ta);
+      } else if(f.type==='select'){
+        var sel = document.createElement('select');
+        sel.id=f.id; sel.name=f.id;
+        (f.options||[]).forEach(function(o){ var opt=document.createElement('option'); opt.value=o; opt.textContent=o; sel.appendChild(opt); });
+        wrap.appendChild(sel);
+      } else if(f.type==='checkbox'){
+        var cb = document.createElement('input');
+        cb.type='checkbox'; cb.id=f.id; cb.name=f.id;
+        wrap.appendChild(cb);
+      } else {
+        var inp = document.createElement('input');
+        inp.type=f.type; inp.id=f.id; inp.name=f.id;
+        if(f.min && (f.type==='text'||f.type==='email'||f.type==='textarea')) inp.minLength=parseInt(f.min);
+        if(f.max && (f.type==='text'||f.type==='email'||f.type==='textarea')) inp.maxLength=parseInt(f.max);
+        if(f.min && f.type==='number') inp.min=f.min;
+        if(f.max && f.type==='number') inp.max=f.max;
+        if(f.pattern) inp.pattern=f.pattern;
+        wrap.appendChild(inp);
+      }
+      var err = document.createElement('div');
+      err.className='err'; err.id=f.id+'_err'; err.style.display='none';
+      wrap.appendChild(err);
+      form.appendChild(wrap);
+    });
+    var btn = document.createElement('button');
+    btn.type='submit';
+    btn.textContent='التحقق من النموذج';
+    form.appendChild(btn);
+    prev.appendChild(form);
+    hide(byId('previewMsg'));
+  }
+  function validateAndShow(){
+    var ok=true;
+    fields.forEach(function(f){
+      var errEl = document.getElementById(f.id+'_err');
+      errEl.style.display='none'; errEl.textContent='';
+      if(f.type==='checkbox'){
+        var cb = document.getElementById(f.id);
+        if(f.required && !cb.checked){ errEl.textContent='هذا الحقل إلزامي.'; errEl.style.display='block'; ok=false; }
+        return;
+      }
+      var el = document.getElementById(f.id);
+      var val = (el.value||'').trim();
+      if(f.required && val===''){ errEl.textContent='هذا الحقل إلزامي.'; errEl.style.display='block'; ok=false; return; }
+      if(val==='') return;
+      if(f.type==='email'){
+        var reE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!reE.test(val)){ errEl.textContent='صيغة البريد الإلكتروني غير صحيحة.'; errEl.style.display='block'; ok=false; return; }
+      }
+      if(f.type==='number'){
+        var num = parseFloat(val);
+        if(isNaN(num)){ errEl.textContent='يرجى إدخال رقم صحيح.'; errEl.style.display='block'; ok=false; return; }
+        if(f.min!=='' && num < parseFloat(f.min)){ errEl.textContent='القيمة أقل من الحد الأدنى.'; errEl.style.display='block'; ok=false; return; }
+        if(f.max!=='' && num > parseFloat(f.max)){ errEl.textContent='القيمة أكبر من الحد الأقصى.'; errEl.style.display='block'; ok=false; return; }
+      }
+      if((f.type==='text'||f.type==='email'||f.type==='textarea')){
+        if(f.min!=='' && val.length < parseInt(f.min)){ errEl.textContent='عدد الأحرف أقل من الحد الأدنى.'; errEl.style.display='block'; ok=false; return; }
+        if(f.max!=='' && val.length > parseInt(f.max)){ errEl.textContent='عدد الأحرف أكبر من الحد الأقصى.'; errEl.style.display='block'; ok=false; return; }
+      }
+      if(f.pattern){
+        try{
+          var reP = new RegExp(f.pattern);
+          if(!reP.test(val)){ errEl.textContent='القيمة لا تطابق النمط المطلوب.'; errEl.style.display='block'; ok=false; return; }
+        }catch(e){ errEl.textContent='نمط التحقق غير صحيح.'; errEl.style.display='block'; ok=false; return; }
+      }
+    });
+    var pm = byId('previewMsg');
+    if(ok){ show(pm, 'تم التحقق بنجاح، جميع القيم صحيحة وفق القواعد المحددة.'); } else { show(pm, 'يوجد أخطاء في النموذج، يرجى تصحيح الحقول المشار إليها.'); }
+  }
+  function loadSavedList(){
+    try{
+      var raw = localStorage.getItem('dynFormsList');
+      var list = raw? JSON.parse(raw): [];
+      var sel = byId('savedFormsList');
+      sel.innerHTML='<option value="">اختر نموذجًا محفوظًا</option>';
+      list.forEach(function(name){ var opt=document.createElement('option'); opt.value=name; opt.textContent=name; sel.appendChild(opt); });
+    }catch(e){}
+  }
+  byId('saveFormBtn').addEventListener('click', function(){
+    var name = byId('formName').value.trim();
+    if(name===''){ show(byId('storageMsg'), 'يرجى إدخال اسم النموذج قبل الحفظ.'); return; }
+    if(fields.length===0){ show(byId('storageMsg'), 'لا يمكن حفظ نموذج فارغ، أضف حقولًا أولًا.'); return; }
+    try{
+      var key = 'dynForm_'+name.replace(/[^ء-يA-Za-z0-9_]/g,'_');
+      localStorage.setItem(key, JSON.stringify(fields));
+      var raw = localStorage.getItem('dynFormsList');
+      var list = raw? JSON.parse(raw): [];
+      if(list.indexOf(name)===-1){ list.push(name); localStorage.setItem('dynFormsList', JSON.stringify(list)); }
+      loadSavedList();
+      byId('formName').value='';
+      show(byId('storageMsg'), 'تم حفظ النموذج محليًا بنجاح.');
+    }catch(e){ show(byId('storageMsg'), 'تعذر الحفظ، قد يكون التخزين ممتلئًا أو غير متاح.'); }
+  });
+  byId('loadFormBtn').addEventListener('click', function(){
+    var name = byId('savedFormsList').value;
+    if(name===''){ show(byId('storageMsg'), 'يرجى اختيار نموذج محفوظ أولًا.'); return; }
+    try{
+      var key = 'dynForm_'+name.replace(/[^ء-يA-Za-z0-9_]/g,'_');
+      var raw = localStorage.getItem(key);
+      if(!raw){ show(byId('storageMsg'), 'لم يتم العثور على بيانات هذا النموذج.'); return; }
+      fields = JSON.parse(raw);
+      renderFieldsList();
+      renderPreview();
+      hide(byId('storageMsg'));
+      show(byId('storageMsg'), 'تم استعادة النموذج بنجاح.');
+    }catch(e){ show(byId('storageMsg'), 'تعذر الاستعادة، بيانات غير صالحة.'); }
+  });
+  byId('deleteFormBtn').addEventListener('click', function(){
+    var name = byId('savedFormsList').value;
+    if(name===''){ show(byId('storageMsg'), 'يرجى اختيار نموذج محفوظ أولًا.'); return; }
+    try{
+      var key = 'dynForm_'+name.replace(/[^ء-يA-Za-z0-9_]/g,'_');
+      localStorage.removeItem(key);
+      var raw = localStorage.getItem('dynFormsList');
+      var list = raw? JSON.parse(raw): [];
+      var idx = list.indexOf(name);
+      if(idx>-1){ list.splice(idx,1); localStorage.setItem('dynFormsList', JSON.stringify(list)); }
+      loadSavedList();
+      show(byId('storageMsg'), 'تم حذف النموذج المحفوظ.');
+    }catch(e){ show(byId('storageMsg'), 'تعذر الحذف.'); }
+  });
+  loadSavedList();
+  renderFieldsList();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
