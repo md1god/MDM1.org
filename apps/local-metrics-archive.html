@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستودع مقاييس زمنية في المتصفح - تخزين وتحليل بلا خادم | MDM1</title>
+<meta name="description" content="تطبيق ويب عربي RTL لإدارة المقاييس الزمنية بالكامل داخل المتصفح: استيراد، تخزين مضغوط، استعلامات، رسم بياني، وتصدير JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/local-metrics-archive.html">
+<meta property="og:title" content="مستودع مقاييس زمنية في المتصفح - تخزين وتحليل بلا خادم">
+<meta property="og:description" content="تطبيق ويب عربي RTL لإدارة المقاييس الزمنية بالكامل داخل المتصفح: استيراد، تخزين مضغوط، استعلامات، رسم بياني، وتصدير JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-metrics-archive.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{font-family:inherit;direction:rtl}
+.app .row{align-items:center}
+.app canvas{display:block}
+.app #seriesList .badge{cursor:pointer;transition:opacity .2s}
+.app #seriesList .badge:hover{opacity:.7}
+.app .badge.removing{opacity:.3;text-decoration:line-through}
+.app input[type=file]{display:none}
+.app label{cursor:pointer}
+.app textarea{resize:vertical;min-height:80px}
+.app .out{padding:.75rem;background:rgba(255,215,0,.1);border:1px solid var(--gold-dim);border-radius:6px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مستودع المقاييس الزمنية المحلي", "url": "https://mdm1.org/apps/local-metrics-archive.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أستورد بيانات من ملف CSV؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط على \"استيراد ملف\" واختر ملف CSV بأعمدة time/ts و value، أو أعمدة مخصصة ستُعامل كوسوم (labels)."}}, {"@type": "Question", "name": "ما صيغة الاستعلامات المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "صيغة مبسطة: `rate(5m) by job,host | avg by job` — تدعم rate/avg/sum مع نافذة زمنية، تجميع by، وتجميع نهائي."}}, {"@type": "Question", "name": "كيف أزيل القيم الشاذة؟", "acceptedAnswer": {"@type": "Answer", "text": "عيّن عتبة z-score (افتراضي 3) واضغط \"تطبيق التنقية\" — تُزال النقاط التي تبعد أكثر من العتبة عن المتوسط."}}, {"@type": "Question", "name": "هل البيانات تبقى بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُخزن في IndexedDB مع ضغط تلقائي وإزالة التكرارات، وتستمر حتى تمسحها يدويًا."}}, {"@type": "Question", "name": "كيف أقارن مجموعات متعددة؟", "acceptedAnswer": {"@type": "Answer", "text": "انقر على شارات السلاسل في القائمة لإضافتها للرسم، ثم نفذ استعلامًا موحدًا — كل مجموعة تحصل على لون مختلف."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مستودع المقاييس الزمنية المحلي</h1>
+  <p class="page-sub">تطبيق ويب عربي RTL لإدارة المقاييس الزمنية بالكامل داخل المتصفح: استيراد، تخزين مضغوط، استعلامات، رسم بياني، وتصدير JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يتيح لك إدارة مقاييس زمنية كاملة داخل المتصفح دون أي خادم: استورد بيانات من ملفات CSV أو JSON أو ألصقها مباشرة، وسيتم تخزينها في IndexedDB مع ضغط تلقائي وإزالة التكرارات. يمكنك كتابة استعلامات مبسطة مثل rate و avg و sum مع تجميع حسب الوسوم، ورؤية النتائج كرسوم بيانية تفاعلية على Canvas مع مقارنة مجموعات متعددة، وتنقية القيم الشاذة، ثم تصدير الحزمة كاملة كملف JSON للنقل أو الأرشفة.</p>
+
+<div class="app card" style="padding:1.5rem">
+  <div class="row" style="gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+    <label>استيراد ملف<input type="file" id="importFile" accept=".csv,.json,.txt" class="input"></label>
+    <label>أو الصق نصًا<textarea id="pasteArea" rows="4" class="input" placeholder="أدخل بيانات JSON أو CSV..."></textarea></label>
+    <button id="btnImport" class="button">استيراد وتخزين</button>
+    <button id="btnExport" class="button sec">تصدير حزمة JSON</button>
+    <button id="btnClear" class="button sec">مسح الكل</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row" style="gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+    <label>استعلام (مثال: rate(5m) by job,host | avg by job)<input type="text" id="queryInput" class="input" style="flex:1;min-width:300px" placeholder="rate(5m) by job,host | avg by job"></label>
+    <select id="timeRange" class="input">
+      <option value="1h">الساعة الأخيرة</option>
+      <option value="6h">6 ساعات</option>
+      <option value="24h" selected>24 ساعة</option>
+      <option value="7d">7 أيام</option>
+      <option value="30d">30 يوم</option>
+    </select>
+    <button id="btnRunQuery" class="button">تنفيذ الاستعلام</button>
+    <button id="btnAddSeries" class="button sec">إضافة للمقارنة</button>
+  </div>
+
+  <div id="seriesList" class="row" style="gap:.5rem;flex-wrap:wrap;margin-bottom:1rem"></div>
+
+  <canvas id="chart" width="1000" height="400" style="width:100%;height:auto;background:var(--dark);border-radius:8px"></canvas>
+
+  <div class="divider" style="margin:1rem 0"></div>
+
+  <div class="row" style="gap:1rem;flex-wrap:wrap">
+    <label>تنقية القيم الشاذة (z-score)<input type="number" id="zThreshold" class="input" value="3" step="0.5" min="1" max="10" style="width:80px"></label>
+    <button id="btnRemoveOutliers" class="button sec">تطبيق التنقية</button>
+    <span id="outlierCount" class="badge" style="align-self:center"></span>
+  </div>
+
+  <div id="status" class="out" style="margin-top:1rem;min-height:2rem"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أستورد بيانات من ملف CSV؟</h3><p>اضغط على &quot;استيراد ملف&quot; واختر ملف CSV بأعمدة time/ts و value، أو أعمدة مخصصة ستُعامل كوسوم (labels).</p><h3>ما صيغة الاستعلامات المدعومة؟</h3><p>صيغة مبسطة: `rate(5m) by job,host | avg by job` — تدعم rate/avg/sum مع نافذة زمنية، تجميع by، وتجميع نهائي.</p><h3>كيف أزيل القيم الشاذة؟</h3><p>عيّن عتبة z-score (افتراضي 3) واضغط &quot;تطبيق التنقية&quot; — تُزال النقاط التي تبعد أكثر من العتبة عن المتوسط.</p><h3>هل البيانات تبقى بعد إغلاق المتصفح؟</h3><p>نعم، تُخزن في IndexedDB مع ضغط تلقائي وإزالة التكرارات، وتستمر حتى تمسحها يدويًا.</p><h3>كيف أقارن مجموعات متعددة؟</h3><p>انقر على شارات السلاسل في القائمة لإضافتها للرسم، ثم نفذ استعلامًا موحدًا — كل مجموعة تحصل على لون مختلف.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+const DB_NAME='MetricsDB',DB_VER=1,STORE='series',META='meta';
+let db=null,currentSeries=[],chartSeries=[],chartCtx=null,chartWidth=0,chartHeight=0;
+
+function openDB(){return new Promise((res,rej)=>{const req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE)){const s=d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});s.createIndex('ts','ts');s.createIndex('labels','labels',{multiEntry:true})}if(!d.objectStoreNames.contains(META))d.createObjectStore(META)};req.onsuccess=e=>{db=e.target.result;res()};req.onerror=e=>rej(e.target.error)})}
+
+function tx(mode){return db.transaction(STORE,mode).objectStore(STORE)}
+
+function detectTS(v){if(v===undefined||v===null)return Date.now();if(typeof v==='number'){return v>1e12?v:v*1000}const n=Date.parse(v);return isNaN(n)?Date.now():n}
+function detectVal(v){if(v===undefined||v===null)return NaN;const n=Number(v);return isNaN(n)?NaN:n}
+function parseLabels(obj){const l={};for(const k in obj){if(!['time','ts','t','value','v','val'].includes(k))l[k]=String(obj[k])}return l}
+
+function parseCSV(text){const lines=text.trim().split(/\r?\n/);if(lines.length<2)return [];const headers=lines[0].split(',').map(h=>h.trim());return lines.slice(1).map(l=>{const v=l.split(',');const o={};headers.forEach((h,i)=>{o[h]=v[i]?.trim()});return o})}
+function parseJSON(text){try{const j=JSON.parse(text);return Array.isArray(j)?j:[j]}catch{return []}}
+
+async function importData(raw){const rows=typeof raw==='string'?(
+  raw.trim().startsWith('[')||raw.trim().startsWith('{')?parseJSON(raw):parseCSV(raw)
+):raw;if(!rows.length){setStatus('لا توجد بيانات صالحة',true);return}
+const map=new Map();
+for(const r of rows){
+  const ts=detectTS(r.time!==undefined?r.time:r.ts!==undefined?r.ts:r.t);
+  const val=detectVal(r.value!==undefined?r.value:r.v!==undefined?r.v:r.val);
+  if(isNaN(val))continue;
+  const labels=parseLabels(r);
+  const key=JSON.stringify(labels);
+  if(!map.has(key))map.set(key,{ts:[],vals:[],labels});
+  const s=map.get(key);
+  const idx=s.ts.findIndex(t=>t===ts);
+  if(idx===-1){s.ts.push(ts);s.vals.push(val)}else if(val!==s.vals[idx]){s.vals[idx]=val}
+}
+const store=tx('readwrite');
+for(const [,s] of map){
+  s.ts.sort((a,b)=>a-b);
+  const uniqTs=[],uniqVals=[];
+  for(let i=0;i<s.ts.length;i++){if(i===0||s.ts[i]!==s.ts[i-1]){uniqTs.push(s.ts[i]);uniqVals.push(s.vals[i])}}
+  s.ts=uniqTs;s.vals=uniqVals;
+  await new Promise((res,rej)=>{const req=store.put({ts:s.ts,vals:s.vals,labels:s.labels,created:Date.now()});req.onsuccess=res;req.onerror=rej});
+}
+setStatus(`تم استيراد ${map.size} سلسلة فريدة`);
+await loadSeriesList()}
+
+function setStatus(msg,isErr){const el=document.getElementById('status');el.textContent=msg;el.style.color=isErr?'var(--gold-bright)':'var(--gold)'}
+
+async function loadSeriesList(){const store=tx('readonly');const req=store.getAll();req.onsuccess=()=>{currentSeries=req.result;renderSeriesList()};req.onerror=()=>setStatus('فشل تحميل السلاسل',true)}
+function renderSeriesList(){const el=document.getElementById('seriesList');el.innerHTML='';currentSeries.forEach((s,i)=>{const lbl=Object.entries(s.labels).map(([k,v])=>`${k}="${v}"`).join(', ')||'(بدون وسوم)';const b=document.createElement('span');b.className='badge';b.textContent=`#${i+1} ${lbl} (${s.ts.length} نقاط)`;b.dataset.idx=i;b.onclick=()=>toggleSeries(i);if(chartSeries.some(c=>c.idx===i))b.classList.add('active');el.appendChild(b)})}
+function toggleSeries(idx){const s=currentSeries[idx];if(!s)return;const pos=chartSeries.findIndex(c=>c.idx===idx);if(pos===-1){chartSeries.push({idx,ts:s.ts,vals:s.vals,labels:s.labels,color:hueColor(chartSeries.length)})}else{chartSeries.splice(pos,1)}renderSeriesList();drawChart()}
+
+function hueColor(i){const hues=[30,210,120,0,280,60,180];return `hsl(${hues[i%hues.length]},80%,55%)`}
+
+function parseQuery(q){const parts=q.split('|').map(p=>p.trim());let agg='rate',windowMs=300000,groupBy=[],finalAgg=null;for(const p of parts){if(p.startsWith('rate(')||p.startsWith('avg(')||p.startsWith('sum(')){const m=p.match(/(\w+)\(([^)]+)\)/);if(m){agg=m[1];windowMs=parseDuration(m[2])}}else if(p.startsWith('by')){groupBy=p.slice(2).trim().split(',').map(s=>s.trim()).filter(Boolean)}else if(p.startsWith('avg by')||p.startsWith('sum by')||p.startsWith('rate by')){const m=p.match(/(\w+) by (.+)/);if(m){finalAgg=m[1];groupBy=m[2].split(',').map(s=>s.trim()).filter(Boolean)}}}return{agg,windowMs,groupBy,finalAgg}}
+function parseDuration(s){s=s.trim().toLowerCase();const m=s.match(/^(\d+)([smhd])$/);if(!m)return 300000;const n=parseInt(m[1]);const u=m[2];return u==='s'?n*1000:u==='m'?n*60000:u==='h'?n*3600000:n*86400000}
+
+function downsample(ts,vals,windowMs){if(!ts.length)return[[],[]];const now=Date.now();const start=ts[0];const buckets=new Map();for(let i=0;i<ts.length;i++){const b=Math.floor((ts[i]-start)/windowMs);if(!buckets.has(b))buckets.set(b,{sum:0,count:0,last:vals[i],first:vals[i]});const buck=buckets.get(b);buck.sum+=vals[i];buck.count++;buck.last=vals[i]}const outTs=[],outVals=[];for(const [b,v] of [...buckets.entries()].sort((a,b)=>a[0]-b[0])){outTs.push(start+b*windowMs+windowMs/2);if(windowMs<=60000)outVals.push(v.last);else outVals.push(v.sum/v.count)}return[outTs,outVals]}
+
+function filterByLabels(series,groupBy){const groups=new Map();for(const s of series){const key=groupBy.map(k=>s.labels[k]||'').join('|');if(!groups.has(key))groups.set(key,{ts:[],vals:[],labels:{}});const g=groups.get(key);for(let i=0;i<s.ts.length;i++){g.ts.push(s.ts[i]);g.vals.push(s.vals[i])}groupBy.forEach(k=>g.labels[k]=s.labels[k])}return[...groups.values()]}
+
+function aggregateFinal(groups,op){const out=[];for(const g of groups){const buckets=new Map();for(let i=0;i<g.ts.length;i++){const b=Math.floor(g.ts[i]/60000);if(!buckets.has(b))buckets.set(b,{sum:0,count:0});const buck=buckets.get(b);buck.sum+=g.vals[i];buck.count++}const ts=[],vals=[];for(const [b,v] of [...buckets.entries()].sort((a,b)=>a[0]-b[0])){ts.push(b*60000+30000);vals.push(op==='sum'?v.sum:v.sum/v.count)}out.push({...g,ts,vals})}return out}
+
+function runQuery(){const q=document.getElementById('queryInput').value.trim();if(!q){setStatus('أدخل استعلامًا',true);return}const {agg,windowMs,groupBy,finalAgg}=parseQuery(q);if(chartSeries.length===0){setStatus('اختر سلاسل للمقارنة أولاً',true);return}let working=chartSeries.map(s=>({ts:s.ts,vals:s.vals,labels:s.labels,color:s.color}));
+if(groupBy.length){working=filterByLabels(working,groupBy)}
+const ds=working.map(w=>{const [nt,nv]=downsample(w.ts,w.vals,windowMs);return{...w,ts:nt,vals:nv}});
+if(finalAgg){ds.push(...aggregateFinal(ds,finalAgg).map(d=>({...d,color:hueColor(chartSeries.length+ds.indexOf(d))})))}
+chartSeries=ds;drawChart();setStatus(`تم تنفيذ الاستعلام: ${ds.length} سلسلة`)}
+
+function drawChart(){const cvs=document.getElementById('chart');const ctx=cvs.getContext('2d');const dpr=window.devicePixelRatio||1;const rect=cvs.getBoundingClientRect();cvs.width=rect.width*dpr;cvs.height=rect.height*dpr;ctx.scale(dpr,dpr);chartWidth=rect.width;chartHeight=rect.height;ctx.clearRect(0,0,chartWidth,chartHeight);
+if(chartSeries.length===0){ctx.fillStyle='var(--gold-dim)';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('لا توجد بيانات للعرض',chartWidth/2,chartHeight/2);return}
+let minT=Infinity,maxT=-Infinity,minV=Infinity,maxV=-Infinity;for(const s of chartSeries){for(let i=0;i<s.ts.length;i++){minT=Math.min(minT,s.ts[i]);maxT=Math.max(maxT,s.ts[i]);minV=Math.min(minV,s.vals[i]);maxV=Math.max(maxV,s.vals[i])}}
+if(minT===Infinity)return;const padT=(maxT-minT)*0.05||60000;const padV=(maxV-minV)*0.1||1;minT-=padT;maxT+=padT;minV-=padV;maxV+=padV;
+const left=60,right=20,top=20,bottom=40;const w=chartWidth-left-right,h=chartHeight-top-bottom;
+ctx.strokeStyle='var(--gold-dim)';ctx.lineWidth=1;ctx.font='11px system-ui';ctx.fillStyle='var(--light)';
+for(let i=0;i<=5;i++){const y=top+h*i/5;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();const v=maxV-(maxV-minV)*i/5;ctx.fillText(v.toFixed(v>100?0:2),left-55,y+4)}
+for(let i=0;i<=10;i++){const x=left+w*i/10;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,top+h);ctx.stroke();const t=minT+(maxT-minT)*i/10;ctx.fillText(fmtTime(t),x-25,chartHeight-8)}
+for(const s of chartSeries){ctx.strokeStyle=s.color;ctx.lineWidth=2;ctx.beginPath();let first=true;for(let i=0;i<s.ts.length;i++){const x=left+(s.ts[i]-minT)/(maxT-minT)*w;const y=top+h-(s.vals[i]-minV)/(maxV-minV)*h;if(first){ctx.moveTo(x,y);first=false}else{ctx.lineTo(x,y)}}ctx.stroke()}
+const legendY=top+15;let lx=left;for(const s of chartSeries){ctx.fillStyle=s.color;ctx.fillRect(lx,legendY,12,12);ctx.fillStyle='var(--light)';ctx.font='12px system-ui';const lbl=Object.entries(s.labels).map(([k,v])=>`${k}=${v}`).join(', ')||'series';ctx.fillText(lbl,lx+18,legendY+10);lx+=ctx.measureText(lbl).width+40}}
+function fmtTime(ts){const d=new Date(ts);return d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}
+
+function removeOutliers(){const z=parseFloat(document.getElementById('zThreshold').value)||3;let removed=0;for(const s of chartSeries){const mean=s.vals.reduce((a,b)=>a+b,0)/s.vals.length;const std=Math.sqrt(s.vals.reduce((a,b)=>a+(b-mean)**2,0)/s.vals.length);const keep=[];for(let i=0;i<s.vals.length;i++){if(Math.abs(s.vals[i]-mean)<=z*std)keep.push(i);else removed++}s.ts=keep.map(i=>s.ts[i]);s.vals=keep.map(i=>s.vals[i])}drawChart();setStatus(`تم إزالة ${removed} قيمة شاذة`)}
+async function exportBundle(){const data={series:chartSeries.map(s=>({ts:s.ts,vals:s.vals,labels:s.labels})),exportedAt:Date.now()};const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`metrics-bundle-${Date.now()}.json`;a.click();URL.revokeObjectURL(url);setStatus('تم تصدير الحزمة')}
+
+async function init(){await openDB();await loadSeriesList();chartCtx=document.getElementById('chart').getContext('2d');drawChart();
+document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importData(r.result);r.readAsText(f);e.target.value=''};
+document.getElementById('btnImport').onclick=()=>{const t=document.getElementById('pasteArea').value.trim();if(t)importData(t);else document.getElementById('importFile').click()};
+document.getElementById('btnExport').onclick=exportBundle;
+document.getElementById('btnClear').onclick=async()=>{if(!confirm('مسح كل البيانات؟'))return;await new Promise((res,rej)=>{const req=db.transaction(STORE,'readwrite').objectStore(STORE).clear();req.onsuccess=res;req.onerror=rej});chartSeries=[];await loadSeriesList();drawChart();setStatus('تم المسح')};
+document.getElementById('btnRunQuery').onclick=runQuery;
+document.getElementById('btnAddSeries').onclick=()=>{renderSeriesList();setStatus('انقر على شارة لإضافتها للمقارنة')};
+document.getElementById('btnRemoveOutliers').onclick=removeOutliers;
+document.getElementById('queryInput').addEventListener('keydown',e=>{if(e.key==='Enter')runQuery()})
+}init()
+})()
+</script>
+</body>
+</html>
