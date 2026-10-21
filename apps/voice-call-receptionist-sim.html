@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>موظف استقبال هاتفي ذكي — محاكاة مكالمات وحجوزات بالمتصفح | MDM1</title>
+<meta name="description" content="تطبيق عربي يعمل كلياً في المتصفح: سجّل مكالمات افتراضية، ردّ عليها بنصوص قابلة للتخصيص، احجز المواعيد في تقويم محلي، وصفِّ العملاء المحتملين بأسئلة تأهيلية — كل البيانات محفوظة في localStorage.">
+<link rel="canonical" href="https://mdm1.org/apps/voice-call-receptionist-sim.html">
+<meta property="og:title" content="موظف استقبال هاتفي ذكي — محاكاة مكالمات وحجوزات بالمتصفح">
+<meta property="og:description" content="تطبيق عربي يعمل كلياً في المتصفح: سجّل مكالمات افتراضية، ردّ عليها بنصوص قابلة للتخصيص، احجز المواعيد في تقويم محلي، وصفِّ العملاء المحتملين بأسئلة تأهيلية — كل البيانات محفوظة في localStorage.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/voice-call-receptionist-sim.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{--line:color-mix(in srgb,var(--gold-dim) 45%,transparent);display:flex;flex-direction:column;gap:1rem;max-width:820px;margin:0 auto;padding:1rem}
+.app .card{padding:1rem;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--dark) 88%,#000)}
+.app h3{margin:0 0 .5rem;color:var(--gold-bright)}
+.app label{display:block;margin:.5rem 0 .2rem;color:var(--light)}
+.app input,.app select,.app textarea{width:100%;padding:.5rem .6rem;border:1px solid var(--gold-dim);border-radius:8px;background:var(--dark);color:var(--light);font:inherit}
+.app input:focus,.app select:focus,.app textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.app button{padding:.55rem .9rem;border:1px solid var(--gold);border-radius:8px;background:var(--gold);color:var(--dark);font-weight:700;cursor:pointer}
+.app button:hover{background:var(--gold-bright)}
+.app button.sec{background:transparent;color:var(--gold);border-color:var(--gold-dim)}
+.app button:disabled{opacity:.45;cursor:not-allowed}
+.app .out{margin:.5rem 0 0;padding:.6rem .75rem;border:1px dashed var(--gold-dim);border-radius:8px;color:var(--light);min-height:1.4rem;white-space:pre-wrap}
+.app .badge{padding:.25rem .5rem;border-radius:999px;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold-bright);font-size:.92rem}
+.app .divider{height:1px;background:var(--gold-dim);margin:.75rem 0}
+.app ul#apptList li,.app ul#tplList li,.app ul#callLog li{padding:.4rem 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;white-space:normal}
+.app ul li:last-child{border-bottom:none}
+.app .del{padding:.2rem .5rem;font-size:.85rem}
+.app .empty{color:var(--gold-dim);font-style:italic}
+.app .live{border-color:var(--gold)}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "موظف استقبال هاتفي ذكي يحجز المواعيد تلقائياً", "url": "https://mdm1.org/apps/voice-call-receptionist-sim.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى خادم أو حساب مستخدم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل كلياً داخل المتصفح ويحفظ كل البيانات في localStorage دون أي اتصال شبكي أو تسجيل دخول."}}, {"@type": "Question", "name": "كيف أضيف قوالب ردود خاصة بعملي؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب نص الرد في صندوق «الرد المقترح» ثم اضغط «حفظ كقالب مخصص»، أو استخدم حقول «قوالب الردود» ثم «إضافة القالب»."}}, {"@type": "Question", "name": "هل يمكن تعديل وقت الموعد قبل الحجز؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر التاريخ والوقت من «التقويم المحلي» ثم اضغط «حجز الموعد تلقائياً» أو «إضافة موعد يدوي»، وستظهر أي تعارضات زمنية."}}, {"@type": "Question", "name": "ماذا يعني «ردود ناقصة» في لوحة الإحصائيات؟", "acceptedAnswer": {"@type": "Answer", "text": "هو عدد المكالمات المسجلة دون رد محفوظ (مثل المكالمات الفائتة)، ويظهر كمؤشر لمتابعة العملاء المحتملين."}}, {"@type": "Question", "name": "هل تُحذف بياناتي عند إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تبقى محفوظة في localStorage حتى تضغط «مسح كل البيانات» أو تغيّر إعدادات التخزين في متصفحك."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">موظف استقبال هاتفي ذكي يحجز المواعيد تلقائياً</h1>
+  <p class="page-sub">تطبيق عربي يعمل كلياً في المتصفح: سجّل مكالمات افتراضية، ردّ عليها بنصوص قابلة للتخصيص، احجز المواعيد في تقويم محلي، وصفِّ العملاء المحتملين بأسئلة تأهيلية — كل البيانات محفوظة في localStorage.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: هذا تطبيق متكامل يحاكي موظف استقبال هاتفي ذكي يعمل بالكامل داخل متصفحك دون أي خادم أو حساب أو اتصال شبكي — تبدأ مكالمة افتراضية، يجمع الموظف بيانات المتصل عبر أسئلة تأهيلية (الاسم، الهاتف، الخدمة المطلوبة، مدى الاستعجال، الميزانية التقريبية، والوقت المفضل)، ثم يقترح الرد المناسب من قوالب نصية قابلة للتعديل، ويحجز الموعد تلقائياً في تقويم محلي بسيط يعرض appointments القادمة، ويحدّث لوحة إحصائيات حية تشمل عدد المكالمات الكلية والردود الناقصة والمواعيد المحجوزة وأكثر الخدمات طلباً، وكل شيء يُحفظ تلقائياً في localStorage مع أزرار لإعادة التعيين وإضافة قوالب ردود مخصصة وإدارة المواعيد المزدوجة بسهولة.</p>
+<div class="app">
+  <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
+    <button id="btnStartCall">بدء مكالمة واردة</button>
+    <button id="btnEndCall" class="sec" type="button">إنهاء المكالمة</button>
+    <button id="btnMissedCall" class="sec" type="button">تسجيل مكالمة فائتة</button>
+    <button id="btnResetAll" class="sec" type="button">مسح كل البيانات</button>
+  </div>
+
+  <div class="card" id="callStatusBox">
+    <div class="row"><span class="badge" id="callStatus">لا توجد مكالمة نشطة</span><span id="callTimer" style="font-variant-numeric:tabular-nums">00:00</span></div>
+    <p id="callHint" class="out">اضغط «بدء مكالمة واردة» لبدء محاكاة مكالمة جديدة من عميل محتمل.</p>
+  </div>
+
+  <div class="card" id="leadFormBox">
+    <h3>أسئلة التأهيل</h3>
+    <label for="inName">اسم المتصل</label>
+    <input id="inName" type="text" placeholder="مثال: سارة أحمد" autocomplete="off" />
+    <label for="inPhone">رقم الهاتف</label>
+    <input id="inPhone" type="tel" inputmode="tel" placeholder="05xxxxxxxx" autocomplete="off" />
+    <label for="inService">الخدمة المطلوبة</label>
+    <select id="inService">
+      <option value="استشارة">استشارة</option>
+      <option value="حجز موعد">حجز موعد</option>
+      <option value="استفسار عن الأسعار">استفسار عن الأسعار</option>
+      <option value="دعم فني">دعم فني</option>
+      <option value="أخرى">أخرى</option>
+    </select>
+    <label for="inUrgency">مدى الاستعجال</label>
+    <select id="inUrgency">
+      <option value="مرتفع">مرتفع</option>
+      <option value="متوسط">متوسط</option>
+      <option value="منخفض">منخفض</option>
+    </select>
+    <label for="inBudget">الميزانية التقريبية</label>
+    <select id="inBudget">
+      <option value="أقل من 500">أقل من 500</option>
+      <option value="500 - 1500">500 - 1500</option>
+      <option value="1500 - 3000">1500 - 3000</option>
+      <option value="أكثر من 3000">أكثر من 3000</option>
+    </select>
+    <label for="inPreferred">الوقت المفضل للموعد</label>
+    <select id="inPreferred">
+      <option value="صباح">صباح (9 ص - 12 م)</option>
+      <option value="ظهر">ظهر (12 م - 3 م)</option>
+      <option value="مساء">مساء (4 م - 8 م)</option>
+    </select>
+    <label for="inNotes">ملاحظات إضافية</label>
+    <textarea id="inNotes" rows="2" placeholder="اكتب أي تفاصيل تهم المتصل..."></textarea>
+    <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
+      <button id="btnAnalyze" type="button">تقييم العميل وتجهيز الرد</button>
+      <button id="btnBook" class="sec" type="button">حجز الموعد تلقائياً</button>
+    </div>
+  </div>
+
+  <div class="card" id="replyBox">
+    <h3>الرد المقترح (قابل للتعديل)</h3>
+    <label for="outReply">نص الرد الذي سيُرسل للمتصل</label>
+    <textarea id="outReply" rows="4" placeholder="سيظهر هنا الرد بعد تقييم العميل..."></textarea>
+    <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem">
+      <button id="btnSaveReply" type="button">حفظ الرد في السجل</button>
+      <button id="btnCopyReply" class="sec" type="button">نسخ الرد إلى الحافظة</button>
+      <button id="btnAddTemplate" class="sec" type="button">حفظ كقالب مخصص</button>
+    </div>
+    <p id="replyMsg" class="out"></p>
+  </div>
+
+  <div class="card" id="calendarBox">
+    <h3>التقويم المحلي</h3>
+    <label for="inDate">تاريخ الموعد</label>
+    <input id="inDate" type="date" />
+    <label for="inTime">وقت الموعد</label>
+    <input id="inTime" type="time" value="10:00" />
+    <div class="row" style="gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap">
+      <button id="btnAddManual" type="button">إضافة موعد يدوي</button>
+      <button id="btnFilterToday" class="sec" type="button">عرض مواعيد اليوم</button>
+      <button id="btnFilterAll" class="sec" type="button">عرض كل المواعيد</button>
+    </div>
+    <ul id="apptList" class="out" style="list-style:none;padding:0;margin:0.5rem 0 0"></ul>
+  </div>
+
+  <div class="card" id="templatesBox">
+    <h3>قوالب الردود القابلة للتخصيص</h3>
+    <label for="inTemplateName">اسم القالب</label>
+    <input id="inTemplateName" type="text" placeholder="مثال: ترحيب صياغة رسمية" autocomplete="off" />
+    <label for="inTemplateBody">نص القالب</label>
+    <textarea id="inTemplateBody" rows="2" placeholder="اكتب نص الرد هنا..."></textarea>
+    <button id="btnSaveTemplate" type="button" style="margin-top:0.5rem">إضافة القالب</button>
+    <ul id="tplList" class="out" style="list-style:none;padding:0;margin:0.5rem 0 0"></ul>
+  </div>
+
+  <div class="card" id="statsBox">
+    <h3>لوحة الإحصائيات</h3>
+    <div class="row" style="flex-wrap:wrap;gap:0.5rem">
+      <span class="badge">إجمالي المكالمات: <b id="statCalls">0</b></span>
+      <span class="badge">الردود المحفوظة: <b id="statReplies">0</b></span>
+      <span class="badge">مواعيد محجوزة: <b id="statBookings">0</b></span>
+      <span class="badge">ردود ناقصة: <b id="statMissed">0</b></span>
+    </div>
+    <p id="statHot" class="out" style="margin-top:0.5rem">أفضل خدمة طلباً: لا يوجد بعد.</p>
+  </div>
+
+  <div class="card" id="historyBox">
+    <h3>سجل المكالمات</h3>
+    <ul id="callLog" class="out" style="list-style:none;padding:0;margin:0"></ul>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى خادم أو حساب مستخدم؟</h3><p>لا، يعمل كلياً داخل المتصفح ويحفظ كل البيانات في localStorage دون أي اتصال شبكي أو تسجيل دخول.</p><h3>كيف أضيف قوالب ردود خاصة بعملي؟</h3><p>اكتب نص الرد في صندوق «الرد المقترح» ثم اضغط «حفظ كقالب مخصص»، أو استخدم حقول «قوالب الردود» ثم «إضافة القالب».</p><h3>هل يمكن تعديل وقت الموعد قبل الحجز؟</h3><p>نعم، اختر التاريخ والوقت من «التقويم المحلي» ثم اضغط «حجز الموعد تلقائياً» أو «إضافة موعد يدوي»، وستظهر أي تعارضات زمنية.</p><h3>ماذا يعني «ردود ناقصة» في لوحة الإحصائيات؟</h3><p>هو عدد المكالمات المسجلة دون رد محفوظ (مثل المكالمات الفائتة)، ويظهر كمؤشر لمتابعة العملاء المحتملين.</p><h3>هل تُحذف بياناتي عند إغلاق المتصفح؟</h3><p>لا، تبقى محفوظة في localStorage حتى تضغط «مسح كل البيانات» أو تغيّر إعدادات التخزين في متصفحك.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var KEY='md-reception-v1';
+  var els=function(id){return document.getElementById(id);};
+  var state={calls:[],replies:[],appts:[],templates:[],missed:0,active:false,startedAt:0,timerId:null};
+  function load(){try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){state.calls=p.calls||[];state.replies=p.replies||[];state.appts=p.appts||[];state.templates=p.templates||[];state.missed=typeof p.missed==='number'?p.missed:0;}}}catch(e){}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify({calls:state.calls,replies:state.replies,appts:state.appts,templates:state.templates,missed:state.missed}));}catch(e){els('replyMsg').textContent='تعذر الحفظ في التخزين المحلي.';}}
+  function fmt(t){var m=Math.floor(t/60),s=t%60;return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;}
+  function tick(){if(state.timerId)clearInterval(state.timerId);state.timerId=setInterval(function(){if(!state.active)return;var sec=Math.floor((Date.now()-state.startedAt)/1000);els('callTimer').textContent=fmt(sec);},1000);}
+  function stopTimer(){if(state.timerId){clearInterval(state.timerId);state.timerId=null;}}
+  function defaultGreeting(){return 'مرحباً، معك فريق الاستقبال. كيف يمكنني مساعدتك اليوم؟';}
+  function buildReply(a){
+    var greet=defaultGreeting();
+    var lead='الاسم: '+a.name+'، الهاتف: '+a.phone+'، الخدمة: '+a.service+'، الاستعجال: '+a.urgency+'، الميزانية: '+a.budget+'، الوقت المفضل: '+a.time+'.';
+    var qual;
+    if(a.urgency==='مرتفع'&&a.budget!=='أقل من 500'){qual='أهلاً '+a.name+'، طلبك من الأولوية العالية وسنخصص لك موعداً أقرب وقت ممكن.';}
+    else if(a.urgency==='متوسط'){qual='أهلاً '+a.name+'، تم تسجيل اهتمامك بخدمة «'+a.service+'» وسنؤكد لك الموعد خلال ساعات.';}
+    else{qual='أهلاً '+a.name+'، سنراجع طلبك لخدمة «'+a.service+'» ونتواصل معك في أقرب فرصة.';}
+    var book='موعدك المقترح: '+els('inDate').value+' الساعة '+els('inTime').value+' ('+a.time+').';
+    var close='شكراً لاتصالك، نتمنى أن نكون عند حسن ظنك. لا تتردد في التواصل معنا مجدداً.';
+    return greet+'\n'+lead+'\n'+qual+'\n'+book+'\n'+close;
+  }
+  function renderStats(){
+    els('statCalls').textContent=state.calls.length;
+    els('statReplies').textContent=state.replies.length;
+    var booked=state.appts.filter(function(x){return x.source==='auto'||x.source==='manual';}).length;
+    els('statBookings').textContent=state.appts.length;
+    els('statMissed').textContent=state.missed;
+    var counts={};
+    state.calls.forEach(function(c){if(c.service){counts[c.service]=(counts[c.service]||0)+1;}});
+    var best='',bn=0;
+    Object.keys(counts).forEach(function(k){if(counts[k]>bn){bn=counts[k];best=k;}});
+    els('statHot').textContent=best?('أفضل خدمة طلباً: '+best+' ('+bn+' مكالمة).'):('أفضل خدمة طلباً: لا يوجد بعد.');
+  }
+  function renderTemplates(){
+    var ul=els('tplList');ul.innerHTML='';
+    if(!state.templates.length){var li=document.createElement('li');li.className='empty';li.textContent='لا توجد قوالب مخصصة بعد.';ul.appendChild(li);return;}
+    state.templates.forEach(function(t,i){
+      var li=document.createElement('li');
+      var span=document.createElement('span');span.textContent=t.name+': '+t.body;li.appendChild(span);
+      var btn=document.createElement('button');btn.type='button';btn.className='sec del';btn.textContent='استخدام';btn.addEventListener('click',function(){els('outReply').value=t.body;els('replyMsg').textContent='تم تحميل القالب «'+t.name+'» في صندوق الرد.';});
+      var del=document.createElement('button');del.type='button';del.className='sec del';del.textContent='حذف';del.addEventListener('click',function(){state.templates.splice(i,1);save();renderTemplates();});
+      li.appendChild(btn);li.appendChild(del);ul.appendChild(li);
+    });
+  }
+  function renderAppts(filter){
+    var ul=els('apptList');ul.innerHTML='';
+    var list=state.appts.slice();
+    if(filter==='today'){var d=new Date().toISOString().slice(0,10);list=list.filter(function(x){return x.date===d;});}
+    list.sort(function(a,b){return (a.date+a.time)<(b.date+b.time)?-1:1;});
+    if(!list.length){var li=document.createElement('li');li.className='empty';li.textContent='لا توجد مواعيد لعرضها.';ul.appendChild(li);return;}
+    list.forEach(function(a){
+      var li=document.createElement('li');
+      var span=document.createElement('span');span.textContent=a.date+' '+a.time+' — '+a.name+' — '+a.service+' ('+(a.source==='auto'?'تلقائي':'يدوي')+')';li.appendChild(span);
+      var del=document.createElement('button');del.type='button';del.className='sec del';del.textContent='حذف';del.addEventListener('click',function(){state.appts=state.appts.filter(function(x){return x.id!==a.id;});save();renderAppts(els('apptList').dataset.filter||'all');renderStats();});
+      li.appendChild(del);ul.appendChild(li);
+    });
+  }
+  function renderLog(){
+    var ul=els('callLog');ul.innerHTML='';
+    if(!state.calls.length){var li=document.createElement('li');li.className='empty';li.textContent='لا توجد مكالمات مسجلة بعد.';ul.appendChild(li);return;}
+    state.calls.slice().reverse().forEach(function(c){
+      var li=document.createElement('li');
+      var span=document.createElement('span');span.textContent=c.time+' — '+(c.name||'غير معروف')+' — '+c.service+' — '+(c.replied?'تم الرد':'بانتظار الرد');li.appendChild(span);ul.appendChild(li);
+    });
+  }
+  function collect(){return{name:els('inName').value.trim(),phone:els('inPhone').value.trim(),service:els('inService').value,urgency:els('inUrgency').value,budget:els('inBudget').value,time:els('inPreferred').value,notes:els('inNotes').value.trim()};}
+  function validateLead(a){
+    if(!a.name){els('replyMsg').textContent='يرجى إدخال اسم المتصل.';return false;}
+    if(!a.phone||a.phone.replace(/\D/g,'').length<8){els('replyMsg').textContent='يرجى إدخال رقم هاتف صحيح (8 أرقام على الأقل).';return false;}
+    return true;
+  }
+  els('btnStartCall').addEventListener('click',function(){
+    state.active=true;state.startedAt=Date.now();els('callStatus').textContent='مكالمة نشطة...';els('callStatusBox').classList.add('live');els('callTimer').textContent='00:00';els('callHint').textContent=defaultGreeting();els('replyMsg').textContent='';tick();
+  });
+  els('btnEndCall').addEventListener('click',function(){
+    if(!state.active){els('replyMsg').textContent='لا توجد مكالمة نشطة لإنهائها.';return;}
+    state.active=false;stopTimer();els('callStatus').textContent='انتهت المكالمة';els('callStatusBox').classList.remove('live');
+    var a=collect();
+    state.calls.push({id:Date.now(),time:new Date().toLocaleString('ar-EG'),name:a.name||'غير معروف',service:a.service,replied:!!els('outReply').value.trim()});
+    save();renderStats();renderLog();
+  });
+  els('btnMissedCall').addEventListener('click',function(){
+    state.missed++;state.calls.push({id:Date.now(),time:new Date().toLocaleString('ar-EG'),name:'مكالمة فائتة',service:'غير محدد',replied:false});save();renderStats();renderLog();els('replyMsg').textContent='تم تسجيل مكالمة فائتة. يُنصح بمتابعة العميل برد مخصص.';
+  });
+  els('btnAnalyze').addEventListener('click',function(){
+    var a=collect();if(!validateLead(a))return;
+    els('outReply').value=buildReply(a);els('replyMsg').textContent='تم تقييم العميل وتجهيز الرد المقترح. يمكنك تعديله ثم حفظه.';
+    if(!state.active){state.calls.push({id:Date.now(),time:new Date().toLocaleString('ar-EG'),name:a.name,service:a.service,replied:true});save();renderStats();renderLog();}
+  });
+  els('btnBook').addEventListener('click',function(){
+    var a=collect();if(!validateLead(a))return;
+    var d=els('inDate').value,t=els('inTime').value;
+    if(!d||!t){els('replyMsg').textContent='يرجى تحديد تاريخ ووقت الموعد قبل الحجز.';return;}
+    var clash=state.appts.some(function(x){return x.date===d&&x.time===t;});
+    if(clash){els('replyMsg').textContent='هناك موعد آخر في نفس التاريخ والوقت. اختر وقتاً آخر.';return;}
+    state.appts.push({id:Date.now(),date:d,time:t,name:a.name,service:a.service,source:'auto'});
+    save();renderAppts('all');renderStats();els('replyMsg').textContent='تم حجز الموعد تلقائياً: '+d+' الساعة '+t+'.';
+  });
+  els('btnSaveReply').addEventListener('click',function(){
+    var v=els('outReply').value.trim();if(!v){els('replyMsg').textContent='لا يوجد رد لحفظه.';return;}
+    var a=collect();state.replies.push({id:Date.now(),text:v,name:a.name||'غير معروف',time:new Date().toLocaleString('ar-EG')});save();renderStats();els('replyMsg').textContent='تم حفظ الرد في السجل ('+state.replies.length+' رد).';
+  });
+  els('btnCopyReply').addEventListener('click',function(){
+    var v=els('outReply').value.trim();if(!v){els('replyMsg').textContent='لا يوجد رد للنسخ.';return;}
+    try{els('outReply').select();els('replyMsg').textContent='تم تحديد النص. اضغط Ctrl+C للنسخ.';}catch(e){els('replyMsg').textContent='تعذر التحديد، انسخ النص يدوياً.';}
+  });
+  els('btnAddTemplate').addEventListener('click',function(){
+    var v=els('outReply').value.trim();if(!v){els('replyMsg').textContent='لا يوجد رد لتحويله إلى قالب.';return;}
+    els('inTemplateName').value='قالب '+new Date().toLocaleTimeString('ar-EG');els('inTemplateBody').value=v;els('replyMsg').textContent='تم تحميل الرد في حقول القالب. اضغط «إضافة القالب» للحفظ.';
+  });
+  els('btnSaveTemplate').addEventListener('click',function(){
+    var n=els('inTemplateName').value.trim(),b=els('inTemplateBody').value.trim();
+    if(!n||!b){els('replyMsg').textContent='يرجى إدخال اسم القالب ونصه.';return;}
+    state.templates.push({name:n,body:b});save();renderTemplates();els('inTemplateName').value='';els('inTemplateBody').value='';els('replyMsg').textContent='تمت إضافة القالب بنجاح.';
+  });
+  els('btnAddManual').addEventListener('click',function(){
+    var d=els('inDate').value,t=els('inTime').value;
+    if(!d||!t){els('replyMsg').textContent='يرجى تحديد التاريخ والوقت أولاً.';return;}
+    var clash=state.appts.some(function(x){return x.date===d&&x.time===t;});
+    if(clash){els('replyMsg').textContent='يوجد موعد مسبق في نفس الوقت.';return;}
+    state.appts.push({id:Date.now(),date:d,time:t,name:'موعد يدوي',service:'غير محدد',source:'manual'});save();renderAppts('all');renderStats();els('replyMsg').textContent='تمت إضافة الموعد اليدوي.';
+  });
+  els('btnFilterToday').addEventListener('click',function(){els('apptList').dataset.filter='today';renderAppts('today');});
+  els('btnFilterAll').addEventListener('click',function(){els('apptList').dataset.filter='all';renderAppts('all');});
+  els('btnResetAll').addEventListener('click',function(){
+    if(!confirm('سيتم حذف جميع المكالمات والمواعيد والقوالب. هل أنت متأكد؟'))return;
+    try{localStorage.removeItem(KEY);}catch(e){}
+    state={calls:[],replies:[],appts:[],templates:[],missed:0,active:false,startedAt:0,timerId:null};
+    els('outReply').value='';els('replyMsg').textContent='تمت إعادة تعيين كل البيانات.';els('callStatus').textContent='لا توجد مكالمة نشطة';els('callStatusBox').classList.remove('live');stopTimer();els('callTimer').textContent='00:00';
+    renderStats();renderLog();renderTemplates();renderAppts('all');
+  });
+  (function init(){
+    var today=new Date();var iso=today.toISOString().slice(0,10);els('inDate').value=iso;els('inDate').min=iso;els('apptList').dataset.filter='all';
+    load();renderStats();renderLog();renderTemplates();renderAppts('all');
+  })();
+})();
+</script>
+</body>
+</html>
