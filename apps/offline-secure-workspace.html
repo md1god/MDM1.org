@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مساحة عمل محلية مغلقة للاستدلال والوثائق | MDM1</title>
+<meta name="description" content="مساحة عمل تعمل بالكامل داخل متصفحك دون اتصال بالشبكة، لتخزين الوثائق والمحادثات في localStorage، مع مساعد وهمي، ولوحات سماحية، وسجل تدقيق، ووضع عزل يمنع أي تخزين خارجي.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-secure-workspace.html">
+<meta property="og:title" content="مساحة عمل محلية مغلقة للاستدلال والوثائق">
+<meta property="og:description" content="مساحة عمل تعمل بالكامل داخل متصفحك دون اتصال بالشبكة، لتخزين الوثائق والمحادثات في localStorage، مع مساعد وهمي، ولوحات سماحية، وسجل تدقيق، ووضع عزل يمنع أي تخزين خارجي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-secure-workspace.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:16px;padding:16px}
+.app .card{padding:16px}
+.app .row{flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.app .row label{font-weight:600;white-space:nowrap}
+.app textarea,.app input[type="text"],.app input[type="file"]{flex:1;min-width:200px;padding:8px;color:var(--light);background:transparent;border:1px solid var(--gold-dim);border-radius:6px}
+.app .badge{display:inline-block;padding:4px 10px;border:1px solid var(--gold-dim);border-radius:999px;font-size:.85rem}
+.app .out{border:1px dashed var(--gold-dim);border-radius:6px;padding:10px;min-height:40px}
+.app ul{list-style:none;margin:0;padding:0}
+.app ul li{border:1px solid var(--gold-dim);border-radius:6px;padding:8px;margin-bottom:6px}
+.app ul li.sel{border-color:var(--gold);cursor:pointer}
+.app ul li.sel:hover{background:rgba(255,215,0,.08)}
+.app #appDocsList li span,.app #appSearchResults span{display:block;font-size:.85rem;opacity:.85}
+.app #appChatOut p{margin:0 0 8px}
+.app #appChatOut strong{color:var(--gold)}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مساحة عمل محلية مغلقة للاستدلال", "url": "https://mdm1.org/apps/offline-secure-workspace.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع أي بيانات من هذه المساحة إلى الإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، هذه المساحة تعمل بالكامل داخل المتصفح باستخدام localStorage فقط، ولا توجد أي أوامر شبكة أو إرسال بيانات خارجية، ووضع العزل يمنع أي تخزين خارجي."}}, {"@type": "Question", "name": "كيف أضيف وثيقة نصية إلى الفهرس المحلي؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل العنوان والنص في قسم رفع الوثائق ثم اضغط \"حفظ الوثيقة وفهرستها\"، أو اختر ملفًا نصيًا من جهازك ليُقرأ محليًا دون رفعه لأي خادم."}}, {"@type": "Question", "name": "ما وظيفة مساعد الاستدلال الوهمي؟", "acceptedAnswer": {"@type": "Answer", "text": "المساعد يعمل بقواعد ومنطق محدد مسبقًا داخل جهازك، فيلخص الوثائق ويجيب على استعلامات السماح وعدد الوثائق دون أي نموذج لغوي خارجي أو اتصال بالشبكة."}}, {"@type": "Question", "name": "ماذا يفعل وضع العزل؟", "acceptedAnswer": {"@type": "Answer", "text": "وضع العزل يبقي كل العمليات داخل الجهاز ويمنع أي محاولة تخزين خارجي أو إرسال بيانات، مع إظهار حالة الاتصال وسجل تدقيق لكل عملية تُنفَّذ محليًا."}}, {"@type": "Question", "name": "هل يمكنني تصدير سجل التدقيق أو مسح كل شيء؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك تحديث سجل التدقيق ومراجعته، أو مسحه بالكامل، أو تفريغ كل بيانات المساحة المحلية عبر زر \"تفريغ كل البيانات\" بعد التأكيد."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مساحة عمل محلية مغلقة للاستدلال</h1>
+  <p class="page-sub">مساحة عمل تعمل بالكامل داخل متصفحك دون اتصال بالشبكة، لتخزين الوثائق والمحادثات في localStorage، مع مساعد وهمي، ولوحات سماحية، وسجل تدقيق، ووضع عزل يمنع أي تخزين خارجي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: هذه المساحة تعمل بالكامل داخل جهازك دون أي اتصال بالشبكة، حيث تُخزَّن الوثائق والمحادثات في localStorage فقط، مع مساعد وهمي يعمل بقواعد ومنطق محدد مسبقًا داخل الجهاز، ولوحات سماحية للمسموح به، وسجل تدقيق محلي لكل عملية، ووضع "عزل" يمنع أي محاولة تخزين خارجي أو إرسال بيانات، لضمان بقاء بيانات القطاعات الحساسة داخل الجهاز وحده دون أي مشاركة خارجية إطلاقًا. يمكنك رفع ملفات النصوص وفهرستها داخليًا وتنفيذ البحث المحلي السريع، وفتح جلسات استدلال مستقلة، وتصدير سجل التدقيق للتحقق منه دون الخروج من بيئة العزل المغلقة، وكل شيء يعمل حتى بدون إنترنت بالكامل.</p>
+
+<div class="app">
+  <section class="card" id="appStatusCard">
+    <div class="row">
+      <span class="badge" id="appNetStatus">غير متصل — العزل مفعّل</span>
+      <span class="badge" id="appStoreStatus">التخزين: غير معروف</span>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <label for="appIsolation">وضع العزل (منع أي تخزين خارجي)</label>
+      <input type="checkbox" id="appIsolation" checked>
+      <button type="button" class="sec" id="appBtnResetAll">تفريغ كل البيانات</button>
+    </div>
+    <p id="appStatusMsg" class="out" role="status"></p>
+  </section>
+
+  <section class="card" id="appDocsCard">
+    <h2>رفع وفهرسة الوثائق النصية</h2>
+    <div class="row">
+      <label for="appDocTitle">عنوان الوثيقة</label>
+      <input type="text" id="appDocTitle" placeholder="مثال: سياسة الأمن السيبراني">
+    </div>
+    <div class="row">
+      <label for="appDocText">نص الوثيقة</label>
+    </div>
+    <textarea id="appDocText" rows="5" placeholder="الصق نص الوثيقة هنا..."></textarea>
+    <div class="row">
+      <label for="appDocFile">أو اختر ملفًا نصيًا (txt / md / csv)</label>
+      <input type="file" id="appDocFile" accept=".txt,.md,.csv,text/plain">
+    </div>
+    <div class="row">
+      <button type="button" id="appBtnAddDoc">حفظ الوثيقة وفهرستها</button>
+      <button type="button" class="sec" id="appBtnClearDocForm">تفريغ النموذج</button>
+    </div>
+    <p id="appDocsMsg" class="out" role="status"></p>
+    <div class="divider"></div>
+    <div class="row">
+      <label for="appSearchInput">البحث المحلي في الوثائق والفهرس</label>
+      <input type="text" id="appSearchInput" placeholder="كلمة البحث...">
+      <button type="button" id="appBtnSearchDocs">ابحث في الجهاز فقط</button>
+    </div>
+    <div id="appSearchResults" class="out" aria-live="polite"></div>
+    <div class="divider"></div>
+    <ul id="appDocsList"></ul>
+  </section>
+
+  <section class="card" id="appAllowCard">
+    <h2>لوحة السماح (Allowlist)</h2>
+    <div class="row">
+      <label for="appAllowInput">عنوان نظام أو مسار مسموح محليًا</label>
+      <input type="text" id="appAllowInput" placeholder="مثال: قاعدة-الوثائق-الداخلية">
+    </div>
+    <div class="row">
+      <button type="button" id="appBtnAllowAdd">إضافة إلى السماح</button>
+      <button type="button" class="sec" id="appBtnAllowRemove">إزالة المحدد</button>
+    </div>
+    <ul id="appAllowList"></ul>
+    <p id="appAllowMsg" class="out" role="status"></p>
+  </section>
+
+  <section class="card" id="appChatCard">
+    <h2>المساعد الوهمي (قواعد محلية)</h2>
+    <div class="row">
+      <label for="appChatInput">اسأل المساعد المحلي</label>
+      <input type="text" id="appChatInput" placeholder="مثال: لخص الوثيقة الأولى">
+    </div>
+    <div class="row">
+      <button type="button" id="appBtnChatSend">تشغيل الاستدلال المحلي</button>
+      <button type="button" class="sec" id="appBtnChatClear">مسح المحادثة</button>
+    </div>
+    <div id="appChatOut" class="out" aria-live="polite"></div>
+  </section>
+
+  <section class="card" id="appAuditCard">
+    <h2>سجل التدقيق المحلي</h2>
+    <div class="row">
+      <button type="button" id="appBtnAuditRefresh">تحديث السجل</button>
+      <button type="button" class="sec" id="appBtnAuditClear">مسح السجل</button>
+    </div>
+    <ul id="appAuditList"></ul>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع أي بيانات من هذه المساحة إلى الإنترنت؟</h3><p>لا، هذه المساحة تعمل بالكامل داخل المتصفح باستخدام localStorage فقط، ولا توجد أي أوامر شبكة أو إرسال بيانات خارجية، ووضع العزل يمنع أي تخزين خارجي.</p><h3>كيف أضيف وثيقة نصية إلى الفهرس المحلي؟</h3><p>أدخل العنوان والنص في قسم رفع الوثائق ثم اضغط &quot;حفظ الوثيقة وفهرستها&quot;، أو اختر ملفًا نصيًا من جهازك ليُقرأ محليًا دون رفعه لأي خادم.</p><h3>ما وظيفة مساعد الاستدلال الوهمي؟</h3><p>المساعد يعمل بقواعد ومنطق محدد مسبقًا داخل جهازك، فيلخص الوثائق ويجيب على استعلامات السماح وعدد الوثائق دون أي نموذج لغوي خارجي أو اتصال بالشبكة.</p><h3>ماذا يفعل وضع العزل؟</h3><p>وضع العزل يبقي كل العمليات داخل الجهاز ويمنع أي محاولة تخزين خارجي أو إرسال بيانات، مع إظهار حالة الاتصال وسجل تدقيق لكل عملية تُنفَّذ محليًا.</p><h3>هل يمكنني تصدير سجل التدقيق أو مسح كل شيء؟</h3><p>يمكنك تحديث سجل التدقيق ومراجعته، أو مسحه بالكامل، أو تفريغ كل بيانات المساحة المحلية عبر زر &quot;تفريغ كل البيانات&quot; بعد التأكيد.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var KEYS={docs:'app_local_docs',allow:'app_local_allow',audit:'app_local_audit',chat:'app_local_chat'};
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return null}}
+  function load(k,f){try{var s=localStorage.getItem(k);return s?JSON.parse(s):f}catch(e){return f}}
+  function saveDocs(d){return store(KEYS.docs,d)}
+  function saveAllow(a){return store(KEYS.allow,a)}
+  function saveAudit(a){return store(KEYS.audit,a)}
+  function saveChat(c){return store(KEYS.chat,c)}
+  function audit(action,detail){
+    var list=load(KEYS.audit,[]);
+    list.unshift({t:new Date().toLocaleString('ar-EG'),action:action,detail:detail});
+    if(list.length>200)list.length=200;
+    saveAudit(list);renderAudit();
+  }
+  function setMsg(id,m){var el=document.getElementById(id);if(el)el.textContent=m||''}
+  function el(id){return document.getElementById(id)}
+  function initStoreStatus(){
+    var ok=store('app_probe','1');
+    var s=el('appStoreStatus');
+    if(s)s.textContent=ok===true?'التخزين: localStorage يعمل':'التخزين: غير متاح (وضع للقراءة فقط)';
+  }
+  function initNet(){
+    var s=el('appNetStatus');
+    if(s)s.textContent=navigator.onLine?'متصل — العزل الإلزامي مفعّل':'غير متصل — العزل مفعّل';
+  }
+  window.addEventListener('online',initNet);
+  window.addEventListener('offline',initNet);
+  el('appIsolation').addEventListener('change',function(){
+    setMsg('appStatusMsg',this.checked?'وضع العزل مفعّل: أي محاولة تخزين خارجي مرفوضة.':'تنبيه: وضع العزل متوقف مؤقتًا، لا تُرسل بيانات خارج الجهاز.');
+    audit('تغيير وضع العزل',this.checked?'مفعّل':'معطّل');
+  });
+  el('appBtnResetAll').addEventListener('click',function(){
+    if(!confirm('تأكيد تفريغ كل بيانات المساحة المحلية؟'))return;
+    try{Object.keys(KEYS).forEach(function(k){localStorage.removeItem(KEYS[k])})}catch(e){}
+    renderDocs();renderAllow();renderAudit();setMsg('appChatOut','');
+    el('appChatOut').textContent='';setMsg('appStatusMsg','تم تفريغ كل البيانات المحلية.');
+    audit('تفريغ شامل','حُذفت جميع المفاتيح المحلية');
+  });
+  function addDoc(title,text){
+    title=(title||'').trim();text=(text||'').trim();
+    if(!title||!text){setMsg('appDocsMsg','خطأ: العنوان والنص مطلوبان.');return false}
+    var docs=load(KEYS.docs,[]);
+    var now=Date.now();
+    docs.unshift({id:'d'+now,title:title,text:text,ts:now});
+    if(saveDocs(docs)===false){setMsg('appDocsMsg','خطأ: تعذر الكتابة في localStorage.');return false}
+    renderDocs();setMsg('appDocsMsg','تم حفظ الوثيقة وفهرستها محليًا: '+title);
+    audit('إضافة وثيقة',title+' ('+text.length+' حرف)');return true;
+  }
+  el('appBtnAddDoc').addEventListener('click',function(){
+    addDoc(el('appDocTitle').value,el('appDocText').value);
+  });
+  el('appBtnClearDocForm').addEventListener('click',function(){
+    el('appDocTitle').value='';el('appDocText').value='';el('appDocFile').value='';
+    setMsg('appDocsMsg','');
+  });
+  el('appDocFile').addEventListener('change',function(){
+    var f=this.files&&this.files[0];if(!f)return;
+    if(el('appIsolation').checked&&f.size>2*1024*1024){setMsg('appDocsMsg','خطأ: الملف كبير جدًا لوضع العزل (2MB).');this.value='';return}
+    var r=new FileReader();
+    r.onload=function(){
+      el('appDocText').value=String(r.result||'');
+      if(!el('appDocTitle').value)el('appDocTitle').value=f.name;
+      setMsg('appDocsMsg','تم تحميل الملف محليًا: '+f.name);
+      audit('رفع ملف',f.name+' ('+f.size+' بايت)');
+    };
+    r.onerror=function(){setMsg('appDocsMsg','خطأ: تعذر قراءة الملف.')};
+    r.readAsText(f);
+  });
+  function renderDocs(){
+    var ul=el('appDocsList');if(!ul)return;ul.innerHTML='';
+    var docs=load(KEYS.docs,[]);
+    if(!docs.length){ul.innerHTML='<li>لا توجد وثائق محفوظة بعد.</li>';return}
+    docs.forEach(function(d){
+      var li=document.createElement('li');
+      var t=document.createElement('strong');t.textContent=d.title;
+      var s=document.createElement('span');
+      s.textContent=new Date(d.ts).toLocaleString('ar-EG')+' — '+d.text.slice(0,80)+'…';
+      var b=document.createElement('button');
+      b.type='button';b.className='sec';b.textContent='حذف الوثيقة';
+      b.addEventListener('click',function(){
+        var cur=load(KEYS.docs,[]).filter(function(x){return x.id!==d.id});
+        saveDocs(cur);renderDocs();audit('حذف وثيقة',d.title);
+      });
+      li.appendChild(t);li.appendChild(s);li.appendChild(b);ul.appendChild(li);
+    });
+  }
+  el('appBtnSearchDocs').addEventListener('click',function(){
+    var q=(el('appSearchInput').value||'').trim().toLowerCase();
+    var box=el('appSearchResults');
+    if(!q){box.textContent='أدخل كلمة للبحث في الوثائق المحفوظة محليًا.';return}
+    var hits=load(KEYS.docs,[]).filter(function(d){
+      return d.title.toLowerCase().indexOf(q)>-1||d.text.toLowerCase().indexOf(q)>-1;
+    });
+    audit('بحث محلي',q+' — '+hits.length+' نتيجة');
+    if(!hits.length){box.textContent='لا توجد نتائج محليًا لـ: '+q;return}
+    var html='';
+    hits.forEach(function(d){
+      var i=d.text.toLowerCase().indexOf(q);
+      var start=i>40?i-40:0;
+      html+='<div><strong>'+esc(d.title)+'</strong><br>'+esc(d.text.slice(start,start+140))+'…</div><br>';
+    });
+    box.innerHTML=html;
+  });
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function renderAllow(){
+    var ul=el('appAllowList');if(!ul)return;ul.innerHTML='';
+    var a=load(KEYS.allow,[]);
+    if(!a.length){ul.innerHTML='<li>لا توجد عناصر في لوحة السماح.</li>';return}
+    a.forEach(function(x,i){
+      var li=document.createElement('li');
+      li.textContent=x;
+      li.addEventListener('click',function(){
+        var all=ul.querySelectorAll('li');all.forEach(function(n){n.classList.remove('sel')});
+        li.classList.add('sel');li.dataset.i=String(i);
+      });
+      ul.appendChild(li);
+    });
+  }
+  el('appBtnAllowAdd').addEventListener('click',function(){
+    var v=(el('appAllowInput').value||'').trim();
+    if(!v){setMsg('appAllowMsg','خطأ: أدخل عنوانًا أولًا.');return}
+    var a=load(KEYS.allow,[]);
+    if(a.indexOf(v)>-1){setMsg('appAllowMsg','هذا العنصر موجود بالفعل.');return}
+    a.push(v);
+    if(saveAllow(a)===false){setMsg('appAllowMsg','خطأ: تعذر الحفظ في localStorage.');return}
+    el('appAllowInput').value='';renderAllow();
+    setMsg('appAllowMsg','تمت الإضافة إلى السماح: '+v);audit('إضافة سماح',v);
+  });
+  el('appBtnAllowRemove').addEventListener('click',function(){
+    var sel=el('appAllowList').querySelector('li.sel');
+    if(!sel){setMsg('appAllowMsg','اختر عنصرًا من القائمة أولًا.');return}
+    var a=load(KEYS.allow,[]);var removed=a.splice(Number(sel.dataset.i),1)[0];
+    saveAllow(a);renderAllow();setMsg('appAllowMsg','تمت الإزالة: '+removed);audit('إزالة سماح',removed||'');
+  });
+  function assistantAnswer(q){
+    var docs=load(KEYS.docs,[]);
+    var allow=load(KEYS.allow,[]);
+    var lower=q.toLowerCase();
+    if(/حذف|مسح/.test(q)&&/بيانات|كل/.test(q))return 'أمر محلي مرفوض تلقائيًا: استخدم زر "تفريغ كل البيانات" بعد التأكيد.';
+    if(/شبكة|سيرفر|api|رفع/.test(lower))return 'المساعد وهمي ويعمل بقواعد محلية فقط. لا يوجد أي اتصال شبكة في هذه المساحة.';
+    if(/عدد الوثائق|كم وثيقة/.test(lower))return 'عدد الوثائق المفهرسة محليًا: '+docs.length+'.';
+    if(/لخص/.test(lower)){
+      if(!docs.length)return 'لا توجد وثائق للتلخيص. أضف وثيقة أولًا.';
+      var d=docs[0];var s=d.text.slice(0,180);
+      return 'ملخص محلي للوثيقة "'+d.title+'": '+s+(d.text.length>180?'…':'');
+    }
+    if(/سماح|allow/.test(lower))return 'عناصر السماح الحاليون ('+allow.length+'): '+(allow.join('، ')||'لا شيء')+'.';
+    if(docs.length&&lower.length>3){
+      var hit=docs.filter(function(d){return d.text.toLowerCase().indexOf(lower)>-1||d.title.toLowerCase().indexOf(lower)>-1});
+      if(hit.length)return 'وجدت محليًا '+hit.length+' وثيقة تطابق سؤالك. الأولى: '+hit[0].title+'.';
+    }
+    return 'فهمت طلبك داخل قواعد المساعد الوهمي. جرّب: لخص، عدد الوثائق، السماح، أو ابحث في الوثائق.';
+  }
+  el('appBtnChatSend').addEventListener('click',function(){
+    var q=(el('appChatInput').value||'').trim();
+    var box=el('appChatOut');
+    if(!q){box.textContent='اكتب سؤالًا أولًا ثم شغّل الاستدلال المحلي.';return}
+    var ans=assistantAnswer(q);
+    var chat=load(KEYS.chat,[]);
+    chat.push({role:'user',msg:q},{role:'bot',msg:ans});
+    saveChat(chat);
+    var html='<p><strong>أنت:</strong> '+esc(q)+'</p><p><strong>المساعد (محلّي):</strong> '+esc(ans)+'</p>';
+    box.innerHTML=html;el('appChatInput').value='';
+    audit('استدلال محلي',q);
+  });
+  el('appBtnChatClear').addEventListener('click',function(){
+    try{localStorage.removeItem(KEYS.chat)}catch(e){}
+    el('appChatOut').textContent='تم مسح سجل المحادثة المحلية.';audit('مسح محادثة','');
+  });
+  function renderAudit(){
+    var ul=el('appAuditList');if(!ul)return;ul.innerHTML='';
+    var a=load(KEYS.audit,[]);
+    if(!a.length){ul.innerHTML='<li>لا توجد عمليات مسجلة بعد.</li>';return}
+    a.slice(0,50).forEach(function(e){
+      var li=document.createElement('li');
+      li.textContent='['+e.t+'] '+e.action+' — '+e.detail;ul.appendChild(li);
+    });
+  }
+  el('appBtnAuditRefresh').addEventListener('click',function(){renderAudit();setMsg('appStatusMsg','تم تحديث سجل التدقيق.')});
+  el('appBtnAuditClear').addEventListener('click',function(){
+    saveAudit([]);renderAudit();audit('مسح سجل تدقيق','تم المسح ثم أُضيفت هذه العملية');
+  });
+  renderDocs();renderAllow();renderAudit();initStoreStatus();initNet();
+})();
+</script>
+</body>
+</html>
