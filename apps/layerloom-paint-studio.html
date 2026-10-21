@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو «ليرلوم»: بكسل‑آرت في المتصفح | MDM1</title>
+<meta name="description" content="محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي، استيراد وتصدير صور، وإطارات متحركة مع onion skin.">
+<link rel="canonical" href="https://mdm1.org/apps/layerloom-paint-studio.html">
+<meta property="og:title" content="استوديو «ليرلوم»: بكسل‑آرت في المتصفح">
+<meta property="og:description" content="محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي، استيراد وتصدير صور، وإطارات متحركة مع onion skin.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/layerloom-paint-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl}
+.app .stage{position:relative;width:100%;max-width:800px;margin:1rem auto}
+.app .stage canvas{width:100%;height:auto;display:block;border-radius:10px;background:rgba(0,0,0,.4)}
+.app #overlay{position:absolute;inset:0;pointer-events:none}
+.app #layersList,.app #framesList{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
+.app #layersList>div{border:1px solid var(--gold-dim);padding:.5rem;border-radius:8px;width:100%}
+.app h3{color:var(--gold-bright);margin-top:1rem}
+.app input[type=color]{height:2.4rem;padding:0}
+.app #frameInfo,.app #status{margin-top:.5rem}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو ليرلوم لرسم وتلوين النقطيات", "url": "https://mdm1.org/apps/layerloom-paint-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل دون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل شيء يعمل داخل متصفحك ولا حاجة لخادم أو حساب."}}, {"@type": "Question", "name": "هل يمكن التراجع والإعادة بلا حدود؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل إجراء يُحفظ في سجل تراجع/إعادة."}}, {"@type": "Question", "name": "ما الصيغ المدعومة للاستيراد؟", "acceptedAnswer": {"@type": "Answer", "text": "PNG وJPEG وWebP."}}, {"@type": "Question", "name": "هل يحفظ العمل تلقائيًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، في IndexedDB داخل جهازك."}}, {"@type": "Question", "name": "هل يدعم الرسوم المتحرّكة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، إطارات متعددة مع onion skin وتشغيل معاينة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو ليرلوم لرسم وتلوين النقطيات</h1>
+  <p class="page-sub">محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي، استيراد وتصدير صور، وإطارات متحركة مع onion skin.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>استوديو «ليرلوم» محرر رسوم نقطية يعمل كليًا داخل متصفحك: نعم، يمكنك الرسم والتلوين وإدارة طبقات متعددة وتحديد مناطق وقصها وتحويلها (حجم/دوران/قلب) والتراجع والإعادة بلا حدود، مع حفظ تلقائي في IndexedDB، واستيراد صور PNG وJPEG وWebP وتصديرها، وإطارات متحركة مع onion skin لصناعة بكسل‑آرت. كل ذلك بدون خادم ولا حسابات ولا تسجيل دخول. ابدأ بالرسم على اللوحة، اختر الأداة واللون والحجم والشفافية والتركيب والنعومة، وأدر طبقاتك وإطاراتك من لوحة التحكم. الأداة خفيفة وسريعة وتعمل دون اتصال وتُبقي بياناتك في جهازك بالكامل، وتتيح لك تصدير عملك كصورة PNG في أي وقت.</p>
+<div class="row">
+  <label for="tool">الأداة</label>
+  <select id="tool"><option value="pen">قلم</option><option value="brush">ريشة</option><option value="smudge">مِسحة</option><option value="eraser">ممحاة</option><option value="line">خط</option><option value="rect">مستطيل</option><option value="ellipse">إهليلج</option><option value="text">نص</option><option value="fill">تعبئة</option><option value="select">تحديد</option></select>
+</div>
+<div class="row">
+  <label for="color">اللون</label>
+  <input type="color" id="color" value="#c9a84c">
+  <label for="size">الحجم</label>
+  <input type="range" id="size" min="1" max="80" value="5">
+  <label for="opacity">الشفافية</label>
+  <input type="range" id="opacity" min="0.05" max="1" step="0.05" value="1">
+  <label for="softness">النعومة</label>
+  <input type="range" id="softness" min="0" max="1" step="0.05" value="0.5">
+  <label for="blend">التركيب</label>
+  <select id="blend"><option value="source-over">عادي</option><option value="multiply">ضرب</option><option value="screen">screen</option><option value="overlay">overlay</option><option value="darken">تغميق</option><option value="lighten">تفتيح</option></select>
+  <label><input type="checkbox" id="shapeFill"> تعبئة الأشكال</label>
+</div>
+<div class="row">
+  <button id="btnUndo" class="sec">تراجع</button>
+  <button id="btnRedo" class="sec">إعادة</button>
+  <button id="btnClearLayer" class="sec">مسح الطبقة</button>
+</div>
+<h3>الطبقات</h3>
+<div id="layersList"></div>
+<div class="row">
+  <button id="btnNewLayer" class="sec">طبقة جديدة</button>
+  <button id="btnDupLayer" class="sec">نسخ الطبقة</button>
+  <button id="btnDelLayer" class="sec">حذف الطبقة</button>
+  <button id="btnUpLayer" class="sec">أعلى</button>
+  <button id="btnDownLayer" class="sec">أسفل</button>
+  <button id="btnMergeDown" class="sec">دمج لأسفل</button>
+</div>
+<h3>التحديد</h3>
+<div class="row">
+  <button id="btnCut" class="sec">قص</button>
+  <button id="btnCopy" class="sec">نسخ</button>
+  <button id="btnPaste" class="sec">لصق</button>
+  <button id="btnDelSel" class="sec">حذف</button>
+  <button id="btnFlipH" class="sec">قلب أفقي</button>
+  <button id="btnFlipV" class="sec">قلب عمودي</button>
+  <button id="btnRotate" class="sec">دوران</button>
+  <button id="btnScale" class="sec">تغيير الحجم</button>
+  <button id="btnClearSel" class="sec">إلغاء التحديد</button>
+</div>
+<h3>الإطارات</h3>
+<div id="framesList"></div>
+<div id="frameInfo" class="out"></div>
+<div class="row">
+  <button id="btnNewFrame" class="sec">إطار جديد</button>
+  <button id="btnDupFrame" class="sec">نسخ الإطار</button>
+  <button id="btnDelFrame" class="sec">حذف الإطار</button>
+  <button id="btnPrevFrame" class="sec">السابق</button>
+  <button id="btnNextFrame" class="sec">التالي</button>
+  <button id="btnPlay" class="sec">تشغيل</button>
+</div>
+<div class="row">
+  <label for="fps">السرعة (إطار/ث)</label>
+  <input type="range" id="fps" min="1" max="30" value="12">
+  <label><input type="checkbox" id="onion" checked> بصلة (onion skin)</label>
+</div>
+<div class="row">
+  <label for="fileImport">استيراد صورة</label>
+  <input type="file" id="fileImport" accept="image/png,image/jpeg,image/webp">
+  <button id="btnExport">تصدير PNG</button>
+</div>
+<div class="stage">
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <canvas id="overlay" width="800" height="600"></canvas>
+</div>
+<div id="status" class="out"></div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل دون اتصال؟</h3><p>نعم، كل شيء يعمل داخل متصفحك ولا حاجة لخادم أو حساب.</p><h3>هل يمكن التراجع والإعادة بلا حدود؟</h3><p>نعم، كل إجراء يُحفظ في سجل تراجع/إعادة.</p><h3>ما الصيغ المدعومة للاستيراد؟</h3><p>PNG وJPEG وWebP.</p><h3>هل يحفظ العمل تلقائيًا؟</h3><p>نعم، في IndexedDB داخل جهازك.</p><h3>هل يدعم الرسوم المتحرّكة؟</h3><p>نعم، إطارات متعددة مع onion skin وتشغيل معاينة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const W=800,H=600;
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+const overlay=document.getElementById('overlay');
+const octx=overlay.getContext('2d');
+
+let layers=[], activeLayer=0;
+let frames=[], activeFrame=0;
+let tool='pen', color='#c9a84c', size=5, opacity=1, soft=0.5, blend='source-over', shapeFill=false;
+let history=[], hIndex=-1;
+let sel=null, selStart=null;
+let clipboard=null;
+let isDrawing=false, last={x:0,y:0}, strokeStart=null;
+let playTimer=null, playing=false, fps=12, onion=true;
+let dirtyTimer=null;
+let db=null;
+
+function newLayerCanvas(){const c=document.createElement('canvas');c.width=W;c.height=H;return c;}
+function createLayer(name){const c=newLayerCanvas();const l={id:Date.now()+Math.random(),name:name||('طبقة '+(layers.length+1)),visible:true,opacity:1,blend:'source-over',canvas:c,ctx:c.getContext('2d')};layers.push(l);activeLayer=layers.length-1;return l;}
+function cloneLayerData(l){const c=newLayerCanvas();c.getContext('2d').drawImage(l.canvas,0,0);return {id:Date.now()+Math.random(),name:l.name,visible:l.visible,opacity:l.opacity,blend:l.blend,canvas:c,ctx:c.getContext('2d')};}
+
+function snapshotLayers(){return layers.map(l=>({name:l.name,visible:l.visible,opacity:l.opacity,blend:l.blend,data:l.ctx.getImageData(0,0,W,H)}));}
+function restoreLayers(snap){layers=snap.map(s=>{const c=newLayerCanvas();c.getContext('2d').putImageData(s.data,0,0);return {id:Date.now()+Math.random(),name:s.name,visible:s.visible,opacity:s.opacity,blend:s.blend,canvas:c,ctx:c.getContext('2d')};}); if(!layers.length) createLayer('طبقة 1'); if(activeLayer>=layers.length) activeLayer=layers.length-1;}
+
+function saveFrame(){if(!frames[activeFrame]) return; frames[activeFrame].layers=snapshotLayers(); frames[activeFrame].activeLayer=activeLayer;}
+function loadFrame(i){if(i<0||i>=frames.length) return; saveFrame(); activeFrame=i; restoreLayers(frames[i].layers||[]); activeLayer=frames[i].activeLayer||0; render(); updateUI();}
+
+function newFrame(){saveFrame(); frames.push({layers:layers.map(l=>({name:l.name,visible:l.visible,opacity:l.opacity,blend:l.blend,data:new ImageData(W,H)})),activeLayer:activeLayer}); activeFrame=frames.length-1; restoreLayers(frames[activeFrame].layers); activeLayer=frames[activeFrame].activeLayer||0; render(); updateUI();}
+function deleteFrame(i){if(frames.length<=1) return; saveFrame(); frames.splice(i,1); if(activeFrame>=frames.length) activeFrame=frames.length-1; loadFrame(activeFrame); updateUI();}
+function duplicateFrame(){saveFrame(); const f=frames[activeFrame]; frames.splice(activeFrame+1,0,{layers:f.layers.map(s=>({name:s.name,visible:s.visible,opacity:s.opacity,blend:s.blend,data:new ImageData(new Uint8ClampedArray(s.data.data),W,H)})),activeLayer:f.activeLayer}); activeFrame++; loadFrame(activeFrame); updateUI();}
+
+function deepSnapshot(){
+  saveFrame();
+  return {frames:frames.map(f=>({layers:f.layers.map(s=>({name:s.name,visible:s.visible,opacity:s.opacity,blend:s.blend,data:new ImageData(new Uint8ClampedArray(s.data.data),W,H)})),activeLayer:f.activeLayer})),activeFrame};
+}
+function restoreSnapshot(snap){
+  frames=snap.frames.map(f=>({layers:f.layers.map(s=>({name:s.name,visible:s.visible,opacity:s.opacity,blend:s.blend,data:new ImageData(new Uint8ClampedArray(s.data.data),W,H)})),activeLayer:s.activeLayer}));
+  activeFrame=snap.activeFrame;
+  const f=frames[activeFrame];
+  restoreLayers(f.layers);
+  activeLayer=f.activeLayer||0;
+  render(); updateUI();
+}
+function pushHistory(){
+  history=history.slice(0,hIndex+1);
+  history.push(deepSnapshot());
+  hIndex=history.length-1;
+  if(history.length>50){history.shift();hIndex--;}
+}
+function undo(){if(hIndex<=0) return; hIndex--; restoreSnapshot(history[hIndex]);}
+function redo(){if(hIndex>=history.length-1) return; hIndex++; restoreSnapshot(history[hIndex]);}
+
+function renderFrame(f,targetCtx,mult){
+  f.layers.forEach(s=>{
+    if(!s.visible) return;
+    const c=document.createElement('canvas'); c.width=W;c.height=H; c.getContext('2d').putImageData(s.data,0,0);
+    targetCtx.save(); targetCtx.globalAlpha=s.opacity*mult; targetCtx.globalCompositeOperation=s.blend; targetCtx.drawImage(c,0,0); targetCtx.restore();
+  });
+}
+function render(){
+  ctx.clearRect(0,0,W,H);
+  if(onion){
+    if(activeFrame>0){ ctx.save(); ctx.globalAlpha=1; renderFrame(frames[activeFrame-1],ctx,0.3); ctx.restore();}
+    if(activeFrame<frames.length-1){ ctx.save(); ctx.globalAlpha=1; renderFrame(frames[activeFrame+1],ctx,0.2); ctx.restore();}
+  }
+  layers.forEach(l=>{if(!l.visible) return; ctx.save(); ctx.globalAlpha=l.opacity; ctx.globalCompositeOperation=l.blend; ctx.drawImage(l.canvas,0,0); ctx.restore();});
+  if(sel){
+    const r=normalizeRect(sel);
+    ctx.save(); ctx.strokeStyle='#fff'; ctx.setLineDash([6,4]); ctx.strokeRect(r.x,r.y,r.w,r.h); ctx.restore();
+  }
+  octx.clearRect(0,0,W,H);
+  scheduleSave();
+}
+
+function scheduleSave(){clearTimeout(dirtyTimer); dirtyTimer=setTimeout(()=>{saveFrame(); persist();},700);}
+
+function hexToRgba(h){const m=h.replace('#',''); const n=parseInt(m,16); return [(n>>16)&255,(n>>8)&255,n&255,1];}
+
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=W/r.width,sy=H/r.height;return {x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};}
+
+function normalizeRect(s){const x=s.w<0?s.x+s.w:s.x; const y=s.h<0?s.y+s.h:s.y; return {x:Math.round(x),y:Math.round(y),w:Math.abs(Math.round(s.w)),h:Math.abs(Math.round(s.h))};}
+
+function drawShape(targetCtx,a,b){
+  targetCtx.save();
+  targetCtx.globalAlpha=opacity;
+  targetCtx.globalCompositeOperation=blend;
+  targetCtx.strokeStyle=color;
+  targetCtx.fillStyle=color;
+  targetCtx.lineWidth=size;
+  if(tool==='line'){
+    targetCtx.beginPath(); targetCtx.moveTo(a.x,a.y); targetCtx.lineTo(b.x,b.y); targetCtx.stroke();
+  } else if(tool==='rect'){
+    const x=Math.min(a.x,b.x), y=Math.min(a.y,b.y), w=Math.abs(b.x-a.x), h=Math.abs(b.y-a.y);
+    if(shapeFill) targetCtx.fillRect(x,y,w,h); else targetCtx.strokeRect(x,y,w,h);
+  } else if(tool==='ellipse'){
+    const x=(a.x+b.x)/2,y=(a.y+b.y)/2,rx=Math.abs(b.x-a.x)/2,ry=Math.abs(b.y-a.y)/2;
+    targetCtx.beginPath(); targetCtx.ellipse(x,y,rx,ry,0,0,Math.PI*2);
+    if(shapeFill) targetCtx.fill(); else targetCtx.stroke();
+  }
+  targetCtx.restore();
+}
+
+function floodFill(ctx,x,y){
+  x=Math.round(x); y=Math.round(y);
+  if(x<0||y<0||x>=W||y>=H) return;
+  const img=ctx.getImageData(0,0,W,H);
+  const data=img.data;
+  const startIdx=(y*W+x)*4;
+  const sr=data[startIdx], sg=data[startIdx+1], sb=data[startIdx+2], sa=data[startIdx+3];
+  const fc=hexToRgba(color);
+  const stack=[[x,y]];
+  const visited=new Uint8Array(W*H);
+  while(stack.length){
+    const [cx,cy]=stack.pop();
+    if(cx<0||cy<0||cx>=W||cy>=H) continue;
+    const i=cy*W+cx;
+    if(visited[i]) continue;
+    const idx=i*4;
+    if(data[idx]!==sr||data[idx+1]!==sg||data[idx+2]!==sb||data[idx+3]!==sa) continue;
+    visited[i]=1;
+    data[idx]=fc[0]; data[idx+1]=fc[1]; data[idx+2]=fc[2]; data[idx+3]=Math.round(fc[3]*255*opacity);
+    stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);
+  }
+  ctx.putImageData(img,0,0);
+}
+
+canvas.addEventListener('mousedown', e=>{
+  const p=getPos(e);
+  if(tool==='select'){
+    sel={x:p.x,y:p.y,w:0,h:0}; selStart=p; isDrawing=true; return;
+  }
+  if(activeLayer<0||!layers[activeLayer]) return;
+  const l=layers[activeLayer];
+  if(tool==='fill'){pushHistory(); floodFill(l.ctx,p.x,p.y); render(); return;}
+  if(tool==='text'){
+    const t=prompt('النص:'); if(t){pushHistory(); l.ctx.save(); l.ctx.globalAlpha=opacity; l.ctx.globalCompositeOperation=blend; l.ctx.fillStyle=color; l.ctx.font=(size*4)+'px sans-serif'; l.ctx.fillText(t,p.x,p.y); l.ctx.restore(); render();}
+    return;
+  }
+  if(tool==='line'||tool==='rect'||tool==='ellipse'){
+    isDrawing=true; strokeStart=p; last=p; pushHistory(); return;
+  }
+  pushHistory();
+  isDrawing=true; last=p; strokeStart=p;
+  l.ctx.save();
+  l.ctx.globalAlpha=opacity;
+  l.ctx.globalCompositeOperation=tool==='eraser'?'destination-out':blend;
+  l.ctx.strokeStyle=color;
+  l.ctx.lineWidth=size;
+  l.ctx.lineCap='round';
+  l.ctx.lineJoin='round';
+  if(tool==='brush'){l.ctx.shadowColor=color; l.ctx.shadowBlur=size*soft*2;}
+  else {l.ctx.shadowBlur=0;}
+  l.ctx.beginPath();
+  l.ctx.moveTo(p.x,p.y);
+});
+
+canvas.addEventListener('mousemove', e=>{
+  if(!isDrawing) return;
+  const p=getPos(e);
+  if(tool==='select'){
+    sel.w=p.x-selStart.x; sel.h=p.y-selStart.y; render(); return;
+  }
+  if(activeLayer<0||!layers[activeLayer]) return;
+  const l=layers[activeLayer];
+  if(tool==='line'||tool==='rect'||tool==='ellipse'){
+    octx.clearRect(0,0,W,H);
+    drawShape(octx,strokeStart,p);
+    return;
+  }
+  if(tool==='smudge'){
+    const r=size;
+    l.ctx.save(); l.ctx.globalAlpha=opacity*0.4; l.ctx.globalCompositeOperation='source-over';
+    l.ctx.drawImage(l.canvas, last.x-r, last.y-r, r*2, r*2, p.x-r, p.y-r, r*2, r*2);
+    l.ctx.restore();
+    last=p; render(); return;
+  }
+  l.ctx.lineTo(p.x,p.y);
+  l.ctx.stroke();
+  last=p;
+  render();
+});
+
+window.addEventListener('mouseup', e=>{
+  if(!isDrawing) return;
+  isDrawing=false;
+  if(tool==='select'){ render(); return;}
+  if(tool==='line'||tool==='rect'||tool==='ellipse'){
+    const p=getPos(e);
+    const l=layers[activeLayer];
+    drawShape(l.ctx,strokeStart,p);
+    octx.clearRect(0,0,W,H);
+    render();
+    return;
+  }
+  const l=layers[activeLayer];
+  if(l){l.ctx.closePath(); l.ctx.restore();}
+  render();
+});
+
+function normalizeSel(){if(!sel) return null; return normalizeRect(sel);}
+function opCut(){
+  if(!sel||activeLayer<0) return;
+  pushHistory();
+  const r=normalizeSel();
+  const l=layers[activeLayer];
+  clipboard=l.ctx.getImageData(r.x,r.y,r.w,r.h);
+  l.ctx.clearRect(r.x,r.y,r.w,r.h);
+  sel=null; render();
+}
+function opCopy(){
+  if(!sel||activeLayer<0) return;
+  const r=normalizeSel();
+  clipboard=layers[activeLayer].ctx.getImageData(r.x,r.y,r.w,r.h);
+}
+function opPaste(){
+  if(!clipboard||activeLayer<0) return;
+  pushHistory();
+  const l=layers[activeLayer];
+  const x=sel?normalizeSel().x:0, y=sel?normalizeSel().y:0;
+  l.ctx.putImageData(clipboard,x,y);
+  render();
+}
+function opDelete(){
+  if(!sel||activeLayer<0) return;
+  pushHistory();
+  const r=normalizeSel();
+  layers[activeLayer].ctx.clearRect(r.x,r.y,r.w,r.h);
+  sel=null; render();
+}
+function opFlipH(){
+  if(!sel||activeLayer<0) return;
+  pushHistory();
+  const r=normalizeSel();
+  const l=layers[activeLayer];
+  const img=l.ctx.getImageData(r.x,r.y,r.w,r.h);
+  const c=document.createElement('canvas'); c.width=r.w;c.height=r.h; c.getContext('2d').putImageData(img,0,0);
+  l.ctx.clearRect(r.x,r.y,r.w,r.h);
+  l.ctx.save(); l.ctx.translate(r.x+r.w,r.y); l.ctx.scale(-1,1); l.ctx.drawImage(c,0,0); l.ctx.restore();
+  render();
+}
+function opFlipV(){
+  if(!sel||activeLayer<0) return;
+  pushHistory();
+  const r=normalizeSel();
+  const l=layers[activeLayer];
+  const img=l.ctx.getImageData(r.x,r.y,r.w,r.h);
+  const c=document.createElement('canvas'); c.width=r.w;c.height=r.h; c.getContext('2d').putImageData(img,0,0);
+  l.ctx.clearRect(r.x,r.y,r.w,r.h);
+  l.ctx.save(); l.ctx.translate(r.x,r.y+r.h); l.ctx.scale(1,-1); l.ctx.drawImage(c,0,0); l.ctx.restore();
+  render();
+}
+function opRotate(){
+  if(!sel||activeLayer<0) return;
+  const deg=parseFloat(prompt('درجات الدوران:','90'));
+  if(isNaN(deg)) return;
+  pushHistory();
+  const r=normalizeSel();
+  const l=layers[activeLayer];
+  const tmp=document.createElement('canvas'); tmp.width=W;tmp.height=H; const tctx=tmp.getContext('2d'); tctx.drawImage(l.canvas,0,0);
+  l.ctx.clearRect(r.x,r.y,r.w,r.h);
+  l.ctx.save();
+  l.ctx.translate(r.x+r.w/2,r.y+r.h/2);
+  l.ctx.rotate(deg*Math.PI/180);
+  l.ctx.drawImage(tmp,r.x,r.y,r.w,r.h,-r.w/2,-r.h/2,r.w,r.h);
+  l.ctx.restore();
+  render();
+}
+function opScale(){
+  if(!sel||activeLayer<0) return;
+  const factor=parseFloat(prompt('نسبة التكبير:','2'));
+  if(isNaN(factor)||factor<=0) return;
+  pushHistory();
+  const r=normalizeSel();
+  const l=layers[activeLayer];
+  const c=document.createElement('canvas'); c.width=r.w;c.height=r.h; c.getContext('2d').drawImage(l.canvas,r.x,r.y,r.w,r.h,0,0,r.w,r.h);
+  l.ctx.clearRect(r.x,r.y,r.w,r.h);
+  const nw=Math.round(r.w*factor), nh=Math.round(r.h*factor);
+  l.ctx.drawImage(c,0,0,r.w,r.h,r.x,r.y,nw,nh);
+  sel={x:r.x,y:r.y,w:nw,h:nh};
+  render();
+}
+
+function updateUI(){updateLayersUI(); updateFramesUI(); updateStatus();}
+function updateLayersUI(){
+  const wrap=document.getElementById('layersList');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  layers.forEach((l,i)=>{
+    const div=document.createElement('div');
+    div.innerHTML=`<div class="row"><label><input type="checkbox" data-i="${i}" class="vis" ${l.visible?'checked':''}> ${escapeHtml(l.name)}</label><input type="range" min="0" max="1" step="0.01" value="${l.opacity}" data-i="${i}" class="op"><select data-i="${i}" class="blend">${blendOpts(l.blend)}</select><button class="sec" data-act="up" data-i="${i}">↑</button><button class="sec" data-act="down" data-i="${i}">↓</button><button class="sec" data-act="dup" data-i="${i}">نسخ</button><button class="sec" data-act="del" data-i="${i}">حذف</button></div>`;
+    if(i===activeLayer) div.style.outline='2px solid var(--gold)';
+    div.addEventListener('click', e=>{
+      if(e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='BUTTON'){activeLayer=i; updateLayersUI();}
+    });
+    wrap.appendChild(div);
+  });
+  wrap.onclick=function(e){
+    const t=e.target;
+    if(t.dataset && t.dataset.i!==undefined && t.dataset.act){
+      const i=+t.dataset.i;
+      if(t.dataset.act==='up' && i>0){pushHistory(); [layers[i-1],layers[i]]=[layers[i],layers[i-1]]; activeLayer=i-1; updateLayersUI(); render();}
+      else if(t.dataset.act==='down' && i<layers.length-1){pushHistory(); [layers[i],layers[i+1]]=[layers[i+1],layers[i]]; activeLayer=i+1; updateLayersUI(); render();}
+      else if(t.dataset.act==='dup'){pushHistory(); const nl=cloneLayerData(layers[i]); layers.splice(i+1,0,nl); activeLayer=i+1; updateLayersUI(); render();}
+      else if(t.dataset.act==='del' && layers.length>1){pushHistory(); layers.splice(i,1); if(activeLayer>=layers.length) activeLayer=layers.length-1; updateLayersUI(); render();}
+    }
+  };
+  wrap.onchange=function(e){
+    const t=e.target;
+    if(!t.dataset || t.dataset.i===undefined) return;
+    const i=+t.dataset.i;
+    if(t.classList.contains('vis')){ layers[i].visible=t.checked; render();}
+    if(t.classList.contains('op')){ pushHistory(); layers[i].opacity=+t.value; render();}
+    if(t.classList.contains('blend')){ pushHistory(); layers[i].blend=t.value; render();}
+  };
+}
+function blendOpts(selected){
+  const modes=['source-over','multiply','screen','overlay','darken','lighten','color-dodge','color-burn','hard-light','soft-light','difference','exclusion','hue','saturation','color','luminosity'];
+  return modes.map(m=>`<option value="${m}" ${m===selected?'selected':''}>${m}</option>`).join('');
+}
+function updateFramesUI(){
+  const wrap=document.getElementById('framesList');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  frames.forEach((f,i)=>{
+    const btn=document.createElement('button');
+    btn.className='sec';
+    btn.textContent=(i===activeFrame?'▶ ':'')+ (i+1);
+    btn.onclick=()=>{pushHistory(); loadFrame(i);};
+    wrap.appendChild(btn);
+  });
+  const info=document.getElementById('frameInfo');
+  if(info) info.textContent='إطار '+(activeFrame+1)+'/'+frames.length;
+}
+function updateStatus(){
+  const s=document.getElementById('status');
+  if(s) s.textContent='طبقة '+(activeLayer+1)+'/'+layers.length+' | أداة: '+tool;
+}
+
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(!window.indexedDB){rej(new Error('no idb')); return;}
+    const r=indexedDB.open('leerloom',1);
+    r.onupgradeneeded=e=>{e.target.result.createObjectStore('projects');};
+    r.onsuccess=e=>{db=e.target.result;res(db);};
+    r.onerror=()=>rej(r.error);
+  });
+}
+function canvasToDataURL(id){const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(id,0,0);return c.toDataURL('image/png');}
+function serializeProject(){
+  saveFrame();
+  return {w:W,h:H,frames:frames.map(f=>({layers:f.layers.map(s=>({name:s.name,visible:s.visible,opacity:s.opacity,blend:s.blend,data:canvasToDataURL(s.data)})),activeLayer:f.activeLayer})),activeFrame,activeLayer};
+}
+function persist(){
+  if(!db) return;
+  try{const tx=db.transaction('projects','readwrite'); tx.objectStore('projects').put(serializeProject(),'autosave');}catch(e){}
+}
+async function dataURLToImageData(url){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{const c=document.createElement('canvas');c.width=W;c.height=H;const cx=c.getContext('2d');cx.drawImage(img,0,0,W,H);resolve(cx.getImageData(0,0,W,H));};
+    img.onerror=()=>resolve(new ImageData(W,H));
+    img.src=url;
+  });
+}
+async function loadProject(p){
+  if(!p||!p.frames) return false;
+  const newFrames=[];
+  for(const f of p.frames){
+    const layersData=[];
+    for(const s of f.layers){
+      const data=await dataURLToImageData(s.data);
+      layersData.push({name:s.name,visible:s.visible,opacity:s.opacity,blend:s.blend,data});
+    }
+    newFrames.push({layers:layersData,activeLayer:s.activeLayer||0});
+  }
+  frames=newFrames;
+  activeFrame=Math.min(p.activeFrame||0,frames.length-1);
+  if(!frames.length){frames=[{layers:[{name:'طبقة 1',visible:true,opacity:1,blend:'source-over',data:new ImageData(W,H)}],activeLayer:0}];}
+  const f=frames[activeFrame];
+  restoreLayers(f.layers);
+  activeLayer=f.activeLayer||0;
+  render(); updateUI();
+  return true;
+}
+
+function initDefault(){
+  frames=[{layers:[{name:'طبقة 1',visible:true,opacity:1,blend:'source-over',data:new ImageData(W,H)}],activeLayer:0}];
+  activeFrame=0;
+  restoreLayers(frames[0].layers);
+  activeLayer=0;
+  render(); updateUI();
+}
+
+function wire(){
+  const toolSel=document.getElementById('tool');
+  if(toolSel) toolSel.onchange=e=>{tool=e.target.value; updateStatus();};
+  const color=document.getElementById('color');
+  if(color) color.oninput=e=>{color=e.target.value;};
+  const sizeR=document.getElementById('size');
+  if(sizeR) sizeR.oninput=e=>{size=+e.target.value;};
+  const opR=document.getElementById('opacity');
+  if(opR) opR.oninput=e=>{opacity=+e.target.value;};
+  const softR=document.getElementById('softness');
+  if(softR) softR.oninput=e=>{soft=+e.target.value;};
+  const blendSel=document.getElementById('blend');
+  if(blendSel) blendSel.onchange=e=>{blend=e.target.value;};
+  const shapeChk=document.getElementById('shapeFill');
+  if(shapeChk) shapeChk.onchange=e=>{shapeFill=e.target.checked;};
+  const onionChk=document.getElementById('onion');
+  if(onionChk) onionChk.onchange=e=>{onion=e.target.checked; render();};
+  const fpsR=document.getElementById('fps');
+  if(fpsR) fpsR.oninput=e=>{fps=+e.target.value;};
+  document.getElementById('btnUndo').onclick=()=>undo();
+  document.getElementById('btnRedo').onclick=()=>redo();
+  document.getElementById('btnNewLayer').onclick=()=>{pushHistory(); createLayer(); updateUI(); render();};
+  document.getElementById('btnDupLayer').onclick=()=>{if(activeLayer<0)return; pushHistory(); const nl=cloneLayerData(layers[activeLayer]); layers.splice(activeLayer+1,0,nl); activeLayer++; updateUI(); render();};
+  document.getElementById('btnDelLayer').onclick=()=>{if(layers.length<=1)return; pushHistory(); layers.splice(activeLayer,1); if(activeLayer>=layers.length) activeLayer=layers.length-1; updateUI(); render();};
+  document.getElementById('btnUpLayer').onclick=()=>{if(activeLayer<=0)return; pushHistory(); [layers[activeLayer-1],layers[activeLayer]]=[layers[activeLayer],layers[activeLayer-1]]; activeLayer--; updateUI(); render();};
+  document.getElementById('btnDownLayer').onclick=()=>{if(activeLayer>=layers.length-1)return; pushHistory(); [layers[activeLayer],layers[activeLayer+1]]=[layers[activeLayer+1],layers[activeLayer]]; activeLayer++; updateUI(); render();};
+  document.getElementById('btnMergeDown').onclick=()=>{if(activeLayer<=0)return; pushHistory(); const below=layers[activeLayer-1]; below.ctx.save(); below.ctx.globalAlpha=layers[activeLayer].opacity; below.ctx.globalCompositeOperation=layers[activeLayer].blend; below.ctx.drawImage(layers[activeLayer].canvas,0,0); below.ctx.restore(); layers.splice(activeLayer,1); activeLayer--; updateUI(); render();};
+  document.getElementById('btnClearLayer').onclick=()=>{if(activeLayer<0)return; pushHistory(); layers[activeLayer].ctx.clearRect(0,0,W,H); render();};
+  document.getElementById('btnCut').onclick=opCut;
+  document.getElementById('btnCopy').onclick=opCopy;
+  document.getElementById('btnPaste').onclick=opPaste;
+  document.getElementById('btnDelSel').onclick=opDelete;
+  document.getElementById('btnFlipH').onclick=opFlipH;
+  document.getElementById('btnFlipV').onclick=opFlipV;
+  document.getElementById('btnRotate').onclick=opRotate;
+  document.getElementById('btnScale').onclick=opScale;
+  document.getElementById('btnNewFrame').onclick=()=>{pushHistory(); newFrame();};
+  document.getElementById('btnDupFrame').onclick=()=>{pushHistory(); duplicateFrame();};
+  document.getElementById('btnDelFrame').onclick=()=>{pushHistory(); deleteFrame(activeFrame);};
+  document.getElementById('btnPrevFrame').onclick=()=>{if(activeFrame>0){pushHistory(); loadFrame(activeFrame-1);}};
+  document.getElementById('btnNextFrame').onclick=()=>{if(activeFrame<frames.length-1){pushHistory(); loadFrame(activeFrame+1);}};
+  document.getElementById('btnPlay').onclick=()=>{
+    if(playing){stop(); document.getElementById('btnPlay').textContent='تشغيل';}
+    else {play(); document.getElementById('btnPlay').textContent='إيقاف';}
+  };
+  document.getElementById('fileImport').onchange=e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        pushHistory();
+        const l=createLayer(file.name||'مستورد');
+        const scale=Math.min(W/img.width,H/img.height,1);
+        const w=img.width*scale,h=img.height*scale;
+        l.ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+        updateUI(); render();
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value='';
+  };
+  document.getElementById('btnExport').onclick=()=>{
+    const c=document.createElement('canvas'); c.width=W;c.height=H; const cx=c.getContext('2d');
+    layers.forEach(l=>{if(!l.visible) return; cx.save(); cx.globalAlpha=l.opacity; cx.globalCompositeOperation=l.blend; cx.drawImage(l.canvas,0,0); cx.restore();});
+    const a=document.createElement('a'); a.download='leerloom.png'; a.href=c.toDataURL('image/png'); a.click();
+  };
+  document.getElementById('btnClearSel').onclick=()=>{sel=null; render();};
+}
+
+function play(){
+  if(playing) return; playing=true;
+  let i=activeFrame;
+  playTimer=setInterval(()=>{ loadFrame(i); i=(i+1)%frames.length; }, Math.max(16,1000/fps));
+}
+function stop(){playing=false; clearInterval(playTimer); playTimer=null;}
+
+async function boot(){
+  wire();
+  try{
+    await openDB();
+    const tx=db.transaction('projects','readonly');
+    const req=tx.objectStore('projects').get('autosave');
+    req.onsuccess=async ()=>{ if(req.result){ await loadProject(req.result); } else { initDefault(); } pushHistory(); };
+    req.onerror=()=>{ initDefault(); pushHistory(); };
+  }catch(e){ initDefault(); pushHistory(); }
+}
+
+boot();
+</script>
+</body>
+</html>
