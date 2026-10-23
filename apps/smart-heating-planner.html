@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تدفئة منزل ذكية | MDM1</title>
+<meta name="description" content="تطبيق ويب محلي لإدارة تدفئة المنزل، حساب وقت فتح الصمامات، عرض الرسوم البيانية، وحفظ الإعدادات محليًا">
+<link rel="canonical" href="https://mdm1.org/apps/smart-heating-planner.html">
+<meta property="og:title" content="تدفئة منزل ذكية">
+<meta property="og:description" content="تطبيق ويب محلي لإدارة تدفئة المنزل، حساب وقت فتح الصمامات، عرض الرسوم البيانية، وحفظ الإعدادات محليًا">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/smart-heating-planner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { max-width: 900px; margin: 20px auto; }
+.app h2 { margin: 10px 0; font-size: 1.2em; color: var(--gold); }
+.app .row { flex-wrap: wrap; gap: 10px; align-items: center; }
+.app .card { margin-bottom: 16px; }
+.app input, .app select { min-width: 120px; }
+.app .out { min-height: 60px; white-space: pre-wrap; font-size: 0.95em; }
+.app canvas { width: 100%; max-width: 400px; background: var(--dark); border: 1px solid var(--gold-dim); margin-top: 10px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق إدارة تدفئة المنزل بذكاء", "url": "https://mdm1.org/apps/smart-heating-planner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل التطبيق محليًا بالكامل ويخزن الإعدادات في ذاكرة المتصفح فقط."}}, {"@type": "Question", "name": "هل يحفظ البيانات عند إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم حفظ الغرف والأوضاع الحرارية في localStorage ويعود عند فتح التطبيق مجددًا."}}, {"@type": "Question", "name": "ما معنى نسب فتح الصمامات؟", "acceptedAnswer": {"@type": "Answer", "text": "النسبة المقترحة لفتح صمام كل مجموعة مشعات بناءً على الفرق الحراري وحالة النوافذ والأبواب."}}, {"@type": "Question", "name": "هل يمكنني حفظ عدة أوضاع حرارية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك حفظ أوضاع متعددة مثل النهار والليل وتطبيق أي منها بسهولة."}}, {"@type": "Question", "name": "هل الرسوم البيانية دقيقة؟", "acceptedAnswer": {"@type": "Answer", "text": "الرسوم البيانية تقريبية لأغراض التوجيه، وتعتمد على الحسابات المبسطة للراحة والطاقة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق إدارة تدفئة المنزل بذكاء</h1>
+  <p class="page-sub">تطبيق ويب محلي لإدارة تدفئة المنزل، حساب وقت فتح الصمامات، عرض الرسوم البيانية، وحفظ الإعدادات محليًا</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: يساعد هذا التطبيق على تنظيم تدفئة المنزل عبر تقسيم المشعات إلى مجموعات، وتتبع درجة الحرارة داخل وخارج المنزل، وحالة النوافذ والأبواب، ثم يحسب أفضل وقت لفتح الصمامات ونسبة الفتح المطلوبة. يعمل التطبيق محليًا بالكامل دون اتصال بالإنترنت، ويخزن جميع الإعدادات في ذاكرة المتصفح.</p>
+<p>يعتمد الحساب على طرق مبسطة لكل من خوارزميات PID وTPI وMPC لتحديد وقت التشغيل ونسبة الفتح المناسبة لكل مجموعة من المشعات. كما يوفر التطبيق إمكانية حفظ أوضاع حرارية مخصصة، وعرض تنبيهات الصيانة، ورسم بياني لراحة المنزل واستهلاك الطاقة التقريبي على مدار اليوم.</p>
+
+<div class="app">
+  <div class="card">
+    <div class="divider"></div>
+    <h2>إعدادات المنازل والغرف</h2>
+    <div class="row">
+      <label for="app-room-name">اسم الغرفة</label>
+      <input id="app-room-name" type="text" placeholder="غرفة المعيشة">
+      <label for="app-room-rad">عدد المشعات</label>
+      <input id="app-room-rad" type="number" min="0" value="2">
+      <button id="app-add-room">إضافة غرفة</button>
+    </div>
+    <div class="out" id="app-rooms-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="divider"></div>
+    <h2>قياسات حرارية يدوية</h2>
+    <div class="row">
+      <label for="app-temp-in">درجة الحرارة داخل (°م)</label>
+      <input id="app-temp-in" type="number" step="0.1" value="18.0">
+      <label for="app-temp-out">درجة الحرارة خارج (°م)</label>
+      <input id="app-temp-out" type="number" step="0.1" value="5.0">
+    </div>
+    <div class="row">
+      <label for="app-windows">النوافذ مفتوحة</label>
+      <select id="app-windows">
+        <option value="0">مغلقة</option>
+        <option value="1">مفتوحة</option>
+        <option value="2">مفتوحة جزئيًا</option>
+      </select>
+      <label for="app-doors">الأبواب مفتوحة</label>
+      <select id="app-doors">
+        <option value="0">مغلقة</option>
+        <option value="1">مفتوحة</option>
+        <option value="2">مفتوحة جزئيًا</option>
+      </select>
+      <label for="app-weather">حالة الطقس</label>
+      <select id="app-weather">
+        <option value="0">عادى</option>
+        <option value="1">رياح قوية</option>
+        <option value="2">ثلج</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="divider"></div>
+    <h2>أوضاع حرارية محفوظة</h2>
+    <div class="row">
+      <label for="app-mode-name">اسم الوضع</label>
+      <input id="app-mode-name" type="text" placeholder="ليل">
+      <label for="app-mode-temp">درجة الحرارة المطلوبة (°م)</label>
+      <input id="app-mode-temp" type="number" step="0.1" value="20.0">
+      <button id="app-save-mode">حفظ الوضع</button>
+    </div>
+    <div class="row">
+      <label for="app-select-mode">اختيار وضع</label>
+      <select id="app-select-mode"></select>
+      <button id="app-apply-mode" class="sec">تطبيق الوضع</button>
+    </div>
+    <div class="out" id="app-modes-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="divider"></div>
+    <h2>حساب تشغيل الصمامات</h2>
+    <div class="row">
+      <label for="app-algo">خوارزمية الحساب</label>
+      <select id="app-algo">
+        <option value="pid">PID مبسط</option>
+        <option value="tpi">TPI مبسط</option>
+        <option value="mpc">MPC مبسط</option>
+      </select>
+      <button id="app-calc">حساب الجدول</button>
+      <button id="app-reset" class="sec">مسح الحساب</button>
+    </div>
+    <div class="out" id="app-calc-result"></div>
+  </div>
+
+  <div class="card">
+    <div class="divider"></div>
+    <h2>رسوم بيانية للراحة والطاقة</h2>
+    <div class="row">
+      <button id="app-show-chart">عرض الرسم البياني</button>
+      <button id="app-clear-chart" class="sec">مسح الرسم</button>
+    </div>
+    <canvas id="app-chart" width="400" height="200"></canvas>
+    <div class="out" id="app-chart-info"></div>
+  </div>
+
+  <div class="card">
+    <div class="divider"></div>
+    <h2>تنبيهات الصيانة</h2>
+    <div class="row">
+      <button id="app-check-maint">فحص تنبيهات الصيانة</button>
+      <button id="app-clear-maint" class="sec">مسح التنبيهات</button>
+    </div>
+    <div class="out" id="app-maint-alerts"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت؟</h3><p>نعم، يعمل التطبيق محليًا بالكامل ويخزن الإعدادات في ذاكرة المتصفح فقط.</p><h3>هل يحفظ البيانات عند إغلاق المتصفح؟</h3><p>نعم، يتم حفظ الغرف والأوضاع الحرارية في localStorage ويعود عند فتح التطبيق مجددًا.</p><h3>ما معنى نسب فتح الصمامات؟</h3><p>النسبة المقترحة لفتح صمام كل مجموعة مشعات بناءً على الفرق الحراري وحالة النوافذ والأبواب.</p><h3>هل يمكنني حفظ عدة أوضاع حرارية؟</h3><p>نعم، يمكنك حفظ أوضاع متعددة مثل النهار والليل وتطبيق أي منها بسهولة.</p><h3>هل الرسوم البيانية دقيقة؟</h3><p>الرسوم البيانية تقريبية لأغراض التوجيه، وتعتمد على الحسابات المبسطة للراحة والطاقة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="smart-shopping-list.html" style="color:var(--gold-bright);font-weight:700">قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار</a><span style="opacity:.75"> — أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم…</span></li><li style="margin:.5rem 0"><a href="solo-fitness-journal.html" style="color:var(--gold-bright);font-weight:700">تطبيق لياقة وتدريب شخصي بدون خادم: تمارين وتغذية وتقدّم</a><span style="opacity:.75"> — أنشئ روتين تمرين مرن مع قواعد تقدم تلقائي للأوزان، وسجّل وزنك وقياساتك وصورك، واحسب سعراتك من قاعدة أطعمة…</span></li><li style="margin:.5rem 0"><a href="starway-explorer.html" style="color:var(--gold-bright);font-weight:700">خريطة سماء تفاعلية</a><span style="opacity:.75"> — تطبيق ويب عربي لعرض خريطة سماء تفاعلية ثلاثية الأبعاد تتيح استكشاف الكواكب والنجوم وضبط التاريخ والوقت…</span></li><li style="margin:.5rem 0"><a href="subscription-billing-simulator.html" style="color:var(--gold-bright);font-weight:700">محاكي منصة الاشتراكات والفوترة: خطط، استخدام، فواتير وMRR</a><span style="opacity:.75"> — منصة محاكاة للاشتراكات والفوترة داخل المتصفح: خطط وأسعار، مشتركون، استخدام، فواتير بضريبة وتسويات نسبية…</span></li><li style="margin:.5rem 0"><a href="swift-key-command-desk.html" style="color:var(--gold-bright);font-weight:700">لوحة أوامر وبحث سريع</a><span style="opacity:.75"> — لوحة أوامر وبحث سريع في المتصفح: بحث ضبابي في اختصارات محفوظة، حساب تعبيرات رياضية فوراً، تصنيف حسب الفئات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-23 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  try {
+    var rooms = [];
+    var modes = [];
+    var calcResult = null;
+    var chartData = [];
+    
+    function loadData(){
+      try {
+        var r = localStorage.getItem('app_rooms');
+        if(r){ rooms = JSON.parse(r); }
+        var m = localStorage.getItem('app_modes');
+        if(m){ modes = JSON.parse(m); }
+      } catch(e){}
+    }
+    
+    function saveData(){
+      try {
+        localStorage.setItem('app_rooms', JSON.stringify(rooms));
+        localStorage.setItem('app_modes', JSON.stringify(modes));
+      } catch(e){}
+    }
+    
+    function updateRoomsList(){
+      var el = document.getElementById('app-rooms-list');
+      if(!el) return;
+      if(rooms.length === 0){
+        el.textContent = 'لا توجد غرف مسجلة';
+        return;
+      }
+      var txt = '';
+      for(var i=0; i<rooms.length; i++){
+        txt += (i+1) + '. ' + rooms[i].name + ' - ' + rooms[i].rad + ' مشع\n';
+      }
+      el.textContent = txt;
+    }
+    
+    function updateModesList(){
+      var sel = document.getElementById('app-select-mode');
+      var el = document.getElementById('app-modes-list');
+      if(sel){
+        sel.innerHTML = '';
+        var opt0 = document.createElement('option');
+        opt0.value = '-1';
+        opt0.textContent = 'اختر وضع';
+        sel.appendChild(opt0);
+        for(var i=0; i<modes.length; i++){
+          var opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = modes[i].name + ' (' + modes[i].temp + '°م)';
+          sel.appendChild(opt);
+        }
+      }
+      if(!el) return;
+      if(modes.length === 0){
+        el.textContent = 'لا توجد أوضاع محفوظة';
+        return;
+      }
+      var txt = '';
+      for(var j=0; j<modes.length; j++){
+        txt += (j+1) + '. ' + modes[j].name + ' - ' + modes[j].temp + '°م\n';
+      }
+      el.textContent = txt;
+    }
+    
+    function addRoom(){
+      var nameEl = document.getElementById('app-room-name');
+      var radEl = document.getElementById('app-room-rad');
+      if(!nameEl || !radEl) return;
+      var name = nameEl.value.trim();
+      var rad = parseInt(radEl.value);
+      if(name === '' || isNaN(rad) || rad < 0){
+        var listEl = document.getElementById('app-rooms-list');
+        if(listEl) listEl.textContent = 'يرجى إدخال اسم غرفة وعدد مشعات صحيح';
+        return;
+      }
+      rooms.push({name: name, rad: rad});
+      nameEl.value = '';
+      radEl.value = '2';
+      saveData();
+      updateRoomsList();
+    }
+    
+    function saveMode(){
+      var nameEl = document.getElementById('app-mode-name');
+      var tempEl = document.getElementById('app-mode-temp');
+      if(!nameEl || !tempEl) return;
+      var name = nameEl.value.trim();
+      var temp = parseFloat(tempEl.value);
+      if(name === '' || isNaN(temp)){
+        var el = document.getElementById('app-modes-list');
+        if(el) el.textContent = 'يرجى إدخال اسم الوضع ودرجة الحرارة';
+        return;
+      }
+      modes.push({name: name, temp: temp});
+      nameEl.value = '';
+      tempEl.value = '20.0';
+      saveData();
+      updateModesList();
+    }
+    
+    function applyMode(){
+      var sel = document.getElementById('app-select-mode');
+      if(!sel) return;
+      var idx = parseInt(sel.value);
+      if(isNaN(idx) || idx < 0 || idx >= modes.length) return;
+      var tempEl = document.getElementById('app-temp-in');
+      if(tempEl){
+        tempEl.value = modes[idx].temp.toFixed(1);
+      }
+    }
+    
+    function calcValve(){
+      var algoEl = document.getElementById('app-algo');
+      var tinEl = document.getElementById('app-temp-in');
+      var toutEl = document.getElementById('app-temp-out');
+      var winEl = document.getElementById('app-windows');
+      var doorEl = document.getElementById('app-doors');
+      var weaEl = document.getElementById('app-weather');
+      var resEl = document.getElementById('app-calc-result');
+      if(!algoEl || !tinEl || !toutEl || !resEl) return;
+      
+      var algo = algoEl.value;
+      var tin = parseFloat(tinEl.value);
+      var tout = parseFloat(toutEl.value);
+      var win = parseInt(winEl ? winEl.value : 0);
+      var door = parseInt(doorEl ? doorEl.value : 0);
+      var wea = parseInt(weaEl ? weaEl.value : 0);
+      
+      if(isNaN(tin) || isNaN(tout)){
+        resEl.textContent = 'يرجى إدخال درجات حرارة صحيحة';
+        return;
+      }
+      
+      var totalRad = 0;
+      for(var i=0; i<rooms.length; i++){
+        totalRad += rooms[i].rad;
+      }
+      if(totalRad === 0){
+        resEl.textContent = 'يرجى إضافة غرفة واحدة على الأقل لحساب الجدول';
+        return;
+      }
+      
+      var delta = tin - tout;
+      var lossFactor = 1.0 + win * 0.15 + door * 0.1 + wea * 0.2;
+      var baseOpen = Math.min(100, Math.max(10, delta * 4 * lossFactor));
+      
+      var openPct = 0;
+      var timeMin = 0;
+      if(algo === 'pid'){
+        openPct = Math.round(baseOpen * 0.9);
+        timeMin = Math.round(30 + delta * 2);
+      } else if(algo === 'tpi'){
+        openPct = Math.round(baseOpen * 1.1);
+        timeMin = Math.round(45 + delta * 1.5);
+      } else if(algo === 'mpc'){
+        openPct = Math.round(baseOpen * 1.0);
+        timeMin = Math.round(40 + delta * 1.8);
+      }
+      
+      openPct = Math.min(100, Math.max(0, openPct));
+      timeMin = Math.min(180, Math.max(10, timeMin));
+      
+      calcResult = {algo: algo, openPct: openPct, timeMin: timeMin, totalRad: totalRad};
+      
+      var txt = 'خوارزمية: ' + (algo === 'pid' ? 'PID' : algo === 'tpi' ? 'TPI' : 'MPC') + '\n';
+      txt += 'عدد المشعات الكلي: ' + totalRad + '\n';
+      txt += 'نسبة فتح الصمامات المقترحة: ' + openPct + '%\n';
+      txt += 'وقت التشغيل المقترح: ' + timeMin + ' دقيقة\n';
+      txt += 'معامل الفقد: ' + lossFactor.toFixed(2);
+      
+      resEl.textContent = txt;
+    }
+    
+    function resetCalc(){
+      var resEl = document.getElementById('app-calc-result');
+      if(resEl) resEl.textContent = 'تم مسح الحساب';
+      calcResult = null;
+    }
+    
+    function showChart(){
+      var canvas = document.getElementById('app-chart');
+      var infoEl = document.getElementById('app-chart-info');
+      if(!canvas) return;
+      var ctx = canvas.getContext('2d');
+      if(!ctx) return;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      var tinEl = document.getElementById('app-temp-in');
+      var toutEl = document.getElementById('app-temp-out');
+      var tin = parseFloat(tinEl ? tinEl.value : 18);
+      var tout = parseFloat(toutEl ? toutEl.value : 5);
+      if(isNaN(tin)) tin = 18;
+      if(isNaN(tout)) tout = 5;
+      
+      chartData = [];
+      for(var h=0; h<24; h++){
+        var tInH = tin + (Math.sin(h/4) * 1.2);
+        var tOutH = tout + (Math.cos(h/3) * 2.5);
+        var comfort = Math.max(0, 100 - Math.abs(tInH - 21) * 15);
+        var energy = Math.max(0, Math.abs(tInH - tOutH) * 3);
+        chartData.push({h: h, comfort: comfort, energy: energy});
+      }
+      
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for(var i=0; i<chartData.length; i++){
+        var x = (i/23) * (canvas.width - 40) + 20;
+        var y = canvas.height - 30 - (chartData[i].comfort / 100) * (canvas.height - 60);
+        if(i === 0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+      
+      ctx.strokeStyle = '#b8860b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for(var j=0; j<chartData.length; j++){
+        var x2 = (j/23) * (canvas.width - 40) + 20;
+        var y2 = canvas.height - 30 - (chartData[j].energy / 150) * (canvas.height - 60);
+        if(j === 0) ctx.moveTo(x2,y2);
+        else ctx.lineTo(x2,y2);
+      }
+      ctx.stroke();
+      
+      if(infoEl){
+        var avgComfort = 0;
+        var avgEnergy = 0;
+        for(var k=0; k<chartData.length; k++){
+          avgComfort += chartData[k].comfort;
+          avgEnergy += chartData[k].energy;
+        }
+        avgComfort = Math.round(avgComfort / chartData.length);
+        avgEnergy = Math.round(avgEnergy / chartData.length);
+        infoEl.textContent = 'متوسط الراحة: ' + avgComfort + '% | متوسط الطاقة التقريبي: ' + avgEnergy;
+      }
+    }
+    
+    function clearChart(){
+      var canvas = document.getElementById('app-chart');
+      var infoEl = document.getElementById('app-chart-info');
+      if(canvas){
+        var ctx = canvas.getContext('2d');
+        if(ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      if(infoEl) infoEl.textContent = 'تم مسح الرسم البياني';
+      chartData = [];
+    }
+    
+    function checkMaint(){
+      var el = document.getElementById('app-maint-alerts');
+      if(!el) return;
+      var alerts = [];
+      if(rooms.length === 0){
+        alerts.push('تحذير: لا توجد غرف مسجلة');
+      }
+      var tinEl = document.getElementById('app-temp-in');
+      var tin = parseFloat(tinEl ? tinEl.value : NaN);
+      if(!isNaN(tin) && tin < 16){
+        alerts.push('تنبيه: درجة الحرارة منخفضة جدًا');
+      }
+      if(calcResult && calcResult.openPct > 90){
+        alerts.push('تنبيه: نسبة فتح عالية جدًا - فحص الصمامات');
+      }
+      if(alerts.length === 0){
+        el.textContent = 'لا توجد تنبيهات صيانة حالية';
+      } else {
+        el.textContent = alerts.join('\n');
+      }
+    }
+    
+    function clearMaint(){
+      var el = document.getElementById('app-maint-alerts');
+      if(el) el.textContent = 'تم مسح التنبيهات';
+    }
+    
+    function init(){
+      loadData();
+      updateRoomsList();
+      updateModesList();
+      
+      var addRoomBtn = document.getElementById('app-add-room');
+      if(addRoomBtn) addRoomBtn.addEventListener('click', addRoom);
+      
+      var saveModeBtn = document.getElementById('app-save-mode');
+      if(saveModeBtn) saveModeBtn.addEventListener('click', saveMode);
+      
+      var applyModeBtn = document.getElementById('app-apply-mode');
+      if(applyModeBtn) applyModeBtn.addEventListener('click', applyMode);
+      
+      var calcBtn = document.getElementById('app-calc');
+      if(calcBtn) calcBtn.addEventListener('click', calcValve);
+      
+      var resetBtn = document.getElementById('app-reset');
+      if(resetBtn) resetBtn.addEventListener('click', resetCalc);
+      
+      var showChartBtn = document.getElementById('app-show-chart');
+      if(showChartBtn) showChartBtn.addEventListener('click', showChart);
+      
+      var clearChartBtn = document.getElementById('app-clear-chart');
+      if(clearChartBtn) clearChartBtn.addEventListener('click', clearChart);
+      
+      var checkMaintBtn = document.getElementById('app-check-maint');
+      if(checkMaintBtn) checkMaintBtn.addEventListener('click', checkMaint);
+      
+      var clearMaintBtn = document.getElementById('app-clear-maint');
+      if(clearMaintBtn) clearMaintBtn.addEventListener('click', clearMaint);
+    }
+    
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
