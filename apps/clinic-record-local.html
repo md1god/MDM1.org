@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق سجل المرضى: طباعة وتقويم وتقارير | MDM1</title>
+<meta name="description" content="تطبيق ويب عربي يعمل بالكامل في المتصفح لإدارة سجلات المرضى والمواعيد والتشخيصات والأدوية محلياً في localStorage مع طباعة وتصدير واستيراد مشفر.">
+<link rel="canonical" href="https://mdm1.org/apps/clinic-record-local.html">
+<meta property="og:title" content="تطبيق سجل المرضى: طباعة وتقويم وتقارير">
+<meta property="og:description" content="تطبيق ويب عربي يعمل بالكامل في المتصفح لإدارة سجلات المرضى والمواعيد والتشخيصات والأدوية محلياً في localStorage مع طباعة وتصدير واستيراد مشفر.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/clinic-record-local.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: block; }
+.app-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.app-panel { display: none; }
+.app-panel.active { display: block; }
+.app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .75rem; }
+.app-list { margin-top: 1rem; max-height: 420px; overflow: auto; }
+.app-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem; margin-top: .75rem; }
+.app-cal-head { text-align: center; font-weight: 700; border-bottom: 1px solid var(--gold-dim); padding: .25rem; }
+.app-cal .day { min-height: 64px; border: 1px solid var(--gold-dim); border-radius: 6px; padding: .3rem; cursor: pointer; }
+.app-cal .day.empty { opacity: .35; }
+.app-cal .day.today { border-color: var(--gold-bright); }
+.app-cal .appt-dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--gold); margin: .1rem; }
+.app-patient-card { margin-bottom: .75rem; }
+.app-row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.app-print { margin-top: 1rem; }
+.app-print table { width: 100%; border-collapse: collapse; }
+.app-print th, .app-print td { border: 1px solid var(--gold-dim); padding: .4rem; }
+.app-intro { line-height: 1.8; margin-bottom: 1rem; }
+@media print { .app-nav, .button, input, select, textarea { display: none !important; } .app-panel { display: block !important; } #appRoot > section:not(#panelPrint) { display: none !important; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "إدارة سجلات المرضى في المتصفح (بدون خادم)", "url": "https://mdm1.org/apps/clinic-record-local.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل بيانات المرضى إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تُخزن جميع البيانات محلياً في متصفحك ضمن localStorage ولا تُرسل إلى أي خادم."}}, {"@type": "Question", "name": "كيف أنقل بياناتي إلى جهاز آخر؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم تصدير JSON مع تشفير اختياري، ثم استورد الملف في المتصفح الآخر."}}, {"@type": "Question", "name": "هل يمكن طب-acreة سجل مريض واحد؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، في تبويب طب-acreة اختر المريض ثم اضغط طب-acreة السجل."}}, {"@type": "Question", "name": "ماذا happens إذا تعذر حفظ البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "يُعرض خطأ في صندوق الحالة وتبقى البيانات المدخلة في النموذج دون فقدان."}}, {"@type": "Question", "name": "هل التشفير إجباري lors du تصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، إذا تركت كلمة المرور فارغة يُصدر الملف بدون تشفير، وإلا يُشفّر бـ AES-GCM."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">إدارة سجلات المرضى في المتصفح (بدون خادم)</h1>
+  <p class="page-sub">تطبيق ويب عربي يعمل بالكامل في المتصفح لإدارة سجلات المرضى والمواعيد والتشخيصات والأدوية محلياً في localStorage مع طباعة وتصدير واستيراد مشفر.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">هذا التطبيق هو سجل طبي شخصي يعمل بالكامل على جهازك بدون خادم: يخزن بيانات المرضى والمواعيد والتشخيصات والأدوية محلياً في متصفحك، ويوفر واجهة عربية من اليمين إلى اليسار. يمكنك البحث عن المرضى وتعديلهم وحذفهم، وإدارة المواعيد وربطها بتقويم شهري يعرض الأنشطة بوضوح، ورسم تقارير إحصائية بسيطة على عنصر Canvas لتتبع التوزيع حسب الجنس أو التسجيلات أو التشخيصات. كما يتيح طباعة سجل طبي منسق، وتصدير جميع البيانات أو استيرادها كملف JSON مع خيار تشفير AES-GCM بكلمة مرور لحماية الخصوصية. لا تُرسل أي بيانات إلى أي خادم؛ كل شيء يبقى في متصفحك، ويعمل دون اتصال، ويُحفظ تلقائياً في localStorage لضمان بقاء سجلاتك متاحة في كل زيارة.</p>
+<div class="app" id="appRoot">
+  <nav class="app-nav" id="appNav">
+    <button id="tabPatients" class="button sec" type="button">المرضы</button>
+    <button id="tabForm" class="button sec" type="button">إضافة / تعديل</button>
+    <button id="tabAppts" class="button sec" type="button">المواعيده
+</rfl:parameter>button>
+    <button id="tabCalendar" class="button sec" type="button">التقويده
+</rfl:parameter>button>
+    <button id="tabReports" class="button sec" type="button">التقارير
+</rfl:parameter>button>
+    <button id="tabData" class="button sec" type="button">البيانات
+</rfl:parameter>button>
+    <button id="tabPrint" class="button sec" type="button">طب-acreة
+</rfl:parameter>button>
+  </nav>
+  <div id="statusBox" class="out" aria-live="polite"></div>
+  <section id="panelPatients" class="app-panel">
+    <div class="card">
+      <div class="row">
+        <label for="searchPatient">بحث</label>
+        <input id="searchPatient" class="input" type="search" placeholder="اسم المريض أو التشخيص">
+      </div>
+      <div id="patientList" class="app-list"></div>
+    </div>
+  </section>
+  <section id="panelForm" class="app-panel">
+    <div class="card">
+      <input id="editingId" type="hidden">
+      <div class="app-grid">
+        <div>
+          <label for="patientName">الاسم</label>
+          <input id="patientName" class="input" type="text" placeholder="الاسم الكامل">
+        </div>
+        <div>
+          <label for="patientAge">العمر</label>
+          <input id="patientAge" class="input" type="number" min="0" max="150">
+        </div>
+        <div>
+          <label for="patientGender">الجنس</label>
+          <select id="patientGender" class="select">
+            <option value="">—</option>
+            <option value="male">ذكر</option>
+            <option value="female">أنثى</option>
+          </select>
+        </div>
+        <div>
+          <label for="patientPhone">الهاتف</label>
+          <input id="patientPhone" class="input" type="tel">
+        </div>
+      </div>
+      <label for="patientDiagnosis">التشخيص</label>
+      <textarea id="patientDiagnosis" class="textarea" rows="3"></textarea>
+      <label for="patientMeds">الأدوية</label>
+      <textarea id="patientMeds" class="textarea" rows="3"></textarea>
+      <label for="patientNotes">ملاحظات</label>
+      <textarea id="patientNotes" class="textarea" rows="3"></textarea>
+      <div class="row">
+        <button id="savePatient" class="button" type="button">حفظ</button>
+        <button id="cancelPatient" class="button sec" type="button">إلغاء</button>
+      </div>
+    </div>
+  </section>
+  <section id="panelAppts" class="app-panel">
+    <div class="card">
+      <div class="app-grid">
+        <div>
+          <label for="apptPatient">المريض</label>
+          <select id="apptPatient" class="select"></select>
+        </div>
+        <div>
+          <label for="apptDate">التاريخ</label>
+          <input id="apptDate" class="input" type="date">
+        </div>
+        <div>
+          <label for="apptTime">الوقت</label>
+          <input id="apptTime" class="input" type="time">
+        </div>
+      </div>
+      <label for="apptReason">السبب</label>
+      <textarea id="apptReason" class="textarea" rows="2"></textarea>
+      <div class="row">
+        <button id="addAppt" class="button" type="button">إضافة موعد</button>
+      </div>
+      <div id="apptList" class="app-list"></div>
+    </div>
+  </section>
+  <section id="panelCalendar" class="app-panel">
+    <div class="card">
+      <div class="row">
+        <button id="calPrev" class="button sec" type="button">السابق</button>
+        <div id="calTitle" class="big"></div>
+        <button id="calNext" class="button sec" type="button">التالي</button>
+      </div>
+      <div id="calGrid" class="app-cal"></div>
+      <div id="calDayList" class="app-list"></div>
+    </div>
+  </section>
+  <section id="panelReports" class="app-panel">
+    <div class="card">
+      <div class="row">
+        <label for="statsType">نوع التقرير</label>
+        <select id="statsType" class="select">
+          <option value="gender">حسب الجنس</option>
+          <option value="appts">المواعيد بالشهر</option>
+          <option value="diagnosis">التشخيصات</option>
+        </select>
+        <button id="drawStats" class="button" type="button">رسم</button>
+      </div>
+      <canvas id="statsCanvas" width="640" height="320"></canvas>
+      <div id="statsSummary" class="out"></div>
+    </div>
+  </section>
+  <section id="panelData" class="app-panel">
+    <div class="card">
+      <div class="app-grid">
+        <div>
+          <label for="exportPw">كلمة مرور التشفير (اختياري)</label>
+          <input id="exportPw" class="input" type="password">
+        </div>
+        <div>
+          <label for="importPw">كلمة مرور الاستيراد</label>
+          <input id="importPw" class="input" type="password">
+        </div>
+      </div>
+      <div class="row">
+        <button id="exportBtn" class="button" type="button">تصدير JSON</button>
+        <input id="importFile" class="input" type="file" accept="application/json">
+        <button id="importBtn" class="button sec" type="button">استيراد</button>
+      </div>
+      <textarea id="exportData" class="textarea" rows="6" readonly placeholder="سيظهر هنا محتوى التصدير"></textarea>
+      <div class="row">
+        <button id="clearAllBtn" class="button sec" type="button">مسح جميع البيانات</button>
+      </div>
+      <div id="dataStatus" class="out"></div>
+    </div>
+  </section>
+  <section id="panelPrint" class="app-panel">
+    <div class="card">
+      <div class="row">
+        <label for="printPatient">المريض</label>
+        <select id="printPatient" class="select"></select>
+        <button id="printRecord" class="button" type="button">طب-acreة السجل
+</rfl:parameter>button>
+      </div>
+      <div id="printArea" class="app-print"></div>
+    </div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل بيانات المرضى إلى أي خادم؟</h3><p>لا، تُخزن جميع البيانات محلياً في متصفحك ضمن localStorage ولا تُرسل إلى أي خادم.</p><h3>كيف أنقل بياناتي إلى جهاز آخر؟</h3><p>استخدم تصدير JSON مع تشفير اختياري، ثم استورد الملف في المتصفح الآخر.</p><h3>هل يمكن طب-acreة سجل مريض واحد؟</h3><p>نعم، في تبويب طب-acreة اختر المريض ثم اضغط طب-acreة السجل.</p><h3>ماذا happens إذا تعذر حفظ البيانات؟</h3><p>يُعرض خطأ في صندوق الحالة وتبقى البيانات المدخلة في النموذج دون فقدان.</p><h3>هل التشفير إجباري lors du تصدير؟</h3><p>لا، إذا تركت كلمة المرور فارغة يُصدر الملف بدون تشفير، وإلا يُشفّر бـ AES-GCM.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const STORAGE_KEY = 'clinic_patients_v1';
+const APPT_KEY = 'clinic_appts_v1';
+let patients = [];
+let appointments = [];
+let editingId = null;
+let currentMonth = new Date();
+currentMonth.setDate(1);
+let selectedDay = null;
+
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toBase64(bytes){ let bin=''; for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]); return btoa(bin); }
+function fromBase64(b64){ const bin=atob(b64); const out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
+function setStatus(msg, ok=true){ const el=$('statusBox'); if(el){ el.textContent=msg; } const st=$('dataStatus'); if(st && $('panelData').classList.contains('active')){ st.textContent=msg; } }
+function safeParse(s,d){ try{return JSON.parse(s);}catch(e){return d;} }
+
+function load(){
+  try{ const raw=localStorage.getItem(STORAGE_KEY); patients = safeParse(raw,'[]')||[]; }catch(e){ patients=[]; }
+  try{ const raw=localStorage.getItem(APPT_KEY); appointments = safeParse(raw,'[]')||[]; }catch(e){ appointments=[]; }
+}
+function save(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(patients)); localStorage.setItem(APPT_KEY, JSON.stringify(appointments)); }
+  catch(e){ setStatus('تعذر حفظ البيانات في localStorage.', false); }
+}
+
+function showPanel(name){
+  document.querySelectorAll('.app-panel').forEach(p=>p.classList.remove('active'));
+  const el=$('panel'+name); if(el) el.classList.add('active');
+}
+
+function resetForm(){
+  editingId=null; $('editingId').value='';
+  ['patientName','patientAge','patientPhone','patientDiagnosis','patientMeds','patientNotes'].forEach(id=>{const e=$(id); if(e) e.value='';});
+  $('patientGender').value='';
+}
+
+function renderPatientList(){
+  const q=($('searchPatient').value||'').toLowerCase();
+  const list=$('patientList');
+  const filtered=patients.filter(p=> (p.name||'').toLowerCase().includes(q) || (p.diagnosis||'').toLowerCase().includes(q));
+  if(!filtered.length){ list.innerHTML='<div class="out">لا توجد سجلات مرضى.</div>'; return; }
+  list.innerHTML=filtered.map(p=>`
+    <div class="card app-patient-card">
+      <div class="row"><strong>${escapeHtml(p.name)}</strong> <span class="badge">${escapeHtml(p.gender||'—')} ${escapeHtml(p.age||'')}</span></div>
+      ${p.diagnosis?`<p><strong>التشخيص:</strong> ${escapeHtml(p.diagnosis)}</p>`:''}
+      ${p.medications?`<p><strong>الأدوية:</strong> ${escapeHtml(p.medications)}</p>`:''}
+      <div class="row">
+        <button id="editPatient_${escapeHtml(p.id)}" class="button sec" type="button" data-action="edit" data-id="${escapeHtml(p.id)}">تعديل</button>
+        <button id="delPatient_${escapeHtml(p.id)}" class="button sec" type="button" data-action="del" data-id="${escapeHtml(p.id)}">حذف</button>
+        <button id="printPatientBtn_${escapeHtml(p.id)}" class="button sec" type="button" data-action="print" data-id="${escapeHtml(p.id)}">طب-acreة
+</rfl:parameter>button>
+      </div>
+    </div>`).join('');
+}
+
+function populatePatientSelects(){
+  const opts=patients.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('');
+  const empty='<option value="">— اختر مриضاً —</option>';
+  ['apptPatient','printPatient'].forEach(id=>{ const e=$(id); if(e) e.innerHTML=empty+opts; });
+}
+
+function savePatient(){
+  const name=($('patientName').value||'').trim();
+  if(!name){ setStatus('يرجى إدخال اسم المريض.', false); return; }
+  const obj={
+    id: editingId || ('p'+Date.now()+Math.random().toString(36).slice(2)),
+    name,
+    age: ($('patientAge').value||'').trim(),
+    gender: $('patientGender').value,
+    phone: ($('patientPhone').value||'').trim(),
+    diagnosis: ($('patientDiagnosis').value||'').trim(),
+    medications: ($('patientMeds').value||'').trim(),
+    notes: ($('patientNotes').value||'').trim(),
+    updatedAt: new Date().toISOString()
+  };
+  if(editingId){
+    const idx=patients.findIndex(p=>p.id===editingId);
+    if(idx>=0) patients[idx]=obj;
+  } else {
+    obj.createdAt=new Date().toISOString();
+    patients.push(obj);
+  }
+  save(); resetForm(); renderPatientList(); populatePatientSelects(); showPanel('Patients'); setStatus('تم حفظ سجل المريض.');
+}
+
+function deletePatient(id){
+  if(!confirm('حذف هذا المريض ومواعيده؟')) return;
+  patients=patients.filter(p=>p.id!==id);
+  appointments=appointments.filter(a=>a.patientId!==id);
+  save(); renderPatientList(); populatePatientSelects(); renderAppts(); renderCalendar(); setStatus('تم الحذف.');
+}
+
+function editPatient(id){
+  const p=patients.find(x=>x.id===id); if(!p) return;
+  editingId=p.id; $('editingId').value=p.id;
+  $('patientName').value=p.name||''; $('patientAge').value=p.age||''; $('patientGender').value=p.gender||'';
+  $('patientPhone').value=p.phone||''; $('patientDiagnosis').value=p.diagnosis||''; $('patientMeds').value=p.medications||''; $('patientNotes').value=p.notes||'';
+  showPanel('Form'); setStatus('وضع التعديل.');
+}
+
+function printPatientRecord(id){
+  const p=patients.find(x=>x.id===id); if(!p) return;
+  $('printPatient').value=p.id;
+  buildPrintArea(p);
+  window.print();
+}
+
+function buildPrintArea(p){
+  const aps=appointments.filter(a=>a.patientId===p.id).sort((a,b)=> (a.date||'').localeCompare(b.date||''));
+  let html='<h2>السجل الطبي الشخصي</h2>';
+  html+='<table>';
+  html+='<tr><th>الحقل</th><th>القيمة</th></tr>';
+  html+=`<tr><td>الاسم</td><td>${escapeHtml(p.name)}</td></tr>`;
+  html+=`<tr><td>العمر</td><td>${escapeHtml(p.age)}</td></tr>`;
+  html+=`<tr><td>الجنس</td><td>${escapeHtml(p.gender)}</td></tr>`;
+  html+=`<tr><td>الهاتف</td><td>${escapeHtml(p.phone)}</td></tr>`;
+  html+=`<tr><td>التشخيص</td><td>${escapeHtml(p.diagnosis)}</td></tr>`;
+  html+=`<tr><td>الأدوية</td><td>${escapeHtml(p.medications)}</td></tr>`;
+  html+=`<tr><td>ملاحظات</td><td>${escapeHtml(p.notes)}</td></tr>`;
+  html+='</table>';
+  html+='<h3>المواعيده</h3>';
+  if(!aps.length){ html+='<p>لا توجد مواعيده.</p>'; }
+  else {
+    html+='<table><tr><th>التاريخ</th><th>الوقت</th><th>السبب</th></tr>';
+    aps.forEach(a=>{ html+=`<tr><td>${escapeHtml(a.date)}</td><td>${escapeHtml(a.time)}</td><td>${escapeHtml(a.reason)}</td></tr>`; });
+    html+='</table>';
+  }
+  html+=`<p>تاريخ الطب-acreة: ${escapeHtml(new Date().toLocaleString('ar'))}</p>`;
+  $('printArea').innerHTML=html;
+}
+
+function addAppt(){
+  const pid=$('apptPatient').value;
+  const date=$('apptDate').value;
+  if(!pid){ setStatus('اختر مريضاً.', false); return; }
+  if(!date){ setStatus('اختر تاريخاً.', false); return; }
+  const obj={ id:'a'+Date.now()+Math.random().toString(36).slice(2), patientId:pid, date, time:$('apptTime').value, reason:($('apptReason').value||'').trim() };
+  appointments.push(obj); save();
+  $('apptReason').value=''; $('apptTime').value='';
+  renderAppts(); renderCalendar(); setStatus('تم إضافة الموعد.');
+}
+
+function deleteAppt(id){
+  appointments=appointments.filter(a=>a.id!==id); save(); renderAppts(); renderCalendar(); setStatus('تم حذف الموعد.');
+}
+
+function renderAppts(){
+  const list=$('apptList');
+  if(!appointments.length){ list.innerHTML='<div class="out">لا توجد مواعيده.</div>'; return; }
+  const sorted=[...appointments].sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.time||'').localeCompare(b.time||''));
+  list.innerHTML=sorted.map(a=>{
+    const p=patients.find(x=>x.id===a.patientId);
+    return `<div class="card"><div class="row"><strong>${escapeHtml(p?p.name:'—')}</strong> <span class="badge">${escapeHtml(a.date)} ${escapeHtml(a.time||'')}</span></div><p>${escapeHtml(a.reason||'')}</p><div class="row"><button id="delAppt_${escapeHtml(a.id)}" class="button sec" type="button" data-action="delAppt" data-id="${escapeHtml(a.id)}">حذف</button></div></div>`;
+  }).join('');
+}
+
+function monthName(d){ return d.toLocaleString('ar',{month:'long',year:'numeric'}); }
+function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
+function firstDay(y,m){ return new Date(y,m,1).getDay(); }
+
+function renderCalendar(){
+  const y=currentMonth.getFullYear(); const m=currentMonth.getMonth();
+  $('calTitle').textContent=monthName(currentMonth);
+  const grid=$('calGrid');
+  const dayNames=['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+  let html=dayNames.map(n=>`<div class="app-cal-head">${n}</div>`).join('');
+  const first=firstDay(y,m); const total=daysInMonth(y,m);
+  for(let i=0;i<first;i++) html+='<div class="day empty"></div>';
+  const today=new Date();
+  for(let d=1;d<=total;d++){
+    const key=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const aps=appointments.filter(a=>a.date===key);
+    const isToday = today.getFullYear()===y && today.getMonth()===m && today.getDate()===d;
+    html+=`<div class="day${isToday?' today':''}" data-day="${d}" data-key="${key}"><strong>${d}</strong><br>`+aps.map(()=>'<span class="appt-dot"></span>').join('')+`</div>`;
+  }
+  grid.innerHTML=html;
+  $('calDayList').innerHTML='';
+}
+
+function drawStats(){
+  const canvas=$('statsCanvas'); const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const type=$('statsType').value;
+  let labels=[]; let values=[];
+  if(type==='gender'){
+    const counts={male:0,female:0,other:0};
+    patients.forEach(p=>{ if(p.gender==='male') counts.male++; else if(p.gender==='female') counts.female++; else counts.other++; });
+    labels=['ذكر','أنثى','أخرى']; values=[counts.male,counts.female,counts.other];
+  } else if(type==='appts'){
+    const map={};
+    appointments.forEach(a=>{ const key=(a.date||'').slice(0,7)||'غير محدد'; map[key]=(map[key]||0)+1; });
+    labels=Object.keys(map).sort(); values=labels.map(l=>map[l]);
+  } else if(type==='diagnosis'){
+    const map={};
+    patients.forEach(p=>{ const k=(p.diagnosis||'').trim()||'غير محدد'; map[k]=(map[k]||0)+1; });
+    labels=Object.keys(map); values=labels.map(l=>map[l]);
+  }
+  const total=values.reduce((a,b)=>a+b,0);
+  if(total===0){ ctx.fillStyle='#ffffff'; ctx.font='16px sans-serif'; ctx.fillText('لا توجد بيانات للعرض.', 20, 40); $('statsSummary').textContent='لا توجد بيانات.'; return; }
+  const max=Math.max(...values,1);
+  const barW=Math.max(20, (canvas.width-80)/Math.max(labels.length,1)-10);
+  let x=40;
+  for(let i=0;i<labels.length;i++){
+    const h=(values[i]/max)*(canvas.height-80);
+    const y=canvas.height-40-h;
+    ctx.fillStyle='#d4af37'; ctx.fillRect(x,y,barW,h);
+    ctx.fillStyle='#ffffff'; ctx.font='12px sans-serif';
+    ctx.fillText(String(values[i]), x, y-4);
+    ctx.save(); ctx.translate(x+barW/2, canvas.height-25); ctx.rotate(-Math.PI/4); ctx.fillText(String(labels[i]).slice(0,12),0,0); ctx.restore();
+    x+=barW+10;
+  }
+  ctx.strokeStyle='#888888'; ctx.beginPath(); ctx.moveTo(30,20); ctx.lineTo(30,canvas.height-30); ctx.lineTo(canvas.width-20,canvas.height-30); ctx.stroke();
+  $('statsSummary').textContent=`المجموع: ${total}.`;
+}
+
+async function deriveKey(password, salt){
+  const enc=new TextEncoder();
+  const base=await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt:salt, iterations:100000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function encryptText(text,password){
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveKey(password,salt);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(text));
+  return {encrypted:true, salt:toBase64(salt), iv:toBase64(iv), data:toBase64(new Uint8Array(ct))};
+}
+async function decryptText(obj,password){
+  const salt=fromBase64(obj.salt); const iv=fromBase64(obj.iv); const data=fromBase64(obj.data);
+  const key=await deriveKey(password,salt);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM', iv:iv}, key, data);
+  return new TextDecoder().decode(pt);
+}
+
+function downloadText(filename,text){
+  const blob=new Blob([text],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>{ URL.revokeObjectURL(url); }, 0);
+}
+
+async function exportData(){
+  const payload={patients, appointments, exportedAt:new Date().toISOString()};
+  const pw=($('exportPw').value||'').trim();
+  let out;
+  if(pw){
+    if(!crypto.subtle){ setStatus('التشفير غير مدعوم في هذا المتصفح.', false); return; }
+    try{ out=await encryptText(JSON.stringify(payload), pw); }
+    catch(e){ setStatus('فشل التشفير: '+e.message, false); return; }
+  } else {
+    out={encrypted:false, patients:payload.patients, appointments:payload.appointments, exportedAt:payload.exportedAt};
+  }
+  const text=JSON.stringify(out,null,2);
+  $('exportData').value=text;
+  downloadText('patient-records.json', text);
+  setStatus('تم تصدير البيانات.');
+}
+
+async function importData(){
+  const file=$('importFile').files && $('importFile').files[0];
+  if(!file){ setStatus('اختر ملفاً.', false); return; }
+  const reader=new FileReader();
+  reader.addEventListener('load', async ()=>{
+    try{
+      const obj=safeParse(reader.result, null);
+      if(!obj){ throw new Error('JSON غير صالح'); }
+      let data=obj;
+      if(obj.encrypted){
+        const pw=($('importPw').value||'').trim();
+        if(!pw){ setStatus('أدخل كلمة المرور.', false); return; }
+        if(!crypto.subtle){ setStatus('التشفير غير مدعوم.', false); return; }
+        const txt=await decryptText(obj,pw);
+        data=safeParse(txt,null);
+        if(!data) throw new Error('فشل فك التشفير');
+      }
+      if(!Array.isArray(data.patients) || !Array.isArray(data.appointments)) throw new Error('هيكل البيانات غير صحيح');
+      patients=data.patients; appointments=data.appointments; save();
+      renderPatientList(); populatePatientSelects(); renderAppts(); renderCalendar();
+      setStatus('تم الاستيراد بنجاح.');
+    }catch(e){ setStatus('فشل الاستيراد: '+e.message, false); }
+  });
+  reader.addEventListener('error', ()=>setStatus('تعذر قراءة الملف.', false));
+  reader.readAsText(file);
+}
+
+function clearAll(){
+  if(!confirm('مسح جميع البيانات؟ لا يمكن التراجع.')) return;
+  patients=[]; appointments=[]; save();
+  renderPatientList(); populatePatientSelects(); renderAppts(); renderCalendar();
+  $('printArea').innerHTML=''; $('statsSummary').textContent='';
+  setStatus('تم مسح جميع البيانات.');
+}
+
+function init(){
+  load();
+  const map=[['tabPatients','Patients'],['tabForm','Form'],['tabAppts','Appts'],['tabCalendar','Calendar'],['tabReports','Reports'],['tabData','Data'],['tabPrint','Print']];
+  map.forEach(([btn,panel])=>{ const b=$(btn); if(b) b.addEventListener('click', ()=>showPanel(panel)); });
+  $('searchPatient').addEventListener('input', renderPatientList);
+  $('savePatient').addEventListener('click', savePatient);
+  $('cancelPatient').addEventListener('click', ()=>{ resetForm(); showPanel('Patients'); });
+  $('patientList').addEventListener('click', e=>{
+    const btn=e.target.closest('button[data-action]'); if(!btn) return;
+    const id=btn.dataset.id; const act=btn.dataset.action;
+    if(act==='edit') editPatient(id);
+    else if(act==='del') deletePatient(id);
+    else if(act==='print'){ printPatientRecord(id); showPanel('Print'); }
+  });
+  $('addAppt').addEventListener('click', addAppt);
+  $('apptList').addEventListener('click', e=>{ const btn=e.target.closest('button[data-action="delAppt"]'); if(btn){ deleteAppt(btn.dataset.id);} });
+  $('calPrev').addEventListener('click', ()=>{ currentMonth.setMonth(currentMonth.getMonth()-1); renderCalendar(); });
+  $('calNext').addEventListener('click', ()=>{ currentMonth.setMonth(currentMonth.getMonth()+1); renderCalendar(); });
+  $('calGrid').addEventListener('click', ev=>{
+    const cell=ev.target.closest('.day[data-key]'); if(!cell) return;
+    selectedDay=cell.dataset.key;
+    const aps=appointments.filter(a=>a.date===selectedDay);
+    const cl=$('calDayList');
+    if(!aps.length){ cl.innerHTML=`<div class="out">لا توجد مواعيده في ${escapeHtml(selectedDay)}.</div>`; return; }
+    cl.innerHTML=aps.map(a=>{
+      const p=patients.find(x=>x.id===a.patientId);
+      return `<div class="card"><strong>${escapeHtml(p?p.name:'—')}</strong> <span class="badge">${escapeHtml(a.time||'')}</span><p>${escapeHtml(a.reason||'')}</p></div>`;
+    }).join('');
+  });
+  $('drawStats').addEventListener('click', drawStats);
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', importData);
+  $('clearAllBtn').addEventListener('click', clearAll);
+  $('printRecord').addEventListener('click', ()=>{ const pid=$('printPatient').value; const p=patients.find(x=>x.id===pid); if(!p){setStatus('اختر مريضاً.',false);return;} buildPrintArea(p); window.print(); });
+  $('printPatient').addEventListener('change', e=>{ const p=patients.find(x=>x.id===e.target.value); if(p) buildPrintArea(p); });
+  renderPatientList(); populatePatientSelects(); renderAppts(); renderCalendar();
+  showPanel('Patients');
+}
+
+if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+</script>
+</body>
+</html>

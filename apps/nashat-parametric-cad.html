@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مصمم نماذج 3D من مخططات 2D بالقيود والأبعاد | MDM1</title>
+<meta name="description" content="ارسم مخططات 2D بالقيود والأبعاد، ثم استخرج نماذج 3D بال extrude والتدوير والقص والتفريغ، مع خط زمني وإعادة بناء وتصدير STL/OBJ.">
+<link rel="canonical" href="https://mdm1.org/apps/nashat-parametric-cad.html">
+<meta property="og:title" content="مصمم نماذج 3D من مخططات 2D بالقيود والأبعاد">
+<meta property="og:description" content="ارسم مخططات 2D بالقيود والأبعاد، ثم استخرج نماذج 3D بال extrude والتدوير والقص والتفريغ، مع خط زمني وإعادة بناء وتصدير STL/OBJ.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/nashat-parametric-cad.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.app-panel{margin-bottom:12px}
+.app-canvas{width:100%;max-width:420px;height:auto;border:1px solid var(--gold-dim);border-radius:8px;background:#050505;touch-action:none}
+.app-table{width:100%;min-height:88px;font-family:monospace}
+.app-inline{display:inline-flex;gap:6px;align-items:center}
+.app-select{min-width:110px}
+@media (max-width:900px){.app-grid{grid-template-columns:1fr}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مصمم النماذج ثلاثية الأبعاد من مخططات 2D", "url": "https://mdm1.org/apps/nashat-parametric-cad.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع العمليات والتصدير والحفظ تتم داخل المتصفح بدون أي شبكة."}}, {"@type": "Question", "name": "ما هي الصيغ المدعومة للتصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكن تصدير النموذج بصيغ STL و OBJ من محتوى النص الناتج."}}, {"@type": "Question", "name": "هل يمكن تعديل القياسات بعد إنشاء النموذج؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تغيير أي قيمة في جدول المعاملات يعيد البناء فوراً."}}, {"@type": "Question", "name": "كيف أستخدم قوالب جاهزة؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر قالباً من القائمة ثم اضغط تحميل قالب لتطبيق نقاطه ومعاملاته."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مصمم النماذج ثلاثية الأبعاد من مخططات 2D</h1>
+  <p class="page-sub">ارسم مخططات 2D بالقيود والأبعاد، ثم استخرج نماذج 3D بال extrude والتدوير والقص والتفريغ، مع خط زمني وإعادة بناء وتصدير STL/OBJ.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot" dir="rtl">
+<p id="introText">يمكنك الآن في هذا التطبيق رسم مخططات 2D تفاعلية على Canvas، وضبط أبعاد النقاط والقيود، ثم تحويلها إلى مجسمات 3D عبر Extrude وRevolve وCut وShell. يعيد النظام البناء فوراً عند تغيير أي قياس في جدول المعاملات، ويعرض خط زمني متحرك للعمليات، مع قوالب جاهزة للأغطية والحوامل والتثبيتات وفتحات المنفذ، وحفظ المشاريع محلياً، وتصدير STL/OBJ، إضافة إلى لغة أوامر للتحكم بالمعلمات. النتائج تظهر فوراً كإطار سلكي قابل للتدوير، ويمكن نسخ ملفات التصدير أو حفظها. جميع العمليات تتم في المتصفح بدون شبكة.</p>
+<div class="app-grid" id="mainGrid">
+<section class="card app-panel" id="sketchCard">
+<h2>المخطط 2D</h2>
+<div class="row" id="drawToolsRow">
+<select id="drawModeSelect" class="app-select">
+<option value="point">نقطة</option>
+<option value="rect">مستطيل</option>
+<option value="circle">دائرة</option>
+</select>
+<label class="app-inline" for="snapToggle"><input type="checkbox" id="snapToggle" checked> محاذاة للشبكة</label>
+<label class="app-inline" for="axisLockToggle"><input type="checkbox" id="axisLockToggle"> قفل محور</label>
+</div>
+<canvas id="sketchCanvas" class="app-canvas" width="420" height="320"></canvas>
+<div class="row" id="sketchButtonsRow">
+<button id="btnUndoPoint" class="sec">تراجع نقطة</button>
+<button id="btnClearSketch" class="sec">مسح المخطط</button>
+</div>
+<label for="pointsInput">نقاط المخطط (JSON)</label>
+<textarea id="pointsInput" class="app-table"></textarea>
+<label for="paramsInput">جدول المعاملات</label>
+<textarea id="paramsInput" class="app-table"></textarea>
+<label for="dimsOutput">الأبعاد والقيود</label>
+<textarea id="dimsOutput" class="app-table" readonly></textarea>
+</section>
+<section class="card app-panel" id="modelCard">
+<h2>النموذج 3D</h2>
+<canvas id="view3d" class="app-canvas" width="420" height="320"></canvas>
+<div class="row" id="viewControlsRow">
+<label for="rotXRange">دوران X</label>
+<input type="range" id="rotXRange" min="0" max="6.28" step="0.01" value="0.55">
+<label for="rotYRange">دوران Y</label>
+<input type="range" id="rotYRange" min="0" max="6.28" step="0.01" value="0.75">
+<label for="zoomRange">تكبير</label>
+<input type="range" id="zoomRange" min="0.5" max="2.5" step="0.05" value="1">
+</div>
+<label for="operationSelect">العملية</label>
+<select id="operationSelect">
+<option value="extrude">Extrude</option>
+<option value="revolve">Revolve</option>
+<option value="cut">Cut</option>
+<option value="shell">Shell</option>
+</select>
+<div class="row" id="opButtonsRow">
+<button id="btnApplyOp">تطبيق عملية</button>
+<button id="btnUndoOp" class="sec">تراجع عملية</button>
+<button id="btnRebuild" class="sec">إعادة بناء</button>
+</div>
+<label for="timelineSpeed">سرعة الخط الزمني</label>
+<input type="range" id="timelineSpeed" min="200" max="1500" step="100" value="700">
+<div class="row" id="timelineButtonsRow">
+<button id="btnPlayTimeline">تشغيل الخط الزمني</button>
+<button id="btnStopTimeline" class="sec">إيقاف</button>
+</div>
+<label for="timelineText">الخط الزمني</label>
+<textarea id="timelineText" class="app-table" readonly></textarea>
+</section>
+</div>
+<div class="card app-panel" id="templatesCard">
+<h2>القوالب</h2>
+<div class="row" id="templateRow">
+<select id="templateSelect">
+<option value="cover">غطاء</option>
+<option value="bracket">حامل</option>
+<option value="mount">تثبيت</option>
+<option value="port">فتحة منفذ</option>
+</select>
+<button id="btnLoadTemplate">تحميل قالب</button>
+</div>
+</div>
+<div class="card app-panel" id="projectsCard">
+<h2>المشاريع</h2>
+<div class="row" id="projectRow">
+<input id="projectNameInput" placeholder="اسم المشروع">
+<select id="savedProjectsSelect"></select>
+<button id="btnSaveProject">حفظ</button>
+<button id="btnLoadProject" class="sec">تحميل</button>
+<button id="btnDeleteProject" class="sec">حذف</button>
+</div>
+</div>
+<div class="card app-panel" id="exportCard">
+<h2>التصدير</h2>
+<div class="row" id="exportRow">
+<select id="exportFormatSelect">
+<option value="stl">STL</option>
+<option value="obj">OBJ</option>
+</select>
+<button id="btnExport">تصدير</button>
+</div>
+<textarea id="exportOutput" class="app-table"></textarea>
+</div>
+<div class="card app-panel" id="commandsCard">
+<h2>لغة الأوامر</h2>
+<textarea id="commandInput" class="app-table"></textarea>
+<button id="btnRunCommand">تنفيذ الأوامر</button>
+<div class="out" id="out"></div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت؟</h3><p>نعم، جميع العمليات والتصدير والحفظ تتم داخل المتصفح بدون أي شبكة.</p><h3>ما هي الصيغ المدعومة للتصدير؟</h3><p>يمكن تصدير النموذج بصيغ STL و OBJ من محتوى النص الناتج.</p><h3>هل يمكن تعديل القياسات بعد إنشاء النموذج؟</h3><p>نعم، تغيير أي قيمة في جدول المعاملات يعيد البناء فوراً.</p><h3>كيف أستخدم قوالب جاهزة؟</h3><p>اختر قالباً من القائمة ثم اضغط تحميل قالب لتطبيق نقاطه ومعاملاته.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+let sketchCanvas, sctx, viewCanvas, vctx;
+let pointsInput, paramsInput, dimsOutput, timelineText, exportOutput, commandInput, resultBox;
+let drawModeSelect, snapToggle, axisLockToggle, operationSelect, templateSelect, savedProjectsSelect, projectNameInput;
+let exportFormatSelect, rotXRange, rotYRange, zoomRange, timelineSpeed;
+const state = {points:[], params:{width:80,height:40,depth:30,radius:30,angle:360,segments:24,thickness:4,grid:10,cutWidth:20,cutHeight:10}, ops:[], activeOp:'extrude', drawMode:'point', rectStart:null, circleStart:null, view:{rx:0.55,ry:0.75,zoom:1,drag:false,lx:0,ly:0}};
+let timer=null;
+function $(id){return document.getElementById(id);}
+function syncPointsInput(){pointsInput.value=JSON.stringify(state.points);}
+function syncParamsInput(){paramsInput.value=Object.entries(state.params).map(([k,v])=>k+'='+v).join('\n');}
+function setStatus(msg){resultBox.textContent=msg;}
+function parseParams(){const next={...state.params};paramsInput.value.split(/\n/).forEach(line=>{const parts=line.split('=');if(parts.length<2)return;const k=parts[0].trim();const v=parts.slice(1).join('=').trim();if(!k)return;const n=Number(v);if(Number.isFinite(n))next[k]=n;else if(v!=='')next[k]=v;});state.params=next;}
+function parsePoints(){try{const arr=JSON.parse(pointsInput.value);if(Array.isArray(arr))state.points=arr.map(p=>({x:+p.x,y:+p.y}));}catch(e){setStatus('خطأ في JSON النقاط: '+e.message);}}
+function toCanvas(p){return {x:210+p.x*2,y:160-p.y*2};}
+function fromCanvas(x,y){return {x:(x-210)/2,y:(160-y)/2};}
+function snapPoint(p){if(!snapToggle.checked)return p;const g=state.params.grid||10;return {x:Math.round(p.x/g)*g,y:Math.round(p.y/g)*g};}
+function drawSketch(){
+const ctx=sctx;const w=sketchCanvas.width,h=sketchCanvas.height;
+ctx.clearRect(0,0,w,h);
+const g=state.params.grid||10;const s=2;
+ctx.strokeStyle='rgba(255,255,255,0.08)';
+for(let x=-w/2;x<=w/2;x+=g*s){ctx.beginPath();ctx.moveTo(w/2+x,0);ctx.lineTo(w/2+x,h);ctx.stroke();}
+for(let y=-h/2;y<=h/2;y+=g*s){ctx.beginPath();ctx.moveTo(0,h/2+y);ctx.lineTo(w,h/2+y);ctx.stroke();}
+if(state.points.length>1){
+ctx.beginPath();
+state.points.forEach((p,i)=>{const c=toCanvas(p);if(i)ctx.lineTo(c.x,c.y);else ctx.moveTo(c.x,c.y);});
+ctx.closePath();
+ctx.fillStyle='rgba(212,175,55,0.18)';
+ctx.fill();
+ctx.strokeStyle='#d4af37';
+ctx.stroke();
+}
+state.points.forEach((p,i)=>{const c=toCanvas(p);ctx.beginPath();ctx.arc(c.x,c.y,4,0,Math.PI*2);ctx.fillStyle='#f5d76e';ctx.fill();ctx.fillStyle='#fff';ctx.font='11px sans-serif';ctx.fillText(i+1,c.x+6,c.y-6);});
+const n=state.points.length;
+let lines=[];
+if(n>=2){for(let i=0;i<n;i++){const p=state.points[i],q=state.points[(i+1)%n];const d=Math.hypot(q.x-p.x,q.y-p.y);lines.push((i+1)+': ('+p.x+', '+p.y+') → ('+q.x+', '+q.y+') = '+d.toFixed(2));}}
+lines.push('عدد النقاط: '+n);
+dimsOutput.value=lines.join('\n');
+}
+function meshExtrude(poly,depth){
+const n=poly.length;const verts=[];
+poly.forEach(p=>verts.push({x:p.x,y:p.y,z:0}));
+poly.forEach(p=>verts.push({x:p.x,y:p.y,z:depth}));
+const edges=[];
+for(let i=0;i<n;i++){edges.push([i,(i+1)%n]);edges.push([n+i,n+(i+1)%n]);edges.push([i,n+i]);}
+const faces=[];
+if(n>=3){for(let i=1;i<n-1;i++)faces.push([0,i,i+1]);for(let i=1;i<n-1;i++)faces.push([n,n+i+1,n+i]);for(let i=0;i<n;i++){const a=i,b=(i+1)%n,c=n+i,d=n+(i+1)%n;faces.push([a,b,d]);faces.push([a,d,c]);}}
+return {verts,edges,faces};
+}
+function meshRevolve(poly,angleDeg,segments){
+const m=Math.max(3,segments|0);const ang=angleDeg*Math.PI/180;const verts=[];const rings=[];
+for(let k=0;k<=m;k++){const th=(k/m)*ang;const ring=[];poly.forEach(p=>{const v={x:p.x*Math.cos(th),y:p.y,z:p.x*Math.sin(th)};ring.push(verts.length);verts.push(v);});rings.push(ring);}
+const edges=[];
+rings.forEach(ring=>{for(let i=0;i<ring.length;i++)edges.push([ring[i],ring[(i+1)%ring.length]]);});
+for(let k=0;k<m;k++){for(let i=0;i<poly.length;i++)edges.push([rings[k][i],rings[k+1][i]]);}
+const faces=[];
+for(let k=0;k<m;k++){for(let i=0;i<poly.length;i++){const j=(i+1)%poly.length;const a=rings[k][i],b=rings[k][j],c=rings[k+1][i],d=rings[k+1][j];faces.push([a,b,d]);faces.push([a,d,c]);}}
+return {verts,edges,faces};
+}
+function scalePoints(poly,factor){
+const n=poly.length;const cx=poly.reduce((s,p)=>s+p.x,0)/n;const cy=poly.reduce((s,p)=>s+p.y,0)/n;
+return poly.map(p=>({x:cx+(p.x-cx)*factor,y:cy+(p.y-cy)*factor}));
+}
+function circlePoints(cx,cy,r,seg){const out=[];for(let i=0;i<seg;i++){const a=i/seg*Math.PI*2;out.push({x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)});}return out;}
+function rectPoints(x1,y1,x2,y2){return [{x:x1,y:y1},{x:x2,y:y1},{x:x2,y:y2},{x:x1,y:y2}];}
+const TEMPLATES={
+cover:()=>({points:[{x:5,y:0},{x:30,y:0},{x:30,y:8},{x:25,y:12},{x:5,y:12}],params:{depth:12,angle:360,segments:32},op:'revolve'}),
+bracket:()=>({points:[{x:0,y:0},{x:40,y:0},{x:40,y:10},{x:10,y:10},{x:10,y:40},{x:0,y:40}],params:{depth:20},op:'extrude'}),
+mount:()=>({points:rectPoints(-40,-30,40,30),params:{depth:8},op:'extrude'}),
+port:()=>({points:circlePoints(0,0,20,32),params:{depth:12,cutWidth:24,cutHeight:12},op:'cut'})
+};
+function rebuildModel(){
+parseParams();
+if(!state.points.length){state.mesh=null;render3D();setStatus('لا توجد نقاط في المخطط');updateTimeline();return;}
+const p=state.params;let mesh;
+if(state.activeOp==='extrude')mesh=meshExtrude(state.points,p.depth||30);
+else if(state.activeOp==='revolve')mesh=meshRevolve(state.points,p.angle||360,p.segments||24);
+else if(state.activeOp==='cut'){mesh=meshExtrude(state.points,p.depth||30);const cw=p.cutWidth||20,ch=p.cutHeight||10;mesh.cut=meshExtrude(rectPoints(-cw/2,-ch/2,cw/2,ch/2),p.depth||30);}
+else if(state.activeOp==='shell'){mesh=meshExtrude(state.points,p.depth||30);const factor=1-((p.thickness||4)/Math.max(10,p.radius||30));mesh.inner=meshExtrude(scalePoints(state.points,Math.max(0.3,factor)),p.depth||30);}
+state.mesh=mesh;render3D();updateTimeline();setStatus('تم إعادة البناء: '+state.activeOp);
+}
+function project(v){
+let x=v.x,y=v.y,z=v.z;const rx=state.view.rx,ry=state.view.ry;
+let y1=y*Math.cos(rx)-z*Math.sin(rx);let z1=y*Math.sin(rx)+z*Math.cos(rx);
+let x2=x*Math.cos(ry)+z1*Math.sin(ry);let z2=-x*Math.sin(ry)+z1*Math.cos(ry);
+const scale=state.view.zoom*180/(320+z2);
+return {x:viewCanvas.width/2+x2*scale,y:viewCanvas.height/2-y1*scale,z:z2};
+}
+function render3D(){
+const ctx=vctx;const w=viewCanvas.width,h=viewCanvas.height;
+ctx.clearRect(0,0,w,h);
+ctx.strokeStyle='rgba(255,255,255,0.08)';
+ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+const mesh=state.mesh;
+if(!mesh){ctx.fillStyle='#aaa';ctx.font='14px sans-serif';ctx.fillText('لا يوجد نموذج',20,30);return;}
+const edges=[];
+function add(m,color,alpha){m.edges.forEach(e=>{const a=project(m.verts[e[0]]),b=project(m.verts[e[1]]);edges.push({a,b,color,alpha,z:(a.z+b.z)/2});});}
+add(mesh,'#d4af37',1);
+if(mesh.inner)add(mesh.inner,'#8a6f1f',0.75);
+if(mesh.cut)add(mesh.cut,'#b33',0.8);
+edges.sort((a,b)=>a.z-b.z);
+edges.forEach(e=>{ctx.globalAlpha=e.alpha;ctx.strokeStyle=e.color;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);ctx.stroke();});
+ctx.globalAlpha=1;
+}
+function updateTimeline(){timelineText.value=state.ops.length?state.ops.map((op,i)=>(i+1)+'. '+op.type+' '+JSON.stringify(op.params)).join('\n'):'لا توجد عمليات';}
+function applyOp(){parseParams();const type=operationSelect.value;state.ops.push({type,params:{...state.params}});state.activeOp=type;rebuildModel();}
+function undoOp(){state.ops.pop();state.activeOp=state.ops.length?state.ops[state.ops.length-1].type:'extrude';operationSelect.value=state.activeOp;rebuildModel();}
+function playTimeline(){
+if(timer)return;
+if(!state.ops.length){setStatus('لا توجد عمليات');return;}
+let i=0;
+timer=setInterval(()=>{if(i>=state.ops.length){stopTimeline();setStatus('اكتمل الخط الزمني');return;}const op=state.ops[i++];state.activeOp=op.type;state.params={...op.params};syncParamsInput();operationSelect.value=state.activeOp;rebuildModel();},+timelineSpeed.value);
+}
+function stopTimeline(){if(timer){clearInterval(timer);timer=null;}}
+function refreshSavedSelect(){const projects=loadProjects();const sel=savedProjectsSelect;sel.innerHTML='';Object.keys(projects).forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name;sel.appendChild(o);});}
+function loadProjects(){try{return JSON.parse(localStorage.getItem('cad3d_projects_v1')||'{}')||{};}catch(e){return {};}}
+function saveProject(){
+parseParams();const name=projectNameInput.value.trim();
+if(!name){setStatus('أدخل اسم المشروع');return;}
+const projects=loadProjects();
+projects[name]={points:state.points,params:state.params,ops:state.ops,activeOp:state.activeOp,saved:Date.now()};
+try{localStorage.setItem('cad3d_projects_v1',JSON.stringify(projects));refreshSavedSelect();setStatus('تم حفظ المشروع: '+name);}catch(e){setStatus('فشل الحفظ: '+e.message);}
+}
+function loadProjectByName(name){
+const projects=loadProjects();const p=projects[name];
+if(!p){setStatus('المشروع غير موجود');return;}
+state.points=p.points||[];state.params=p.params||state.params;state.ops=p.ops||[];state.activeOp=p.activeOp||'extrude';
+syncPointsInput();syncParamsInput();operationSelect.value=state.activeOp;drawSketch();rebuildModel();setStatus('تم تحميل: '+name);
+}
+function deleteProject(){
+const name=savedProjectsSelect.value;if(!name){setStatus('اختر مشروعاً');return;}
+const projects=loadProjects();delete projects[name];
+try{localStorage.setItem('cad3d_projects_v1',JSON.stringify(projects));refreshSavedSelect();setStatus('تم حذف: '+name);}catch(e){setStatus('فشل الحذف: '+e.message);}
+}
+function toSTL(mesh){
+let s='solid model\n';
+mesh.faces.forEach(f=>{s+='facet normal 0 0 0\n outer loop\n';f.forEach(i=>{const v=mesh.verts[i];s+='  vertex '+v.x+' '+v.y+' '+v.z+'\n';});s+=' endloop\nendfacet\n';});
+s+='endsolid model\n';return s;
+}
+function toOBJ(mesh){
+let s='';mesh.verts.forEach(v=>s+='v '+v.x+' '+v.y+' '+v.z+'\n');mesh.faces.forEach(f=>s+='f '+f.map(i=>i+1).join(' ')+'\n');return s;
+}
+function exportModel(format){
+if(!state.mesh){setStatus('لا يوجد نموذج للتصدير');return;}
+exportOutput.value=format==='obj'?toOBJ(state.mesh):toSTL(state.mesh);setStatus('تم تصدير '+format.toUpperCase());
+}
+function runCommands(){
+const lines=commandInput.value.split(/\n/);const out=[];
+for(const raw of lines){const line=raw.trim();if(!line)continue;const t=line.split(/\s+/);const cmd=t[0].toLowerCase();
+try{
+if(cmd==='help')out.push('الأوامر: param, point, clear, rect, circle, template, op, apply, undo, rebuild, play, stop, export, save, load, list');
+else if(cmd==='param'){if(t.length<3)throw new Error('param name value');state.params[t[1]]=Number(t[2]);syncParamsInput();rebuildModel();out.push('تم تعيين '+t[1]);}
+else if(cmd==='point'){state.points.push({x:+t[1],y:+t[2]});syncPointsInput();drawSketch();rebuildModel();out.push('تمت إضافة نقطة');}
+else if(cmd==='clear'){state.points=[];syncPointsInput();drawSketch();rebuildModel();out.push('تم المسح');}
+else if(cmd==='rect'){state.points=rectPoints(+t[1],+t[2],+t[3],+t[4]);syncPointsInput();drawSketch();rebuildModel();out.push('تم إنشاء مستطيل');}
+else if(cmd==='circle'){state.points=circlePoints(+t[1]||0,+t[2]||0,+t[3]||20,+t[4]||24);syncPointsInput();drawSketch();rebuildModel();out.push('تم إنشاء دائرة');}
+else if(cmd==='template'){const tpl=TEMPLATES[t[1]]();state.points=tpl.points;state.params={...state.params,...tpl.params};state.activeOp=tpl.op;state.ops=[];syncPointsInput();syncParamsInput();operationSelect.value=state.activeOp;rebuildModel();out.push('تم تحميل قالب '+t[1]);}
+else if(cmd==='op'){state.activeOp=t[1];operationSelect.value=state.activeOp;rebuildModel();out.push('العملية '+t[1]);}
+else if(cmd==='apply'){applyOp();out.push('تم تطبيق العملية');}
+else if(cmd==='undo'){undoOp();out.push('تم التراجع');}
+else if(cmd==='rebuild'){rebuildModel();out.push('تم إعادة البناء');}
+else if(cmd==='play'){playTimeline();out.push('تشغيل');}
+else if(cmd==='stop'){stopTimeline();out.push('إيقاف');}
+else if(cmd==='export'){exportModel(t[1]||'stl');out.push('تم التصدير');}
+else if(cmd==='save'){projectNameInput.value=t.slice(1).join(' ');saveProject();out.push('تم الحفظ');}
+else if(cmd==='load'){loadProjectByName(t.slice(1).join(' '));out.push('تم التحميل');}
+else if(cmd==='list'){out.push(Object.keys(loadProjects()).join(', ')||'لا توجد مشاريع');}
+else throw new Error('أمر غير معروف: '+cmd);
+}catch(e){out.push('خطأ: '+e.message);}
+}
+resultBox.textContent=out.join('\n');
+}
+function init(){
+sketchCanvas=$('sketchCanvas');sctx=sketchCanvas.getContext('2d');
+viewCanvas=$('view3d');vctx=viewCanvas.getContext('2d');
+pointsInput=$('pointsInput');paramsInput=$('paramsInput');dimsOutput=$('dimsOutput');timelineText=$('timelineText');exportOutput=$('exportOutput');commandInput=$('commandInput');resultBox=$('out');
+drawModeSelect=$('drawModeSelect');snapToggle=$('snapToggle');axisLockToggle=$('axisLockToggle');operationSelect=$('operationSelect');templateSelect=$('templateSelect');savedProjectsSelect=$('savedProjectsSelect');projectNameInput=$('projectNameInput');exportFormatSelect=$('exportFormatSelect');rotXRange=$('rotXRange');rotYRange=$('rotYRange');zoomRange=$('zoomRange');timelineSpeed=$('timelineSpeed');
+const w=state.params.width,h=state.params.height;
+state.points=[{x:-w/2,y:-h/2},{x:w/2,y:-h/2},{x:w/2,y:h/2},{x:-w/2,y:h/2}];
+syncPointsInput();syncParamsInput();
+rotXRange.value=state.view.rx;rotYRange.value=state.view.ry;zoomRange.value=state.view.zoom;
+drawModeSelect.addEventListener('change',e=>{state.drawMode=e.target.value;state.rectStart=null;state.circleStart=null;});
+sketchCanvas.addEventListener('click',e=>{
+const rect=sketchCanvas.getBoundingClientRect();
+const cx=(e.clientX-rect.left)*(sketchCanvas.width/rect.width);
+const cy=(e.clientY-rect.top)*(sketchCanvas.height/rect.height);
+const p=snapPoint(fromCanvas(cx,cy));
+if(state.drawMode==='rect'){if(!state.rectStart){state.rectStart=p;setStatus('اختر الزاوية الثانية');return;}const a=state.rectStart;state.points=[{x:a.x,y:a.y},{x:p.x,y:a.y},{x:p.x,y:p.y},{x:a.x,y:p.y}];state.rectStart=null;}
+else if(state.drawMode==='circle'){if(!state.circleStart){state.circleStart=p;setStatus('اختر نصف القطر');return;}const c=state.circleStart;const r=Math.hypot(p.x-c.x,p.y-c.y);const segs=state.params.segments||24;state.points=[];for(let i=0;i<segs;i++){const a=i/segs*Math.PI*2;state.points.push({x:c.x+r*Math.cos(a),y:c.y+r*Math.sin(a)});}state.circleStart=null;}
+else{if(axisLockToggle.checked&&state.points.length){const last=state.points[state.points.length-1];const dx=Math.abs(p.x-last.x),dy=Math.abs(p.y-last.y);if(dx>dy)p.y=last.y;else p.x=last.x;}state.points.push(p);}
+syncPointsInput();drawSketch();rebuildModel();
+});
+$('btnUndoPoint').addEventListener('click',()=>{state.points.pop();syncPointsInput();drawSketch();rebuildModel();});
+$('btnClearSketch').addEventListener('click',()=>{state.points=[];syncPointsInput();drawSketch();rebuildModel();});
+pointsInput.addEventListener('input',()=>{parsePoints();drawSketch();rebuildModel();});
+paramsInput.addEventListener('input',()=>{parseParams();drawSketch();rebuildModel();});
+operationSelect.addEventListener('change',e=>{state.activeOp=e.target.value;rebuildModel();});
+$('btnApplyOp').addEventListener('click',applyOp);
+$('btnUndoOp').addEventListener('click',undoOp);
+$('btnRebuild').addEventListener('click',rebuildModel);
+$('btnPlayTimeline').addEventListener('click',playTimeline);
+$('btnStopTimeline').addEventListener('click',stopTimeline);
+$('btnLoadTemplate').addEventListener('click',()=>{const tpl=TEMPLATES[templateSelect.value]();state.points=tpl.points;state.params={...state.params,...tpl.params};state.activeOp=tpl.op;state.ops=[];syncPointsInput();syncParamsInput();operationSelect.value=state.activeOp;drawSketch();rebuildModel();setStatus('تم تحميل القالب');});
+$('btnSaveProject').addEventListener('click',saveProject);
+$('btnLoadProject').addEventListener('click',()=>loadProjectByName(savedProjectsSelect.value));
+$('btnDeleteProject').addEventListener('click',deleteProject);
+$('btnExport').addEventListener('click',()=>exportModel(exportFormatSelect.value));
+$('btnRunCommand').addEventListener('click',runCommands);
+rotXRange.addEventListener('input',e=>{state.view.rx=+e.target.value;render3D();});
+rotYRange.addEventListener('input',e=>{state.view.ry=+e.target.value;render3D();});
+zoomRange.addEventListener('input',e=>{state.view.zoom=+e.target.value;render3D();});
+let dragging=false,lx=0,ly=0;
+viewCanvas.addEventListener('mousedown',e=>{dragging=true;lx=e.offsetX;ly=e.offsetY;});
+window.addEventListener('mousemove',e=>{if(!dragging)return;const r=viewCanvas.getBoundingClientRect();const cx=e.clientX-r.left,cy=e.clientY-r.top;state.view.ry+=(cx-lx)*0.01;state.view.rx+=(cy-ly)*0.01;lx=cx;ly=cy;render3D();});
+window.addEventListener('mouseup',()=>{dragging=false;});
+refreshSavedSelect();drawSketch();rebuildModel();setStatus('جاهز');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+</script>
+</body>
+</html>

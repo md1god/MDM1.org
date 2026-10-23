@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قارئ نصوص ثنائي اللغة مع قاموس وترجمة مقارنة | MDM1</title>
+<meta name="description" content="تطبيق ويب عربي لقراءة النصوص بلغتين جنباً لجنب مع قاموس مدمج، تحديد كلمات للترجمة الفورية، وحفظ المصطلحات محلياً مع استيراد وتصدير.">
+<link rel="canonical" href="https://mdm1.org/apps/bilingual-reading-companion.html">
+<meta property="og:title" content="قارئ نصوص ثنائي اللغة مع قاموس وترجمة مقارنة">
+<meta property="og:description" content="تطبيق ويب عربي لقراءة النصوص بلغتين جنباً لجنب مع قاموس مدمج، تحديد كلمات للترجمة الفورية، وحفظ المصطلحات محلياً مع استيراد وتصدير.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/bilingual-reading-companion.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-container { direction: rtl; font-family: inherit; }
+.app-container .card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 16px; }
+.app-container .input { width: 100%; background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 10px; color: var(--light); font-size: 14px; box-sizing: border-box; }
+.app-container .input:focus { outline: none; border-color: var(--gold); }
+.app-container textarea.input { resize: vertical; font-family: monospace; line-height: 1.6; }
+.app-container .row { display: flex; align-items: center; gap: 8px; }
+.app-container .out { background: rgba(0,0,0,0.2); border-radius: 6px; padding: 12px; border: 1px solid var(--gold-dim); }
+.app-container .dict-entry { padding: 6px 0; border-bottom: 1px solid var(--gold-dim); cursor: pointer; transition: background 0.2s; }
+.app-container .dict-entry:hover { background: var(--gold-dim); border-radius: 4px; padding-left: 8px; }
+.app-container .dict-entry:last-child { border-bottom: none; }
+.app-container .term-word { font-weight: bold; color: var(--gold); }
+.app-container .term-trans { color: var(--light); opacity: 0.9; }
+.app-container .comparison-item { padding: 10px; margin: 8px 0; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid var(--gold); }
+.app-container .comparison-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; color: var(--gold); }
+.app-container .comparison-text { font-size: 13px; line-height: 1.6; }
+.app-container .word-detail-box { padding: 12px; background: rgba(255,215,0,0.05); border-radius: 6px; border: 1px solid var(--gold-dim); }
+.app-container .word-detail-word { font-size: 18px; font-weight: bold; color: var(--gold); margin-bottom: 8px; }
+.app-container .word-detail-trans { color: var(--light); line-height: 1.8; }
+.app-container .badge { background: var(--gold); color: var(--dark); padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+.app-container button { cursor: pointer; }
+.app-container button:disabled { opacity: 0.5; cursor: not-allowed; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "قارئ النصوص ثنائي اللغة - قاموس وترجمة مقارنة", "url": "https://mdm1.org/apps/bilingual-reading-companion.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أستخدم القاموس المدمج؟", "acceptedAnswer": {"@type": "Answer", "text": "انقر على أي كلمة في قائمة القاموس المدمج لعرض ترجمتها، أو حدد كلمة في نص المصدر لترى تفاصيلها في الأسفل مع خيار إضافتها إلى قاموسك الشخصي."}}, {"@type": "Question", "name": "هل تُحفظ البيانات بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، القاموس الشخصي وأزواج الترجمات المحفوظة تُخزن في localStorage وتظل متاحة عند إعادة فتح الصفحة."}}, {"@type": "Question", "name": "كيف يعمل استيراد وتصدير المصطلحات؟", "acceptedAnswer": {"@type": "Answer", "text": "زر التصدير ينشئ ملف JSON يحتوي على قاموسك وأزواج الترجمة. زر الاستيراد يقرأ ملف JSON مشابه ويضيف محتواه إلى بياناتك الحالية."}}, {"@type": "Question", "name": "هل يدعم التطبيق لغات غير العربية والإنجليزية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يدعم القائمة الفرنسية والإسبانية والألمانية والتركية كلغات مصدر أو هدف، والقاموس المدمج يحتوي على كلمات إنجليزية مع ترجمات عربية."}}, {"@type": "Question", "name": "ماذا يحدث عند تحديد كلمة غير موجودة في القاموس؟", "acceptedAnswer": {"@type": "Answer", "text": "يعرض التطبيق رسالة تخبرك بعدم وجود ترجمة محفوظة، مع زر لإضافة الكلمة وترجمتك الخاصة إلى القاموس الشخصي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">قارئ النصوص ثنائي اللغة - قاموس وترجمة مقارنة</h1>
+  <p class="page-sub">تطبيق ويب عربي لقراءة النصوص بلغتين جنباً لجنب مع قاموس مدمج، تحديد كلمات للترجمة الفورية، وحفظ المصطلحات محلياً مع استيراد وتصدير.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p dir="rtl">هذا التطبيق يتيح لك قراءة نصين بلغتين مختلفتين جنباً إلى جنب مع قاموس مدمج للكلمات الشائعة، حيث يمكنك تحديد أي كلمة لعرض ترجمتها فوراً وإضافتها إلى قاموسك الشخصي المحفوظ محلياً، مع لوحة مقارنة بين عدة ترجمات محفوظة ودعم استيراد وتصدير ملفات المصطلحات بصيغة JSON، وكل ذلك يعمل دون اتصال بالإنترنت داخل متصفحك.</p>
+<div class="app-container" dir="rtl">
+  <div class="row" style="gap:12px;flex-wrap:wrap;margin-bottom:16px">
+    <label for="srcLang">لغة المصدر</label>
+    <select id="srcLang" class="input">
+      <option value="ar">العربية</option>
+      <option value="en">الإنجليزية</option>
+      <option value="fr">الفرنسية</option>
+      <option value="es">الإسبانية</option>
+      <option value="de">الألمانية</option>
+      <option value="tr">التركية</option>
+    </select>
+    <label for="tgtLang">لغة الهدف</label>
+    <select id="tgtLang" class="input">
+      <option value="en">الإنجليزية</option>
+      <option value="ar" selected>العربية</option>
+      <option value="fr">الفرنسية</option>
+      <option value="es">الإسبانية</option>
+      <option value="de">الألمانية</option>
+      <option value="tr">التركية</option>
+    </select>
+  </div>
+  <div class="row" style="gap:12px;flex-wrap:wrap;margin-bottom:16px">
+    <div class="card" style="flex:1;min-width:300px;display:flex;flex-direction:column">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <strong>النص الأصلي</strong>
+        <button id="clearSrc" class="sec" style="padding:4px 12px;font-size:13px">مسح</button>
+      </div>
+      <textarea id="srcText" class="input" rows="10" placeholder="أدخل النص هنا..."></textarea>
+    </div>
+    <div class="card" style="flex:1;min-width:300px;display:flex;flex-direction:column">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <strong>الترجمة</strong>
+        <button id="clearTgt" class="sec" style="padding:4px 12px;font-size:13px">مسح</button>
+      </div>
+      <textarea id="tgtText" class="input" rows="10" placeholder="الترجمة تظهر هنا..."></textarea>
+    </div>
+  </div>
+  <div class="row" style="gap:12px;flex-wrap:wrap;margin-bottom:16px">
+    <button id="swapLangs" class="sec">تبديل اللغات</button>
+    <button id="savePair" class="button">حفظ زوج الترجمة</button>
+    <button id="exportTerms" class="sec">تصدير المصطلحات</button>
+    <label for="importFile" style="cursor:pointer">
+      <input type="file" id="importFile" accept=".json" style="display:none" />
+      <button type="button" class="sec">استيراد المصطلحات</button>
+    </label>
+  </div>
+  <div class="divider"></div>
+  <div class="row" style="gap:16px;flex-wrap:wrap;margin-bottom:16px">
+    <div class="card" style="flex:1;min-width:300px;max-height:300px;overflow:auto">
+      <strong>القاموس المدمج</strong>
+      <div id="builtinDict" class="out" style="min-height:200px;font-size:14px;line-height:1.8"></div>
+    </div>
+    <div class="card" style="flex:1;min-width:300px;max-height:300px;overflow:auto">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <strong>قاموسك الشخصي</strong>
+        <button id="clearPersonal" class="sec" style="padding:2px 8px;font-size:12px">مسح الكل</button>
+      </div>
+      <div id="personalDict" class="out" style="min-height:200px;font-size:14px;line-height:1.8"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="card" style="margin-bottom:16px">
+    <strong>لوحة مقارنة الترجمات المحفوظة</strong>
+    <div id="comparisonPanel" class="out" style="min-height:150px;font-size:14px"></div>
+  </div>
+  <div class="card">
+    <strong>تفاصيل الكلمة المحددة</strong>
+    <div id="wordDetail" class="out" style="min-height:100px;font-size:14px;color:var(--gold-dim)">
+      حدد كلمة في النص الأصلي لعرض تفاصيلها هنا
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أستخدم القاموس المدمج؟</h3><p>انقر على أي كلمة في قائمة القاموس المدمج لعرض ترجمتها، أو حدد كلمة في نص المصدر لترى تفاصيلها في الأسفل مع خيار إضافتها إلى قاموسك الشخصي.</p><h3>هل تُحفظ البيانات بعد إغلاق المتصفح؟</h3><p>نعم، القاموس الشخصي وأزواج الترجمات المحفوظة تُخزن في localStorage وتظل متاحة عند إعادة فتح الصفحة.</p><h3>كيف يعمل استيراد وتصدير المصطلحات؟</h3><p>زر التصدير ينشئ ملف JSON يحتوي على قاموسك وأزواج الترجمة. زر الاستيراد يقرأ ملف JSON مشابه ويضيف محتواه إلى بياناتك الحالية.</p><h3>هل يدعم التطبيق لغات غير العربية والإنجليزية؟</h3><p>نعم، يدعم القائمة الفرنسية والإسبانية والألمانية والتركية كلغات مصدر أو هدف، والقاموس المدمج يحتوي على كلمات إنجليزية مع ترجمات عربية.</p><h3>ماذا يحدث عند تحديد كلمة غير موجودة في القاموس؟</h3><p>يعرض التطبيق رسالة تخبرك بعدم وجود ترجمة محفوظة، مع زر لإضافة الكلمة وترجمتك الخاصة إلى القاموس الشخصي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  'use strict';
+  const builtinDict = {
+    'hello': 'مرحبا', 'world': 'عالم', 'welcome': 'أهلا', 'thank you': 'شكرا', 'please': 'من فضلك',
+    'yes': 'نعم', 'no': 'لا', 'good': 'جيد', 'bad': 'سيء', 'big': 'كبير', 'small': 'صغير',
+    'today': 'اليوم', 'tomorrow': 'غدا', 'yesterday': 'أمس', 'time': 'وقت', 'day': 'يوم',
+    'night': 'ليل', 'morning': 'صباح', 'evening': 'مساء', 'week': 'أسبوع', 'month': 'شهر',
+    'year': 'سنة', 'book': 'كتاب', 'read': 'قراءة', 'write': 'كتابة', 'speak': 'تحدث',
+    'listen': 'استمع', 'understand': 'فهم', 'learn': 'تعلم', 'teach': 'علم', 'help': 'مساعدة',
+    'friend': 'صديق', 'family': 'عائلة', 'home': 'منزل', 'work': 'عمل', 'school': 'مدرسة',
+    'food': 'طعام', 'water': 'ماء', 'eat': 'أكل', 'drink': 'شرب', 'sleep': 'نوم', 'wake': 'استيقظ'
+  };
+  const els = {
+    srcLang: document.getElementById('srcLang'),
+    tgtLang: document.getElementById('tgtLang'),
+    srcText: document.getElementById('srcText'),
+    tgtText: document.getElementById('tgtText'),
+    swapLangs: document.getElementById('swapLangs'),
+    clearSrc: document.getElementById('clearSrc'),
+    clearTgt: document.getElementById('clearTgt'),
+    savePair: document.getElementById('savePair'),
+    exportTerms: document.getElementById('exportTerms'),
+    importFile: document.getElementById('importFile'),
+    clearPersonal: document.getElementById('clearPersonal'),
+    builtinDict: document.getElementById('builtinDict'),
+    personalDict: document.getElementById('personalDict'),
+    comparisonPanel: document.getElementById('comparisonPanel'),
+    wordDetail: document.getElementById('wordDetail')
+  };
+  let personalDict = {};
+  let savedPairs = [];
+  let lastSelection = '';
+  function loadStorage() {
+    try {
+      const pd = localStorage.getItem('bilingual_personal_dict');
+      const sp = localStorage.getItem('bilingual_saved_pairs');
+      if (pd) personalDict = JSON.parse(pd);
+      if (sp) savedPairs = JSON.parse(sp);
+    } catch (e) { console.warn('Storage load failed:', e); }
+  }
+  function saveStorage() {
+    try {
+      localStorage.setItem('bilingual_personal_dict', JSON.stringify(personalDict));
+      localStorage.setItem('bilingual_saved_pairs', JSON.stringify(savedPairs));
+    } catch (e) { console.warn('Storage save failed:', e); }
+  }
+  function renderBuiltinDict() {
+    const entries = Object.entries(builtinDict).map(([k,v]) =>
+      `<div class="dict-entry" data-word="${escapeHtml(k)}"><span class="term-word">${escapeHtml(k)}</span> : <span class="term-trans">${escapeHtml(v)}</span></div>`
+    ).join('');
+    els.builtinDict.innerHTML = entries || '<div style="color:var(--gold-dim);text-align:center;padding:20px">القاموس فارغ</div>';
+  }
+  function renderPersonalDict() {
+    const entries = Object.entries(personalDict).map(([k,v]) =>
+      `<div class="dict-entry" data-word="${escapeHtml(k)}"><span class="term-word">${escapeHtml(k)}</span> : <span class="term-trans">${escapeHtml(v)}</span></div>`
+    ).join('');
+    els.personalDict.innerHTML = entries || '<div style="color:var(--gold-dim);text-align:center;padding:20px">لا توجد مصطلحات محفوظة بعد</div>';
+  }
+  function renderComparison() {
+    if (savedPairs.length === 0) {
+      els.comparisonPanel.innerHTML = '<div style="color:var(--gold-dim);text-align:center;padding:20px">لا توجد ترجمات محفوظة للمقارنة</div>';
+      return;
+    }
+    const items = savedPairs.map((pair, i) =>
+      `<div class="comparison-item">
+        <div class="comparison-header">
+          <span>زوج #${i+1} <span class="badge">${escapeHtml(pair.srcLang)} → ${escapeHtml(pair.tgtLang)}</span></span>
+          <span>${escapeHtml(pair.date)}</span>
+        </div>
+        <div class="comparison-text"><strong>الأصل:</strong> ${escapeHtml(pair.srcText.substring(0,200))}${pair.srcText.length>200?'...':''}</div>
+        <div class="comparison-text"><strong>الترجمة:</strong> ${escapeHtml(pair.tgtText.substring(0,200))}${pair.tgtText.length>200?'...':''}</div>
+      </div>`
+    ).join('');
+    els.comparisonPanel.innerHTML = items;
+  }
+  function renderWordDetail(word) {
+    const lower = word.toLowerCase();
+    let trans = personalDict[lower] || builtinDict[lower];
+    if (!trans) {
+      els.wordDetail.innerHTML = `<div class="word-detail-box"><div class="word-detail-word">${escapeHtml(word)}</div><div class="word-detail-trans">لا توجد ترجمة محفوظة. أضفها إلى قاموسك الشخصي.</div></div>`;
+      return;
+    }
+    const source = personalDict[lower] ? 'قاموسك الشخصي' : 'القاموس المدمج';
+    els.wordDetail.innerHTML = `<div class="word-detail-box">
+      <div class="word-detail-word">${escapeHtml(word)}</div>
+      <div class="word-detail-trans">${escapeHtml(trans)}</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--gold-dim)">المصدر: ${escapeHtml(source)}</div>
+      ${!personalDict[lower] ? `<button id="addToPersonal" class="button" style="margin-top:8px;padding:6px 16px" data-word="${escapeHtml(lower)}" data-trans="${escapeHtml(trans)}">إضافة إلى قاموسي</button>` : ''}
+    </div>`;
+    const addBtn = document.getElementById('addToPersonal');
+    if (addBtn) addBtn.onclick = () => addToPersonalDict(addBtn.dataset.word, addBtn.dataset.trans);
+  }
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function addToPersonalDict(word, trans) {
+    personalDict[word] = trans;
+    saveStorage();
+    renderPersonalDict();
+    renderWordDetail(word);
+  }
+  function handleTextSelection() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const text = sel.toString().trim();
+    if (text && text !== lastSelection && /^[\w\u0600-\u06FF'-]+$/.test(text)) {
+      lastSelection = text;
+      renderWordDetail(text);
+    }
+  }
+  els.srcText.addEventListener('mouseup', handleTextSelection);
+  els.srcText.addEventListener('keyup', handleTextSelection);
+  els.swapLangs.onclick = () => {
+    const sl = els.srcLang.value, tl = els.tgtLang.value;
+    els.srcLang.value = tl; els.tgtLang.value = sl;
+    const st = els.srcText.value; els.srcText.value = els.tgtText.value; els.tgtText.value = st;
+  };
+  els.clearSrc.onclick = () => { els.srcText.value = ''; };
+  els.clearTgt.onclick = () => { els.tgtText.value = ''; };
+  els.savePair.onclick = () => {
+    const src = els.srcText.value.trim(), tgt = els.tgtText.value.trim();
+    if (!src || !tgt) { alert('يرجى ملء كلا الحقلين'); return; }
+    savedPairs.unshift({
+      srcLang: els.srcLang.value, tgtLang: els.tgtLang.value,
+      srcText: src, tgtText: tgt,
+      date: new Date().toLocaleString('ar-SA')
+    });
+    if (savedPairs.length > 50) savedPairs.pop();
+    saveStorage();
+    renderComparison();
+  };
+  els.exportTerms.onclick = () => {
+    const data = { personalDict, savedPairs, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `bilingual_terms_${Date.now()}.json`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+  els.importFile.onchange = (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (data.personalDict) { personalDict = { ...personalDict, ...data.personalDict }; }
+        if (data.savedPairs) { savedPairs = [...data.savedPairs, ...savedPairs].slice(0, 50); }
+        saveStorage(); renderPersonalDict(); renderComparison();
+        alert('تم الاستيراد بنجاح');
+      } catch (err) { alert('ملف غير صالح'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+  els.clearPersonal.onclick = () => {
+    if (confirm('مسح القاموس الشخصي بالكامل؟')) {
+      personalDict = {}; saveStorage(); renderPersonalDict();
+    }
+  };
+  function init() {
+    loadStorage();
+    renderBuiltinDict();
+    renderPersonalDict();
+    renderComparison();
+    document.querySelectorAll('.dict-entry').forEach(el => {
+      el.onclick = () => renderWordDetail(el.dataset.word);
+    });
+    els.builtinDict.onclick = (e) => {
+      const entry = e.target.closest('.dict-entry');
+      if (entry) renderWordDetail(entry.dataset.word);
+    };
+    els.personalDict.onclick = (e) => {
+      const entry = e.target.closest('.dict-entry');
+      if (entry) renderWordDetail(entry.dataset.word);
+    };
+  }
+  init();
+})();
+</script>
+</body>
+</html>

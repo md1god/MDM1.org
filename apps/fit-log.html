@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق لياقة بدنية دون إنترنت - خطط وتمارين وتغذية | MDM1</title>
+<meta name="description" content="تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون حسابات، ويعمل كاملاً من دون إنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/fit-log.html">
+<meta property="og:title" content="تطبيق لياقة بدنية دون إنترنت - خطط وتمارين وتغذية">
+<meta property="og:description" content="تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون حسابات، ويعمل كاملاً من دون إنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/fit-log.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:16px}
+.app .tabs{display:flex;flex-wrap:wrap;gap:8px}
+.app .tab{flex:1 1 130px}
+.app .panel{display:none}
+.app .panel.is-active{display:block}
+.app .two{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.app .row{display:flex;flex-wrap:wrap;gap:12px}
+.app .row .label{flex:1 1 140px}
+.app table{width:100%;border-collapse:collapse;font-size:.88rem}
+.app th,.app td{padding:6px;border-bottom:1px solid rgba(255,255,255,.14);vertical-align:top}
+.app .history{max-height:290px;overflow:auto}
+.app .actions{display:flex;gap:8px;flex-wrap:wrap}
+.app .metrics{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.app .metric{text-align:center}
+.app .status{min-height:1.3em}
+.app [hidden]{display:none!important}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق لياقة بدنية يعمل دون إنترنت", "url": "https://mdm1.org/apps/fit-log.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل بياناتي دون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. الخطة، السجلات، الأوزان، والملف الشخصي يُخزنون trong localStorage في المتصفح، ولا يستدعي التطبيق أي خادم."}}, {"@type": "Question", "name": "هل يمكنني نقل البيانات بين أجهزة؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم تصدير JSON، ثم الصق النسخة inbox textarea on the other device and اضغط استيراد."}}, {"@type": "Question", "name": "كيف يُحسب وزن الهدف للسعرات؟", "acceptedAnswer": {"@type": "Answer", "text": "يُستخدم آخر وزن in body tracker إذا وُجد، وelse وزن الملف الشخصي، مع BMR Mifflin-St Jeor وعامل النشاط والهدف."}}, {"@type": "Question", "name": "what if form has bad inputs?", "acceptedAnswer": {"@type": "Answer", "text": "التطبيق يتحقق from الأوزان والتكرارات والملف، ويعرض حالة error with clear guidance بدلاً من حفظ بيانات غير صالحة."}}, {"@type": "Question", "name": "هل يمكنني حذف كل شيء؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر حذف جميع البيانات clears localStorage after confirmation.\n</rfl:parameter>"}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق لياقة بدنية يعمل دون إنترنت</h1>
+  <p class="page-sub">تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون حسابات، ويعمل كاملاً من دون إنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذا التطبيق يعمل بالكامل داخل المتصفح، ويحفظ خطط التمارين وسجلات التدريب والأوزان والتغذية محلياً دون إنترنت أو حساب أو خادم. يمكنك تعديل خطة التمارين، وتسجيل الأوزان والمجموعات والتكرارات، وتتبع تغيّر وزن الجسم، وحساب السعرات والمغذيات اليومية بدقة. تبقى جميع البيانات على جهازك، ولا يُرسل أي شيء إلى أي خادم، وتُعرض حالات فارغة واضحة عندما لا تتوفر بيانات، مع تعليمات للبدء.</p>
+<div class="app" id="fitnessApp" dir="rtl">
+<div class="card">
+<h2>لوحة التحكم</h2>
+<p>جميع البيانات تُخزن محلياً в المتصفح. استخدم النسخ الاحتياطي لحفظها أو نقلها بين الأجهزة.</p>
+<div class="tabs">
+<button class="button" id="tabPlanButton" type="button" data-tab="panelPlan">خطة التمارين</button>
+<button class="button" id="tabSessionButton" type="button" data-tab="panelSessions">سجل التدريب</button>
+<button class="button" id="tabSetButton" type="button" data-tab="panelSets">المجموعات والأوزان</button>
+<button class="button" id="tabBodyButton" type="button" data-tab="panelBody">وزن الجسم</button>
+<button class="button" id="tabNutritionButton" type="button" data-tab="panelNutrition">التغذية</button>
+<button class="button" id="tabDataButton" type="button" data-tab="panelData">النسخ الاحتياطي</button>
+</div>
+</div>
+<section class="panel is-active" id="panelPlan">
+<div class="card">
+<h2>خطة التمارين القابلة للتعديل</h2>
+<div class="two">
+<div>
+<div class="row">
+<label class="label" for="planNameInput">اسم التمرين
+<input class="input" id="planNameInput" type="text" placeholder="مثال: ضغط الصدر بالبار">
+</label>
+<label class="label" for="planSetsInput">المجموعات
+<input class="input" id="planSetsInput" type="text" placeholder="3">
+</label>
+</div>
+<div class="row">
+<label class="label" for="planRepsInput">التكرارات
+<input class="input" id="planRepsInput" type="text" placeholder="8-12">
+</label>
+<label class="label" for="planRestInput">الراحة
+<input class="input" id="planRestInput" type="text" placeholder="90 ثانية">
+</label>
+</div>
+<label class="label" for="planNoteInput">ملاحظات
+<textarea class="textarea" id="planNoteInput" rows="2" placeholder=" Grip، وضعية، أوزان ابتدائية"></textarea>
+</label>
+<div class="actions">
+<button class="button" id="planSaveButton" type="button">إضافة تمرين</button>
+<button class="button sec" id="planCancelButton" type="button">إلغاء التعديل</button>
+</div>
+<p class="empty status" id="planStatus" hidden></p>
+</div>
+<div>
+<div class="empty" id="planEmpty">لا توجد تمارين في الخطة. أضف تمريناً للبدء أو استخدم النسخة الاحتياطية.</div>
+<div class="history" id="planTableWrap" hidden>
+<table>
+<thead><tr><th>التمرين</th><th>المجموعات</th><th>التكرارات</th><th>الراحة</th><th>ملاحظات</th><th>إجراءات</th></tr></thead>
+<tbody id="planTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel" id="panelSessions" hidden>
+<div class="card">
+<h2>مسجل التدريب المخصص</h2>
+<div class="two">
+<div>
+<label class="label" for="sessionDateInput">التاريخ
+<input class="input" id="sessionDateInput" type="date">
+</label>
+<label class="label" for="sessionNameInput">اسم الجلسة
+<input class="input" id="sessionNameInput" type="text" placeholder="مثال: صدر وثلاثية الرؤوس">
+</label>
+<label class="label" for="sessionDurationInput">المدة (دقائق)
+<input class="input" id="sessionDurationInput" type="number" min="0" step="1" placeholder="60">
+</label>
+<label class="label" for="sessionFocusInput">التركيز
+<select class="select" id="sessionFocusInput">
+<option value="قوة">قوة</option>
+<option value="تضخيم">تضخيم</option>
+<option value="تحمل">تحمل</option>
+<option value="تعافي">تعافي</option>
+<option value="مرونة">مرونة</option>
+</select>
+</label>
+<label class="label" for="sessionNotesInput">ملاحظات
+<textarea class="textarea" id="sessionNotesInput" rows="2" placeholder="Energiه، نوم، آلام، notes داخلي"></textarea>
+</label>
+<div class="actions">
+<button class="button" id="sessionSaveButton" type="button">حفظ الجلسة</button>
+</div>
+<p class="empty status" id="sessionStatus" hidden></p>
+</div>
+<div>
+<div class="empty" id="sessionEmpty">لا توجد جلسات مسجلة. ابدأ بتسجيل جلسة 훈련 after التدريب.</div>
+<div class="history" id="sessionTableWrap" hidden>
+<table>
+<thead><tr><th>التاريخ</th><th>الجلسة</th><th>المدة</th><th>التركيز</th><th>ملاحظات</th><th>إجراءات</th></tr></thead>
+<tbody id="sessionTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel" id="panelSets" hidden>
+<div class="card">
+<h2>سجل المجموعات والأوزان</h2>
+<div class="two">
+<div>
+<label class="label" for="logDateInput">التاريخ
+<input class="input" id="logDateInput" type="date">
+</label>
+<label class="label" for="logExerciseSelect">اختيار من الخطة (اختياري)
+<select class="select" id="logExerciseSelect"></select>
+</label>
+<label class="label" for="logExerciseInput">اسم التمرين
+<input class="input" id="logExerciseInput" type="text" placeholder="مثال: القرفصاء">
+</label>
+<div class="row">
+<label class="label" for="logWeightInput">الوزن (كغ)
+<input class="input" id="logWeightInput" type="number" min="0" step="0.5" placeholder="60">
+</label>
+<label class="label" for="logSetsInput">المجموعات
+<input class="input" id="logSetsInput" type="number" min="1" step="1" placeholder="3">
+</label>
+</div>
+<div class="row">
+<label class="label" for="logRepsInput">التكرارات
+<input class="input" id="logRepsInput" type="number" min="1" step="1" placeholder="10">
+</label>
+<label class="label" for="logRpeInput">شدة RPE (1-10)
+<input class="input" id="logRpeInput" type="number" min="1" max="10" step="1" placeholder="8">
+</label>
+</div>
+<label class="label" for="logNoteInput">ملاحظات
+<textarea class="textarea" id="logNoteInput" rows="2" placeholder="form، grip، variations"></textarea>
+</label>
+<div class="actions">
+<button class="button" id="logSaveButton" type="button">حفظ السجل</button>
+</div>
+<p class="empty status" id="logStatus" hidden></p>
+</div>
+<div>
+<label class="label" for="logFilterInput">تصفية حسب تمرين
+<input class="input" id="logFilterInput" type="text" placeholder="ابحث في السجل">
+</label>
+<div class="out" id="logSummary">لا توجد سجلات بعد. احفظ أول سجل لعرض الملخص.</div>
+<div class="empty" id="logEmpty">لا توجد سجلات للمجموعات. سجّل وزناً وعدد تكرارات.</div>
+<div class="history" id="logTableWrap" hidden>
+<table>
+<thead><tr><th>التاريخ</th><th>التمرين</th><th>وزن</th><th>مج.</th><th>تكر.</th><th>الحجم</th><th>إجراءات</th></tr></thead>
+<tbody id="logTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel" id="panelBody" hidden>
+<div class="card">
+<h2>تتبع وزن الجسم</h2>
+<div class="two">
+<div>
+<label class="label" for="bodyDateInput">التاريخ
+<input class="input" id="bodyDateInput" type="date">
+</label>
+<label class="label" for="bodyWeightInput">الوزن (كغ)
+<input class="input" id="bodyWeightInput" type="number" min="20" max="350" step="0.1" placeholder="70.0">
+</label>
+<label class="label" for="bodyNoteInput">ملاحظات
+<textarea class="textarea" id="bodyNoteInput" rows="2" placeholder="صيام، hydration، ظروف"></textarea>
+</label>
+<div class="actions">
+<button class="button" id="bodySaveButton" type="button">حفظ وزن</button>
+</div>
+<p class="empty status" id="bodyStatus" hidden></p>
+</div>
+<div>
+<div class="out" id="bodyStats">أدخل وزناً لعرض الإحصاءات والاتجاه.</div>
+<div class="empty" id="bodyEmpty">لا توجد قياسات وزن. سجّل أول قياس.</div>
+<div class="history" id="bodyTableWrap" hidden>
+<table>
+<thead><tr><th>التاريخ</th><th>الوزن</th><th>ملاحظات</th><th>إجراءات</th></tr></thead>
+<tbody id="bodyTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel" id="panelNutrition" hidden>
+<div class="card">
+<h2>السعرات والمغذيات اليومية</h2>
+<div class="two">
+<div>
+<label class="label" for="profileSexSelect">الجنس
+<select class="select" id="profileSexSelect">
+<option value="">اختر</option>
+<option value="male">ذكر</option>
+<option value="female">أنثى</option>
+</select>
+</label>
+<label class="label" for="profileAgeInput">العمر (سنوات)
+<input class="input" id="profileAgeInput" type="number" min="14" max="90" step="1" placeholder="30">
+</label>
+<label class="label" for="profileHeightInput">الطول (سم)
+<input class="input" id="profileHeightInput" type="number" min="120" max="230" step="1" placeholder="175">
+</label>
+<label class="label" for="profileWeightInput">الوزن (كغ) (إذا لم تُUse body tracker)
+<input class="input" id="profileWeightInput" type="number" min="30" max="350" step="0.1" placeholder="70.0">
+</label>
+<label class="label" for="profileActivitySelect">مستوى النشاط
+<select class="select" id="profileActivitySelect">
+<option value="">اختر</option>
+<option value="1.2">خامل (1.2)</option>
+<option value="1.375">خفيف (1.375)</option>
+<option value="1.55">متوسط (1.55)</option>
+<option value="1.725">مرتفع (1.725)</option>
+<option value="1.9"> athlete (1.9)</option>
+</select>
+</label>
+<label class="label" for="profileGoalSelect">الهدف
+<select class="select" id="profileGoalSelect">
+<option value="">اختر</option>
+<option value="lose">خسارة وزن</option>
+<option value="maintain">محافظة</option>
+<option value="gain">زيادة وزن</option>
+</select>
+</label>
+<div class="actions">
+<button class="button" id="profileSaveButton" type="button">حفظ الملف</button>
+</div>
+<p class="empty status" id="profileStatus" hidden></p>
+</div>
+<div>
+<div class="out" id="nutritionCalories">أدخل الملف الشخصي لحساب السعرات. Use body tracker weight if available.</div>
+<div class="out" id="nutritionMacros">سيظهر توزيع البروتين والدهون والكربوهيدرات هنا.</div>
+<div class="out" id="nutritionMeals">سيظهر توزيع الوجبات اليومية هنا.</div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel" id="panelData" hidden>
+<div class="card">
+<h2>النسخ الاحتياطي وال استيراد</h2>
+<label class="label" for="dataTransferArea">بيانات JSON
+<textarea class="textarea" id="dataTransferArea" rows="8" placeholder='{"plan":[...]}'></textarea>
+</label>
+<div class="actions">
+<button class="button" id="dataExportButton" type="button">تصدير</button>
+<button class="button" id="dataImportButton" type="button">استيراد</button>
+<button class="button sec" id="dataResetButton" type="button">حذف جميع البيانات</button>
+</div>
+<p class="empty status" id="dataStatus" hidden></p>
+</div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل بياناتي دون إنترنت؟</h3><p>نعم. الخطة، السجلات، الأوزان، والملف الشخصي يُخزنون trong localStorage في المتصفح، ولا يستدعي التطبيق أي خادم.</p><h3>هل يمكنني نقل البيانات بين أجهزة؟</h3><p>استخدم تصدير JSON، ثم الصق النسخة inbox textarea on the other device and اضغط استيراد.</p><h3>كيف يُحسب وزن الهدف للسعرات؟</h3><p>يُستخدم آخر وزن in body tracker إذا وُجد، وelse وزن الملف الشخصي، مع BMR Mifflin-St Jeor وعامل النشاط والهدف.</p><h3>what if form has bad inputs?</h3><p>التطبيق يتحقق from الأوزان والتكرارات والملف، ويعرض حالة error with clear guidance بدلاً من حفظ بيانات غير صالحة.</p><h3>هل يمكنني حذف كل شيء؟</h3><p>نعم، زر حذف جميع البيانات clears localStorage after confirmation.
+&lt;/rfl:parameter&gt;</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-16 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+const K={plan:'mdfitness_plan_v1',sessions:'mdfitness_sessions_v1',logs:'mdfitness_logs_v1',body:'mdfitness_body_v1',profile:'mdfitness_profile_v1'};
+const $ = (id) => document.getElementById(id);
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function getJSON(key,fb){try{const s=localStorage.getItem(key); if(s===null) return fb; const v=JSON.parse(s); return v==null?fb:v;}catch{return fb;}}
+function setJSON(key,v){try{localStorage.setItem(key,JSON.stringify(v));}catch{}}
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function val(id){const e=$(id); return e?e.value:'';}
+function today(){const d=new Date(); const t=d.getTimezoneOffset()*60000; return new Date(d.getTime()-t).toISOString().slice(0,10);}
+function toNum(v){const n=Number(String(v||'').trim().replace(',','.')); return Number.isFinite(n)?n:null;}
+function status(id,msg,err){const e=$(id); if(!e) return; e.hidden=false; e.textContent=msg; e.style.opacity=err?'1':'0.82';}
+function clearStatus(id){const e=$(id); if(e){e.hidden=true; e.textContent='';}}
+const defaultPlan=[
+{id:uid(),name:'ضغط الصدر بالبار',sets:'4',reps:'5-8',rest:'120 ثانية',note:' controlled eccentric'},
+{id:uid(),name:'القرفصاء',sets:'4',reps:'6-10',rest:'150 ثانية',note:'عمق كامل'},
+{id:uid(),name:'السحب للأعلى',sets:'3',reps:'6-10',rest:'120 ثانية',note:' controlled'},
+{id:uid(),name:'ضغط الأكتاف بالدامبل',sets:'3',reps:'8-12',rest:'90 ثانية',note:' stabilize core'}
+];
+let plan = (localStorage.getItem(K.plan)===null) ? defaultPlan : getJSON(K.plan,[]);
+let sessions = getJSON(K.sessions,[]);
+let logs = getJSON(K.logs,[]);
+let bodyWeights = getJSON(K.body,[]);
+let profile = getJSON(K.profile,{});
+let editingPlanId=null;
+function sortedBody(){return [...bodyWeights].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')) || (Number(b.createdAt)||0)-(Number(a.createdAt)||0));}
+function currentWeight(){
+const s=sortedBody(); if(s.length) return Number(s[0].weight);
+const w=toNum(profile.weight); return w==null?null:w;
+}
+function syncExerciseSelect(){
+const sel=$('logExerciseSelect'); if(!sel) return;
+const cur=sel.value;
+sel.innerHTML='<option value="">اختر من الخطة (اختياري)</option>'+plan.map(p=>'<option value="'+esc(p.name)+'">'+esc(p.name)+'</option>').join('');
+sel.value=plan.some(p=>p.name===cur)?cur:'';
+}
+function renderPlan(){
+const empty=$('planEmpty'), wrap=$('planTableWrap'), body=$('planTableBody'); if(!empty||!wrap||!body) return;
+if(!plan.length){empty.hidden=false;wrap.hidden=true;body.innerHTML='';return;}
+empty.hidden=true;wrap.hidden=false;
+body.innerHTML=plan.map(p=>'<tr><td>'+esc(p.name)+'</td><td class="mono">'+esc(p.sets)+'</td><td class="mono">'+esc(p.reps)+'</td><td>'+esc(p.rest)+'</td><td>'+esc(p.note)+'</td><td><button class="button sec" type="button" id="planEdit-'+p.id+'">تعديل</button> <button class="button sec" type="button" id="planDel-'+p.id+'">حذف</button></td></tr>').join('');
+plan.forEach(p=>{
+const e=$('planEdit-'+p.id); if(e) e.addEventListener('click',()=>editPlan(p.id));
+const d=$('planDel-'+p.id); if(d) d.addEventListener('click',()=>deletePlan(p.id));
+});
+}
+function editPlan(id){
+const p=plan.find(x=>x.id===id); if(!p) return;
+editingPlanId=id;
+$('planNameInput').value=p.name||'';
+$('planSetsInput').value=p.sets||'';
+$('planRepsInput').value=p.reps||'';
+$('planRestInput').value=p.rest||'';
+$('planNoteInput').value=p.note||'';
+$('planSaveButton').textContent='تحديث تمرين';
+}
+function resetPlanForm(){
+editingPlanId=null;
+$('planNameInput').value='';
+$('planSetsInput').value='3';
+$('planRepsInput').value='8-12';
+$('planRestInput').value='90 ثانية';
+$('planNoteInput').value='';
+const b=$('planSaveButton'); if(b) b.textContent='إضافة تمرين';
+}
+function savePlanItem(){
+clearStatus('planStatus');
+const name=val('planNameInput').trim();
+if(!name){status('planStatus','أدخل اسم التمرين قبل الحفظ.',true);return;}
+const item={id:editingPlanId||uid(),name,sets:val('planSetsInput').trim()||'3',reps:val('planRepsInput').trim()||'8-12',rest:val('planRestInput').trim()||'90 ثانية',note:val('planNoteInput').trim()};
+if(editingPlanId){
+const idx=plan.findIndex(x=>x.id===editingPlanId);
+if(idx>=0) plan[idx]=item;
+resetPlanForm();
+} else {
+plan.unshift(item);
+}
+setJSON(K.plan,plan);
+renderPlan(); syncExerciseSelect(); renderLogs();
+status('planStatus','تم حفظ التمرين في الخطة.',false);
+}
+function deletePlan(id){
+if(!confirm('هل تريد حذف هذا التمرين من الخطة؟')) return;
+plan=plan.filter(x=>x.id!==id);
+setJSON(K.plan,plan);
+renderPlan(); syncExerciseSelect();
+status('planStatus','تم حذف التمرين.',false);
+}
+function renderSessions(){
+const empty=$('sessionEmpty'), wrap=$('sessionTableWrap'), body=$('sessionTableBody'); if(!empty||!wrap||!body) return;
+if(!sessions.length){empty.hidden=false;wrap.hidden=true;body.innerHTML='';return;}
+empty.hidden=true;wrap.hidden=false;
+body.innerHTML=sessions.map(s=>'<tr><td>'+esc(s.date)+'</td><td>'+esc(s.name)+'</td><td class="mono">'+(s.duration?s.duration+' د':'-')+'</td><td>'+esc(s.focus||'-')+'</td><td>'+esc(s.notes)+'</td><td><button class="button sec" type="button" id="sessionDel-'+s.id+'">حذف</button></td></tr>').join('');
+sessions.forEach(s=>{
+const d=$('sessionDel-'+s.id); if(d) d.addEventListener('click',()=>deleteSession(s.id));
+});
+}
+function saveSessionItem(){
+clearStatus('sessionStatus');
+const name=val('sessionNameInput').trim();
+if(!name){status('sessionStatus','أدخل اسم الجلسة قبل الحفظ.',true);return;}
+let dur=toNum(val('sessionDurationInput')); if(dur!==null && dur<0) dur=0;
+const durText=dur==null?'':String(Math.round(dur));
+const item={id:uid(),date:val('sessionDateInput')||today(),name,duration:durText,focus:val('sessionFocusInput'),notes:val('sessionNotesInput').trim(),createdAt:Date.now()};
+sessions.unshift(item);
+setJSON(K.sessions,sessions);
+renderSessions();
+$('sessionNameInput').value='';$('sessionDurationInput').value='';$('sessionNotesInput').value='';
+const d=$('sessionDateInput'); if(d) d.value=today();
+status('sessionStatus','تم حفظ الجلسة.',false);
+}
+function deleteSession(id){
+if(!confirm('هل تريد حذف هذه الجلسة؟')) return;
+sessions=sessions.filter(x=>x.id!==id);
+setJSON(K.sessions,sessions);
+renderSessions();
+}
+function filteredLogs(){
+const q=val('logFilterInput').trim().toLowerCase();
+if(!q) return logs;
+return logs.filter(l=>[l.exercise,l.note,l.date].some(v=>String(v||'').toLowerCase().includes(q)));
+}
+function renderLogs(){
+syncExerciseSelect();
+const empty=$('logEmpty'), wrap=$('logTableWrap'), body=$('logTableBody'), summary=$('logSummary'); if(!empty||!wrap||!body) return;
+const rows=filteredLogs();
+if(!rows.length){empty.hidden=false;wrap.hidden=true;body.innerHTML=''; if(summary) summary.textContent='لا توجد سجلات مطابقة. عدّل التصفية أو أضف سجلاً.'; return;}
+empty.hidden=true;wrap.hidden=false;
+body.innerHTML=rows.map(l=>'<tr><td>'+esc(l.date)+'</td><td>'+esc(l.exercise)+'</td><td class="mono">'+esc(l.weight)+'</td><td class="mono">'+esc(l.sets)+'</td><td class="mono">'+esc(l.reps)+'</td><td class="mono">'+esc(l.volume)+'</td><td><button class="button sec" type="button" id="logDel-'+l.id+'">حذف</button></td></tr>').join('');
+rows.forEach(l=>{
+const d=$('logDel-'+l.id); if(d) d.addEventListener('click',()=>deleteLog(l.id));
+});
+if(summary){
+const weights=rows.map(l=>Number(l.weight)||0);
+const max=weights.length?Math.max(...weights):0;
+const volume=rows.reduce((a,l)=>a+(Number(l.volume)||0),0);
+const sets=rows.reduce((a,l)=>a+(Number(l.sets)||0),0);
+summary.innerHTML='<div>السجلات المعروضة: <span class="big">'+rows.length+'</span></div><div class="row">أقصى وزن: <strong>'+max+' كغ</strong> · حجم التدريب: <strong>'+Math.round(volume)+' كغ</strong> · المجموعات: <strong>'+sets+'</strong> · آخر تاريخ: <strong>'+esc(rows[0].date)+'</strong></div>';
+}
+}
+function saveSetLog(){
+clearStatus('logStatus');
+let exercise=val('logExerciseInput').trim();
+if(!exercise) exercise=val('logExerciseSelect');
+if(!exercise){status('logStatus','أدخل اسم التمرين أو اختره من الخطة.',true);return;}
+const weight=toNum(val('logWeightInput'));
+if(weight==null||weight<=0){status('logStatus','أدخل وزناً صحيحاً أكبر من صفر.',true);return;}
+const sets=toNum(val('logSetsInput'));
+const reps=toNum(val('logRepsInput'));
+if(sets==null||sets<1){status('logStatus','أدخل عدداً صحيحاً للمجموعات.',true);return;}
+if(reps==null||reps<1){status('logStatus','أدخل عدداً صحيحاً للتكرارات.',true);return;}
+let rpe=toNum(val('logRpeInput')); if(rpe!=null && (rpe<1||rpe>10)) rpe=null;
+const setsN=Math.round(sets), repsN=Math.round(reps);
+const item={id:uid(),date:val('logDateInput')||today(),exercise,weight,sets:setsN,reps:repsN,rpe,note:val('logNoteInput').trim(),volume:weight*setsN*repsN,createdAt:Date.now()};
+logs.unshift(item);
+setJSON(K.logs,logs);
+renderLogs();
+$('logWeightInput').value='';$('logSetsInput').value='';$('logRepsInput').value='';$('logRpeInput').value='';$('logNoteInput').value='';
+const d=$('logDateInput'); if(d) d.value=today();
+status('logStatus','تم حفظ سجل المجموعات.',false);
+}
+function deleteLog(id){
+if(!confirm('هل تريد حذف هذا السجل؟')) return;
+logs=logs.filter(x=>x.id!==id);
+setJSON(K.logs,logs);
+renderLogs();
+}
+function renderBody(){
+const empty=$('bodyEmpty'), wrap=$('bodyTableWrap'), body=$('bodyTableBody'), stats=$('bodyStats'); if(!empty||!wrap||!body) return;
+const sorted=sortedBody();
+if(!sorted.length){empty.hidden=false;wrap.hidden=true;body.innerHTML=''; if(stats) stats.textContent='أدخل وزناً لعرض الإحصاءات والاتجاه.'; return;}
+empty.hidden=true;wrap.hidden=false;
+body.innerHTML=sorted.map(w=>'<tr><td>'+esc(w.date)+'</td><td class="mono">'+esc(w.weight)+'</td><td>'+esc(w.note)+'</td><td><button class="button sec" type="button" id="bodyDel-'+w.id+'">حذف</button></td></tr>').join('');
+sorted.forEach(w=>{
+const d=$('bodyDel-'+w.id); if(d) d.addEventListener('click',()=>deleteBody(w.id));
+});
+if(stats){
+const cur=Number(sorted[0].weight); const prev=sorted[1]?Number(sorted[1].weight):null;
+const first=Number(sorted[sorted.length-1].weight);
+const change=cur-first;
+const avg=sorted.slice(0,7).reduce((a,w)=>a+Number(w.weight),0)/Math.min(7,sorted.length);
+const min=Math.min(...sorted.map(w=>Number(w.weight)));
+const max=Math.max(...sorted.map(w=>Number(w.weight)));
+let bmiText='';
+if(profile.height){const h=Number(profile.height)/100; const bmi=cur/(h*h); bmiText=' · مؤشر كتلة الجسم: <strong>'+bmi.toFixed(1)+'</strong>';}
+stats.innerHTML='<div>الوزن الحالي: <span class="big">'+cur+'</span> كغ</div><div class="row">التغيّر منذ أول قياس: <strong>'+(change>0?'+':'')+change.toFixed(1)+' كغ</strong> · متوسط ٧ قياسات: <strong>'+avg.toFixed(1)+' كغ</strong> · المدى: <strong>'+min+'–'+max+' كغ</strong>'+(prev!==null?' · السابق: <strong>'+prev+' كغ</strong>':'')+bmiText+'</div>';
+}
+}
+function saveBodyItem(){
+clearStatus('bodyStatus');
+const w=toNum(val('bodyWeightInput'));
+if(w==null||w<=0){status('bodyStatus','أدخل وزناً صحيحاً.',true);return;}
+const item={id:uid(),date:val('bodyDateInput')||today(),weight:w,note:val('bodyNoteInput').trim(),createdAt:Date.now()};
+bodyWeights.unshift(item);
+setJSON(K.body,bodyWeights);
+renderBody(); renderNutrition();
+$('bodyWeightInput').value='';$('bodyNoteInput').value='';
+const d=$('bodyDateInput'); if(d) d.value=today();
+status('bodyStatus','تم حفظ وزن الجسم.',false);
+}
+function deleteBody(id){
+if(!confirm('هل تريد حذف this measurement?')) return;
+bodyWeights=bodyWeights.filter(x=>x.id!==id);
+setJSON(K.body,bodyWeights);
+renderBody(); renderNutrition();
+}
+function nutritionData(){
+const w=currentWeight(); const p=profile;
+const age=toNum(p.age); const h=toNum(p.height);
+if(w==null||!p.sex||age==null||h==null||!p.activity||!p.goal) return null;
+const bmr = p.sex==='female' ? (10*w+6.25*h-5*age-161) : (10*w+6.25*h-5*age+5);
+const tdee=bmr*Number(p.activity);
+const delta = p.goal==='lose'?-500 : p.goal==='gain'?300 : 0;
+let target=Math.max(tdee+delta, p.sex==='female'?1200:1500);
+const pf = p.goal==='lose'?2.0 : p.goal==='gain'?1.8 : 1.6;
+const ff = p.goal==='lose'?0.8 : p.goal==='gain'?1.0 : 0.9;
+let protein=Math.round(w*pf);
+let fat=Math.round(w*ff);
+let carbs=Math.round((target-protein*4-fat*9)/4);
+if(carbs<0){
+let f=fat;
+while(f>0 && (target-protein*4-f*9)/4 < 0) f--;
+fat=f;
+carbs=Math.max(0,Math.round((target-protein*4-fat*9)/4));
+}
+const goalLabel = p.goal==='lose'?'خسارة وزن':p.goal==='gain'?'زيادة وزن':'محافظة';
+return {w,age,h,bmr,tdee,adjustment:delta,target,protein,fat,carbs,goalLabel};
+}
+function renderNutrition(){
+const cal=$('nutritionCalories'), macros=$('nutritionMacros'), mealsEl=$('nutritionMeals');
+if(!cal||!macros||!mealsEl) return;
+const d=nutritionData();
+if(!d){
+cal.textContent='أدخل الجنس، العمر، الطول، مستوى النشاط، الهدف، ووزناً (عبر الملف or body tracker) لحساب السعرات.';
+macros.textContent='سيظهر توزيع البروتين والدهون والكربوهيدرات هنا.';
+mealsEl.textContent='سيظهر توزيع الوجبات اليومية هنا.';
+return;
+}
+const target=Math.round(d.target);
+const pPct=Math.round(d.protein*4/target*100); const fPct=Math.round(d.fat*9/target*100); const cPct=Math.max(0,100-pPct-fPct);
+cal.innerHTML='<div>السعرات اليومية المستهدفة: <span class="big">'+target+'</span> kcal</div><div class="row">BMR: <strong>'+Math.round(d.bmr)+' kcal</strong> · TDEE: <strong>'+Math.round(d.tdee)+' kcal</strong> · الهدف: <strong>'+d.goalLabel+'</strong> · تعديل: <strong>'+(d.adjustment>0?'+':'')+d.adjustment+' kcal</strong></div>';
+macros.innerHTML='<table><thead><tr><th>المغذي</th><th>غرام</th><th>سعرات</th><th>نسبة</th></tr></thead><tbody><tr><td>بروتين</td><td class="mono">'+d.protein+' g</td><td class="mono">'+(d.protein*4)+'</td><td class="mono">'+pPct+'%</td></tr><tr><td>دهون</td><td class="mono">'+d.fat+' g</td><td class="mono">'+(d.fat*9)+'</td><td class="mono">'+fPct+'%</td></tr><tr><td>كربوهيدرات</td><td class="mono">'+d.carbs+' g</td><td class="mono">'+(d.carbs*4)+'</td><td class="mono">'+cPct+'%</td></tr></tbody></table>';
+const mealDefs=[{name:'الفطور',pct:.30},{name:'الغداء',pct:.35},{name:'العشاء',pct:.25},{name:'وجبات خفيفة',pct:.10}];
+mealsEl.innerHTML='<table><thead><tr><th>الوجبة</th><th>سعرات</th><th>بروتين</th><th>دهون</th><th>كربوهيدرات</th></tr></thead><tbody>'+mealDefs.map(m=>'<tr><td>'+m.name+'</td><td class="mono">'+Math.round(target*m.pct)+'</td><td class="mono">'+Math.round(d.protein*m.pct)+' g</td><td class="mono">'+Math.round(d.fat*m.pct)+' g</td><td class="mono">'+Math.round(d.carbs*m.pct)+' g</td></tr>').join('')+'</tbody></table>';
+}
+function saveProfile(){
+clearStatus('profileStatus');
+const p={
+sex:val('profileSexSelect'),
+age:val('profileAgeInput').trim(),
+height:val('profileHeightInput').trim(),
+weight:val('profileWeightInput').trim(),
+activity:val('profileActivitySelect'),
+goal:val('profileGoalSelect')
+};
+profile=p;
+setJSON(K.profile,profile);
+renderNutrition();
+status('profileStatus','تم حفظ الملف الشخصي.',false);
+}
+function exportData(){
+const payload={version:1,exportedAt:new Date().toISOString(),plan,sessions,logs,bodyWeights,profile};
+const a=$('dataTransferArea'); if(a) a.value=JSON.stringify(payload,null,2);
+status('dataStatus','تم إنشاء JSON. انسخه أو احفظه في مكان آمن.',false);
+}
+function normalizeItems(list){return Array.isArray(list)?list.map(x=>{if(!x||typeof x!=='object') return null; if(!x.id) x.id=uid(); return x;}).filter(Boolean):[];}
+function importData(){
+clearStatus('dataStatus');
+const raw=val('dataTransferArea').trim();
+if(!raw){status('dataStatus','الصق بيانات JSON قبل الاستيراد.',true);return;}
+let p; try{p=JSON.parse(raw);}catch(e){status('dataStatus','صيغة JSON غير صالحة.',true);return;}
+if(!p||typeof p!=='object'){status('dataStatus','بيانات غير صالحة.',true);return;}
+plan=normalizeItems(p.plan);
+sessions=normalizeItems(p.sessions);
+logs=normalizeItems(p.logs);
+bodyWeights=normalizeItems(p.bodyWeights);
+profile=(p.profile&&typeof p.profile==='object')?p.profile:{};
+setJSON(K.plan,plan); setJSON(K.sessions,sessions); setJSON(K.logs,logs); setJSON(K.body,bodyWeights); setJSON(K.profile,profile);
+renderAll();
+status('dataStatus','تم استيراد البيانات.',false);
+}
+function resetAll(){
+if(!confirm('سيتم حذف جميع البيانات المحلية. هل أنت متأكد؟')) return;
+Object.keys(K).forEach(k=>localStorage.removeItem(K[k]));
+plan=(localStorage.getItem(K.plan)===null)?defaultPlan:[];
+sessions=[];logs=[];bodyWeights=[];profile={};
+setJSON(K.plan,plan);setJSON(K.sessions,sessions);setJSON(K.logs,logs);setJSON(K.body,bodyWeights);setJSON(K.profile,profile);
+renderAll();
+const d=$('sessionDateInput'); if(d) d.value=today();
+status('dataStatus','تم حذف جميع البيانات.',false);
+}
+function renderAll(){renderPlan();syncExerciseSelect();renderSessions();renderLogs();renderBody();renderNutrition();}
+function bind(){
+document.querySelectorAll('#fitnessApp [data-tab]').forEach(b=>b.addEventListener('click',()=>{
+const target=b.getAttribute('data-tab');
+document.querySelectorAll('#fitnessApp .panel').forEach(p=>p.classList.toggle('is-active',p.id===target));
+}));
+const ids=['sessionDateInput','logDateInput','bodyDateInput']; ids.forEach(id=>{const e=$(id); if(e) e.value=today();});
+const profileBtn=$('profileSaveButton'); if(profileBtn) profileBtn.addEventListener('click',saveProfile);
+const planSave=$('planSaveButton'); if(planSave) planSave.addEventListener('click',savePlanItem);
+const planCancel=$('planCancelButton'); if(planCancel) planCancel.addEventListener('click',resetPlanForm);
+const sessionSave=$('sessionSaveButton'); if(sessionSave) sessionSave.addEventListener('click',saveSessionItem);
+const logSave=$('logSaveButton'); if(logSave) logSave.addEventListener('click',saveSetLog);
+const bodySave=$('bodySaveButton'); if(bodySave) bodySave.addEventListener('click',saveBodyItem);
+const exportBtn=$('dataExportButton'); if(exportBtn) exportBtn.addEventListener('click',exportData);
+const importBtn=$('dataImportButton'); if(importBtn) importBtn.addEventListener('click',importData);
+const resetBtn=$('dataResetButton'); if(resetBtn) resetBtn.addEventListener('click',resetAll);
+const filter=$('logFilterInput'); if(filter) filter.addEventListener('input',renderLogs);
+const sel=$('logExerciseSelect'); if(sel) sel.addEventListener('change',()=>{const v=sel.value; if(v){const inp=$('logExerciseInput'); if(inp) inp.value=v;}});
+if($('planSetsInput') && !$('planSetsInput').value) $('planSetsInput').value='3';
+if($('planRepsInput') && !$('planRepsInput').value) $('planRepsInput').value='8-12';
+renderAll();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+})();
+</script>
+</body>
+</html>

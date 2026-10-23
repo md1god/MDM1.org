@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح | MDM1</title>
+<meta name="description" content="تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات وإحصاءات وتقويم واختبار حي، حفظ localStorage.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-courseware-quiz-studio.html">
+<meta property="og:title" content="استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح">
+<meta property="og:description" content="تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات وإحصاءات وتقويم واختبار حي، حفظ localStorage.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-courseware-quiz-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{font-family:inherit;line-height:1.7;}
+.app .tab-active{background:var(--gold-bright)!important;}
+.app .small{font-size:.85rem;color:var(--gold-dim);}
+.app .qblock{padding:10px;border:1px solid var(--gold-dim);border-radius:8px;margin-bottom:8px;background:rgba(255,215,0,.03);}
+.app .opt{margin:4px 0;}
+.app .score{color:var(--gold);font-weight:700;}
+.app table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.app th,.app td{border:1px solid var(--gold-dim);padding:6px;text-align:right;}
+.app .badge2{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--gold-dim);margin:2px;}
+.app .empty-state{color:var(--gold-dim);text-align:center;padding:16px;}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو بناء المقررات والاختبارات", "url": "https://mdm1.org/apps/offline-courseware-quiz-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أنشئ مقررًا جديدًا؟", "acceptedAnswer": {"@type": "Answer", "text": "افتح تبويب \"المقررات\"، اضغط \"مقرر جديد\"، ثم انتقل إلى \"المحرر\" لكتابة المحتوى والأسئلة. استخدم صيغة Q: mcq أو Q: code لتحديد الأسئلة."}}, {"@type": "Question", "name": "كيف يعمل تنفيذ كود الطالب؟", "acceptedAnswer": {"@type": "Answer", "text": "كود الطالب يُنفَّذ داخل إطار معزول (iframe sandbox) مع حد زمني، وتُقارن نتائج الدوال (solve) بالمتوقع تلقائياً. لا يمكنه الوصول إلى صفحتك أو بياناتك."}}, {"@type": "Question", "name": "كيف أنشر نسخة للطلاب؟", "acceptedAnswer": {"@type": "Answer", "text": "احفظ المسودة، ثم اضغط \"نسخة جديدة\" عند الحاجة، وأخيراً \"نشر (للطلاب)\" لجعل النسخة الحالية مرئية للطلاب. يمكنك معاينة أحدث مسودة بينما يبقى الطلاب على النسخة المنشورة."}}, {"@type": "Question", "name": "أين تُحفظ البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "كل المقررات والمسودات والإجابات والدرجات تُحفظ في localStorage في متصفحك فقط، دون خادم أو حسابات. استخدم \"استيراد/تصدير\" لنسخ احتياطي."}}, {"@type": "Question", "name": "ما هو وضع الاختبار الحي؟", "acceptedAnswer": {"@type": "Answer", "text": "يتيح للمعلم بدء جلسة اختبار في الصف، حيث يدخل الطلاب أسماءهم ويحلون الأسئلة، وتظهر نتائجهم فوراً في لوحة المعلم."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو بناء المقررات والاختبارات</h1>
+  <p class="page-sub">تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات وإحصاءات وتقويم واختبار حي، حفظ localStorage.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يتيح للمعلمين كتابة مقرراتهم واختباراتهم في المتصفح بالكامل، باستخدام نص بسيط (markdown وYAML-like) مع أسئلة اختيار من متعدد وأسئلة برمجية يُنفَّذ كود الطالب داخل إطار معزول ويُصَحَّح آليًا. يحفظ كل المقررات والمسودات والإجابات في localStorage، ويوفر دفتر درجات ووصفًا لكل طالب وإحصاءات وتقويمًا للمقرر ووضع اختبار حي في الصف بنتائج فورية، ويدعم عدة مقررات وقواعد مشاركة وتقديم مع معاينة أحدث نسخة من المحتوى بينما يبقى الطلاب على نسخة سابقة، دون أي خادم أو حسابات أو اتصال بالشبكة أبداً ومجاناً.</p>
+<div class="app" id="appRoot" style="direction:rtl;text-align:right;">
+  <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+    <button id="tabCourses" class="button sec">المقررات</button>
+    <button id="tabEditor" class="button sec">المحرر</button>
+    <button id="tabStudent" class="button sec">واجهة الطالب</button>
+    <button id="tabGradebook" class="button sec">دفتر الدرجات</button>
+    <button id="tabStats" class="button sec">الإحصاءات</button>
+    <button id="tabCalendar" class="button sec">التقويم</button>
+    <button id="tabLive" class="button sec">اختبار حي</button>
+    <button id="tabIO" class="button sec">استيراد/تصدير</button>
+  </div>
+  <div id="panelCourses" class="card">
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <select id="courseSelect" class="input" style="min-width:220px;"></select>
+      <button id="newCourseBtn" class="button">مقرر جديد</button>
+      <button id="delCourseBtn" class="button sec">حذف</button>
+    </div>
+    <div id="courseInfo" class="out" style="min-height:60px;"></div>
+    <div class="divider"></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <label>اسم الطالب:</label>
+      <input id="studentNameInput" class="input" placeholder="أضف طالبًا..." />
+      <button id="addStudentBtn" class="button sec">إضافة طالب</button>
+    </div>
+    <div id="studentList" class="out" style="min-height:60px;max-height:180px;overflow:auto;"></div>
+  </div>
+  <div id="panelEditor" class="card" style="display:none;">
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <label>النسخة:</label>
+      <select id="versionSelect" class="input" style="min-width:120px;"></select>
+      <button id="saveDraftBtn" class="button">حفظ مسودة</button>
+      <button id="publishBtn" class="button sec">نشر (للطلاب)</button>
+      <button id="newVerBtn" class="button sec">نسخة جديدة</button>
+    </div>
+    <textarea id="contentEditor" class="input" style="width:100%;min-height:260px;resize:vertical;font-family:monospace;" placeholder="اكتب المقرر هنا..."></textarea>
+    <div class="divider"></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <label>محاولات:</label>
+      <input id="ruleAttempts" class="input" type="number" min="1" style="width:80px;" />
+      <label>وقت (د):</label>
+      <input id="ruleTime" class="input" type="number" min="0" style="width:80px;" />
+      <label><input id="ruleLate" type="checkbox" /> السماح بالتأخر</label>
+      <button id="saveRulesBtn" class="button sec">حفظ القواعد</button>
+    </div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <input id="calDate" class="input" type="date" />
+      <input id="calTitle" class="input" placeholder="حدث تقويم..." style="flex:1;min-width:160px;" />
+      <button id="addCalBtn" class="button sec">إضافة حدث</button>
+    </div>
+  </div>
+  <div id="panelStudent" class="card" style="display:none;">
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <label>المقرر:</label>
+      <select id="stuCourseSelect" class="input" style="min-width:220px;"></select>
+      <label>الطالب:</label>
+      <select id="stuStudentSelect" class="input" style="min-width:160px;"></select>
+      <button id="loadStuBtn" class="button">تحميل</button>
+    </div>
+    <div id="stuLesson" class="out" style="min-height:80px;max-height:220px;overflow:auto;margin-bottom:8px;"></div>
+    <div id="stuQuestions" class="out" style="min-height:120px;max-height:360px;overflow:auto;margin-bottom:8px;"></div>
+    <div class="row" style="gap:8px;">
+      <button id="submitAnsBtn" class="button">تقديم الإجابات</button>
+      <span id="stuResult" class="big"></span>
+    </div>
+  </div>
+  <div id="panelGradebook" class="card" style="display:none;">
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <label>المقرر:</label>
+      <select id="gbCourseSelect" class="input" style="min-width:220px;"></select>
+      <button id="refreshGbBtn" class="button sec">تحديث</button>
+    </div>
+    <div id="gradebookOut" class="out" style="min-height:120px;max-height:360px;overflow:auto;"></div>
+  </div>
+  <div id="panelStats" class="card" style="display:none;">
+    <div id="statsOut" class="out" style="min-height:120px;"></div>
+  </div>
+  <div id="panelCalendar" class="card" style="display:none;">
+    <div id="calendarOut" class="out" style="min-height:120px;max-height:360px;overflow:auto;"></div>
+  </div>
+  <div id="panelLive" class="card" style="display:none;">
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <label>المقرر:</label>
+      <select id="liveCourseSelect" class="input" style="min-width:220px;"></select>
+      <button id="startLiveBtn" class="button">بدء جلسة</button>
+      <button id="endLiveBtn" class="button sec">إنهاء</button>
+    </div>
+    <div id="liveStatus" class="out" style="min-height:40px;margin-bottom:8px;"></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <input id="liveName" class="input" placeholder="اسم الطالب..." />
+      <button id="liveJoinBtn" class="button sec">انضمام</button>
+    </div>
+    <div id="liveQuestions" class="out" style="min-height:80px;max-height:280px;overflow:auto;margin-bottom:8px;"></div>
+    <button id="liveSubmitBtn" class="button" style="display:none;">إرسال</button>
+    <div id="liveResults" class="out" style="min-height:80px;max-height:280px;overflow:auto;margin-top:8px;"></div>
+  </div>
+  <div id="panelIO" class="card" style="display:none;">
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <button id="exportBtn" class="button">تصدير JSON</button>
+      <input id="importFile" type="file" class="input" accept="application/json" />
+    </div>
+    <textarea id="ioArea" class="input" style="width:100%;min-height:200px;resize:vertical;font-family:monospace;" placeholder="JSON هنا..."></textarea>
+    <div class="row" style="gap:8px;margin-top:8px;">
+      <button id="importBtn" class="button sec">استيراد</button>
+      <button id="copyExportBtn" class="button sec">نسخ</button>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أنشئ مقررًا جديدًا؟</h3><p>افتح تبويب &quot;المقررات&quot;، اضغط &quot;مقرر جديد&quot;، ثم انتقل إلى &quot;المحرر&quot; لكتابة المحتوى والأسئلة. استخدم صيغة Q: mcq أو Q: code لتحديد الأسئلة.</p><h3>كيف يعمل تنفيذ كود الطالب؟</h3><p>كود الطالب يُنفَّذ داخل إطار معزول (iframe sandbox) مع حد زمني، وتُقارن نتائج الدوال (solve) بالمتوقع تلقائياً. لا يمكنه الوصول إلى صفحتك أو بياناتك.</p><h3>كيف أنشر نسخة للطلاب؟</h3><p>احفظ المسودة، ثم اضغط &quot;نسخة جديدة&quot; عند الحاجة، وأخيراً &quot;نشر (للطلاب)&quot; لجعل النسخة الحالية مرئية للطلاب. يمكنك معاينة أحدث مسودة بينما يبقى الطلاب على النسخة المنشورة.</p><h3>أين تُحفظ البيانات؟</h3><p>كل المقررات والمسودات والإجابات والدرجات تُحفظ في localStorage في متصفحك فقط، دون خادم أو حسابات. استخدم &quot;استيراد/تصدير&quot; لنسخ احتياطي.</p><h3>ما هو وضع الاختبار الحي؟</h3><p>يتيح للمعلم بدء جلسة اختبار في الصف، حيث يدخل الطلاب أسماءهم ويحلون الأسئلة، وتظهر نتائجهم فوراً في لوحة المعلم.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+const KEY='courseStudio_v1';
+function uid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{courses:[],students:[]};}catch(e){return {courses:[],students:[]};}}
+function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+let S=load();
+function $(id){return document.getElementById(id);}
+function curCourse(){return S.courses.find(c=>c.id===S.currentId)||null;}
+function ensureCourse(){if(!S.currentId&&S.courses.length){S.currentId=S.courses[0].id;save(S);}}
+function switchTab(name){
+  ['Courses','Editor','Student','Gradebook','Stats','Calendar','Live','IO'].forEach(t=>{
+    const p=$('panel'+t); if(p) p.style.display=(t.toLowerCase()===name.toLowerCase())?'block':'none';
+  });
+  document.querySelectorAll('[id^="tab"]').forEach(b=>b.classList.remove('tab-active'));
+  const btn=$('tab'+name.charAt(0).toUpperCase()+name.slice(1)); if(btn) btn.classList.add('tab-active');
+}
+function renderCourseSelects(){
+  const opts=S.courses.map(c=>`<option value="${c.id}">${c.title||'مقرر'} (v${c.publishedVersion||1})</option>`).join('');
+  ['courseSelect','stuCourseSelect','gbCourseSelect','liveCourseSelect'].forEach(id=>{const el=$(id); if(el){el.innerHTML=opts||'<option value="">لا مقررات</option>'; if(S.currentId) el.value=S.currentId;}});
+}
+function renderStudents(){
+  const box=$('studentList'); const sel=$('stuStudentSelect');
+  if(sel) sel.innerHTML=S.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')||'<option value="">لا طلاب</option>';
+  if(!S.students.length){box.innerHTML='<div class="empty-state">لا طلاب بعد</div>';return;}
+  box.innerHTML=S.students.map(s=>`<div class="badge2">${s.name}</div>`).join('');
+}
+function newCourse(){
+  const c={id:uid(),title:'مقرر جديد',content:'# مقرر جديد\n\n## درس\nنص الدرس هنا.\n\n## أسئلة\nQ: mcq\nPROMPT: 2+2=?\nOPTIONS:\n- 3\n- 4\n- 5\nANSWER: 1\nPOINTS: 1\n',version:1,publishedVersion:1,versions:[{v:1,content:'',at:Date.now()}],rules:{maxAttempts:3,timeLimit:0,allowLate:true},calendar:[],submissions:{}};
+  c.versions[0].content=c.content;
+  S.courses.push(c); S.currentId=c.id; save(S);
+  renderCourseSelects(); loadEditor();
+}
+function delCourse(){
+  if(!confirm('حذف المقرر؟'))return;
+  S.courses=S.courses.filter(c=>c.id!==S.currentId);
+  S.currentId=S.courses.length?S.courses[0].id:null;
+  save(S); renderCourseSelects(); loadEditor(); renderCourseInfo();
+}
+function loadEditor(){
+  const c=curCourse(); if(!c){$('contentEditor').value='';return;}
+  $('contentEditor').value=c.content||'';
+  const vs=$('versionSelect');
+  vs.innerHTML=c.versions.map(v=>`<option value="${v.v}">v${v.v}</option>`).join('');
+  vs.value=c.version;
+  $('ruleAttempts').value=c.rules.maxAttempts;
+  $('ruleTime').value=c.rules.timeLimit;
+  $('ruleLate').checked=c.rules.allowLate;
+  renderCourseInfo();
+}
+function saveDraft(){
+  const c=curCourse(); if(!c)return;
+  c.content=$('contentEditor').value;
+  const v=c.versions.find(x=>x.v===c.version);
+  if(v) v.content=c.content;
+  c.updatedAt=Date.now();
+  save(S); renderCourseInfo();
+  alert('تم حفظ المسودة');
+}
+function newVersion(){
+  const c=curCourse(); if(!c)return;
+  saveDraft();
+  c.version=(c.version||1)+1;
+  c.versions.push({v:c.version,content:c.content,at:Date.now()});
+  save(S); loadEditor();
+}
+function publish(){
+  const c=curCourse(); if(!c)return;
+  saveDraft();
+  c.publishedVersion=c.version;
+  save(S); renderCourseSelects(); renderCourseInfo();
+  alert('تم النشر (v'+c.version+')');
+}
+function renderCourseInfo(){
+  const c=curCourse();
+  const box=$('courseInfo');
+  if(!c){box.innerHTML='<div class="empty-state">لا مقرر محدد</div>';return;}
+  const qs=parseQuestions(c.content);
+  box.innerHTML=`<div><strong>${c.title}</strong></div><div class="small">النسخة: ${c.version} | المنشورة: ${c.publishedVersion} | أسئلة: ${qs.length} | إجابات: ${Object.keys(c.submissions||{}).length}</div>`;
+}
+function parseQuestions(text){
+  const qs=[]; const lines=(text||'').split('\n');
+  const starts=[]; lines.forEach((l,i)=>{if(/^Q:\s*\w+/i.test(l.trim()))starts.push(i);});
+  starts.forEach((s,si)=>{
+    const e=starts[si+1]??lines.length;
+    const block=lines.slice(s,e).join('\n');
+    const m=block.match(/^Q:\s*(\w+)/i); if(!m)return;
+    const type=m[1].toLowerCase();
+    const get=(key)=>{const r=block.match(new RegExp('^'+key+':\\s*(.*)$','im'));return r?r[1].trim():'';};
+    if(type==='mcq'){
+      const opts=[]; let inO=false;
+      block.split('\n').forEach(l=>{
+        if(/^OPTIONS:/i.test(l.trim())){inO=true;return;}
+        if(inO && (/^(ANSWER|POINTS|PROMPT):/i.test(l.trim()))){inO=false;return;}
+        if(inO){const mm=l.trim().match(/^-\s*(.*)$/); if(mm) opts.push(mm[1]);}
+      });
+      qs.push({id:'q'+qs.length,type:'mcq',prompt:get('PROMPT'),options:opts,answer:parseInt(get('ANSWER'))||0,points:parseFloat(get('POINTS'))||1});
+    } else if(type==='code'){
+      const sm=block.match(/STARTER:\s*\n([\s\S]*?)(?=TESTS:|POINTS:|$)/i);
+      const starter=sm?sm[1].trim():'';
+      const tests=[]; const tm=block.match(/TESTS:\s*\n([\s\S]*?)(?=POINTS:|$)/i);
+      if(tm){
+        let cur=null; tm[1].split('\n').forEach(l=>{
+          const a=l.match(/^\s*-\s*in:\s*(.*)$/); if(a){cur={in:a[1].trim()};tests.push(cur);return;}
+          const b=l.match(/^\s*out:\s*(.*)$/); if(b&&cur) cur.out=b[1].trim();
+        });
+      }
+      qs.push({id:'q'+qs.length,type:'code',prompt:get('PROMPT'),lang:get('LANG')||'js',starter,tests,points:parseFloat(get('POINTS'))||2});
+    }
+  });
+  return qs;
+}
+function lessonText(content){
+  const idx=content.search(/\nQ:\s*\w+/i);
+  const part= idx>=0?content.slice(0,idx):content;
+  // remove yaml-ish front? just return
+  return part.replace(/^---[\s\S]*?---\s*/,'').trim();
+}
+function renderStudentCourse(){
+  const c=S.courses.find(x=>x.id===$('stuCourseSelect').value);
+  if(!c){$('stuLesson').innerHTML='<div class="empty-state">لا مقرر</div>'; $('stuQuestions').innerHTML=''; return;}
+  const pub=c.versions.find(v=>v.v===c.publishedVersion)||c.versions[c.versions.length-1];
+  const content=pub?pub.content:c.content;
+  $('stuLesson').innerHTML='<pre style="white-space:pre-wrap;margin:0;">'+escapeHtml(lessonText(content))+'</pre>';
+  const qs=parseQuestions(content);
+  const box=$('stuQuestions');
+  if(!qs.length){box.innerHTML='<div class="empty-state">لا أسئلة</div>'; return;}
+  box.innerHTML=qs.map((q,qi)=>{
+    if(q.type==='mcq'){
+      return `<div class="qblock"><div><strong>س${qi+1}:</strong> ${escapeHtml(q.prompt)} (${q.points} pts)</div>`+
+        q.options.map((o,oi)=>`<div class="opt"><label><input type="radio" name="q${qi}" value="${oi}" /> ${escapeHtml(o)}</label></div>`).join('')+
+        `</div>`;
+    }
+    return `<div class="qblock"><div><strong>س${qi+1}:</strong> ${escapeHtml(q.prompt)} (${q.points} pts)</div>`+
+      `<textarea class="input codeAns" data-qi="${qi}" style="width:100%;min-height:120px;font-family:monospace;">${escapeHtml(q.starter||'')}</textarea></div>`;
+  }).join('');
+}
+function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function runCodeP(code,input){
+  return new Promise(resolve=>{
+    const html='<!doctype html><html><body><script>(function(){const input='+JSON.stringify((input!==''&&!isNaN(input))?Number(input):input)+';let result;try{'+code.replace(/<\/script/gi,'<\\/script')+'\nresult=(typeof solve==="function")?solve(input):"NO_SOLVE";}catch(e){result="ERROR: "+e.message;}parent.postMessage({type:"cr",result:String(result)},"*");})();<\/script></body></html>';
+    const iframe=document.createElement('iframe');
+    iframe.sandbox='allow-scripts'; iframe.style.display='none'; iframe.srcdoc=html;
+    document.body.appendChild(iframe);
+    let done=false;
+    function finish(val){ if(done)return; done=true; window.removeEventListener('message',handler); if(iframe.parentNode) iframe.parentNode.removeChild(iframe); resolve(val); }
+    function handler(e){ if(e.source===iframe.contentWindow && e.data && e.data.type==='cr') finish(e.data.result); }
+    window.addEventListener('message',handler);
+    setTimeout(()=>finish('TIMEOUT'),2000);
+  });
+}
+async function gradeSubmission(){
+  const c=S.courses.find(x=>x.id===$('stuCourseSelect').value);
+  if(!c){alert('اختر مقررًا');return;}
+  const sid=$('stuStudentSelect').value;
+  const pub=c.versions.find(v=>v.v===c.publishedVersion)||c.versions[c.versions.length-1];
+  const content=pub?pub.content:c.content;
+  const qs=parseQuestions(content);
+  const answers={};
+  let score=0; const total=qs.reduce((a,q)=>a+q.points,0);
+  // collect
+  qs.forEach((q,qi)=>{
+    if(q.type==='mcq'){
+      const sel=document.querySelector('input[name="q'+qi+'"]:checked');
+      answers[q.id]=sel?parseInt(sel.value):-1;
+    } else {
+      const ta=document.querySelector('.codeAns[data-qi="'+qi+'"]');
+      answers[q.id]=ta?ta.value:'';
+    }
+  });
+  // grade
+  for(let qi=0;qi<qs.length;qi++){
+    const q=qs[qi];
+    if(q.type==='mcq'){
+      if(answers[q.id]===q.answer) score+=q.points;
+    } else {
+      let passed=0;
+      for(const t of (q.tests||[])){
+        const out=await runCodeP(answers[q.id], t.in);
+        if(String(out).trim()===String(t.out).trim()) passed++;
+      }
+      const tot=(q.tests||[]).length||1;
+      score += q.points*(passed/tot);
+    }
+  }
+  if(!c.submissions) c.submissions={};
+  c.submissions[sid]={version:c.publishedVersion,answers,score,at:Date.now(),attempt:(c.submissions[sid]?.attempt||0)+1};
+  save(S);
+  $('stuResult').textContent='النتيجة: '+score.toFixed(2)+' / '+total;
+}
+function renderGradebook(){
+  const c=S.courses.find(x=>x.id===$('gbCourseSelect').value);
+  const box=$('gradebookOut');
+  if(!c){box.innerHTML='<div class="empty-state">لا مقرر</div>';return;}
+  const rows=Object.entries(c.submissions||{}).map(([sid,s])=>{
+    const st=S.students.find(x=>x.id===sid);
+    return `<tr><td>${escapeHtml(st?st.name:sid)}</td><td>v${s.version}</td><td class="score">${Number(s.score).toFixed(2)}</td><td>${new Date(s.at).toLocaleString('ar')}</td><td>${s.attempt}</td></tr>`;
+  }).join('');
+  box.innerHTML=`<table><thead><tr><th>الطالب</th><th>النسخة</th><th>الدرجة</th><th>التاريخ</th><th>محاولة</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="empty-state">لا إجابات</td></tr>'}</tbody></table>`;
+}
+function renderStats(){
+  const box=$('statsOut');
+  const totalSubs=S.courses.reduce((a,c)=>a+Object.keys(c.submissions||{}).length,0);
+  const avgScores=S.courses.map(c=>{
+    const sc=Object.values(c.submissions||{}).map(s=>s.score);
+    return sc.length? (sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(2):'-';
+  });
+  box.innerHTML=`<div class="row" style="gap:12px;flex-wrap:wrap;">
+    <div class="badge2">مقررات: ${S.courses.length}</div>
+    <div class="badge2">طلاب: ${S.students.length}</div>
+    <div class="badge2">إجابات: ${totalSubs}</div>
+  </div>
+  <div style="margin-top:8px;">${S.courses.map((c,i)=>`<div>${escapeHtml(c.title)}: متوسط ${avgScores[i]}</div>`).join('')||'<div class="empty-state">لا بيانات</div>'}</div>`;
+}
+function renderCalendar(){
+  const box=$('calendarOut');
+  const events=[];
+  S.courses.forEach(c=>(c.calendar||[]).forEach(e=>events.push({course:c.title,...e})));
+  events.sort((a,b)=>a.date.localeCompare(b.date));
+  if(!events.length){box.innerHTML='<div class="empty-state">لا أحداث</div>';return;}
+  box.innerHTML=events.map(e=>`<div style="padding:6px;border-bottom:1px solid var(--gold-dim);"><strong>${e.date}</strong> — ${escapeHtml(e.title)} <span class="small">(${escapeHtml(e.course)})</span></div>`).join('');
+}
+let liveSession=null;
+function startLive(){
+  const c=S.courses.find(x=>x.id===$('liveCourseSelect').value);
+  if(!c){alert('اختر مقررًا');return;}
+  const pub=c.versions.find(v=>v.v===c.publishedVersion)||c.versions[c.versions.length-1];
+  liveSession={courseId:c.id,content:pub?pub.content:c.content,participants:{}};
+  $('liveStatus').innerHTML='<div class="score">جلسة نشطة: '+escapeHtml(c.title)+'</div>';
+  renderLiveQuestions();
+  $('liveSubmitBtn').style.display='inline-block';
+}
+function endLive(){liveSession=null; $('liveStatus').innerHTML='<div class="empty-state">لا جلسة</div>'; $('liveQuestions').innerHTML=''; $('liveResults').innerHTML=''; $('liveSubmitBtn').style.display='none';}
+function renderLiveQuestions(){
+  if(!liveSession)return;
+  const qs=parseQuestions(liveSession.content);
+  const box=$('liveQuestions');
+  box.innerHTML=qs.map((q,qi)=>{
+    if(q.type==='mcq') return `<div class="qblock"><strong>س${qi+1}:</strong> ${escapeHtml(q.prompt)}<br/>`+
+      q.options.map((o,oi)=>`<label style="display:block;"><input type="radio" name="lq${qi}" value="${oi}"/> ${escapeHtml(o)}</label>`).join('')+`</div>`;
+    return `<div class="qblock"><strong>س${qi+1}:</strong> ${escapeHtml(q.prompt)}<br/><textarea class="input lcode" data-qi="${qi}" style="width:100%;min-height:100px;font-family:monospace;">${escapeHtml(q.starter||'')}</textarea></div>`;
+  }).join('');
+}
+async function liveSubmit(){
+  if(!liveSession){alert('ابدأ جلسة');return;}
+  const name=$('liveName').value.trim(); if(!name){alert('أدخل الاسم');return;}
+  const c=S.courses.find(x=>x.id===liveSession.courseId);
+  const qs=parseQuestions(liveSession.content);
+  const answers={}; let score=0; const total=qs.reduce((a,q)=>a+q.points,0);
+  qs.forEach((q,qi)=>{
+    if(q.type==='mcq'){const s=document.querySelector('input[name="lq'+qi+'"]:checked'); answers[q.id]=s?parseInt(s.value):-1;}
+    else {const t=document.querySelector('.lcode[data-qi="'+qi+'"]'); answers[q.id]=t?t.value:'';}
+  });
+  for(let qi=0;qi<qs.length;qi++){
+    const q=qs[qi];
+    if(q.type==='mcq'){ if(answers[q.id]===q.answer) score+=q.points; }
+    else {
+      let passed=0;
+      for(const t of (q.tests||[])){const out=await runCodeP(answers[q.id],t.in); if(String(out).trim()===String(t.out).trim()) passed++;}
+      const tot=(q.tests||[]).length||1; score+=q.points*(passed/tot);
+    }
+  }
+  liveSession.participants[name]={score,total,at:Date.now()};
+  renderLiveResults();
+}
+function renderLiveResults(){
+  if(!liveSession)return;
+  const box=$('liveResults');
+  const rows=Object.entries(liveSession.participants).map(([name,p])=>`<div>${escapeHtml(name)}: <span class="score">${p.score.toFixed(2)}/${p.total}</span></div>`).join('');
+  box.innerHTML=rows||'<div class="empty-state">لا مشاركات بعد</div>';
+}
+// wiring
+document.addEventListener('DOMContentLoaded',()=>{
+  ensureCourse();
+  renderCourseSelects(); renderStudents(); loadEditor();
+  // tabs
+  const tabs=['Courses','Editor','Student','Gradebook','Stats','Calendar','Live','IO'];
+  tabs.forEach(t=>{const b=$('tab'+t); if(b) b.onclick=()=>switchTab(t.toLowerCase());});
+  switchTab('courses');
+  // courses
+  $('courseSelect').onchange=e=>{S.currentId=e.target.value; save(S); loadEditor();};
+  $('newCourseBtn').onclick=newCourse;
+  $('delCourseBtn').onclick=delCourse;
+  $('addStudentBtn').onclick=()=>{const n=$('studentNameInput').value.trim(); if(!n)return; S.students.push({id:uid(),name:n}); $('studentNameInput').value=''; save(S); renderStudents();};
+  // editor
+  $('versionSelect').onchange=e=>{const c=curCourse(); if(!c)return; c.version=parseInt(e.target.value); c.content=c.versions.find(v=>v.v===c.version)?.content||c.content; save(S); loadEditor();};
+  $('saveDraftBtn').onclick=saveDraft;
+  $('publishBtn').onclick=publish;
+  $('newVerBtn').onclick=newVersion;
+  $('saveRulesBtn').onclick=()=>{const c=curCourse(); if(!c)return; c.rules={maxAttempts:parseInt($('ruleAttempts').value)||3,timeLimit:parseInt($('ruleTime').value)||0,allowLate:$('ruleLate').checked}; save(S); alert('تم حفظ القواعد');};
+  $('addCalBtn').onclick=()=>{const c=curCourse(); if(!c)return; const d=$('calDate').value; const t=$('calTitle').value.trim(); if(!d||!t)return; c.calendar.push({date:d,title:t}); save(S); $('calTitle').value=''; renderCalendar();};
+  // student
+  $('loadStuBtn').onclick=renderStudentCourse;
+  $('submitAnsBtn').onclick=gradeSubmission;
+  // gradebook
+  $('refreshGbBtn').onclick=renderGradebook;
+  $('gbCourseSelect').onchange=renderGradebook;
+  // stats
+  // calendar
+  // live
+  $('startLiveBtn').onclick=startLive;
+  $('endLiveBtn').onclick=endLive;
+  $('liveJoinBtn').onclick=()=>{renderLiveQuestions();};
+  $('liveSubmitBtn').onclick=liveSubmit;
+  // io
+  $('exportBtn').onclick=()=>{$('ioArea').value=JSON.stringify(S,null,2);};
+  $('importBtn').onclick=()=>{try{const d=JSON.parse($('ioArea').value); if(d.courses){S=d; if(!S.students)S.students=[]; ensureCourse(); save(S); renderCourseSelects(); renderStudents(); loadEditor(); alert('تم الاستيراد');}}catch(e){alert('JSON غير صالح');}};
+  $('importFile').onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{$('ioArea').value=r.result;}; r.readAsText(f);};
+  $('copyExportBtn').onclick=()=>{navigator.clipboard.writeText($('ioArea').value).catch(()=>{});};
+  renderCalendar(); renderStats();
+});
+})();
+</script>
+</body>
+</html>

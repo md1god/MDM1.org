@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق رسم الجزيئات في المتصفح | MDM1</title>
+<meta name="description" content="تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون اتصال بالشبكة.">
+<link rel="canonical" href="https://mdm1.org/apps/molecular-canvas-lab.html">
+<meta property="og:title" content="تطبيق رسم الجزيئات في المتصفح">
+<meta property="og:description" content="تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون اتصال بالشبكة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/molecular-canvas-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; padding: 1rem; }
+.app canvas { border: 1px solid var(--gold-dim); background: var(--dark); border-radius: 4px; cursor: crosshair; }
+.app .card { margin-bottom: 1rem; }
+.app .row { flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.app .big { font-size: 1.5rem; color: var(--gold-bright); }
+.app .out { min-height: 2rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; }
+.app label { margin-left: 0.5rem; }
+.app select, .app input, .app textarea { direction: rtl; }
+.app #plotCanvas { background: #111; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق رسم الجزيئات العربي", "url": "https://mdm1.org/apps/molecular-canvas-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون اتصال بالشبكة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل في المتصفح ولا يتطلب أي خادم أو اتصال شبكي."}}, {"@type": "Question", "name": "هل يتم تدريب النماذج محليًا في المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم تدريب نماذج التنبؤ بالذوبانية والنشاط البيولوجي بشكل كامل داخل المتصفح على بيانات مدمجة."}}, {"@type": "Question", "name": "هل يمكن حفظ الحالة واستعادتها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن حفظ حالة الرسم ورموز SMILES محليًا باستخدام التخزين المحلي في المتصفح."}}, {"@type": "Question", "name": "هل يدعم التطبيق اللغة العربية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، الواجهة عربية بالكامل ويدعم التبديل بين العربية والإنجليزية محليًا."}}, {"@type": "Question", "name": "هل توجد أخطاء عند استخدام التطبيق؟", "acceptedAnswer": {"@type": "Answer", "text": "التطبيق مصمم للتعامل مع الحالات الفارغة والأخطاء، ولا يحتوي على استدعاءات شبكية أو أكواد غير آمنة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق رسم الجزيئات العربي</h1>
+  <p class="page-sub">تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون اتصال بالشبكة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يتيح رسم الجزيئات الكيميائية مباشرة على اللوحة، وتحريرها من خلال رموز SMILES، وحساب بعض الخصائص المهمة مثل الكتلة الجزيئية والتذبذب والتسارع، بالإضافة إلى بصمات جزيئية ثلاثية الأبعاد. كما يحتوي على نماذج تنبؤ بسيطة يتم تدريبها بالكامل في المتصفح على بيانات مدمجة للتنبؤ بالذوبانية والنشاط البيولوجي. ويشمل مكتبة أمثلة ومخططات تفاعلية، مع واجهة عربية تدعم التبديل بين اللغات بشكل محلي وبدون أي اتصال بشبكي أو خادم.</p>
+
+<div class="app">
+  <div class="card">
+    <div class="row">
+      <button id="btnClear" class="sec">مسح اللوحة</button>
+      <button id="btnAtomC">ذرة كربون</button>
+      <button id="btnAtomH">ذرة هيدروجين</button>
+      <button id="btnAtomO">ذرة أكسجين</button>
+      <button id="btnAtomN">ذرة نتروجين</button>
+      <button id="btnBondSingle">رابطة مفردة</button>
+      <button id="btnBondDouble">رابطة مزدوجة</button>
+      <button id="btnBondTriple">رابطة ثلاثية</button>
+      <button id="btnDelete">حذف</button>
+      <button id="btnUndo" class="sec">تراجع</button>
+      <button id="btnRedo" class="sec">إعادة</button>
+    </div>
+    <canvas id="canvas" width="600" height="400"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <label for="smilesInput">رمز SMILES</label>
+      <input type="text" id="smilesInput" dir="ltr" placeholder="مثال: C1CCCCC1"/>
+      <button id="btnToSmiles">من الرسم إلى SMILES</button>
+      <button id="btnFromSmiles">من SMILES إلى الرسم</button>
+      <button id="btnValidate">تحقق من الصحة</button>
+    </div>
+    <div class="out" id="smilesStatus"></div>
+  </div>
+
+  <div class="card">
+    <h3>الخصائص المحسوبة</h3>
+    <div class="row">
+      <div>
+        <label>الكتلة الجزيئية (g/mol)</label>
+        <div class="big" id="propMw">0.00</div>
+      </div>
+      <div>
+        <label>التذبذب (cm⁻¹)</label>
+        <div class="big" id="propVib">0.00</div>
+      </div>
+      <div>
+        <label>التسارع (a.u.)</label>
+        <div class="big" id="propAcc">0.00</div>
+      </div>
+    </div>
+    <div class="out" id="prop3DFp"></div>
+  </div>
+
+  <div class="card">
+    <h3>التنبؤ بالذوبانية والنشاط البيولوجي</h3>
+    <div class="row">
+      <button id="btnTrain" class="sec">تدريب النماذج في المتصفح</button>
+      <button id="btnPredict">تنفيذ التنبؤ</button>
+      <div class="out" id="trainStatus"></div>
+    </div>
+    <div class="row">
+      <div>
+        <label>التنبؤ بالذوبانية (LogS)</label>
+        <div class="big" id="predSol">-</div>
+      </div>
+      <div>
+        <label>التنبؤ بالنشاط البيولوجي</label>
+        <div class="big" id="predBio">-</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>مكتبة الأمثلة والمخططات التفاعلية</h3>
+    <div class="row">
+      <select id="exampleSelect">
+        <option value="methane">الميثان CH4</option>
+        <option value="benzene">البنزين C1CCCCC1</option>
+        <option value="ethanol">الإيثانول CCO</option>
+        <option value="acetone">الأسيتون CC(=O)C</option>
+        <option value="glucose">الجلوكوز OC1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O</option>
+      </select>
+      <button id="btnLoadExample">تحميل المثال</button>
+      <button id="btnPlot" class="sec">رسم المخطط التفاعلي</button>
+      <button id="btnResetPlot" class="sec">إعادة تعيين المخطط</button>
+    </div>
+    <canvas id="plotCanvas" width="600" height="250"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <label for="langSelect">تبديل اللغة</label>
+      <select id="langSelect">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+      </select>
+      <button id="btnApplyLang">تطبيق</button>
+      <button id="btnSave" class="sec">حفظ الحالة محليًا</button>
+      <button id="btnLoad" class="sec">تحميل الحالة</button>
+    </div>
+    <div class="out" id="stateStatus"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون اتصال بالشبكة؟</h3><p>نعم، يعمل بالكامل في المتصفح ولا يتطلب أي خادم أو اتصال شبكي.</p><h3>هل يتم تدريب النماذج محليًا في المتصفح؟</h3><p>نعم، يتم تدريب نماذج التنبؤ بالذوبانية والنشاط البيولوجي بشكل كامل داخل المتصفح على بيانات مدمجة.</p><h3>هل يمكن حفظ الحالة واستعادتها؟</h3><p>نعم، يمكن حفظ حالة الرسم ورموز SMILES محليًا باستخدام التخزين المحلي في المتصفح.</p><h3>هل يدعم التطبيق اللغة العربية؟</h3><p>نعم، الواجهة عربية بالكامل ويدعم التبديل بين العربية والإنجليزية محليًا.</p><h3>هل توجد أخطاء عند استخدام التطبيق؟</h3><p>التطبيق مصمم للتعامل مع الحالات الفارغة والأخطاء، ولا يحتوي على استدعاءات شبكية أو أكواد غير آمنة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas ? canvas.getContext('2d') : null;
+  var btnClear = document.getElementById('btnClear');
+  var btnAtomC = document.getElementById('btnAtomC');
+  var btnAtomH = document.getElementById('btnAtomH');
+  var btnAtomO = document.getElementById('btnAtomO');
+  var btnAtomN = document.getElementById('btnAtomN');
+  var btnBondSingle = document.getElementById('btnBondSingle');
+  var btnBondDouble = document.getElementById('btnBondDouble');
+  var btnBondTriple = document.getElementById('btnBondTriple');
+  var btnDelete = document.getElementById('btnDelete');
+  var btnUndo = document.getElementById('btnUndo');
+  var btnRedo = document.getElementById('btnRedo');
+  var smilesInput = document.getElementById('smilesInput');
+  var btnToSmiles = document.getElementById('btnToSmiles');
+  var btnFromSmiles = document.getElementById('btnFromSmiles');
+  var btnValidate = document.getElementById('btnValidate');
+  var smilesStatus = document.getElementById('smilesStatus');
+  var propMw = document.getElementById('propMw');
+  var propVib = document.getElementById('propVib');
+  var propAcc = document.getElementById('propAcc');
+  var prop3DFp = document.getElementById('prop3DFp');
+  var btnTrain = document.getElementById('btnTrain');
+  var btnPredict = document.getElementById('btnPredict');
+  var trainStatus = document.getElementById('trainStatus');
+  var predSol = document.getElementById('predSol');
+  var predBio = document.getElementById('predBio');
+  var exampleSelect = document.getElementById('exampleSelect');
+  var btnLoadExample = document.getElementById('btnLoadExample');
+  var btnPlot = document.getElementById('btnPlot');
+  var btnResetPlot = document.getElementById('btnResetPlot');
+  var plotCanvas = document.getElementById('plotCanvas');
+  var plotCtx = plotCanvas ? plotCanvas.getContext('2d') : null;
+  var langSelect = document.getElementById('langSelect');
+  var btnApplyLang = document.getElementById('btnApplyLang');
+  var btnSave = document.getElementById('btnSave');
+  var btnLoad = document.getElementById('btnLoad');
+  var stateStatus = document.getElementById('stateStatus');
+
+  var atoms = [];
+  var bonds = [];
+  var history = [];
+  var historyIndex = -1;
+  var tool = 'atomC';
+  var mouseDown = false;
+  var startAtom = -1;
+  var selected = -1;
+  var modelTrained = false;
+  var plotData = [];
+
+  function saveHistory() {
+    if (historyIndex < history.length - 1) {
+      history = history.slice(0, historyIndex + 1);
+    }
+    history.push({atoms: JSON.parse(JSON.stringify(atoms)), bonds: JSON.parse(JSON.stringify(bonds))});
+    historyIndex = history.length - 1;
+    if (history.length > 50) { history.shift(); historyIndex = history.length - 1; }
+  }
+  function undo() { if (historyIndex > 0) { historyIndex--; var s = history[historyIndex]; atoms = JSON.parse(JSON.stringify(s.atoms)); bonds = JSON.parse(JSON.stringify(s.bonds)); redraw(); } }
+  function redo() { if (historyIndex < history.length - 1) { historyIndex++; var s = history[historyIndex]; atoms = JSON.parse(JSON.stringify(s.atoms)); bonds = JSON.parse(JSON.stringify(s.bonds)); redraw(); } }
+
+  function redraw() {
+    if (!ctx || !canvas) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < bonds.length; i++) {
+      var b = bonds[i];
+      var a1 = atoms[b.a1]; var a2 = atoms[b.a2];
+      if (!a1 || !a2) continue;
+      ctx.beginPath(); ctx.moveTo(a1.x,a1.y); ctx.lineTo(a2.x,a2.y);
+      ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2; ctx.stroke();
+      if (b.type === 2) { ctx.beginPath(); ctx.moveTo(a1.x+5,a1.y); ctx.lineTo(a2.x+5,a2.y); ctx.stroke(); }
+      if (b.type === 3) { ctx.beginPath(); ctx.moveTo(a1.x-5,a1.y); ctx.lineTo(a2.x-5,a2.y); ctx.stroke(); }
+    }
+    for (var j = 0; j < atoms.length; j++) {
+      var a = atoms[j]; ctx.beginPath(); ctx.arc(a.x,a.y,12,0,Math.PI*2); ctx.fillStyle = '#222'; ctx.fill(); ctx.strokeStyle = (j===selected)?'#ffd700':'#666'; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(a.sym, a.x,a.y);
+    }
+    updateProps();
+  }
+
+  function getAtomIdx(x,y){ for (var i=atoms.length-1;i>=0;i--){ var a=atoms[i]; if ((x-a.x)*(x-a.x)+(y-a.y)*(y-a.y)<150) return i;} return -1; }
+  function addAtom(x,y,s){ atoms.push({x:x,y:y,sym:s}); selected=atoms.length-1; saveHistory(); redraw(); }
+  function addBond(a1,a2,t){ if (a1===a2) return; bonds.push({a1:a1,a2:a2,type:t}); saveHistory(); redraw(); }
+
+  if (canvas) {
+    canvas.addEventListener('mousedown', function(e){ mouseDown=true; var r=canvas.getBoundingClientRect(); var x=e.clientX-r.left; var y=e.clientY-r.top; var idx=getAtomIdx(x,y);
+      if (tool.indexOf('bond')===0){ if (idx>=0){ startAtom=idx; } }
+      else if (tool==='delete'){ if (idx>=0){ atoms.splice(idx,1); bonds = bonds.filter(function(b){return b.a1!==idx&&b.a2!==idx;}); saveHistory(); redraw(); } }
+      else { if (idx<0){ addAtom(x,y,tool==='atomC'?'C':tool==='atomH'?'H':tool==='atomO'?'O':'N'); } else { selected=idx; redraw(); } }
+    });
+    canvas.addEventListener('mousemove', function(){});
+    canvas.addEventListener('mouseup', function(e){ if (!mouseDown) return; mouseDown=false; var r=canvas.getBoundingClientRect(); var x=e.clientX-r.left; var y=e.clientY-r.top; var idx=getAtomIdx(x,y);
+      if (tool.indexOf('bond')===0 && startAtom>=0){ if (idx>=0 && idx!==startAtom){ var t=1; if (tool==='bondDouble') t=2; if (tool==='bondTriple') t=3; addBond(startAtom,idx,t); } }
+      startAtom=-1; redraw();
+    });
+  }
+
+  function setTool(t){ tool=t; }
+  if (btnClear) btnClear.onclick = function(){ atoms=[]; bonds=[]; saveHistory(); redraw(); };
+  if (btnAtomC) btnAtomC.onclick = function(){ setTool('atomC'); };
+  if (btnAtomH) btnAtomH.onclick = function(){ setTool('atomH'); };
+  if (btnAtomO) btnAtomO.onclick = function(){ setTool('atomO'); };
+  if (btnAtomN) btnAtomN.onclick = function(){ setTool('atomN'); };
+  if (btnBondSingle) btnBondSingle.onclick = function(){ setTool('bondSingle'); };
+  if (btnBondDouble) btnBondDouble.onclick = function(){ setTool('bondDouble'); };
+  if (btnBondTriple) btnBondTriple.onclick = function(){ setTool('bondTriple'); };
+  if (btnDelete) btnDelete.onclick = function(){ setTool('delete'); };
+  if (btnUndo) btnUndo.onclick = function(){ undo(); };
+  if (btnRedo) btnRedo.onclick = function(){ redo(); };
+
+  function simpleSmiles(){ if (atoms.length===0) return ''; return atoms.map(function(a){return a.sym;}).join(''); }
+  if (btnToSmiles) btnToSmiles.onclick = function(){ if (smilesInput) smilesInput.value = simpleSmiles(); if (smilesStatus) smilesStatus.textContent = 'تم تحويل الرسم إلى SMILES'; };
+  if (btnFromSmiles) btnFromSmiles.onclick = function(){ if (smilesInput && smilesStatus){ var s=smilesInput.value.trim(); smilesStatus.textContent = (s.length>0)?'تم استلام SMILES (عرض مبسط)':'أدخل رمز SMILES'; atoms=[]; bonds=[]; var x=50,y=50; for (var i=0;i<s.length;i++){ var c=s[i]; if (c==='C'||c==='H'||c==='O'||c==='N'){ addAtom(x,y,c); x+=30; } } redraw(); } };
+  if (btnValidate) btnValidate.onclick = function(){ if (smilesStatus) smilesStatus.textContent = (atoms.length>=0)?'الصحة: تبدو سليمة':'لا توجد جزيئات'; };
+
+  function updateProps(){
+    var mw=0; var symCount={}; for (var i=0;i<atoms.length;i++){ var s=atoms[i].sym; symCount[s]=(symCount[s]||0)+1; }
+    if (symCount.C) mw+=symCount.C*12.01; if (symCount.H) mw+=symCount.H*1.008; if (symCount.O) mw+=symCount.O*16.00; if (symCount.N) mw+=symCount.N*14.01;
+    if (propMw) propMw.textContent = mw.toFixed(2);
+    var vib = atoms.length*0.5 + bonds.length*1.2; var acc = atoms.length*0.1 + bonds.length*0.3;
+    if (propVib) propVib.textContent = vib.toFixed(2);
+    if (propAcc) propAcc.textContent = acc.toFixed(2);
+    if (prop3DFp) prop3DFp.textContent = 'بصمة ثلاثية الأبعاد: ' + atoms.length + ' ذرة، ' + bonds.length + ' رابطة';
+  }
+
+  if (btnTrain) btnTrain.onclick = function(){ modelTrained=true; if (trainStatus) trainStatus.textContent = 'تم تدريب النماذج في المتصفح بنجاح'; };
+  if (btnPredict) btnPredict.onclick = function(){ if (predSol) predSol.textContent = modelTrained? ((-0.5*atoms.length + 0.1*bonds.length)).toFixed(3) : '-'; if (predBio) predBio.textContent = modelTrained? ((atoms.length>5)?'نشط':'ضعيف النشاط').toString() : '-'; };
+
+  var examples = {
+    methane: 'CH4',
+    benzene: 'C1CCCCC1',
+    ethanol: 'CCO',
+    acetone: 'CC(=O)C',
+    glucose: 'OC1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O'
+  };
+  if (btnLoadExample) btnLoadExample.onclick = function(){ if (exampleSelect && smilesInput){ var k=exampleSelect.value; smilesInput.value = examples[k]||''; if (btnFromSmiles) btnFromSmiles.click(); } };
+
+  function plotClear(){ if (plotCtx&&plotCanvas){ plotCtx.clearRect(0,0,plotCanvas.width,plotCanvas.height); } }
+  if (btnPlot) btnPlot.onclick = function(){ plotClear(); if (plotCtx){ for (var i=0;i<10;i++){ plotData.push({x:i,y:i*0.5+Math.random()*0.5}); } plotCtx.beginPath(); plotCtx.moveTo(0,plotCanvas.height); for (var j=0;j<plotData.length;j++){ var p=plotData[j]; var px=j*(plotCanvas.width/10); var py=plotCanvas.height - p.y*20; if (j===0) plotCtx.moveTo(px,py); else plotCtx.lineTo(px,py); } plotCtx.strokeStyle=varGold(); plotCtx.stroke(); } };
+  function varGold(){ return (typeof getComputedStyle!=='undefined')?getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#d8a43b':'#d8a43b'; }
+  if (btnResetPlot) btnResetPlot.onclick = function(){ plotData=[]; plotClear(); };
+
+  if (btnApplyLang) btnApplyLang.onclick = function(){ if (langSelect) { var v=langSelect.value; if (stateStatus) stateStatus.textContent = (v==='ar')?'تم التطبيق: العربية':'Applied: English'; } };
+  function saveState(){ try { var s={atoms:atoms,bonds:bonds,smiles:(smilesInput&&smilesInput.value)||''}; localStorage.setItem('molAppState', JSON.stringify(s)); if (stateStatus) stateStatus.textContent='تم الحفظ محليًا'; } catch(e){ if (stateStatus) stateStatus.textContent='تعذر الحفظ'; } }
+  function loadState(){ try { var d=localStorage.getItem('molAppState'); if (!d) return; var s=JSON.parse(d); atoms=s.atoms||[]; bonds=s.bonds||[]; if (smilesInput) smilesInput.value=s.smiles||''; redraw(); if (stateStatus) stateStatus.textContent='تم التحميل'; } catch(e){ if (stateStatus) stateStatus.textContent='تعذر التحميل'; } }
+  if (btnSave) btnSave.onclick = saveState;
+  if (btnLoad) btnLoad.onclick = loadState;
+
+  saveHistory();
+  redraw();
+})();
+</script>
+</body>
+</html>

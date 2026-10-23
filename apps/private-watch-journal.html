@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مكتبة أفلام ومسلسلات شخصية - تطبيق إدارة مشاهدة وتقييم ومراجعات | MDM1</title>
+<meta name="description" content="تطبيق ويب عربي لإدارة مكتبة الأفلام والمسلسلات: أضف أعمالك، استوردها من CSV/JSON، تابع تقدم الحلقات، قيّم الأعمال، اكتب مراجعات، أنشئ قوائم مخصصة، وشاهد إحصاءات مشاهدتك التفصيلية.">
+<link rel="canonical" href="https://mdm1.org/apps/private-watch-journal.html">
+<meta property="og:title" content="مكتبة أفلام ومسلسلات شخصية - تطبيق إدارة مشاهدة وتقييم ومراجعات">
+<meta property="og:description" content="تطبيق ويب عربي لإدارة مكتبة الأفلام والمسلسلات: أضف أعمالك، استوردها من CSV/JSON، تابع تقدم الحلقات، قيّم الأعمال، اكتب مراجعات، أنشئ قوائم مخصصة، وشاهد إحصاءات مشاهدتك التفصيلية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/private-watch-journal.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .row{margin-bottom:.7rem}
+.app .row .out{margin:0 .3rem;padding:.4rem;border-radius:6px;background:rgba(255,255,255,.05)}
+.app #libraryList .item,#app .item{border:1px solid var(--gold-dim);border-radius:8px;padding:.8rem;margin-bottom:.6rem;background:rgba(255,255,255,.03)}
+.app .item h3{margin:0 0 .4rem;color:var(--gold)}
+.app .item .meta{font-size:.85rem;color:var(--light);opacity:.85;margin-bottom:.4rem}
+.app .item .actions{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.app .item .actions button{font-size:.8rem;padding:.25rem .6rem}
+.app .badge{display:inline-block;padding:.15rem .5rem;border-radius:4px;background:var(--gold);color:var(--dark);font-size:.75rem;margin:0 .15rem}
+.app .badge.status-completed{background:#2e7d32;color:#fff}
+.app .badge.status-watching{background:#1565c0;color:#fff}
+.app .badge.status-not_started{background:#616161;color:#fff}
+.app .badge.status-on_hold{background:#ef6c00;color:#fff}
+.app .badge.status-dropped{background:#c62828;color:#fff}
+.app .listItem{display:flex;justify-content:space-between;align-items:center;padding:.4rem;border-bottom:1px solid var(--gold-dim);font-size:.9rem}
+.app .listItem button{margin-right:.3rem;font-size:.75rem;padding:.15rem .4rem}
+.app #calendarList .calItem{padding:.4rem;border-bottom:1px solid var(--gold-dim);font-size:.9rem}
+.app input[type="file"]{color:var(--light)}
+.app .big{font-size:1.4rem;font-weight:bold;color:var(--gold-bright)}
+.app h2{color:var(--gold);margin-top:0}
+.app .out{color:var(--light)}
+.app table{width:100%;border-collapse:collapse;font-size:.85rem}
+.app table td,.app table th{padding:.3rem;border:1px solid var(--gold-dim);text-align:right}
+.app .starRating{display:flex;gap:.15rem;margin:.3rem 0}
+.app .starRating span{cursor:pointer;font-size:1.2rem;color:var(--gold-dim)}
+.app .starRating span.active{color:var(--gold-bright)}
+.app .progressBar{background:rgba(255,255,255,.1);height:6px;border-radius:3px;margin:.3rem 0}
+.app .progressBar div{background:var(--gold);height:100%;border-radius:3px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مكتبتي السينمائية - إدارة ذكية لأفلامك ومسلسلاتك", "url": "https://mdm1.org/apps/private-watch-journal.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يمكنني استخدام التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل التطبيق بالكامل داخل المتصفح ويعتمد على التخزين المحلي للبيانات، لذلك لا يحتاج إلى اتصال بالإنترنت بعد تحميل الصفحة."}}, {"@type": "Question", "name": "كيف أستورد بياناتي من ملفات CSV أو JSON؟", "acceptedAnswer": {"@type": "Answer", "text": "من قسم \"استيراد وتصدير\"، اختر الملف المطلوب من جهازك ثم اضغط زر \"استيراد الملف\". يجب أن يحتوي ملف CSV على عمود title على الأقل، وملف JSON على مصفوفة من كائنات الأعمال."}}, {"@type": "Question", "name": "هل يمكنني تصدير نسخة احتياطية من بياناتي؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تصدير جميع بياناتك بصيغة JSON أو CSV من خلال الأزرار المخصصة في قسم \"استيراد وتصدير\" وحفظها على جهازك."}}, {"@type": "Question", "name": "كيف أتابع تقدم الحلقات في المسلسلات؟", "acceptedAnswer": {"@type": "Answer", "text": "عند إضافة مسلسل، حدد عدد الحلقات الكلية، ثم استخدم زر \"إضافة حلقة\" في بطاقة العمل لزيادة عدد الحلقات المشاهدة تدريجيًا، وسيتحدث تقدم المشاهدة تلقائيًا."}}, {"@type": "Question", "name": "هل يمكنني إنشاء قوائم مخصصة لأعمالي؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، من قسم \"قوائم مخصصة\" يمكنك إنشاء قوائم بأسماء تختارها مثل \"مفضلاتي\" أو \"قائمة الانتظار\"، ثم تعيين الأعمال إليها عند الإضافة أو التعديل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مكتبتي السينمائية - إدارة ذكية لأفلامك ومسلسلاتك</h1>
+  <p class="page-sub">تطبيق ويب عربي لإدارة مكتبة الأفلام والمسلسلات: أضف أعمالك، استوردها من CSV/JSON، تابع تقدم الحلقات، قيّم الأعمال، اكتب مراجعات، أنشئ قوائم مخصصة، وشاهد إحصاءات مشاهدتك التفصيلية.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إذا كنت تبحث عن طريقة منظمة لإدارة كل أفلامك ومسلسلاتك الشخصية في مكان واحد، فأنت في المكان الصحيح. هذا التطبيق يتيح لك إضافة الأعمال يدويًا أو استيرادها من ملفات CSV أو JSON، وتسجيل تفاصيل المشاهدة مثل التقييم والملاحظات والتقييم الشخصي، ومتابعة تقدم الحلقات لكل مسلسل بشكل دقيق، وتوثيق لحظات إعادة المشاهدة. يتيح لك كذلك إنشاء قوائم مخصصة مثل "الأفلام المفضلة" أو "قائمة الانتظار"، والبحث والفلترة المتقدمة حسب النوع والحالة والتقييم، وتصفح تقويم إصدارات محلي يعرض الأعمال القادمة مرتبة زمنيًا. تُحفظ جميع بياناتك في ذاكرة المتصفح المحلية ويمكنك تصديرها كنسخة احتياطية كاملة في أي وقت. ابدأ الآن بإضافة أول عمل لمكتبتك واستمتع بتجربة إدارة متكاملة بالكامل باللغة العربية.</p>
+
+<div class="app">
+<div class="card">
+<h2>إضافة عمل جديد</h2>
+<div class="row">
+<label for="title">اسم العمل</label>
+<input type="text" id="title" placeholder="مثال: فيلم أو مسلسل">
+</div>
+<div class="row">
+<label for="type">النوع</label>
+<select id="type">
+<option value="movie">فيلم</option>
+<option value="series">مسلسل</option>
+</select>
+</div>
+<div class="row">
+<label for="genre">التصنيف</label>
+<select id="genre">
+<option value="دراما">دراما</option>
+<option value="أكشن">أكشن</option>
+<option value="كوميديا">كوميديا</option>
+<option value="رعب">رعب</option>
+<option value="خيال علمي">خيال علمي</option>
+<option value="وثائقي">وثائقي</option>
+<option value="رومانسي">رومانسي</option>
+<option value="جريمة">جريمة</option>
+<option value="مغامرة">مغامرة</option>
+<option value="تاريخي">تاريخي</option>
+</select>
+</div>
+<div class="row">
+<label for="releaseDate">تاريخ الإصدار</label>
+<input type="date" id="releaseDate">
+</div>
+<div class="row">
+<label for="totalEpisodes">عدد الحلقات (للمسلسلات)</label>
+<input type="number" id="totalEpisodes" min="0" value="0">
+</div>
+<div class="row">
+<label for="status">حالة المشاهدة</label>
+<select id="status">
+<option value="not_started">لم أبدأ</option>
+<option value="watching">أشاهد حاليًا</option>
+<option value="completed">مكتمل</option>
+<option value="on_hold">متوقف مؤقتًا</option>
+<option value="dropped">متوقف نهائيًا</option>
+</select>
+</div>
+<div class="row">
+<label for="watchedEpisodes">الحلقات المشاهدة</label>
+<input type="number" id="watchedEpisodes" min="0" value="0">
+</div>
+<div class="row">
+<label for="rating">التقييم (من 10)</label>
+<input type="number" id="rating" min="0" max="10" step="0.1" placeholder="0-10">
+</div>
+<div class="row">
+<label for="review">المراجعة</label>
+<textarea id="review" rows="3" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+</div>
+<div class="row">
+<label for="rewatchCount">عدد مرات إعادة المشاهدة</label>
+<input type="number" id="rewatchCount" min="0" value="0">
+</div>
+<div class="row">
+<label for="listAssign">إضافة إلى قائمة</label>
+<select id="listAssign">
+<option value="">بدون قائمة</option>
+</select>
+</div>
+<div class="row">
+<button id="addBtn">إضافة العمل</button>
+<button id="editCancelBtn" class="sec" style="display:none">إلغاء التعديل</button>
+</div>
+<div id="addMsg" class="out" style="display:none"></div>
+</div>
+
+<div class="card">
+<h2>بحث وفلترة</h2>
+<div class="row">
+<label for="searchInput">بحث بالاسم</label>
+<input type="text" id="searchInput" placeholder="اكتب اسم العمل...">
+</div>
+<div class="row">
+<label for="filterType">النوع</label>
+<select id="filterType">
+<option value="all">الكل</option>
+<option value="movie">أفلام</option>
+<option value="series">مسلسلات</option>
+</select>
+</div>
+<div class="row">
+<label for="filterStatus">الحالة</label>
+<select id="filterStatus">
+<option value="all">الكل</option>
+<option value="not_started">لم أبدأ</option>
+<option value="watching">أشاهد حاليًا</option>
+<option value="completed">مكتمل</option>
+<option value="on_hold">متوقف مؤقتًا</option>
+<option value="dropped">متوقف نهائيًا</option>
+</select>
+</div>
+<div class="row">
+<label for="filterGenre">التصنيف</label>
+<select id="filterGenre">
+<option value="all">الكل</option>
+</select>
+</div>
+<div class="row">
+<label for="filterRating">التقييم الأدنى</label>
+<input type="number" id="filterRating" min="0" max="10" step="0.1" value="0">
+</div>
+<div class="row">
+<label for="sortBy">ترتيب حسب</label>
+<select id="sortBy">
+<option value="title">الاسم</option>
+<option value="rating">التقييم</option>
+<option value="releaseDate">تاريخ الإصدار</option>
+<option value="watchedEpisodes">الحلقات المشاهدة</option>
+</select>
+</div>
+<div class="row">
+<button id="applyFilterBtn">تطبيق الفلترة</button>
+<button id="resetFilterBtn" class="sec">إعادة تعيين الفلاتر</button>
+</div>
+</div>
+
+<div class="card">
+<h2>قوائم مخصصة</h2>
+<div class="row">
+<label for="newListName">اسم القائمة الجديدة</label>
+<input type="text" id="newListName" placeholder="مثال: مفضلاتي">
+</div>
+<div class="row">
+<button id="createListBtn">إنشاء قائمة</button>
+</div>
+<div id="listsContainer"></div>
+</div>
+
+<div class="card">
+<h2>إحصائيات المشاهدة</h2>
+<div class="row">
+<div class="out">إجمالي الأعمال: <span class="big" id="statTotal">0</span></div>
+<div class="out">الأفلام: <span class="big" id="statMovies">0</span></div>
+<div class="out">المسلسلات: <span class="big" id="statSeries">0</span></div>
+</div>
+<div class="row">
+<div class="out">مكتملة: <span class="big" id="statCompleted">0</span></div>
+<div class="out">قيد المشاهدة: <span class="big" id="statWatching">0</span></div>
+<div class="out">إجمالي الحلقات: <span class="big" id="statEpisodes">0</span></div>
+</div>
+<div class="row">
+<div class="out">إعادة المشاهدة: <span class="big" id="statRewatch">0</span></div>
+<div class="out">متوسط التقييم: <span class="big" id="statAvgRating">0</span></div>
+<div class="out">عدد المراجعات: <span class="big" id="statReviews">0</span></div>
+</div>
+</div>
+
+<div class="card">
+<h2>تقويم الإصدارات القادم</h2>
+<div id="calendarList"></div>
+</div>
+
+<div class="card">
+<h2>استيراد وتصدير</h2>
+<div class="row">
+<label for="importFile">اختر ملف CSV أو JSON</label>
+<input type="file" id="importFile" accept=".csv,.json">
+</div>
+<div class="row">
+<button id="importBtn">استيراد الملف</button>
+<button id="exportJsonBtn" class="sec">تصدير JSON</button>
+<button id="exportCsvBtn" class="sec">تصدير CSV</button>
+</div>
+<div class="row">
+<button id="clearAllBtn" class="sec">حذف جميع البيانات</button>
+</div>
+<div id="importMsg" class="out" style="display:none"></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="card">
+<h2>مكتبة الأعمال</h2>
+<div id="libraryList"></div>
+<div id="emptyMsg" class="out" style="display:none">لا توجد أعمال في المكتبة بعد. ابدأ بإضافة أول عمل من النموذج أعلاه.</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يمكنني استخدام التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل التطبيق بالكامل داخل المتصفح ويعتمد على التخزين المحلي للبيانات، لذلك لا يحتاج إلى اتصال بالإنترنت بعد تحميل الصفحة.</p><h3>كيف أستورد بياناتي من ملفات CSV أو JSON؟</h3><p>من قسم &quot;استيراد وتصدير&quot;، اختر الملف المطلوب من جهازك ثم اضغط زر &quot;استيراد الملف&quot;. يجب أن يحتوي ملف CSV على عمود title على الأقل، وملف JSON على مصفوفة من كائنات الأعمال.</p><h3>هل يمكنني تصدير نسخة احتياطية من بياناتي؟</h3><p>نعم، يمكنك تصدير جميع بياناتك بصيغة JSON أو CSV من خلال الأزرار المخصصة في قسم &quot;استيراد وتصدير&quot; وحفظها على جهازك.</p><h3>كيف أتابع تقدم الحلقات في المسلسلات؟</h3><p>عند إضافة مسلسل، حدد عدد الحلقات الكلية، ثم استخدم زر &quot;إضافة حلقة&quot; في بطاقة العمل لزيادة عدد الحلقات المشاهدة تدريجيًا، وسيتحدث تقدم المشاهدة تلقائيًا.</p><h3>هل يمكنني إنشاء قوائم مخصصة لأعمالي؟</h3><p>نعم، من قسم &quot;قوائم مخصصة&quot; يمكنك إنشاء قوائم بأسماء تختارها مثل &quot;مفضلاتي&quot; أو &quot;قائمة الانتظار&quot;، ثم تعيين الأعمال إليها عند الإضافة أو التعديل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-22 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+const LS_KEY='arabic_media_lib_v1';
+let mediaItems=[];
+let customLists=[];
+let editingId=null;
+
+function $(id){return document.getElementById(id)}
+
+function loadData(){
+try{
+const raw=localStorage.getItem(LS_KEY);
+if(raw){const d=JSON.parse(raw);mediaItems=d.items||[];customLists=d.lists||[];}
+}catch(e){mediaItems=[];customLists=[];}
+}
+
+function saveData(){
+try{
+localStorage.setItem(LS_KEY,JSON.stringify({items:mediaItems,lists:customLists}));
+}catch(e){}
+}
+
+function genId(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5);}
+
+function statusLabel(s){
+const map={not_started:'لم أبدأ',watching:'أشاهد حاليًا',completed:'مكتمل',on_hold:'متوقف مؤقتًا',dropped:'متوقف نهائيًا'};
+return map[s]||s;
+}
+
+function escapeHtml(t){
+return String(t||'').replace(/[&<>"']/g,function(c){
+return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+});
+}
+
+function renderLibrary(){
+const container=$('libraryList');
+const emptyMsg=$('emptyMsg');
+if(mediaItems.length===0){container.innerHTML='';emptyMsg.style.display='block';return;}
+emptyMsg.style.display='none';
+
+const search=$('searchInput').value.trim().toLowerCase();
+const fType=$('filterType').value;
+const fStatus=$('filterStatus').value;
+const fGenre=$('filterGenre').value;
+const fRating=parseFloat($('filterRating').value)||0;
+const sortBy=$('sortBy').value;
+
+let filtered=mediaItems.filter(function(it){
+if(search && it.title.toLowerCase().indexOf(search)===-1)return false;
+if(fType!=='all' && it.type!==fType)return false;
+if(fStatus!=='all' && it.status!==fStatus)return false;
+if(fGenre!=='all' && it.genre!==fGenre)return false;
+if(it.rating && it.rating<fRating)return false;
+return true;
+});
+
+filtered.sort(function(a,b){
+if(sortBy==='title')return a.title.localeCompare(b.title,'ar');
+if(sortBy==='rating')return (b.rating||0)-(a.rating||0);
+if(sortBy==='releaseDate')return(b.releaseDate||'').localeCompare(a.releaseDate||'');
+if(sortBy==='watchedEpisodes')return(b.watchedEpisodes||0)-(a.watchedEpisodes||0);
+return 0;
+});
+
+if(filtered.length===0){container.innerHTML='<div class="out">لا توجد نتائج مطابقة للفلاتر الحالية.</div>';return;}
+
+container.innerHTML=filtered.map(function(it){
+const progress=it.type==='series'&&it.totalEpisodes>0?Math.round((it.watchedEpisodes/it.totalEpisodes)*100):0;
+const stars='';
+for(let i=1;i<=10;i++){stars+='<span class="'+(it.rating&&i<=Math.round(it.rating)?'active':'')+'">★</span>';}
+const listNames=customLists.filter(function(l){return l.itemIds.indexOf(it.id)!==-1;}).map(function(l){return l.name;}).join('، ');
+return'<div class="item" data-id="'+it.id+'">'+
+'<h3>'+escapeHtml(it.title)+'</h3>'+
+'<div class="meta">'+
+'<span class="badge">'+(it.type==='movie'?'فيلم':'مسلسل')+'</span>'+
+'<span class="badge status-'+it.status+'">'+statusLabel(it.status)+'</span>'+
+'<span class="badge">'+escapeHtml(it.genre)+'</span>'+
+(it.releaseDate?'<span class="badge">'+it.releaseDate+'</span>':'')+
+'</div>'+
+'<div class="meta">التقييم: '+(it.rating?it.rating+'/10':'غير مقيّم')+'</div>'+
+'<div class="starRating">'+stars+'</div>'+
+(it.type==='series'?'<div class="meta">الحلقات: '+it.watchedEpisodes+' / '+it.totalEpisodes+'</div><div class="progressBar"><div style="width:'+progress+'%"></div></div>':'')+
+'<div class="meta">إعادة المشاهدة: '+(it.rewatchCount||0)+'</div>'+
+(it.review?'<div class="meta">المراجعة: '+escapeHtml(it.review)+'</div>':'')+
+(listNames?'<div class="meta">القوائم: '+escapeHtml(listNames)+'</div>':'')+
+'<div class="actions">'+
+'<button onclick="window.__editItem(\''+it.id+'\')">تعديل</button>'+
+'<button onclick="window.__deleteItem(\''+it.id+'\')">حذف</button>'+
+(it.type==='series'?'<button onclick="window.__addEpisode(\''+it.id+'\')">إضافة حلقة</button>':'')+
+'<button onclick="window.__markWatched(\''+it.id+'\')">تعليم كمكتمل</button>'+
+'<button onclick="window.__rewatch(\''+it.id+'\')">إعادة مشاهدة</button>'+
+'</div>'+
+'</div>';
+}).join('');
+}
+
+window.__editItem=function(id){
+const it=mediaItems.find(function(x){return x.id===id;});
+if(!it)return;
+editingId=id;
+$('title').value=it.title||'';
+$('type').value=it.type||'movie';
+$('genre').value=it.genre||'دراما';
+$('releaseDate').value=it.releaseDate||'';
+$('totalEpisodes').value=it.totalEpisodes||0;
+$('status').value=it.status||'not_started';
+$('watchedEpisodes').value=it.watchedEpisodes||0;
+$('rating').value=it.rating||'';
+$('review').value=it.review||'';
+$('rewatchCount').value=it.rewatchCount||0;
+$('editCancelBtn').style.display='inline-block';
+$('addBtn').textContent='تحديث العمل';
+$('title').scrollIntoView({behavior:'smooth'});
+};
+
+$('editCancelBtn').onclick=function(){
+editingId=null;
+$('addBtn').textContent='إضافة العمل';
+$('editCancelBtn').style.display='none';
+resetForm();
+};
+
+window.__deleteItem=function(id){
+if(!confirm('هل أنت متأكد من حذف هذا العمل؟'))return;
+mediaItems=mediaItems.filter(function(x){return x.id!==id;});
+customLists.forEach(function(l){l.itemIds=l.itemIds.filter(function(iid){return iid!==id;});});
+saveData();renderAll();
+};
+
+window.__addEpisode=function(id){
+const it=mediaItems.find(function(x){return x.id===id;});
+if(!it)return;
+if(it.watchedEpisodes<it.totalEpisodes){it.watchedEpisodes++;}
+if(it.watchedEpisodes>=it.totalEpisodes){it.status='completed';}
+else{it.status='watching';}
+saveData();renderAll();
+};
+
+window.__markWatched=function(id){
+const it=mediaItems.find(function(x){return x.id===id;});
+if(!it)return;
+it.status='completed';
+if(it.type==='series'){it.watchedEpisodes=it.totalEpisodes;}
+saveData();renderAll();
+};
+
+window.__rewatch=function(id){
+const it=mediaItems.find(function(x){return x.id===id;});
+if(!it)return;
+it.rewatchCount=(it.rewatchCount||0)+1;
+saveData();renderAll();
+};
+
+function resetForm(){
+$('title').value='';$('releaseDate').value='';$('totalEpisodes').value=0;
+$('watchedEpisodes').value=0;$('rating').value='';$('review').value='';$('rewatchCount').value=0;
+}
+
+$('addBtn').onclick=function(){
+const title=$('title').value.trim();
+if(!title){showMsg('addMsg','يرجى إدخال اسم العمل.');return;}
+const type=$('type').value;
+const genre=$('genre').value;
+const releaseDate=$('releaseDate').value;
+const totalEpisodes=parseInt($('totalEpisodes').value)||0;
+const status=$('status').value;
+const watchedEpisodes=parseInt($('watchedEpisodes').value)||0;
+const ratingVal=$('rating').value;
+const rating=ratingVal?parseFloat(ratingVal):null;
+if(rating!==null&&(rating<0||rating>10)){showMsg('addMsg','التقييم يجب أن يكون بين 0 و 10.');return;}
+const review=$('review').value.trim();
+const rewatchCount=parseInt($('rewatchCount').value)||0;
+const listId=$('listAssign').value;
+
+if(editingId){
+const it=mediaItems.find(function(x){return x.id===editingId;});
+if(it){it.title=title;it.type=type;it.genre=genre;it.releaseDate=releaseDate;
+it.totalEpisodes=totalEpisodes;it.status=status;it.watchedEpisodes=watchedEpisodes;
+it.rating=rating;it.review=review;it.rewatchCount=rewatchCount;}
+editingId=null;$('addBtn').textContent='إضافة العمل';$('editCancelBtn').style.display='none';
+}else{
+const newItem={id:genId(),title:title,type:type,genre:genre,releaseDate:releaseDate,
+totalEpisodes:totalEpisodes,status:status,watchedEpisodes:watchedEpisodes,
+rating:rating,review:review,rewatchCount:rewatchCount,createdAt:Date.now()};
+mediaItems.push(newItem);
+if(listId){const list=customLists.find(function(l){return l.id===listId;});if(list){list.itemIds.push(newItem.id);}}
+}
+saveData();resetForm();renderAll();
+showMsg('addMsg',editingId?'تم التحديث بنجاح.':'تمت الإضافة بنجاح.');
+};
+
+function showMsg(id,text){
+const el=$(id);el.textContent=text;el.style.display='block';
+setTimeout(function(){el.style.display='none';},4000);
+}
+
+$('applyFilterBtn').onclick=function(){renderLibrary();};
+$('resetFilterBtn').onclick=function(){
+$('searchInput').value='';$('filterType').value='all';$('filterStatus').value='all';
+$('filterGenre').value='all';$('filterRating').value=0;$('sortBy').value='title';
+renderLibrary();
+};
+$('searchInput').oninput=function(){renderLibrary();};
+
+function renderFilterGenres(){
+const genres=[...new Set(mediaItems.map(function(it){return it.genre;}))];
+const sel=$('filterGenre');
+const cur=sel.value;
+sel.innerHTML='<option value="all">الكل</option>'+genres.map(function(g){return'<option value="'+escapeHtml(g)+'">'+escapeHtml(g)+'</option>';}).join('');
+sel.value=cur||'all';
+}
+
+function renderListAssign(){
+const sel=$('listAssign');
+sel.innerHTML='<option value="">بدون قائمة</option>'+customLists.map(function(l){return'<option value="'+l.id+'">'+escapeHtml(l.name)+'</option>';}).join('');
+}
+
+function renderLists(){
+const c=$('listsContainer');
+if(customLists.length===0){c.innerHTML='<div class="out">لا توجد قوائم بعد.</div>';return;}
+c.innerHTML=customLists.map(function(l){
+const items=mediaItems.filter(function(it){return l.itemIds.indexOf(it.id)!==-1;});
+return'<div class="listItem"><span><strong>'+escapeHtml(l.name)+'</strong> ('+items.length+' عمل)</span>'+
+'<span><button onclick="window.__viewList(\''+l.id+'\')">عرض</button>'+
+'<button onclick="window.__deleteList(\''+l.id+'\')">حذف</button></span></div>';
+}).join('');
+}
+
+window.__viewList=function(id){
+const list=customLists.find(function(l){return l.id===id;});
+if(!list)return;
+const items=mediaItems.filter(function(it){return list.itemIds.indexOf(it.id)!==-1;});
+alert('قائمة '+list.name+':\n'+(items.length?items.map(function(i){return i.title;}).join('\n'):'فارغة'));
+};
+
+window.__deleteList=function(id){
+if(!confirm('حذف هذه القائمة؟'))return;
+customLists=customLists.filter(function(l){return l.id!==id;});
+saveData();renderAll();
+};
+
+$('createListBtn').onclick=function(){
+const name=$('newListName').value.trim();
+if(!name){showMsg('addMsg','يرجى إدخال اسم القائمة.');return;}
+customLists.push({id:genId(),name:name,itemIds:[]});
+$('newListName').value='';saveData();renderAll();
+};
+
+function renderStats(){
+$('statTotal').textContent=mediaItems.length;
+$('statMovies').textContent=mediaItems.filter(function(i){return i.type==='movie';}).length;
+$('statSeries').textContent=mediaItems.filter(function(i){return i.type==='series';}).length;
+$('statCompleted').textContent=mediaItems.filter(function(i){return i.status==='completed';}).length;
+$('statWatching').textContent=mediaItems.filter(function(i){return i.status==='watching';}).length;
+$('statEpisodes').textContent=mediaItems.reduce(function(s,i){return s+(i.watchedEpisodes||0);},0);
+$('statRewatch').textContent=mediaItems.reduce(function(s,i){return s+(i.rewatchCount||0);},0);
+const rated=mediaItems.filter(function(i){return i.rating;});
+$('statAvgRating').textContent=rated.length?(rated.reduce(function(s,i){return s+i.rating;},0)/rated.length).toFixed(1):'0';
+$('statReviews').textContent=mediaItems.filter(function(i){return i.review;}).length;
+}
+
+function renderCalendar(){
+const c=$('calendarList');
+const upcoming=mediaItems.filter(function(it){return it.releaseDate;}).sort(function(a,b){return b.releaseDate.localeCompare(a.releaseDate);});
+if(upcoming.length===0){c.innerHTML='<div class="out">لا توجد أعمال مسجلة بتاريخ إصدار.</div>';return;}
+c.innerHTML=upcoming.slice(0,15).map(function(it){
+return'<div class="calItem"><strong>'+it.releaseDate+'</strong> - '+escapeHtml(it.title)+' ('+(it.type==='movie'?'فيلم':'مسلسل')+')</div>';
+}).join('');
+}
+
+$('importBtn').onclick=function(){
+const fileInput=$('importFile');
+if(!fileInput.files||!fileInput.files[0]){showMsg('importMsg','يرجى اختيار ملف أولاً.');return;}
+const file=fileInput.files[0];
+const reader=new FileReader();
+reader.onload=function(e){
+try{
+const text=e.target.result;
+let imported=[];
+if(file.name.endsWith('.json')){
+const data=JSON.parse(text);
+if(Array.isArray(data))imported=data;
+else if(data.items)imported=data.items;
+}else{
+const lines=text.split('\n').filter(function(l){return l.trim();});
+if(lines.length<2){showMsg('importMsg','الملف فارغ أو غير صالح.');return;}
+const headers=lines[0].split(',').map(function(h){return h.trim();});
+for(let i=1;i<lines.length;i++){
+const vals=lines[i].split(',');
+const obj={};
+headers.forEach(function(h,idx){obj[h]=(vals[idx]||'').trim();});
+imported.push(obj);
+}
+}
+let count=0;
+imported.forEach(function(raw){
+if(!raw.title)return;
+const item={
+id:genId(),
+title:raw.title,
+type:raw.type||'movie',
+genre:raw.genre||'دراما',
+releaseDate:raw.releaseDate||'',
+totalEpisodes:parseInt(raw.totalEpisodes)||0,
+status:raw.status||'not_started',
+watchedEpisodes:parseInt(raw.watchedEpisodes)||0,
+rating:raw.rating?parseFloat(raw.rating):null,
+review:raw.review||'',
+rewatchCount:parseInt(raw.rewatchCount)||0,
+createdAt:Date.now()
+};
+mediaItems.push(item);count++;
+});
+saveData();renderAll();
+showMsg('importMsg','تم استيراد '+count+' عمل بنجاح.');
+}catch(err){showMsg('importMsg','خطأ في قراءة الملف: '+err.message);}
+};
+reader.readAsText(file);
+};
+
+$('exportJsonBtn').onclick=function(){
+const data=JSON.stringify({items:mediaItems,lists:customLists},null,2);
+const blob=new Blob([data],{type:'application/json'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='media_backup.json';a.click();
+URL.revokeObjectURL(url);
+showMsg('importMsg','تم تصدير النسخة الاحتياطية بصيغة JSON.');
+};
+
+$('exportCsvBtn').onclick=function(){
+const headers='title,type,genre,releaseDate,totalEpisodes,status,watchedEpisodes,rating,review,rewatchCount';
+const rows=mediaItems.map(function(it){
+return[ '"'+it.title+'"',it.type,'"'+it.genre+'"',it.releaseDate||'',it.totalEpisodes||0,
+it.status,it.watchedEpisodes||0,it.rating||'','"'+(it.review||'').replace(/"/g,'""')+'"',it.rewatchCount||0
+].join(',');
+});
+const csv=headers+'\n'+rows.join('\n');
+const blob=new Blob([csv],{type:'text/csv'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='media_backup.csv';a.click();
+URL.revokeObjectURL(url);
+showMsg('importMsg','تم تصدير البيانات بصيغة CSV.');
+};
+
+$('clearAllBtn').onclick=function(){
+if(!confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع.'))return;
+mediaItems=[];customLists=[];saveData();renderAll();
+showMsg('importMsg','تم حذف جميع البيانات.');
+};
+
+function renderAll(){
+renderLibrary();renderFilterGenres();renderListAssign();renderLists();renderStats();renderCalendar();
+}
+
+loadData();renderAll();
+})();
+</script>
+</body>
+</html>

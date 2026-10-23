@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة توقيع إلكتروني مجانية - مستندات آمنة في المتصفح | MDM1</title>
+<meta name="description" content="أنشئ وارفع وارسم توقيعاتك على المستندات محلياً دون خوادم. قوالب محفوظة وأثر تدقيق تلقائي وتصدير PDF/HTML ومشاركة روابط توقيع فورية.">
+<link rel="canonical" href="https://mdm1.org/apps/canvas-sign-local.html">
+<meta property="og:title" content="أداة توقيع إلكتروني مجانية - مستندات آمنة في المتصفح">
+<meta property="og:description" content="أنشئ وارفع وارسم توقيعاتك على المستندات محلياً دون خوادم. قوالب محفوظة وأثر تدقيق تلقائي وتصدير PDF/HTML ومشاركة روابط توقيع فورية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/canvas-sign-local.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app canvas{cursor:crosshair}
+.app .row{flex-wrap:wrap;gap:12px;align-items:flex-end}
+.app .row>label{min-width:180px;font-weight:600;color:var(--gold-bright)}
+.app input,.app textarea,.app select{flex:1;min-width:220px;padding:10px 12px;background:var(--dark);border:1px solid var(--gold-dim);border-radius:8px;color:var(--light);font-size:15px}
+.app input:focus,.app textarea:focus,.app select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-dim)}
+.app button{padding:10px 18px;font-size:15px;font-weight:600;border-radius:8px;border:none;cursor:pointer;transition:background .15s,transform .05s}
+.app button:active{transform:scale(.98)}
+.app button:not(.sec){background:var(--gold);color:var(--dark)}
+.app button:not(.sec):hover{background:var(--gold-bright)}
+.app button.sec{background:transparent;color:var(--gold);border:1px solid var(--gold-dim)}
+.app button.sec:hover{background:var(--gold-dim);color:var(--dark)}
+.app button:disabled{opacity:.5;cursor:not-allowed}
+.app .out{width:100%;box-sizing:border-box}
+.app .badge{padding:4px 10px;background:var(--gold-dim);color:var(--dark);border-radius:999px;font-size:13px;font-weight:600}
+.app #auditLog{line-height:1.5}
+.app #auditLog .audit-entry{border-bottom:1px solid var(--gold-dim);padding:6px 0}
+.app #auditLog .audit-entry:last-child{border-bottom:none}
+.app #auditLog .audit-time{color:var(--gold-bright)}
+.app #auditLog .audit-action{color:var(--gold)}
+.app #templateList option{background:var(--dark);color:var(--light)}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "توقيع إلكتروني مجاني بالكامل في المتصفح", "url": "https://mdm1.org/apps/canvas-sign-local.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج لإنشاء حساب أو الاتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الأداة تعمل كاملة دون اتصال (Offline) داخل متصفحك، لا خوادم ولا حسابات، جميع البيانات تبقى في جهازك فقط."}}, {"@type": "Question", "name": "كيف يعمل رابط المشاركة دون خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "الرابط يحتوي على بيانات المستند الموقّع مضغوطة ومشفرة (Base64) داخل الرابط نفسه بعد رمز #، لذا لا يُرسل أي شيء لخادم، والمتلقي يفتح الرابط فيحمله المتصفح مباشرة من الـ URL."}}, {"@type": "Question", "name": "هل التوقيع قانوني ومقبول رسمياً؟", "acceptedAnswer": {"@type": "Answer", "text": "الأداة توفر أثر تدقيق (Audit Trail) يوثّق وقت التوقيع وخطواته، لكن القبول القانوني يعتمد على قوانين بلدك ونوع المعاملة، استشر مختصاً قانونياً للاستخدامات الرسمية."}}, {"@type": "Question", "name": "هل يمكنني تعديل المستند بعد التوقيع؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، بمجرد الضغط على \"توقيع المستند\" يتم تثبيت المحتوى والتوقيع وأثر التدقيق في كائن واحد، وأي تعديل يتطلب إنشاء مستند جديد."}}, {"@type": "Question", "name": "أين تُحفظ القوالب وأثر التدقيق؟", "acceptedAnswer": {"@type": "Answer", "text": "في localStorage للمتصفح نفسه، لذا تبقى متاحة عند إعادة فتح الصفحة على نفس الجهاز والمتصفح، ولا تُرفع لأي مكان خارجي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">توقيع إلكتروني مجاني بالكامل في المتصفح</h1>
+  <p class="page-sub">أنشئ وارفع وارسم توقيعاتك على المستندات محلياً دون خوادم. قوالب محفوظة وأثر تدقيق تلقائي وتصدير PDF/HTML ومشاركة روابط توقيع فورية.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>أداة توقيع إلكتروني مجانية تعمل كاملة داخل متصفحك دون أي خوادم أو حسابات — أنشئ مستندات جديدة أو ارفع ملفات PDF/صور، ارسم توقيعك باللمس أو الماوس على لوحة Canvas، احفظ قوالبك في localStorage، وسجّل أثر تدقيق تلقائي يوثّق وقت كل خطوة، ثم صدّر النسخة الموقّعة كملف PDF أو HTML وشارك رابط التوقيع الذي يحمل بيانات المستند داخل الرابط نفسه ليصل الموقّع مباشرة دون تسجيل دخول.</p>
+
+<div class="app card" style="direction:rtl">
+  <div class="row">
+    <label for="docTitle">عنوان المستند</label>
+    <input type="text" id="docTitle" placeholder="مثال: عقد إيجار، اتفاقية سرية، تفويض...">
+  </div>
+  <div class="row">
+    <label for="docContent">محتوى المستند (نص)</label>
+    <textarea id="docContent" rows="6" placeholder="اكتب نص المستند هنا..."></textarea>
+  </div>
+  <div class="row">
+    <label for="fileUpload">أو ارفع ملف (PDF، صورة)</label>
+    <input type="file" id="fileUpload" accept=".pdf,.png,.jpg,.jpeg">
+  </div>
+  <div class="row">
+    <button id="btnSaveTemplate" class="sec">حفظ كقالب</button>
+    <button id="btnLoadTemplate" class="sec">تحميل قالب</button>
+    <button id="btnClearDoc" class="sec">مسح المستند</button>
+  </div>
+  <div class="divider"></div>
+  <h3 style="margin:0 0 12px">منطقة التوقيع</h3>
+  <div class="row" style="flex-direction:column;gap:8px">
+    <label for="signerName">اسم الموقّع</label>
+    <input type="text" id="signerName" placeholder="الاسم الكامل">
+  </div>
+  <div class="row" style="flex-direction:column;gap:8px">
+    <label for="signerEmail">بريد الموقّع (اختياري)</label>
+    <input type="email" id="signerEmail" placeholder="email@example.com">
+  </div>
+  <canvas id="signatureCanvas" width="600" height="200" style="border:2px solid var(--gold-dim);border-radius:8px;background:var(--dark);touch-action:none"></canvas>
+  <div class="row" style="margin-top:8px">
+    <button id="btnClearCanvas" class="sec">مسح التوقيع</button>
+    <button id="btnUndoStroke" class="sec">تراجع آخر خطوة</button>
+    <span id="strokeCount" class="badge" style="margin-right:auto">خطوات: 0</span>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <button id="btnSignDoc">توقيع المستند</button>
+    <button id="btnExportPDF" class="sec" disabled>تصدير PDF</button>
+    <button id="btnExportHTML" class="sec" disabled>تصدير HTML</button>
+    <button id="btnGenLink" class="sec" disabled>إنشاء رابط توقيع</button>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <label for="linkOutput">رابط المشاركة (انسخه وأرسله للموقّع)</label>
+    <textarea id="linkOutput" class="out" rows="3" readonly placeholder="سيظهر الرابط هنا بعد إنشاء المستند الموقّع..."></textarea>
+  </div>
+  <div class="divider"></div>
+  <h3 style="margin:0 0 12px">أثر التدقيق (Audit Trail)</h3>
+  <div id="auditLog" class="out" style="min-height:120px;max-height:250px;overflow:auto;font-family:monospace;font-size:13px;white-space:pre-wrap;direction:ltr;text-align:left"></div>
+  <div class="row" style="margin-top:8px">
+    <button id="btnClearAudit" class="sec">مسح السجل</button>
+    <button id="btnExportAudit" class="sec">تصدير السجل JSON</button>
+  </div>
+  <div class="divider"></div>
+  <h3 style="margin:0 0 12px">القوالب المحفوظة</h3>
+  <select id="templateList" class="out" style="padding:8px;background:var(--dark);border:1px solid var(--gold-dim);border-radius:8px;color:var(--light)"></select>
+  <div class="row" style="margin-top:8px">
+    <button id="btnDeleteTemplate" class="sec">حذف القالب المحدد</button>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل أحتاج لإنشاء حساب أو الاتصال بالإنترنت؟</h3><p>لا، الأداة تعمل كاملة دون اتصال (Offline) داخل متصفحك، لا خوادم ولا حسابات، جميع البيانات تبقى في جهازك فقط.</p><h3>كيف يعمل رابط المشاركة دون خادم؟</h3><p>الرابط يحتوي على بيانات المستند الموقّع مضغوطة ومشفرة (Base64) داخل الرابط نفسه بعد رمز #، لذا لا يُرسل أي شيء لخادم، والمتلقي يفتح الرابط فيحمله المتصفح مباشرة من الـ URL.</p><h3>هل التوقيع قانوني ومقبول رسمياً؟</h3><p>الأداة توفر أثر تدقيق (Audit Trail) يوثّق وقت التوقيع وخطواته، لكن القبول القانوني يعتمد على قوانين بلدك ونوع المعاملة، استشر مختصاً قانونياً للاستخدامات الرسمية.</p><h3>هل يمكنني تعديل المستند بعد التوقيع؟</h3><p>لا، بمجرد الضغط على &quot;توقيع المستند&quot; يتم تثبيت المحتوى والتوقيع وأثر التدقيق في كائن واحد، وأي تعديل يتطلب إنشاء مستند جديد.</p><h3>أين تُحفظ القوالب وأثر التدقيق؟</h3><p>في localStorage للمتصفح نفسه، لذا تبقى متاحة عند إعادة فتح الصفحة على نفس الجهاز والمتصفح، ولا تُرفع لأي مكان خارجي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const state={doc:{title:'',content:'',file:null},templates:[],strokes:[],audit:[],signedDoc:null};
+  const canvas=$('signatureCanvas');
+  const ctx=canvas.getContext('2d');
+  let drawing=false;
+  let lastPoint=null;
+
+  function logAudit(action,details={}){
+    const entry={time:new Date().toISOString(),action,details};
+    state.audit.push(entry);
+    renderAudit();
+    saveState();
+  }
+  function renderAudit(){
+    const el=$('auditLog');
+    if(!state.audit.length){el.textContent='لا يوجد سجل تدقيق بعد.';return}
+    el.innerHTML=state.audit.map(e=>`<div class="audit-entry"><span class="audit-time">[${new Date(e.time).toLocaleString('ar-SA')}]</span> <span class="audit-action">${e.action}</span> ${JSON.stringify(e.details, null, 2)}</div>`).join('');
+    el.scrollTop=el.scrollHeight;
+  }
+  function saveState(){
+    try{localStorage.setItem('esign_templates',JSON.stringify(state.templates))}catch(e){}
+    try{localStorage.setItem('esign_audit',JSON.stringify(state.audit))}catch(e){}
+  }
+  function loadState(){
+    try{state.templates=JSON.parse(localStorage.getItem('esign_templates')||'[]')}catch(e){state.templates=[]}
+    try{state.audit=JSON.parse(localStorage.getItem('esign_audit')||'[]')}catch(e){state.audit=[]}
+    renderTemplates();
+    renderAudit();
+  }
+  function renderTemplates(){
+    const sel=$('templateList');
+    sel.innerHTML='<option value="">— اختر قالباً —</option>'+state.templates.map((t,i)=>`<option value="${i}">${t.title||'بدون عنوان'}</option>`).join('');
+  }
+  function addStroke(points){
+    state.strokes.push({points,time:Date.now()});
+    $('strokeCount').textContent=`خطوات: ${state.strokes.length}`;
+    redrawCanvas();
+  }
+  function redrawCanvas(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='#fff';
+    ctx.lineWidth=2.5;
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+    state.strokes.forEach(s=>{
+      ctx.beginPath();
+      s.points.forEach((p,i)=>{i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});
+      ctx.stroke();
+    });
+  }
+  function getPoint(e){
+    const rect=canvas.getBoundingClientRect();
+    const client=e.touches?e.touches[0]:e;
+    return{x:client.clientX-rect.left,y:client.clientY-rect.top};
+  }
+  canvas.addEventListener('mousedown',e=>{drawing=true;lastPoint=getPoint(e);});
+  canvas.addEventListener('mousemove',e=>{if(!drawing)return;const p=getPoint(e);addStroke([lastPoint,p]);lastPoint=p;});
+  canvas.addEventListener('mouseup',()=>{drawing=false;lastPoint=null;});
+  canvas.addEventListener('mouseleave',()=>{drawing=false;lastPoint=null;});
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;lastPoint=getPoint(e);},{passive:false});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=getPoint(e);addStroke([lastPoint,p]);lastPoint=p;},{passive:false});
+  canvas.addEventListener('touchend',()=>{drawing=false;lastPoint=null;});
+
+  $('btnClearCanvas').onclick=()=>{state.strokes=[];redrawCanvas();$('strokeCount').textContent='خطوات: 0';logAudit('CLEAR_CANVAS')};
+  $('btnUndoStroke').onclick=()=>{if(state.strokes.length){state.strokes.pop();redrawCanvas();$('strokeCount').textContent=`خطوات: ${state.strokes.length}`;logAudit('UNDO_STROKE',{remaining:state.strokes.length})}};
+
+  $('btnSaveTemplate').onclick=()=>{
+    const title=$('docTitle').value.trim();
+    const content=$('docContent').value.trim();
+    if(!title&&!content){alert('لا يوجد محتوى للحفظ');return}
+    state.templates.push({title:title||'قالب غير مسمى',content,time:Date.now()});
+    saveState();renderTemplates();logAudit('SAVE_TEMPLATE',{title});
+  };
+  $('btnLoadTemplate').onclick=()=>{
+    const idx=parseInt($('templateList').value);
+    if(isNaN(idx)){alert('اختر قالباً أولاً');return}
+    const t=state.templates[idx];
+    $('docTitle').value=t.title;
+    $('docContent').value=t.content;
+    logAudit('LOAD_TEMPLATE',{title:t.title});
+  };
+  $('btnDeleteTemplate').onclick=()=>{
+    const idx=parseInt($('templateList').value);
+    if(isNaN(idx)){alert('اختر قالباً أولاً');return}
+    const t=state.templates.splice(idx,1)[0];
+    saveState();renderTemplates();logAudit('DELETE_TEMPLATE',{title:t.title});
+  };
+  $('btnClearDoc').onclick=()=>{
+    $('docTitle').value='';
+    $('docContent').value='';
+    $('fileUpload').value='';
+    state.doc={title:'',content:'',file:null};
+    logAudit('CLEAR_DOC');
+  };
+
+  $('fileUpload').onchange=e=>{
+    const f=e.target.files[0];
+    if(!f)return;
+    state.doc.file={name:f.name,type:f.type,size:f.size};
+    const reader=new FileReader();
+    reader.onload=ev=>{state.doc.file.data=ev.target.result;logAudit('UPLOAD_FILE',{name:f.name,type:f.type})};
+    reader.readAsDataURL(f);
+  };
+
+  function buildSignedDoc(){
+    const title=$('docTitle').value.trim()||'مستند بدون عنوان';
+    const content=$('docContent').value.trim();
+    const signer=$('signerName').value.trim()||'غير محدد';
+    const email=$('signerEmail').value.trim();
+    const strokes=state.strokes.map(s=>s.points);
+    const audit=state.audit.map(a=>({time:a.time,action:a.action,details:a.details}));
+    const signed={title,content,file:state.doc.file,signer,email,strokes,audit,signedAt:new Date().toISOString()};
+    state.signedDoc=signed;
+    return signed;
+  }
+
+  $('btnSignDoc').onclick=()=>{
+    if(!state.strokes.length){alert('ارسم توقيعك أولاً');return}
+    const signed=buildSignedDoc();
+    logAudit('SIGN_DOC',{signer:signed.signer});
+    $('btnExportPDF').disabled=false;
+    $('btnExportHTML').disabled=false;
+    $('btnGenLink').disabled=false;
+    alert('تم توقيع المستند بنجاح');
+  };
+
+  function exportHTML(doc){
+    const strokesHtml=doc.strokes.map((stroke,i)=>`<polyline points="${stroke.map(p=>`${p.x},${p.y}`).join(' ')}" fill="none" stroke="#fff" stroke-width="2.5"/>`).join('');
+    const auditHtml=doc.audit.map(a=>`<div style="margin:4px 0;font-family:monospace;font-size:12px"><span style="color:#ffd700">[${new Date(a.time).toLocaleString('ar-SA')}]</span> <span style="color:#ffd700">${a.action}</span> ${JSON.stringify(a.details)}</div>`).join('');
+    return `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${doc.title}</title><style>body{font-family:system-ui,sans-serif;background:#111;color:#fff;padding:20px;max-width:800px;margin:auto}.sig-canvas{background:#000;border:2px solid #b8860b;border-radius:8px}.meta{margin-bottom:20px}.field{margin:8px 0}.label{color:#ffd700;font-weight:600}</style></head><body><div class="meta"><h1>${doc.title}</h1><div class="field"><span class="label">الموقّع:</span> ${doc.signer}</div><div class="field"><span class="label">البريد:</span> ${doc.email||'—'}</div><div class="field"><span class="label">تاريخ التوقيع:</span> ${new Date(doc.signedAt).toLocaleString('ar-SA')}</div></div><div style="margin:20px 0"><strong>محتوى المستند:</strong><pre style="white-space:pre-wrap;background:#1a1a1a;padding:15px;border-radius:8px">${doc.content||'—'}</pre></div><div><strong>التوقيع:</strong><svg class="sig-canvas" width="600" height="200" viewBox="0 0 600 200">${strokesHtml}</svg></div><hr style="border-color:#333;margin:20px 0"><div><strong>أثر التدقيق:</strong>${auditHtml}</div></body></html>`;
+  }
+
+  $('btnExportHTML').onclick=()=>{
+    if(!state.signedDoc){alert('وقّع المستند أولاً');return}
+    const html=exportHTML(state.signedDoc);
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`${state.signedDoc.title.replace(/[<>:\"/\\|?*]/g,'')}_موقع.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+    logAudit('EXPORT_HTML');
+  };
+
+  $('btnExportPDF').onclick=async()=>{
+    if(!state.signedDoc){alert('وقّع المستند أولاً');return}
+    try{
+      const html=exportHTML(state.signedDoc);
+      const iframe=document.createElement('iframe');
+      iframe.style.position='absolute';
+      iframe.style.left='-9999px';
+      document.body.appendChild(iframe);
+      iframe.contentDocument.write(html);
+      iframe.contentDocument.close();
+      await new Promise(r=>setTimeout(r,300));
+      iframe.contentWindow.print();
+      setTimeout(()=>{document.body.removeChild(iframe)},1000);
+      logAudit('EXPORT_PDF');
+    }catch(e){alert('فشل تصدير PDF: '+e.message);logAudit('EXPORT_PDF_FAILED',{error:e.message})}
+  };
+
+  $('btnGenLink').onclick=()=>{
+    if(!state.signedDoc){alert('وقّع المستند أولاً');return}
+    const data=btoa(JSON.stringify(state.signedDoc));
+    const link=location.origin+location.pathname+'#signed='+data;
+    $('linkOutput').value=link;
+    logAudit('GEN_LINK');
+  };
+
+  $('btnClearAudit').onclick=()=>{
+    if(!confirm('مسح أثر التدقيق بالكامل؟'))return;
+    state.audit=[];
+    saveState();
+    renderAudit();
+  };
+  $('btnExportAudit').onclick=()=>{
+    const blob=new Blob([JSON.stringify(state.audit,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='audit_trail.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    logAudit('EXPORT_AUDIT');
+  };
+
+  function checkHash(){
+    const hash=location.hash.replace('#signed=','');
+    if(hash){
+      try{
+        const doc=JSON.parse(atob(hash));
+        if(doc && doc.title){
+          $('docTitle').value=doc.title;
+          $('docContent').value=doc.content||'';
+          $('signerName').value=doc.signer||'';
+          $('signerEmail').value=doc.email||'';
+          state.strokes=doc.strokes||[];
+          redrawCanvas();
+          $('strokeCount').textContent=`خطوات: ${state.strokes.length}`;
+          state.signedDoc=doc;
+          $('btnExportPDF').disabled=false;
+          $('btnExportHTML').disabled=false;
+          $('btnGenLink').disabled=false;
+          logAudit('LOAD_FROM_LINK',{signer:doc.signer});
+          alert('تم تحميل مستند موقّع من الرابط');
+        }
+      }catch(e){}
+    }
+  }
+
+  loadState();
+  checkHash();
+})();
+</script>
+</body>
+</html>

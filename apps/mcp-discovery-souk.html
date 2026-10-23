@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فهرس خوادم MCP العربي - بحث، أمان، وتصدير إعدادات | MDM1</title>
+<meta name="description" content="تطبيق عربي يعمل محلياً لتصفح خوادم MCP، البحث الدلالي، فحص ملفات الإعداد للصلاحيات الخطرة، وتوليد تهيئة جاهزة لـ Claude وCursor وVS Code بضغطة واحدة.">
+<link rel="canonical" href="https://mdm1.org/apps/mcp-discovery-souk.html">
+<meta property="og:title" content="فهرس خوادم MCP العربي - بحث، أمان، وتصدير إعدادات">
+<meta property="og:description" content="تطبيق عربي يعمل محلياً لتصفح خوادم MCP، البحث الدلالي، فحص ملفات الإعداد للصلاحيات الخطرة، وتوليد تهيئة جاهزة لـ Claude وCursor وVS Code بضغطة واحدة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/mcp-discovery-souk.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app h3 { color: var(--gold); margin-bottom: .75rem; font-size: 1.1rem; }
+.app .row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: flex-end; }
+.app label { display: block; font-size: .85rem; color: var(--gold-dim); margin-bottom: .25rem; }
+.app input, .app select, .app textarea { width: 100%; background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); padding: .5rem .75rem; border-radius: 4px; font-family: inherit; }
+.app input:focus, .app select:focus, .app textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-dim); }
+.app button { background: var(--gold); color: var(--dark); border: none; padding: .5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-family: inherit; }
+.app button:hover { background: var(--gold-bright); }
+.app button.sec { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+.app button.sec:hover { background: var(--gold-dim); color: var(--dark); }
+.app .out { background: rgba(255,215,0,.08); border: 1px solid var(--gold-dim); border-radius: 4px; padding: .75rem; font-size: .9rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.app .badge { background: var(--gold); color: var(--dark); padding: .1rem .5rem; border-radius: 999px; font-size: .75rem; font-weight: 600; }
+.app .server-card { border: 1px solid var(--gold-dim); border-radius: 6px; padding: .75rem; background: rgba(255,215,0,.03); transition: border-color .2s; }
+.app .server-card:hover { border-color: var(--gold); }
+.app .server-card.favorite { border-color: var(--gold); background: rgba(255,215,0,.08); }
+.app .server-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .5rem; }
+.app .server-title { font-weight: 600; color: var(--light); }
+.app .server-security { font-size: 1.25rem; font-weight: 700; }
+.app .server-security.high { color: #4ade80; }
+.app .server-security.med { color: var(--gold); }
+.app .server-security.low { color: #f87171; }
+.app .server-meta { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem; font-size: .8rem; color: var(--gold-dim); }
+.app .server-desc { color: var(--gold-dim); font-size: .85rem; margin-bottom: .5rem; line-height: 1.5; }
+.app .server-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+.app .server-actions button { padding: .3rem .6rem; font-size: .8rem; }
+.app .audit-entry { padding: .4rem .6rem; border-bottom: 1px solid var(--gold-dim); font-family: monospace; font-size: .8rem; }
+.app .audit-entry:last-child { border-bottom: none; }
+.app .audit-time { color: var(--gold-dim); }
+.app .audit-action { color: var(--gold); font-weight: 600; }
+.app .audit-detail { color: var(--light); margin-top: .2rem; }
+.app .config-output { font-family: monospace; font-size: .8rem; background: var(--dark); padding: .75rem; border-radius: 4px; overflow: auto; max-height: 300px; border: 1px solid var(--gold-dim); }
+.app .warning { color: #f87171; }
+.app .success { color: #4ade80; }
+.app .info { color: var(--gold); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "فهرس خوادم MCP العربي مع فحص الأمان وتوليد الإعدادات", "url": "https://mdm1.org/apps/mcp-discovery-souk.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يرسل التطبيق بيانات إلى خوادم خارجية؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل بالكامل محلياً في المتصفح دون أي اتصال شبكي. جميع البيانات محفوظة في localStorage."}}, {"@type": "Question", "name": "كيف يعمل البحث الدلالي دون خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "يستخدم قاموس مرادفات وجذور لغوية مدمج في الكود يوسع استعلام البحث ليشمل كلمات مرتبطة بالمعنى."}}, {"@type": "Question", "name": "هل يمكن إضافة خوادم مخصصة للفهرس؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، عبر استيراد ملف JSON للفهرس الكامل أو تعديل الكود مباشرة لإضافة خوادم جديدة."}}, {"@type": "Question", "name": "ماذا تعني درجة الأمان؟", "acceptedAnswer": {"@type": "Answer", "text": "درجة من 0-100 تحسب مسبقاً بناءً على الصلاحيات المعلنة وطبيعة الأوامر. 90+ ممتاز، 70-89 جيد، أقل من 70 يحتاج حذر."}}, {"@type": "Question", "name": "كيف أفحص إعداد خادم غير موجود في الفهرس؟", "acceptedAnswer": {"@type": "Answer", "text": "ألصق ملف JSON الإعداد في مربع التحليل واضغط \"تحليل الأمان\" للكشف عن الصلاحيات الخطرة والأوامر المشبوهة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">فهرس خوادم MCP العربي مع فحص الأمان وتوليد الإعدادات</h1>
+  <p class="page-sub">تطبيق عربي يعمل محلياً لتصفح خوادم MCP، البحث الدلالي، فحص ملفات الإعداد للصلاحيات الخطرة، وتوليد تهيئة جاهزة لـ Claude وCursor وVS Code بضغطة واحدة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p dir="rtl">هذا التطبيق يعمل بالكامل في متصفحك دون أي خادم أو حساب خارجي. يوفر فهرساً محلياً لخوادم MCP مع بحث دلالي يعتمد على المرادفات والجذور اللغوية، ويعرض درجة أمان محسوبة مسبقاً لكل خادم. يمكنك لصق ملف إعداد أو بيان خادم لفحصه محلياً والكشف عن الصلاحيات الخطرة والأوامر المشبوهة، ثم توليد إعداد جاهز للنسخ لأكثر من عميل مثل Claude وCursor وVS Code. المفضلة والمجموعات وسجل التعهدات محفوظة في localStorage مع إمكانية التصدير والاستيراد الكامل.</p>
+
+<div class="app card" style="margin-bottom:1rem;">
+  <h3 style="margin:0 0 .5rem;">البحث والتصفية</h3>
+  <div class="row" style="gap:.5rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:200px;">
+      <label for="searchInput">البحث الدلالي</label>
+      <input type="text" id="searchInput" placeholder="اكتب للبحث بالمرادفات والجذور..." aria-label="البحث الدلالي">
+    </div>
+    <div style="flex:1; min-width:180px;">
+      <label for="categoryFilter">التصنيف</label>
+      <select id="categoryFilter" aria-label="تصفية حسب التصنيف">
+        <option value="">الكل</option>
+      </select>
+    </div>
+    <div style="flex:1; min-width:180px;">
+      <label for="securityFilter">الحد الأدنى لدرجة الأمان</label>
+      <select id="securityFilter" aria-label="تصفية حسب درجة الأمان">
+        <option value="0">أي درجة</option>
+        <option value="70">70+ (آمن)</option>
+        <option value="85">85+ (موثوق)</option>
+        <option value="95">95+ (ممتاز)</option>
+      </select>
+    </div>
+    <button class="sec" id="clearFiltersBtn" style="align-self:flex-end;">مسح التصفية</button>
+  </div>
+</div>
+
+<div class="app card" style="margin-bottom:1rem;">
+  <h3 style="margin:0 0 .5rem;">فهرس الخوادم <span class="badge" id="serverCount">0</span></h3>
+  <div id="serverList" style="display:grid; gap:.5rem; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));"></div>
+  <div class="out" id="emptyState" style="display:none; text-align:center; padding:2rem; color:var(--gold-dim);">لا توجد خوادم مطابقة للتصفية</div>
+</div>
+
+<div class="app card" style="margin-bottom:1rem;">
+  <h3 style="margin:0 0 .5rem;">فحص ملف الإعداد وتحليل الأمان</h3>
+  <div class="row" style="gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem;">
+    <div style="flex:1; min-width:200px;">
+      <label for="configInput">ألصق ملف إعداد الخادم (JSON)</label>
+      <textarea id="configInput" rows="8" placeholder='{"name":"server-name","command":"npx","args":["-y","@modelcontextprotocol/server-example"],"env":{},"permissions":["read","write"]}' aria-label="ملف إعداد الخادم"></textarea>
+    </div>
+    <div style="flex:1; min-width:280px; display:flex; flex-direction:column; justify-content:flex-end; gap:.5rem;">
+      <button id="analyzeBtn">تحليل الأمان</button>
+      <button class="sec" id="clearConfigBtn">مسح</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div id="analysisResult" class="out" style="display:none;"></div>
+</div>
+
+<div class="app card" style="margin-bottom:1rem;">
+  <h3 style="margin:0 0 .5rem;">توليد إعداد العميل</h3>
+  <div class="row" style="gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem; align-items:flex-end;">
+    <div style="flex:1; min-width:200px;">
+      <label for="clientSelect">العميل المستهدف</label>
+      <select id="clientSelect" aria-label="اختر العميل">
+        <option value="claude">Claude Desktop</option>
+        <option value="cursor">Cursor</option>
+        <option value="vscode">VS Code (مضمن)</option>
+        <option value="vscode-insiders">VS Code Insiders</option>
+        <option value="cline">Cline</option>
+        <option value="roo">Roo Code</option>
+      </select>
+    </div>
+    <div style="flex:1; min-width:200px;">
+      <label for="serverNameInput">اسم الخادم في الإعداد</label>
+      <input type="text" id="serverNameInput" placeholder="mcp-server-name" aria-label="اسم الخادم">
+    </div>
+    <button id="generateConfigBtn">توليد ونسخ الإعداد</button>
+  </div>
+  <div class="out" id="generatedConfig" style="display:none;"></div>
+</div>
+
+<div class="app card" style="margin-bottom:1rem;">
+  <h3 style="margin:0 0 .5rem;">إدارة المفضلة والمجموعات</h3>
+  <div class="row" style="gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem; align-items:flex-end;">
+    <div style="flex:1; min-width:200px;">
+      <label for="groupSelect">المجموعة</label>
+      <select id="groupSelect" aria-label="اختر المجموعة">
+        <option value="default">افتراضية</option>
+      </select>
+    </div>
+    <div style="flex:1; min-width:200px;">
+      <label for="newGroupInput">مجموعة جديدة</label>
+      <input type="text" id="newGroupInput" placeholder="اسم المجموعة" aria-label="مجموعة جديدة">
+    </div>
+    <button class="sec" id="createGroupBtn">إنشاء مجموعة</button>
+    <button class="sec" id="deleteGroupBtn">حذف المجموعة الحالية</button>
+  </div>
+  <div id="favoritesList" style="display:grid; gap:.5rem; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));"></div>
+  <div class="out" id="emptyFavorites" style="display:none; text-align:center; padding:1rem; color:var(--gold-dim);">لا توجد مفضلة في هذه المجموعة</div>
+</div>
+
+<div class="app card" style="margin-bottom:1rem;">
+  <h3 style="margin:0 0 .5rem;">سجل التعهدات (للمشرفين)</h3>
+  <div class="row" style="gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem; align-items:flex-end;">
+    <button id="exportAuditBtn">تصدير السجل (JSON)</button>
+    <button class="sec" id="clearAuditBtn">مسح السجل</button>
+    <input type="file" id="importAuditInput" accept=".json" style="display:none;" aria-label="استيراد السجل">
+    <button class="sec" id="importAuditBtn">استيراد السجل</button>
+  </div>
+  <div id="auditLog" style="max-height:300px; overflow:auto; font-family:monospace; font-size:.85rem; line-height:1.6;"></div>
+  <div class="out" id="emptyAudit" style="display:none; text-align:center; padding:1rem; color:var(--gold-dim);">السجل فارغ</div>
+</div>
+
+<div class="app card">
+  <h3 style="margin:0 0 .5rem;">تصدير واستيراد الفهرس الكامل</h3>
+  <div class="row" style="gap:.5rem; flex-wrap:wrap; align-items:flex-end;">
+    <button id="exportIndexBtn">تصدير الفهرس (JSON)</button>
+    <input type="file" id="importIndexInput" accept=".json" style="display:none;" aria-label="استيراد الفهرس">
+    <button class="sec" id="importIndexBtn">استيراد الفهرس</button>
+    <button class="sec" id="resetIndexBtn" style="color:var(--gold-dim);">إعادة الفهرس الافتراضي</button>
+  </div>
+  <div class="out" id="importExportStatus" style="display:none; margin-top:.5rem;"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يرسل التطبيق بيانات إلى خوادم خارجية؟</h3><p>لا، يعمل بالكامل محلياً في المتصفح دون أي اتصال شبكي. جميع البيانات محفوظة في localStorage.</p><h3>كيف يعمل البحث الدلالي دون خادم؟</h3><p>يستخدم قاموس مرادفات وجذور لغوية مدمج في الكود يوسع استعلام البحث ليشمل كلمات مرتبطة بالمعنى.</p><h3>هل يمكن إضافة خوادم مخصصة للفهرس؟</h3><p>نعم، عبر استيراد ملف JSON للفهرس الكامل أو تعديل الكود مباشرة لإضافة خوادم جديدة.</p><h3>ماذا تعني درجة الأمان؟</h3><p>درجة من 0-100 تحسب مسبقاً بناءً على الصلاحيات المعلنة وطبيعة الأوامر. 90+ ممتاز، 70-89 جيد، أقل من 70 يحتاج حذر.</p><h3>كيف أفحص إعداد خادم غير موجود في الفهرس؟</h3><p>ألصق ملف JSON الإعداد في مربع التحليل واضغط &quot;تحليل الأمان&quot; للكشف عن الصلاحيات الخطرة والأوامر المشبوهة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-22 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  const DEFAULT_SERVERS = [
+    { id: 'fs', name: 'نظام الملفات', desc: 'قراءة وكتابة الملفات والمجلدات محلياً', category: 'ملفات', security: 95, permissions: ['read','write','list'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-filesystem'], tags: ['filesystem','local','read','write'] },
+    { id: 'git', name: 'Git', desc: 'عمليات Git: commit، push، pull، branch، diff', category: 'تطوير', security: 88, permissions: ['read','write','exec'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-git'], tags: ['git','version-control','repo'] },
+    { id: 'github', name: 'GitHub', desc: 'إدارة المستودعات، القضايا، طلبات السحب، الإجراءات', category: 'تطوير', security: 82, permissions: ['read','write','api'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-github'], tags: ['github','api','repo','issues'] },
+    { id: 'sqlite', name: 'SQLite', desc: 'قاعدة بيانات SQLite محلية: استعلامات، مخططات، بيانات', category: 'بيانات', security: 90, permissions: ['read','write','query'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-sqlite'], tags: ['database','sql','local','query'] },
+    { id: 'postgres', name: 'PostgreSQL', desc: 'الاتصال بقواعد بيانات PostgreSQL عن بعد', category: 'بيانات', security: 75, permissions: ['read','write','network','query'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-postgres'], tags: ['database','sql','remote','network'] },
+    { id: 'fetch', name: 'جلب الويب', desc: 'طلبات HTTP/HTTPS، REST APIs، استخراج محتوى', category: 'شبكة', security: 70, permissions: ['network','read'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-fetch'], tags: ['http','api','web','fetch'] },
+    { id: 'brave', name: 'بحث Brave', desc: 'بحث الويب عبر Brave Search API', category: 'شبكة', security: 78, permissions: ['network','read','api'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-brave-search'], tags: ['search','web','api','brave'] },
+    { id: 'memory', name: 'الذاكرة', desc: 'تخزين واسترجاع المعلومات عبر الجلسات', category: 'أدوات', security: 92, permissions: ['read','write','memory'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-memory'], tags: ['memory','storage','session','persist'] },
+    { id: 'sequential', name: 'التفكير المتسلسل', desc: 'حل المشكلات خطوة بخطوة مع التفكير المنظم', category: 'ذكاء اصطناعي', security: 96, permissions: ['compute'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-sequentialthinking'], tags: ['reasoning','thinking','ai','logic'] },
+    { id: 'time', name: 'الوقت والتاريخ', desc: 'الوقت الحالي، المناطق الزمنية، تنسيقات التاريخ', category: 'أدوات', security: 98, permissions: ['read'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-time'], tags: ['time','date','timezone','utility'] },
+    { id: 'everything', name: 'كل شيء', desc: 'خادم مرجعي يعرض جميع القدرات للاختبار', category: 'اختبار', security: 60, permissions: ['read','write','exec','network','all'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-everything'], tags: ['test','reference','all','demo'] },
+    { id: 'shell', name: 'الصدفة', desc: 'تنفيذ أوامر الصدفة والأوامر النظامية', category: 'نظام', security: 40, permissions: ['exec','read','write','network','system'], command: 'npx', args: ['-y', '@modelcontextprotocol/server-shell'], tags: ['shell','command','system','exec','dangerous'] },
+  ];
+
+  const SYNONYMS = {
+    'ملفات': ['file','filesystem','نظام الملفات','قراءة','كتابة','مجلد','folder'],
+    'تطوير': ['dev','development','git','github','كود','code','برمجة','مستودع','repo'],
+    'بيانات': ['data','database','sql','قاعدة بيانات','استعلام','query','postgres','sqlite'],
+    'شبكة': ['network','web','http','api','fetch','بحث','search','brave','إنترنت'],
+    'أدوات': ['tools','utility','memory','وقت','time','ذاكرة','تخزين','storage'],
+    'ذكاء اصطناعي': ['ai','reasoning','thinking','تفكير','منطق','logic','sequential'],
+    'اختبار': ['test','demo','everything','مرجع','reference','تجربة'],
+    'نظام': ['system','shell','exec','أوامر','command','صدفة','خطير','dangerous'],
+    'آمن': ['secure','safe','موثوق','trusted','عالي','high'],
+    'خطير': ['dangerous','risk','خطر','منخفض','low','غير آمن'],
+  };
+
+  const DANGEROUS_PERMS = ['exec','system','shell','all','network','write'];
+  const SUSPICIOUS_CMDS = ['curl','wget','bash','sh','powershell','cmd','eval','exec','rm','rmdir','del','format','dd','mkfs','sudo','su','chmod','chown','passwd','ssh','scp','rsync','nc','netcat','nmap','telnet','ftp','wget','curl'];
+
+  let servers = [];
+  let favorites = {};
+  let groups = ['default'];
+  let currentGroup = 'default';
+  let auditLog = [];
+  let lastAnalyzedConfig = null;
+
+  function $(id) { return document.getElementById(id); }
+
+  function loadAll() {
+    try {
+      const s = localStorage.getItem('mcp_servers');
+      if (s) servers = JSON.parse(s);
+      else { servers = DEFAULT_SERVERS.map((sv,i)=>({...sv, _orig:true})); saveServers(); }
+    } catch(e) { servers = DEFAULT_SERVERS.map((sv,i)=>({...sv, _orig:true})); }
+    try { favorites = JSON.parse(localStorage.getItem('mcp_favorites') || '{}'); } catch(e) { favorites = {}; }
+    try { groups = JSON.parse(localStorage.getItem('mcp_groups') || '["default"]'); } catch(e) { groups = ['default']; }
+    try { currentGroup = localStorage.getItem('mcp_current_group') || 'default'; } catch(e) { currentGroup = 'default'; }
+    try { auditLog = JSON.parse(localStorage.getItem('mcp_audit') || '[]'); } catch(e) { auditLog = []; }
+  }
+
+  function saveServers() { try { localStorage.setItem('mcp_servers', JSON.stringify(servers)); } catch(e) {} }
+  function saveFav() { try { localStorage.setItem('mcp_favorites', JSON.stringify(favorites)); } catch(e) {} }
+  function saveGroups() { try { localStorage.setItem('mcp_groups', JSON.stringify(groups)); } catch(e) {} }
+  function saveCurrentGroup() { try { localStorage.setItem('mcp_current_group', currentGroup); } catch(e) {} }
+  function saveAudit() { try { localStorage.setItem('mcp_audit', JSON.stringify(auditLog)); } catch(e) {} }
+
+  function addAudit(action, detail) {
+    auditLog.unshift({ time: new Date().toISOString(), action, detail });
+    if (auditLog.length > 500) auditLog = auditLog.slice(0, 500);
+    saveAudit();
+    renderAudit();
+  }
+
+  function stem(word) {
+    return word.replace(/^(ال|بال|كال|فال|ول|لل|ب|ك|ف|و|ل)/,'')
+               .replace(/(ون|ين|ات|ة|ي|ان|ة)$/,'')
+               .replace(/(ا|و|ي)$/,'');
+  }
+
+  function tokenize(text) {
+    return (text || '').toLowerCase().split(/[\s\u0600-\u06FF\p{P}]+/u).filter(Boolean).map(stem);
+  }
+
+  function expandQuery(query) {
+    const tokens = tokenize(query);
+    const expanded = new Set(tokens);
+    tokens.forEach(t => {
+      Object.entries(SYNONYMS).forEach(([k, vals]) => {
+        if (vals.some(v => stem(v) === t || v.includes(t) || t.includes(v))) {
+          vals.forEach(v => expanded.add(stem(v)));
+          expanded.add(stem(k));
+        }
+      });
+    });
+    return Array.from(expanded);
+  }
+
+  function matchesSearch(server, queryTokens) {
+    if (!queryTokens.length) return true;
+    const haystack = tokenize(`${server.name} ${server.desc} ${server.category} ${server.tags.join(' ')}`);
+    return queryTokens.every(qt => haystack.some(ht => ht === qt || ht.includes(qt) || qt.includes(ht)));
+  }
+
+  function getSecurityClass(score) {
+    if (score >= 85) return 'high';
+    if (score >= 70) return 'med';
+    return 'low';
+  }
+
+  function renderServers() {
+    const q = $('searchInput').value;
+    const cat = $('categoryFilter').value;
+    const secMin = parseInt($('securityFilter').value, 10);
+    const tokens = expandQuery(q);
+    const list = $('serverList');
+    const empty = $('emptyState');
+    const cats = new Set();
+
+    list.innerHTML = '';
+    let count = 0;
+    servers.forEach(s => {
+      cats.add(s.category);
+      if (!matchesSearch(s, tokens)) return;
+      if (cat && s.category !== cat) return;
+      if (s.security < secMin) return;
+      count++;
+      const isFav = favorites[currentGroup]?.includes(s.id);
+      const card = document.createElement('div');
+      card.className = `server-card${isFav ? ' favorite' : ''}`;
+      card.innerHTML = `
+        <div class="server-header">
+          <span class="server-title">${escapeHtml(s.name)}</span>
+          <span class="server-security ${getSecurityClass(s.security)}">${s.security}</span>
+        </div>
+        <div class="server-meta">
+          <span class="badge">${escapeHtml(s.category)}</span>
+          <span>${escapeHtml(s.command)} ${s.args.join(' ')}</span>
+        </div>
+        <div class="server-desc">${escapeHtml(s.desc)}</div>
+        <div class="server-actions">
+          <button class="sec" data-action="fav" data-id="${s.id}">${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}</button>
+          <button class="sec" data-action="analyze" data-id="${s.id}">فحص الأمان</button>
+          <button data-action="gen" data-id="${s.id}">توليد إعداد</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    $('serverCount').textContent = count;
+    empty.style.display = count ? 'none' : 'block';
+
+    const catSel = $('categoryFilter');
+    const curCat = catSel.value;
+    catSel.innerHTML = '<option value="">الكل</option>';
+    Array.from(cats).sort().forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      catSel.appendChild(o);
+    });
+    catSel.value = curCat;
+  }
+
+  function renderFavorites() {
+    const list = $('favoritesList');
+    const empty = $('emptyFavorites');
+    const favs = favorites[currentGroup] || [];
+    list.innerHTML = '';
+    if (!favs.length) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    favs.forEach(id => {
+      const s = servers.find(x => x.id === id);
+      if (!s) return;
+      const card = document.createElement('div');
+      card.className = 'server-card favorite';
+      card.innerHTML = `
+        <div class="server-header">
+          <span class="server-title">${escapeHtml(s.name)}</span>
+          <span class="server-security ${getSecurityClass(s.security)}">${s.security}</span>
+        </div>
+        <div class="server-meta"><span class="badge">${escapeHtml(s.category)}</span></div>
+        <div class="server-desc">${escapeHtml(s.desc)}</div>
+        <div class="server-actions">
+          <button class="sec" data-action="unfav" data-id="${s.id}">إزالة من المفضلة</button>
+          <button class="sec" data-action="analyze" data-id="${s.id}">فحص الأمان</button>
+          <button data-action="gen" data-id="${s.id}">توليد إعداد</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function renderGroups() {
+    const sel = $('groupSelect');
+    const val = sel.value;
+    sel.innerHTML = '';
+    groups.forEach(g => {
+      const o = document.createElement('option');
+      o.value = g; o.textContent = g === 'default' ? 'افتراضية' : g;
+      sel.appendChild(o);
+    });
+    sel.value = groups.includes(val) ? val : 'default';
+    currentGroup = sel.value;
+    saveCurrentGroup();
+    renderFavorites();
+  }
+
+  function renderAudit() {
+    const container = $('auditLog');
+    const empty = $('emptyAudit');
+    if (!auditLog.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    container.innerHTML = auditLog.map(e => `
+      <div class="audit-entry">
+        <span class="audit-time">${new Date(e.time).toLocaleString('ar-SA')}</span>
+        <span class="audit-action"> ${escapeHtml(e.action)}</span>
+        <div class="audit-detail">${escapeHtml(e.detail)}</div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function analyzeConfig(configText) {
+    let config;
+    try { config = JSON.parse(configText); } catch(e) { return { ok: false, error: 'JSON غير صالح: ' + e.message }; }
+    const warnings = [];
+    const info = [];
+    const perms = (config.permissions || []).map(String).map(p => p.toLowerCase());
+    const cmd = (config.command || '').toLowerCase();
+    const args = (config.args || []).join(' ').toLowerCase();
+    const env = config.env || {};
+
+    DANGEROUS_PERMS.forEach(p => {
+      if (perms.includes(p)) warnings.push(`صلاحية خطرة: "${p}"`);
+    });
+
+    SUSPICIOUS_CMDS.forEach(s => {
+      if (cmd.includes(s) || args.includes(s)) warnings.push(`أمر مشبوه محتمل: "${s}"`);
+    });
+
+    if (Object.keys(env).length) {
+      Object.keys(env).forEach(k => {
+        if (/key|secret|token|password|credential/i.test(k)) warnings.push(`متغير بيئة حساس: ${k}`);
+      });
+    }
+
+    if (!perms.length) info.push('لم تُعلن صلاحيات صريحة');
+    if (!warnings.length) info.push('لم يتم اكتشاف مشاكل واضحة');
+
+    const score = Math.max(0, 100 - warnings.length * 15 - info.length * 5);
+    return { ok: true, config, warnings, info, score, perms, cmd, args };
+  }
+
+  function renderAnalysis(result) {
+    const out = $('analysisResult');
+    if (!result.ok) { out.className = 'out warning'; out.textContent = result.error; out.style.display = 'block'; return; }
+    lastAnalyzedConfig = result.config;
+    let html = `<div class="${result.score >= 70 ? 'success' : 'warning'}"><strong>درجة الأمان: ${result.score}/100</strong></div>`;
+    if (result.warnings.length) {
+      html += '<div class="warning"><strong>تحذيرات:</strong><ul>' + result.warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('') + '</ul></div>';
+    }
+    if (result.info.length) {
+      html += '<div class="info"><strong>معلومات:</strong><ul>' + result.info.map(i => `<li>${escapeHtml(i)}</li>`).join('') + '</ul></div>';
+    }
+    html += `<div class="config-output">${escapeHtml(JSON.stringify(result.config, null, 2))}</div>`;
+    out.innerHTML = html;
+    out.style.display = 'block';
+    addAudit('فحص إعداد', `خادم: ${result.config.name || 'غير معروف'}, درجة: ${result.score}`);
+  }
+
+  function generateClientConfig(client, serverName, config) {
+    const base = { command: config.command, args: config.args, env: config.env || {} };
+    switch (client) {
+      case 'claude':
+        return JSON.stringify({ mcpServers: { [serverName]: base } }, null, 2);
+      case 'cursor':
+        return JSON.stringify({ mcp: { servers: { [serverName]: base } } }, null, 2);
+      case 'vscode':
+      case 'vscode-insiders':
+        return JSON.stringify({ "mcp.servers": { [serverName]: base } }, null, 2);
+      case 'cline':
+        return JSON.stringify({ mcpServers: { [serverName]: base } }, null, 2);
+      case 'roo':
+        return JSON.stringify({ roo: { mcpServers: { [serverName]: base } } }, null, 2);
+      default:
+        return JSON.stringify({ [serverName]: base }, null, 2);
+    }
+  }
+
+  function copyToClipboard(text) {
+    return navigator.clipboard.writeText(text).then(() => true).catch(() => false);
+  }
+
+  function init() {
+    loadAll();
+    renderServers();
+    renderGroups();
+    renderAudit();
+
+    $('searchInput').addEventListener('input', renderServers);
+    $('categoryFilter').addEventListener('change', renderServers);
+    $('securityFilter').addEventListener('change', renderServers);
+    $('clearFiltersBtn').addEventListener('click', () => {
+      $('searchInput').value = '';
+      $('categoryFilter').value = '';
+      $('securityFilter').value = '0';
+      renderServers();
+    });
+
+    $('analyzeBtn').addEventListener('click', () => {
+      const text = $('configInput').value.trim();
+      if (!text) { $('analysisResult').className = 'out warning'; $('analysisResult').textContent = 'أدخل إعداداً أولاً'; $('analysisResult').style.display = 'block'; return; }
+      renderAnalysis(analyzeConfig(text));
+    });
+    $('clearConfigBtn').addEventListener('click', () => { $('configInput').value = ''; $('analysisResult').style.display = 'none'; lastAnalyzedConfig = null; });
+
+    $('generateConfigBtn').addEventListener('click', async () => {
+      const client = $('clientSelect').value;
+      const name = $('serverNameInput').value.trim() || 'mcp-server';
+      const config = lastAnalyzedConfig;
+      if (!config) { $('generatedConfig').className = 'out warning'; $('generatedConfig').textContent = 'حلل إعداداً أولاً أو ألصق إعداداً صحيحاً'; $('generatedConfig').style.display = 'block'; return; }
+      const out = generateClientConfig(client, name, config);
+      const ok = await copyToClipboard(out);
+      $('generatedConfig').className = 'out ' + (ok ? 'success' : 'warning');
+      $('generatedConfig').textContent = (ok ? '✓ تم النسخ إلى الحافظة\n\n' : '✗ فشل النسخ، انسخ يدوياً:\n\n') + out;
+      $('generatedConfig').style.display = 'block';
+      addAudit('توليد إعداد', `عميل: ${client}, خادم: ${name}`);
+    });
+
+    $('serverList').addEventListener('click', e => {
+      const btn = e.target.closest('button'); if (!btn) return;
+      const id = btn.dataset.id; const action = btn.dataset.action;
+      const s = servers.find(x => x.id === id); if (!s) return;
+      if (action === 'fav') { if (!favorites[currentGroup]) favorites[currentGroup] = []; if (!favorites[currentGroup].includes(id)) { favorites[currentGroup].push(id); saveFav(); addAudit('إضافة مفضلة', s.name); renderServers(); renderFavorites(); } }
+      else if (action === 'unfav') { if (favorites[currentGroup]) { favorites[currentGroup] = favorites[currentGroup].filter(x => x !== id); saveFav(); addAudit('إزالة مفضلة', s.name); renderServers(); renderFavorites(); } }
+      else if (action === 'analyze') { $('configInput').value = JSON.stringify(s, null, 2); renderAnalysis(analyzeConfig(JSON.stringify(s))); $('configInput').scrollIntoView({behavior:'smooth'}); }
+      else if (action === 'gen') { $('serverNameInput').value = s.id; lastAnalyzedConfig = s; $('generateConfigBtn').click(); }
+    });
+
+    $('favoritesList').addEventListener('click', e => {
+      const btn = e.target.closest('button'); if (!btn) return;
+      const id = btn.dataset.id; const action = btn.dataset.action;
+      const s = servers.find(x => x.id === id); if (!s) return;
+      if (action === 'unfav') { if (favorites[currentGroup]) { favorites[currentGroup] = favorites[currentGroup].filter(x => x !== id); saveFav(); addAudit('إزالة مفضلة', s.name); renderServers(); renderFavorites(); } }
+      else if (action === 'analyze') { $('configInput').value = JSON.stringify(s, null, 2); renderAnalysis(analyzeConfig(JSON.stringify(s))); $('configInput').scrollIntoView({behavior:'smooth'}); }
+      else if (action === 'gen') { $('serverNameInput').value = s.id; lastAnalyzedConfig = s; $('generateConfigBtn').click(); }
+    });
+
+    $('createGroupBtn').addEventListener('click', () => {
+      const name = $('newGroupInput').value.trim();
+      if (!name) return;
+      if (!groups.includes(name)) { groups.push(name); saveGroups(); }
+      currentGroup = name; saveCurrentGroup(); renderGroups(); $('newGroupInput').value = '';
+      addAudit('إنشاء مجموعة', name);
+    });
+    $('deleteGroupBtn').addEventListener('click', () => {
+      if (currentGroup === 'default') { alert('لا يمكن حذف المجموعة الافتراضية'); return; }
+      if (!confirm(`حذف المجموعة "${currentGroup}" ومفضلاتها؟`)) return;
+      delete favorites[currentGroup]; saveFav();
+      groups = groups.filter(g => g !== currentGroup); saveGroups();
+      currentGroup = 'default'; saveCurrentGroup(); renderGroups();
+      addAudit('حذف مجموعة', currentGroup);
+    });
+    $('groupSelect').addEventListener('change', () => { currentGroup = $('groupSelect').value; saveCurrentGroup(); renderFavorites(); });
+
+    $('exportAuditBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(auditLog, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `mcp-audit-${Date.now()}.json`; a.click(); URL.revokeObjectURL(url);
+      addAudit('تصدير سجل', 'تم تصدير سجل التعهدات');
+    });
+    $('clearAuditBtn').addEventListener('click', () => { if (confirm('مسح كل سجل التعهدات؟')) { auditLog = []; saveAudit(); renderAudit(); addAudit('مسح سجل', 'تم مسح السجل'); } });
+    $('importAuditBtn').addEventListener('click', () => $('importAuditInput').click());
+    $('importAuditInput').addEventListener('change', e => {
+      const f = e.target.files[0]; if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => { try { auditLog = JSON.parse(reader.result); saveAudit(); renderAudit(); addAudit('استيراد سجل', `تم استيراد ${auditLog.length} سجل`); } catch(err) { alert('ملف غير صالح: ' + err.message); } };
+      reader.readAsText(f); e.target.value = '';
+    });
+
+    $('exportIndexBtn').addEventListener('click', () => {
+      const data = { servers, favorites, groups, currentGroup, auditLog };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `mcp-index-${Date.now()}.json`; a.click(); URL.revokeObjectURL(url);
+      addAudit('تصدير فهرس', 'تم تصدير الفهرس الكامل');
+    });
+    $('importIndexBtn').addEventListener('click', () => $('importIndexInput').click());
+    $('importIndexInput').addEventListener('change', e => {
+      const f = e.target.files[0]; if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (data.servers) { servers = data.servers; saveServers(); }
+          if (data.favorites) { favorites = data.favorites; saveFav(); }
+          if (data.groups) { groups = data.groups; saveGroups(); }
+          if (data.currentGroup && groups.includes(data.currentGroup)) { currentGroup = data.currentGroup; saveCurrentGroup(); }
+          if (data.auditLog) { auditLog = data.auditLog; saveAudit(); }
+          renderServers(); renderGroups(); renderAudit();
+          $('importExportStatus').className = 'out success'; $('importExportStatus').textContent = 'تم الاستيراد بنجاح'; $('importExportStatus').style.display = 'block';
+          addAudit('استيراد فهرس', 'تم استيراد الفهرس الكامل');
+        } catch(err) { $('importExportStatus').className = 'out warning'; $('importExportStatus').textContent = 'خطأ: ' + err.message; $('importExportStatus').style.display = 'block'; }
+      };
+      reader.readAsText(f); e.target.value = '';
+    });
+    $('resetIndexBtn').addEventListener('click', () => {
+      if (!confirm('إعادة الفهرس للافتراضي؟ سيحذف التغييرات.')) return;
+      servers = DEFAULT_SERVERS.map(s => ({...s, _orig:true})); saveServers();
+      favorites = {}; saveFav();
+      groups = ['default']; saveGroups();
+      currentGroup = 'default'; saveCurrentGroup();
+      renderServers(); renderGroups(); renderAudit();
+      addAudit('إعادة فهرس', 'تمت إعادة الفهرس للافتراضي');
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>

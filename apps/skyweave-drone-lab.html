@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاكي طيران مسيّر تفاعلي داخل المتصفح | MDM1</title>
+<meta name="description" content="محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات عن بعد، مستشعرات، سرب، وحفظ سيناريوهات محلياً.">
+<link rel="canonical" href="https://mdm1.org/apps/skyweave-drone-lab.html">
+<meta property="og:title" content="محاكي طيران مسيّر تفاعلي داخل المتصفح">
+<meta property="og:description" content="محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات عن بعد، مستشعرات، سرب، وحفظ سيناريوهات محلياً.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/skyweave-drone-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-shell{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:12px;align-items:start}
+.app-map-wrap{position:relative}
+.app-canvas{width:100%;height:auto;border:1px solid var(--gold-dim);border-radius:8px;background:#05080c;display:block}
+.app-panel{display:flex;flex-direction:column;gap:8px}
+.app-status{min-height:1.5em;white-space:pre-wrap}
+.app-telemetry{min-height:8em;white-space:pre-wrap;font-family:monospace}
+.app-map-wrap .badge{margin:2px}
+@media (max-width:900px){.app-shell{grid-template-columns:1fr}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محاكي طيران تفاعلي للطائرات المسيّرة", "url": "https://mdm1.org/apps/skyweave-drone-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج المحاكي إلى خادم أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل بالكامل داخل المتصفح ويحفظ السيناريوهات في التخزين المحلي."}}, {"@type": "Question", "name": "كيف أرسم مسار طيران؟", "acceptedAnswer": {"@type": "Answer", "text": "انقر على الخريطة لإضافة نقاط، واستخدم مسح المسار أو تراجع عند الحاجة."}}, {"@type": "Question", "name": "ما تأثير الرياح والطقس؟", "acceptedAnswer": {"@type": "Answer", "text": "تغير سرعة الرياح واتجاهها واضطرابها قوى الحركة والبطارية ودقة المسار."}}, {"@type": "Question", "name": "هل يمكن تشغيل عدة طائرات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر عدد الطائرات والتشكيل، وستتبع السرب المسار مع تجنب الاصطدام."}}, {"@type": "Question", "name": "كيف أقارن الرحلات؟", "acceptedAnswer": {"@type": "Answer", "text": "احفظ كل سيناريو بعد تشغيله، ثم استخدم زر مقارنة لعرض القياسات."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محاكي طيران تفاعلي للطائرات المسيّرة</h1>
+  <p class="page-sub">محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات عن بعد، مستشعرات، سرب، وحفظ سيناريوهات محلياً.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذا المحاكي يتيح رسم مسار طيران على خريطة تفاعلية، وضبط الرياح والطقس، ومراقبة فيزياء الطيران والهبوط والتجنب في الوقت الحقيقي، مع لوحة قياس عن بعد ومستشعرات كاميرا وليدار وسرب طائرات وحفظ السيناريوهات محلياً. ابدأ بإضافة نقطتي طيران على الأقل على الخريطة، ثم اضبط سرعة الرياح واتجاهها واضطرابها ورؤية الطقس، واضغط بدء المحاكاة لمشاهدة الطائرات تتبع المسار مع تحديث القياسات والبطارية والتجنب تلقائياً. يمكنك توليد عقبات، إظهار أشعة المستشعرات، حفظ السيناريو وتحميله أو مقارنته لاحقاً دون أي خادم أو حساب.</p>
+<div class="app-shell">
+  <div class="card">
+    <h2>الخريطة والمسار</h2>
+    <div class="app-map-wrap"><canvas id="appCanvas" class="app-canvas" width="800" height="500" aria-label="خريطة محاكاة طيران"></canvas></div>
+    <div class="row">
+      <button id="appClearPath" class="sec">مسح المسار</button>
+      <button id="appUndoWaypoint" class="sec">تراجع عن نقطة</button>
+      <button id="appGenObstacles" class="sec">توليد عقبات</button>
+      <button id="appClearObstacles" class="sec">مسح العقبات</button>
+    </div>
+    <div id="appWaypointList" class="row"></div>
+  </div>
+  <div class="card app-panel">
+    <h2>السرب</h2>
+    <div class="row">
+      <label for="appDroneCount">عدد الطائرات</label>
+      <select id="appDroneCount"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="5">5</option><option value="8">8</option></select>
+    </div>
+    <div class="row">
+      <label for="appFormation">التشكيل</label>
+      <select id="appFormation"><option value="line">خط</option><option value="v">شكل V</option><option value="grid">شبكة</option></select>
+    </div>
+    <div class="row">
+      <label for="appObstacleCount">عدد العقبات</label>
+      <input id="appObstacleCount" type="number" min="0" max="40" value="8">
+    </div>
+    <div class="divider"></div>
+    <h2>الطقس والرياح</h2>
+    <div class="row"><label for="appWindSpeed">سرعة الرياح</label><input id="appWindSpeed" type="range" min="0" max="20" value="3"></div>
+    <div class="row"><label for="appWindDir">اتجاه الرياح (°)</label><input id="appWindDir" type="range" min="0" max="360" value="45"></div>
+    <div class="row"><label for="appTurbulence">اضطراب</label><input id="appTurbulence" type="range" min="0" max="5" step="0.1" value="0.8"></div>
+    <div class="row"><label for="appVisibility">الرؤية</label><input id="appVisibility" type="range" min="1" max="20" value="10"></div>
+    <div class="row"><label for="appTemp">درجة الحرارة</label><input id="appTemp" type="number" value="20"></div>
+    <div class="divider"></div>
+    <h2>خصائص الطائرة</h2>
+    <div class="row"><label for="appMass">الكتلة</label><input id="appMass" type="number" step="0.1" value="1"></div>
+    <div class="row"><label for="appMaxSpeed">السرعة القصوى</label><input id="appMaxSpeed" type="number" value="8"></div>
+    <div class="row"><label for="appBatteryCap">سعة البطارية</label><input id="appBatteryCap" type="number" value="100"></div>
+  </div>
+</div>
+<div class="card app-panel">
+  <h2>المستشعرات</h2>
+  <div class="row"><label for="appCameraFov">زاوية كاميرا (°)</label><input id="appCameraFov" type="number" value="60"></div>
+  <div class="row"><label for="appCameraRange">مدى الكاميرا</label><input id="appCameraRange" type="number" value="120"></div>
+  <div class="row"><label for="appLidarRays">أشعة ليدار</label><input id="appLidarRays" type="number" min="4" max="64" value="16"></div>
+  <div class="row"><label for="appLidarRange">مدى ليدار</label><input id="appLidarRange" type="number" value="150"></div>
+  <div class="row"><label for="appShowSensors">إظهار أشعة المستشعرات</label><input id="appShowSensors" type="checkbox" checked></div>
+  <div class="row"><label for="appShowTrails">إظهار المسارات</label><input id="appShowTrails" type="checkbox" checked></div>
+  <div class="row"><label for="appAvoidance">تجنب الاصطدام</label><input id="appAvoidance" type="checkbox" checked></div>
+</div>
+<div class="card">
+  <h2>التحكم بالمحاكاة</h2>
+  <div class="row">
+    <label for="appSimSpeed">سرعة المحاكاة</label>
+    <select id="appSimSpeed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option><option value="4">4x</option></select>
+    <button id="appStart">بدء المحاكاة</button>
+    <button id="appPause" class="sec">إيقاف مؤقت</button>
+    <button id="appReset" class="sec">إعادة تعيين</button>
+    <button id="appAutoLand">هبوط تلقائي</button>
+  </div>
+  <div class="row"><label for="appTelemetryDrone">طائرة للقياسات</label><select id="appTelemetryDrone"></select></div>
+  <div id="appStatus" class="app-status out"></div>
+  <div id="appTelemetry" class="out app-telemetry"></div>
+</div>
+<div class="card">
+  <h2>السيناريوهات والمقارنة</h2>
+  <div class="row">
+    <label for="appScenarioName">اسم السيناريو</label>
+    <input id="appScenarioName" type="text" placeholder="اسم السيناريو">
+    <button id="appSaveScenario">حفظ</button>
+  </div>
+  <div class="row">
+    <label for="appScenarioList">السيناريوهات</label>
+    <select id="appScenarioList"></select>
+    <button id="appLoadScenario" class="sec">تحميل</button>
+    <button id="appDeleteScenario" class="sec">حذف</button>
+    <button id="appCompare">مقارنة</button>
+  </div>
+  <textarea id="appFlightLog" class="out" rows="8" placeholder="سجل الرحلات والمقارنة"></textarea>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج المحاكي إلى خادم أو حساب؟</h3><p>لا، يعمل بالكامل داخل المتصفح ويحفظ السيناريوهات في التخزين المحلي.</p><h3>كيف أرسم مسار طيران؟</h3><p>انقر على الخريطة لإضافة نقاط، واستخدم مسح المسار أو تراجع عند الحاجة.</p><h3>ما تأثير الرياح والطقس؟</h3><p>تغير سرعة الرياح واتجاهها واضطرابها قوى الحركة والبطارية ودقة المسار.</p><h3>هل يمكن تشغيل عدة طائرات؟</h3><p>نعم، اختر عدد الطائرات والتشكيل، وستتبع السرب المسار مع تجنب الاصطدام.</p><h3>كيف أقارن الرحلات؟</h3><p>احفظ كل سيناريو بعد تشغيله، ثم استخدم زر مقارنة لعرض القياسات.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-22 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const canvas = $('appCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+
+  let waypoints = [];
+  let obstacles = [];
+  let drones = [];
+  let running = false;
+  let paused = false;
+  let simSpeed = 1;
+  let lastTime = 0;
+  let selectedDrone = 0;
+  let scenarioMetrics = null;
+  let landingRequested = false;
+
+  function num(id, def){ const v = parseFloat($(id).value); return isNaN(v) ? def : v; }
+  function intv(id, def){ const v = parseInt($(id).value, 10); return isNaN(v) ? def : v; }
+
+  function settings(){
+    return {
+      droneCount: Math.max(1, Math.min(12, intv('appDroneCount', 3))),
+      formation: $('appFormation').value,
+      windSpeed: num('appWindSpeed', 0),
+      windDir: num('appWindDir', 0) * Math.PI / 180,
+      turbulence: num('appTurbulence', 0),
+      visibility: num('appVisibility', 10),
+      temp: num('appTemp', 20),
+      mass: Math.max(0.1, num('appMass', 1)),
+      maxSpeed: Math.max(1, num('appMaxSpeed', 8)),
+      batteryCap: Math.max(10, num('appBatteryCap', 100)),
+      camFov: num('appCameraFov', 60) * Math.PI / 180,
+      camRange: num('appCameraRange', 120),
+      lidarRays: Math.max(4, Math.min(64, intv('appLidarRays', 16))),
+      lidarRange: num('appLidarRange', 150),
+      showSensors: $('appShowSensors').checked,
+      showTrails: $('appShowTrails').checked,
+      avoidance: $('appAvoidance').checked
+    };
+  }
+
+  function windVector(s){ return { x: Math.cos(s.windDir) * s.windSpeed, y: Math.sin(s.windDir) * s.windSpeed }; }
+
+  function setStatus(msg){ const el = $('appStatus'); if (el) el.textContent = msg; }
+
+  function updateWaypointList(){
+    const el = $('appWaypointList');
+    if (!el) return;
+    el.textContent = '';
+    waypoints.forEach((w, i) => {
+      const b = document.createElement('span');
+      b.className = 'badge';
+      b.textContent = (i + 1) + ': ' + Math.round(w.x) + ',' + Math.round(w.y);
+      el.appendChild(b);
+    });
+  }
+
+  function initDrones(){
+    const s = settings();
+    drones = [];
+    const home = { x: 60, y: H / 2 };
+    const spacing = 26;
+    const cols = 3;
+    const rows = Math.ceil(s.droneCount / cols);
+    const offsets = [];
+    for (let i = 0; i < s.droneCount; i++){
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      offsets.push({ x: -col * spacing, y: (row - (rows - 1) / 2) * spacing });
+    }
+    for (let i = 0; i < s.droneCount; i++){
+      drones.push({
+        id: i,
+        x: home.x + offsets[i].x,
+        y: home.y + offsets[i].y,
+        vx: 0, vy: 0,
+        alt: 0,
+        battery: s.batteryCap,
+        target: 0,
+        landed: false,
+        status: 'جاهز',
+        trail: []
+      });
+    }
+    selectedDrone = 0;
+    const sel = $('appTelemetryDrone');
+    if (sel){
+      sel.textContent = '';
+      drones.forEach((d, i) => {
+        const o = document.createElement('option');
+        o.value = String(i);
+        o.textContent = 'طائرة ' + (i + 1);
+        sel.appendChild(o);
+      });
+      sel.value = '0';
+    }
+  }
+
+  function genObstacles(){
+    obstacles = [];
+    const count = Math.max(0, Math.min(40, intv('appObstacleCount', 8)));
+    for (let i = 0; i < count; i++){
+      obstacles.push({
+        x: 120 + Math.random() * (W - 240),
+        y: 60 + Math.random() * (H - 120),
+        r: 8 + Math.random() * 18
+      });
+    }
+    setStatus('تم توليد ' + obstacles.length + ' عقبة');
+  }
+
+  function start(){
+    if (running) return;
+    if (waypoints.length < 2){
+      setStatus('أضف نقطتي طيران على الأقل قبل البدء');
+      return;
+    }
+    initDrones();
+    running = true;
+    paused = false;
+    landingRequested = false;
+    lastTime = performance.now();
+    scenarioMetrics = { startTime: Date.now(), distance: 0, minBattery: 100, landed: 0 };
+    const btn = $('appPause'); if (btn) btn.textContent = 'إيقاف مؤقت';
+    setStatus('المحاكاة تعمل');
+    requestAnimationFrame(loop);
+  }
+
+  function togglePause(){
+    if (!running) return;
+    paused = !paused;
+    const btn = $('appPause');
+    if (btn) btn.textContent = paused ? 'استئناف' : 'إيقاف مؤقت';
+    setStatus(paused ? 'تم الإيقاف المؤقت' : 'تم الاستئناف');
+    if (!paused){ lastTime = performance.now(); requestAnimationFrame(loop); }
+  }
+
+  function reset(){
+    running = false;
+    paused = false;
+    landingRequested = false;
+    drones = [];
+    initDrones();
+    const btn = $('appPause'); if (btn) btn.textContent = 'إيقاف مؤقت';
+    setStatus('تم إعادة التعيين');
+    render();
+  }
+
+  function autoLand(){
+    if (!running){ setStatus('ابدأ المحاكاة أولاً'); return; }
+    landingRequested = true;
+    drones.forEach(d => { if (!d.landed) d.target = waypoints.length; });
+    setStatus('تم طلب الهبوط التلقائي');
+  }
+
+  function rayCircle(ox, oy, dx, dy, cx, cy, r){
+    const fx = ox - cx, fy = oy - cy;
+    const a = dx * dx + dy * dy;
+    const b = 2 * (fx * dx + fy * dy);
+    const c = fx * fx + fy * fy - r * r;
+    const disc = b * b - 4 * a * c;
+    if (disc < 0) return null;
+    const sq = Math.sqrt(disc);
+    const t1 = (-b - sq) / (2 * a);
+    const t2 = (-b + sq) / (2 * a);
+    if (t1 >= 0) return t1;
+    if (t2 >= 0) return t2;
+    return null;
+  }
+
+  function boundDist(ox, oy, dx, dy, maxD){
+    let t = maxD;
+    if (dx > 0) t = Math.min(t, (W - ox) / dx);
+    if (dx < 0) t = Math.min(t, (0 - ox) / dx);
+    if (dy > 0) t = Math.min(t, (H - oy) / dy);
+    if (dy < 0) t = Math.min(t, (0 - oy) / dy);
+    if (!isFinite(t) || t < 0) t = maxD;
+    return Math.min(maxD, Math.max(0, t));
+  }
+
+  function avoidForce(drone, s){
+    let ax = 0, ay = 0;
+    if (!s.avoidance) return { ax, ay };
+    drones.forEach(other => {
+      if (other === drone || other.landed) return;
+      const dx = drone.x - other.x;
+      const dy = drone.y - other.y;
+      const d = Math.hypot(dx, dy) || 0.001;
+      if (d < 50){
+        const f = (50 - d) / 50 * 3;
+        ax += dx / d * f;
+        ay += dy / d * f;
+      }
+    });
+    obstacles.forEach(o => {
+      const dx = drone.x - o.x;
+      const dy = drone.y - o.y;
+      const d = Math.hypot(dx, dy) || 0.001;
+      if (d < o.r + 40){
+        const f = (o.r + 40 - d) / 40 * 4;
+        ax += dx / d * f;
+        ay += dy / d * f;
+      }
+    });
+    return { ax, ay };
+  }
+
+  function update(dt){
+    const s = settings();
+    simSpeed = parseFloat($('appSimSpeed').value) || 1;
+    const wv = windVector(s);
+    const turb = s.turbulence;
+    drones.forEach(drone => {
+      if (drone.landed) return;
+      if (drone.battery <= 0){ drone.landed = true; drone.status = 'بطارية فارغة'; return; }
+
+      let tx, ty;
+      if (drone.target < waypoints.length){
+        tx = waypoints[drone.target].x;
+        ty = waypoints[drone.target].y;
+      } else {
+        const last = waypoints[waypoints.length - 1];
+        tx = last.x;
+        ty = last.y;
+      }
+
+      const dx = tx - drone.x;
+      const dy = ty - drone.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 20 && drone.target < waypoints.length){
+        drone.target++;
+      }
+      if (drone.target >= waypoints.length && dist < 25){
+        drone.alt = Math.max(0, drone.alt - 40 * dt * simSpeed);
+        if (drone.alt <= 0.5){
+          drone.landed = true;
+          drone.alt = 0;
+          drone.vx = 0; drone.vy = 0;
+          drone.status = 'هبط';
+          if (scenarioMetrics) scenarioMetrics.landed++;
+          return;
+        }
+      } else {
+        drone.alt = Math.min(70, drone.alt + 30 * dt * simSpeed);
+      }
+
+      const desiredSpeed = dist > 0 ? Math.min(s.maxSpeed, Math.max(1, dist * 0.4)) : 0;
+      let dvx = (dist > 0 ? dx / dist * desiredSpeed : 0) - drone.vx;
+      let dvy = (dist > 0 ? dy / dist * desiredSpeed : 0) - drone.vy;
+
+      const af = avoidForce(drone, s);
+      const ax = dvx * 2 + wv.x * 0.4 + af.ax + (Math.random() - 0.5) * turb;
+      const ay = dvy * 2 + wv.y * 0.4 + af.ay + (Math.random() - 0.5) * turb;
+
+      const mass = s.mass;
+      drone.vx += ax / mass * dt * simSpeed;
+      drone.vy += ay / mass * dt * simSpeed;
+
+      const sp = Math.hypot(drone.vx, drone.vy);
+      if (sp > s.maxSpeed){
+        drone.vx = drone.vx / sp * s.maxSpeed;
+        drone.vy = drone.vy / sp * s.maxSpeed;
+      }
+      drone.x += drone.vx * dt * simSpeed;
+      drone.y += drone.vy * dt * simSpeed;
+
+      drone.x = Math.max(5, Math.min(W - 5, drone.x));
+      drone.y = Math.max(5, Math.min(H - 5, drone.y));
+
+      const throttle = sp / s.maxSpeed;
+      drone.battery -= (0.015 + throttle * 0.09 + s.windSpeed * 0.006) * dt * simSpeed;
+      if (drone.battery < 0) drone.battery = 0;
+
+      if (drone.battery <= 0) drone.status = 'بطارية فارغة';
+      else if (drone.landed) drone.status = 'هبط';
+      else if (drone.target >= waypoints.length) drone.status = 'هبوط';
+      else drone.status = 'طيران';
+
+      if (s.showTrails){
+        drone.trail.push({ x: drone.x, y: drone.y });
+        if (drone.trail.length > 400) drone.trail.shift();
+      }
+    });
+
+    if (scenarioMetrics){
+      scenarioMetrics.minBattery = Math.min(scenarioMetrics.minBattery, ...drones.map(d => d.battery));
+      scenarioMetrics.distance += drones.reduce((a, d) => a + Math.hypot(d.vx, d.vy), 0) * dt * simSpeed;
+    }
+
+    if (drones.length && drones.every(d => d.landed || d.battery <= 0)){
+      running = false;
+      paused = false;
+      if (scenarioMetrics){
+        scenarioMetrics.duration = (Date.now() - scenarioMetrics.startTime) / 1000;
+        scenarioMetrics.landed = drones.filter(d => d.status === 'هبط').length;
+      }
+      setStatus('اكتملت المحاكاة — هبط ' + drones.filter(d => d.status === 'هبط').length + ' من ' + drones.length);
+      const btn = $('appPause'); if (btn) btn.textContent = 'إيقاف مؤقت';
+    }
+  }
+
+  function lidarRays(drone, s){
+    const rays = [];
+    const n = s.lidarRays;
+    const heading = Math.atan2(drone.vy, drone.vx);
+    const base = isNaN(heading) ? 0 : heading;
+    for (let i = 0; i < n; i++){
+      const ang = base + (i / n) * Math.PI * 2;
+      const dx = Math.cos(ang), dy = Math.sin(ang);
+      let best = boundDist(drone.x, drone.y, dx, dy, s.lidarRange);
+      let hit = false;
+      obstacles.forEach(o => {
+        const t = rayCircle(drone.x, drone.y, dx, dy, o.x, o.y, o.r);
+        if (t !== null && t >= 0 && t < best){ best = t; hit = true; }
+      });
+      best = Math.min(best, s.lidarRange);
+      rays.push({ ang, dist: best, hit });
+    }
+    return rays;
+  }
+
+  function render(){
+    ctx.clearRect(0, 0, W, H);
+    // grid
+    ctx.strokeStyle = 'rgba(212,175,55,0.08)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 40){
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 40){
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // obstacles
+    obstacles.forEach(o => {
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(220,80,80,0.35)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(220,80,80,0.8)';
+      ctx.stroke();
+    });
+
+    // path
+    if (waypoints.length){
+      ctx.strokeStyle = 'rgba(212,175,55,0.9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(waypoints[0].x, waypoints[0].y);
+      for (let i = 1; i < waypoints.length; i++) ctx.lineTo(waypoints[i].x, waypoints[i].y);
+      ctx.stroke();
+      waypoints.forEach((w, i) => {
+        ctx.beginPath();
+        ctx.arc(w.x, w.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = i === waypoints.length - 1 ? '#ff6b6b' : '#d4af37';
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px sans-serif';
+        ctx.fillText(String(i + 1), w.x + 8, w.y - 8);
+      });
+    }
+
+    const s = settings();
+    // drones
+    drones.forEach(drone => {
+      if (s.showTrails && drone.trail.length > 1){
+        ctx.strokeStyle = 'rgba(100,200,255,0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(drone.trail[0].x, drone.trail[0].y);
+        for (let i = 1; i < drone.trail.length; i++) ctx.lineTo(drone.trail[i].x, drone.trail[i].y);
+        ctx.stroke();
+      }
+
+      if (s.showSensors && !drone.landed){
+        // camera wedge
+        const heading = Math.atan2(drone.vy, drone.vx);
+        const h = isNaN(heading) ? 0 : heading;
+        ctx.save();
+        ctx.translate(drone.x, drone.y);
+        ctx.rotate(h);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, s.camRange, -s.camFov / 2, s.camFov / 2);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,215,0,0.07)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,215,0,0.25)';
+        ctx.stroke();
+        ctx.restore();
+
+        // lidar
+        const rays = lidarRays(drone, s);
+        rays.forEach(r => {
+          const ex = drone.x + Math.cos(r.ang) * r.dist;
+          const ey = drone.y + Math.sin(r.ang) * r.dist;
+          ctx.beginPath();
+          ctx.moveTo(drone.x, drone.y);
+          ctx.lineTo(ex, ey);
+          ctx.strokeStyle = r.hit ? 'rgba(255,100,100,0.7)' : 'rgba(100,255,150,0.45)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        });
+      }
+
+      // drone body
+      ctx.beginPath();
+      ctx.arc(drone.x, drone.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = drone.landed ? '#888' : (drone.battery <= 0 ? '#ff4444' : '#4da6ff');
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(drone.id + 1), drone.x, drone.y + 3);
+      ctx.textAlign = 'start';
+    });
+  }
+
+  function updateTelemetry(){
+    const sel = $('appTelemetryDrone');
+    if (sel) selectedDrone = parseInt(sel.value, 10) || 0;
+    const d = drones[selectedDrone] || drones[0];
+    const el = $('appTelemetry');
+    if (!el) return;
+    if (!d){ el.textContent = 'لا توجد طائرات. ابدأ المحاكاة.'; return; }
+    const s = settings();
+    const sp = Math.hypot(d.vx, d.vy);
+    el.textContent =
+      'طائرة: ' + (d.id + 1) + '\n' +
+      'السرعة: ' + sp.toFixed(1) + ' px/s\n' +
+      'الارتفاع: ' + d.alt.toFixed(0) + '\n' +
+      'البطارية: ' + d.battery.toFixed(1) + '%\n' +
+      'الهدف: ' + Math.min(d.target + 1, waypoints.length) + '/' + waypoints.length + '\n' +
+      'الحالة: ' + d.status + '\n' +
+      'رياح: ' + s.windSpeed.toFixed(1) + ' / ' + (s.windDir * 180 / Math.PI).toFixed(0) + '°\n' +
+      'سرب: ' + drones.length + ' | هبط: ' + drones.filter(x => x.status === 'هبط').length;
+  }
+
+  function loadScenarios(){
+    try { return JSON.parse(localStorage.getItem('appScenariosV1') || '[]'); }
+    catch (e){ return []; }
+  }
+  function saveScenarios(list){
+    try { localStorage.setItem('appScenariosV1', JSON.stringify(list)); return true; }
+    catch (e){ setStatus('تعذر الحفظ في التخزين المحلي'); return false; }
+  }
+  function refreshScenarioList(){
+    const sel = $('appScenarioList');
+    if (!sel) return;
+    const list = loadScenarios();
+    sel.textContent = '';
+    list.forEach(sc => {
+      const o = document.createElement('option');
+      o.value = sc.name;
+      o.textContent = sc.name;
+      sel.appendChild(o);
+    });
+  }
+
+  function saveScenario(){
+    const nameInput = $('appScenarioName');
+    const name = (nameInput.value || '').trim() || ('سيناريو ' + (loadScenarios().length + 1));
+    const s = settings();
+    const sc = {
+      name: name,
+      createdAt: new Date().toISOString(),
+      waypoints: waypoints.map(w => ({ x: w.x, y: w.y })),
+      obstacles: obstacles.map(o => ({ x: o.x, y: o.y, r: o.r })),
+      settings: s,
+      metrics: scenarioMetrics ? {
+        duration: scenarioMetrics.duration || null,
+        minBattery: scenarioMetrics.minBattery,
+        landed: scenarioMetrics.landed || 0,
+        distance: Math.round(scenarioMetrics.distance || 0)
+      } : null
+    };
+    const list = loadScenarios().filter(x => x.name !== name);
+    list.push(sc);
+    if (saveScenarios(list)){ refreshScenarioList(); setStatus('تم حفظ السيناريو: ' + name); }
+  }
+
+  function loadScenario(){
+    const name = $('appScenarioList').value;
+    const sc = loadScenarios().find(x => x.name === name);
+    if (!sc){ setStatus('لم يتم العثور على السيناريو'); return; }
+    waypoints = sc.waypoints.map(w => ({ x: w.x, y: w.y }));
+    obstacles = sc.obstacles.map(o => ({ x: o.x, y: o.y, r: o.r }));
+    const st = sc.settings || {};
+    const setVal = (id, v) => { const el = $(id); if (el && v !== undefined) el.value = v; };
+    setVal('appDroneCount', st.droneCount);
+    setVal('appFormation', st.formation);
+    setVal('appWindSpeed', st.windSpeed);
+    setVal('appWindDir', st.windDir !== undefined ? st.windDir * 180 / Math.PI : undefined);
+    setVal('appTurbulence', st.turbulence);
+    setVal('appVisibility', st.visibility);
+    setVal('appTemp', st.temp);
+    setVal('appMass', st.mass);
+    setVal('appMaxSpeed', st.maxSpeed);
+    setVal('appBatteryCap', st.batteryCap);
+    setVal('appCameraFov', st.camFov !== undefined ? st.camFov * 180 / Math.PI : undefined);
+    setVal('appCameraRange', st.camRange);
+    setVal('appLidarRays', st.lidarRays);
+    setVal('appLidarRange', st.lidarRange);
+    if ($('appShowSensors')) $('appShowSensors').checked = !!st.showSensors;
+    if ($('appShowTrails')) $('appShowTrails').checked = !!st.showTrails;
+    if ($('appAvoidance')) $('appAvoidance').checked = st.avoidance !== false;
+    updateWaypointList();
+    reset();
+    setStatus('تم تحميل السيناريو: ' + sc.name);
+  }
+
+  function deleteScenario(){
+    const name = $('appScenarioList').value;
+    if (!name) return;
+    const list = loadScenarios().filter(x => x.name !== name);
+    saveScenarios(list);
+    refreshScenarioList();
+    setStatus('تم حذف السيناريو');
+  }
+
+  function compareScenarios(){
+    const list = loadScenarios();
+    const el = $('appFlightLog');
+    if (!el) return;
+    if (!list.length){ el.value = 'لا توجد سيناريوهات محفوظة للمقارنة.'; return; }
+    const lines = list.map(sc => {
+      const m = sc.metrics;
+      return sc.name + ' | نقاط: ' + sc.waypoints.length + ' | رياح: ' + (sc.settings.windSpeed || 0).toFixed(1) +
+        ' | بطارية min: ' + (m ? m.minBattery.toFixed(1) + '%' : '—') +
+        ' | هبط: ' + (m ? m.landed : '—') + ' | مدة: ' + (m && m.duration ? m.duration.toFixed(1) + 's' : '—');
+    });
+    el.value = lines.join('\n');
+  }
+
+  function loop(now){
+    if (!running) { render(); return; }
+    const dt = Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
+    if (!paused){
+      update(dt);
+      updateTelemetry();
+    }
+    render();
+    if (running) requestAnimationFrame(loop);
+  }
+
+  function init(){
+    initDrones();
+    updateWaypointList();
+    refreshScenarioList();
+    render();
+    updateTelemetry();
+
+    const canvasEl = $('appCanvas');
+    canvasEl.addEventListener('click', (e) => {
+      if (running) return;
+      const rect = canvasEl.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvasEl.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvasEl.height / rect.height);
+      waypoints.push({ x, y });
+      updateWaypointList();
+      render();
+    });
+
+    $('appClearPath').addEventListener('click', () => { if (running) return; waypoints = []; updateWaypointList(); render(); setStatus('تم مسح المسار'); });
+    $('appUndoWaypoint').addEventListener('click', () => { if (running) return; waypoints.pop(); updateWaypointList(); render(); });
+    $('appGenObstacles').addEventListener('click', () => { if (running) return; genObstacles(); render(); });
+    $('appClearObstacles').addEventListener('click', () => { if (running) return; obstacles = []; render(); setStatus('تم مسح العقبات'); });
+
+    $('appStart').addEventListener('click', start);
+    $('appPause').addEventListener('click', togglePause);
+    $('appReset').addEventListener('click', reset);
+    $('appAutoLand').addEventListener('click', autoLand);
+
+    $('appSaveScenario').addEventListener('click', saveScenario);
+    $('appLoadScenario').addEventListener('click', loadScenario);
+    $('appDeleteScenario').addEventListener('click', deleteScenario);
+    $('appCompare').addEventListener('click', compareScenarios);
+
+    ['appDroneCount','appFormation','appWindSpeed','appWindDir','appTurbulence','appVisibility','appTemp','appMass','appMaxSpeed','appBatteryCap','appCameraFov','appCameraRange','appLidarRays','appLidarRange','appShowSensors','appShowTrails','appAvoidance','appSimSpeed','appTelemetryDrone'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('change', () => { if (!running) initDrones(); render(); updateTelemetry(); });
+    });
+    if ($('appSimSpeed')) $('appSimSpeed').addEventListener('change', () => { simSpeed = parseFloat($('appSimSpeed').value) || 1; });
+
+    setStatus('جاهز. أضف نقطتي طيران على الأقل ثم ابدأ.');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>

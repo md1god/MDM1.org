@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خريطة السماء ثلاثية الأبعاد - محاكاة النجوم والكواكب | MDM1</title>
+<meta name="description" content="تطبيق ويب تفاعلي لعرض خريطة السماء ثلاثية الأبعاد بناءً على موقعك ووقتك، مع محاكاة الرؤية بالعين المجردة أو المنظار للنجوم والكواكب والأبراج.">
+<link rel="canonical" href="https://mdm1.org/apps/sama-chart.html">
+<meta property="og:title" content="خريطة السماء ثلاثية الأبعاد - محاكاة النجوم والكواكب">
+<meta property="og:description" content="تطبيق ويب تفاعلي لعرض خريطة السماء ثلاثية الأبعاد بناءً على موقعك ووقتك، مع محاكاة الرؤية بالعين المجردة أو المنظار للنجوم والكواكب والأبراج.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/sama-chart.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-container { direction: rtl; font-family: inherit; }
+.app-container .row { gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.app-container .row > * { flex: 1 1 180px; min-width: 140px; }
+.app-container label { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--light); cursor: pointer; }
+.app-container input, .app-container select { background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); padding: 8px 12px; border-radius: 6px; font-size: 14px; }
+.app-container input:focus, .app-container select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-dim); }
+.app-container input[type="range"] { padding: 0; height: 24px; }
+.app-container output { min-width: 50px; text-align: center; }
+.app-container button { min-width: 120px; }
+.app-container #canvasContainer { border: 1px solid var(--gold-dim); }
+.app-container #infoPanel { pointer-events: none; }
+.app-container .out { min-height: 60px; white-space: pre-wrap; direction: rtl; text-align: right; }
+.app-container .divider { border-color: var(--gold-dim); margin: 12px 0; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "خريطة السماء ثلاثية الأبعاد", "url": "https://mdm1.org/apps/sama-chart.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل في المتصفح دون حاجة لاتصال بالإنترنت بعد تحميل الصفحة، حيث تُحسب مواقع الأجرام فلكياً باستخدام خوارزميات دقيقة."}}, {"@type": "Question", "name": "كيف أحفظ موقعِي المفضل؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم حفظ جميع الإعدادات (الموقع، التاريخ، الوقت، وضع الرؤية) تلقائياً في localStorage وتُستعاد عند إعادة فتح الصفحة."}}, {"@type": "Question", "name": "ما دقة مواقع الكواكب والنجوم؟", "acceptedAnswer": {"@type": "Answer", "text": "تستخدم خوارزميات فلكية مبسطة ولكنها دقيقة بما يكفي للاستخدام الهوائي (خطأ أقل من درجة واحدة للكواكب، ودقيقة جداً للنجوم الثابتة)."}}, {"@type": "Question", "name": "كيف أبحث عن نجم أو كوكب معين؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب اسمه في حقل البحث (مثال: \"سهيل\" أو \"المشتري\" أو \"الجبار\") واضغط بحث، وسيظهر موقعه وتفاصيله إن كان فوق الأفق."}}, {"@type": "Question", "name": "هل يدعم التطبيق اللغة العربية بالكامل؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، الواجهة بالكامل بالعربية مع دعم RTL، وأسماء الأجرام والأبراج بأسمائها العربية التقليدية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">خريطة السماء ثلاثية الأبعاد</h1>
+  <p class="page-sub">تطبيق ويب تفاعلي لعرض خريطة السماء ثلاثية الأبعاد بناءً على موقعك ووقتك، مع محاكاة الرؤية بالعين المجردة أو المنظار للنجوم والكواكب والأبراج.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>تطبيق خريطة السماء ثلاثية الأبعاد يتيح لك استكشاف الأجرام السماوية بدقة من متصفحك دون اتصال بالإنترنت. حدد موقعك الجغرافي والتاريخ والوقت لرؤية مواقع الشمس والقمر والكواكب والنجوم والأبراج في سماء منطقتك. يدعم التطبيق محاكاة الرؤية بالعين المجردة والمنظار، مع إمكانية البحث عن أي جرم سماوي وعرض خطوط الأبراج وحدود الأفق. تُحفظ إعداداتك محلياً في المتصفح لتجربة سلسة ومستمرة.</p>
+
+<div class="card app-container">
+  <div class="row">
+    <label for="lat">خط العرض</label>
+    <input type="number" id="lat" step="0.0001" placeholder="مثال: 24.7136" title="خط العرض الجغرافي">
+    <label for="lon">خط الطول</label>
+    <input type="number" id="lon" step="0.0001" placeholder="مثال: 46.6753" title="خط الطول الجغرافي">
+  </div>
+  <div class="row">
+    <label for="date">التاريخ</label>
+    <input type="date" id="date">
+    <label for="time">الوقت</label>
+    <input type="time" id="time" step="60">
+  </div>
+  <div class="row">
+    <label for="tz">المنطقة الزمنية</label>
+    <select id="tz">
+      <option value="auto">تلقائي (من المتصفح)</option>
+      <option value="UTC">UTC</option>
+      <option value="Asia/Riyadh">آسيا/الرياض (UTC+3)</option>
+      <option value="Asia/Dubai">آسيا/دبي (UTC+4)</option>
+      <option value="Africa/Cairo">أفريقيا/القاهرة (UTC+2)</option>
+      <option value="Asia/Baghdad">آسيا/بغداد (UTC+3)</option>
+      <option value="Asia/Amman">آسيا/عمان (UTC+3)</option>
+      <option value="Asia/Beirut">آسيا/بيروت (UTC+2)</option>
+    </select>
+  </div>
+  <div class="row">
+    <label for="viewMode">وضع الرؤية</label>
+    <select id="viewMode">
+      <option value="naked">العين المجردة (القدر 6.5)</option>
+      <option value="binoculars">منظار (القدر 9.5)</option>
+      <option value="telescope">تلسكوب صغير (القدر 11.5)</option>
+    </select>
+    <label for="fov">مجال الرؤية (°)</label>
+    <input type="range" id="fov" min="30" max="120" value="60">
+    <output id="fovValue" class="badge">60°</output>
+  </div>
+  <div class="row">
+    <button id="btnUseLocation" class="sec">استخدام موقعي الحالي</button>
+    <button id="btnNow" class="sec">الآن</button>
+    <button id="btnReset" class="sec">إعادة تعيين</button>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <label for="search">البحث عن جرم سماوي</label>
+    <input type="text" id="search" placeholder="اكتب اسم نجم، كوكب، أو برج...">
+    <button id="btnSearch">بحث</button>
+  </div>
+  <div class="row">
+    <label>
+      <input type="checkbox" id="showConstellations" checked> عرض خطوط الأبراج
+    </label>
+    <label>
+      <input type="checkbox" id="showHorizon" checked> عرض خط الأفق
+    </label>
+    <label>
+      <input type="checkbox" id="showGrid" checked> عرض الشبكة السماوية
+    </label>
+    <label>
+      <input type="checkbox" id="showLabels" checked> عرض الأسماء
+    </label>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <div id="canvasContainer" style="position:relative;width:100%;height:500px;background:var(--dark);border-radius:8px;overflow:hidden;">
+      <canvas id="skyCanvas"></canvas>
+      <div id="loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--gold);text-align:center;display:none;">
+        جاري تحميل بيانات السماء...
+      </div>
+      <div id="infoPanel" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.8);padding:10px;border-radius:6px;font-size:12px;max-width:250px;color:var(--light);display:none;"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="out" id="selectedObject">مرر المؤشر على الأجرام لعرض التفاصيل، أو ابحث عن جرم محدد.</div>
+  </div>
+  <div class="row">
+    <div class="badge" id="sunInfo"></div>
+    <div class="badge" id="moonInfo"></div>
+    <div class="badge" id="planetsInfo"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل في المتصفح دون حاجة لاتصال بالإنترنت بعد تحميل الصفحة، حيث تُحسب مواقع الأجرام فلكياً باستخدام خوارزميات دقيقة.</p><h3>كيف أحفظ موقعِي المفضل؟</h3><p>يتم حفظ جميع الإعدادات (الموقع، التاريخ، الوقت، وضع الرؤية) تلقائياً في localStorage وتُستعاد عند إعادة فتح الصفحة.</p><h3>ما دقة مواقع الكواكب والنجوم؟</h3><p>تستخدم خوارزميات فلكية مبسطة ولكنها دقيقة بما يكفي للاستخدام الهوائي (خطأ أقل من درجة واحدة للكواكب، ودقيقة جداً للنجوم الثابتة).</p><h3>كيف أبحث عن نجم أو كوكب معين؟</h3><p>اكتب اسمه في حقل البحث (مثال: &quot;سهيل&quot; أو &quot;المشتري&quot; أو &quot;الجبار&quot;) واضغط بحث، وسيظهر موقعه وتفاصيله إن كان فوق الأفق.</p><h3>هل يدعم التطبيق اللغة العربية بالكامل؟</h3><p>نعم، الواجهة بالكامل بالعربية مع دعم RTL، وأسماء الأجرام والأبراج بأسمائها العربية التقليدية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  const $ = id => document.getElementById(id);
+  const canvas = $('skyCanvas');
+  const ctx = canvas.getContext('2d');
+  const container = $('canvasContainer');
+
+  let config = {
+    lat: 24.7136, lon: 46.6753,
+    date: null, time: null, tz: 'auto',
+    viewMode: 'naked', fov: 60,
+    showConstellations: true, showHorizon: true, showGrid: true, showLabels: true
+  };
+
+  const LIMITS = { naked: 6.5, binoculars: 9.5, telescope: 11.5 };
+
+  const STARS = [
+    { name: 'الشرياق', ra: 279.23, dec: 38.78, mag: 0.03, color: '#ffffff', type: 'A0V', const: 'الدجاجة' },
+    { name: 'سهيل', ra: 95.99, dec: -52.69, mag: -0.74, color: '#ffff00', type: 'F0II', const: 'الثور' },
+    { name: 'الشعرى اليمانية', ra: 101.29, dec: -16.72, mag: -1.46, color: '#ffffff', type: 'A1V', const: 'الكلب الأكبر' },
+    { name: 'الشعرى الشامية', ra: 114.83, dec: 5.23, mag: 0.38, color: '#ffff88', type: 'F5IV', const: 'الكلب الأصغر' },
+    { name: 'العواء', ra: 213.92, dec: 19.18, mag: -0.04, color: '#ff8800', type: 'K1III', const: 'العواء' },
+    { name: 'قلب العقرب', ra: 247.35, dec: -26.43, mag: 0.96, color: '#ff4400', type: 'M1Ib', const: 'العقرب' },
+    { name: 'النسر الواقع', ra: 297.70, dec: 8.87, mag: 0.77, color: '#ffffff', type: 'A0V', const: 'النسر الواقع' },
+    { name: 'النسر الطائر', ra: 299.87, dec: 41.31, mag: 1.25, color: '#ffff88', type: 'A7IV', const: 'النسر الطائر' },
+    { name: 'الدبران', ra: 68.98, dec: 16.51, mag: 0.85, color: '#ff8800', type: 'K5III', const: 'الثور' },
+    { name: 'رجل الجبار', ra: 83.82, dec: -8.20, mag: 0.12, color: '#88aaff', type: 'B8Ia', const: 'الجبار' },
+    { name: 'منكب الجوزاء', ra: 88.79, dec: 7.41, mag: 0.50, color: '#ff6600', type: 'M1Ia', const: 'الجبار' },
+    { name: 'الفرقدان', ra: 223.63, dec: 54.56, mag: 2.08, color: '#ffffff', type: 'A3III', const: 'الدب الأصغر' },
+    { name: 'الجدي', ra: 318.18, dec: 8.87, mag: 2.85, color: '#ffff88', type: 'G8III', const: 'الجدي' },
+    { name: 'رأس التوأم', ra: 113.65, dec: 31.89, mag: 1.14, color: '#ffff88', type: 'A1IV', const: 'التوأمان' },
+    { name: 'الزنبق', ra: 152.09, dec: -11.16, mag: 0.98, color: '#ffffff', type: 'B1V', const: 'العذراء' },
+    { name: 'قلب الأسد', ra: 152.09, dec: 11.97, mag: 1.35, color: '#ffff88', type: 'B7V', const: 'الأسد' },
+    { name: 'السماك الرامح', ra: 204.19, dec: -11.16, mag: -0.74, color: '#ffff00', type: 'K0III', const: 'العواء' },
+    { name: 'الغفر', ra: 192.26, dec: -15.30, mag: 1.63, color: '#ffffff', type: 'B2V', const: 'الميزان' },
+    { name: 'النعام', ra: 307.18, dec: -43.43, mag: 1.91, color: '#ffff88', type: 'K3III', const: 'النعام' },
+    { name: 'الركبتان', ra: 338.98, dec: -47.29, mag: 1.86, color: '#ff8800', type: 'K5III', const: 'الكركي' }
+  ];
+
+  const CONSTELLATIONS = {
+    'الجبار': [[2, 9, 10], [9, 10]],
+    'الثور': [[0, 8]],
+    'العقرب': [[5]],
+    'العذراء': [[14]],
+    'الأسد': [[15]],
+    'العواء': [[4, 16]],
+    'الدجاجة': [[0]],
+    'النسر الواقع': [[6]],
+    'النسر الطائر': [[7]],
+    'الدب الأصغر': [[11]],
+    'الجدي': [[12]],
+    'التوأمان': [[13]],
+    'الميزان': [[17]],
+    'النعام': [[18]],
+    'الكركي': [[19]]
+  };
+
+  const CONSTELLATION_LINES = {
+    'الجبار': [[9, 10], [9, 2], [10, 14]],
+    'الثور': [[0, 8]],
+    'العقرب': [[5, 17]],
+    'العذراء': [[14, 15]],
+    'الأسد': [[15, 13]],
+    'العواء': [[4, 16], [16, 0]],
+    'الدجاجة': [[0, 6], [6, 7]],
+    'النسر الواقع': [[6, 7]],
+    'النسر الطائر': [[7, 11]],
+    'الدب الأصغر': [[11, 12]],
+    'الجدي': [[12, 18]],
+    'التوأمان': [[13, 14]],
+    'الميزان': [[17, 18]],
+    'النعام': [[18, 19]],
+    'الكركي': [[19, 5]]
+  };
+
+  function deg2rad(d) { return d * Math.PI / 180; }
+  function rad2deg(r) { return r * 180 / Math.PI; }
+
+  function getJulianDate(date, time, tz) {
+    const d = new Date(date + 'T' + time + ':00');
+    if (tz !== 'auto' && tz !== 'UTC') {
+      const offset = getTimezoneOffset(tz, d);
+      d.setMinutes(d.getMinutes() - offset);
+    }
+    const y = d.getUTCFullYear();
+    const m = d.getUTCMonth() + 1;
+    const day = d.getUTCDate() + d.getUTCHours()/24 + d.getUTCMinutes()/1440 + d.getUTCSeconds()/86400;
+    let a = Math.floor((14 - m) / 12);
+    let y2 = y + 4800 - a;
+    let m2 = m + 12*a - 3;
+    let jd = day + Math.floor((153*m2 + 2)/5) + 365*y2 + Math.floor(y2/4) - Math.floor(y2/100) + Math.floor(y2/400) - 32045;
+    return jd - 0.5;
+  }
+
+  function getTimezoneOffset(tz, date) {
+    const offsets = { 'Asia/Riyadh': 180, 'Asia/Dubai': 240, 'Africa/Cairo': 120, 'Asia/Baghdad': 180, 'Asia/Amman': 180, 'Asia/Beirut': 120 };
+    return offsets[tz] || 0;
+  }
+
+  function getLST(jd, lon) {
+    const T = (jd - 2451545.0) / 36525.0;
+    let theta = 280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * T * T - T * T * T / 38710000;
+    theta = theta % 360;
+    if (theta < 0) theta += 360;
+    return theta + lon;
+  }
+
+  function eqToHorizon(ra, dec, lst, lat) {
+    const ha = deg2rad(lst - ra);
+    const decRad = deg2rad(dec);
+    const latRad = deg2rad(lat);
+    const sinAlt = Math.sin(decRad) * Math.sin(latRad) + Math.cos(decRad) * Math.cos(latRad) * Math.cos(ha);
+    const alt = Math.asin(sinAlt);
+    const cosAz = (Math.sin(decRad) - Math.sin(alt) * Math.sin(latRad)) / (Math.cos(alt) * Math.cos(latRad));
+    let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
+    if (Math.sin(ha) > 0) az = 2 * Math.PI - az;
+    return { alt: rad2deg(alt), az: rad2deg(az) };
+  }
+
+  function projectToCanvas(alt, az, width, height, fov) {
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) * 0.45;
+    const zenithDist = 90 - alt;
+    const r = radius * (zenithDist / (fov / 2));
+    if (r > radius) return null;
+    const angle = deg2rad(az - 90);
+    const x = centerX + r * Math.cos(angle);
+    const y = centerY - r * Math.sin(angle);
+    return { x, y, r, visible: alt > 0 };
+  }
+
+  function getSunPosition(jd) {
+    const n = jd - 2451545.0;
+    const L = (280.460 + 0.9856474 * n) % 360;
+    const g = deg2rad((357.528 + 0.9856003 * n) % 360);
+    const lambda = L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2*g);
+    const epsilon = 23.439 - 0.0000004 * n;
+    const epsRad = deg2rad(epsilon);
+    const lambdaRad = deg2rad(lambda);
+    const ra = rad2deg(Math.atan2(Math.cos(epsRad) * Math.sin(lambdaRad), Math.cos(lambdaRad)));
+    const dec = rad2deg(Math.asin(Math.sin(epsRad) * Math.sin(lambdaRad)));
+    const dist = 1.00014 - 0.01671 * Math.cos(g) - 0.00014 * Math.cos(2*g);
+    return { ra: ra < 0 ? ra + 360 : ra, dec, dist, mag: -26.74 };
+  }
+
+  function getMoonPosition(jd) {
+    const n = jd - 2451545.0;
+    const L = (218.316 + 13.176396 * n) % 360;
+    const M = deg2rad((134.963 + 13.064993 * n) % 360);
+    const F = deg2rad((93.272 + 13.229350 * n) % 360);
+    const lambda = L + 6.289 * Math.sin(M) + 1.274 * Math.sin(2*deg2rad((2*L - M) % 360)) + 0.658 * Math.sin(2*deg2rad(M));
+    const beta = 5.128 * Math.sin(F);
+    const epsilon = 23.439 - 0.0000004 * n;
+    const epsRad = deg2rad(epsilon);
+    const lambdaRad = deg2rad(lambda);
+    const betaRad = deg2rad(beta);
+    const ra = rad2deg(Math.atan2(Math.sin(lambdaRad) * Math.cos(epsRad) - Math.tan(betaRad) * Math.sin(epsRad), Math.cos(lambdaRad)));
+    const dec = rad2deg(Math.asin(Math.sin(betaRad) * Math.cos(epsRad) + Math.cos(betaRad) * Math.sin(epsRad) * Math.sin(lambdaRad)));
+    const phase = 0.5 * (1 - Math.cos(deg2rad((L - lambda) % 360)));
+    return { ra: ra < 0 ? ra + 360 : ra, dec, phase, mag: -12.7 + 2.5 * Math.log10(1/phase) };
+  }
+
+  function getPlanetPosition(name, jd) {
+    const planets = {
+      mercury: { a: 0.387, e: 0.206, i: 7.0, L: 252.25, p: 77.46, n: 4.092, mag: -0.36 },
+      venus: { a: 0.723, e: 0.007, i: 3.4, L: 181.98, p: 131.53, n: 1.602, mag: -4.4 },
+      mars: { a: 1.524, e: 0.093, i: 1.8, L: 355.43, p: 336.04, n: 0.524, mag: -1.5 },
+      jupiter: { a: 5.203, e: 0.048, i: 1.3, L: 34.35, p: 14.75, n: 0.083, mag: -2.2 },
+      saturn: { a: 9.537, e: 0.054, i: 2.5, L: 50.08, p: 92.43, n: 0.034, mag: 0.7 },
+      uranus: { a: 19.19, e: 0.047, i: 0.8, L: 314.06, p: 170.97, n: 0.011, mag: 5.7 },
+      neptune: { a: 30.07, e: 0.009, i: 1.8, L: 304.35, p: 44.97, n: 0.006, mag: 7.8 }
+    };
+    const p = planets[name.toLowerCase()];
+    if (!p) return null;
+    const n_days = jd - 2451545.0;
+    const M = deg2rad((p.L - p.p + p.n * n_days) % 360);
+    const r = p.a * (1 - p.e * p.e) / (1 + p.e * Math.cos(M));
+    const theta = M + 2 * p.e * Math.sin(M);
+    const x = r * Math.cos(theta);
+    const y = r * Math.sin(theta);
+    const dist = Math.sqrt(x*x + y*y);
+    const ra = rad2deg(Math.atan2(y, x));
+    const dec = 0;
+    return { ra: ra < 0 ? ra + 360 : ra, dec, dist, mag: p.mag + 5 * Math.log10(dist) };
+  }
+
+  function loadConfig() {
+    try {
+      const saved = localStorage.getItem('skyMapConfig');
+      if (saved) config = { ...config, ...JSON.parse(saved) };
+    } catch (e) {}
+    applyConfigToUI();
+  }
+
+  function saveConfig() {
+    try {
+      localStorage.setItem('skyMapConfig', JSON.stringify(config));
+    } catch (e) {}
+  }
+
+  function applyConfigToUI() {
+    $('lat').value = config.lat;
+    $('lon').value = config.lon;
+    $('date').value = config.date || new Date().toISOString().split('T')[0];
+    $('time').value = config.time || new Date().toTimeString().slice(0,5);
+    $('tz').value = config.tz;
+    $('viewMode').value = config.viewMode;
+    $('fov').value = config.fov;
+    $('fovValue').textContent = config.fov + '°';
+    $('showConstellations').checked = config.showConstellations;
+    $('showHorizon').checked = config.showHorizon;
+    $('showGrid').checked = config.showGrid;
+    $('showLabels').checked = config.showLabels;
+  }
+
+  function updateConfigFromUI() {
+    config.lat = parseFloat($('lat').value) || 0;
+    config.lon = parseFloat($('lon').value) || 0;
+    config.date = $('date').value;
+    config.time = $('time').value;
+    config.tz = $('tz').value;
+    config.viewMode = $('viewMode').value;
+    config.fov = parseInt($('fov').value);
+    config.showConstellations = $('showConstellations').checked;
+    config.showHorizon = $('showHorizon').checked;
+    config.showGrid = $('showGrid').checked;
+    config.showLabels = $('showLabels').checked;
+    saveConfig();
+  }
+
+  function resizeCanvas() {
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    drawSky();
+  }
+
+  function drawSky() {
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    ctx.clearRect(0, 0, width, height);
+
+    updateConfigFromUI();
+    const jd = getJulianDate(config.date, config.time, config.tz);
+    const lst = getLST(jd, config.lon);
+    const magLimit = LIMITS[config.viewMode];
+
+    const sun = getSunPosition(jd);
+    const moon = getMoonPosition(jd);
+    const planets = ['mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'].map(n => ({ name: n, ...getPlanetPosition(n, jd) }));
+
+    if (config.showGrid) drawGrid(width, height);
+    if (config.showHorizon) drawHorizon(width, height);
+    if (config.showConstellations) drawConstellations(width, height, lst);
+    drawStars(width, height, lst, magLimit);
+    drawSunMoonPlanets(width, height, lst, sun, moon, planets);
+    updateInfoPanel(sun, moon, planets);
+  }
+
+  function drawGrid(width, height) {
+    ctx.strokeStyle = 'rgba(255,215,0,0.1)';
+    ctx.lineWidth = 0.5;
+    const centerX = width / 2, centerY = height / 2;
+    const radius = Math.min(width, height) * 0.45;
+    for (let i = 1; i <= 4; i++) {
+      const r = radius * i / 4;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, r, 0, 2*Math.PI);
+      ctx.stroke();
+    }
+    for (let a = 0; a < 360; a += 30) {
+      const rad = deg2rad(a - 90);
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(centerX + radius * Math.cos(rad), centerY - radius * Math.sin(rad));
+      ctx.stroke();
+    }
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = 'rgba(255,215,0,0.3)';
+    ctx.textAlign = 'center';
+    for (let a = 0; a < 360; a += 30) {
+      const rad = deg2rad(a - 90);
+      const r = radius * 1.05;
+      ctx.fillText(a + '°', centerX + r * Math.cos(rad), centerY - r * Math.sin(rad) + 4);
+    }
+  }
+
+  function drawHorizon(width, height) {
+    ctx.strokeStyle = 'rgba(255,215,0,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 5]);
+    const centerX = width / 2, centerY = height / 2;
+    const radius = Math.min(width, height) * 0.45;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = 'var(--gold)';
+    ctx.textAlign = 'center';
+    const dirs = [{a:0,l:'ش'}, {a:90,l:'غ'}, {a:180,l:'ج'}, {a:270,l:'ش'}];
+    dirs.forEach(d => {
+      const rad = deg2rad(d.a - 90);
+      ctx.fillText(d.l, centerX + radius * 1.1 * Math.cos(rad), centerY - radius * 1.1 * Math.sin(rad) + 4);
+    });
+  }
+
+  function drawConstellations(width, height, lst) {
+    ctx.strokeStyle = 'rgba(255,215,0,0.3)';
+    ctx.lineWidth = 1;
+    Object.entries(CONSTELLATION_LINES).forEach(([name, lines]) => {
+      lines.forEach(([i1, i2]) => {
+        const s1 = STARS[i1], s2 = STARS[i2];
+        const h1 = eqToHorizon(s1.ra, s1.dec, lst, config.lat);
+        const h2 = eqToHorizon(s2.ra, s2.dec, lst, config.lat);
+        const p1 = projectToCanvas(h1.alt, h1.az, width, height, config.fov);
+        const p2 = projectToCanvas(h2.alt, h2.az, width, height, config.fov);
+        if (p1 && p2 && p1.visible && p2.visible) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      });
+    });
+  }
+
+  function drawStars(width, height, lst, magLimit) {
+    STARS.forEach((star, idx) => {
+      if (star.mag > magLimit) return;
+      const h = eqToHorizon(star.ra, star.dec, lst, config.lat);
+      const p = projectToCanvas(h.alt, h.az, width, height, config.fov);
+      if (!p || !p.visible) return;
+      const size = Math.max(1.5, 6 - star.mag * 0.8);
+      const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 2);
+      gradient.addColorStop(0, star.color);
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * 2, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.fillStyle = star.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size, 0, 2*Math.PI);
+      ctx.fill();
+      if (config.showLabels && star.mag < 2) {
+        ctx.font = '10px sans-serif';
+        ctx.fillStyle = 'var(--light)';
+        ctx.textAlign = 'left';
+        ctx.fillText(star.name, p.x + size + 2, p.y + 3);
+      }
+      star._screenPos = p;
+      star._idx = idx;
+    });
+  }
+
+  function drawSunMoonPlanets(width, height, lst, sun, moon, planets) {
+    const bodies = [
+      { name: 'الشمس', ...sun, color: '#ffdd00', size: 12 },
+      { name: 'القمر', ...moon, color: '#ffffee', size: 10 },
+      ...planets.map(p => ({ name: planetNames[p.name], ...p, color: planetColors[p.name], size: planetSizes[p.name] }))
+    ];
+    bodies.forEach(body => {
+      const h = eqToHorizon(body.ra, body.dec, lst, config.lat);
+      const p = projectToCanvas(h.alt, h.az, width, height, config.fov);
+      if (!p || !p.visible) return;
+      const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, body.size * 2);
+      gradient.addColorStop(0, body.color);
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, body.size * 2, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.fillStyle = body.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, body.size, 0, 2*Math.PI);
+      ctx.fill();
+      if (config.showLabels) {
+        ctx.font = '11px sans-serif';
+        ctx.fillStyle = 'var(--gold)';
+        ctx.textAlign = 'left';
+        ctx.fillText(body.name, p.x + body.size + 3, p.y + 4);
+      }
+      body._screenPos = p;
+    });
+  }
+
+  const planetNames = { mercury: 'عطارد', venus: 'الزهرة', mars: 'المريخ', jupiter: 'المشتري', saturn: 'زحل', uranus: 'أورانوس', neptune: 'نبتون' };
+  const planetColors = { mercury: '#aaa', venus: '#ffeedd', mars: '#ff6600', jupiter: '#ddaa88', saturn: '#ffddaa', uranus: '#88ffff', neptune: '#8888ff' };
+  const planetSizes = { mercury: 4, venus: 6, mars: 5, jupiter: 8, saturn: 7, uranus: 5, neptune: 5 };
+
+  function updateInfoPanel(sun, moon, planets) {
+    const sunH = eqToHorizon(sun.ra, sun.dec, getLST(getJulianDate(config.date, config.time, config.tz), config.lon), config.lat);
+    const moonH = eqToHorizon(moon.ra, moon.dec, getLST(getJulianDate(config.date, config.time, config.tz), config.lon), config.lat);
+    $('sunInfo').textContent = `الشمس: ارتفاع ${sunH.alt.toFixed(1)}°، اتجاه ${sunH.az.toFixed(0)}°`;
+    $('moonInfo').textContent = `القمر: ارتفاع ${moonH.alt.toFixed(1)}°، طور ${(moon.phase*100).toFixed(0)}%`;
+    const visPlanets = planets.filter(p => {
+      const h = eqToHorizon(p.ra, p.dec, getLST(getJulianDate(config.date, config.time, config.tz), config.lon), config.lat);
+      return h.alt > 0;
+    }).map(p => planetNames[p.name]).join('، ');
+    $('planetsInfo').textContent = `الكواكب المرئية: ${visPlanets || 'لا شيء'}`;
+  }
+
+  function searchObject(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return;
+    let found = STARS.find(s => s.name.toLowerCase().includes(q) || s.const.toLowerCase().includes(q));
+    if (!found) {
+      const planets = ['عطارد','الزهرة','المريخ','المشتري','زحل','أورانوس','نبتون','الشمس','القمر'];
+      found = planets.find(p => p.includes(q));
+    }
+    if (found) {
+      if (typeof found === 'string') {
+        $('selectedObject').textContent = `تم العثور على: ${found} - حدد التاريخ والوقت لرؤية موقعه الدقيق.`;
+      } else {
+        const h = eqToHorizon(found.ra, found.dec, getLST(getJulianDate(config.date, config.time, config.tz), config.lon), config.lat);
+        $('selectedObject').textContent = `${found.name} (${found.const})\nالقدر: ${found.mag}\nالنوع: ${found.type}\nالارتفاع: ${h.alt.toFixed(1)}°\nالاتجاه: ${h.az.toFixed(0)}°\n${h.alt > 0 ? '✓ فوق الأفق' : '✗ تحت الأفق'}`;
+      }
+    } else {
+      $('selectedObject').textContent = 'لم يتم العثور على جرم بهذا الاسم. جرب: الشعرى، سهيل، الدبران، المشتري، زحل، الجبار، الثور...';
+    }
+  }
+
+  function handleCanvasMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    let nearest = null, minDist = 30;
+    [...STARS, {name:'الشمس',...getSunPosition(getJulianDate(config.date, config.time, config.tz))}, {name:'القمر',...getMoonPosition(getJulianDate(config.date, config.time, config.tz))}, ...['mercury','venus','mars','jupiter','saturn','uranus','neptune'].map(n => ({name:planetNames[n], ...getPlanetPosition(n, getJulianDate(config.date, config.time, config.tz))}))].forEach(obj => {
+      if (obj._screenPos) {
+        const d = Math.hypot(x - obj._screenPos.x, y - obj._screenPos.y);
+        if (d < minDist) { minDist = d; nearest = obj; }
+      }
+    });
+    if (nearest) {
+      const h = eqToHorizon(nearest.ra, nearest.dec, getLST(getJulianDate(config.date, config.time, config.tz), config.lon), config.lat);
+      const info = `${nearest.name}\nالارتفاع: ${h.alt.toFixed(1)}°\nالاتجاه: ${h.az.toFixed(0)}°\nالقدر: ${nearest.mag?.toFixed(2) || 'N/A'}\n${h.alt > 0 ? '✓ فوق الأفق' : '✗ تحت الأفق'}`;
+      $('selectedObject').textContent = info;
+      const panel = $('infoPanel');
+      panel.style.display = 'block';
+      panel.style.left = (x + 15) + 'px';
+      panel.style.top = (y + 15) + 'px';
+      panel.textContent = info;
+    } else {
+      $('infoPanel').style.display = 'none';
+    }
+  }
+
+  function handleCanvasLeave() {
+    $('infoPanel').style.display = 'none';
+  }
+
+  function init() {
+    loadConfig();
+    if (!config.date) {
+      const now = new Date();
+      config.date = now.toISOString().split('T')[0];
+      config.time = now.toTimeString().slice(0,5);
+    }
+    applyConfigToUI();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    canvas.addEventListener('mousemove', handleCanvasMove);
+    canvas.addEventListener('mouseleave', handleCanvasLeave);
+
+    $('btnUseLocation').addEventListener('click', () => {
+      if (!navigator.geolocation) { alert('تحديد الموقع غير مدعوم'); return; }
+      $('btnUseLocation').textContent = 'جاري تحديد الموقع...';
+      navigator.geolocation.getCurrentPosition(pos => {
+        config.lat = pos.coords.latitude;
+        config.lon = pos.coords.longitude;
+        applyConfigToUI();
+        drawSky();
+        $('btnUseLocation').textContent = 'استخدام موقعي الحالي';
+      }, err => {
+        alert('تعذر تحديد الموقع: ' + err.message);
+        $('btnUseLocation').textContent = 'استخدام موقعي الحالي';
+      });
+    });
+
+    $('btnNow').addEventListener('click', () => {
+      const now = new Date();
+      config.date = now.toISOString().split('T')[0];
+      config.time = now.toTimeString().slice(0,5);
+      applyConfigToUI();
+      drawSky();
+    });
+
+    $('btnReset').addEventListener('click', () => {
+      config = { lat: 24.7136, lon: 46.6753, date: new Date().toISOString().split('T')[0], time: new Date().toTimeString().slice(0,5), tz: 'auto', viewMode: 'naked', fov: 60, showConstellations: true, showHorizon: true, showGrid: true, showLabels: true };
+      applyConfigToUI();
+      drawSky();
+    });
+
+    $('fov').addEventListener('input', e => {
+      $('fovValue').textContent = e.target.value + '°';
+      drawSky();
+    });
+
+    ['lat','lon','date','time','tz','viewMode','showConstellations','showHorizon','showGrid','showLabels'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('change', drawSky);
+    });
+
+    $('btnSearch').addEventListener('click', () => searchObject($('search').value));
+    $('search').addEventListener('keypress', e => { if (e.key === 'Enter') searchObject($('search').value); });
+
+    drawSky();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مكتبة صور محلية: عرض، وسوم، بحث وتصدير داخل المتصفح | MDM1</title>
+<meta name="description" content="نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات، تكبير، وسلة تصدير بدون خادم أو حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/local-photo-library.html">
+<meta property="og:title" content="مكتبة صور محلية: عرض، وسوم، بحث وتصدير داخل المتصفح">
+<meta property="og:description" content="نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات، تكبير، وسلة تصدير بدون خادم أو حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-photo-library.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl;text-align:right}
+.app section{margin:14px 0}
+.app h2{font-size:1.05rem;margin:0 0 8px}
+.app .app-drop{border:2px dashed var(--gold-dim);border-radius:12px;padding:16px;transition:.2s}
+.app .app-drop.app-over{border-color:var(--gold-bright);background:rgba(212,175,55,.09)}
+.app .app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.app .app-tile{border:1px solid var(--gold-dim);border-radius:10px;overflow:hidden;background:rgba(255,255,255,.02);display:flex;flex-direction:column}
+.app .app-thumb{width:100%;height:120px;object-fit:cover;display:block;background:#111;cursor:zoom-in}
+.app .app-thumb-ph{display:flex;align-items:center;justify-content:center;color:var(--gold-dim);font-size:.75rem;text-align:center}
+.app .app-tile-body{padding:8px;font-size:.82rem;flex:1}
+.app .app-tile-name{color:var(--light);word-break:break-word;font-weight:600}
+.app .app-tile-date{color:var(--gold-dim);font-size:.75rem;margin-top:2px}
+.app .app-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.app .app-chip{background:rgba(212,175,55,.15);border:1px solid var(--gold-dim);border-radius:999px;padding:1px 8px;font-size:.72rem}
+.app .app-chip button{background:none;border:0;color:var(--gold-bright);cursor:pointer;padding:0 4px;font-size:.85rem}
+.app .app-tile-actions{gap:6px;padding:8px;border-top:1px solid var(--gold-dim);flex-wrap:wrap;align-items:center}
+.app .app-tile-actions .button{padding:3px 8px;font-size:.72rem}
+.app .app-tile-actions label.label{display:flex;align-items:center;gap:4px}
+.app .app-tile.app-selected{outline:2px solid var(--gold-bright)}
+.app .app-lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:9999;padding:14px}
+.app .app-lb-inner{max-width:920px;width:100%;max-height:94vh;overflow:auto}
+.app .app-lb-view{overflow:auto;height:58vh;background:#000;border-radius:8px;display:block}
+.app .app-lb-view img{display:block;margin:auto;transform-origin:top center;max-width:100%}
+.app .app-big{font-size:2rem;color:var(--gold-bright);font-weight:700;line-height:1}
+.app .app-muted{color:var(--gold-dim);font-size:.8rem}
+.app input[type=file].input{padding:6px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مكتبة الصور المحلية: سحب وإفلات، وسوم، وبحث وتصدير", "url": "https://mdm1.org/apps/local-photo-library.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع صوري إلى الإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تتم قراءة الملفات ومعالجتها بالكامل داخل متصفحك، ولا يوجد أي اتصال بخادم أو رفع للصور."}}, {"@type": "Question", "name": "كيف يُحدَّد تاريخ كل صورة؟", "acceptedAnswer": {"@type": "Answer", "text": "يُقرأ تاريخ التصوير من بيانات EXIF داخل الملف، وإن غاب فيُستخدم تاريخ آخر تعديل للملف نفسه."}}, {"@type": "Question", "name": "هل تُحفظ الوسوم بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُحفظ الوسوم وبيانات الصور محلياً في متصفحك، وتُستعاد عند إعادة فتح الصفحة."}}, {"@type": "Question", "name": "ماذا يتضمن ملف التصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "لكل صورة في السلة يُنزّل ملف الصورة الأصلي عند توفره، مع ملف CSV يجمع الأسماء والتواريخ والوسوم وبيانات EXIF."}}, {"@type": "Question", "name": "لماذا لا يظهر تصدير الملفات الأصلية لبعض الصور؟", "acceptedAnswer": {"@type": "Answer", "text": "الصور المسترجَعة من الذاكرة المحلية تحتفظ بالمعاينة والوسوم فقط؛ أعد إفلات الملفات لتفعيل تصدير النسخ الأصلية بالحجم الكامل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مكتبة الصور المحلية: سحب وإفلات، وسوم، وبحث وتصدير</h1>
+  <p class="page-sub">نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات، تكبير، وسلة تصدير بدون خادم أو حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card">نعم، يمكنك إدارة كامل مكتبة صورك المحلية داخل المتصفح دون أي خادم أو حساب. اسحب مجموعة صور أو مجلداً كاملاً وأفلته في المساحة المخصصة، وسيقرأ التطبيق الملفات مباشرة على جهازك، ثم يستخرج بيانات EXIF مثل نوع الكاميرا وفتحة العدسة وسرعة الغالق وقيمة ISO والبعد البؤري، معتمداً على تاريخ التصوير داخل الملف، وإن لم يتوفر فيستخدم تاريخ الملف نفسه. بعد الاستيراد يمكنك إضافة وسوم مخصصة لكل صورة وحفظها محلياً، والبحث الفوري بالاسم أو الوسم أو التاريخ، وترتيب النتائج، ومشاهدة مصغرات واضحة، وتكبير أي صورة والتنقل بين تفاصيلها. كما تتيح لك السلة جمع صور محددة ثم تصديرها مع وسومها وبياناتها في خطوة واحدة.
+<div class="app" id="appRoot">
+  <section class="card app-drop" id="dropZone">
+    <h2>استيراد الصور</h2>
+    <p class="app-muted">اسحب وأفلت هنا مجموعة صور أو مجلداً كاملاً، أو استخدم الأزرار.</p>
+    <div class="row">
+      <label class="label" for="fileInput">اختيار صور</label>
+      <input class="input" type="file" id="fileInput" accept="image/*" multiple>
+      <label class="label" for="folderInput">اختيار مجلد</label>
+      <input class="input" type="file" id="folderInput" webkitdirectory directory multiple>
+      <button class="button sec" type="button" id="clearAllBtn">حذف كل الصور</button>
+    </div>
+    <div class="out" id="importStatus">لا توجد صور بعد. ابدأ بالسحب والإفلات أو باختيار الملفات.</div>
+  </section>
+
+  <section class="card">
+    <h2>البحث والترتيب</h2>
+    <div class="row">
+      <label class="label" for="searchInput">نص البحث</label>
+      <input class="input" type="search" id="searchInput" placeholder="ابحث بالاسم أو الوسم أو التاريخ">
+      <label class="label" for="searchMode">نطاق البحث</label>
+      <select class="select" id="searchMode">
+        <option value="all">الكل</option>
+        <option value="name">الاسم</option>
+        <option value="tag">الوسم</option>
+        <option value="date">التاريخ</option>
+      </select>
+      <label class="label" for="sortSelect">الترتيب</label>
+      <select class="select" id="sortSelect">
+        <option value="dateDesc">الأحدث أولاً</option>
+        <option value="dateAsc">الأقدم أولاً</option>
+        <option value="name">حسب الاسم</option>
+      </select>
+    </div>
+    <div class="row">
+      <div>
+        <div class="app-big" id="bigCount">0</div>
+        <div class="app-muted">صورة في المكتبة</div>
+      </div>
+      <span class="badge">المعروض: <b id="shownBadge">0</b></span>
+      <span class="badge">المحدد: <b id="selBadge">0</b></span>
+      <span class="badge">السلة: <b id="basketBadge">0</b></span>
+      <button class="button sec" type="button" id="selectAllBtn">تحديد كل المعروض</button>
+      <button class="button sec" type="button" id="clearSelBtn">إلغاء التحديد</button>
+    </div>
+    <div class="out" id="searchStatus">المكتبة فارغة.</div>
+  </section>
+
+  <section class="card">
+    <h2>الصور</h2>
+    <div class="app-grid" id="photoGrid"></div>
+    <div class="out app-empty" id="gridEmpty" hidden>لا توجد صور مطابقة.</div>
+  </section>
+
+  <section class="card">
+    <h2>الوسوم وسلة التصدير</h2>
+    <div class="row">
+      <label class="label" for="tagInput">وسم جديد</label>
+      <input class="input" type="text" id="tagInput" placeholder="مثال: عائلة أو رحلة">
+      <button class="button" type="button" id="addTagBtn">إضافة الوسم إلى المحدد</button>
+      <button class="button sec" type="button" id="exportBasketBtn">تصدير السلة</button>
+      <button class="button sec" type="button" id="clearBasketBtn">إفراغ السلة</button>
+    </div>
+    <div class="out" id="tagStatus">حدد صوراً ثم أضف لها وسماً، أو أضف صوراً إلى السلة للتصدير.</div>
+  </section>
+
+  <div class="app-lb" id="lightbox" hidden>
+    <div class="app-lb-inner card">
+      <div class="row">
+        <button class="button sec" type="button" id="lbZoomIn">تكبير</button>
+        <button class="button sec" type="button" id="lbZoomOut">تصغير</button>
+        <button class="button sec" type="button" id="lbReset">إعادة الضبط</button>
+        <button class="button" type="button" id="lbClose">إغلاق العارض</button>
+      </div>
+      <div class="app-lb-view" id="lbView">
+        <img id="lbImage" alt="معاينة الصورة المكبرة">
+      </div>
+      <div class="out" id="lbMeta"></div>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع صوري إلى الإنترنت؟</h3><p>لا، تتم قراءة الملفات ومعالجتها بالكامل داخل متصفحك، ولا يوجد أي اتصال بخادم أو رفع للصور.</p><h3>كيف يُحدَّد تاريخ كل صورة؟</h3><p>يُقرأ تاريخ التصوير من بيانات EXIF داخل الملف، وإن غاب فيُستخدم تاريخ آخر تعديل للملف نفسه.</p><h3>هل تُحفظ الوسوم بعد إغلاق الصفحة؟</h3><p>نعم، تُحفظ الوسوم وبيانات الصور محلياً في متصفحك، وتُستعاد عند إعادة فتح الصفحة.</p><h3>ماذا يتضمن ملف التصدير؟</h3><p>لكل صورة في السلة يُنزّل ملف الصورة الأصلي عند توفره، مع ملف CSV يجمع الأسماء والتواريخ والوسوم وبيانات EXIF.</p><h3>لماذا لا يظهر تصدير الملفات الأصلية لبعض الصور؟</h3><p>الصور المسترجَعة من الذاكرة المحلية تحتفظ بالمعاينة والوسوم فقط؛ أعد إفلات الملفات لتفعيل تصدير النسخ الأصلية بالحجم الكامل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var KEY='mdphoto.library.v1';
+  var photos=[], files={}, urls={}, basket={}, selected={}, lastList=[], lbId=null, lbZoom=1;
+  function $(id){ return document.getElementById(id); }
+  function setStatus(id,msg){ var el=$(id); if(el) el.textContent=msg; }
+  function byId(id){ for(var i=0;i<photos.length;i++){ if(photos[i].id===id) return photos[i]; } return null; }
+  function safeId(s){ return String(s).replace(/[^A-Za-z0-9\u0600-\u06FF]/g,'_'); }
+  function csv(v){ v=String(v==null?'':v); if(/[",\n;]/.test(v)) v='"'+v.replace(/"/g,'""')+'"'; return v; }
+  function sanitize(n){ return String(n).replace(/[\\/:*?"<>|]+/g,'_').slice(0,80)||'image'; }
+  function str(dv,o,n){ var s=''; for(var i=0;i<n;i++) s+=String.fromCharCode(dv.getUint8(o+i)); return s; }
+  function parseExif(buf){
+    try{
+      var dv=new DataView(buf);
+      if(dv.byteLength<4||dv.getUint16(0,false)!==0xFFD8) return null;
+      var off=2,len=dv.byteLength,seen=0;
+      while(off+4<=len&&seen<200){
+        seen++;
+        if(dv.getUint8(off)!==0xFF){ off++; continue; }
+        var m=dv.getUint8(off+1);
+        if(m===0xFF){ off++; continue; }
+        if(m===0xD8||m===0x01||(m>=0xD0&&m<=0xD7)){ off+=2; continue; }
+        if(m===0xDA||m===0xD9) break;
+        var size=dv.getUint16(off+2,false);
+        if(size<2) break;
+        if(m===0xE1&&str(dv,off+4,4)==='Exif') return parseTiff(dv,off+10);
+        off+=2+size;
+      }
+    }catch(e){}
+    return null;
+  }
+  function parseTiff(dv,t){
+    if(t+8>dv.byteLength) return null;
+    var bo=str(dv,t,2), le=(bo==='II');
+    if(!le&&bo!=='MM') return null;
+    function u16(o){ return dv.getUint16(o,le); }
+    function u32(o){ return dv.getUint32(o,le); }
+    if(u16(t+2)!==42) return null;
+    var out={}, exifPtr=0;
+    function valPos(e,type,count){
+      var sz=({1:1,2:1,3:2,4:4,5:8,6:1,7:1,8:2,9:4,10:8})[type]||1;
+      return (sz*count<=4) ? e+8 : t+u32(e+8);
+    }
+    function readStr(e,type,count){ var p=valPos(e,type,count),s=''; for(var i=0;i<count;i++){ var ch=dv.getUint8(p+i); if(ch===0) break; s+=String.fromCharCode(ch); } return s.trim(); }
+    function readNum(e,type,count){
+      var p=valPos(e,type,count);
+      if(type===3) return u16(p);
+      if(type===4) return u32(p);
+      if(type===5){ var d=u32(p+4); return d?u32(p)/d:0; }
+      if(type===9) return dv.getInt32(p,le);
+      if(type===10){ var d2=dv.getInt32(p+4,le); return d2?dv.getInt32(p,le)/d2:0; }
+      if(type===1) return dv.getUint8(p);
+      return 0;
+    }
+    function readIFD(off,isExif){
+      if(off+2>dv.byteLength) return;
+      var n=u16(off);
+      for(var i=0;i<n;i++){
+        var e=off+2+i*12; if(e+12>dv.byteLength) break;
+        var tag=u16(e),type=u16(e+2),count=u32(e+4);
+        if(tag===0x8769&&!isExif){ exifPtr=u32(e+8); continue; }
+        if(tag===0x010F) out.make=readStr(e,type,count);
+        else if(tag===0x0110) out.model=readStr(e,type,count);
+        else if(tag===0x0132&&!out.dateTime) out.dateTime=readStr(e,type,count);
+        else if(tag===0x9003) out.dateTimeOriginal=readStr(e,type,count);
+        else if(tag===0x9004&&!out.dateTimeOriginal) out.dateTimeOriginal=readStr(e,type,count);
+        else if(tag===0x8827) out.iso=readNum(e,type,count);
+        else if(tag===0x829D) out.fnumber=readNum(e,type,count);
+        else if(tag===0x829A) out.exposure=readNum(e,type,count);
+        else if(tag===0x920A) out.focal=readNum(e,type,count);
+        else if(tag===0xA002) out.width=readNum(e,type,count);
+        else if(tag===0xA003) out.height=readNum(e,type,count);
+      }
+    }
+    readIFD(t+u32(t+4),false);
+    if(exifPtr) readIFD(t+exifPtr,true);
+    return out;
+  }
+  function normDate(s){
+    if(!s) return '';
+    var m=String(s).match(/(\d{4})[:\-](\d{2})[:\-](\d{2})[T ](\d{2}):(\d{2}):(\d{2})/);
+    return m ? m[1]+'-'+m[2]+'-'+m[3]+' '+m[4]+':'+m[5]+':'+m[6] : String(s);
+  }
+  function fmtFileDate(ms){
+    if(!ms) return '';
+    var d=new Date(ms), p=function(n){ return (n<10?'0':'')+n; };
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+  function makeThumb(file,cb){
+    var url;
+    try{ url=URL.createObjectURL(file); }catch(e){ cb('',0,0); return; }
+    var img=new Image();
+    img.onload=function(){
+      var w=img.naturalWidth||1,h=img.naturalHeight||1,max=240,r=Math.min(1,max/Math.max(w,h));
+      var tw=Math.max(1,Math.round(w*r)),th=Math.max(1,Math.round(h*r));
+      var c=document.createElement('canvas'); c.width=tw; c.height=th;
+      var data='';
+      try{ c.getContext('2d').drawImage(img,0,0,tw,th); data=c.toDataURL('image/jpeg',0.72); }catch(e){ data=''; }
+      try{ URL.revokeObjectURL(url); }catch(e){}
+      cb(data,w,h);
+    };
+    img.onerror=function(){ try{ URL.revokeObjectURL(url); }catch(e){} cb('',0,0); };
+    img.src=url;
+  }
+  function save(){
+    var slim=photos.map(function(p){ return {id:p.id,key:p.key,name:p.name,size:p.size,type:p.type,lastModified:p.lastModified,date:p.date,exif:p.exif,tags:p.tags,width:p.width,height:p.height,thumb:p.thumb}; });
+    try{ localStorage.setItem(KEY,JSON.stringify({photos:slim,basket:basket})); return true; }
+    catch(e){
+      try{ localStorage.setItem(KEY,JSON.stringify({photos:slim.map(function(p){ var c={}; for(var k in p) c[k]=p[k]; c.thumb=''; return c; }),basket:basket})); }catch(e2){}
+      return false;
+    }
+  }
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY); if(!raw) return 0;
+      var data=JSON.parse(raw);
+      if(data&&Array.isArray(data.photos)){
+        photos=data.photos.filter(function(p){ return p&&p.id&&p.name; }).map(function(p){ if(!Array.isArray(p.tags)) p.tags=[]; if(typeof p.thumb!=='string') p.thumb=''; return p; });
+      }
+      if(data&&data.basket&&typeof data.basket==='object') basket=data.basket;
+      return photos.length;
+    }catch(e){ photos=[]; basket={}; return 0; }
+  }
+  function handleFiles(list){
+    var arr=[],i;
+    for(i=0;i<list.length;i++){
+      var f=list[i];
+      if(f&&(/^image\//.test(f.type)||/\.(jpe?g|png|webp|gif|bmp|avif|heic|heif)$/i.test(f.name))) arr.push(f);
+    }
+    if(!arr.length){ setStatus('importStatus','لم يتم العثور على صور صالحة. الأنواع المدعومة تشمل JPG وPNG وWEBP.'); return; }
+    setStatus('importStatus','جارٍ قراءة '+arr.length+' ملفاً...');
+    var pending=arr.length,added=0,dup=0,bad=0;
+    arr.forEach(function(f){
+      addOne(f,function(res){
+        if(res==='added') added++; else if(res==='dup') dup++; else bad++;
+        pending--;
+        if(pending===0){
+          var ok=save(); render();
+          setStatus('importStatus','تمت إضافة '+added+' صورة'+(dup?('، وتخطي '+dup+' مكررة'):'')+(bad?('، وفشل '+bad):'')+'. الإجمالي: '+photos.length+'.'+(ok?'':' تعذّر الحفظ المحلي بالكامل بسبب امتلاء المساحة.'));
+        }
+      });
+    });
+  }
+  function addOne(file,done){
+    var key=file.name+'|'+file.size+'|'+file.lastModified;
+    for(var i=0;i<photos.length;i++){
+      if(photos[i].key===key){ files[photos[i].id]=file; done('dup'); return; }
+    }
+    var id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    var rec={id:id,key:key,name:file.name,size:file.size,type:file.type||'',lastModified:file.lastModified||0,date:'',exif:null,tags:[],width:0,height:0,thumb:''};
+    function finish(){
+      makeThumb(file,function(thumb,w,h){
+        rec.thumb=thumb; rec.width=w; rec.height=h;
+        photos.push(rec); files[id]=file; done('added');
+      });
+    }
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{ rec.exif=parseExif(reader.result); }catch(e){ rec.exif=null; }
+      rec.date=normDate(rec.exif&&rec.exif.dateTimeOriginal)||normDate(rec.exif&&rec.exif.dateTime)||fmtFileDate(rec.lastModified);
+      finish();
+    };
+    reader.onerror=function(){ rec.date=fmtFileDate(rec.lastModified); finish(); };
+    try{ reader.readAsArrayBuffer(file.slice(0,262144)); }catch(e){ rec.date=fmtFileDate(rec.lastModified); finish(); }
+  }
+  function match(p,q,mode){
+    if(!q) return true;
+    var tags=(p.tags||[]).join(' ').toLowerCase(), name=String(p.name).toLowerCase(), date=String(p.date);
+    if(mode==='name') return name.indexOf(q)>=0;
+    if(mode==='tag') return tags.indexOf(q)>=0;
+    if(mode==='date') return date.indexOf(q)>=0;
+    return name.indexOf(q)>=0||tags.indexOf(q)>=0||date.indexOf(q)>=0;
+  }
+  function thumbSrc(p){
+    if(files[p.id]){ if(!urls[p.id]){ try{ urls[p.id]=URL.createObjectURL(files[p.id]); }catch(e){} } if(urls[p.id]) return urls[p.id]; }
+    return p.thumb||'';
+  }
+  function tile(p){
+    var el=document.createElement('div');
+    el.className='app-tile'+(selected[p.id]?' app-selected':'');
+    el.setAttribute('data-id',p.id);
+    var media;
+    if(p.thumb){ media=document.createElement('img'); media.className='app-thumb'; media.src=p.thumb; media.alt=p.name; }
+    else{ media=document.createElement('div'); media.className='app-thumb app-thumb-ph'; media.textContent='لا تتوفر معاينة'; }
+    media.addEventListener('click',function(){ openLightbox(p.id); });
+    el.appendChild(media);
+    var body=document.createElement('div'); body.className='app-tile-body';
+    var nm=document.createElement('div'); nm.className='app-tile-name'; nm.textContent=p.name; body.appendChild(nm);
+    var dt=document.createElement('div'); dt.className='app-tile-date';
+    dt.textContent=(p.date||'بدون تاريخ')+((p.exif&&p.exif.model)?(' • '+p.exif.model):'');
+    body.appendChild(dt);
+    var chips=document.createElement('div'); chips.className='app-chips';
+    (p.tags||[]).forEach(function(t){
+      var c=document.createElement('span'); c.className='app-chip'; c.textContent=t;
+      var x=document.createElement('button'); x.type='button'; x.id='rmtag_'+p.id+'_'+safeId(t); x.textContent='×';
+      x.setAttribute('aria-label','إزالة الوسم '+t);
+      x.addEventListener('click',function(ev){ ev.stopPropagation(); removeTag(p.id,t); });
+      c.appendChild(x); chips.appendChild(c);
+    });
+    body.appendChild(chips); el.appendChild(body);
+    var act=document.createElement('div'); act.className='row app-tile-actions';
+    var lab=document.createElement('label'); lab.className='label';
+    var cb=document.createElement('input'); cb.type='checkbox'; cb.id='sel_'+p.id; cb.checked=!!selected[p.id];
+    cb.addEventListener('change',function(){ if(cb.checked) selected[p.id]=true; else delete selected[p.id]; render(); });
+    lab.appendChild(cb); lab.appendChild(document.createTextNode(' تحديد'));
+    act.appendChild(lab);
+    var zb=document.createElement('button'); zb.type='button'; zb.className='button sec'; zb.id='zoom_'+p.id; zb.textContent='تكبير';
+    zb.addEventListener('click',function(){ openLightbox(p.id); }); act.appendChild(zb);
+    var bb=document.createElement('button'); bb.type='button'; bb.className='button sec'; bb.id='basket_'+p.id;
+    bb.textContent=basket[p.id]?'إزالة من السلة':'إضافة إلى السلة';
+    bb.addEventListener('click',function(){ toggleBasket(p.id); }); act.appendChild(bb);
+    el.appendChild(act);
+    return el;
+  }
+  function render(){
+    var q=($('searchInput').value||'').trim().toLowerCase();
+    var mode=$('searchMode').value, sort=$('sortSelect').value;
+    var list=photos.filter(function(p){ return match(p,q,mode); });
+    list.sort(function(a,b){
+      if(sort==='name') return String(a.name).localeCompare(String(b.name),'ar');
+      if(sort==='dateAsc') return String(a.date).localeCompare(String(b.date));
+      return String(b.date).localeCompare(String(a.date));
+    });
+    lastList=list;
+    var grid=$('photoGrid'); grid.innerHTML='';
+    list.forEach(function(p){ grid.appendChild(tile(p)); });
+    $('gridEmpty').hidden=list.length>0;
+    $('bigCount').textContent=String(photos.length);
+    $('shownBadge').textContent=String(list.length);
+    $('selBadge').textContent=String(Object.keys(selected).length);
+    $('basketBadge').textContent=String(Object.keys(basket).length);
+    if(!photos.length) setStatus('searchStatus','المكتبة فارغة. أضف صوراً من قسم الاستيراد.');
+    else if(!list.length) setStatus('searchStatus','لا نتائج مطابقة لبحثك. جرّب كلمة أخرى أو غيّر النطاق.');
+    else setStatus('searchStatus','يتم عرض '+list.length+' من '+photos.length+' صورة.');
+  }
+  function toggleBasket(id){
+    if(basket[id]) delete basket[id]; else basket[id]=true;
+    save(); render();
+    setStatus('tagStatus','عدد الصور في السلة: '+Object.keys(basket).length+'.');
+  }
+  function addTagToSelected(){
+    var v=($('tagInput').value||'').trim();
+    if(!v){ setStatus('tagStatus','اكتب وسماً أولاً ثم اضغط الإضافة.'); return; }
+    var ids=Object.keys(selected);
+    if(!ids.length){ setStatus('tagStatus','حدد صورة واحدة على الأقل قبل إضافة الوسم.'); return; }
+    var n=0;
+    ids.forEach(function(id){ var p=byId(id); if(p&&p.tags.indexOf(v)<0){ p.tags.push(v); n++; } });
+    $('tagInput').value='';
+    save(); render();
+    setStatus('tagStatus',n?('تمت إضافة الوسم "'+v+'" إلى '+n+' صورة.'):('الوسم "'+v+'" موجود مسبقاً على الصور المحددة.'));
+  }
+  function removeTag(id,tag){
+    var p=byId(id); if(!p) return;
+    var i=p.tags.indexOf(tag); if(i>=0) p.tags.splice(i,1);
+    save(); render();
+    setStatus('tagStatus','تمت إزالة الوسم "'+tag+'".');
+  }
+  function srcFor(p){
+    if(files[p.id]){ if(!urls[p.id]){ try{ urls[p.id]=URL.createObjectURL(files[p.id]); }catch(e){} } if(urls[p.id]) return urls[p.id]; }
+    return p.thumb||'';
+  }
+  function applyZoom(){ var im=$('lbImage'); if(im) im.style.transform='scale('+lbZoom+')'; }
+  function openLightbox(id){
+    var p=byId(id); if(!p) return;
+    lbId=id; lbZoom=1;
+    var im=$('lbImage'), s=srcFor(p);
+    if(s){ im.src=s; im.style.display='block'; } else { im.removeAttribute('src'); im.style.display='none'; }
+    applyZoom();
+    var parts=['الاسم: '+p.name,'التاريخ: '+(p.date||'غير معروف')];
+    var x=p.exif;
+    if(x){
+      if(x.make||x.model) parts.push('الكاميرا: '+[x.make,x.model].filter(Boolean).join(' '));
+      if(x.fnumber) parts.push('فتحة العدسة: f/'+Number(x.fnumber).toFixed(1));
+      if(x.exposure) parts.push('سرعة الغالق: '+(x.exposure>=1?x.exposure+'ث':'1/'+Math.round(1/x.exposure)+'ث'));
+      if(x.iso) parts.push('ISO: '+x.iso);
+      if(x.focal) parts.push('البعد البؤري: '+Math.round(x.focal)+'مم');
+      if(x.width&&x.height) parts.push('الأبعاد: '+x.width+'×'+x.height);
+    }
+    if(p.tags&&p.tags.length) parts.push('الوسوم: '+p.tags.join('، '));
+    $('lbMeta').textContent=parts.join(' • ');
+    $('lightbox').hidden=false;
+  }
+  function closeLightbox(){ $('lightbox').hidden=true; lbId=null; }
+  function downloadBlob(blob,name){
+    try{
+      var url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ try{ URL.revokeObjectURL(url); }catch(e){} },3000);
+    }catch(e){}
+  }
+  function exportBasket(){
+    var ids=Object.keys(basket);
+    if(!ids.length){ setStatus('tagStatus','السلة فارغة. أضف صوراً إلى السلة أولاً.'); return; }
+    var lines=['name,date,tags,size_bytes,mime,exif'],dled=0;
+    ids.forEach(function(id){
+      var p=byId(id); if(!p) return;
+      var exifStr=p.exif?[p.exif.make,p.exif.model,p.exif.fnumber?('f/'+Number(p.exif.fnumber).toFixed(1)):'',p.exif.iso?('ISO'+p.exif.iso):'',p.exif.exposure?('exp '+p.exif.exposure):''].filter(Boolean).join(' '):'';
+      lines.push([csv(p.name),csv(p.date),csv((p.tags||[]).join('; ')),p.size,p.type,csv(exifStr)].join(','));
+      if(files[id]){ downloadBlob(files[id],'export_'+sanitize(p.name)); dled++; }
+    });
+    var manifest=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+    downloadBlob(manifest,'library-manifest.csv');
+    setStatus('tagStatus','تم تصدير '+ids.length+' صورة ('+dled+' من الملفات الأصلية) مع ملف بيانات CSV.'+(dled<ids.length?' الصور المسترجعة من الذاكرة فقط صدّرت بياناتها؛ أعد إفلات ملفاتها لتصدير الأصل.':''));
+  }
+  function wire(){
+    var dz=$('dropZone');
+    ['dragenter','dragover'].forEach(function(ev){ dz.addEventListener(ev,function(e){ e.preventDefault(); dz.classList.add('app-over'); }); });
+    ['dragleave','drop'].forEach(function(ev){ dz.addEventListener(ev,function(e){ e.preventDefault(); dz.classList.remove('app-over'); }); });
+    dz.addEventListener('drop',function(e){
+      e.preventDefault();
+      var dt=e.dataTransfer, f=dt&&dt.files;
+      if(f&&f.length) handleFiles(f);
+      else setStatus('importStatus','لم يتم استلام أي ملف. جرّب السحب مرة أخرى أو استخدم زر اختيار الصور.');
+    });
+    $('fileInput').addEventListener('change',function(){ if(this.files&&this.files.length) handleFiles(this.files); this.value=''; });
+    $('folderInput').addEventListener('change',function(){ if(this.files&&this.files.length) handleFiles(this.files); this.value=''; });
+    $('clearAllBtn').addEventListener('click',function(){
+      if(!photos.length){ setStatus('importStatus','لا توجد صور لحذفها.'); return; }
+      if(!window.confirm('سيتم حذف كل الصور والوسوم من هذه المكتبة. هل أنت متأكد؟')) return;
+      Object.keys(urls).forEach(function(k){ try{ URL.revokeObjectURL(urls[k]); }catch(e){} });
+      photos=[]; files={}; urls={}; basket={}; selected={};
+      try{ localStorage.removeItem(KEY); }catch(e){}
+      render();
+      setStatus('importStatus','تم حذف كل الصور وإفراغ المكتبة.');
+    });
+    $('searchInput').addEventListener('input',render);
+    $('searchMode').addEventListener('change',render);
+    $('sortSelect').addEventListener('change',render);
+    $('selectAllBtn').addEventListener('click',function(){
+      if(!lastList.length){ setStatus('searchStatus','لا توجد صور معروضة لتحديدها.'); return; }
+      lastList.forEach(function(p){ selected[p.id]=true; });
+      render();
+      setStatus('searchStatus','تم تحديد '+lastList.length+' صورة من المعروض.');
+    });
+    $('clearSelBtn').addEventListener('click',function(){ selected={}; render(); setStatus('searchStatus','تم إلغاء تحديد كل الصور.'); });
+    $('addTagBtn').addEventListener('click',addTagToSelected);
+    $('tagInput').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); addTagToSelected(); } });
+    $('exportBasketBtn').addEventListener('click',exportBasket);
+    $('clearBasketBtn').addEventListener('click',function(){
+      if(!Object.keys(basket).length){ setStatus('tagStatus','السلة فارغة بالفعل.'); return; }
+      basket={}; save(); render(); setStatus('tagStatus','تم إفراغ السلة.');
+    });
+    $('lbZoomIn').addEventListener('click',function(){ lbZoom=Math.min(5,lbZoom+0.25); applyZoom(); });
+    $('lbZoomOut').addEventListener('click',function(){ lbZoom=Math.max(0.25,lbZoom-0.25); applyZoom(); });
+    $('lbReset').addEventListener('click',function(){ lbZoom=1; applyZoom(); });
+    $('lbClose').addEventListener('click',closeLightbox);
+    $('lightbox').addEventListener('click',function(e){ if(e.target===$('lightbox')) closeLightbox(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!$('lightbox').hidden) closeLightbox(); });
+  }
+  function init(){
+    wire();
+    var n=load();
+    if(n){
+      render();
+      setStatus('importStatus','تم استرجاع '+n+' صورة من الذاكرة المحلية. أعد إفلات الملفات الأصلية لتفعيل التصدير بالحجم الكامل.');
+    }else{
+      render();
+      setStatus('importStatus','لا توجد صور محفوظة. اسحب وأفلت صوراً أو مجلداً للبدء.');
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+</body>
+</html>

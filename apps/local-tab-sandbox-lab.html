@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مختبر متصفح خفيف - محرر HTML/CSS/JS فوري مع معاينة وأداء | MDM1</title>
+<meta name="description" content="محرر ويب متكامل يعمل بالكامل في المتصفح، يتيح كتابة وتشغيل كود HTML/CSS/JS مع معاينة فورية، ألسنة تنقل، حفظ محلي، وقياس أداء الرسم دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/local-tab-sandbox-lab.html">
+<meta property="og:title" content="مختبر متصفح خفيف - محرر HTML/CSS/JS فوري مع معاينة وأداء">
+<meta property="og:description" content="محرر ويب متكامل يعمل بالكامل في المتصفح، يتيح كتابة وتشغيل كود HTML/CSS/JS مع معاينة فورية، ألسنة تنقل، حفظ محلي، وقياس أداء الرسم دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-tab-sandbox-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{font-family:inherit}
+.app .row{align-items:center}
+.app textarea{box-sizing:border-box}
+.app #app-tabs{display:flex;gap:4px}
+.app .tab-btn{padding:6px 12px;background:var(--dark);border:1px solid var(--gold-dim);border-radius:4px;cursor:pointer;color:var(--light);font-size:13px;white-space:nowrap;transition:all .2s}
+.app .tab-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
+.app .tab-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold);font-weight:bold}
+.app .tab-btn .close{margin-right:6px;cursor:pointer;opacity:.7;font-weight:bold}
+.app .tab-btn .close:hover{opacity:1}
+.app #app-preview-container iframe{width:100%;height:100%;border:none;background:white}
+.app .saved-item,.app .bookmark-item{display:flex;justify-content:space-between;align-items:center;padding:8px;margin:4px 0;background:var(--dark);border:1px solid var(--gold-dim);border-radius:4px;cursor:pointer;transition:all .2s}
+.app .saved-item:hover,.app .bookmark-item:hover{border-color:var(--gold);background:var(--gold-dim)}
+.app .saved-item .name,.app .bookmark-item .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app .saved-item .actions,.app .bookmark-item .actions{display:flex;gap:4px}
+.app .saved-item button,.app .bookmark-item button{font-size:11px;padding:2px 6px}
+.app #app-perf{font-family:monospace}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مختبر المتصفح الخفيف", "url": "https://mdm1.org/apps/local-tab-sandbox-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل دون شبكة، جميع البيانات محفوظة في localStorage محلياً."}}, {"@type": "Question", "name": "كيف أحفظ صفحة كتبتها؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر \"حفظ الصفحة\" وأدخل اسماً، ستظهر في قائمة \"الصفحات المحفوظة\" للتحميل لاحقاً."}}, {"@type": "Question", "name": "ما الفرق بين وضعيات المحرك؟", "acceptedAnswer": {"@type": "Answer", "text": "\"قياسي\" للعرض الحديث، \"توافق\" لصفحات قديمة، \"صارم\" لمعايير HTML5، \"محاكاة جوال\" لاختبار الاستجابة."}}, {"@type": "Question", "name": "كيف أرى أداء الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "شريط \"الأداء\" يعرض FCP (أول رسم محتوى)، LCP (أكبر رسم محتوى)، وTTI (زمن التفاعل) بالمللي ثانية."}}, {"@type": "Question", "name": "هل يمكن تشغيل كود JavaScript في المعاينة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، المعاينة تدعم JS داخل iframe معزول (sandbox) يسمح بالسكربتات والنماذج."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مختبر المتصفح الخفيف</h1>
+  <p class="page-sub">محرر ويب متكامل يعمل بالكامل في المتصفح، يتيح كتابة وتشغيل كود HTML/CSS/JS مع معاينة فورية، ألسنة تنقل، حفظ محلي، وقياس أداء الرسم دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>مختبر متصفح خفيف يعمل بالكامل داخل المتصفح يتيح لك كتابة وتشغيل صفحات HTML وCSS وJavaScript داخل إطار معزول مع شريط عناوين وألسنة تنقل متعددة، وحفظ الصفحات والمفضلة محلياً في localStorage، وعرض معاينة فورية مع قياس أداء الرسم والزمن، مع إمكانية تبديل محرك العرض بين وضعيات محاكاة مختلفة دون أي خادم أو شبكة خارجية.</p>
+
+<div class="app card" style="direction:rtl">
+  <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+    <label for="app-url" style="flex:1 1 200px">عنوان الصفحة:</label>
+    <input id="app-url" type="text" placeholder="about:blank أو اسم الصفحة المحفوظة" style="flex:1 1 300px;min-width:200px" />
+    <button id="app-go" class="button" style="white-space:nowrap">انتقال</button>
+    <button id="app-new-tab" class="button sec" style="white-space:nowrap">تبويب جديد +</button>
+    <select id="app-engine" class="select" style="min-width:160px">
+      <option value="standard">قياسي (Standard)</option>
+      <option value="quirks">توافق (Quirks)</option>
+      <option value="strict">صارم (Strict)</option>
+      <option value="mobile">محاكاة جوال</option>
+    </select>
+  </div>
+
+  <div class="row" style="gap:8px;margin-bottom:12px">
+    <div id="app-tabs" class="row" style="flex:1;gap:4px;overflow-x:auto;padding:4px 0"></div>
+    <button id="app-save" class="button sec" style="white-space:nowrap">حفظ الصفحة</button>
+    <button id="app-bookmark" class="button sec" style="white-space:nowrap">إضافة للمفضلة</button>
+    <button id="app-clear" class="button sec" style="white-space:nowrap">مسح المحرر</button>
+  </div>
+
+  <div class="row" style="gap:12px;height:calc(100vh - 280px);min-height:400px">
+    <div style="flex:1;display:flex;flex-direction:column;min-width:300px">
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <span class="badge">محرر الكود</span>
+        <select id="app-mode" class="select" style="width:auto">
+          <option value="html">HTML</option>
+          <option value="css">CSS</option>
+          <option value="js">JavaScript</option>
+        </select>
+      </div>
+      <textarea id="app-editor" class="textarea" style="flex:1;font-family:monospace;font-size:13px;line-height:1.5;resize:none;background:var(--dark);color:var(--light);border:1px solid var(--gold-dim);border-radius:4px;padding:8px" spellcheck="false" placeholder="اكتب كود HTML/CSS/JS هنا..."></textarea>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;min-width:300px;position:relative">
+      <div class="row" style="gap:8px;margin-bottom:8px;align-items:center">
+        <span class="badge">معاينة فورية</span>
+        <span id="app-perf" class="out big" style="font-size:12px;min-width:200px">الأداء: —</span>
+        <button id="app-reload" class="button sec" style="white-space:nowrap;font-size:12px;padding:4px 8px">تحديث المعاينة</button>
+      </div>
+      <div id="app-preview-container" style="flex:1;background:var(--dark);border:1px solid var(--gold-dim);border-radius:4px;overflow:hidden;position:relative;min-height:300px"></div>
+    </div>
+  </div>
+
+  <div class="divider" style="margin:12px 0"></div>
+
+  <div class="row" style="gap:12px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <span class="badge">الصفحات المحفوظة</span>
+        <button id="app-load-list" class="button sec" style="white-space:nowrap;font-size:12px">تحديث القائمة</button>
+      </div>
+      <div id="app-saved-list" class="out" style="min-height:100px;max-height:200px;overflow-y:auto;font-size:13px"></div>
+    </div>
+    <div style="flex:1;min-width:280px">
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <span class="badge">المفضلة</span>
+        <button id="app-bm-list" class="button sec" style="white-space:nowrap;font-size:12px">تحديث القائمة</button>
+      </div>
+      <div id="app-bookmark-list" class="out" style="min-height:100px;max-height:200px;overflow-y:auto;font-size:13px"></div>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل دون شبكة، جميع البيانات محفوظة في localStorage محلياً.</p><h3>كيف أحفظ صفحة كتبتها؟</h3><p>اضغط زر &quot;حفظ الصفحة&quot; وأدخل اسماً، ستظهر في قائمة &quot;الصفحات المحفوظة&quot; للتحميل لاحقاً.</p><h3>ما الفرق بين وضعيات المحرك؟</h3><p>&quot;قياسي&quot; للعرض الحديث، &quot;توافق&quot; لصفحات قديمة، &quot;صارم&quot; لمعايير HTML5، &quot;محاكاة جوال&quot; لاختبار الاستجابة.</p><h3>كيف أرى أداء الصفحة؟</h3><p>شريط &quot;الأداء&quot; يعرض FCP (أول رسم محتوى)، LCP (أكبر رسم محتوى)، وTTI (زمن التفاعل) بالمللي ثانية.</p><h3>هل يمكن تشغيل كود JavaScript في المعاينة؟</h3><p>نعم، المعاينة تدعم JS داخل iframe معزول (sandbox) يسمح بالسكربتات والنماذج.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const STORAGE_KEY='blite_pages';
+  const BOOKMARK_KEY='blite_bookmarks';
+  const TABS_KEY='blite_tabs';
+  const ACTIVE_TAB_KEY='blite_active';
+
+  function loadJSON(key,def){try{const v=localStorage.getItem(key);return v?JSON.parse(v):def}catch{return def}}
+  function saveJSON(key,val){try{localStorage.setItem(key,JSON.stringify(val))}catch{}}
+
+  let tabs=loadJSON(TABS_KEY,[{id:Date.now(),title:'غير مسمى',html:'',css:'',js:'',url:'about:blank'}]);
+  let activeTabId=loadJSON(ACTIVE_TAB_KEY,tabs[0]?.id);
+  let previewIframe=null;
+  let perfObserver=null;
+
+  function getTab(id){return tabs.find(t=>t.id===id)}
+  function getActiveTab(){return getTab(activeTabId)||tabs[0]}
+  function setActiveTab(id){activeTabId=id;saveJSON(ACTIVE_TAB_KEY,id);renderTabs();loadTabContent(id)}
+
+  function renderTabs(){
+    const c=$('app-tabs');c.innerHTML='';
+    tabs.forEach(t=>{
+      const btn=document.createElement('button');
+      btn.className='tab-btn'+(t.id===activeTabId?' active':'');
+      btn.innerHTML=`<span>${escapeHtml(t.title)}</span><span class="close" data-id="${t.id}">×</span>`;
+      btn.onclick=e=>{if(e.target.classList.contains('close')){closeTab(t.id)}else{setActiveTab(t.id)}};
+      c.appendChild(btn);
+    });
+  }
+
+  function closeTab(id){
+    if(tabs.length<=1)return;
+    tabs=tabs.filter(t=>t.id!==id);
+    if(activeTabId===id){activeTabId=tabs[0].id}
+    saveJSON(TABS_KEY,tabs);saveJSON(ACTIVE_TAB_KEY,activeTabId);
+    renderTabs();loadTabContent(activeTabId);
+  }
+
+  function loadTabContent(id){
+    const tab=getTab(id);if(!tab)return;
+    const mode=$('app-mode').value;
+    $('app-editor').value=tab[mode]||'';
+    $('app-url').value=tab.url||'about:blank';
+    updatePreview();
+  }
+
+  function saveCurrentTab(){
+    const tab=getActiveTab();if(!tab)return;
+    const mode=$('app-mode').value;
+    tab[mode]=$('app-editor').value;
+    tab.url=$('app-url').value||'about:blank';
+    tab.title=tab.url.length>30?tab.url.slice(0,30)+'…':tab.url;
+    saveJSON(TABS_KEY,tabs);renderTabs();
+  }
+
+  function updatePreview(){
+    const tab=getActiveTab();if(!tab)return;
+    const html=tab.html||'';
+    const css=tab.css||'';
+    const js=tab.js||'';
+    const engine=$('app-engine').value;
+    const container=$('app-preview-container');
+    if(!previewIframe){
+      previewIframe=document.createElement('iframe');
+      previewIframe.sandbox='allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+      container.appendChild(previewIframe);
+    }
+    const doc=previewIframe.contentDocument;
+    doc.open();
+    let doctype='<!DOCTYPE html>';
+    if(engine==='quirks')doctype='';
+    doc.write(`${doctype}<html><head><meta charset="utf-8"><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`);
+    doc.close();
+    measurePerformance(doc);
+  }
+
+  function measurePerformance(doc){
+    const perf=$('app-perf');
+    try{
+      if(perfObserver)perfObserver.disconnect();
+      perfObserver=new PerformanceObserver(list=>{
+        const entries=list.getEntries();
+        let fcp=0,lcp=0,tti=0;
+        entries.forEach(e=>{
+          if(e.name==='first-contentful-paint')fcp=e.startTime;
+          if(e.entryType==='largest-contentful-paint')lcp=e.startTime;
+        });
+        tti=performance.now();
+        perf.textContent=`الأداء: FCP ${fcp.toFixed(1)}ms | LCP ${lcp.toFixed(1)}ms | TTI ${tti.toFixed(1)}ms`;
+      });
+      perfObserver.observe({entryTypes:['paint','largest-contentful-paint']});
+      setTimeout(()=>{if(perfObserver)perfObserver.disconnect()},3000);
+    }catch{e=>{perf.textContent='الأداء: غير متاح'}}
+  }
+
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+  function renderSavedList(){
+    const pages=loadJSON(STORAGE_KEY,[]);
+    const c=$('app-saved-list');
+    if(!pages.length){c.innerHTML='<div style="color:var(--gold-dim);text-align:center;padding:20px">لا توجد صفحات محفوظة</div>';return}
+    c.innerHTML=pages.map((p,i)=>`<div class="saved-item" data-idx="${i}"><span class="name">${escapeHtml(p.title||'بدون عنوان')}</span><div class="actions"><button class="button sec" data-act="load" data-idx="${i}">تحميل</button><button class="button sec" data-act="del" data-idx="${i}">حذف</button></div></div>`).join('');
+  }
+
+  function renderBookmarkList(){
+    const bms=loadJSON(BOOKMARK_KEY,[]);
+    const c=$('app-bookmark-list');
+    if(!bms.length){c.innerHTML='<div style="color:var(--gold-dim);text-align:center;padding:20px">لا توجد مفضلات</div>';return}
+    c.innerHTML=bms.map((b,i)=>`<div class="bookmark-item" data-idx="${i}"><span class="name">${escapeHtml(b.title)}</span><div class="actions"><button class="button sec" data-act="go" data-url="${escapeHtml(b.url)}" data-idx="${i}">انتقال</button><button class="button sec" data-act="del" data-idx="${i}">إزالة</button></div></div>`).join('');
+  }
+
+  $('app-go').onclick=()=>{
+    const url=$('app-url').value.trim();
+    if(!url)return;
+    const tab=getActiveTab();tab.url=url;tab.title=url.length>30?url.slice(0,30)+'…':url;
+    saveJSON(TABS_KEY,tabs);renderTabs();updatePreview();
+  };
+
+  $('app-new-tab').onclick=()=>{
+    const id=Date.now();
+    tabs.push({id,title:'غير مسمى',html:'',css:'',js:'',url:'about:blank'});
+    activeTabId=id;saveJSON(TABS_KEY,tabs);saveJSON(ACTIVE_TAB_KEY,id);
+    renderTabs();loadTabContent(id);
+  };
+
+  $('app-mode').onchange=()=>{saveCurrentTab();loadTabContent(activeTabId)};
+
+  $('app-editor').oninput=()=>{saveCurrentTab();updatePreview()};
+
+  $('app-engine').onchange=()=>{updatePreview()};
+
+  $('app-reload').onclick=()=>{updatePreview()};
+
+  $('app-save').onclick=()=>{
+    const tab=getActiveTab();if(!tab)return;
+    const title=prompt('اسم الصفحة:',tab.title||'صفحة جديدة');
+    if(!title)return;
+    const pages=loadJSON(STORAGE_KEY,[]);
+    pages.push({title,url:tab.url,html:tab.html,css:tab.css,js:tab.js,time:Date.now()});
+    saveJSON(STORAGE_KEY,pages);renderSavedList();
+  };
+
+  $('app-bookmark').onclick=()=>{
+    const tab=getActiveTab();if(!tab)return;
+    const title=prompt('اسم المفضلة:',tab.title||tab.url);
+    if(!title)return;
+    const bms=loadJSON(BOOKMARK_KEY,[]);
+    bms.push({title,url:tab.url,time:Date.now()});
+    saveJSON(BOOKMARK_KEY,bms);renderBookmarkList();
+  };
+
+  $('app-clear').onclick=()=>{
+    if(!confirm('مسح محتوى التبويب الحالي؟'))return;
+    const tab=getActiveTab();tab.html=tab.css=tab.js='';saveCurrentTab();loadTabContent(activeTabId);
+  };
+
+  $('app-load-list').onclick=renderSavedList;
+  $('app-bm-list').onclick=renderBookmarkList;
+
+  $('app-saved-list').onclick=e=>{
+    const btn=e.target.closest('button');if(!btn)return;
+    const idx=+btn.dataset.idx;const pages=loadJSON(STORAGE_KEY,[]);const p=pages[idx];if(!p)return;
+    if(btn.dataset.act==='load'){
+      const id=Date.now();
+      tabs.push({id,title:p.title,html:p.html,css:p.css,js:p.js,url:p.url});
+      activeTabId=id;saveJSON(TABS_KEY,tabs);saveJSON(ACTIVE_TAB_KEY,id);
+      renderTabs();loadTabContent(id);
+    }else if(btn.dataset.act==='del'){
+      pages.splice(idx,1);saveJSON(STORAGE_KEY,pages);renderSavedList();
+    }
+  };
+
+  $('app-bookmark-list').onclick=e=>{
+    const btn=e.target.closest('button');if(!btn)return;
+    const idx=+btn.dataset.idx;const bms=loadJSON(BOOKMARK_KEY,[]);
+    if(btn.dataset.act==='go'){
+      const b=bms[idx];if(!b)return;
+      $('app-url').value=b.url;$('app-go').click();
+    }else if(btn.dataset.act==='del'){
+      bms.splice(idx,1);saveJSON(BOOKMARK_KEY,bms);renderBookmarkList();
+    }
+  };
+
+  renderTabs();loadTabContent(activeTabId);renderSavedList();renderBookmarkList();
+})();
+</script>
+</body>
+</html>

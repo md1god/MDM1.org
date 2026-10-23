@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة الإجازات والعطلات والغيابات | MDM1</title>
+<meta name="description" content="تطبيق محلي لإدارة طلبات الإجازات ورصيدها وأيام المرض وساعات العمل الإضافي وعرضها في تقويم مع إمكانية تصدير البيانات دون اتصال بالإنترنت.">
+<link rel="canonical" href="https://mdm1.org/apps/leave-balance-tracker.html">
+<meta property="og:title" content="إدارة الإجازات والعطلات والغيابات">
+<meta property="og:description" content="تطبيق محلي لإدارة طلبات الإجازات ورصيدها وأيام المرض وساعات العمل الإضافي وعرضها في تقويم مع إمكانية تصدير البيانات دون اتصال بالإنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/leave-balance-tracker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:flex; flex-direction:column; gap:14px; padding:4px; }
+.app h3 { margin:4px 0 10px 0; color:var(--light); }
+.app .card { border:1px solid var(--gold-dim); border-radius:10px; padding:12px; background:linear-gradient(180deg, rgba(255,215,0,0.04), transparent); }
+.app .row { display:flex; flex-direction:row-reverse; flex-wrap:wrap; gap:10px; align-items:flex-end; }
+.app .row > * { flex:1 1 220px; }
+.app .out { border:1px dashed var(--gold-dim); border-radius:8px; padding:8px; margin-top:8px; }
+.app .big { font-size:28px; color:var(--gold-bright); }
+.app .badge { display:inline-block; padding:2px 8px; border:1px solid var(--gold-dim); border-radius:999px; font-size:12px; }
+.app .badge.ok { border-color:var(--gold-bright); color:var(--gold-bright); }
+.app .badge.bad { border-color:var(--gold-dim); opacity:0.8; }
+.app .badge.sick { border-color:var(--gold); }
+.app .badge.ot { border-color:var(--gold-bright); }
+.app .divider { height:1px; background:var(--gold-dim); margin:10px 0; opacity:0.5; }
+.app .calgrid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:10px; }
+.app .calcell { border:1px solid var(--gold-dim); border-radius:8px; padding:6px; min-height:70px; display:flex; flex-direction:column; gap:2px; font-size:12px; }
+.app .calhead { text-align:center; padding:4px; font-size:12px; color:var(--gold); }
+.app .caltoday { box-shadow:0 0 0 1px var(--gold-bright) inset; }
+.app .ev { font-size:11px; border-radius:6px; padding:1px 4px; border:1px solid var(--gold-dim); }
+.app .ev.wait { opacity:0.8; }
+.app .ev.ok { color:var(--gold-bright); border-color:var(--gold-bright); }
+.app .ev.bad { opacity:0.7; text-decoration:line-through; }
+.app .ev.sick { border-color:var(--gold); }
+.app .ev.ot { border-color:var(--gold-bright); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "إدارة الإجازات والعطلات والمرض والعمل الإضافي", "url": "https://mdm1.org/apps/leave-balance-tracker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم إرسال أي بيانات للخادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يتم حفظ كل البيانات داخل متصفحك فقط باستخدام localStorage ولا يتم إرسالها لأي عنوان خارجي."}}, {"@type": "Question", "name": "كيف يحسب التطبيق رصيد الإجازات المتبقي؟", "acceptedAnswer": {"@type": "Answer", "text": "يحسب الرصيد بطرح عدد أيام الإجازات ذات الحالة \"موافق\" فقط من الرصيد السنوي الذي قمت بحفظه، بينما تبقى طلبات \"قيد الانتظار\" و\"مرفوض\" بدون خصم."}}, {"@type": "Question", "name": "هل يمكنني تعديل حالة طلب بعد الموافقة أو الرفض؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك حذف الطلب بالكامل من قائمة طلبات الإجازة ثم تسجيله مجددًا، أو حذفه مباشرةً وفق الحاجة."}}, {"@type": "Question", "name": "هل يعمل التطبيق بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل محليًا بعد تحميل الصفحة، ولا يستخدم أي طلبات شبكة، ما يجعله صالحًا للعمل دون اتصال."}}, {"@type": "Question", "name": "هل يمكنني تصدير البيانات لأغراض الأرشفة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تصدير جميع السجلات بصيغة JSON وحفظ الملف محليًا على جهازك للرجوع إليه في أي وقت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">إدارة الإجازات والعطلات والمرض والعمل الإضافي</h1>
+  <p class="page-sub">تطبيق محلي لإدارة طلبات الإجازات ورصيدها وأيام المرض وساعات العمل الإضافي وعرضها في تقويم مع إمكانية تصدير البيانات دون اتصال بالإنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك إدارة كل غياباتك من مكان واحد. يتيح لك هذا التطبيق تسجيل طلبات الإجازة ومتابعة حالتها من قيد الانتظار إلى موافق أو مرفوض، كما يحسب رصيد الإجازات المتبقي تلقائياً بناءً على ما تم قبوله سابقًا. إضافةً إلى ذلك يمكنك تسجيل أيام المرض وساعات العمل الإضافي، ومشاهدة جميع هذه الأحداث مجتمعةً داخل تقويم واضح، مع إمكانية تصدير جميع البيانات محليًا بصيغة JSON لحفظها أو الرجوع إليها لاحقًا. كل ذلك يتم حفظًا محليًا داخل متصفحك فقط دون إرسال أي بيانات خارج الجهاز، ما يضمن الخصوصية ويعمل بشكل كامل دون اتصال.</p>
+
+<div class="app" dir="rtl" lang="ar">
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label class="label" for="initBalance">رصيد الإجازات السنوي (يوم)</label>
+        <input id="initBalance" class="input" type="number" min="0" step="1" placeholder="مثال: ٢١">
+      </div>
+      <div>
+        <label class="label" for="yearSel">السنة المرجعية</label>
+        <select id="yearSel" class="select"></select>
+      </div>
+      <button id="btnSaveBalance" class="button">حفظ الرصيد</button>
+    </div>
+    <div class="out">
+      <div>رصيد الإجازات المتبقي</div>
+      <div id="remainBalance" class="big">٠</div>
+      <div>مجموع المقبول: <span id="usedApproved">٠</span> يوم</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>تسجيل طلب إجازة</h3>
+    <div class="row">
+      <div>
+        <label class="label" for="leaveType">نوع الإجازة</label>
+        <select id="leaveType" class="select">
+          <option value="">اختر نوع الإجازة</option>
+          <option value="سنوية">سنوية</option>
+          <option value="عارضة">عارضة</option>
+          <option value="غير مدفوعة">غير مدفوعة</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="startDate">تاريخ البداية</label>
+        <input id="startDate" class="input" type="date">
+      </div>
+      <div>
+        <label class="label" for="endDate">تاريخ النهاية</label>
+        <input id="endDate" class="input" type="date">
+      </div>
+    </div>
+    <label class="label" for="leaveReason">سبب الطلب (اختياري)</label>
+    <textarea id="leaveReason" class="textarea" rows="3" placeholder="أدخل سبب الطلب إن وُجد"></textarea>
+    <div class="row">
+      <button id="btnAddLeave" class="button">إضافة طلب إجازة</button>
+      <button id="btnClearLeaveForm" class="button sec">تفريغ الحقول</button>
+    </div>
+    <div id="leaveFormMsg" class="out" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h3>طلبات الإجازة ومتابعتها</h3>
+    <div class="row">
+      <select id="leaveFilter" class="select">
+        <option value="all">الكل</option>
+        <option value="قيد الانتظار">قيد الانتظار</option>
+        <option value="موافق">موافق</option>
+        <option value="مرفوض">مرفوض</option>
+      </select>
+      <button id="btnFilterLeave" class="button sec">تصفية</button>
+      <button id="btnClearLeaves" class="button sec">حذف كل طلبات الإجازة</button>
+    </div>
+    <div class="divider"></div>
+    <div id="leaveList" class="out" style="display:block;min-height:60px;"></div>
+    <div id="leaveListEmpty" class="out" style="display:none;">لا توجد طلبات حالياً</div>
+  </div>
+
+  <div class="card">
+    <h3>تسجيل أيام المرض</h3>
+    <div class="row">
+      <div>
+        <label class="label" for="sickDate">تاريخ يوم المرض</label>
+        <input id="sickDate" class="input" type="date">
+      </div>
+      <div>
+        <label class="label" for="sickNote">ملاحظات (اختياري)</label>
+        <input id="sickNote" class="input" type="text" placeholder="مثال: إجازة مرضية">
+      </div>
+      <button id="btnAddSick" class="button">إضافة يوم مرض</button>
+    </div>
+    <div id="sickMsg" class="out" style="display:none;"></div>
+    <div class="divider"></div>
+    <div id="sickList" class="out" style="display:block;min-height:50px;"></div>
+    <div id="sickEmpty" class="out" style="display:none;">لا توجد أيام مرض مسجلة</div>
+    <button id="btnClearSick" class="button sec">حذف كل أيام المرض</button>
+  </div>
+
+  <div class="card">
+    <h3>تسجيل ساعات العمل الإضافي</h3>
+    <div class="row">
+      <div>
+        <label class="label" for="otDate">تاريخ العمل الإضافي</label>
+        <input id="otDate" class="input" type="date">
+      </div>
+      <div>
+        <label class="label" for="otHours">عدد الساعات</label>
+        <input id="otHours" class="input" type="number" min="0" step="0.5" placeholder="مثال: ٢">
+      </div>
+      <div>
+        <label class="label" for="otNote">ملاحظات (اختياري)</label>
+        <input id="otNote" class="input" type="text" placeholder="سبب العمل الإضافي">
+      </div>
+      <button id="btnAddOt" class="button">إضافة ساعات إضافية</button>
+    </div>
+    <div id="otMsg" class="out" style="display:none;"></div>
+    <div class="divider"></div>
+    <div id="otList" class="out" style="display:block;min-height:50px;"></div>
+    <div id="otEmpty" class="out" style="display:none;">لا توجد ساعات عمل إضافي مسجلة</div>
+    <button id="btnClearOt" class="button sec">حذف كل ساعات العمل الإضافي</button>
+  </div>
+
+  <div class="card">
+    <h3>تقويم الغيابات</h3>
+    <div class="row">
+      <button id="btnCalPrev" class="button sec">الشهر السابق</button>
+      <div id="calTitle" class="out" style="flex:1;text-align:center;font-weight:bold;"></div>
+      <button id="btnCalNext" class="button sec">الشهر التالي</button>
+    </div>
+    <div id="calGrid" class="calgrid"></div>
+    <div class="out">
+      <div>مفتاح الألوان:</div>
+      <div class="row" style="flex-wrap:wrap;gap:6px;">
+        <span class="badge">إجازة قيد الانتظار</span>
+        <span class="badge ok">إجازة موافق عليها</span>
+        <span class="badge bad">إجازة مرفوضة</span>
+        <span class="badge sick">يوم مرض</span>
+        <span class="badge ot">عمل إضافي</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>تصدير البيانات محليًا</h3>
+    <div class="row">
+      <button id="btnExportJson" class="button">تصدير كملف JSON</button>
+      <button id="btnClearAll" class="button sec">مسح كل البيانات من هذا الجهاز</button>
+    </div>
+    <div id="exportMsg" class="out" style="display:none;"></div>
+  </div>
+
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم إرسال أي بيانات للخادم؟</h3><p>لا، يتم حفظ كل البيانات داخل متصفحك فقط باستخدام localStorage ولا يتم إرسالها لأي عنوان خارجي.</p><h3>كيف يحسب التطبيق رصيد الإجازات المتبقي؟</h3><p>يحسب الرصيد بطرح عدد أيام الإجازات ذات الحالة &quot;موافق&quot; فقط من الرصيد السنوي الذي قمت بحفظه، بينما تبقى طلبات &quot;قيد الانتظار&quot; و&quot;مرفوض&quot; بدون خصم.</p><h3>هل يمكنني تعديل حالة طلب بعد الموافقة أو الرفض؟</h3><p>نعم، يمكنك حذف الطلب بالكامل من قائمة طلبات الإجازة ثم تسجيله مجددًا، أو حذفه مباشرةً وفق الحاجة.</p><h3>هل يعمل التطبيق بدون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل محليًا بعد تحميل الصفحة، ولا يستخدم أي طلبات شبكة، ما يجعله صالحًا للعمل دون اتصال.</p><h3>هل يمكنني تصدير البيانات لأغراض الأرشفة؟</h3><p>نعم، يمكنك تصدير جميع السجلات بصيغة JSON وحفظ الملف محليًا على جهازك للرجوع إليه في أي وقت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const storeKey="app_leave_sick_ot_v1";
+  const ySel=document.getElementById("yearSel");
+  const initBal=document.getElementById("initBalance");
+  const btnSaveBal=document.getElementById("btnSaveBalance");
+  const remainEl=document.getElementById("remainBalance");
+  const usedEl=document.getElementById("usedApproved");
+
+  const lType=document.getElementById("leaveType");
+  const sDate=document.getElementById("startDate");
+  const eDate=document.getElementById("endDate");
+  const lReason=document.getElementById("leaveReason");
+  const btnAddL=document.getElementById("btnAddLeave");
+  const btnClrL=document.getElementById("btnClearLeaveForm");
+  const lMsg=document.getElementById("leaveFormMsg");
+
+  const lFilter=document.getElementById("leaveFilter");
+  const btnFiltL=document.getElementById("btnFilterLeave");
+  const btnClrLeaves=document.getElementById("btnClearLeaves");
+  const lList=document.getElementById("leaveList");
+  const lEmpty=document.getElementById("leaveListEmpty");
+
+  const sickDate=document.getElementById("sickDate");
+  const sickNote=document.getElementById("sickNote");
+  const btnAddS=document.getElementById("btnAddSick");
+  const sMsg=document.getElementById("sickMsg");
+  const sList=document.getElementById("sickList");
+  const sEmpty=document.getElementById("sickEmpty");
+  const btnClrS=document.getElementById("btnClearSick");
+
+  const otDate=document.getElementById("otDate");
+  const otHours=document.getElementById("otHours");
+  const otNote=document.getElementById("otNote");
+  const btnAddO=document.getElementById("btnAddOt");
+  const oMsg=document.getElementById("otMsg");
+  const oList=document.getElementById("otList");
+  const oEmpty=document.getElementById("otEmpty");
+  const btnClrO=document.getElementById("btnClearOt");
+
+  const calTitle=document.getElementById("calTitle");
+  const calGrid=document.getElementById("calGrid");
+  const btnPrev=document.getElementById("btnCalPrev");
+  const btnNext=document.getElementById("btnCalNext");
+
+  const btnExp=document.getElementById("btnExportJson");
+  const btnClrAll=document.getElementById("btnClearAll");
+  const expMsg=document.getElementById("exportMsg");
+
+  let state={initBalance:0,year:new Date().getFullYear(),leaves:[],sick:[],ot:[]};
+  let calView=new Date();
+
+  function load(){
+    try{
+      const raw=localStorage.getItem(storeKey);
+      if(raw){ const p=JSON.parse(raw); if(p) state=p; }
+    }catch(e){}
+    calView=new Date(state.year,0,1);
+    fillYear();
+  }
+  function save(){
+    try{ localStorage.setItem(storeKey,JSON.stringify(state)); }catch(e){}
+  }
+  function fillYear(){
+    ySel.innerHTML="";
+    const y=state.year;
+    for(let i=y-2;i<=y+2;i++){
+      const o=document.createElement("option");
+      o.value=i;o.textContent=i;
+      if(i===y)o.selected=true;
+      ySel.appendChild(o);
+    }
+  }
+  function daysBetween(a,b){
+    const x=new Date(a+"T00:00:00");
+    const z=new Date(b+"T00:00:00");
+    if(isNaN(x)||isNaN(z)) return 0;
+    if(z<x) return 0;
+    const ms=z-x+86400000;
+    return Math.round(ms/86400000);
+  }
+  function renderBalance(){
+    let used=0;
+    for(let i=0;i<state.leaves.length;i++){
+      if(state.leaves[i].status==="موافق") used+=Number(state.leaves[i].days)||0;
+    }
+    const rem=Number(state.initBalance)-used;
+    remainEl.textContent=String(rem<0?0:rem);
+    usedEl.textContent=String(used);
+    initBal.value=state.initBalance||"";
+    ySel.value=state.year;
+  }
+  function renderLeaves(){
+    const f=lFilter.value;
+    let arr=state.leaves.slice();
+    if(f!=="all") arr=arr.filter(x=>x.status===f);
+    arr.sort((a,b)=> (a.start+"").localeCompare(b.start+""));
+    if(arr.length===0){ lList.innerHTML=""; lEmpty.style.display="block"; return; }
+    lEmpty.style.display="none";
+    let html="";
+    for(let i=0;i<arr.length;i++){
+      const it=arr[i];
+      html+="<div style='margin-bottom:6px;border:1px solid var(--gold-dim);border-radius:8px;padding:6px;'>";
+      html+="<div><b>نوع:</b> "+escape(it.type)+" | <b>من:</b> "+escape(it.start)+" | <b>إلى:</b> "+escape(it.end)+" | <b>أيام:</b> "+it.days+" | <b>حالة:</b> "+escape(it.status)+"</div>";
+      if(it.reason) html+="<div><b>سبب:</b> "+escape(it.reason)+"</div>";
+      if(it.status==="قيد الانتظار"){
+        html+="<div class='row' style='margin-top:6px;'>";
+        html+="<button class='button' id='ap_"+it.id+"'>موافقة</button>";
+        html+="<button class='button sec' id='rej_"+it.id+"'>رفض</button>";
+        html+="<button class='button sec' id='del_"+it.id+"'>حذف هذا الطلب</button>";
+        html+="</div>";
+      }else{
+        html+="<div class='row' style='margin-top:6px;'><button class='button sec' id='del_"+it.id+"'>حذف هذا الطلب</button></div>";
+      }
+      html+="</div>";
+    }
+    lList.innerHTML=html;
+    for(let i=0;i<arr.length;i++){
+      const it=arr[i];
+      const ap=document.getElementById("ap_"+it.id);
+      const rj=document.getElementById("rej_"+it.id);
+      const dl=document.getElementById("del_"+it.id);
+      if(ap) ap.onclick=()=>{ it.status="موافق"; save(); renderAll(); };
+      if(rj) rj.onclick=()=>{ it.status="مرفوض"; save(); renderAll(); };
+      if(dl) dl.onclick=()=>{ state.leaves=state.leaves.filter(x=>x.id!==it.id); save(); renderAll(); };
+    }
+  }
+  function renderSick(){
+    const arr=state.sick.slice().sort((a,b)=>(a.date+"").localeCompare(b.date+""));
+    if(arr.length===0){ sList.innerHTML=""; sEmpty.style.display="block"; return; }
+    sEmpty.style.display="none";
+    let html="";
+    for(let i=0;i<arr.length;i++){
+      const it=arr[i];
+      html+="<div style='margin-bottom:4px;border:1px solid var(--gold-dim);border-radius:8px;padding:6px;'>";
+      html+="<div><b>تاريخ:</b> "+escape(it.date);
+      if(it.note) html+=" | <b>ملاحظات:</b> "+escape(it.note);
+      html+=" <button class='button sec' id='ds_"+it.id+"'>حذف</button></div>";
+      html+="</div>";
+    }
+    sList.innerHTML=html;
+    for(let i=0;i<arr.length;i++){
+      const id=state.sick.slice().sort((a,b)=>(a.date+"").localeCompare(b.date+""))[i].id;
+      const b=document.getElementById("ds_"+id);
+      if(b) b.onclick=()=>{ state.sick=state.sick.filter(x=>x.id!==id); save(); renderAll(); };
+    }
+  }
+  function renderOt(){
+    const arr=state.ot.slice().sort((a,b)=>(a.date+"").localeCompare(b.date+""));
+    if(arr.length===0){ oList.innerHTML=""; oEmpty.style.display="block"; return; }
+    oEmpty.style.display="none";
+    let html="";
+    for(let i=0;i<arr.length;i++){
+      const it=arr[i];
+      html+="<div style='margin-bottom:4px;border:1px solid var(--gold-dim);border-radius:8px;padding:6px;'>";
+      html+="<div><b>تاريخ:</b> "+escape(it.date)+" | <b>ساعات:</b> "+it.hours;
+      if(it.note) html+=" | <b>ملاحظات:</b> "+escape(it.note);
+      html+=" <button class='button sec' id='do_"+it.id+"'>حذف</button></div>";
+      html+="</div>";
+    }
+    oList.innerHTML=html;
+    for(let i=0;i<arr.length;i++){
+      const id=state.ot.slice().sort((a,b)=>(a.date+"").localeCompare(b.date+""))[i].id;
+      const b=document.getElementById("do_"+id);
+      if(b) b.onclick=()=>{ state.ot=state.ot.filter(x=>x.id!==id); save(); renderAll(); };
+    }
+  }
+  function renderCal(){
+    const y=calView.getFullYear();
+    const m=calView.getMonth();
+    calTitle.textContent=y+" / "+(m+1);
+    calGrid.innerHTML="";
+    const names=["أحد","اثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"];
+    for(let i=0;i<7;i++){ const h=document.createElement("div"); h.className="calhead"; h.textContent=names[i]; calGrid.appendChild(h); }
+    const first=new Date(y,m,1);
+    const last=new Date(y,m+1,0);
+    let start=first.getDay();
+    const total=last.getDate();
+    const today=new Date();
+    for(let i=0;i<start;i++){ const e=document.createElement("div"); e.className="calcell"; calGrid.appendChild(e); }
+    for(let d=1;d<=total;d++){
+      const cell=document.createElement("div");
+      cell.className="calcell";
+      const ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+      if(today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d) cell.classList.add("caltoday");
+      const dd=document.createElement("div");
+      dd.textContent=d;
+      cell.appendChild(dd);
+      for(let i=0;i<state.leaves.length;i++){
+        const lv=state.leaves[i];
+        if(lv.start<=ds&&lv.end>=ds){
+          const ev=document.createElement("div");
+          ev.className="ev";
+          if(lv.status==="قيد الانتظار") ev.classList.add("wait");
+          if(lv.status==="موافق") ev.classList.add("ok");
+          if(lv.status==="مرفوض") ev.classList.add("bad");
+          ev.textContent="إجازة: "+lv.type+" ("+lv.status+")";
+          cell.appendChild(ev);
+        }
+      }
+      for(let i=0;i<state.sick.length;i++){
+        if(state.sick[i].date===ds){
+          const ev=document.createElement("div");
+          ev.className="ev sick";
+          ev.textContent="مرض";
+          cell.appendChild(ev);
+        }
+      }
+      for(let i=0;i<state.ot.length;i++){
+        if(state.ot[i].date===ds){
+          const ev=document.createElement("div");
+          ev.className="ev ot";
+          ev.textContent="عمل إضافي "+state.ot[i].hours+"س";
+          cell.appendChild(ev);
+        }
+      }
+      calGrid.appendChild(cell);
+    }
+  }
+  function renderAll(){
+    renderBalance();
+    renderLeaves();
+    renderSick();
+    renderOt();
+    renderCal();
+  }
+  function show(el,msg,ok){
+    el.style.display="block";
+    el.textContent=msg;
+    el.style.color=ok?"var(--gold-bright)":"var(--light)";
+    setTimeout(()=>{ el.style.display="none"; },2000);
+  }
+  function uid(){ return Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,6); }
+
+  btnSaveBal.onclick=()=>{
+    const v=Number(initBal.value);
+    if(isNaN(v)||v<0){ show(lMsg,"يرجى إدخال رصيد صحيح >= ٠",false); return; }
+    state.initBalance=v;
+    state.year=Number(ySel.value)||state.year;
+    save(); renderAll(); show(lMsg,"تم حفظ الرصيد والسنة بنجاح",true);
+  };
+
+  btnAddL.onclick=()=>{
+    const type=lType.value.trim();
+    const sd=sDate.value;
+    const ed=eDate.value;
+    const rs=lReason.value.trim();
+    if(!type){ show(lMsg,"يرجى اختيار نوع الإجازة",false); return; }
+    if(!sd||!ed){ show(lMsg,"يرجى اختيار تاريخ البداية والنهاية",false); return; }
+    const d=daysBetween(sd,ed);
+    if(d<=0){ show(lMsg,"يجب أن يكون تاريخ النهاية >= تاريخ البداية",false); return; }
+    state.leaves.push({id:uid(),type,type,start:sd,end:ed,days:d,reason:rs,status:"قيد الانتظار"});
+    save(); renderAll(); show(lMsg,"تم إضافة طلب الإجازة",true);
+  };
+  btnClrL.onclick=()=>{
+    lType.value=""; sDate.value=""; eDate.value=""; lReason.value="";
+  };
+
+  btnFiltL.onclick=renderLeaves;
+  btnClrLeaves.onclick=()=>{
+    if(state.leaves.length===0){ show(lMsg,"لا توجد طلبات للحذف",false); return; }
+    state.leaves=[];
+    save(); renderAll(); show(lMsg,"تم حذف كل طلبات الإجازة",true);
+  };
+
+  btnAddS.onclick=()=>{
+    const d=sickDate.value; const n=sickNote.value.trim();
+    if(!d){ show(sMsg,"يرجى اختيار تاريخ يوم المرض",false); return; }
+    state.sick.push({id:uid(),date:d,note:n});
+    save(); renderAll(); show(sMsg,"تم إضافة يوم المرض",true);
+  };
+  btnClrS.onclick=()=>{
+    if(state.sick.length===0){ show(sMsg,"لا توجد أيام مرض للحذف",false); return; }
+    state.sick=[];
+    save(); renderAll(); show(sMsg,"تم حذف كل أيام المرض",true);
+  };
+
+  btnAddO.onclick=()=>{
+    const d=otDate.value; const h=Number(otHours.value); const n=otNote.value.trim();
+    if(!d){ show(oMsg,"يرجى اختيار تاريخ العمل الإضافي",false); return; }
+    if(isNaN(h)||h<=0){ show(oMsg,"يرجى إدخال عدد ساعات صحيح > ٠",false); return; }
+    state.ot.push({id:uid(),date:d,hours:h,note:n});
+    save(); renderAll(); show(oMsg,"تم إضافة ساعات العمل الإضافي",true);
+  };
+  btnClrO.onclick=()=>{
+    if(state.ot.length===0){ show(oMsg,"لا توجد ساعات إضافية للحذف",false); return; }
+    state.ot=[];
+    save(); renderAll(); show(oMsg,"تم حذف كل ساعات العمل الإضافي",true);
+  };
+
+  btnPrev.onclick=()=>{ calView.setMonth(calView.getMonth()-1); calView=new Date(calView); renderCal(); };
+  btnNext.onclick=()=>{ calView.setMonth(calView.getMonth()+1); calView=new Date(calView); renderCal(); };
+
+  btnExp.onclick=()=>{
+    try{
+      const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url; a.download="absences_export.json"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      show(expMsg,"تم تصدير الملف محليًا بنجاح",true);
+    }catch(e){
+      show(expMsg,"تعذر التصدير في هذا المتصفح",false);
+    }
+  };
+  btnClrAll.onclick=()=>{
+    if(!confirm("هل أنت متأكد من مسح كل البيانات المحفوظة محليًا؟ لا يمكن التراجع عن هذا الإجراء")) return;
+    try{ localStorage.removeItem(storeKey); }catch(e){}
+    state={initBalance:0,year:new Date().getFullYear(),leaves:[],sick:[],ot:[]};
+    calView=new Date(state.year,0,1);
+    fillYear(); renderAll(); show(expMsg,"تم مسح كل البيانات بنجاح",true);
+  };
+
+  load(); renderAll();
+})();
+</script>
+</body>
+</html>

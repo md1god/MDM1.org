@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم أشياء إنترنت منزلية: أصول وقراءات وأتمتة وتقارير | MDM1</title>
+<meta name="description" content="لوحة تحكم أشياء إنترنت: سجّل الأجهزة أصولاً، حاكي الطاقة والحرارة والرطوبة، ابنِ قواعد عندما-ثم، وتابع رسومات وسجل أحداث وتقارير استهلاك محفوظة محلياً.">
+<link rel="canonical" href="https://mdm1.org/apps/pulse-home-iot-console.html">
+<meta property="og:title" content="لوحة تحكم أشياء إنترنت منزلية: أصول وقراءات وأتمتة وتقارير">
+<meta property="og:description" content="لوحة تحكم أشياء إنترنت: سجّل الأجهزة أصولاً، حاكي الطاقة والحرارة والرطوبة، ابنِ قواعد عندما-ثم، وتابع رسومات وسجل أحداث وتقارير استهلاك محفوظة محلياً.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/pulse-home-iot-console.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{line-height:1.75}
+.app h2{margin:0 0 12px;color:var(--gold-bright);font-size:1.15rem}
+.app .fld{display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1}
+.app .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.app .list{max-height:280px;overflow:auto;border:1px solid var(--gold-dim);border-radius:10px;padding:8px;background:rgba(0,0,0,.2);margin-top:10px}
+.app .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed var(--gold-dim);flex-wrap:wrap}
+.app .item:last-child{border-bottom:0}
+.app .meta{font-size:.85rem;opacity:.82;margin-top:4px}
+.app .empty{padding:16px;text-align:center;border:1px dashed var(--gold-dim);border-radius:10px;opacity:.75;margin-top:10px}
+.app canvas{width:100%;height:170px;display:block;background:rgba(0,0,0,.3);border:1px solid var(--gold-dim);border-radius:10px;margin-top:6px}
+.app .stat{text-align:center;background:rgba(0,0,0,.22);border:1px solid var(--gold-dim);border-radius:10px;padding:10px 6px}
+.app .stat .badge{display:block;margin-bottom:6px}
+.app .msg{font-size:.92rem;margin-top:8px;min-height:1.2em}
+.app .msg.err{color:#ff9a9a}
+.app .msg.ok{color:#a5e8ab}
+.app .chklbl{display:inline-flex;gap:8px;align-items:center;white-space:nowrap}
+.app ol.log{list-style:none;margin:10px 0 0;padding:0;max-height:260px;overflow:auto;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(0,0,0,.2)}
+.app .logline{padding:7px 8px;border-bottom:1px dashed var(--gold-dim);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.9rem}
+.app .logline:last-child{border-bottom:0}
+.app table{width:100%;border-collapse:collapse;margin-top:8px}
+.app th,.app td{padding:7px 6px;border-bottom:1px solid var(--gold-dim);text-align:right;font-size:.92rem}
+.app .actions{display:flex;gap:8px;flex-wrap:wrap}
+.app .out .big{margin:6px 0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة تحكم أشياء إنترنت: تسجيل الأصول ومحاكاة القراءات والأتمتة", "url": "https://mdm1.org/apps/pulse-home-iot-console.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج هذا التطبيق إلى خادم أو اتصال بالإنترنت ليعمل؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل بالكامل داخل المتصفح بجافاسكربت خالص، ولا يستدعي أي شبكة أو موارد خارجية، ويمكنك استخدامه حتى بدون اتصال إنترنت بعد فتح الصفحة مرة واحدة."}}, {"@type": "Question", "name": "أين تُحفظ الأجهزة والقراءات والقواعد والتقارير؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ كلها في localStorage على متصفح جهازك بنفسك فقط، وهي تبقى بعد إغلاق الصفحة وإعادة فتحها، ويمكنك حذفها نهائياً في أي وقت من قسم إدارة البيانات والخصوصية."}}, {"@type": "Question", "name": "كيف تعمل قواعد «عندما — ثم» في اللوحة؟", "acceptedAnswer": {"@type": "Answer", "text": "تختار قيمة (القدرة أو الحرارة أو الرطوبة أو معدل الاستهلاك) وشرط المقارنة والعتبة، ثم الإجراء المطلوب، وتُفحص القاعدة مع كل قراءة جديدة وتنفَّذ مرة واحدة عند تجاوز العتبة ثم تنتظر حتى يعود الشرط ليصبح صحيحاً مجدداً."}}, {"@type": "Question", "name": "هل المحاكاة تعكس أرقاماً حقيقية من أجهزتي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، القراءات مولَّدة عشوائياً لأغراض العرض والتجربة وبناء قواعد الأتمتة وفهم التقارير، ويمكنك ببساطة تسجيل أجهزتك بأدائها الاسمي لترى كيف تتفاعل القواعد واللوحات والتقارير مع استهلاكها."}}, {"@type": "Question", "name": "هل يمكنني الاحتفاظ بعدة تقارير استهلاك مختلفة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل تقرير تنشئه (يوم أو أسبوع أو شهر أو كل القراءات) يُحفظ في قائمة التقارير ويمكنك عرضه أو حذفه في أي وقت، مع بقاء أحدث تقرير معروضاً في صندوق النتيجة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة تحكم أشياء إنترنت: تسجيل الأصول ومحاكاة القراءات والأتمتة</h1>
+  <p class="page-sub">لوحة تحكم أشياء إنترنت: سجّل الأجهزة أصولاً، حاكي الطاقة والحرارة والرطوبة، ابنِ قواعد عندما-ثم، وتابع رسومات وسجل أحداث وتقارير استهلاك محفوظة محلياً.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: نعم، يمكنك إدارة منزلك وأجهزة إنترنت الأشياء بالكامل من داخل المتصفح دون أي خادم أو حساب، من خلال لوحة تحكم واحدة تسجّل فيها الأجهزة والمنزل كأصول، ثم تحاكي قراءات الطاقة والحرارة والرطوبة، وتبني قواعد عندما-ثم للأتمتة، وترسم لوحات معلومات رسومية، وتصون سجل أحداث زمني، وتنشئ تقارير استهلاك تُحفظ محلياً في localStorage لتبقى بعد إغلاق الصفحة. كل شيء يعمل بجافاسكربت خالص داخل جهازك، وبياناتك لا تغادر متصفحك إطلاقاً، ويمكنك مسحها في أي لحظة بضغطة واحدة من قسم إدارة البيانات والخصوصية. ابدأ بتسجيل أول جهاز ثم شغّل المحاكاة لترى النتائج فوراً.</p>
+
+<div class="card">
+  <h2 id="hAdd">تسجيل جهاز أو أصل جديد</h2>
+  <div class="row" id="rowAddControls">
+    <div class="fld"><label for="devName">اسم الجهاز أو الأصل</label><input id="devName" type="text" placeholder="مثال: مكيف غرفة النوم" maxlength="60"></div>
+    <div class="fld"><label for="devType">نوع الجهاز</label><select id="devType"><option>تكييف</option><option>سخان</option><option>ثلاجة</option><option>غسالة</option><option>إضاءة</option><option>مروحة سقف</option><option>تلفزيون</option><option>مضخة مياه</option><option>أصل منزل ثابت</option></select></div>
+    <div class="fld"><label for="devRoom">الغرفة أو الموقع</label><select id="devRoom"><option>غرفة النوم</option><option>المعيشة</option><option>المطبخ</option><option>الحمام</option><option>المكتب</option><option>الخارج</option></select></div>
+    <div class="fld"><label for="devPower">القدرة (واط)</label><input id="devPower" type="number" min="1" max="5000" step="1" value="120"></div>
+    <div class="fld"><label for="devKind">تصنيف الأصل</label><select id="devKind"><option value="جهاز كهربائي">جهاز كهربائي</option><option value="أصل ثابت">أصل ثابت في المنزل</option></select></div>
+  </div>
+  <div class="row" id="rowAddActions">
+    <button id="btnAddDevice" type="button">إضافة الأصل إلى السجل</button>
+    <button id="btnFillSample" class="sec" type="button">تعبئة ثلاثة أجهزة نموذجية</button>
+    <span id="deviceMsg" class="badge"></span>
+  </div>
+  <div class="divider"></div>
+  <div class="row" id="rowFilter">
+    <div class="fld"><label for="devFilter">بحث وتصفية في قائمة الأصول</label><input id="devFilter" type="search" placeholder="اكتب اسم الجهاز أو الغرفة"></div>
+    <button id="btnStartAll" class="sec" type="button">تشغيل جميع الأجهزة</button>
+    <button id="btnStopAll" class="sec" type="button">إيقاف جميع الأجهزة</button>
+    <button id="btnClearDevices" class="sec" type="button">حذف كل الأجهزة</button>
+  </div>
+  <div id="devicesEmpty" class="empty">لا توجد أجهزة مسجّلة بعد. اكتب اسم الجهاز وقدرته ثم اضغط «إضافة الأصل إلى السجل»، أو استخدم زر النماذج الثلاثة.</div>
+  <div id="devicesList" class="list"></div>
+</div>
+
+<div class="card">
+  <h2 id="hSim">محاكاة قراءات الطاقة والحرارة والرطوبة</h2>
+  <div class="row" id="rowSimActions">
+    <button id="btnSimStep" type="button">محاكاة قراءة واحدة (ساعة)</button>
+    <button id="btnSimDay" class="sec" type="button">محاكاة يوم كامل (24 قراءة)</button>
+    <button id="btnSimWeek" class="sec" type="button">محاكاة أسبوع (168 قراءة)</button>
+    <label class="chklbl" for="chkAuto"><input id="chkAuto" type="checkbox"> تشغيل المحاكاة التلقائية</label>
+    <div class="fld"><label for="autoInterval">فترة التحديث التلقائي</label><select id="autoInterval"><option value="3000">كل 3 ثوانٍ</option><option value="5000" selected>كل 5 ثوانٍ</option><option value="10000">كل 10 ثوانٍ</option><option value="20000">كل 20 ثانية</option></select></div>
+    <button id="btnResetReadings" class="sec" type="button">مسح كل القراءات</button>
+  </div>
+  <div class="out">
+    <div class="grid3">
+      <div class="stat"><span class="badge">القدرة اللحظية</span><div class="big" id="statPower">0 واط</div></div>
+      <div class="stat"><span class="badge">درجة الحرارة</span><div class="big" id="statTemp">0 °م</div></div>
+      <div class="stat"><span class="badge">نسبة الرطوبة</span><div class="big" id="statHum">0 %</div></div>
+      <div class="stat"><span class="badge">استهلاك تراكمي</span><div class="big" id="statEnergy">0.00</div></div>
+      <div class="stat"><span class="badge">عدد القراءات</span><div class="big" id="statCount">0</div></div>
+      <div class="stat"><span class="badge">أجهزة تعمل الآن</span><div class="big" id="statOn">0</div></div>
+    </div>
+    <div class="row" id="rowEco"><span id="ecoBadge" class="badge">وضع توفير الطاقة: مُعطّل</span></div>
+  </div>
+  <div id="simMsg" class="empty">لا توجد قراءات بعد. اضغط «محاكاة قراءة واحدة» لتوليد أول قراءة حيّة.</div>
+</div>
+
+<div class="card">
+  <h2 id="hCharts">لوحات معلومات رسومية</h2>
+  <div class="row" id="rowChartCtl">
+    <div class="fld"><label for="chartWindow">نافذة العرض</label><select id="chartWindow"><option value="12">آخر 12 قراءة</option><option value="24" selected>آخر 24 قراءة</option><option value="48">آخر 48 قراءة</option><option value="0">كل القراءات</option></select></div>
+    <button id="btnRedraw" class="sec" type="button">تحديث اللوحات الرسومية</button>
+  </div>
+  <div id="chartsEmpty" class="empty">اللوحات فارغة حالياً. شغّل المحاكاة لتظهر منحنيات الطاقة والحرارة والرطوبة هنا.</div>
+  <div class="grid3">
+    <div><div class="meta">منحنى الاستهلاك التراكمي (ك.و.س)</div><canvas id="chartEnergy" width="320" height="170"></canvas></div>
+    <div><div class="meta">منحنى درجة الحرارة (°م)</div><canvas id="chartTemp" width="320" height="170"></canvas></div>
+    <div><div class="meta">منحنى الرطوبة (%)</div><canvas id="chartHum" width="320" height="170"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 id="hRules">قواعد «عندما — ثم» للأتمتة</h2>
+  <div class="row" id="rowRuleControls">
+    <div class="fld"><label for="ruleName">اسم القاعدة</label><input id="ruleName" type="text" placeholder="مثال: توقف المكيف عند البرودة" maxlength="70"></div>
+    <div class="fld"><label for="ruleMetric">عندما تكون القيمة</label><select id="ruleMetric"><option value="power">القدرة اللحظية (واط)</option><option value="temp">درجة الحرارة (مئوية)</option><option value="hum">نسبة الرطوبة (%)</option><option value="rate">معدل استهلاك الساعة (ك.و.س)</option><option value="energy">الاستهلاك التراكمي (ك.و.س)</option></select></div>
+    <div class="fld"><label for="ruleOp">شرط المقارنة</label><select id="ruleOp"><option value="gt">أكبر من</option><option value="lt">أقل من</option></select></div>
+    <div class="fld"><label for="ruleThreshold">القيمة العتبية</label><input id="ruleThreshold" type="number" step="0.1" value="25"></div>
+    <div class="fld"><label for="ruleAction">ثم نفّذ</label><select id="ruleAction"><option value="off">إطفاء جميع الأجهزة</option><option value="on">تشغيل جميع الأجهزة</option><option value="ecoOn">تفعيل وضع توفير الطاقة</option><option value="ecoOff">إلغاء وضع توفير الطاقة</option><option value="report">إنشاء تقرير استهلاك تلقائي</option><option value="alert">تسجيل تنبيه فقط في سجل الأحداث</option></select></div>
+  </div>
+  <div class="row" id="rowRuleActions">
+    <button id="btnAddRule" type="button">حفظ قاعدة عندما-ثم</button>
+    <button id="btnClearRules" class="sec" type="button">حذف كل القواعد</button>
+    <span id="ruleMsg" class="badge"></span>
+  </div>
+  <div id="rulesEmpty" class="empty">لا توجد قواعد أتمتة بعد. اضبط الشرط والعتبة ثم اضغط «حفظ قاعدة عندما-ثم» لتفعيلها عند كل قراءة جديدة.</div>
+  <div id="rulesList" class="list"></div>
+</div>
+
+<div class="card">
+  <h2 id="hLog">سجل الأحداث</h2>
+  <div class="row" id="rowNote">
+    <div class="fld"><label for="eventNote">ملاحظة يدوية لإضافتها إلى السجل</label><textarea id="eventNote" rows="2" placeholder="مثال: تم صيانة السخان بواسطة الفني"></textarea></div>
+    <button id="btnAddNote" class="sec" type="button">إضافة الملاحظة إلى السجل</button>
+    <button id="btnClearEvents" class="sec" type="button">تفريغ السجل</button>
+  </div>
+  <div id="eventsEmpty" class="empty">سجل الأحداث فارغ. سيُسجَّل هنا كل إضافة أو حذف أو تنفيذ لقاعدة أتمتة.</div>
+  <ol id="eventsList" class="log"></ol>
+</div>
+
+<div class="card">
+  <h2 id="hReport">تقارير الاستهلاك المحفوظة محلياً</h2>
+  <div class="row" id="rowReportCtl">
+    <div class="fld"><label for="reportPeriod">فترة التقرير</label><select id="reportPeriod"><option value="day">اليوم (آخر 24 قراءة)</option><option value="week">الأسبوع (آخر 168 قراءة)</option><option value="month">الشهر (آخر 720 قراءة)</option><option value="all">كل القراءات المتوفرة</option></select></div>
+    <button id="btnMakeReport" type="button">إنشاء تقرير استهلاك وحفظه</button>
+    <button id="btnClearReports" class="sec" type="button">حذف كل التقارير المحفوظة</button>
+  </div>
+  <div id="reportMsg" class="msg"></div>
+  <div class="out" id="reportOut"><div class="big">لا يوجد تقرير معروض</div><div class="meta">اختر فترة ثم اضغط «إنشاء تقرير استهلاك وحفظه» لعرض النتيجة هنا.</div></div>
+  <div id="reportsEmpty" class="empty">لا توجد تقارير محفوظة بعد في متصفحك.</div>
+  <div id="reportsList" class="list"></div>
+</div>
+
+<div class="card">
+  <h2 id="hData">إدارة البيانات والخصوصية</h2>
+  <div class="row" id="rowData">
+    <button id="btnWipeAll" class="sec" type="button">حذف كل البيانات نهائيًا من المتصفح</button>
+    <div class="out"><div class="meta" id="dataInfo">الحجم المستخدم: 0 بايت</div></div>
+  </div>
+  <div class="out"><div class="meta" id="dataStatus">كل البيانات محفوظة محلياً في localStorage على جهازك فقط.</div></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج هذا التطبيق إلى خادم أو اتصال بالإنترنت ليعمل؟</h3><p>لا، التطبيق يعمل بالكامل داخل المتصفح بجافاسكربت خالص، ولا يستدعي أي شبكة أو موارد خارجية، ويمكنك استخدامه حتى بدون اتصال إنترنت بعد فتح الصفحة مرة واحدة.</p><h3>أين تُحفظ الأجهزة والقراءات والقواعد والتقارير؟</h3><p>تُحفظ كلها في localStorage على متصفح جهازك بنفسك فقط، وهي تبقى بعد إغلاق الصفحة وإعادة فتحها، ويمكنك حذفها نهائياً في أي وقت من قسم إدارة البيانات والخصوصية.</p><h3>كيف تعمل قواعد «عندما — ثم» في اللوحة؟</h3><p>تختار قيمة (القدرة أو الحرارة أو الرطوبة أو معدل الاستهلاك) وشرط المقارنة والعتبة، ثم الإجراء المطلوب، وتُفحص القاعدة مع كل قراءة جديدة وتنفَّذ مرة واحدة عند تجاوز العتبة ثم تنتظر حتى يعود الشرط ليصبح صحيحاً مجدداً.</p><h3>هل المحاكاة تعكس أرقاماً حقيقية من أجهزتي؟</h3><p>لا، القراءات مولَّدة عشوائياً لأغراض العرض والتجربة وبناء قواعد الأتمتة وفهم التقارير، ويمكنك ببساطة تسجيل أجهزتك بأدائها الاسمي لترى كيف تتفاعل القواعد واللوحات والتقارير مع استهلاكها.</p><h3>هل يمكنني الاحتفاظ بعدة تقارير استهلاك مختلفة؟</h3><p>نعم، كل تقرير تنشئه (يوم أو أسبوع أو شهر أو كل القراءات) يُحفظ في قائمة التقارير ويمكنك عرضه أو حذفه في أي وقت، مع بقاء أحدث تقرير معروضاً في صندوق النتيجة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+var K={d:'iotx_dev_v1',r:'iotx_rd_v1',rl:'iotx_rl_v1',e:'iotx_ev_v1',rp:'iotx_rp_v1',ec:'iotx_eco_v1'};
+var st={devices:[],readings:[],rules:[],events:[],reports:[],eco:false,autoTimer:null};
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function num(n,d){var v=Number(n);if(!isFinite(v))v=0;return v.toFixed(d===undefined?1:d);}
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+function p2(n){return (n<10?'0':'')+n;}
+function fmt(t){var d=new Date(t);return d.getFullYear()+'/'+p2(d.getMonth()+1)+'/'+p2(d.getDate())+' '+p2(d.getHours())+':'+p2(d.getMinutes());}
+
+function load(k,f){try{var v=localStorage.getItem(k);if(v===null||v===undefined||v==='')return f;var p=JSON.parse(v);return (p===null||p===undefined)?f:p;}catch(e){return f;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));setStatus('تم الحفظ محلياً في متصفحك ✓ آخر تحديث: '+fmt(Date.now()));return true;}catch(e){setStatus('تعذّر الحفظ في localStorage: '+(e&&e.name?e.name:'خطأ غير معروف'));return false;}}
+function setStatus(t){var el=$('dataStatus');if(el)el.textContent=t;}
+function bytesUsed(){var n=0;for(var k in K){try{var v=localStorage.getItem(K[k]);if(v)n+=v.length;}catch(e){}}return n;}
+function refreshInfo(){var el=$('dataInfo');if(el)el.textContent='الحجم المستخدم تقريباً: '+bytesUsed()+' بايت ('+(K.d+', '+K.r+', '+K.rl+', '+K.e+', '+K.rp)+')';}
+
+function addEvent(msg,level){
+  st.events.push({t:Date.now(),m:String(msg),l:level||'info'});
+  if(st.events.length>300)st.events=st.events.slice(-300);
+  save(K.e,st.events);
+  renderEvents();
+}
+function setMsg(id,text,kind){var el=$(id);if(!el)return;el.textContent=text||'';el.className='badge'+(kind?' '+kind:'');}
+
+function renderDevices(){
+  var box=$('devicesList'),empty=$('devicesEmpty');
+  if(!box||!empty)return;
+  var q=(($('devFilter')&&$('devFilter').value)||'').trim().toLowerCase();
+  var list=st.devices.filter(function(d){
+    if(!q)return true;
+    return (d.name+' '+d.type+' '+d.room).toLowerCase().indexOf(q)>-1;
+  });
+  if(!st.devices.length){box.innerHTML='';box.style.display='none';empty.style.display='block';refreshInfo();return;}
+  empty.style.display='none';box.style.display='block';
+  if(!list.length){box.innerHTML='<div class="meta">لا نتائج مطابقة لبحثك.</div>';refreshInfo();return;}
+  var html='';
+  list.forEach(function(d){
+    html+='<div class="item" id="row_'+d.id+'">'+
+      '<div><strong>'+esc(d.name)+'</strong> <span class="badge">'+esc(d.type)+'</span> <span class="badge">'+esc(d.room)+'</span> <span class="badge">'+(d.on?'يعمل':'متوقف')+'</span>'+
+      '<div class="meta">'+d.power+' واط • '+esc(d.kind)+' • تراكمي: '+num(d.energy,2)+' ك.و.س • أُضيف: '+fmt(d.added)+'</div></div>'+
+      '<div class="actions">'+
+      '<button type="button" class="sec" id="tg_'+d.id+'">'+(d.on?'إيقاف ':'تشغيل ')+esc(d.name)+'</button>'+
+      '<button type="button" class="sec" id="rs_'+d.id+'">تصفير عداد '+esc(d.name)+'</button>'+
+      '<button type="button" id="dl_'+d.id+'">حذف '+esc(d.name)+'</button>'+
+      '</div></div>';
+  });
+  box.innerHTML=html;
+  list.forEach(function(d){
+    var a=$('tg_'+d.id),b=$('dl_'+d.id),c=$('rs_'+d.id);
+    if(a)a.onclick=function(){d.on=!d.on;save(K.d,st.devices);addEvent((d.on?'تشغيل ':'إيقاف ')+d.name,'info');renderDevices();renderStats();};
+    if(b)b.onclick=function(){
+      if(!window.confirm('حذف الأصل «'+d.name+'» نهائياً من السجل؟'))return;
+      st.devices=st.devices.filter(function(x){return x.id!==d.id;});save(K.d,st.devices);
+      addEvent('تم حذف الأصل '+d.name,'warn');renderDevices();renderStats();
+    };
+    if(c)c.onclick=function(){d.energy=0;save(K.d,st.devices);addEvent('تم تصفير عداد الاستهلاك لـ '+d.name,'info');renderDevices();};
+  });
+  refreshInfo();
+}
+
+function metricLabel(m){
+  return {power:'القدرة اللحظية',temp:'درجة الحرارة',hum:'الرطوبة',rate:'معدل الاستهلاك',energy:'الاستهلاك التراكمي'}[m]||m;
+}
+function actionLabel(a){
+  return {off:'إطفاء جميع الأجهزة',on:'تشغيل جميع الأجهزة',ecoOn:'تفعيل وضع توفير الطاقة',ecoOff:'إلغاء وضع توفير الطاقة',report:'إنشاء تقرير تلقائي',alert:'تسجيل تنبيه'}[a]||a;
+}
+
+function renderRules(){
+  var box=$('rulesList'),empty=$('rulesEmpty');
+  if(!box||!empty)return;
+  if(!st.rules.length){box.innerHTML='';box.style.display='none';empty.style.display='block';return;}
+  empty.style.display='none';box.style.display='block';
+  var html='';
+  st.rules.forEach(function(r){
+    html+='<div class="item" id="rrow_'+r.id+'">'+
+      '<div><strong>'+esc(r.name)+'</strong> <span class="badge">'+(r.on?'مُفعّلة':'مُعطّلة')+'</span>'+
+      '<div class="meta">عندما '+metricLabel(r.metric)+' '+(r.op==='gt'?'أكبر من':'أقل من')+' '+r.th+' ← ثم '+actionLabel(r.action)+'</div></div>'+
+      '<div class="actions">'+
+      '<button type="button" class="sec" id="rt_'+r.id+'">'+(r.on?'تعطيل ':'تفعيل ')+esc(r.name)+'</button>'+
+      '<button type="button" id="rd_'+r.id+'">حذف القاعدة '+esc(r.name)+'</button>'+
+      '</div></div>';
+  });
+  box.innerHTML=html;
+  st.rules.forEach(function(r){
+    var a=$('rt_'+r.id),b=$('rd_'+r.id);
+    if(a)a.onclick=function(){r.on=!r.on;r.armed=false;save(K.rl,st.rules);addEvent((r.on?'تفعيل ':'تعطيل ')+'قاعدة '+r.name,'info');renderRules();};
+    if(b)b.onclick=function(){st.rules=st.rules.filter(function(x){return x.id!==r.id;});save(K.rl,st.rules);addEvent('حذف قاعدة '+r.name,'warn');renderRules();};
+  });
+}
+
+function renderEvents(){
+  var box=$('eventsList'),empty=$('eventsEmpty');
+  if(!box||!empty)return;
+  if(!st.events.length){box.innerHTML='';box.style.display='none';empty.style.display='block';refreshInfo();return;}
+  empty.style.display='none';box.style.display='block';
+  var names={info:'معلومة',ok:'نجاح',warn:'تنبيه',rule:'أتمتة',err:'خطأ'};
+  var html='';
+  st.events.slice().reverse().forEach(function(ev,i){
+    html+='<li class="logline"><span class="badge">'+(names[ev.l]||'معلومة')+'</span><span>'+esc(ev.m)+'</span><span class="meta">'+fmt(ev.t)+'</span></li>';
+  });
+  box.innerHTML=html;
+}
+
+function renderReports(){
+  var box=$('reportsList'),empty=$('reportsEmpty');
+  if(!box||!empty)return;
+  if(!st.reports.length){box.innerHTML='';box.style.display='none';empty.style.display='block';refreshInfo();return;}
+  empty.style.display='none';box.style.display='block';
+  var html='';
+  st.reports.slice().reverse().forEach(function(rp){
+    html+='<div class="item" id="rp_'+rp.id+'">'+
+      '<div><strong>تقرير '+esc(rp.period)+'</strong><div class="meta">'+fmt(rp.t)+' • '+num(rp.energy,2)+' ك.و.س • '+rp.count+' قراءة</div></div>'+
+      '<div class="actions">'+
+      '<button type="button" class="sec" id="rv_'+rp.id+'">عرض التقرير المحفوظ</button>'+
+      '<button type="button" id="rx_'+rp.id+'">حذف التقرير</button>'+
+      '</div></div>';
+  });
+  box.innerHTML=html;
+  st.reports.forEach(function(rp){
+    var a=$('rv_'+rp.id),b=$('rx_'+rp.id);
+    if(a)a.onclick=function(){showReport(rp,false);};
+    if(b)b.onclick=function(){st.reports=st.reports.filter(function(x){return x.id!==rp.id;});save(K.rp,st.reports);addEvent('حذف تقرير '+rp.period,'warn');renderReports();};
+  });
+}
+
+function renderStats(){
+  var last=st.readings[st.readings.length-1];
+  var onCount=st.devices.filter(function(d){return d.on;}).length;
+  var totalE=0;st.devices.forEach(function(d){totalE+=d.energy;});
+  $('statPower').textContent=last?num(last.power,0)+' واط':'0 واط';
+  $('statTemp').textContent=last?num(last.temp,1)+' °م':'0 °م';
+  $('statHum').textContent=last?num(last.hum,1)+' %':'0 %';
+  $('statEnergy').textContent=num(totalE,2)+' ك.و.س';
+  $('statCount').textContent=String(st.readings.length);
+  $('statOn').textContent=onCount+' / '+st.devices.length;
+  $('ecoBadge').textContent='وضع توفير الطاقة: '+(st.eco?'مُفعّل (حمل 50%)':'مُعطّل');
+  var m=$('simMsg');
+  if(!st.readings.length){m.textContent='لا توجد قراءات بعد. اضغط «محاكاة قراءة واحدة» لتوليد أول قراءة حيّة.';}
+  else if(!st.devices.length){m.textContent='تُولَّد قراءات بيئية فقط لأنه لا توجد أجهزة مسجّلة. أضف جهازاً ليظهر استهلاكه.';}
+  else {m.textContent='آخر قراءة: '+fmt(last.t)+' • متوسط الحرارة '+avgOf('temp')+' °م • متوسط الرطوبة '+avgOf('hum')+' %';}
+}
+function avgOf(key){
+  if(!st.readings.length)return '0.0';
+  var s=0;st.readings.forEach(function(r){s+=r[key];});
+  return num(s/st.readings.length,1);
+}
+
+function sliceReadings(){
+  var w=parseInt($('chartWindow').value,10);
+  if(!w||w<=0||w>=st.readings.length)return st.readings.slice();
+  return st.readings.slice(-w);
+}
+function drawLine(id,data,color,unit,dec){
+  var c=$(id);if(!c)return;
+  var ctx=c.getContext('2d');if(!ctx)return;
+  var w=c.clientWidth||320,h=c.clientHeight||170,dpr=window.devicePixelRatio||1;
+  c.width=Math.max(1,Math.round(w*dpr));c.height=Math.max(1,Math.round(h*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=1;
+  for(var i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,h*i/4);ctx.lineTo(w,h*i/4);ctx.stroke();}
+  if(!data.length){ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('لا توجد قراءات بعد',w/2,h/2);return;}
+  var mn=Math.min.apply(null,data),mx=Math.max.apply(null,data),range=(mx-mn)||1,pad=16;
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();
+  data.forEach(function(v,i){
+    var px=pad+(w-pad*2)*(data.length===1?0.5:i/(data.length-1));
+    var py=h-pad-((v-mn)/range)*(h-pad*2);
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+  if(data.length){var lx=pad+(w-pad*2)*(data.length===1?0.5:(data.length-1)/(data.length-1));var lv=data[data.length-1];
+    var ly=h-pad-((lv-mn)/range)*(h-pad*2);
+    ctx.fillStyle=color;ctx.beginPath();ctx.arc(Math.min(lx,w-pad),ly,3.5,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle=color;ctx.font='12px sans-serif';ctx.textAlign='right';
+  ctx.fillText('أقصى '+num(mx,dec)+' '+unit,w-8,16);
+  ctx.textAlign='left';
+  ctx.fillText('أدنى '+num(mn,dec)+' '+unit,8,h-6);
+}
+function drawCharts(){
+  var data=sliceReadings();
+  var e=$('chartsEmpty');
+  if(e)e.style.display=st.readings.length?'none':'block';
+  drawLine('chartEnergy',data.map(function(r){return r.energy;}),'var(--gold)','','2');
+  drawLine('chartTemp',data.map(function(r){return r.temp;}),'#ff9f6b','°م',1);
+  drawLine('chartHum',data.map(function(r){return r.hum;}),'#6bc7ff','%',1);
+}
+
+function applyAction(r,v){
+  var txt='';
+  if(r.action==='off'){st.devices.forEach(function(d){d.on=false;});save(K.d,st.devices);txt='تم إطفاء جميع الأجهزة';}
+  else if(r.action==='on'){st.devices.forEach(function(d){d.on=true;});save(K.d,st.devices);txt='تم تشغيل جميع الأجهزة';}
+  else if(r.action==='ecoOn'){st.eco=true;save(K.ec,st.eco);txt='تم تفعيل وضع توفير الطاقة';}
+  else if(r.action==='ecoOff'){st.eco=false;save(K.ec,st.eco);txt='تم إلغاء وضع توفير الطاقة';}
+  else if(r.action==='report'){makeReport('اليوم','تنبيه أتمتة');txt='تم إنشاء تقرير استهلاك تلقائي';}
+  else {txt='تم تسجيل تنبيه فقط دون تغيير الأجهزة';}
+  addEvent('تنفيذ القاعدة «'+r.name+'»: عندما '+metricLabel(r.metric)+' '+(r.op==='gt'?'أكبر من':'أقل من')+' '+r.th+' ← '+txt+' (القيمة الحالية '+num(v,2)+')','rule');
+  renderDevices();renderStats();
+}
+function checkRules(rec,prev){
+  var vals={power:rec.power,temp:rec.temp,hum:rec.hum,energy:rec.energy,rate:Math.max(0,rec.energy-prev)};
+  var changed=false;
+  st.rules.forEach(function(r){
+    if(!r.on)return;
+    var v=vals[r.metric];
+    if(v===undefined||v===null||!isFinite(v))return;
+    var cond=(r.op==='gt')?(v>r.th):(v<r.th);
+    if(cond&&!r.armed){r.armed=true;applyAction(r,v);changed=true;}
+    else if(!cond&&r.armed){r.armed=false;changed=true;}
+  });
+  if(changed)save(K.rl,st.rules);
+}
+
+function step(h,quiet){
+  var last=st.readings[st.readings.length-1];
+  var temp=last?last.temp:24.5, hum=last?last.hum:46;
+  temp=clamp(temp+(Math.random()*2-1),15,36);
+  hum=clamp(hum+(Math.random()*4-2),20,85);
+  var load=st.eco?0.5:1,total=0;
+  st.devices.forEach(function(d){
+    if(!d.on)return;
+    var w=d.power*(0.35+Math.random()*0.65)*load;
+    total+=w;
+    d.energy+=(w/1000)*h;
+  });
+  var prev=last?last.energy:0;
+  var energy=0;st.devices.forEach(function(d){energy+=d.energy;});
+  st.readings.push({t:Date.now(),temp:temp,hum:hum,power:total,energy:energy});
+  if(st.readings.length>800)st.readings=st.readings.slice(-800);
+  save(K.r,st.readings);
+  save(K.d,st.devices);
+  checkRules(st.readings[st.readings.length-1],prev);
+  if(!quiet){renderStats();renderDevices();drawCharts();refreshInfo();}
+}
+
+function showReport(rp,isNew){
+  var rows='';
+  rows+='<tr><th>الفترة</th><td>'+esc(rp.period)+'</td></tr>';
+  rows+='<tr><th>عدد القراءات (ساعات المحاكاة)</th><td>'+rp.count+'</td></tr>';
+  rows+='<tr><th>استهلاك الفترة</th><td>'+num(rp.energy,2)+' ك.و.س</td></tr>';
+  rows+='<tr><th>متوسط الاستهلاك بالساعة</th><td>'+num(rp.avgRate,3)+' ك.و.س</td></tr>';
+  rows+='<tr><th>أعلى قدرة لحظية</th><td>'+num(rp.maxPower,0)+' واط</td></tr>';
+  rows+='<tr><th>متوسط الحرارة</th><td>'+num(rp.avgTemp,1)+' °م</td></tr>';
+  rows+='<tr><th>متوسط الرطوبة</th><td>'+num(rp.avgHum,1)+' %</td></tr>';
+  rows+='<tr><th>عدد الأجهزة وقادرتها المركبة</th><td>'+rp.devCount+' جهاز / '+rp.installed+' واط</td></tr>';
+  rows+='<tr><th>وضع توفير الطاقة</th><td>'+(rp.eco?'مُفعّل':'مُعطّل')+'</td></tr>';
+  if(rp.devices&&rp.devices.length){
+    rows+='<tr><th colspan="2">توزيع الاستهلاك التراكمي على الأجهزة</th></tr>';
+    rp.devices.forEach(function(dd){
+      rows+='<tr><td>'+esc(dd.name)+'</td><td>'+num(dd.energy,2)+' ك.و.س ('+num(dd.pct,1)+'%)</td></tr>';
+    });
+  }
+  $('reportOut').innerHTML='<div class="meta">'+(isNew?'تقرير جديد محفوظ: ':'عرض تقرير محفوظ: ')+fmt(rp.t)+'</div>'+
+    '<div class="big">'+num(rp.energy,2)+' ك.و.س</div>'+
+    '<table><tbody>'+rows+'</tbody></table>';
+}
+function makeReport(periodText,fallbackPeriod){
+  var period=periodText||($('reportPeriod').selectedOptions?$('reportPeriod').selectedOptions[0].textContent:'تقرير');
+  var limit={day:24,week:168,month:720,all:0}[periodText]||0;
+  if(!st.readings.length){
+    setMsg('reportMsg','لا توجد قراءات إطلاقاً. شغّل المحاكاة أولاً حتى يُبنى التقرير.','err');
+    $('reportOut').innerHTML='<div class="big">لا يمكن إنشاء تقرير</div><div class="meta">ابدأ بمحاكاة قراءة واحدة على الأقل.</div>';
+    return null;
+  }
+  var data=limit?st.readings.slice(-limit):st.readings.slice();
+  if(!data.length)data=st.readings.slice();
+  var first=data[0],last=data[data.length-1];
+  var energy=Math.max(0,last.energy-first.energy+(data.length===1?0:0));
+  if(data.length===1)energy=last.energy;
+  var sT=0,sH=0,maxP=0;
+  data.forEach(function(r){sT+=r.temp;sH+=r.hum;if(r.power>maxP)maxP=r.power;});
+  var totalDevE=0,installed=0,devs=[];
+  st.devices.forEach(function(d){totalDevE+=d.energy;installed+=d.power;});
+  st.devices.forEach(function(d){
+    devs.push({name:d.name,energy:d.energy,pct:totalDevE>0?(d.energy/totalDevE)*100:0});
+  });
+  devs.sort(function(a,b){return b.energy-a.energy;});
+  var rep={
+    id:'rp'+Date.now()+Math.floor(Math.random()*900),
+    t:Date.now(),
+    period:period||fallbackPeriod||'تقرير',
+    count:data.length,
+    energy:energy,
+    avgRate:data.length?energy/data.length:0,
+    maxPower:maxP,
+    avgTemp:sT/data.length,
+    avgHum:sH/data.length,
+    devCount:st.devices.length,
+    installed:installed,
+    eco:st.eco,
+    devices:devs
+  };
+  st.reports.push(rep);
+  if(st.reports.length>40)st.reports=st.reports.slice(-40);
+  save(K.rp,st.reports);
+  showReport(rep,true);
+  renderReports();
+  setMsg('reportMsg','تم إنشاء التقرير وحفظه محلياً بنجاح ✓','ok');
+  addEvent('إنشاء تقرير استهلاك ('+rep.period+') بمقدار '+num(rep.energy,2)+' ك.و.س','ok');
+  return rep;
+}
+
+function stopAuto(){
+  if(st.autoTimer){clearInterval(st.autoTimer);st.autoTimer=null;}
+}
+function startAuto(){
+  stopAuto();
+  var ms=parseInt($('autoInterval').value,10)||5000;
+  st.autoTimer=setInterval(function(){step(1,false);},ms);
+  addEvent('بدء المحاكاة التلقائية كل '+(ms/1000)+' ثانية','info');
+}
+
+function addDevice(){
+  var name=($('devName').value||'').trim();
+  if(name.length<2){setMsg('deviceMsg','اكتب اسمًا واضحًا من حرفين على الأقل.','err');$('devName').focus();return;}
+  var p=parseInt($('devPower').value,10);
+  if(!isFinite(p)||p<1||p>5000){setMsg('deviceMsg','أدخل قدرة صحيحة بين 1 و5000 واط.','err');$('devPower').focus();return;}
+  if(st.devices.length>=40){setMsg('deviceMsg','الحد الأقصى 40 صنفاً في السجل.','err');return;}
+  st.devices.push({id:'d'+Date.now()+Math.floor(Math.random()*900),name:name,type:$('devType').value,room:$('devRoom').value,power:p,kind:$('devKind').value,on:true,energy:0,added:Date.now()});
+  save(K.d,st.devices);
+  addEvent('تمت إضافة الأصل «'+name+'» ('+p+' واط) إلى السجل','ok');
+  $('devName').value='';
+  setMsg('deviceMsg','تمت إضافة «'+name+'» بنجاح.','ok');
+  renderDevices();renderStats();drawCharts();
+}
+function fillSample(){
+  var samples=[
+    {name:'تكييف غرفة النوم',type:'تكييف',room:'غرفة النوم',power:1500},
+    {name:'سخان المطبخ',type:'سخان',room:'المطبخ',power:2000},
+    {name:'إضاءة المعيشة',type:'إضاءة',room:'المعيشة',power:60}
+  ];
+  var added=0;
+  samples.forEach(function(s){
+    st.devices.push({id:'d'+Date.now()+Math.floor(Math.random()*9000),name:s.name,type:s.type,room:s.room,power:s.power,kind:'جهاز كهربائي',on:true,energy:0,added:Date.now()});
+    added++;
+  });
+  save(K.d,st.devices);
+  setMsg('deviceMsg','تمت تعبئة '+added+' أجهزة نموذجية.','ok');
+  addEvent('تعبئة ثلاثة أجهزة نموذجية في السجل','ok');
+  renderDevices();renderStats();drawCharts();
+}
+function addRule(){
+  var name=($('ruleName').value||'').trim();
+  var th=parseFloat($('ruleThreshold').value);
+  if(!isFinite(th)){setMsg('ruleMsg','أدخل قيمة عتبية رقمية صحيحة.','err');$('ruleThreshold').focus();return;}
+  if(!name)name='قاعدة رقم '+(st.rules.length+1);
+  if(st.rules.length>=20){setMsg('ruleMsg','الحد الأقصى 20 قاعدة.','err');return;}
+  var op=$('ruleOp').value;
+  st.rules.push({id:'r'+Date.now()+Math.floor(Math.random()*900),name:name,metric:$('ruleMetric').value,op:op,th:th,action:$('ruleAction').value,on:true,armed:false,created:Date.now()});
+  save(K.rl,st.rules);
+  setMsg('ruleMsg','حُفظت القاعدة «'+name+'» وستُفحص مع كل قراءة.','ok');
+  addEvent('إضافة قاعدة أتمتة: '+name+' (عندما '+metricLabel($('ruleMetric').value)+' '+(op==='gt'?'أكبر من':'أقل من')+' '+th+' ← ثم '+actionLabel($('ruleAction').value)+')','rule');
+  $('ruleName').value='';
+  renderRules();
+}
+function wipeAll(){
+  if(!window.confirm('سيتم حذف كل الأجهزة والقراءات والقواعد والسجل والتقارير نهائياً. هل أنت متأكد؟'))return;
+  stopAuto();
+  if($('chkAuto'))$('chkAuto').checked=false;
+  try{for(var k in K){localStorage.removeItem(K[k]);}}catch(e){}
+  st.devices=[];st.readings=[];st.rules=[];st.events=[];st.reports=[];st.eco=false;
+  renderDevices();renderRules();renderEvents();renderReports();renderStats();drawCharts();
+  $('reportOut').innerHTML='<div class="big">لا يوجد تقرير معروض</div><div class="meta">تم مسح كل البيانات. اختر فترة ثم اضغط «إنشاء تقرير استهلاك وحفظه».</div>';
+  setMsg('reportMsg','','');
+  setMsg('deviceMsg','','');setMsg('ruleMsg','','');
+  setStatus('تم حذف كل البيانات من متصفحك بالكامل.');
+  refreshInfo();
+}
+
+function bind(){
+  $('btnAddDevice').onclick=addDevice;
+  $('btnFillSample').onclick=fillSample;
+  $('devName').addEventListener('keydown',function(e){if(e.key==='Enter')addDevice();});
+  $('devFilter').addEventListener('input',renderDevices);
+  $('btnStartAll').onclick=function(){
+    if(!st.devices.length){setMsg('deviceMsg','لا توجد أجهزة لتشغيلها.','err');return;}
+    st.devices.forEach(function(d){d.on=true;});save(K.d,st.devices);
+    addEvent('تشغيل جميع الأجهزة يدوياً','info');renderDevices();renderStats();
+  };
+  $('btnStopAll').onclick=function(){
+    if(!st.devices.length){setMsg('deviceMsg','لا توجد أجهزة لإيقافها.','err');return;}
+    st.devices.forEach(function(d){d.on=false;});save(K.d,st.devices);
+    addEvent('إيقاف جميع الأجهزة يدوياً','warn');renderDevices();renderStats();
+  };
+  $('btnClearDevices').onclick=function(){
+    if(!st.devices.length){setMsg('deviceMsg','القائمة فارغة أصلاً.','err');return;}
+    if(!window.confirm('حذف كل الأجهزة من السجل؟'))return;
+    st.devices=[];save(K.d,st.devices);
+    addEvent('حذف كل الأجهزة من السجل','warn');renderDevices();renderStats();drawCharts();
+  };
+  $('btnSimStep').onclick=function(){step(1,false);};
+  $('btnSimDay').onclick=function(){for(var i=0;i<24;i++)step(1,true);renderStats();renderDevices();drawCharts();addEvent('محاكاة يوم كامل: 24 قراءة مضافة','ok');refreshInfo();};
+  $('btnSimWeek').onclick=function(){for(var i=0;i<168;i++)step(1,true);renderStats();renderDevices();drawCharts();addEvent('محاكاة أسبوع كامل: 168 قراءة مضافة','ok');refreshInfo();};
+  $('chkAuto').addEventListener('change',function(){
+    if(this.checked)startAuto();else{stopAuto();addEvent('إيقاف المحاكاة التلقائية','info');}
+  });
+  $('autoInterval').addEventListener('change',function(){if($('chkAuto').checked)startAuto();});
+  $('btnResetReadings').onclick=function(){
+    if(!st.readings.length){setMsg('simMsg','لا توجد قراءات لمسحها.','err');return;}
+    if(!window.confirm('مسح كل القراءات المحفوظة؟'))return;
+    st.readings=[];save(K.r,st.readings);
+    addEvent('مسح كل القراءات','warn');renderStats();drawCharts();
+  };
+  $('chartWindow').addEventListener('change',drawCharts);
+  $('btnRedraw').onclick=drawCharts;
+  $('btnAddRule').onclick=addRule;
+  $('ruleThreshold').addEventListener('keydown',function(e){if(e.key==='Enter')addRule();});
+  $('btnClearRules').onclick=function(){
+    if(!st.rules.length){setMsg('ruleMsg','لا توجد قواعد لحذفها.','err');return;}
+    if(!window.confirm('حذف كل قواعد الأتمتة؟'))return;
+    st.rules=[];save(K.rl,st.rules);
+    addEvent('حذف كل قواعد الأتمتة','warn');renderRules();
+  };
+  $('btnAddNote').onclick=function(){
+    var v=($('eventNote').value||'').trim();
+    if(v.length<2){setMsg('ruleMsg','','');addEvent('تعذّرت إضافة ملاحظة فارغة','err');return;}
+    addEvent('ملاحظة يدوية: '+v,'info');
+    $('eventNote').value='';
+  };
+  $('btnClearEvents').onclick=function(){
+    if(!st.events.length)return;
+    if(!window.confirm('تفريغ سجل الأحداث بالكامل؟'))return;
+    st.events=[];save(K.e,st.events);renderEvents();setStatus('تم تفريغ سجل الأحداث.');
+  };
+  $('btnMakeReport').onclick=function(){makeReport($('reportPeriod').value);};
+  $('btnClearReports').onclick=function(){
+    if(!st.reports.length){setMsg('reportMsg','لا توجد تقارير محفوظة.','err');return;}
+    if(!window.confirm('حذف كل التقارير المحفوظة؟'))return;
+    st.reports=[];save(K.rp,st.reports);
+    $('reportOut').innerHTML='<div class="big">لا يوجد تقرير معروض</div><div class="meta">حُذفت كل التقارير.</div>';
+    setMsg('reportMsg','تم حذف كل التقارير.','ok');
+    addEvent('حذف كل التقارير المحفوظة','warn');renderReports();
+  };
+  $('btnWipeAll').onclick=wipeAll;
+  window.addEventListener('resize',function(){drawCharts();});
+}
+
+function init(){
+  st.devices=load(K.d,[])||[];
+  st.readings=load(K.r,[])||[];
+  st.rules=load(K.rl,[])||[];
+  st.events=load(K.e,[])||[];
+  st.reports=load(K.rp,[])||[];
+  st.eco=load(K.ec,false)===true;
+  if(!Array.isArray(st.devices))st.devices=[];
+  if(!Array.isArray(st.readings))st.readings=[];
+  if(!Array.isArray(st.rules))st.rules=[];
+  if(!Array.isArray(st.events))st.events=[];
+  if(!Array.isArray(st.reports))st.reports=[];
+  st.rules.forEach(function(r){r.armed=false;r.on=r.on!==false;});
+  bind();
+  renderDevices();renderRules();renderEvents();renderReports();renderStats();drawCharts();refreshInfo();
+  setStatus('جاهز للعمل. كل شيء يُحفظ محلياً في localStorage على جهازك فقط.');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>

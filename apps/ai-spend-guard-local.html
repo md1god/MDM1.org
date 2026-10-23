@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم مراقبة مصروفات أدوات الذكاء الاصطناعي | MDM1</title>
+<meta name="description" content="أداة مجانية لمراقبة مصروفات أدوات الذكاء الاصطناعي، ومقارنة تكاليف النماذج، وتخزين الاستعلامات المحلية، وضبط الميزانية الشهرية مع التنبيهات.">
+<link rel="canonical" href="https://mdm1.org/apps/ai-spend-guard-local.html">
+<meta property="og:title" content="لوحة تحكم مراقبة مصروفات أدوات الذكاء الاصطناعي">
+<meta property="og:description" content="أداة مجانية لمراقبة مصروفات أدوات الذكاء الاصطناعي، ومقارنة تكاليف النماذج، وتخزين الاستعلامات المحلية، وضبط الميزانية الشهرية مع التنبيهات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ai-spend-guard-local.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: var(--light);
+}
+.app h2 {
+  margin: 0 0 1rem 0;
+  color: var(--gold-bright);
+  font-size: 1.25rem;
+}
+.app .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+.app .row > div {
+  flex: 1 1 200px;
+  min-width: 150px;
+}
+.app input,
+.app select,
+.app textarea {
+  width: 100%;
+}
+.app .out {
+  margin-top: 1rem;
+}
+.app .badge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold-bright);
+}
+.app #logList .log-item,
+.app #queriesList .query-item,
+.app #modelsList .model-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--gold-dim);
+  font-size: 0.9rem;
+}
+.app #logList .log-item:last-child,
+.app #queriesList .query-item:last-child,
+.app #modelsList .model-item:last-child {
+  border-bottom: none;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة تحكم مراقبة مصروفات أدوات الذكاء الاصطناعي", "url": "https://mdm1.org/apps/ai-spend-guard-local.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تعمل بالكامل داخل متصفحك ولا تحتاج لأي اتصال بالإنترنت أو تسجيل دخول."}}, {"@type": "Question", "name": "هل يتم حفظ البيانات على خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع البيانات تُحفظ في متصفحك فقط عبر localStorage ولا تُرسل إلى أي خادم."}}, {"@type": "Question", "name": "كيف يتم اقتراح الأرخص لكل مهمة؟", "acceptedAnswer": {"@type": "Answer", "text": "تقوم الأداة بحساب التكلفة التقديرية بناءً على عدد رموز الإدخال والإخراج المتوقعة وسعر كل نموذج، ثم تقارن النتائج وتعرض النموذج الأقل تكلفة."}}, {"@type": "Question", "name": "كيف تعمل ميزة تخزين الاستعلامات المتكررة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك حفظ عنوان الاستعلام ومحتواه أو نتيجته محليًا، ثم تحميله لاحقًا لتجنّب إعادة كتابته أو إعادة الطلب."}}, {"@type": "Question", "name": "متى تظهر تنبيهات الميزانية الشهرية؟", "acceptedAnswer": {"@type": "Answer", "text": "تظهر التنبيهات تلقائياً عند وصول المصاريف إلى 50%، ثم 80%، ثم عند تجاوز 100% من مبلغ الميزانية المحدد."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة تحكم مراقبة مصروفات أدوات الذكاء الاصطناعي</h1>
+  <p class="page-sub">أداة مجانية لمراقبة مصروفات أدوات الذكاء الاصطناعي، ومقارنة تكاليف النماذج، وتخزين الاستعلامات المحلية، وضبط الميزانية الشهرية مع التنبيهات.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">
+  <p>نعم، هذه الأداة تعمل بالكامل داخل متصفحك لحل مشكلة صعوبة تتبع مصاريف أدوات الذكاء الاصطناعي المتزايدة يومًا بعد يوم. يمكنك من تسجيل كل استخدام لأدوات الذكاء الاصطناعي والنماذج المختلفة مع سعر الإدخال والإخراج لكل جولة، لتجمع تلقائياً إجمالي المصاريف وتحسب التكلفة الدقيقة لكل استعلام. كما تتيح لك مقارنة تكاليف النماذج المتاحة لاقتراح الأرخص لكل مهمة بناءً على عدد الرموز أو التوقعات، وتخزين نتائج الاستعلامات المتكررة محليًا لتجنّب إعادة الطلبات وتوفير التكاليف. بالإضافة إلى ذلك يمكنك تحديد ميزانية شهرية مع تنبيهات فورية عند الاقتراب من الحد أو تجاوزه، وكل بياناتك تبقى في متصفحك فقط دون أي خادم أو حسابات لضمان أقصى درجات الخصوصية والأمان.</p>
+
+  <div class="card">
+    <h2>تحديد الميزانية الشهرية</h2>
+    <div class="row">
+      <div>
+        <label class="label" for="budgetAmount">مبلغ الميزانية الشهرية (ريال)</label>
+        <input type="number" id="budgetAmount" step="any" placeholder="مثال: 500">
+      </div>
+      <div>
+        <label class="label" for="budgetCurrency">العملة</label>
+        <select id="budgetCurrency">
+          <option value="SAR">ريال سعودي (SAR)</option>
+          <option value="USD">دولار أمريكي (USD)</option>
+          <option value="AED">درهم إماراتي (AED)</option>
+          <option value="EGP">جنيه مصري (EGP)</option>
+        </select>
+      </div>
+    </div>
+    <button id="saveBudgetBtn">حفظ الميزانية الشهرية</button>
+    <div id="budgetStatus" class="out" style="display:none">
+      <div class="big" id="budgetSpent">0.00</div>
+      <p id="budgetInfo"></p>
+      <div id="budgetAlert" class="badge" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>إضافة استخدام جديد لأداة ذكاء اصطناعي</h2>
+    <div class="row">
+      <div>
+        <label class="label" for="toolName">اسم الأداة أو النموذج</label>
+        <input type="text" id="toolName" placeholder="مثال: نموذج نصي 1، صورة، صوت">
+      </div>
+      <div>
+        <label class="label" for="taskType">نوع المهمة</label>
+        <input type="text" id="taskType" placeholder="مثال: ترجمة، تلخيص، إنشاء محتوى">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label class="label" for="inputTokens">عدد رموز الإدخال</label>
+        <input type="number" id="inputTokens" step="any" placeholder="0">
+      </div>
+      <div>
+        <label class="label" for="outputTokens">عدد رموز الإخراج</label>
+        <input type="number" id="outputTokens" step="any" placeholder="0">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label class="label" for="inputCost">سعر رمز الإدخال (لكل 1,000 رمز)</label>
+        <input type="number" id="inputCost" step="any" placeholder="0.0000">
+      </div>
+      <div>
+        <label class="label" for="outputCost">سعر رمز الإخراج (لكل 1,000 رمز)</label>
+        <input type="number" id="outputCost" step="any" placeholder="0.0000">
+      </div>
+    </div>
+    <label class="label" for="usageNote">ملاحظات (اختياري)</label>
+    <input type="text" id="usageNote" placeholder="مثال: استعلام في موضوع معين">
+    <button id="addUsageBtn">تسجيل الاستخدام وحساب التكلفة</button>
+    <div id="usageCalc" class="out" style="display:none">
+      <p>تكلفة هذا الاستخدام:</p>
+      <div class="big" id="usageCost">0.00</div>
+      <p id="usageDetails"></p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>مقارنة تكاليف النماذج واقتراح الأرخص لكل مهمة</h2>
+    <label class="label" for="compareTask">نوع المهمة المراد مقارنتها</label>
+    <input type="text" id="compareTask" placeholder="مثال: تلخيص، ترجمة، برمجة">
+    <div class="row">
+      <div>
+        <label class="label" for="compareIn">عدد رموز الإدخال المتوقع</label>
+        <input type="number" id="compareIn" step="any" placeholder="0">
+      </div>
+      <div>
+        <label class="label" for="compareOut">عدد رموز الإخراج المتوقع</label>
+        <input type="number" id="compareOut" step="any" placeholder="0">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label class="label" for="modelName">اسم النموذج</label>
+        <input type="text" id="modelName" placeholder="مثال: نموذج أ، نموذج ب">
+      </div>
+      <div>
+        <label class="label" for="modelInCost">سعر الإدخال (لكل 1,000 رمز)</label>
+        <input type="number" id="modelInCost" step="any" placeholder="0.0000">
+      </div>
+      <div>
+        <label class="label" for="modelOutCost">سعر الإخراج (لكل 1,000 رمز)</label>
+        <input type="number" id="modelOutCost" step="any" placeholder="0.0000">
+      </div>
+    </div>
+    <div class="row">
+      <button id="addModelBtn" class="sec">إضافة نموذج للمقارنة</button>
+      <button id="clearModelsBtn" class="sec">مسح قائمة النماذج</button>
+      <button id="compareModelsBtn">مقارنة النماذج واقتراح الأرخص</button>
+    </div>
+    <div id="modelsList" class="out" style="display:none"></div>
+    <div id="compareResult" class="out" style="display:none">
+      <p id="cheapestModel"></p>
+      <div class="big" id="cheapestCost">0.00</div>
+      <p id="compareDetails"></p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>استعلامات متكررة محفوظة محليًا</h2>
+    <label class="label" for="queryKey">عنوان الاستعلام</label>
+    <input type="text" id="queryKey" placeholder="مثال: تلخيص مقال معين">
+    <label class="label" for="queryContent">محتوى الاستعلام أو النتيجة</label>
+    <textarea id="queryContent" rows="4" placeholder="ضع محتوى الاستعلام أو النتيجة هنا لتخزينها محليًا"></textarea>
+    <div class="row">
+      <button id="saveQueryBtn">حفظ الاستعلام محليًا</button>
+      <button id="loadQueryBtn" class="sec">تحميل استعلام محفوظ</button>
+      <button id="clearQueriesBtn" class="sec">مسح جميع الاستعلامات المحفوظة</button>
+    </div>
+    <div id="queryMsg" class="out" style="display:none"></div>
+    <div id="queriesList" class="out" style="display:none"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>سجل الاستخدامات والمصاريف الشهرية</h2>
+    <div class="row">
+      <button id="refreshLogBtn" class="sec">تحديث السجل</button>
+      <button id="clearLogBtn" class="sec">مسح سجل الاستخدامات بالكامل</button>
+    </div>
+    <div id="logTotal" class="out" style="display:none">
+      <p>إجمالي المصاريف المسجلة:</p>
+      <div class="big" id="logTotalAmount">0.00</div>
+      <p id="logCount"></p>
+    </div>
+    <div id="logList" class="out" style="display:none"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة بدون اتصال بالإنترنت؟</h3><p>نعم، تعمل بالكامل داخل متصفحك ولا تحتاج لأي اتصال بالإنترنت أو تسجيل دخول.</p><h3>هل يتم حفظ البيانات على خادم؟</h3><p>لا، جميع البيانات تُحفظ في متصفحك فقط عبر localStorage ولا تُرسل إلى أي خادم.</p><h3>كيف يتم اقتراح الأرخص لكل مهمة؟</h3><p>تقوم الأداة بحساب التكلفة التقديرية بناءً على عدد رموز الإدخال والإخراج المتوقعة وسعر كل نموذج، ثم تقارن النتائج وتعرض النموذج الأقل تكلفة.</p><h3>كيف تعمل ميزة تخزين الاستعلامات المتكررة؟</h3><p>يمكنك حفظ عنوان الاستعلام ومحتواه أو نتيجته محليًا، ثم تحميله لاحقًا لتجنّب إعادة كتابته أو إعادة الطلب.</p><h3>متى تظهر تنبيهات الميزانية الشهرية؟</h3><p>تظهر التنبيهات تلقائياً عند وصول المصاريف إلى 50%، ثم 80%، ثم عند تجاوز 100% من مبلغ الميزانية المحدد.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-10-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  const formatNumber = function(num) {
+    if (isNaN(num) || num === null || num === undefined || num === '') return '0.00';
+    return Number(num).toFixed(2);
+  };
+
+  const getLS = function(key, def) {
+    try {
+      const v = localStorage.getItem(key);
+      if (v === null) return def;
+      return JSON.parse(v);
+    } catch (e) {
+      return def;
+    }
+  };
+
+  const setLS = function(key, val) {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) {}
+  };
+
+  let models = [];
+  let budget = getLS('ai_cost_budget', { amount: 0, currency: 'SAR', spent: 0 });
+
+  const budgetAmountEl = document.getElementById('budgetAmount');
+  const budgetCurrencyEl = document.getElementById('budgetCurrency');
+  const saveBudgetBtn = document.getElementById('saveBudgetBtn');
+  const budgetStatusEl = document.getElementById('budgetStatus');
+  const budgetSpentEl = document.getElementById('budgetSpent');
+  const budgetInfoEl = document.getElementById('budgetInfo');
+  const budgetAlertEl = document.getElementById('budgetAlert');
+
+  const toolNameEl = document.getElementById('toolName');
+  const taskTypeEl = document.getElementById('taskType');
+  const inputTokensEl = document.getElementById('inputTokens');
+  const outputTokensEl = document.getElementById('outputTokens');
+  const inputCostEl = document.getElementById('inputCost');
+  const outputCostEl = document.getElementById('outputCost');
+  const usageNoteEl = document.getElementById('usageNote');
+  const addUsageBtn = document.getElementById('addUsageBtn');
+  const usageCalcEl = document.getElementById('usageCalc');
+  const usageCostEl = document.getElementById('usageCost');
+  const usageDetailsEl = document.getElementById('usageDetails');
+
+  const compareTaskEl = document.getElementById('compareTask');
+  const compareInEl = document.getElementById('compareIn');
+  const compareOutEl = document.getElementById('compareOut');
+  const modelNameEl = document.getElementById('modelName');
+  const modelInCostEl = document.getElementById('modelInCost');
+  const modelOutCostEl = document.getElementById('modelOutCost');
+  const addModelBtn = document.getElementById('addModelBtn');
+  const clearModelsBtn = document.getElementById('clearModelsBtn');
+  const compareModelsBtn = document.getElementById('compareModelsBtn');
+  const modelsListEl = document.getElementById('modelsList');
+  const compareResultEl = document.getElementById('compareResult');
+  const cheapestModelEl = document.getElementById('cheapestModel');
+  const cheapestCostEl = document.getElementById('cheapestCost');
+  const compareDetailsEl = document.getElementById('compareDetails');
+
+  const queryKeyEl = document.getElementById('queryKey');
+  const queryContentEl = document.getElementById('queryContent');
+  const saveQueryBtn = document.getElementById('saveQueryBtn');
+  const loadQueryBtn = document.getElementById('loadQueryBtn');
+  const clearQueriesBtn = document.getElementById('clearQueriesBtn');
+  const queryMsgEl = document.getElementById('queryMsg');
+  const queriesListEl = document.getElementById('queriesList');
+
+  const refreshLogBtn = document.getElementById('refreshLogBtn');
+  const clearLogBtn = document.getElementById('clearLogBtn');
+  const logTotalEl = document.getElementById('logTotal');
+  const logTotalAmountEl = document.getElementById('logTotalAmount');
+  const logCountEl = document.getElementById('logCount');
+  const logListEl = document.getElementById('logList');
+
+  const updateBudgetUI = function() {
+    budgetSpentEl.textContent = formatNumber(budget.spent) + ' ' + budget.currency;
+    const amt = Number(budget.amount) || 0;
+    if (amt > 0) {
+      budgetInfoEl.textContent = 'المبلغ المخطط: ' + formatNumber(amt) + ' ' + budget.currency + ' | المتبقي: ' + formatNumber(amt - budget.spent) + ' ' + budget.currency;
+      budgetStatusEl.style.display = 'block';
+      const pct = (budget.spent / amt) * 100;
+      if (pct >= 100) {
+        budgetAlertEl.textContent = 'تنبيه: تجاوزت الميزانية الشهرية';
+        budgetAlertEl.style.display = 'inline-block';
+      } else if (pct >= 80) {
+        budgetAlertEl.textContent = 'تنبيه: اقتربت من 80% من الميزانية الشهرية';
+        budgetAlertEl.style.display = 'inline-block';
+      } else if (pct >= 50) {
+        budgetAlertEl.textContent = 'تنبيه: استخدمت أكثر من 50% من الميزانية الشهرية';
+        budgetAlertEl.style.display = 'inline-block';
+      } else {
+        budgetAlertEl.style.display = 'none';
+      }
+    } else {
+      budgetInfoEl.textContent = 'لم يتم تحديد مبلغ الميزانية بعد. يرجى حفظ الميزانية لعرض التنبيهات.';
+      budgetStatusEl.style.display = 'block';
+      budgetAlertEl.style.display = 'none';
+    }
+  };
+
+  saveBudgetBtn.addEventListener('click', function() {
+    const amt = Number(budgetAmountEl.value);
+    if (isNaN(amt) || amt < 0) {
+      budgetInfoEl.textContent = 'يرجى إدخال مبلغ صحيح للميزانية الشهرية';
+      budgetStatusEl.style.display = 'block';
+      budgetAlertEl.style.display = 'none';
+      return;
+    }
+    budget.amount = amt;
+    budget.currency = budgetCurrencyEl.value;
+    setLS('ai_cost_budget', budget);
+    updateBudgetUI();
+  });
+
+  addUsageBtn.addEventListener('click', function() {
+    const tool = toolNameEl.value.trim();
+    const task = taskTypeEl.value.trim();
+    const inTok = Number(inputTokensEl.value) || 0;
+    const outTok = Number(outputTokensEl.value) || 0;
+    const inCost = Number(inputCostEl.value) || 0;
+    const outCost = Number(outputCostEl.value) || 0;
+    const note = usageNoteEl.value.trim();
+    if (tool === '' && task === '') {
+      usageDetailsEl.textContent = 'يرجى إدخال اسم الأداة أو نوع المهمة على الأقل';
+      usageCalcEl.style.display = 'block';
+      usageCostEl.textContent = '0.00';
+      return;
+    }
+    if (inTok < 0 || outTok < 0 || inCost < 0 || outCost < 0) {
+      usageDetailsEl.textContent = 'لا يمكن إدخال قيم سالبة';
+      usageCalcEl.style.display = 'block';
+      usageCostEl.textContent = '0.00';
+      return;
+    }
+    const cost = (inTok * inCost / 1000) + (outTok * outCost / 1000);
+    usageCostEl.textContent = formatNumber(cost) + ' ' + budget.currency;
+    usageDetailsEl.textContent = 'الأداة/النموذج: ' + (tool || '-') + ' | المهمة: ' + (task || '-') + ' | رموز إدخال: ' + inTok + ' | رموز إخراج: ' + outTok + ' | ملاحظات: ' + (note || 'لا توجد') + ' | التكلفة: ' + formatNumber(cost);
+    usageCalcEl.style.display = 'block';
+    budget.spent += cost;
+    setLS('ai_cost_budget', budget);
+    updateBudgetUI();
+    const log = getLS('ai_cost_log', []);
+    log.unshift({
+      date: new Date().toISOString(),
+      tool: tool || '-',
+      task: task || '-',
+      inTok: inTok,
+      outTok: outTok,
+      cost: cost,
+      currency: budget.currency,
+      note: note || '-'
+    });
+    setLS('ai_cost_log', log);
+    toolNameEl.value = '';
+    taskTypeEl.value = '';
+    inputTokensEl.value = '';
+    outputTokensEl.value = '';
+    inputCostEl.value = '';
+    outputCostEl.value = '';
+    usageNoteEl.value = '';
+  });
+
+  addModelBtn.addEventListener('click', function() {
+    const name = modelNameEl.value.trim();
+    const inCost = Number(modelInCostEl.value);
+    const outCost = Number(modelOutCostEl.value);
+    if (name === '') {
+      modelsListEl.innerHTML = '<p>يرجى إدخال اسم النموذج</p>';
+      modelsListEl.style.display = 'block';
+      return;
+    }
+    if (isNaN(inCost) || isNaN(outCost) || inCost < 0 || outCost < 0) {
+      modelsListEl.innerHTML = '<p>يرجى إدخال أسعار صحيحة للنموذج</p>';
+      modelsListEl.style.display = 'block';
+      return;
+    }
+    models.push({ name: name, inCost: inCost, outCost: outCost });
+    modelNameEl.value = '';
+    modelInCostEl.value = '';
+    modelOutCostEl.value = '';
+    renderModels();
+  });
+
+  const renderModels = function() {
+    if (models.length === 0) {
+      modelsListEl.style.display = 'none';
+      return;
+    }
+    let html = '<div class="model-item"><strong>قائمة النماذج المضافة للمقارنة:</strong></div>';
+    for (let i = 0; i < models.length; i++) {
+      html += '<div class="model-item">• ' + models[i].name + ' | سعر إدخال: ' + models[i].inCost + ' لكل 1,000 رمز | سعر إخراج: ' + models[i].outCost + ' لكل 1,000 رمز</div>';
+    }
+    modelsListEl.innerHTML = html;
+    modelsListEl.style.display = 'block';
+  };
+
+  clearModelsBtn.addEventListener('click', function() {
+    models = [];
+    renderModels();
+    compareResultEl.style.display = 'none';
+  });
+
+  compareModelsBtn.addEventListener('click', function() {
+    if (models.length === 0) {
+      compareDetailsEl.textContent = 'يرجى إضافة نموذج واحد على الأقل للمقارنة';
+      compareResultEl.style.display = 'block';
+      cheapestModelEl.textContent = '';
+      cheapestCostEl.textContent = '0.00';
+      return;
+    }
+    const inTok = Number(compareInEl.value) || 0;
+    const outTok = Number(compareOutEl.value) || 0;
+    const task = compareTaskEl.value.trim();
+    if (inTok < 0 || outTok < 0) {
+      compareDetailsEl.textContent = 'لا يمكن أن تكون أعداد الرموز سالبة';
+      compareResultEl.style.display = 'block';
+      cheapestModelEl.textContent = '';
+      cheapestCostEl.textContent = '0.00';
+      return;
+    }
+    let cheapest = null;
+    let cheapestCostVal = Infinity;
+    let details = 'نتائج مقارنة التكاليف لـ: ' + (task || 'مهمة غير محددة') + ' | رموز إدخال متوقعة: ' + inTok + ' | رموز إخراج متوقعة: ' + outTok + '<br>';
+    for (let i = 0; i < models.length; i++) {
+      const m = models[i];
+      const cost = (inTok * m.inCost / 1000) + (outTok * m.outCost / 1000);
+      details += '• ' + m.name + ': ' + formatNumber(cost) + ' ' + budget.currency + '<br>';
+      if (cost < cheapestCostVal) {
+        cheapestCostVal = cost;
+        cheapest = m;
+      }
+    }
+    if (cheapest === null) {
+      compareDetailsEl.textContent = 'لا يمكن تحديد الأرخص';
+      compareResultEl.style.display = 'block';
+      return;
+    }
+    cheapestModelEl.textContent = 'النموذج الأرخص المقترح: ' + cheapest.name;
+    cheapestCostEl.textContent = formatNumber(cheapestCostVal) + ' ' + budget.currency;
+    compareDetailsEl.innerHTML = details;
+    compareResultEl.style.display = 'block';
+  });
+
+  const renderQueries = function() {
+    const q = getLS('ai_cost_queries', {});
+    const keys = Object.keys(q);
+    if (keys.length === 0) {
+      queriesListEl.style.display = 'none';
+      return;
+    }
+    let html = '';
+    for (let i = 0; i < keys.length; i++) {
+      html += '<div class="query-item"><strong>' + keys[i] + '</strong>: ' + String(q[keys[i]]).substring(0, 150) + (String(q[keys[i]]).length > 150 ? '...' : '') + '</div>';
+    }
+    queriesListEl.innerHTML = html;
+    queriesListEl.style.display = 'block';
+  };
+
+  saveQueryBtn.addEventListener('click', function() {
+    const key = queryKeyEl.value.trim();
+    const content = queryContentEl.value;
+    if (key === '') {
+      queryMsgEl.textContent = 'يرجى إدخال عنوان الاستعلام';
+      queryMsgEl.style.display = 'block';
+      return;
+    }
+    if (content.trim() === '') {
+      queryMsgEl.textContent = 'يرجى إدخال محتوى الاستعلام أو النتيجة';
+      queryMsgEl.style.display = 'block';
+      return;
+    }
+    const q = getLS('ai_cost_queries', {});
+    q[key] = content;
+    setLS('ai_cost_queries', q);
+    queryMsgEl.textContent = 'تم حفظ الاستعلام محليًا بنجاح';
+    queryMsgEl.style.display = 'block';
+    renderQueries();
+    queryKeyEl.value = '';
+    queryContentEl.value = '';
+  });
+
+  loadQueryBtn.addEventListener('click', function() {
+    const key = queryKeyEl.value.trim();
+    if (key === '') {
+      queryMsgEl.textContent = 'يرجى إدخال عنوان الاستعلام للبحث عنه';
+      queryMsgEl.style.display = 'block';
+      return;
+    }
+    const q = getLS('ai_cost_queries', {});
+    if (q[key] === undefined) {
+      queryMsgEl.textContent = 'لم يتم العثور على استعلام محفوظ بهذا العنوان';
+      queryMsgEl.style.display = 'block';
+      queryContentEl.value = '';
+      return;
+    }
+    queryContentEl.value = q[key];
+    queryMsgEl.textContent = 'تم تحميل الاستعلام بنجاح';
+    queryMsgEl.style.display = 'block';
+  });
+
+  clearQueriesBtn.addEventListener('click', function() {
+    try {
+      localStorage.removeItem('ai_cost_queries');
+    } catch (e) {}
+    queryMsgEl.textContent = 'تم مسح جميع الاستعلامات المحفوظة';
+    queryMsgEl.style.display = 'block';
+    renderQueries();
+  });
+
+  const renderLog = function() {
+    const log = getLS('ai_cost_log', []);
+    if (log.length === 0) {
+      logTotalEl.style.display = 'none';
+      logListEl.style.display = 'none';
+      return;
+    }
+    let total = 0;
+    for (let i = 0; i < log.length; i++) {
+      total += Number(log[i].cost) || 0;
+    }
+    logTotalAmountEl.textContent = formatNumber(total) + ' ' + (log[0].currency || budget.currency);
+    logCountEl.textContent = 'عدد الاستخدامات المسجلة: ' + log.length;
+    logTotalEl.style.display = 'block';
+    let html = '';
+    for (let i = 0; i < Math.min(log.length, 50); i++) {
+      const item = log[i];
+      const d = item.date ? new Date(item.date).toLocaleString('ar-SA') : '-';
+      html += '<div class="log-item">' + d + ' | ' + (item.tool || '-') + ' | ' + (item.task || '-') + ' | تكلفة: ' + formatNumber(item.cost) + ' ' + item.currency + ' | ملاحظات: ' + (item.note || '-') + '</div>';
+    }
+    logListEl.innerHTML = html;
+    logListEl.style.display = 'block';
+  };
+
+  refreshLogBtn.addEventListener('click', renderLog);
+  clearLogBtn.addEventListener('click', function() {
+    try {
+      localStorage.removeItem('ai_cost_log');
+    } catch (e) {}
+    renderLog();
+    budget.spent = 0;
+    setLS('ai_cost_budget', budget);
+    updateBudgetUI();
+  });
+
+  updateBudgetUI();
+  renderModels();
+  renderQueries();
+  renderLog();
+})();
+</script>
+</body>
+</html>
