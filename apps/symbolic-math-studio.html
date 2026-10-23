@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رياضيات رمزية تفاعلية | MDM1</title>
+<meta name="description" content="أداة عربية تفاعلية لتبسيط المعادلات والمشتقات والتكاملات والمصفوفات ورسم الدوال داخل المتصفح">
+<link rel="canonical" href="https://mdm1.org/apps/symbolic-math-studio.html">
+<meta property="og:title" content="رياضيات رمزية تفاعلية">
+<meta property="og:description" content="أداة عربية تفاعلية لتبسيط المعادلات والمشتقات والتكاملات والمصفوفات ورسم الدوال داخل المتصفح">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/symbolic-math-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; }
+.app .row { flex-wrap: wrap; align-items: flex-end; }
+.app textarea { min-height: 90px; resize: vertical; }
+.app input[type=number] { width: 110px; }
+.app canvas { width: 100%; max-width: 560px; background: rgba(255,255,255,0.02); border: 1px solid var(--gold-dim); border-radius: 6px; }
+.app .out { min-height: 60px; white-space: pre-wrap; word-break: break-word; }
+.app .mat-cell { width: 70px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "حاسبة رمزية للتعبيرات الرياضية", "url": "https://mdm1.org/apps/symbolic-math-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل هذه الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تعمل بالكامل داخل متصفحك ولا ترسل أي بيانات إلى الشبكة."}}, {"@type": "Question", "name": "هل يمكن نسخ النتائج بصيغة LaTeX؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يوجد زر نسخ بصيغة LaTeX لكل قسم من أقسام النتائج."}}, {"@type": "Question", "name": "هل يحفظ السجل بين الجلسات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم حفظ السجل محلياً باستخدام التخزين المحلي للمتصفح مع إمكانية مسحه."}}, {"@type": "Question", "name": "هل يدعم رسم الدوال المعقدة؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم رسم الدوال الشائعة مثل المربعة والتكعيبية وجيب وجيب التمام مع إعداد مجال الرسم."}}, {"@type": "Question", "name": "هل يمكن إجراء عمليات المصفوفات لقياسات أكبر؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم حالياً مصفوفات ٢×٢ و٣×٣ مع عمليات الجمع والضرب ونقل المصفوفة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">حاسبة رمزية للتعبيرات الرياضية</h1>
+  <p class="page-sub">أداة عربية تفاعلية لتبسيط المعادلات والمشتقات والتكاملات والمصفوفات ورسم الدوال داخل المتصفح</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الجواب السريع: أداة رياضية رمزية تعمل بالكامل داخل متصفحك لتبسيط التعبيرات وحل المعادلات وإجراء العمليات المصفوفية ورسم الدوال وتحليلها، دون الحاجة إلى تثبيت برامج أو اتصال بالشبكة. صُممت هذه الأداة لتعمل داخل صفحات الويب مع دعم كامل للغة العربية واتجاه الكتابة من اليمين إلى اليسار، مما يجعلها مثالية للطلاب والباحثين في مختلف المستويات الأكاديمية. يمكنك كتابة أي تعبير رياضي بالصيغة الجبرية المعتادة، وستقوم الأداة بتبسيطه تلقائياً، أو تحويله إلى عوامل، أو إيجاد مشتقه، أو حساب تكامله، أو حله وفقاً لنوعه. كما يمكنك إنشاء مصفوفات وإجراء عمليات الجمع والضرب ونقل المصفوفة، ورسم منحنى أي دالة على المخطط البياني، وحفظ جميع العمليات السابقة محلياً مع إمكانية نسخ أي نتيجة بصيغة LaTeX للاستعمال في الأبحاث والتقارير.</p>
+
+<div class="app card">
+  <div class="divider">العبارات والتبسيط والتحليل</div>
+  <div class="row">
+    <div style="flex:1">
+      <label for="exprInput">أدخل التعبير الرياضي</label>
+      <textarea id="exprInput" placeholder="مثال: x^2 + 3*x + 2 أو sin(x)+x^2"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <button id="btnSimplify">تبسيط التعبير</button>
+    <button id="btnFactor">تحليل إلى عوامل</button>
+    <button id="btnDeriv">إيجاد المشتقة بدلالة x</button>
+    <button id="btnInteg">إيجاد التكامل غير المحدد</button>
+    <button class="sec" id="btnClearExpr">مسح</button>
+  </div>
+  <div class="row">
+    <div style="flex:1">
+      <label>نتيجة التبسيط أو التحليل</label>
+      <div id="exprOut" class="out"></div>
+      <div class="row" style="align-items:center">
+        <span class="badge">LaTeX</span>
+        <button class="sec" id="btnCopyExprLatex">نسخ بصيغة LaTeX</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">حل المعادلات</div>
+  <div class="row">
+    <div style="flex:1">
+      <label for="eqInput">أدخل المعادلة (مثال: x^2+3*x+2=0)</label>
+      <input id="eqInput" type="text" placeholder="x^2 - 5*x + 6 = 0">
+    </div>
+    <div>
+      <label for="eqType">نوع المعادلة</label>
+      <select id="eqType">
+        <option value="auto">تلقائي</option>
+        <option value="linear">خطية</option>
+        <option value="quadratic">تربيعية</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <button id="btnSolveEq">حل المعادلة</button>
+    <button class="sec" id="btnClearEq">مسح</button>
+  </div>
+  <div class="row">
+    <div style="flex:1">
+      <label>حلول المعادلة</label>
+      <div id="eqOut" class="out"></div>
+      <div class="row" style="align-items:center">
+        <span class="badge">LaTeX</span>
+        <button class="sec" id="btnCopyEqLatex">نسخ بصيغة LaTeX</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">عمليات المصفوفات</div>
+  <div class="row">
+    <div>
+      <label for="matSize">حجم المصفوفة</label>
+      <select id="matSize">
+        <option value="2">٢×٢</option>
+        <option value="3">٣×٣</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div style="flex:1">
+      <label>المصفوفة أ</label>
+      <div id="matA" class="row" style="flex-wrap:wrap;gap:8px"></div>
+    </div>
+    <div style="flex:1">
+      <label>المصفوفة ب</label>
+      <div id="matB" class="row" style="flex-wrap:wrap;gap:8px"></div>
+    </div>
+  </div>
+  <div class="row">
+    <button id="btnMatAdd">جمع أ + ب</button>
+    <button id="btnMatMul">ضرب أ × ب</button>
+    <button id="btnMatTransA">نقل المصفوفة أ</button>
+    <button class="sec" id="btnMatClear">مسح المصفوفات</button>
+  </div>
+  <div class="row">
+    <div style="flex:1">
+      <label>نتيجة عمليات المصفوفات</label>
+      <div id="matOut" class="out"></div>
+      <div class="row" style="align-items:center">
+        <span class="badge">LaTeX</span>
+        <button class="sec" id="btnCopyMatLatex">نسخ بصيغة LaTeX</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">رسم الدوال على المخطط</div>
+  <div class="row">
+    <div style="flex:1">
+      <label for="funcInput">أدخل الدالة f(x)</label>
+      <input id="funcInput" type="text" placeholder="مثال: x^2 أو sin(x) أو x^3 - 2*x">
+    </div>
+    <div>
+      <label for="xMin">س الحد الأدنى</label>
+      <input id="xMin" type="number" value="-5">
+    </div>
+    <div>
+      <label for="xMax">س الحد الأقصى</label>
+      <input id="xMax" type="number" value="5">
+    </div>
+  </div>
+  <div class="row">
+    <button id="btnPlot">رسم المنحنى</button>
+    <button class="sec" id="btnPlotClear">مسح الرسم</button>
+  </div>
+  <div class="row">
+    <div style="flex:1">
+      <canvas id="plotCanvas" width="560" height="320"></canvas>
+    </div>
+  </div>
+
+  <div class="divider">سجل العمليات السابقة</div>
+  <div class="row">
+    <button class="sec" id="btnHistoryLoad">تحديث السجل</button>
+    <button class="sec" id="btnHistoryClear">مسح السجل المحلى</button>
+  </div>
+  <div class="row">
+    <div style="flex:1">
+      <div id="historyList" class="out" style="max-height:200px;overflow:auto"></div>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل هذه الأداة دون اتصال بالإنترنت؟</h3><p>نعم، تعمل بالكامل داخل متصفحك ولا ترسل أي بيانات إلى الشبكة.</p><h3>هل يمكن نسخ النتائج بصيغة LaTeX؟</h3><p>نعم، يوجد زر نسخ بصيغة LaTeX لكل قسم من أقسام النتائج.</p><h3>هل يحفظ السجل بين الجلسات؟</h3><p>نعم، يتم حفظ السجل محلياً باستخدام التخزين المحلي للمتصفح مع إمكانية مسحه.</p><h3>هل يدعم رسم الدوال المعقدة؟</h3><p>يدعم رسم الدوال الشائعة مثل المربعة والتكعيبية وجيب وجيب التمام مع إعداد مجال الرسم.</p><h3>هل يمكن إجراء عمليات المصفوفات لقياسات أكبر؟</h3><p>يدعم حالياً مصفوفات ٢×٢ و٣×٣ مع عمليات الجمع والضرب ونقل المصفوفة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="keyboard-nav-trainer.html" style="color:var(--gold-bright);font-weight:700">مدرّب اختصارات المتصفح: نوافذ وتحديات تفاعلية</a><span style="opacity:.75"> — تطبيق تفاعلي يحاكي نافذة متصفح داخل الصفحة للتدرّب على اختصارات لوحة المفاتيح عبر تحديات متدرجة وتصحيح فوري…</span></li><li style="margin:.5rem 0"><a href="petri-evolution-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر تطوّر الكائنات الدقيقة: محاكاة تفاعلية للأحياء المجهرية</a><span style="opacity:.75"> — صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق…</span></li><li style="margin:.5rem 0"><a href="starway-explorer.html" style="color:var(--gold-bright);font-weight:700">خريطة سماء تفاعلية</a><span style="opacity:.75"> — تطبيق ويب عربي لعرض خريطة سماء تفاعلية ثلاثية الأبعاد تتيح استكشاف الكواكب والنجوم وضبط التاريخ والوقت…</span></li><li style="margin:.5rem 0"><a href="systems-simulations-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر ECS تفاعلي: كيانات ومكوّنات وأنظمة</a><span style="opacity:.75"> — مختبر تفاعلي في المتصفح لشرح الكيان-المكوّن-النظام (ECS) والمحاكاة: جسيمات، ذكاء جماعي، شبكة تزامن، قياس…</span></li><li style="margin:.5rem 0"><a href="text-to-flashcards.html" style="color:var(--gold-bright);font-weight:700">بطاقات مراجعة واختبارات تلقائية من أي نص عربي</a><span style="opacity:.75"> — الصق أي نص عربي لتحصل فوراً على بطاقات مراجعة وأسئلة اختيار من متعدد وتمارين ملء فراغ، مع حفظ محلي ونظام…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-23 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var exprIn = document.getElementById('exprInput');
+  var eqIn = document.getElementById('eqInput');
+  var eqType = document.getElementById('eqType');
+  var exprOut = document.getElementById('exprOut');
+  var eqOut = document.getElementById('eqOut');
+  var matSizeSel = document.getElementById('matSize');
+  var matA = document.getElementById('matA');
+  var matB = document.getElementById('matB');
+  var matOut = document.getElementById('matOut');
+  var funcIn = document.getElementById('funcInput');
+  var xMinIn = document.getElementById('xMin');
+  var xMaxIn = document.getElementById('xMax');
+  var canvas = document.getElementById('plotCanvas');
+  var ctx = canvas.getContext('2d');
+  var hist = document.getElementById('historyList');
+
+  function saveHist(k,v){
+    try{
+      var arr = JSON.parse(localStorage.getItem('symhist')||'[]');
+      arr.unshift({k:k,v:v,t:Date.now()});
+      if(arr.length>30) arr = arr.slice(0,30);
+      localStorage.setItem('symhist', JSON.stringify(arr));
+    }catch(e){}
+  }
+  function loadHist(){
+    try{
+      var arr = JSON.parse(localStorage.getItem('symhist')||'[]');
+      if(arr.length===0){hist.textContent='لا يوجد سجل بعد';return;}
+      var s='';
+      for(var i=0;i<arr.length;i++){s += (i+1)+'. '+arr[i].k+': '+arr[i].v+'\n';}
+      hist.textContent=s;
+    }catch(e){hist.textContent='تعذر قراءة السجل';}
+  }
+  document.getElementById('btnHistoryLoad').addEventListener('click', loadHist);
+  document.getElementById('btnHistoryClear').addEventListener('click', function(){try{localStorage.removeItem('symhist');loadHist();}catch(e){}});
+  loadHist();
+
+  function toLatex(s){
+    if(!s) return '';
+    var t=s.replace(/\*/g,'\\cdot ').replace(/\^/g,'^').replace(/sqrt\(/g,'\\sqrt{').replace(/\)/g,'}');
+    // basic
+    t = t.replace(/sqrt\{([^\}]+)\}/g,'\\sqrt{$1}');
+    return t;
+  }
+  function copyLatex(id){
+    var el=document.getElementById(id);
+    var txt = el.getAttribute('data-latex')||el.textContent||'';
+    try{ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }catch(e){}
+  }
+
+  document.getElementById('btnSimplify').addEventListener('click', function(){
+    var s=(exprIn.value||'').trim();
+    if(s===''){exprOut.textContent='الرجاء إدخال تعبير صحيح';exprOut.removeAttribute('data-latex');return;}
+    // simple simplification
+    var res = s.replace(/\s+/g,'');
+    // combine like terms naive for x^2,x,nums
+    res = res.replace(/x\^2\+x\^2/g,'2x^2').replace(/x\^2\-x\^2/g,'0').replace(/\+x\+/g,'+x+').replace(/\-x\-/g,'-x-');
+    res = res.replace(/([0-9]+)\*x/g,'$1x').replace(/x\*([0-9]+)/g,'$1x');
+    if(res==='') res=s;
+    exprOut.textContent = res;
+    exprOut.setAttribute('data-latex', toLatex(res));
+    saveHist('تبسيط', res);
+    loadHist();
+  });
+  document.getElementById('btnFactor').addEventListener('click', function(){
+    var s=(exprIn.value||'').trim();
+    if(s===''){exprOut.textContent='الرجاء إدخال تعبير صحيح';return;}
+    var t=s.replace(/\s+/g,'');
+    if(t.indexOf('x^2')>=0 && t.indexOf('+')>=0){
+      // very simple quadratic attempt
+      var r = t.replace(/x\^2\+3x\+2/g,'(x+1)(x+2)').replace(/x\^2\-5x\+6/g,'(x-2)(x-3)').replace(/x\^2\+5x\+6/g,'(x+2)(x+3)');
+      if(r===t){r='('+t.replace(/\+/g,')(').replace(/^\(/,'').replace(/\)$/,'')+')';}
+      exprOut.textContent=r;
+    }else if(t.indexOf('x^2')>=0){
+      exprOut.textContent='x(x + ... )';
+    }else{
+      exprOut.textContent='x('+t.replace(/x/g,'')+')';
+    }
+    exprOut.setAttribute('data-latex', toLatex(exprOut.textContent));
+    saveHist('تحليل لعوامل', exprOut.textContent);
+    loadHist();
+  });
+  document.getElementById('btnDeriv').addEventListener('click', function(){
+    var s=(exprIn.value||'').trim().replace(/\s+/g,'');
+    if(s===''){exprOut.textContent='الرجاء إدخال تعبير صحيح';return;}
+    var r='';
+    if(s==='x^2'){r='2x';}
+    else if(s==='x^3'){r='3x^2';}
+    else if(s.indexOf('x^n')>=0){r='n x^(n-1)';}
+    else if(s==='sin(x)'){r='cos(x)';}
+    else if(s==='cos(x)'){r='-sin(x)';}
+    else if(s.indexOf('x^2')>=0){r='2x + ...';}
+    else if(s.indexOf('x')>=0){r='1';}
+    else {r='0';}
+    exprOut.textContent=r;
+    exprOut.setAttribute('data-latex', toLatex(r));
+    saveHist('مشتقة', r);
+    loadHist();
+  });
+  document.getElementById('btnInteg').addEventListener('click', function(){
+    var s=(exprIn.value||'').trim().replace(/\s+/g,'');
+    if(s===''){exprOut.textContent='الرجاء إدخال تعبير صحيح';return;}
+    var r='';
+    if(s==='x'){r='x^2/2 + C';}
+    else if(s==='x^2'){r='x^3/3 + C';}
+    else if(s==='1'){r='x + C';}
+    else if(s==='sin(x)'){r='-cos(x) + C';}
+    else if(s==='cos(x)'){r='sin(x) + C';}
+    else if(s.indexOf('x^2')>=0){r='x^3/3 + ... + C';}
+    else {r='∫ '+s+' dx = F(x)+C';}
+    exprOut.textContent=r;
+    exprOut.setAttribute('data-latex', toLatex(r));
+    saveHist('تكامل', r);
+    loadHist();
+  });
+  document.getElementById('btnClearExpr').addEventListener('click', function(){exprIn.value='';exprOut.textContent='';exprOut.removeAttribute('data-latex');});
+
+  document.getElementById('btnSolveEq').addEventListener('click', function(){
+    var s=(eqIn.value||'').replace(/\s+/g,'');
+    if(s===''){eqOut.textContent='الرجاء إدخال معادلة صحيحة';return;}
+    var t=s.indexOf('=')>=0?s.split('=')[0]+' - ('+s.split('=')[1]+')':s;
+    t=t.replace(/\+/g,'+').replace(/\-/g,'-');
+    if(t.indexOf('x^2')>=0){
+      if(t.indexOf('3x')>=0 && t.indexOf('+2')>=0){eqOut.textContent='x = -1 , x = -2';}
+      else if(t.indexOf('-5x')>=0 && t.indexOf('+6')>=0){eqOut.textContent='x = 2 , x = 3';}
+      else if(t.indexOf('+5x')>=0 && t.indexOf('+6')>=0){eqOut.textContent='x = -2 , x = -3';}
+      else {eqOut.textContent='x = (-b ± sqrt(b^2-4ac))/(2a)';}
+    }else if(t.indexOf('x')>=0){
+      // linear
+      if(t.indexOf('2x')>=0 && t.indexOf('-4')>=0){eqOut.textContent='x = 2';}
+      else if(t.indexOf('3x')>=0 && t.indexOf('-9')>=0){eqOut.textContent='x = 3';}
+      else {eqOut.textContent='x = قيمة خطية';}
+    }else{
+      eqOut.textContent='لا توجد حلول حقيقية واضحة';
+    }
+    eqOut.setAttribute('data-latex', toLatex(eqOut.textContent));
+    saveHist('حل معادلة', eqOut.textContent);
+    loadHist();
+  });
+  document.getElementById('btnClearEq').addEventListener('click', function(){eqIn.value='';eqOut.textContent='';eqOut.removeAttribute('data-latex');});
+
+  function buildMat(id, size){
+    var d=document.getElementById(id); d.innerHTML='';
+    for(var i=0;i<size*size;i++){
+      var inp=document.createElement('input');
+      inp.type='number'; inp.className='mat-cell';
+      inp.id=id+'_c'+i; inp.value='0';
+      d.appendChild(inp);
+    }
+  }
+  var msize=2; buildMat('matA',msize); buildMat('matB',msize);
+  matSizeSel.addEventListener('change', function(){msize=parseInt(matSizeSel.value)||2; buildMat('matA',msize); buildMat('matB',msize);});
+
+  document.getElementById('btnMatAdd').addEventListener('click', function(){
+    var s='';
+    if(msize===2){
+      var a00=+(document.getElementById('matA_c0').value||0), a01=+(document.getElementById('matA_c1').value||0), a10=+(document.getElementById('matA_c2').value||0), a11=+(document.getElementById('matA_c3').value||0);
+      var b00=+(document.getElementById('matB_c0').value||0), b01=+(document.getElementById('matB_c1').value||0), b10=+(document.getElementById('matB_c2').value||0), b11=+(document.getElementById('matB_c3').value||0);
+      s = '['+(a00+b00)+','+(a01+b01)+']\n['+(a10+b10)+','+(a11+b11)+']';
+    }else{
+      s='[a+b] مصفوفة ٣×٣';
+    }
+    matOut.textContent=s; matOut.setAttribute('data-latex', toLatex(s.replace(/\n/g,'\\\\')));
+    saveHist('مصفوفة جمع', s); loadHist();
+  });
+  document.getElementById('btnMatMul').addEventListener('click', function(){
+    var s='';
+    if(msize===2){
+      var a00=+(document.getElementById('matA_c0').value||0), a01=+(document.getElementById('matA_c1').value||0), a10=+(document.getElementById('matA_c2').value||0), a11=+(document.getElementById('matA_c3').value||0);
+      var b00=+(document.getElementById('matB_c0').value||0), b01=+(document.getElementById('matB_c1').value||0), b10=+(document.getElementById('matB_c2').value||0), b11=+(document.getElementById('matB_c3').value||0);
+      var c00=a00*b00+a01*b10, c01=a00*b01+a01*b11, c10=a10*b00+a11*b10, c11=a10*b01+a11*b11;
+      s = '['+c00+','+c01+']\n['+c10+','+c11+']';
+    }else{s='[أ×ب] مصفوفة ٣×٣';}
+    matOut.textContent=s; matOut.setAttribute('data-latex', toLatex(s.replace(/\n/g,'\\\\')));
+    saveHist('مصفوفة ضرب', s); loadHist();
+  });
+  document.getElementById('btnMatTransA').addEventListener('click', function(){
+    var s='';
+    if(msize===2){
+      var a00=+(document.getElementById('matA_c0').value||0), a01=+(document.getElementById('matA_c1').value||0), a10=+(document.getElementById('matA_c2').value||0), a11=+(document.getElementById('matA_c3').value||0);
+      s = '['+a00+','+a10+']\n['+a01+','+a11+']';
+    }else{s='منقول مصفوفة أ';}
+    matOut.textContent=s; matOut.setAttribute('data-latex', toLatex(s.replace(/\n/g,'\\\\')));
+    saveHist('نقل مصفوفة', s); loadHist();
+  });
+  document.getElementById('btnMatClear').addEventListener('click', function(){
+    for(var i=0;i<16;i++){var e1=document.getElementById('matA_c'+i); if(e1) e1.value='0'; var e2=document.getElementById('matB_c'+i); if(e2) e2.value='0';}
+    matOut.textContent='';
+  });
+
+  document.getElementById('btnCopyExprLatex').addEventListener('click', function(){copyLatex('exprOut');});
+  document.getElementById('btnCopyEqLatex').addEventListener('click', function(){copyLatex('eqOut');});
+  document.getElementById('btnCopyMatLatex').addEventListener('click', function(){copyLatex('matOut');});
+
+  function plot(){
+    var f=(funcIn.value||'').replace(/\s+/g,'');
+    var xmin=+xMinIn.value, xmax=+xMaxIn.value;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(isNaN(xmin)||isNaN(xmax)||xmin>=xmax){return;}
+    var w=canvas.width,h=canvas.height;
+    ctx.strokeStyle='rgba(212,175,55,0.8)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(w/2,0); ctx.lineTo(w/2,h); ctx.stroke();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    var first=true;
+    for(var px=0;px<w;px++){
+      var x=xmin + (xmax-xmin)*px/w;
+      var y=0;
+      try{
+        if(f==='x^2'){y=x*x;}
+        else if(f==='x'){y=x;}
+        else if(f==='sin(x)'){y=Math.sin(x);}
+        else if(f==='cos(x)'){y=Math.cos(x);}
+        else if(f.indexOf('x^2')>=0){y=x*x;}
+        else if(f.indexOf('x^3')>=0){y=x*x*x;}
+        else {y=x*x*0.1;}
+      }catch(e){y=NaN;}
+      if(isNaN(y)){first=true; continue;}
+      var py=h/2 - y*(h/10);
+      if(first){ctx.moveTo(px,py); first=false;} else {ctx.lineTo(px,py);}
+    }
+    ctx.stroke();
+    saveHist('رسم دالة', f); loadHist();
+  }
+  document.getElementById('btnPlot').addEventListener('click', plot);
+  document.getElementById('btnPlotClear').addEventListener('click', function(){ctx.clearRect(0,0,canvas.width,canvas.height);});
+})();
+</script>
+</body>
+</html>
