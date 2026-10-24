@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محلل منشورات التواصل الاجتماعي | تحليل انتشار وتفاعل | MDM1</title>
+<meta name="description" content="حلل منشوراتك عربيًا دون اتصال: درجة انتشار، تفكيك الجملة الافتتاحية، مقارنة تفاعل، خريطة أوقات، إعادة صياغة بنبرة الكاتب، حفظ وتصدير النتائج.">
+<link rel="canonical" href="https://mdm1.org/apps/post-lift-lens.html">
+<meta property="og:title" content="محلل منشورات التواصل الاجتماعي | تحليل انتشار وتفاعل">
+<meta property="og:description" content="حلل منشوراتك عربيًا دون اتصال: درجة انتشار، تفكيك الجملة الافتتاحية، مقارنة تفاعل، خريطة أوقات، إعادة صياغة بنبرة الكاتب، حفظ وتصدير النتائج.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/post-lift-lens.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-container { direction: rtl; max-width: 900px; margin: 0 auto; gap: 1rem; }
+.app-intro { line-height: 1.8; color: var(--light); opacity: 0.9; }
+.app-select, .app-input, .app-textarea { width: 100%; background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); padding: 0.75rem; border-radius: 4px; }
+.app-textarea { resize: vertical; min-height: 120px; font-family: inherit; }
+.app-results { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.app-full { width: 100%; }
+.app-analysis-text { white-space: pre-wrap; line-height: 1.7; }
+.app-heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 1rem 0; direction: ltr; }
+.app-heatmap-cell { aspect-ratio: 1; border-radius: 4px; transition: transform 0.2s; cursor: pointer; }
+.app-heatmap-cell:hover { transform: scale(1.1); z-index: 1; }
+.app-heatmap-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.75rem; color: var(--gold-dim); margin-bottom: 0.5rem; direction: ltr; }
+.app-best-times { font-size: 0.9rem; color: var(--gold-bright); line-height: 1.6; }
+.app-history-list { max-height: 300px; overflow-y: auto; }
+.app-history-item { padding: 0.75rem; border-bottom: 1px solid var(--gold-dim); cursor: pointer; transition: background 0.2s; }
+.app-history-item:hover { background: var(--gold-dim); color: var(--dark); }
+.app-history-item:last-child { border-bottom: none; }
+.app-history-date { font-size: 0.8rem; color: var(--gold-dim); }
+.app-history-preview { font-size: 0.9rem; margin-top: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.75rem; margin: 0.2rem; background: var(--gold-dim); color: var(--dark); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تحليل منشورات التواصل الاجتماعي", "url": "https://mdm1.org/apps/post-lift-lens.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تعمل بالكامل في المتصفح دون أي طلبات شبكة، وتعتمد على خوارزميات محلية وبيانات معايير مخزنة في الكود."}}, {"@type": "Question", "name": "كيف تُحسب درجة الانتشار التقديرية؟", "acceptedAnswer": {"@type": "Answer", "text": "خوارزمية محلية تحلل طول النص، وجود أسئلة، أرقام، هاشتاغز، منشنز، إيموجي، وهيكل الفقرات، مع تعديل حسب المنصة المختارة."}}, {"@type": "Question", "name": "هل يمكن حفظ تحليلات متعددة والرجوع إليها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يُحفظ حتى 50 تحليل في localStorage مع الطابع الزمني، ويمكن عرضها واستعادتها أو تصديرها كملف JSON."}}, {"@type": "Question", "name": "ما دقة خريطة الحرارة لأفضل أوقات النشر؟", "acceptedAnswer": {"@type": "Answer", "text": "تستند إلى دراسات عامة لكل منصة (أيام الأسبوع × 6 فترات يومية)، وتقدم توجيهًا تقريبيًا لا قاعدة ثابتة."}}, {"@type": "Question", "name": "هل تدعم الأداة اللغات غير العربية؟", "acceptedAnswer": {"@type": "Answer", "text": "تحلل أي نص، لكن قوالب إعادة الصياغة ومقاييس الخُطاف مُحسّنة للعربية، وقد تكون أقل دقة مع لغات أخرى."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تحليل منشورات التواصل الاجتماعي</h1>
+  <p class="page-sub">حلل منشوراتك عربيًا دون اتصال: درجة انتشار، تفكيك الجملة الافتتاحية، مقارنة تفاعل، خريطة أوقات، إعادة صياغة بنبرة الكاتب، حفظ وتصدير النتائج.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">هذه الأداة تمنحك تقييماً فورياً لانتشار منشورك وتفكيكاً لجملته الافتتاحية ومعدل تفاعل مقارنة بمجالك، مع خريطة حرارية لأفضل أوقات النشر وإعادة صياغة بنبرة الكاتب، وكل ذلك في المتصفح دون اتصال. الصق نص منشورك، واختر المنصة والمجال، ثم احصل على تحليل مفصل يشرح سبب نجاح المنشور وما يمكن تحسينه، مع حفظ النتائج وتصديرها. يمكنك أيضاً مقارنة النتيجة بمعايير مجالك، واستكشاف خريطة حرارية لأفضل أوقات النشر، ونسخ إعادة صياغة فورية، وحفظ التحليلات في localStorage وتصديرها. كل المعالجة محلية، ولا يتم إرسال أي بيانات إلى خادم.</p>
+
+<div class="app-container">
+  <div class="card">
+    <div class="row">
+      <label for="app-platform">المنصة</label>
+      <select id="app-platform" class="app-select">
+        <option value="twitter">X (تويتر)</option>
+        <option value="linkedin">لينكد إن</option>
+        <option value="instagram">إنستغرام</option>
+        <option value="facebook">فيسبوك</option>
+        <option value="threads">ثريدز</option>
+        <option value="other">أخرى</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="app-post-url">رابط المنشور (اختياري)</label>
+      <input type="url" id="app-post-url" placeholder="https://..." class="app-input">
+    </div>
+    <div class="row">
+      <label for="app-post-text">نص المنشور</label>
+      <textarea id="app-post-text" rows="6" placeholder="الصق نص المنشور هنا..." class="app-textarea"></textarea>
+    </div>
+    <div class="row">
+      <label for="app-domain">مجال المحتوى</label>
+      <select id="app-domain" class="app-select">
+        <option value="tech">تقنية وبرمجة</option>
+        <option value="business">أعمال وريادة</option>
+        <option value="marketing">تسويق ومبيعات</option>
+        <option value="education">تعليم وتدريب</option>
+        <option value="health">صحة ولياقة</option>
+        <option value="finance">مالية واستثمار</option>
+        <option value="lifestyle">نمط حياة</option>
+        <option value="general">عام</option>
+      </select>
+    </div>
+    <div class="row">
+      <button id="app-analyze" class="button">تحليل المنشور</button>
+      <button id="app-clear" class="button sec">مسح</button>
+    </div>
+  </div>
+
+  <div class="card app-results" style="display:none">
+    <h3>نتائج التحليل</h3>
+
+    <div class="row">
+      <div class="out">
+        <div class="big" id="app-reach-score">—</div>
+        <div>درجة الانتشار التقديرية (0-100)</div>
+      </div>
+      <div class="out">
+        <div class="big" id="app-engagement-rate">—</div>
+        <div>معدل التفاعل المتوقع %</div>
+      </div>
+      <div class="out">
+        <div class="big" id="app-vs-benchmark">—</div>
+        <div>مقارنة بالمعايير %</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="out app-full">
+        <h4>تفكيك الجملة الافتتاحية والخُطاف</h4>
+        <div id="app-hook-analysis" class="app-analysis-text">—</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="out app-full">
+        <h4>خريطة حرارية لأفضل أوقات النشر</h4>
+        <div id="app-heatmap-labels" class="app-heatmap-labels"></div>
+        <div id="app-heatmap" class="app-heatmap"></div>
+        <div id="app-best-times" class="app-best-times"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="out app-full">
+        <h4>إعادة صياغة بنبرة الكاتب</h4>
+        <div class="row">
+          <label for="app-tone">اختر القالب</label>
+          <select id="app-tone" class="app-select">
+            <option value="original">الأصلية (كما هي)</option>
+            <option value="professional">مهنية رسمية</option>
+            <option value="friendly">ودية محفزة</option>
+            <option value="storytelling">سردية قصصية</option>
+            <option value="authority">خبيرية موثوقة</option>
+            <option value="minimal">مختصرة مباشرة</option>
+          </select>
+        </div>
+        <textarea id="app-rewrite" rows="5" readonly class="app-textarea"></textarea>
+        <div class="row">
+          <button id="app-copy-rewrite" class="button sec">نسخ إعادة الصياغة</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <div class="out app-full">
+        <h4>ماذا نجح في هذا المنشور؟</h4>
+        <div id="app-success-factors" class="app-analysis-text">—</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <button id="app-save" class="button">حفظ التحليل</button>
+      <button id="app-export" class="button sec">تصدير JSON</button>
+      <button id="app-history" class="button sec">عرض المحفوظات</button>
+    </div>
+  </div>
+
+  <div class="card app-history-panel" style="display:none">
+    <div class="row">
+      <h3>المحفوظات</h3>
+      <button id="app-close-history" class="button sec">إغلاق</button>
+    </div>
+    <div id="app-history-list" class="app-history-list"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة دون اتصال بالإنترنت؟</h3><p>نعم، تعمل بالكامل في المتصفح دون أي طلبات شبكة، وتعتمد على خوارزميات محلية وبيانات معايير مخزنة في الكود.</p><h3>كيف تُحسب درجة الانتشار التقديرية؟</h3><p>خوارزمية محلية تحلل طول النص، وجود أسئلة، أرقام، هاشتاغز، منشنز، إيموجي، وهيكل الفقرات، مع تعديل حسب المنصة المختارة.</p><h3>هل يمكن حفظ تحليلات متعددة والرجوع إليها؟</h3><p>نعم، يُحفظ حتى 50 تحليل في localStorage مع الطابع الزمني، ويمكن عرضها واستعادتها أو تصديرها كملف JSON.</p><h3>ما دقة خريطة الحرارة لأفضل أوقات النشر؟</h3><p>تستند إلى دراسات عامة لكل منصة (أيام الأسبوع × 6 فترات يومية)، وتقدم توجيهًا تقريبيًا لا قاعدة ثابتة.</p><h3>هل تدعم الأداة اللغات غير العربية؟</h3><p>تحلل أي نص، لكن قوالب إعادة الصياغة ومقاييس الخُطاف مُحسّنة للعربية، وقد تكون أقل دقة مع لغات أخرى.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="retro-audio-deck.html" style="color:var(--gold-bright);font-weight:700">مشغّل صوتيات محلي بأسلوب الثمانينيات مع محلل طيف ومعادل صوت</a><span style="opacity:.75"> — مشغّل صوتيات يعمل بالكامل في متصفحك: اسحب ملفاتك MP3 وFLAC وOGG وWAV، واستمتع بقائمة تشغيل ومحلل طيف حيّ…</span></li><li style="margin:.5rem 0"><a href="prayer-times-qibla.html" style="color:var(--gold-bright);font-weight:700">أوقات الصلاة واتجاه القبلة حسب موقعك</a><span style="opacity:.75"> — احسب أوقات الصلاة الخمس وزاوية القبلة حسب موقعك والتاريخ (بدون إنترنت)، مع حفظ الإحداثيات محلياً في المتصفح…</span></li><li style="margin:.5rem 0"><a href="privacy-pulse-analytics.html" style="color:var(--gold-bright);font-weight:700">متتبع زيارات محلي</a><span style="opacity:.75"> — تتبع زيارات صفحاتك يوميًا بدون خادم أو حساب. اعرض إحصائيات تفاعلية ورسومًا بيانية وصدّر واستورد بياناتك…</span></li><li style="margin:.5rem 0"><a href="private-calorie-diary.html" style="color:var(--gold-bright);font-weight:700">حاسبة السعرات والماكروز ودفتر الطعام اليومي في المتصفح</a><span style="opacity:.75"> — سجّل طعامك وشرابك مقابل هدف يومي من السعرات والماكروز يُحسب من طولك ووزنك وعمرك ونشاطك، مع قاعدة أطعمة…</span></li><li style="margin:.5rem 0"><a href="private-newsletter-vault.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور</a><span style="opacity:.75"> — أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-24 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const platform = $('app-platform');
+  const postUrl = $('app-post-url');
+  const postText = $('app-post-text');
+  const domain = $('app-domain');
+  const analyzeBtn = $('app-analyze');
+  const clearBtn = $('app-clear');
+  const results = document.querySelector('.app-results');
+  const historyPanel = document.querySelector('.app-history-panel');
+  const historyList = $('app-history-list');
+  const toneSelect = $('app-tone');
+  const rewriteField = $('app-rewrite');
+
+  const benchmarks = {
+    tech: { avgEngagement: 3.2, avgReach: 15000 },
+    business: { avgEngagement: 2.8, avgReach: 12000 },
+    marketing: { avgEngagement: 4.1, avgReach: 18000 },
+    education: { avgEngagement: 3.5, avgReach: 10000 },
+    health: { avgEngagement: 4.5, avgReach: 22000 },
+    finance: { avgEngagement: 2.5, avgReach: 8000 },
+    lifestyle: { avgEngagement: 5.2, avgReach: 25000 },
+    general: { avgEngagement: 3.0, avgReach: 10000 }
+  };
+
+  const heatmapData = {
+    twitter: [[0.3,0.2,0.1,0.1,0.2,0.4,0.6],[0.4,0.3,0.2,0.2,0.3,0.5,0.7],[0.6,0.5,0.4,0.4,0.5,0.7,0.8],[0.8,0.7,0.6,0.6,0.7,0.9,0.9],[0.9,0.8,0.7,0.7,0.8,0.9,0.8],[0.7,0.6,0.5,0.5,0.6,0.7,0.6]],
+    linkedin: [[0.2,0.1,0.1,0.1,0.1,0.1,0.1],[0.5,0.4,0.3,0.3,0.4,0.2,0.1],[0.8,0.7,0.6,0.6,0.7,0.3,0.1],[0.9,0.8,0.7,0.7,0.8,0.3,0.1],[0.7,0.6,0.5,0.5,0.6,0.2,0.1],[0.3,0.2,0.1,0.1,0.2,0.1,0.1]],
+    instagram: [[0.2,0.2,0.1,0.1,0.2,0.4,0.5],[0.3,0.3,0.2,0.2,0.3,0.5,0.6],[0.5,0.4,0.3,0.3,0.4,0.7,0.8],[0.7,0.6,0.5,0.5,0.6,0.8,0.9],[0.8,0.7,0.6,0.6,0.7,0.9,0.9],[0.6,0.5,0.4,0.4,0.5,0.7,0.7]],
+    facebook: [[0.3,0.2,0.1,0.1,0.2,0.4,0.5],[0.4,0.3,0.2,0.2,0.3,0.5,0.6],[0.6,0.5,0.4,0.4,0.5,0.7,0.8],[0.7,0.6,0.5,0.5,0.6,0.8,0.9],[0.8,0.7,0.6,0.6,0.7,0.9,0.9],[0.5,0.4,0.3,0.3,0.4,0.6,0.6]],
+    threads: [[0.2,0.2,0.1,0.1,0.2,0.4,0.5],[0.3,0.3,0.2,0.2,0.3,0.5,0.6],[0.5,0.4,0.3,0.3,0.4,0.7,0.8],[0.7,0.6,0.5,0.5,0.6,0.8,0.9],[0.8,0.7,0.6,0.6,0.7,0.9,0.9],[0.6,0.5,0.4,0.4,0.5,0.7,0.7]],
+    other: [[0.3,0.2,0.1,0.1,0.2,0.3,0.4],[0.4,0.3,0.2,0.2,0.3,0.4,0.5],[0.5,0.4,0.3,0.3,0.4,0.5,0.6],[0.6,0.5,0.4,0.4,0.5,0.6,0.7],[0.7,0.6,0.5,0.5,0.6,0.7,0.7],[0.4,0.3,0.2,0.2,0.3,0.4,0.4]]
+  };
+
+  const hooks = [
+    { pattern: /^كيف\s/, type: 'سؤال استفتاحي', strength: 'عالي' },
+    { pattern: /^لماذا\s/, type: 'سؤال تحليلي', strength: 'عالي' },
+    { pattern: /^\d+\s/, type: 'رقم أو إحصائية', strength: 'عالي' },
+    { pattern: /^(أسرار|سر|خدعة|حيلة)\s/, type: 'وعد بقيمة خفية', strength: 'عالي' },
+    { pattern: /^(خطأ|أخطاء|لا تفعل)\s/, type: 'تحذير من الفوت', strength: 'متوسط' },
+    { pattern: /^(أنا|قصتي|عندما)\s/, type: 'سرد شخصي', strength: 'متوسط' },
+    { pattern: /^(تخيل|تصور)\s/, type: 'تصور مستقبلي', strength: 'متوسط' },
+    { pattern: /^(الحقيقة|الواقع|صحيح)\s/, type: 'مواجهة معتقد', strength: 'عالي' }
+  ];
+
+  const toneTemplates = {
+    professional: (text) => text.replace(/(!|\?)/g, '.').replace(/(أهلاً|مرحباً|يا)/g, '').trim() + '.',
+    friendly: (text) => 'أهلاً! ' + text.replace(/\./g, ' 😊').replace(/!/g, '! 🌟') + ' ✨',
+    storytelling: (text) => 'دعني أحكي لك... ' + text.replace(/^(.{0,50})/, 'في البداية، $1'),
+    authority: (text) => 'بناءً على خبرتي: ' + text.replace(/(أعتقد|أظن|ربما)/g, 'أؤكد').replace(/\?/g, '.'),
+    minimal: (text) => text.split(/[.!?؟]/).filter(function (s) { return s.trim(); }).slice(0, 2).join('. ') + '.'
+  };
+
+  const dayLabels = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+  const hourLabels = ['6ص', '9ص', '12م', '3م', '6م', '9م'];
+
+  function analyzeHook(text) {
+    const firstSentence = text.trim().split(/[.!?؟]/)[0] || text.trim().slice(0, 100);
+    const trimmed = firstSentence.trim();
+    for (let i = 0; i < hooks.length; i++) {
+      if (hooks[i].pattern.test(trimmed)) {
+        return { sentence: trimmed, type: hooks[i].type, strength: hooks[i].strength };
+      }
+    }
+    return { sentence: trimmed, type: 'افتتاحية عامة', strength: 'منخفض' };
+  }
+
+  function calculateReachScore(text, platformKey) {
+    let score = 30;
+    const length = text.length;
+    const hasQuestion = /\?|\؟/.test(text);
+    const hasNumbers = /\d/.test(text);
+    const hasHashtags = /#\w+/.test(text);
+    const hasMentions = /@\w+/.test(text);
+    const hasEmoji = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}]/u.test(text);
+    const lines = text.split('\n').filter(function (l) { return l.trim(); }).length;
+
+    if (length > 200) score += 10;
+    else if (length > 100) score += 5;
+    if (hasQuestion) score += 8;
+    if (hasNumbers) score += 7;
+    if (hasHashtags) score += 10;
+    if (hasMentions) score += 5;
+    if (hasEmoji) score += 6;
+    if (lines > 3) score += 5;
+    if (platformKey === 'linkedin' && length > 500) score += 5;
+    if (platformKey === 'twitter' && length < 280) score += 5;
+    return Math.min(100, Math.max(0, score));
+  }
+
+  function calculateEngagementRate(text, domainKey) {
+    const bench = benchmarks[domainKey] || benchmarks.general;
+    let rate = bench.avgEngagement;
+    const length = text.length;
+    const hasQuestion = /\?|\؟/.test(text);
+    const hasCTA = /(شارك|علّق|رأيك|ما رأيك|اضغط|تابع|اشترك)/i.test(text);
+    if (hasQuestion) rate *= 1.3;
+    if (hasCTA) rate *= 1.2;
+    if (length > 150 && length < 500) rate *= 1.1;
+    return Math.round(rate * 10) / 10;
+  }
+
+  function buildHeatmap(platformKey) {
+    const data = heatmapData[platformKey] || heatmapData.other;
+    const container = $('app-heatmap');
+    const labelsContainer = $('app-heatmap-labels');
+    labelsContainer.innerHTML = '';
+    dayLabels.forEach(function (d) {
+      const el = document.createElement('div');
+      el.textContent = d;
+      labelsContainer.appendChild(el);
+    });
+    container.innerHTML = '';
+    data.forEach(function (row, hIdx) {
+      row.forEach(function (val, dIdx) {
+        const cell = document.createElement('div');
+        cell.className = 'app-heatmap-cell';
+        const intensity = Math.round(val * 255);
+        cell.style.background = 'rgb(' + (255 - intensity) + ', ' + Math.round(50 + intensity * 0.5) + ', 50)';
+        cell.title = hourLabels[hIdx] + ' - ' + dayLabels[dIdx] + ': ' + Math.round(val * 100) + '%';
+        container.appendChild(cell);
+      });
+    });
+    const best = [];
+    data.forEach(function (row, hIdx) {
+      row.forEach(function (val, dIdx) {
+        if (val > 0.75) best.push(dayLabels[dIdx] + ' ' + hourLabels[hIdx]);
+      });
+    });
+    $('app-best-times').textContent = best.length ? 'أفضل الأوقات: ' + best.slice(0, 5).join('، ') : 'لا توجد أوقات مميزة بوضوح';
+  }
+
+  function analyzeSuccessFactors(text, reachScore) {
+    const factors = [];
+    if (/\?|\؟/.test(text)) factors.push('يحتوي على سؤال يثير الفضول ويدعو للتفاعل');
+    if (/\d/.test(text)) factors.push('يستخدم أرقامًا وإحصائيات تزيد المصداقية');
+    if (/#\w+/.test(text)) factors.push('يستفيد من الهاشتاقات للوصول لجمهور أوسع');
+    if (/@\w+/.test(text)) factors.push('يذكر حسابات أخرى مما يوسع دائرة الوصول');
+    if (/[\u{1F600}-\u{1F64F}]/u.test(text)) factors.push('يستخدم الإيموجي لإضافة نبرة بشرية');
+    if (text.split('\n').filter(function (l) { return l.trim(); }).length > 3) factors.push('مقسّم لفقرات يسهل القراءة السريعة');
+    if (/(شارك|علّق|رأيك|ما رأيك)/i.test(text)) factors.push('يحتوي على دعوة صريحة للتفاعل (CTA)');
+    if (/(أسرار|سر|خدعة|حيلة|خطأ)/i.test(text)) factors.push('يستخدم كلمة قوية تعد بقيمة فورية');
+    if (reachScore > 70) factors.push('بنية المنشور محسّنة لخوارزمية المنصة');
+    return factors.length ? factors : ['المنشور أساسي، يمكن تحسينه بإضافة أسئلة، أرقام، أو دعوة للتفاعل'];
+  }
+
+  function rewriteText(text, tone) {
+    if (tone === 'original') return text;
+    const fn = toneTemplates[tone];
+    return fn ? fn(text) : text;
+  }
+
+  function saveAnalysis(data) {
+    try {
+      const key = 'app_post_analyses';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.unshift(Object.assign({}, data, { timestamp: Date.now() }));
+      if (existing.length > 50) existing.splice(50);
+      localStorage.setItem(key, JSON.stringify(existing));
+      return true;
+    } catch (e) {
+      console.error('Save failed:', e);
+      return false;
+    }
+  }
+
+  function loadHistory() {
+    try {
+      const key = 'app_post_analyses';
+      const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function renderHistory() {
+    const items = loadHistory();
+    historyList.innerHTML = '';
+    if (!items.length) {
+      historyList.innerHTML = '<div class="app-history-item">لا توجد تحليلات محفوظة بعد</div>';
+      return;
+    }
+    items.forEach(function (item) {
+      const el = document.createElement('div');
+      el.className = 'app-history-item';
+      const date = new Date(item.timestamp || Date.now()).toLocaleString('ar-SA');
+      el.innerHTML = '<div class="app-history-date">' + date + '</div>' +
+        '<div class="app-history-preview">' + (item.platform || '') + ' | ' + (item.domain || '') + ' | انتشار: ' + (item.reachScore || '') + ' | تفاعل: ' + (item.engagementRate || '') + '%</div>';
+      el.addEventListener('click', function () { restoreAnalysis(item); });
+      historyList.appendChild(el);
+    });
+  }
+
+  function restoreAnalysis(item) {
+    platform.value = item.platform || 'twitter';
+    postUrl.value = item.postUrl || '';
+    postText.value = item.postText || '';
+    domain.value = item.domain || 'general';
+    toneSelect.value = item.tone || 'original';
+    analyzeBtn.click();
+    historyPanel.style.display = 'none';
+    rewriteField.value = item.rewrite || rewriteText(item.postText || '', toneSelect.value);
+    window.__lastAnalysis = Object.assign({}, item, { tone: toneSelect.value, rewrite: rewriteField.value });
+  }
+
+  function exportHistory() {
+    try {
+      const data = loadHistory();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'post-analyses-' + Date.now() + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('فشل التصدير: ' + e.message);
+    }
+  }
+
+  let lastAnalysis = null;
+
+  analyzeBtn.addEventListener('click', function () {
+    const text = postText.value.trim();
+    if (!text) {
+      alert('الرجاء إدخال نص المنشور');
+      return;
+    }
+    const p = platform.value;
+    const d = domain.value;
+    const reach = calculateReachScore(text, p);
+    const engagement = calculateEngagementRate(text, d);
+    const bench = benchmarks[d] || benchmarks.general;
+    const vsBench = bench.avgEngagement ? Math.round(((engagement - bench.avgEngagement) / bench.avgEngagement) * 100) : 0;
+
+    $('app-reach-score').textContent = reach;
+    $('app-engagement-rate').textContent = engagement + '%';
+    $('app-vs-benchmark').textContent = (vsBench >= 0 ? '+' : '') + vsBench + '%';
+
+    const hook = analyzeHook(text);
+    $('app-hook-analysis').textContent = 'الجملة: "' + hook.sentence + '"\nالنوع: ' + hook.type + '\nالقوة: ' + hook.strength;
+
+    buildHeatmap(p);
+
+    const factors = analyzeSuccessFactors(text, reach);
+    $('app-success-factors').textContent = factors.map(function (f, i) { return (i + 1) + '. ' + f; }).join('\n\n');
+
+    const rewrite = rewriteText(text, toneSelect.value);
+    rewriteField.value = rewrite;
+
+    results.style.display = 'block';
+    try { results.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+
+    lastAnalysis = {
+      platform: p,
+      postUrl: postUrl.value.trim(),
+      postText: text,
+      domain: d,
+      reachScore: reach,
+      engagementRate: engagement,
+      vsBenchmark: vsBench,
+      hook: hook,
+      successFactors: factors,
+      rewrite: rewrite,
+      tone: toneSelect.value
+    };
+    window.__lastAnalysis = lastAnalysis;
+  });
+
+  clearBtn.addEventListener('click', function () {
+    postUrl.value = '';
+    postText.value = '';
+    rewriteField.value = '';
+    toneSelect.value = 'original';
+    results.style.display = 'none';
+    historyPanel.style.display = 'none';
+    lastAnalysis = null;
+    window.__lastAnalysis = null;
+  });
+
+  $('app-save').addEventListener('click', function () {
+    const current = lastAnalysis || window.__lastAnalysis;
+    if (!current) {
+      alert('قم بتحليل منشور أولاً');
+      return;
+    }
+    current.rewrite = rewriteField.value;
+    current.tone = toneSelect.value;
+    if (saveAnalysis(current)) {
+      alert('تم الحفظ بنجاح');
+    } else {
+      alert('فشل الحفظ');
+    }
+  });
+
+  $('app-export').addEventListener('click', exportHistory);
+
+  $('app-history').addEventListener('click', function () {
+    renderHistory();
+    historyPanel.style.display = historyPanel.style.display === 'block' ? 'none' : 'block';
+  });
+
+  $('app-close-history').addEventListener('click', function () {
+    historyPanel.style.display = 'none';
+  });
+
+  toneSelect.addEventListener('change', function () {
+    const current = lastAnalysis || window.__lastAnalysis;
+    if (current) {
+      const rewrite = rewriteText(current.postText, toneSelect.value);
+      rewriteField.value = rewrite;
+      current.rewrite = rewrite;
+      current.tone = toneSelect.value;
+    }
+  });
+
+  $('app-copy-rewrite').addEventListener('click', function () {
+    const value = rewriteField.value;
+    if (!value) {
+      alert('لا توجد إعادة صياغة للنسخ');
+      return;
+    }
+    try {
+      rewriteField.select();
+      document.execCommand('copy');
+      alert('تم النسخ');
+    } catch (e) {
+      alert('فشل النسخ');
+    }
+  });
+})();
+</script>
+</body>
+</html>
