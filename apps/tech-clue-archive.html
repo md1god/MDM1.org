@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة كشف تقنيات المواقع | MDM1</title>
+<meta name="description" content="أداة لحفظ وفهرسة بصمات التقنيات للمواقع وتحليلها محلياً دون اتصال بالإنترنت">
+<link rel="canonical" href="https://mdm1.org/apps/tech-clue-archive.html">
+<meta property="og:title" content="أداة كشف تقنيات المواقع">
+<meta property="og:description" content="أداة لحفظ وفهرسة بصمات التقنيات للمواقع وتحليلها محلياً دون اتصال بالإنترنت">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/tech-clue-archive.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 1rem; }
+.app h2 { margin: 0 0 0.75rem 0; color: var(--gold); font-size: 1.1rem; }
+.app .row { align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+.app label { min-width: 120px; color: var(--light); }
+.app input, .app select, .app textarea { flex: 1; min-width: 200px; background: var(--dark); color: var(--light); border: 1px solid var(--gold-dim); padding: 0.5rem; }
+.app textarea { resize: vertical; }
+.app .out { background: var(--dark); border: 1px solid var(--gold-dim); padding: 0.75rem; margin: 0.5rem 0; min-height: 3rem; }
+.app-techlist, .app-savedlist { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
+.app-techitem, .app-saveditem { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--dark); border: 1px solid var(--gold-dim); }
+.app-techname { color: var(--gold-bright); }
+.app-techcat { color: var(--light); opacity: 0.8; }
+.app-savedinfo { display: flex; flex-direction: column; gap: 0.25rem; }
+.app-savedurl { color: var(--gold-bright); }
+.app-savedmeta { color: var(--light); opacity: 0.7; font-size: 0.9rem; }
+.app-actions { display: flex; gap: 0.5rem; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة كشف تقنيات المواقع وفهرستها", "url": "https://mdm1.org/apps/tech-clue-archive.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة بدون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع العمليات تتم محلياً داخل متصفحك ولا يتم إرسال أي بيانات إلى خوادم خارجية."}}, {"@type": "Question", "name": "كيف يتم حفظ البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم حفظ المواقع وقوائم العملاء في التخزين المحلي للمتصفح باستخدام localStorage مع معالجة الأخطاء."}}, {"@type": "Question", "name": "هل يمكن تصدير البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تصدير جميع البيانات بصيغة JSON واستيرادها لاحقاً في نفس المتصفح أو متصفح آخر."}}, {"@type": "Question", "name": "هل تكشف الأداة جميع التقنيات؟", "acceptedAnswer": {"@type": "Answer", "text": "الأداة تستخدم مكتبة محلية من الأنماط الشائعة للكشف عن تقنيات محددة، وقد لا تكشف عن تقنيات مخصصة أو نادرة."}}, {"@type": "Question", "name": "هل يمكنني البحث في المواقع المحفوظة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك البحث والتصفية حسب اسم التقنية أو اسم الموقع بسهولة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة كشف تقنيات المواقع وفهرستها</h1>
+  <p class="page-sub">أداة لحفظ وفهرسة بصمات التقنيات للمواقع وتحليلها محلياً دون اتصال بالإنترنت</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بإيجاز: أداة تعمل بالكامل داخل متصفحك لاكتشاف تقنيات المواقع وحفظها محلياً. تتيح لك هذه الأداة إدخال عنوان الموقع أو لصق شفرة HTML يدوياً، ثم تقارنها مع مكتبة محلية من الأنماط الشائعة للكشف عن أنظمة إدارة المحتوى وأطر العمل وأدوات التحليلات والمدفوعات. يمكنك تصنيف المواقع حسب التقنية وبناء قوائم العملاء المحتملين وحفظها في التخزين المحلي للمتصفح دون أي اتصال بالإنترنت أو خوادم خارجية، مما يضمن خصوصية تامة لبياناتك ويسمح لك بالعمل في أي وقت.</p>
+
+<div class="app">
+  <div class="card">
+    <h2>إدخال البيانات</h2>
+    <div class="row">
+      <label for="siteUrl">عنوان الموقع</label>
+      <input id="siteUrl" type="text" placeholder="example.com" />
+    </div>
+    <div class="divider"></div>
+    <div>
+      <label for="htmlInput">أو لصق شفرة HTML يدوياً</label>
+      <textarea id="htmlInput" rows="6" placeholder="<html>...</html>"></textarea>
+    </div>
+    <div class="row">
+      <button id="detectBtn">كشف التقنيات</button>
+      <button id="clearInputBtn" class="sec">مسح المدخلات</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>نتائج الكشف</h2>
+    <div id="resultStatus" class="out">لم يتم الكشف بعد</div>
+    <div id="techList" class="app-techlist"></div>
+    <div class="row">
+      <button id="saveSiteBtn">حفظ الموقع</button>
+      <button id="addToListBtn" class="sec">إضافة إلى قائمة العملاء</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>تصفية وبحث</h2>
+    <div class="row">
+      <label for="filterTech">تصفية حسب التقنية</label>
+      <select id="filterTech">
+        <option value="all">الكل</option>
+      </select>
+    </div>
+    <div class="row">
+      <input id="searchSaved" type="text" placeholder="بحث في المواقع المحفوظة..." />
+      <button id="applyFilterBtn" class="sec">تطبيق</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>المواقع المحفوظة</h2>
+    <div class="row">
+      <span class="badge">المجموع: <span id="savedCount" class="big">0</span></span>
+      <span class="badge">في القائمة: <span id="listCount" class="big">0</span></span>
+    </div>
+    <div id="savedList" class="app-savedlist"></div>
+    <div class="row">
+      <button id="exportBtn">تصدير JSON</button>
+      <button id="importBtn" class="sec">استيراد JSON</button>
+      <input id="importFile" type="file" accept="application/json" style="display:none" />
+    </div>
+    <div class="row">
+      <button id="clearAllBtn" class="sec">مسح الكل</button>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة بدون اتصال بالإنترنت؟</h3><p>نعم، جميع العمليات تتم محلياً داخل متصفحك ولا يتم إرسال أي بيانات إلى خوادم خارجية.</p><h3>كيف يتم حفظ البيانات؟</h3><p>يتم حفظ المواقع وقوائم العملاء في التخزين المحلي للمتصفح باستخدام localStorage مع معالجة الأخطاء.</p><h3>هل يمكن تصدير البيانات؟</h3><p>نعم، يمكنك تصدير جميع البيانات بصيغة JSON واستيرادها لاحقاً في نفس المتصفح أو متصفح آخر.</p><h3>هل تكشف الأداة جميع التقنيات؟</h3><p>الأداة تستخدم مكتبة محلية من الأنماط الشائعة للكشف عن تقنيات محددة، وقد لا تكشف عن تقنيات مخصصة أو نادرة.</p><h3>هل يمكنني البحث في المواقع المحفوظة؟</h3><p>نعم، يمكنك البحث والتصفية حسب اسم التقنية أو اسم الموقع بسهولة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="vertical-clip-reframe-studio.html" style="color:var(--gold-bright);font-weight:700">أداة تقطيع الفيديو وإعادة تأطيره 9:16 مع ترجمات عربية</a><span style="opacity:.75"> — استورد فيديو، قطّعه إلى مقاطع قصيرة، أعد تأطيره 9:16 بالسحب والاقتصاص، أضف ترجمات عربية بتوقيت يدوي، عاين…</span></li><li style="margin:.5rem 0"><a href="vocal-free-studio.html" style="color:var(--gold-bright);font-weight:700">أداة إزالة الصوت الغنائي من ملفات الموسيقى</a><span style="opacity:.75"> — ترفع ملفًا موسيقيًا وتستخلص نسخة خالية تقريبًا من الغناء بالاعتماد على إزالة القناة الوسطى عبر WebAudio، مع…</span></li><li style="margin:.5rem 0"><a href="voice-agent-studio.html" style="color:var(--gold-bright);font-weight:700">أداة بناء وكيل مكالمة صوتي بدون كود للمشاريع الصغيرة</a><span style="opacity:.75"> — اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً…</span></li><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="arabic-text-authenticity-lab.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل النصوص العربية</a><span style="opacity:.75"> — أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-24 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const patterns = [
+    {name: 'WordPress', cat: 'CMS', re: /(wp-content|wp-includes|wordpress)/i},
+    {name: 'Drupal', cat: 'CMS', re: /(drupal|sites\/default)/i},
+    {name: 'Joomla', cat: 'CMS', re: /(joomla|com_content)/i},
+    {name: 'Shopify', cat: 'متجر', re: /(shopify|myshopify)/i},
+    {name: 'WooCommerce', cat: 'متجر', re: /(woocommerce)/i},
+    {name: 'Magento', cat: 'متجر', re: /(magento|mage\/)/i},
+    {name: 'React', cat: 'إطار عمل', re: /(react|_react)/i},
+    {name: 'Vue.js', cat: 'إطار عمل', re: /(vue\.js|vue\.min)/i},
+    {name: 'Angular', cat: 'إطار عمل', re: /(angular|ng-)/i},
+    {name: 'jQuery', cat: 'مكتبة', re: /(jquery)/i},
+    {name: 'Google Analytics', cat: 'تحليلات', re: /(google-analytics|gtag|ga\.js)/i},
+    {name: 'Google Tag Manager', cat: 'تحليلات', re: /(gtm\.js|googletagmanager)/i},
+    {name: 'Facebook Pixel', cat: 'تحليلات', re: /(fbq|facebook\.net)/i},
+    {name: 'Stripe', cat: 'مدفوعات', re: /(stripe\.com|stripe\.js)/i},
+    {name: 'PayPal', cat: 'مدفوعات', re: /(paypal\.com)/i}
+  ];
+
+  const siteUrl = document.getElementById('siteUrl');
+  const htmlInput = document.getElementById('htmlInput');
+  const detectBtn = document.getElementById('detectBtn');
+  const clearInputBtn = document.getElementById('clearInputBtn');
+  const resultStatus = document.getElementById('resultStatus');
+  const techList = document.getElementById('techList');
+  const saveSiteBtn = document.getElementById('saveSiteBtn');
+  const addToListBtn = document.getElementById('addToListBtn');
+  const filterTech = document.getElementById('filterTech');
+  const searchSaved = document.getElementById('searchSaved');
+  const applyFilterBtn = document.getElementById('applyFilterBtn');
+  const savedList = document.getElementById('savedList');
+  const savedCount = document.getElementById('savedCount');
+  const listCount = document.getElementById('listCount');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFile = document.getElementById('importFile');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+
+  let currentTech = [];
+  let savedSites = [];
+  let clientList = [];
+
+  function loadData(){
+    try {
+      const s = localStorage.getItem('techSites');
+      if(s) savedSites = JSON.parse(s);
+      const c = localStorage.getItem('techClients');
+      if(c) clientList = JSON.parse(c);
+    } catch(e) { savedSites = []; clientList = []; }
+    updateCounts();
+    renderSaved();
+    updateFilter();
+  }
+
+  function saveData(){
+    try {
+      localStorage.setItem('techSites', JSON.stringify(savedSites));
+      localStorage.setItem('techClients', JSON.stringify(clientList));
+    } catch(e) {}
+    updateCounts();
+  }
+
+  function updateCounts(){
+    savedCount.textContent = savedSites.length;
+    listCount.textContent = clientList.length;
+  }
+
+  function updateFilter(){
+    const cats = new Set();
+    patterns.forEach(p=>cats.add(p.cat));
+    filterTech.innerHTML = '<option value="all">الكل</option>';
+    Array.from(cats).sort().forEach(cat=>{
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      filterTech.appendChild(opt);
+    });
+  }
+
+  detectBtn.addEventListener('click', function(){
+    const url = siteUrl.value.trim();
+    const html = htmlInput.value;
+    if(!url && !html){
+      resultStatus.textContent = 'يرجى إدخال عنوان موقع أو لصق شفرة HTML';
+      techList.innerHTML = '';
+      currentTech = [];
+      return;
+    }
+    const content = (url + ' ' + html).toLowerCase();
+    const found = [];
+    patterns.forEach(p=>{
+      if(p.re.test(content)) found.push({name: p.name, cat: p.cat});
+    });
+    currentTech = found;
+    if(found.length === 0){
+      resultStatus.textContent = 'لم يتم العثور على تقنيات معروفة في المدخلات';
+      techList.innerHTML = '';
+      return;
+    }
+    resultStatus.textContent = 'تم العثور على ' + found.length + ' تقنية';
+    techList.innerHTML = '';
+    found.forEach(f=>{
+      const item = document.createElement('div');
+      item.className = 'app-techitem';
+      const name = document.createElement('span');
+      name.className = 'app-techname';
+      name.textContent = f.name;
+      const cat = document.createElement('span');
+      cat.className = 'app-techcat';
+      cat.textContent = f.cat;
+      item.appendChild(name);
+      item.appendChild(cat);
+      techList.appendChild(item);
+    });
+  });
+
+  clearInputBtn.addEventListener('click', function(){
+    siteUrl.value = '';
+    htmlInput.value = '';
+    resultStatus.textContent = 'لم يتم الكشف بعد';
+    techList.innerHTML = '';
+    currentTech = [];
+  });
+
+  saveSiteBtn.addEventListener('click', function(){
+    const url = siteUrl.value.trim() || 'غير محدد';
+    if(currentTech.length === 0){
+      resultStatus.textContent = 'لا توجد تقنيات للحفظ';
+      return;
+    }
+    const entry = {
+      id: Date.now().toString(),
+      url: url,
+      tech: currentTech.slice(),
+      date: new Date().toISOString()
+    };
+    savedSites.push(entry);
+    saveData();
+    renderSaved();
+    resultStatus.textContent = 'تم حفظ الموقع بنجاح';
+  });
+
+  addToListBtn.addEventListener('click', function(){
+    const url = siteUrl.value.trim() || 'غير محدد';
+    if(currentTech.length === 0){
+      resultStatus.textContent = 'لا توجد تقنيات للإضافة';
+      return;
+    }
+    const exists = clientList.find(c=>c.url === url);
+    if(exists){
+      resultStatus.textContent = 'الموقع موجود بالفعل في قائمة العملاء';
+      return;
+    }
+    const entry = {
+      id: Date.now().toString(),
+      url: url,
+      tech: currentTech.slice(),
+      date: new Date().toISOString()
+    };
+    clientList.push(entry);
+    saveData();
+    renderSaved();
+    resultStatus.textContent = 'تم الإضافة إلى قائمة العملاء المحتملين';
+  });
+
+  function renderSaved(){
+    const filter = filterTech.value;
+    const search = searchSaved.value.trim().toLowerCase();
+    savedList.innerHTML = '';
+    let items = savedSites.slice();
+    if(filter !== 'all'){
+      items = items.filter(it=>it.tech.some(t=>t.cat === filter));
+    }
+    if(search){
+      items = items.filter(it=>it.url.toLowerCase().includes(search));
+    }
+    if(items.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'out';
+      empty.textContent = 'لا توجد مواقع محفوظة';
+      savedList.appendChild(empty);
+      return;
+    }
+    items.forEach(it=>{
+      const item = document.createElement('div');
+      item.className = 'app-saveditem';
+      const info = document.createElement('div');
+      info.className = 'app-savedinfo';
+      const url = document.createElement('div');
+      url.className = 'app-savedurl';
+      url.textContent = it.url;
+      const meta = document.createElement('div');
+      meta.className = 'app-savedmeta';
+      const techNames = it.tech.map(t=>t.name).join('، ');
+      meta.textContent = techNames + ' | ' + new Date(it.date).toLocaleDateString('ar');
+      info.appendChild(url);
+      info.appendChild(meta);
+      const actions = document.createElement('div');
+      actions.className = 'app-actions';
+      const del = document.createElement('button');
+      del.className = 'sec';
+      del.textContent = 'حذف';
+      del.addEventListener('click', function(){
+        savedSites = savedSites.filter(s=>s.id !== it.id);
+        clientList = clientList.filter(c=>c.id !== it.id);
+        saveData();
+        renderSaved();
+      });
+      actions.appendChild(del);
+      item.appendChild(info);
+      item.appendChild(actions);
+      savedList.appendChild(item);
+    });
+  }
+
+  applyFilterBtn.addEventListener('click', renderSaved);
+  searchSaved.addEventListener('input', renderSaved);
+  filterTech.addEventListener('change', renderSaved);
+
+  exportBtn.addEventListener('click', function(){
+    const data = {sites: savedSites, clients: clientList};
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tech-sites.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  importBtn.addEventListener('click', function(){
+    importFile.click();
+  });
+
+  importFile.addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        const data = JSON.parse(ev.target.result);
+        if(Array.isArray(data.sites)) savedSites = data.sites;
+        if(Array.isArray(data.clients)) clientList = data.clients;
+        saveData();
+        renderSaved();
+        resultStatus.textContent = 'تم الاستيراد بنجاح';
+      } catch(err) {
+        resultStatus.textContent = 'خطأ في استيراد الملف';
+      }
+    };
+    reader.readAsText(file);
+    importFile.value = '';
+  });
+
+  clearAllBtn.addEventListener('click', function(){
+    if(confirm('هل أنت متأكد من مسح جميع البيانات؟')){
+      savedSites = [];
+      clientList = [];
+      saveData();
+      renderSaved();
+      resultStatus.textContent = 'تم مسح جميع البيانات';
+    }
+  });
+
+  loadData();
+})();
+</script>
+</body>
+</html>
