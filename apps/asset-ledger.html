@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متتبع الأصول والمعاملات | MDM1</title>
+<meta name="description" content="تطبيق محلي لتسجيل الأصول والمعاملات وحساب الأرباح والخسائر مع إحصائيات ورسم بياني وحفظ على الجهاز فقط">
+<link rel="canonical" href="https://mdm1.org/apps/asset-ledger.html">
+<meta property="og:title" content="متتبع الأصول والمعاملات">
+<meta property="og:description" content="تطبيق محلي لتسجيل الأصول والمعاملات وحساب الأرباح والخسائر مع إحصائيات ورسم بياني وحفظ على الجهاز فقط">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/asset-ledger.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: grid; gap: 14px; }
+.app .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.app .row > div { min-width: 160px; flex: 1 1 160px; }
+.app h2 { margin: 4px 0 8px; }
+.app h3 { margin: 6px 0 8px; }
+.app canvas { width: 100%; max-width: 380px; border: 1px solid var(--gold-dim); border-radius: 6px; }
+.app .bar-wrap { margin: 6px 0; }
+.app .bar-label { font-size: 0.9em; }
+.app .bar-outer { width: 100%; background: var(--dark); border: 1px solid var(--gold-dim); height: 12px; border-radius: 6px; overflow: hidden; }
+.app .bar-inner { height: 12px; background: var(--gold); }
+.app .item { border: 1px solid var(--gold-dim); padding: 8px 10px; margin: 6px 0; border-radius: 6px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "متتبع الأصول والمعاملات المالية", "url": "https://mdm1.org/apps/asset-ledger.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحفظ التطبيق البيانات على خوادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع البيانات تحفظ محليًا في جهازك فقط عبر التخزين المحلي ولا ترسل إلى أي خوادم."}}, {"@type": "Question", "name": "هل يعمل التطبيق دون حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل في المتصفح دون خوادم أو حسابات، ويمكنك البدء مباشرةً بإضافة الأصول والمعاملات."}}, {"@type": "Question", "name": "كيف يحسب التطبيق الأرباح والخسائر؟", "acceptedAnswer": {"@type": "Answer", "text": "يحسب التطبيق صافي الفرق بين إجمالي قيمة الأصول وإجمالي الدخل مطروحًا منه إجمالي المصروفات، ويعرض النتيجة مع تمييزها كأرباح أو خسائر أو متساوية."}}, {"@type": "Question", "name": "هل يمكنني مسح البيانات أو استعادتها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، توجد أزرار لحفظ البيانات واستعادتها ومسحها بالكامل من التخزين المحلي حسب الحاجة."}}, {"@type": "Question", "name": "هل يعتمد التطبيق على موارد خارجية؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، لا يستخدم أي شبكات أو عناوين خارجية أو موارد محملة من الخارج، ويعمل بالكامل بالمتصفح."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">متتبع الأصول والمعاملات المالية</h1>
+  <p class="page-sub">تطبيق محلي لتسجيل الأصول والمعاملات وحساب الأرباح والخسائر مع إحصائيات ورسم بياني وحفظ على الجهاز فقط</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بإجابة سريعة، يعمل هذا التطبيق بالكامل داخل المتصفح دون خوادم أو حسابات، ويتيح لك تسجيل أصولك ومعاملاتك المالية يدويًا في أي وقت. يقوم التطبيق بحساب إجمالي الأصول، وإجمالي الدخل والمصروفات، وصافي الأرباح أو الخسائر بناءً على ما أدخلته فقط، ويعرض إحصائيات بسيطة عبر رسم بياني مباشر. جميع البيانات تحفظ محليًا في جهازك عبر التخزين المحلي ولا تغادره أبدًا، ويمكنك استعادتها أو مسحها عند الحاجة. كما يوفر التطبيق حالات فارغة ورسائل خطأ واضحة عند إدخال بيانات غير صالحة، مع الحفاظ على تصميم متناسق مع قالب الصفحة الحالي دون إضافة أي موارد خارجية.</p>
+
+<div class="app" dir="rtl">
+  <section class="card">
+    <h2>إضافة أصل جديد</h2>
+    <div class="row">
+      <div>
+        <label class="label">اسم الأصل</label>
+        <input id="asset_name" type="text" class="input" placeholder="مثال: أصل ثابت">
+      </div>
+      <div>
+        <label class="label">القيمة الابتدائية</label>
+        <input id="asset_init" type="number" step="0.01" min="0" class="input" placeholder="0.00">
+      </div>
+    </div>
+    <button id="add_asset">إضافة أصل</button>
+    <p id="asset_msg" class="out"></p>
+    <div class="divider"></div>
+    <h3>قائمة الأصول المسجلة</h3>
+    <div id="asset_list"></div>
+  </section>
+
+  <section class="card">
+    <h2>إضافة معاملة مالية</h2>
+    <div class="row">
+      <div>
+        <label class="label">نوع المعاملة</label>
+        <select id="tx_type" class="select">
+          <option value="income">دخل</option>
+          <option value="expense">مصروف</option>
+          <option value="buy">شراء أصل</option>
+          <option value="sell">بيع أصل</option>
+        </select>
+      </div>
+      <div>
+        <label class="label">المبلغ</label>
+        <input id="tx_amount" type="number" step="0.01" min="0" class="input" placeholder="0.00">
+      </div>
+      <div>
+        <label class="label">ربط بالأصل (اختياري)</label>
+        <select id="tx_asset" class="select">
+          <option value="">بدون ربط</option>
+        </select>
+      </div>
+    </div>
+    <label class="label">وصف المعاملة</label>
+    <textarea id="tx_desc" class="textarea" placeholder="اكتب وصفًا موجزًا للمعاملة"></textarea>
+    <button id="add_tx">إضافة معاملة</button>
+    <p id="tx_msg" class="out"></p>
+    <div class="divider"></div>
+    <h3>قائمة المعاملات المسجلة</h3>
+    <div id="tx_list"></div>
+  </section>
+
+  <section class="card">
+    <h2>حساب الأرباح والخسائر</h2>
+    <p>يحسب التطبيق صافي الفرق بناءً على الأصول والمعاملات المسجلة، مع عرض حالات فارغة عند عدم وجود بيانات كافية.</p>
+    <button id="calc_pl">حساب الأرباح والخسائر الآن</button>
+    <div class="out">
+      <div>إجمالي قيمة الأصول: <span class="big" id="pl_assets">0</span></div>
+      <div>إجمالي الدخل: <span class="big" id="pl_income">0</span></div>
+      <div>إجمالي المصروفات: <span class="big" id="pl_expense">0</span></div>
+      <div>صافي الأرباح أو الخسائر: <span class="big" id="pl_total">0</span> <span id="pl_badge" class="badge"></span></div>
+    </div>
+    <p id="pl_msg" class="out"></p>
+  </section>
+
+  <section class="card">
+    <h2>إحصائيات ورسم بياني</h2>
+    <p>يعرض التطبيق إحصائيات مبسطة كنسب بين الدخل والمصروفات وقيمة الأصول، مع رسم بياني نصي وبياني على القماش.</p>
+    <button id="draw_chart">تحديث الإحصائيات والرسم البياني</button>
+    <div class="out">
+      <div>نسبة الدخل: <span id="stat_inc">0%</span></div>
+      <div>نسبة المصروفات: <span id="stat_exp">0%</span></div>
+      <div>نسبة قيمة الأصول: <span id="stat_ast">0%</span></div>
+    </div>
+    <canvas id="stats_canvas" width="320" height="130"></canvas>
+    <div id="chart_bars"></div>
+    <p id="chart_msg" class="out"></p>
+  </section>
+
+  <section class="card">
+    <h2>حفظ واستعادة البيانات</h2>
+    <p>يمكنك حفظ جميع الأصول والمعاملات في التخزين المحلي لهذا المتصفح، أو استعادتها لاحقًا، أو مسحها بالكامل.</p>
+    <div class="row">
+      <button id="save_data">حفظ البيانات على الجهاز</button>
+      <button id="load_data" class="sec">استعادة البيانات المحفوظة</button>
+      <button id="clear_data" class="sec">مسح جميع البيانات</button>
+    </div>
+    <p id="data_msg" class="out"></p>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحفظ التطبيق البيانات على خوادم؟</h3><p>لا، جميع البيانات تحفظ محليًا في جهازك فقط عبر التخزين المحلي ولا ترسل إلى أي خوادم.</p><h3>هل يعمل التطبيق دون حساب؟</h3><p>نعم، يعمل بالكامل في المتصفح دون خوادم أو حسابات، ويمكنك البدء مباشرةً بإضافة الأصول والمعاملات.</p><h3>كيف يحسب التطبيق الأرباح والخسائر؟</h3><p>يحسب التطبيق صافي الفرق بين إجمالي قيمة الأصول وإجمالي الدخل مطروحًا منه إجمالي المصروفات، ويعرض النتيجة مع تمييزها كأرباح أو خسائر أو متساوية.</p><h3>هل يمكنني مسح البيانات أو استعادتها؟</h3><p>نعم، توجد أزرار لحفظ البيانات واستعادتها ومسحها بالكامل من التخزين المحلي حسب الحاجة.</p><h3>هل يعتمد التطبيق على موارد خارجية؟</h3><p>لا، لا يستخدم أي شبكات أو عناوين خارجية أو موارد محملة من الخارج، ويعمل بالكامل بالمتصفح.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="privacy-pulse-analytics.html" style="color:var(--gold-bright);font-weight:700">متتبع زيارات محلي</a><span style="opacity:.75"> — تتبع زيارات صفحاتك يوميًا بدون خادم أو حساب. اعرض إحصائيات تفاعلية ورسومًا بيانية وصدّر واستورد بياناتك…</span></li><li style="margin:.5rem 0"><a href="bilingual-reading-companion.html" style="color:var(--gold-bright);font-weight:700">قارئ نصوص ثنائي اللغة مع قاموس وترجمة مقارنة</a><span style="opacity:.75"> — تطبيق ويب عربي لقراءة النصوص بلغتين جنباً لجنب مع قاموس مدمج، تحديد كلمات للترجمة الفورية، وحفظ المصطلحات…</span></li><li style="margin:.5rem 0"><a href="browser-clip-studio.html" style="color:var(--gold-bright);font-weight:700">تقسيم الفيديو والصوت عند الصمت وإعادة التأطير وتصدير مقاطع جاهزة</a><span style="opacity:.75"> — أداة عربية تعمل داخل المتصفح لتقسيم الفيديو والصوت عند فترات الصمت، وإعادة التأطير إلى 9:16 أو مربّع، مع…</span></li><li style="margin:.5rem 0"><a href="browser-image-codec-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر ضغط الصور: تحويل وضغط PNG وJPEG وGIF وWebP داخل المتصفح</a><span style="opacity:.75"> — حوّل واضغط صور PNG وJPEG وGIF وWebP داخل المتصفح مع شريط جودة ومستويات جهد، واعرض نسبة التوفير وحجم الملف…</span></li><li style="margin:.5rem 0"><a href="browser-inventory-erp.html" style="color:var(--gold-bright);font-weight:700">برنامج إدارة المخزون والمبيعات والمشتريات والمالية للمتاجر</a><span style="opacity:.75"> — تطبيق عربي متكامل لإدارة المخزون والمبيعات والمشتريات والعملاء والموردين والمصروفات مع تقارير الأرباح…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-24 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var assets = [];
+  var txs = [];
+  var key = 'local_asset_tracker_v1';
+
+  function byId(id){ return document.getElementById(id); }
+  function num(v){ var n = parseFloat(v); return isNaN(n) ? NaN : n; }
+  function fmt(n){ return (Math.round(n*100)/100).toFixed(2); }
+
+  function renderAssets(){
+    var list = byId('asset_list'); list.innerHTML='';
+    if(assets.length===0){ var p=document.createElement('p'); p.textContent='لا توجد أصول مسجلة بعد.'; list.appendChild(p); refreshTxAssetSelect(); return; }
+    for(var i=0;i<assets.length;i++){
+      var a=assets[i];
+      var div=document.createElement('div'); div.className='item';
+      div.innerHTML='<div><strong>'+a.name+'</strong> <span class="badge">قيمة: '+fmt(a.init)+'</span></div>';
+      list.appendChild(div);
+    }
+    refreshTxAssetSelect();
+  }
+
+  function refreshTxAssetSelect(){
+    var sel=byId('tx_asset'); var cur=sel.value;
+    sel.innerHTML='<option value="">بدون ربط</option>';
+    for(var i=0;i<assets.length;i++){
+      var opt=document.createElement('option'); opt.value=String(i); opt.textContent=assets[i].name; sel.appendChild(opt);
+    }
+    if(assets.length===0){ sel.value=''; return; }
+    if(cur!=='' && parseInt(cur)>=0 && parseInt(cur)<assets.length){ sel.value=cur; } else { sel.value=''; }
+  }
+
+  function renderTxs(){
+    var list=byId('tx_list'); list.innerHTML='';
+    if(txs.length===0){ var p=document.createElement('p'); p.textContent='لا توجد معاملات مسجلة بعد.'; list.appendChild(p); return; }
+    for(var i=txs.length-1;i>=0;i--){
+      var t=txs[i];
+      var div=document.createElement('div'); div.className='item';
+      var typeMap={income:'دخل', expense:'مصروف', buy:'شراء أصل', sell:'بيع أصل'};
+      var assetStr='';
+      if(t.assetIndex!=='' && assets[parseInt(t.assetIndex)]){ assetStr=' | أصل: '+assets[parseInt(t.assetIndex)].name; }
+      div.innerHTML='<div><strong>'+typeMap[t.type]+'</strong> <span class="badge">مبلغ: '+fmt(t.amount)+'</span>'+assetStr+'</div><div>'+ (t.desc||'') +'</div>';
+      list.appendChild(div);
+    }
+  }
+
+  byId('add_asset').addEventListener('click', function(){
+    var name=byId('asset_name').value.trim();
+    var initv=num(byId('asset_init').value);
+    var msg=byId('asset_msg');
+    if(name===''){ msg.textContent='خطأ: يجب إدخال اسم الأصل.'; return; }
+    if(isNaN(initv) || initv<0){ msg.textContent='خطأ: يجب إدخال قيمة ابتدائية صالحة.'; return; }
+    assets.push({name:name, init:initv});
+    byId('asset_name').value=''; byId('asset_init').value='';
+    msg.textContent='تم إضافة الأصل بنجاح.';
+    renderAssets(); renderTxs();
+  });
+
+  byId('add_tx').addEventListener('click', function(){
+    var type=byId('tx_type').value;
+    var amountv=num(byId('tx_amount').value);
+    var aidx=byId('tx_asset').value;
+    var desc=byId('tx_desc').value.trim();
+    var msg=byId('tx_msg');
+    if(isNaN(amountv) || amountv<=0){ msg.textContent='خطأ: يجب إدخال مبلغ أكبر من صفر.'; return; }
+    if(type==='buy' && aidx===''){ msg.textContent='خطأ: معاملات شراء الأصل يجب ربطها بأصل مسجل.'; return; }
+    if(type==='sell' && aidx===''){ msg.textContent='خطأ: معاملات بيع الأصل يجب ربطها بأصل مسجل.'; return; }
+    txs.push({type:type, amount:amountv, assetIndex:aidx, desc:desc});
+    byId('tx_amount').value=''; byId('tx_desc').value=''; byId('tx_asset').value='';
+    msg.textContent='تم إضافة المعاملة بنجاح.';
+    renderTxs();
+  });
+
+  byId('calc_pl').addEventListener('click', function(){
+    var aSum=0, inc=0, exp=0;
+    for(var i=0;i<assets.length;i++){ aSum += assets[i].init; }
+    for(var j=0;j<txs.length;j++){
+      var t=txs[j];
+      if(t.type==='income'){ inc += t.amount; }
+      if(t.type==='expense'){ exp += t.amount; }
+      if(t.type==='buy'){ /* شراء لا يضيف دخل، يؤثر عبر الأصول */ }
+      if(t.type==='sell'){ /* بيع */ }
+    }
+    var total = aSum + inc - exp;
+    byId('pl_assets').textContent = fmt(aSum);
+    byId('pl_income').textContent = fmt(inc);
+    byId('pl_expense').textContent = fmt(exp);
+    byId('pl_total').textContent = fmt(total);
+    var badge=byId('pl_badge'); badge.textContent='';
+    if(total>0){ badge.textContent='أرباح'; }
+    else if(total<0){ badge.textContent='خسائر'; }
+    else { badge.textContent='متساوي'; }
+    var m=byId('pl_msg');
+    if(assets.length===0 && txs.length===0){ m.textContent='لا توجد بيانات كافية للحساب. أضف أصلًا أو معاملة أولًا.'; }
+    else { m.textContent='تم الحساب بناءً على البيانات المسجلة.'; }
+  });
+
+  function drawBars(incP, expP, astP){
+    var wrap=byId('chart_bars'); wrap.innerHTML='';
+    function addBar(label,p){
+      var w=document.createElement('div'); w.className='bar-wrap';
+      var l=document.createElement('div'); l.className='bar-label'; l.textContent=label+' '+p+'%';
+      var outb=document.createElement('div'); outb.className='bar-outer';
+      var inb=document.createElement('div'); inb.className='bar-inner'; inb.style.width = Math.max(2, p)+'%';
+      outb.appendChild(inb); w.appendChild(l); w.appendChild(outb); wrap.appendChild(w);
+    }
+    addBar('الدخل', incP); addBar('المصروفات', expP); addBar('الأصول', astP);
+  }
+
+  byId('draw_chart').addEventListener('click', function(){
+    var aSum=0, inc=0, exp=0;
+    for(var i=0;i<assets.length;i++){ aSum += assets[i].init; }
+    for(var j=0;j<txs.length;j++){
+      var t=txs[j];
+      if(t.type==='income'){ inc += t.amount; }
+      if(t.type==='expense'){ exp += t.amount; }
+    }
+    var totalAll = aSum + inc + exp;
+    var incP=0, expP=0, astP=0;
+    if(totalAll>0){
+      incP = Math.round((inc/totalAll)*100);
+      expP = Math.round((exp/totalAll)*100);
+      astP = Math.round((aSum/totalAll)*100);
+    }
+    byId('stat_inc').textContent = incP+'%';
+    byId('stat_exp').textContent = expP+'%';
+    byId('stat_ast').textContent = astP+'%';
+    drawBars(incP,expP,astP);
+    var ctx=byId('stats_canvas').getContext('2d');
+    ctx.clearRect(0,0,320,130);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold') || '#d4af37';
+    var x=20;
+    if(incP>0){ ctx.fillRect(x,10, incP*2.2, 18); x+=incP*2.2+10; }
+    if(expP>0){ ctx.fillRect(x,40, expP*2.2, 18); x+=expP*2.2+10; }
+    if(astP>0){ ctx.fillRect(x,70, astP*2.2, 18); }
+    var m=byId('chart_msg');
+    if(totalAll===0){ m.textContent='لا توجد بيانات كافية لعرض الإحصائيات. أضف أصلًا أو معاملة أولًا.'; }
+    else { m.textContent='تم تحديث الإحصائيات والرسم البياني.'; }
+  });
+
+  byId('save_data').addEventListener('click', function(){
+    try {
+      var data = JSON.stringify({assets:assets, txs:txs});
+      localStorage.setItem(key, data);
+      byId('data_msg').textContent='تم حفظ البيانات على الجهاز بنجاح.';
+    } catch(e){
+      byId('data_msg').textContent='خطأ: تعذر حفظ البيانات في هذا المتصفح.';
+    }
+  });
+
+  byId('load_data').addEventListener('click', function(){
+    try {
+      var raw = localStorage.getItem(key);
+      if(!raw){ byId('data_msg').textContent='لا توجد بيانات محفوظة للاستعادة.'; return; }
+      var data = JSON.parse(raw);
+      if(Array.isArray(data.assets)) assets=data.assets;
+      if(Array.isArray(data.txs)) txs=data.txs;
+      renderAssets(); renderTxs();
+      byId('data_msg').textContent='تم استعادة البيانات المحفوظة بنجاح.';
+    } catch(e){
+      byId('data_msg').textContent='خطأ: تعذر استعادة البيانات المحفوظة.';
+    }
+  });
+
+  byId('clear_data').addEventListener('click', function(){
+    try {
+      localStorage.removeItem(key);
+    } catch(e){}
+    assets=[]; txs=[];
+    renderAssets(); renderTxs();
+    byId('asset_msg').textContent=''; byId('tx_msg').textContent=''; byId('pl_msg').textContent=''; byId('chart_msg').textContent=''; byId('data_msg').textContent='تم مسح جميع البيانات.';
+    byId('pl_assets').textContent='0'; byId('pl_income').textContent='0'; byId('pl_expense').textContent='0'; byId('pl_total').textContent='0'; byId('pl_badge').textContent='';
+    byId('stat_inc').textContent='0%'; byId('stat_exp').textContent='0%'; byId('stat_ast').textContent='0%';
+    byId('chart_bars').innerHTML=''; var ctx=byId('stats_canvas').getContext('2d'); ctx.clearRect(0,0,320,130);
+  });
+
+  renderAssets(); renderTxs();
+})();
+</script>
+</body>
+</html>
