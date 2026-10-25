@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة إنشاء استطلاعات مصغرة | MDM1</title>
+<meta name="description" content="صمم أسئلة استطلاع مصغرة ومعاينة النموذج وحفظ الردود محليًا وتصديرها بصيغ JSON وCSV بسهولة داخل المتصفح.">
+<link rel="canonical" href="https://mdm1.org/apps/feedback-studio.html">
+<meta property="og:title" content="أداة إنشاء استطلاعات مصغرة">
+<meta property="og:description" content="صمم أسئلة استطلاع مصغرة ومعاينة النموذج وحفظ الردود محليًا وتصديرها بصيغ JSON وCSV بسهولة داخل المتصفح.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/feedback-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 16px; }
+.app .card { width: 100%; }
+.app .row { align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.app #optsWrap { margin-top: 10px; }
+.app #qlist { margin-top: 10px; white-space: normal; }
+.app #previewBox { margin-top: 10px; }
+.app #formBox { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+.app .qitem { padding: 8px 0; border-bottom: 1px solid var(--gold-dim); }
+.app .qitem:last-child { border-bottom: none; }
+.app #respList { margin-top: 10px; max-height: 200px; overflow: auto; }
+.app #expOut { width: 100%; margin-top: 8px; font-family: monospace; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تصميم استطلاعات الزوار", "url": "https://mdm1.org/apps/feedback-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تحفظ الأداة البيانات في أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع الأسئلة والردود تحفظ محليًا في متصفحك باستخدام localStorage فقط دون إرسال أي بيانات إلى الإنترنت."}}, {"@type": "Question", "name": "ما أنواع الأسئلة المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم الأداة أربعة أنواع: نص قصير، اختيار واحد، اختيارات متعددة، وقائمة منسدلة مع إمكانية إضافة خيارات مخصصة."}}, {"@type": "Question", "name": "كيف يمكنني تصدير الردود؟", "acceptedAnswer": {"@type": "Answer", "text": "بعد جمع الردود يمكنك تصديرها بصيغة JSON لنسخها كبيانات منظمة، أو بصيغة CSV لفتحها مباشرة في برامج جداول البيانات."}}, {"@type": "Question", "name": "هل أحتاج إلى حساب أو تسجيل دخول؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الأداة تعمل بالكامل داخل المتصفح دون الحاجة إلى حساب أو تسجيل دخول أو اتصال بالإنترنت بعد التحميل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تصميم استطلاعات الزوار</h1>
+  <p class="page-sub">صمم أسئلة استطلاع مصغرة ومعاينة النموذج وحفظ الردود محليًا وتصديرها بصيغ JSON وCSV بسهولة داخل المتصفح.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بسرعة يمكنك تصميم استطلاع مصغرة مخصص لجمع آراء الزوار دون الحاجة إلى أي أدوات خارجية أو حسابات معقدة. تعتمد هذه الأداة بالكامل على متصفحك حيث تتيح لك إضافة أسئلة بأنواع مختلفة مثل النص القصير أو الاختيار الواحد أو الاختيارات المتعددة أو القائمة المنسدلة، ثم معاينة النموذج مباشرة كما سيظهر للزوار. بعد جمع الردود يمكنك حفظها محليًا في متصفحك والرجوع إليها لاحقًا، أو تصديرها بصيغة JSON لنسخها إلى أنظمة أخرى، أو بصيغة CSV لفتحها في جداول البيانات. كل شيء يعمل دون اتصال بالإنترنت وبحفظ البيانات داخل جهازك فقط لضمان خصوصية بسيطة وسريعة.</p>
+
+<div class="app">
+  <section class="card">
+    <h2>تصميم الأسئلة</h2>
+    <div class="divider"></div>
+    <div class="row">
+      <div>
+        <label for="qtype">نوع السؤال</label>
+        <select id="qtype">
+          <option value="text">نص قصير</option>
+          <option value="radio">اختيار واحد</option>
+          <option value="checkbox">اختيارات متعددة</option>
+          <option value="select">قائمة منسدلة</option>
+        </select>
+      </div>
+      <div>
+        <label for="qtext">نص السؤال</label>
+        <input id="qtext" type="text" placeholder="اكتب سؤال الاستطلاع هنا">
+      </div>
+    </div>
+    <div id="optsWrap" style="display:none">
+      <label for="qopts">خيارات السؤال (افصل بفاصلة)</label>
+      <input id="qopts" type="text" placeholder="مثال: ممتاز، جيد، متوسط، ضعيف">
+    </div>
+    <div class="row">
+      <button id="addq">إضافة السؤال</button>
+      <button id="clearq" class="sec">مسح قائمة الأسئلة</button>
+    </div>
+    <div id="qlist" class="out"></div>
+  </section>
+
+  <section class="card">
+    <h2>معاينة النموذج</h2>
+    <div class="divider"></div>
+    <button id="preview">معاينة النموذج</button>
+    <div id="previewBox" class="out"></div>
+  </section>
+
+  <section class="card">
+    <h2>جمع الردود</h2>
+    <div class="divider"></div>
+    <div id="formBox"></div>
+    <div class="row">
+      <button id="submitResp">حفظ الرد</button>
+      <button id="clearResp" class="sec">مسح الردود المحفوظة</button>
+    </div>
+    <div>
+      <span class="badge">عدد الردود المحفوظة</span>
+      <div id="respCount" class="big">0</div>
+    </div>
+    <div id="respList" class="out"></div>
+  </section>
+
+  <section class="card">
+    <h2>تصدير الردود</h2>
+    <div class="divider"></div>
+    <div class="row">
+      <button id="expJson">تصدير JSON</button>
+      <button id="expCsv" class="sec">تصدير CSV</button>
+    </div>
+    <label for="expOut">نص التصدير</label>
+    <textarea id="expOut" rows="8" readonly></textarea>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تحفظ الأداة البيانات في أي خادم؟</h3><p>لا، جميع الأسئلة والردود تحفظ محليًا في متصفحك باستخدام localStorage فقط دون إرسال أي بيانات إلى الإنترنت.</p><h3>ما أنواع الأسئلة المدعومة؟</h3><p>تدعم الأداة أربعة أنواع: نص قصير، اختيار واحد، اختيارات متعددة، وقائمة منسدلة مع إمكانية إضافة خيارات مخصصة.</p><h3>كيف يمكنني تصدير الردود؟</h3><p>بعد جمع الردود يمكنك تصديرها بصيغة JSON لنسخها كبيانات منظمة، أو بصيغة CSV لفتحها مباشرة في برامج جداول البيانات.</p><h3>هل أحتاج إلى حساب أو تسجيل دخول؟</h3><p>لا، الأداة تعمل بالكامل داخل المتصفح دون الحاجة إلى حساب أو تسجيل دخول أو اتصال بالإنترنت بعد التحميل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="private-newsletter-vault.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور</a><span style="opacity:.75"> — أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء…</span></li><li style="margin:.5rem 0"><a href="form-field-mapper.html" style="color:var(--gold-bright);font-weight:700">أداة بناء النماذج الديناميكية</a><span style="opacity:.75"> — أداة بسيطة لبناء وإدارة نماذج ديناميكية مع حقول وأنواع وقواعد تحقق وحفظ محلي في المتصفح دون إعادة تحميل أو…</span></li><li style="margin:.5rem 0"><a href="lien-waiver-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تتبع نماذج إعفاء الرهن</a><span style="opacity:.75"> — أداة لتسجيل المشاريع والعملاء والمدفوعات وإنشاء نماذج إعفاء جزئي أو كلي مع حفظ محلي وإمكانية الطباعة مباشرة</span></li><li style="margin:.5rem 0"><a href="local-code-map.html" style="color:var(--gold-bright);font-weight:700">أداة توثيق الأكواد المحلية</a><span style="opacity:.75"> — توثيق ملفات المشروع تلقائياً وإنشاء فهرس وREADME ورسم تخطيطي للهيكل مع حفظ محلي دون إنترنت أو حسابات</span></li><li style="margin:.5rem 0"><a href="local-faceless-video-planner.html" style="color:var(--gold-bright);font-weight:700">أداة تخطيط الفيديوهات الطويلة بدون وجه</a><span style="opacity:.75"> — أداة عربية تعمل داخل المتصفح بلا خادم: قوالب سيناريو محسّنة للسيو للفيديوهات الطويلة بدون وجه، مخطط زمني على…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var qtype=document.getElementById('qtype');
+  var qtext=document.getElementById('qtext');
+  var qopts=document.getElementById('qopts');
+  var optsWrap=document.getElementById('optsWrap');
+  var addq=document.getElementById('addq');
+  var clearq=document.getElementById('clearq');
+  var qlist=document.getElementById('qlist');
+  var preview=document.getElementById('preview');
+  var previewBox=document.getElementById('previewBox');
+  var formBox=document.getElementById('formBox');
+  var submitResp=document.getElementById('submitResp');
+  var clearResp=document.getElementById('clearResp');
+  var respCount=document.getElementById('respCount');
+  var respList=document.getElementById('respList');
+  var expJson=document.getElementById('expJson');
+  var expCsv=document.getElementById('expCsv');
+  var expOut=document.getElementById('expOut');
+
+  var questions=[];
+  var responses=[];
+
+  function load(){
+    try{
+      var q=localStorage.getItem('app_q');
+      if(q){ questions=JSON.parse(q)||[]; }
+      var r=localStorage.getItem('app_r');
+      if(r){ responses=JSON.parse(r)||[]; }
+    }catch(e){}
+    renderQ();
+    renderResp();
+  }
+  function saveQ(){
+    try{ localStorage.setItem('app_q', JSON.stringify(questions)); }catch(e){}
+  }
+  function saveR(){
+    try{ localStorage.setItem('app_r', JSON.stringify(responses)); }catch(e){}
+  }
+
+  qtype.addEventListener('change', function(){
+    if(qtype.value==='radio'||qtype.value==='checkbox'||qtype.value==='select'){
+      optsWrap.style.display='block';
+    }else{
+      optsWrap.style.display='none';
+    }
+  });
+
+  addq.addEventListener('click', function(){
+    var txt=qtext.value.replace(/^\s+|\s+$/g,'');
+    if(txt===''){ alert('يرجى كتابة نص السؤال'); return; }
+    var item={id:Date.now(), type:qtype.value, text:txt, opts:[]};
+    if(item.type==='radio'||item.type==='checkbox'||item.type==='select'){
+      var o=qopts.value.replace(/^\s+|\s+$/g,'');
+      if(o===''){ alert('يرجى كتابة خيارات السؤال'); return; }
+      var parts=o.split(',');
+      for(var i=0;i<parts.length;i++){
+        var p=parts[i].replace(/^\s+|\s+$/g,'');
+        if(p!==''){ item.opts.push(p); }
+      }
+      if(item.opts.length===0){ alert('يرجى كتابة خيارات صحيحة'); return; }
+    }
+    questions.push(item);
+    qtext.value='';
+    qopts.value='';
+    saveQ();
+    renderQ();
+  });
+
+  clearq.addEventListener('click', function(){
+    if(questions.length===0){ return; }
+    if(!confirm('مسح جميع الأسئلة؟')){ return; }
+    questions=[];
+    saveQ();
+    renderQ();
+    previewBox.innerHTML='';
+    formBox.innerHTML='';
+  });
+
+  function renderQ(){
+    if(questions.length===0){
+      qlist.innerHTML='<div>لا توجد أسئلة بعد</div>';
+      return;
+    }
+    var html='';
+    for(var i=0;i<questions.length;i++){
+      var q=questions[i];
+      html+='<div class="qitem"><strong>'+(i+1)+'. '+escapeHtml(q.text)+'</strong> <span class="badge">'+typeName(q.type)+'</span>';
+      if(q.opts&&q.opts.length>0){
+        html+=' <div>الخيارات: '+escapeHtml(q.opts.join('، '))+'</div>';
+      }
+      html+='</div>';
+    }
+    qlist.innerHTML=html;
+  }
+
+  function typeName(t){
+    if(t==='text') return 'نص قصير';
+    if(t==='radio') return 'اختيار واحد';
+    if(t==='checkbox') return 'اختيارات متعددة';
+    if(t==='select') return 'قائمة منسدلة';
+    return t;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  preview.addEventListener('click', function(){
+    if(questions.length===0){ previewBox.innerHTML='لا توجد أسئلة للمعاينة'; return; }
+    var html='<form>';
+    for(var i=0;i<questions.length;i++){
+      var q=questions[i];
+      html+='<div style="margin-bottom:10px"><label>'+escapeHtml(q.text)+'</label><br>';
+      if(q.type==='text'){
+        html+='<input type="text" data-qid="'+q.id+'" style="width:100%">';
+      }else if(q.type==='radio'){
+        for(var j=0;j<q.opts.length;j++){
+          html+='<label style="display:block"><input type="radio" name="r'+q.id+'" value="'+escapeAttr(q.opts[j])+'" data-qid="'+q.id+'"> '+escapeHtml(q.opts[j])+'</label>';
+        }
+      }else if(q.type==='checkbox'){
+        for(var k=0;k<q.opts.length;k++){
+          html+='<label style="display:block"><input type="checkbox" value="'+escapeAttr(q.opts[k])+'" data-qid="'+q.id+'"> '+escapeHtml(q.opts[k])+'</label>';
+        }
+      }else if(q.type==='select'){
+        html+='<select data-qid="'+q.id+'" style="width:100%"><option value="">اختر...</option>';
+        for(var m=0;m<q.opts.length;m++){
+          html+='<option value="'+escapeAttr(q.opts[m])+'">'+escapeHtml(q.opts[m])+'</option>';
+        }
+        html+='</select>';
+      }
+      html+='</div>';
+    }
+    html+='</form>';
+    previewBox.innerHTML=html;
+    buildForm();
+  });
+
+  function escapeAttr(s){
+    return String(s).replace(/"/g,'&quot;');
+  }
+
+  function buildForm(){
+    if(questions.length===0){ formBox.innerHTML='أضف أسئلة أولاً لتمكين جمع الردود'; return; }
+    var html='';
+    for(var i=0;i<questions.length;i++){
+      var q=questions[i];
+      html+='<div><label>'+escapeHtml(q.text)+'</label><br>';
+      if(q.type==='text'){
+        html+='<input type="text" id="f'+q.id+'" style="width:100%">';
+      }else if(q.type==='radio'){
+        for(var j=0;j<q.opts.length;j++){
+          html+='<label style="display:block"><input type="radio" name="fr'+q.id+'" value="'+escapeAttr(q.opts[j])+'" id="fr'+q.id+'_'+j+'"> '+escapeHtml(q.opts[j])+'</label>';
+        }
+      }else if(q.type==='checkbox'){
+        for(var k=0;k<q.opts.length;k++){
+          html+='<label style="display:block"><input type="checkbox" id="fc'+q.id+'_'+k+'" value="'+escapeAttr(q.opts[k])+'"> '+escapeHtml(q.opts[k])+'</label>';
+        }
+      }else if(q.type==='select'){
+        html+='<select id="fs'+q.id+'" style="width:100%"><option value="">اختر...</option>';
+        for(var m=0;m<q.opts.length;m++){
+          html+='<option value="'+escapeAttr(q.opts[m])+'">'+escapeHtml(q.opts[m])+'</option>';
+        }
+        html+='</select>';
+      }
+      html+='</div>';
+    }
+    formBox.innerHTML=html;
+  }
+
+  submitResp.addEventListener('click', function(){
+    if(questions.length===0){ alert('لا توجد أسئلة'); return; }
+    var entry={id:Date.now(), answers:{}};
+    for(var i=0;i<questions.length;i++){
+      var q=questions[i];
+      if(q.type==='text'){
+        var t=document.getElementById('f'+q.id);
+        entry.answers[q.id]={q:q.text, type:q.type, val: t?t.value:''};
+      }else if(q.type==='radio'){
+        var sel='';
+        var radios=document.getElementsByName('fr'+q.id);
+        for(var j=0;j<radios.length;j++){
+          if(radios[j].checked){ sel=radios[j].value; break; }
+        }
+        entry.answers[q.id]={q:q.text, type:q.type, val:sel};
+      }else if(q.type==='checkbox'){
+        var arr=[];
+        for(var k=0;k<q.opts.length;k++){
+          var c=document.getElementById('fc'+q.id+'_'+k);
+          if(c&&c.checked){ arr.push(c.value); }
+        }
+        entry.answers[q.id]={q:q.text, type:q.type, val:arr};
+      }else if(q.type==='select'){
+        var s=document.getElementById('fs'+q.id);
+        entry.answers[q.id]={q:q.text, type:q.type, val:s?s.value:''};
+      }
+    }
+    responses.push(entry);
+    saveR();
+    renderResp();
+    alert('تم حفظ الرد');
+  });
+
+  clearResp.addEventListener('click', function(){
+    if(responses.length===0){ return; }
+    if(!confirm('مسح جميع الردود المحفوظة؟')){ return; }
+    responses=[];
+    saveR();
+    renderResp();
+  });
+
+  function renderResp(){
+    respCount.textContent=String(responses.length);
+    if(responses.length===0){
+      respList.innerHTML='لا توجد ردود محفوظة';
+      return;
+    }
+    var html='';
+    for(var i=responses.length-1;i>=0;i--){
+      var r=responses[i];
+      html+='<div class="qitem"><strong>رد #'+(responses.length-i)+'</strong>';
+      for(var qid in r.answers){
+        if(r.answers.hasOwnProperty(qid)){
+          var a=r.answers[qid];
+          html+='<div>س: '+escapeHtml(a.q)+'<br>ج: '+formatVal(a.val)+'</div>';
+        }
+      }
+      html+='</div>';
+    }
+    respList.innerHTML=html;
+  }
+
+  function formatVal(v){
+    if(Array.isArray(v)){
+      if(v.length===0) return '(فارغ)';
+      return escapeHtml(v.join('، '));
+    }
+    if(v===''||v===null||v===undefined) return '(فارغ)';
+    return escapeHtml(String(v));
+  }
+
+  expJson.addEventListener('click', function(){
+    if(responses.length===0){ expOut.value='[]'; return; }
+    expOut.value=JSON.stringify(responses, null, 2);
+  });
+
+  expCsv.addEventListener('click', function(){
+    if(responses.length===0){ expOut.value=''; return; }
+    var headers=[];
+    if(questions.length>0){
+      for(var i=0;i<questions.length;i++){ headers.push(questions[i].text); }
+    }
+    var lines=[];
+    lines.push(headers.map(csvEscape).join(','));
+    for(var r=0;r<responses.length;r++){
+      var row=[];
+      for(var qi=0;qi<questions.length;qi++){
+        var qid=questions[qi].id;
+        var a=responses[r].answers[qid];
+        var v=a?a.val:'';
+        if(Array.isArray(v)){ v=v.join('؛ '); }
+        row.push(csvEscape(v==null?'':v));
+      }
+      lines.push(row.join(','));
+    }
+    expOut.value=lines.join('\n');
+  });
+
+  function csvEscape(s){
+    s=String(s).replace(/"/g,'""');
+    if(s.indexOf(',')>=0||s.indexOf('\n')>=0||s.indexOf('"')>=0){
+      return '"'+s+'"';
+    }
+    return s;
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
