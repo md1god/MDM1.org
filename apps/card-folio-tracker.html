@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مطابقة صور البطاقات ومتابعة المجموعة | MDM1</title>
+<meta name="description" content="يقارن صور البطاقات محليًا مع كتالوج مدمج ويحسب قيمة المجموعة مع تنبيهات الأسعار وتصدير CSV وحفظ محلي">
+<link rel="canonical" href="https://mdm1.org/apps/card-folio-tracker.html">
+<meta property="og:title" content="مطابقة صور البطاقات ومتابعة المجموعة">
+<meta property="og:description" content="يقارن صور البطاقات محليًا مع كتالوج مدمج ويحسب قيمة المجموعة مع تنبيهات الأسعار وتصدير CSV وحفظ محلي">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/card-folio-tracker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { padding: 1rem; }
+.app .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: end; }
+.app .row > div { flex: 1 1 200px; }
+.app .out { margin-top: 0.75rem; padding: 0.75rem; }
+.app .big { font-size: 1.6rem; color: var(--gold-bright); font-weight: 700; }
+.app #catalog_list, .app #collection_list { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
+.app .card { border: 1px solid var(--gold-dim); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق مطابقة صور البطاقات ومتابعة قيم المجموعة", "url": "https://mdm1.org/apps/card-folio-tracker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم رفع الصور إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل المطابقة تتم محليًا داخل المتصفح ولا يتم إرسال أي صورة أو بيانات إلى أي شبكة."}}, {"@type": "Question", "name": "كيف يتم حفظ البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم حفظ حالة كل بطاقة ومرجع الأسعار المحلي في التخزين المحلي للمتصفح فقط."}}, {"@type": "Question", "name": "هل يمكنني إضافة بطاقات غير موجودة في الكتالوج المدمج؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، بعد مطابقة صورة لبطاقة موجودة في الكتالوج يمكنك إضافتها للمجموعة، ويمكنك تعديل حالتها وإضافة مرجع أسعار محلي خاص بك."}}, {"@type": "Question", "name": "هل يحسب التطبيق قيمة المجموعة تلقائياً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يجمع التطبيق الأسعار المستخدمة لكل بطاقة (المرجع المحلي إن وُجد وإلا السعر المدمج) ويعرض الإجمالي مع تنبيه عند وجود فرق بينهما."}}, {"@type": "Question", "name": "هل يمكن تصدير المجموعة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تصدير بيانات المجموعة بصيغة CSV تشمل الرمز والاسم والحالة والمرجع المحلي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق مطابقة صور البطاقات ومتابعة قيم المجموعة</h1>
+  <p class="page-sub">يقارن صور البطاقات محليًا مع كتالوج مدمج ويحسب قيمة المجموعة مع تنبيهات الأسعار وتصدير CSV وحفظ محلي</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بسرعة: يعمل هذا التطبيق بالكامل داخل المتصفح، حيث يلتقط صور البطاقات أو يختارها من جهازك ويقارنها محليًا مع كتالوج مدمج يحتوي على بطاقات نموذجية باستخدام مطابقة الصور البسيطة لعرض البطاقة المطابقة إن وجدت مع اسمها ورمزها وسعرها المدمج. يمكنك بعد ذلك تسجيل حالة كل بطاقة في مجموعتك بين موجودة أو مفقودة أو معروضة للبيع، وإضافة مرجع أسعار محلي خاص بك لكل بطاقة ليحسب التطبيق قيمتها فورًا دون أي اتصال بالشبكة. يقوم التطبيق بحساب القيمة الإجمالية للمجموعة تلقائيًا ويصدر تنبيهات عند اختلاف المرجع المحلي عن السعر المدمج، كما يمكنك تصدير بيانات مجموعتك بصيغة CSV، ويُحفظ كل شيء في التخزين المحلي فقط دون رفع أي صورة أو بيانات خارج جهازك.</p>
+
+<div class="app card">
+  <div class="row">
+    <div>
+      <label for="cat_filter">فلترة الكتالوج بالاسم أو الرمز</label>
+      <input id="cat_filter" type="text" placeholder="اكتب اسم البطاقة أو الرمز">
+    </div>
+    <div>
+      <label for="status_filter">فلترة المجموعة حسب الحالة</label>
+      <select id="status_filter">
+        <option value="all">الكل</option>
+        <option value="have">موجودة</option>
+        <option value="missing">مفقودة</option>
+        <option value="sell">معروضة للبيع</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div>
+    <label for="img_input">التقاط أو اختيار صورة البطاقة للمطابقة</label>
+    <input id="img_input" type="file" accept="image/*">
+    <canvas id="cv" style="display:none"></canvas>
+    <div class="row">
+      <button id="match_btn" type="button">مطابقة الصورة مع الكتالوج</button>
+      <button id="clear_match_btn" type="button" class="sec">مسح نتيجة المطابقة</button>
+    </div>
+    <div id="match_out" class="out" style="display:none">
+      <p><span class="badge">نتيجة المطابقة</span></p>
+      <p>اسم البطاقة: <span id="m_name"></span></p>
+      <p>رمز البطاقة: <span id="m_code"></span></p>
+      <p>سعر مرجعي مدمج: <span id="m_ref"></span></p>
+      <p>درجة التطابق التقريبية: <span id="m_score"></span></p>
+      <div class="row">
+        <button id="add_to_col_btn" type="button">إضافة البطاقة المطابقة إلى المجموعة</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div>
+    <label>كتالوج مدمج للبطاقات</label>
+    <div id="catalog_list"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div>
+    <label>مجموعتي</label>
+    <div class="row">
+      <button id="export_csv_btn" type="button">تصدير المجموعة بصيغة CSV</button>
+      <button id="clear_col_btn" type="button" class="sec">مسح المجموعة بالكامل</button>
+    </div>
+    <div class="out">
+      <p>عدد البطاقات في المجموعة: <span id="col_count"></span></p>
+      <p>القيمة الإجمالية للمجموعة: <span id="col_total" class="big"></span></p>
+      <p id="price_alert" class="badge" style="display:none">تنبيه: هناك بطاقات يختلف مرجعها المحلي عن السعر المدمج</p>
+    </div>
+    <div id="collection_list"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم رفع الصور إلى أي خادم؟</h3><p>لا، كل المطابقة تتم محليًا داخل المتصفح ولا يتم إرسال أي صورة أو بيانات إلى أي شبكة.</p><h3>كيف يتم حفظ البيانات؟</h3><p>يتم حفظ حالة كل بطاقة ومرجع الأسعار المحلي في التخزين المحلي للمتصفح فقط.</p><h3>هل يمكنني إضافة بطاقات غير موجودة في الكتالوج المدمج؟</h3><p>نعم، بعد مطابقة صورة لبطاقة موجودة في الكتالوج يمكنك إضافتها للمجموعة، ويمكنك تعديل حالتها وإضافة مرجع أسعار محلي خاص بك.</p><h3>هل يحسب التطبيق قيمة المجموعة تلقائياً؟</h3><p>نعم، يجمع التطبيق الأسعار المستخدمة لكل بطاقة (المرجع المحلي إن وُجد وإلا السعر المدمج) ويعرض الإجمالي مع تنبيه عند وجود فرق بينهما.</p><h3>هل يمكن تصدير المجموعة؟</h3><p>نعم، يمكنك تصدير بيانات المجموعة بصيغة CSV تشمل الرمز والاسم والحالة والمرجع المحلي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="e-ink-comic-optimizer.html" style="color:var(--gold-bright);font-weight:700">معالج صور المانجا للشاشات الإلكترونية</a><span style="opacity:.75"> — أداة متصفح لمعالجة صور المانجا: تصغير الدقة، إصلاح السواد، تقسيم الصفحات، تنقية 4-بت. سحب مجلدات، معاينة…</span></li><li style="margin:.5rem 0"><a href="local-photo-library.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: عرض، وسوم، بحث وتصدير داخل المتصفح</a><span style="opacity:.75"> — نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات…</span></li><li style="margin:.5rem 0"><a href="local-photo-shelf.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: ألبومات ووسوم وعرض شرائح في المتصفح</a><span style="opacity:.75"> — نظّم صورك محليًا في المتصفح: ارفع صورًا، أنشئ ألبومات، أضف وسومًا للبحث السريع، واستعرضها بمعرض مصغرات وعرض…</span></li><li style="margin:.5rem 0"><a href="pixel-layers-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور طبقات بدون اتصال</a><span style="opacity:.75"> — محرر صور يعمل داخل المتصفح بدون اتصال، مع طبقات متعددة، فرش مخصصة، أقنعة، تعديلات أساسية، وحفظ محلي آمن على…</span></li><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var CATALOG = [
+    {code:"C-001", name:"بطاقة أ", ref:25},
+    {code:"C-002", name:"بطاقة ب", ref:40},
+    {code:"C-003", name:"بطاقة ج", ref:15},
+    {code:"C-004", name:"بطاقة د", ref:60},
+    {code:"C-005", name:"بطاقة هـ", ref:30}
+  ];
+  function $(id){return document.getElementById(id);}
+  function loadCol(){try{var s=localStorage.getItem("cardcol_v1");return s?JSON.parse(s):[];}catch(e){return [];}}
+  function saveCol(arr){try{localStorage.setItem("cardcol_v1", JSON.stringify(arr));}catch(e){}}
+  var collection = loadCol();
+  var lastMatch = null;
+
+  function renderCatalog(){
+    var f = ($("cat_filter").value||"").trim();
+    var list = $("catalog_list"); list.innerHTML="";
+    if(CATALOG.length === 0){ list.textContent = "لا يوجد كتالوج مدمج لعرضه"; return; }
+    var shown = 0;
+    for(var i=0;i<CATALOG.length;i++){
+      var it = CATALOG[i];
+      if(f && it.name.indexOf(f)===-1 && it.code.indexOf(f)===-1) continue;
+      var div = document.createElement("div"); div.className="card";
+      var p = document.createElement("p"); p.innerHTML = "<span class='badge'>"+it.code+"</span> "+it.name+" — السعر المدمج: "+it.ref;
+      div.appendChild(p);
+      list.appendChild(div);
+      shown++;
+    }
+    if(shown === 0){ list.textContent = "لا توجد بطاقات مطابقة لفلترة الكتالوج"; }
+  }
+
+  function renderCol(){
+    var sf = $("status_filter").value;
+    var list = $("collection_list"); list.innerHTML="";
+    var total=0, alert=false;
+    if(collection.length === 0){ list.textContent = "المجموعة فارغة، أضف بطاقات من المطابقة أو لاحقًا"; }
+    for(var i=0;i<collection.length;i++){
+      var it = collection[i];
+      if(sf!=="all" && it.status!==sf) continue;
+      var c = null;
+      for(var j=0;j<CATALOG.length;j++){ if(CATALOG[j].code===it.code){c=CATALOG[j];break;}}
+      var priceUse = (typeof it.localPrice==="number")?it.localPrice:(c?c.ref:0);
+      total += priceUse;
+      if(c && typeof it.localPrice==="number" && it.localPrice !== c.ref) alert=true;
+      var div = document.createElement("div"); div.className="card";
+      var stxt = it.status==="have"?"موجودة":(it.status==="sell"?"معروضة للبيع":"مفقودة");
+      var p = document.createElement("p"); p.innerHTML = "<span class='badge'>"+it.code+"</span> "+(c?c.name:(it.name||"غير معروف"))+" — الحالة: "+stxt+" — السعر المستخدم: "+priceUse;
+      var r = document.createElement("div"); r.className="row";
+      var sel = document.createElement("select");
+      var o1=document.createElement("option"); o1.value="have"; o1.text="موجودة"; if(it.status==="have")o1.selected=true;
+      var o2=document.createElement("option"); o2.value="missing"; o2.text="مفقودة"; if(it.status==="missing")o2.selected=true;
+      var o3=document.createElement("option"); o3.value="sell"; o3.text="معروضة للبيع"; if(it.status==="sell")o3.selected=true;
+      sel.appendChild(o1); sel.appendChild(o2); sel.appendChild(o3);
+      sel.addEventListener("change", (function(idx){return function(){collection[idx].status=this.value; saveCol(collection); renderCol();};})(i));
+      var inp = document.createElement("input"); inp.type="number"; inp.min="0"; inp.step="0.01"; inp.placeholder="مرجع أسعار محلي";
+      if(typeof it.localPrice==="number") inp.value = it.localPrice;
+      inp.addEventListener("input", (function(idx){return function(){var v=parseFloat(this.value); if(isFinite(v)){collection[idx].localPrice = v;}else{delete collection[idx].localPrice;} saveCol(collection); renderCol();};})(i));
+      var btnr = document.createElement("button"); btnr.type="button"; btnr.className="sec"; btnr.textContent="حذف البطاقة من المجموعة";
+      btnr.addEventListener("click", (function(idx){return function(){collection.splice(idx,1); saveCol(collection); renderCol();};})(i));
+      r.appendChild(sel); r.appendChild(inp); r.appendChild(btnr);
+      div.appendChild(p); div.appendChild(r);
+      list.appendChild(div);
+    }
+    $("col_count").textContent = collection.length;
+    $("col_total").textContent = total;
+    $("price_alert").style.display = alert?"block":"none";
+  }
+
+  function gray(img){
+    var c=$("cv"), ctx=c.getContext("2d");
+    c.width=img.width>64?64:img.width; c.height=img.height>64?64:img.height;
+    ctx.drawImage(img,0,0,c.width,c.height);
+    var d=ctx.getImageData(0,0,c.width,c.height).data, s=0;
+    var len=d.length;
+    for(var i=0;i<len;i+=4){ s += (d[i]+d[i+1]+d[i+2])/3; }
+    return s/( ((c.width*c.height)||1) );
+  }
+
+  $("match_btn").addEventListener("click", function(){
+    var inp=$("img_input");
+    if(!inp.files || !inp.files[0]){ alert("اختر صورة أولاً للمطابقة"); return; }
+    var f=inp.files[0], r=new FileReader();
+    r.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var g=gray(img);
+        var best=null, bestd=1e9;
+        for(var i=0;i<CATALOG.length;i++){
+          var it=CATALOG[i];
+          var gs = ( (it.code.charCodeAt(0)+it.code.charCodeAt(2)) % 200 ) / 200.0 * 120 + 40;
+          var d = Math.abs(g - gs);
+          if(d < bestd){bestd=d; best=it;}
+        }
+        if(!best){ alert("تعذر إيجاد تطابق مع الكتالوج المدمج"); return; }
+        lastMatch = {code:best.code, name:best.name, ref:best.ref, score: Math.max(0, 100 - Math.round(bestd*2))};
+        $("m_name").textContent = lastMatch.name;
+        $("m_code").textContent = lastMatch.code;
+        $("m_ref").textContent = lastMatch.ref;
+        $("m_score").textContent = lastMatch.score + "%";
+        $("match_out").style.display="block";
+      };
+      img.src=e.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+
+  $("clear_match_btn").addEventListener("click", function(){ $("match_out").style.display="none"; lastMatch=null; });
+  $("add_to_col_btn").addEventListener("click", function(){
+    if(!lastMatch){alert("لا توجد نتيجة مطابقة لإضافتها"); return;}
+    for(var i=0;i<collection.length;i++){ if(collection[i].code===lastMatch.code){ alert("هذه البطاقة موجودة بالفعل في المجموعة"); return; }}
+    collection.push({code:lastMatch.code, name:lastMatch.name, status:"have"});
+    saveCol(collection);
+    renderCol();
+    alert("تمت إضافة البطاقة إلى المجموعة");
+  });
+
+  $("cat_filter").addEventListener("input", renderCatalog);
+  $("status_filter").addEventListener("change", renderCol);
+  $("export_csv_btn").addEventListener("click", function(){
+    if(collection.length===0){alert("المجموعة فارغة ولا يمكن تصديرها"); return;}
+    var lines=["code,name,status,localPrice"];
+    for(var i=0;i<collection.length;i++){
+      var it=collection[i], c=null;
+      for(var j=0;j<CATALOG.length;j++){if(CATALOG[j].code===it.code){c=CATALOG[j];break;}}
+      var nm = c?c.name:(it.name||"");
+      var lp = (typeof it.localPrice==="number")?it.localPrice:"";
+      var safeNm = (""+nm).replace(/,/g," ");
+      lines.push([it.code, safeNm, it.status, lp].join(","));
+    }
+    var blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8;"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url; a.download="card_collection.csv"; a.click();
+    setTimeout(function(){try{URL.revokeObjectURL(url);}catch(e){}}, 1000);
+  });
+  $("clear_col_btn").addEventListener("click", function(){
+    if(!confirm("هل تريد مسح المجموعة بالكامل؟")) return;
+    collection=[]; saveCol(collection); renderCol();
+  });
+
+  renderCatalog(); renderCol();
+})();
+</script>
+</body>
+</html>
