@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحويل ملاحظات الاجتماعات إلى محاضر ومهام منظمة | MDM1</title>
+<meta name="description" content="أداة عربية RTL تعمل بالكامل في المتصفح لتحويل ملاحظات الاجتماعات إلى محاضر منظومة مع استخراج المهام والقرارات والمسؤولين والمواعيد، لوحة مهام تفاعلية، CRM مبسط للجهات والفرص، بحث وأرشفة، تصدير CSV وطب">
+<link rel="canonical" href="https://mdm1.org/apps/meeting-actions-crm.html">
+<meta property="og:title" content="أداة تحويل ملاحظات الاجتماعات إلى محاضر ومهام منظمة">
+<meta property="og:description" content="أداة عربية RTL تعمل بالكامل في المتصفح لتحويل ملاحظات الاجتماعات إلى محاضر منظومة مع استخراج المهام والقرارات والمسؤولين والمواعيد، لوحة مهام تفاعلية، CRM مبسط للجهات والفرص، بحث وأرشفة، تصدير CSV وطب">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/meeting-actions-crm.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; font-family: inherit; }
+.app .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-bottom: 12px; }
+.app .row > * { flex: 1 1 200px; min-width: 160px; }
+.app textarea { min-height: 120px; resize: vertical; }
+.app .out { background: var(--dark); border: 1px solid var(--gold-dim); padding: 12px; border-radius: 6px; min-height: 60px; }
+.app .task-card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 10px; margin-bottom: 8px; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
+.app .task-header { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.app .task-field { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 140px; }
+.app .task-field label { font-size: 11px; color: var(--gold-dim); text-transform: uppercase; }
+.app .task-field input, .app .task-field select, .app .task-field textarea { background: var(--dark); border: 1px solid var(--gold-dim); color: var(--light); padding: 6px 8px; border-radius: 4px; font-size: 13px; }
+.app .task-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.app .crm-card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 10px; margin-bottom: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; align-items: end; }
+.app .crm-card .crm-actions { grid-column: 1 / -1; display: flex; gap: 6px; margin-top: 6px; }
+.app .archive-item { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color .2s; }
+.app .archive-item:hover { border-color: var(--gold); }
+.app .archive-title { font-weight: bold; color: var(--gold); margin-bottom: 4px; }
+.app .archive-meta { font-size: 12px; color: var(--gold-dim); display: flex; gap: 12px; flex-wrap: wrap; }
+.app .badge { background: var(--gold); color: var(--dark); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+.badge.pending { background: var(--gold-dim); color: var(--light); }
+.badge.done { background: #2e7d32; color: var(--light); }
+.badge.high { background: #c62828; color: var(--light); }
+.app .divider { border-top: 1px solid var(--gold-dim); margin: 16px 0; }
+.app h3 { margin: 16px 0 8px; color: var(--gold); }
+.app .empty { color: var(--gold-dim); font-style: italic; text-align: center; padding: 20px; }
+.app .print-only { display: none; }
+@media print { .app .no-print { display: none !important; } .app .print-only { display: block !important; } .app .card { border: none; box-shadow: none; } .app .out { border: 1px solid #ccc; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محول ملاحظات الاجتماعات إلى محاضر منظمة مع مهام وCRM", "url": "https://mdm1.org/apps/meeting-actions-crm.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، الأداة تعمل بالكامل في المتصفح وتخزن جميع البيانات في localStorage دون الحاجة لأي اتصال بالشبكة أو حسابات."}}, {"@type": "Question", "name": "كيف أستخرج المهام من نص الاجتماع؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب أو الصق ملاحظات الاجتماع في مربع النص، واضغط \"استخراج البنود وإنشاء المحضر\". الأداة تستخدم قواعد محلية لتحديد المهام (أسطر تحتوي على أفعال تكليف)، المواعيد (كلمات مثل \"حتى\" أو \"قبل\" تليها تواريخ)، والمسؤولين (أسماء تليها كلمات مثل \"مسؤول\" أو \"يتابع\")."}}, {"@type": "Question", "name": "هل يمكنني تعديل المهام بعد استخراجها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، لوحة المهام تعرض كل مهمة في بطاقة قابلة للتعديل: يمكنك تغيير النص، المسؤول، الموعد النهائي، الأولوية، وتعليم المهمة كمنجزة أو التراجع عن ذلك. التغييرات تحفظ تلقائياً في localStorage."}}, {"@type": "Question", "name": "كيف يعمل CRM المبسط المدمج؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك إضافة جهات اتصال أو فرص بيع من النموذج المخصص، مع تحديد الحالة، آخر تواصل، وتاريخ تذكير. المهام يمكن ربطها بسجلات CRM عبر زر \"ربط بـ CRM\" في كل بطاقة مهمة، ويظهر عدد المهام المرتبطة في كل سجل CRM."}}, {"@type": "Question", "name": "كيف أبحث في أرشيف الاجتماعات السابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب كلمة مفتاحية في مربع البحث واضغط \"بحث\" لتصفية الأرشيف حسب العنوان، الملاحظات، المهام، أو القرارات. زر \"عرض الكل\" يعيد القائمة الكاملة. النقر على أي اجتماع في الأرشيف يحمل محضره ومهامه للتعديل أو الطباعة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محول ملاحظات الاجتماعات إلى محاضر منظمة مع مهام وCRM</h1>
+  <p class="page-sub">أداة عربية RTL تعمل بالكامل في المتصفح لتحويل ملاحظات الاجتماعات إلى محاضر منظومة مع استخراج المهام والقرارات والمسؤولين والمواعيد، لوحة مهام تفاعلية، CRM مبسط للجهات والفرص، بحث وأرشفة، تصدير CSV وطب</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p dir="rtl">أداة متكاملة تحول نص الاجتماع أو ملاحظاته إلى محضر منظم فوراً؛ تستخرج البنود التنفيذية والقرارات والأسماء والمواعيد بقواعد محلية، وتعرضها في لوحة مهام قابلة للتعديل والتعيين والإنجاز مع ربط كل بند بسجل جهة اتصال أو فرصة بيع في CRM مبسط يحتفظ بحالة المتابعة وآخر تواصل وتذكيرات، وتتيح البحث في أرشيف الاجتماعات وتصدير المحضر والمهام بصيغة CSV أو نسخة للطباعة، مع حفظ كل البيانات في localStorage دون حسابات أو اتصال بالشبكة.</p>
+<div class="app card" dir="rtl">
+  <div class="row">
+    <label for="meetingTitle">عنوان الاجتماع</label>
+    <input id="meetingTitle" type="text" placeholder="مثال: اجتماع فريق المبيعات الأسبوعي">
+  </div>
+  <div class="row">
+    <label for="meetingDate">التاريخ</label>
+    <input id="meetingDate" type="date">
+  </div>
+  <div class="row">
+    <label for="meetingNotes">ملاحظات الاجتماع / النص الكامل</label>
+    <textarea id="meetingNotes" rows="8" placeholder="اكتب أو الصق ملاحظات الاجتماع هنا...&#10;مثال:&#10;- أحمد يتابع عرض السعر لعميل ABC حتى 15/1&#10;- تقرر الموافقة على الميزانية الجديدة&#10;- سارة مسؤولة عن توظيف مطور جديد قبل نهاية الشهر&#10;- محمد سيتواصل مع عميل XYZ غداً"></textarea>
+  </div>
+  <div class="row">
+    <button id="btnExtract" class="button">استخراج البنود وإنشاء المحضر</button>
+    <button id="btnClear" class="button sec">مسح النموذج</button>
+  </div>
+  <div class="divider"></div>
+  <h3>المحضر المستخرج</h3>
+  <div id="minutesOut" class="out"></div>
+  <div class="divider"></div>
+  <h3>لوحة المهام (قابلة للتعديل)</h3>
+  <div id="tasksBoard" class="out"></div>
+  <div class="row">
+    <button id="btnAddTask" class="button sec">إضافة مهمة يدوياً</button>
+    <button id="btnExportCSV" class="button">تصدير المهام CSV</button>
+    <button id="btnExportMinutes" class="button sec">تصدير المحضر CSV</button>
+    <button id="btnPrint" class="button sec">نسخة للطباعة</button>
+  </div>
+  <div class="divider"></div>
+  <h3>CRM مبسط: جهات الاتصال والفرص</h3>
+  <div class="row">
+    <select id="crmType">
+      <option value="contact">جهة اتصال</option>
+      <option value="opportunity">فرصة بيع</option>
+    </select>
+    <input id="crmName" type="text" placeholder="الاسم">
+    <input id="crmCompany" type="text" placeholder="الشركة">
+    <input id="crmPhone" type="text" placeholder="الهاتف">
+    <input id="crmEmail" type="email" placeholder="البريد الإلكتروني">
+    <select id="crmStatus">
+      <option value="new">جديد</option>
+      <option value="contacted">تم التواصل</option>
+      <option value="negotiating">تفاوض</option>
+      <option value="won">مكسب</option>
+      <option value="lost">خاسر</option>
+    </select>
+    <input id="crmLastContact" type="date">
+    <input id="crmReminder" type="date" placeholder="تذكير">
+    <button id="btnSaveCRM" class="button">حفظ في CRM</button>
+  </div>
+  <div id="crmList" class="out"></div>
+  <div class="divider"></div>
+  <h3>أرشيف الاجتماعات والبحث</h3>
+  <div class="row">
+    <input id="searchArchive" type="text" placeholder="ابحث في الأرشيف...">
+    <button id="btnSearch" class="button sec">بحث</button>
+    <button id="btnShowAll" class="button sec">عرض الكل</button>
+  </div>
+  <div id="archiveList" class="out"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة دون اتصال بالإنترنت؟</h3><p>نعم، الأداة تعمل بالكامل في المتصفح وتخزن جميع البيانات في localStorage دون الحاجة لأي اتصال بالشبكة أو حسابات.</p><h3>كيف أستخرج المهام من نص الاجتماع؟</h3><p>اكتب أو الصق ملاحظات الاجتماع في مربع النص، واضغط &quot;استخراج البنود وإنشاء المحضر&quot;. الأداة تستخدم قواعد محلية لتحديد المهام (أسطر تحتوي على أفعال تكليف)، المواعيد (كلمات مثل &quot;حتى&quot; أو &quot;قبل&quot; تليها تواريخ)، والمسؤولين (أسماء تليها كلمات مثل &quot;مسؤول&quot; أو &quot;يتابع&quot;).</p><h3>هل يمكنني تعديل المهام بعد استخراجها؟</h3><p>نعم، لوحة المهام تعرض كل مهمة في بطاقة قابلة للتعديل: يمكنك تغيير النص، المسؤول، الموعد النهائي، الأولوية، وتعليم المهمة كمنجزة أو التراجع عن ذلك. التغييرات تحفظ تلقائياً في localStorage.</p><h3>كيف يعمل CRM المبسط المدمج؟</h3><p>يمكنك إضافة جهات اتصال أو فرص بيع من النموذج المخصص، مع تحديد الحالة، آخر تواصل، وتاريخ تذكير. المهام يمكن ربطها بسجلات CRM عبر زر &quot;ربط بـ CRM&quot; في كل بطاقة مهمة، ويظهر عدد المهام المرتبطة في كل سجل CRM.</p><h3>كيف أبحث في أرشيف الاجتماعات السابقة؟</h3><p>اكتب كلمة مفتاحية في مربع البحث واضغط &quot;بحث&quot; لتصفية الأرشيف حسب العنوان، الملاحظات، المهام، أو القرارات. زر &quot;عرض الكل&quot; يعيد القائمة الكاملة. النقر على أي اجتماع في الأرشيف يحمل محضره ومهامه للتعديل أو الطباعة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="meeting-notes-organizer.html" style="color:var(--gold-bright);font-weight:700">محضر الاجتماع: تحويل ملاحظات الاجتماع إلى محضر منظّم فورياً</a><span style="opacity:.75"> — أداة في المتصفح لتدوين ملاحظات الاجتماع بموقّت زمني، واستخراج المهام والمواعيد والمسؤولين تلقائياً، مع بحث…</span></li><li style="margin:.5rem 0"><a href="local-meeting-notes.html" style="color:var(--gold-bright);font-weight:700">مسجّل الاجتماعات: تحويل الصوت نصيًا واستخراج المهام محليًا</a><span style="opacity:.75"> — سجّل صوت اجتماعك وحوّله نصيًا في المتصفح، أو الصق نصًا جاهزًا، ثم استخرج بنود العمل والمواعيد تلقائيًا واحفظ…</span></li><li style="margin:.5rem 0"><a href="polished-dictation-desk.html" style="color:var(--gold-bright);font-weight:700">أداة إملاء صوتي تنظّف النص وتعلم تصحيحاتك محليًا</a><span style="opacity:.75"> — أداة إملاء صوتي عربية تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم…</span></li><li style="margin:.5rem 0"><a href="private-newsletter-vault.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور</a><span style="opacity:.75"> — أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء…</span></li><li style="margin:.5rem 0"><a href="project-lifecycle-board.html" style="color:var(--gold-bright);font-weight:700">منظّم دورة حياة المشاريع: من الفكرة إلى الإطلاق والصيانة</a><span style="opacity:.75"> — نظّم دورة حياة مشروعك من التخطيط والتطوير والاختبار إلى الإطلاق والصيانة عبر مسار بصري وبوابات جاهزية وقوائم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {
+  'use strict';
+  const LS_KEYS = {
+    meetings: 'meetings_archive',
+    crm: 'crm_records',
+    tasks: 'tasks_board'
+  };
+  function $(id) { return document.getElementById(id); }
+  function load(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function formatDate(d) { if(!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('ar-EG'); }
+  const state = { meetings: load(LS_KEYS.meetings, []), crm: load(LS_KEYS.crm, []), tasks: load(LS_KEYS.tasks, []) };
+  const el = {
+    meetingTitle: $('meetingTitle'), meetingDate: $('meetingDate'), meetingNotes: $('meetingNotes'),
+    btnExtract: $('btnExtract'), btnClear: $('btnClear'), minutesOut: $('minutesOut'),
+    tasksBoard: $('tasksBoard'), btnAddTask: $('btnAddTask'), btnExportCSV: $('btnExportCSV'),
+    btnExportMinutes: $('btnExportMinutes'), btnPrint: $('btnPrint'),
+    crmType: $('crmType'), crmName: $('crmName'), crmCompany: $('crmCompany'), crmPhone: $('crmPhone'),
+    crmEmail: $('crmEmail'), crmStatus: $('crmStatus'), crmLastContact: $('crmLastContact'),
+    crmReminder: $('crmReminder'), btnSaveCRM: $('btnSaveCRM'), crmList: $('crmList'),
+    searchArchive: $('searchArchive'), btnSearch: $('btnSearch'), btnShowAll: $('btnShowAll'),
+    archiveList: $('archiveList')
+  };
+  function extractItems(text) {
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const tasks = [], decisions = [], assignees = new Set();
+    const deadlineRegex = /(?:حتى|قبل|موعد| deadline|بحد أقصى)\s*(\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?)/i;
+    const assigneeRegex = /(?:^|\s)(?:[أ-ي]+(?:\s+[أ-ي]+)?)\s*(?:مسؤول|مكلف|يتابع|سيتابع|سوف يتابع|موكول)\s*(?:عن|بـ|ب)?/i;
+    const decisionRegex = /(?:تقرر|تم الاتفاق|وافقنا|اتفقنا|قررنا|تمت الموافقة)/i;
+    lines.forEach(line => {
+      const clean = line.replace(/^[-*•]\s*/, '');
+      let deadline = '', assignee = '', isDecision = false;
+      const dlMatch = clean.match(deadlineRegex); if (dlMatch) deadline = dlMatch[1];
+      const asMatch = clean.match(assigneeRegex); if (asMatch) { assignee = asMatch[1] || clean.split(/\s+(?:مسؤول|مكلف|يتابع)/i)[0].trim(); assignees.add(assignee); }
+      if (decisionRegex.test(clean)) { isDecision = true; decisions.push({ text: clean, deadline }); }
+      else { tasks.push({ text: clean, deadline, assignee, done: false, id: uid() }); }
+    });
+    return { tasks, decisions, assignees: Array.from(assignees) };
+  }
+  function renderMinutes(m) {
+    if (!m) { el.minutesOut.innerHTML = '<div class="empty">لا يوجد محضر للعرض. استخرج البنود أولاً.</div>'; return; }
+    let html = `<div class="print-only"><h2>${escapeHtml(m.title)}</h2><p><strong>التاريخ:</strong> ${formatDate(m.date)}</p></div>`;
+    html += `<p><strong>عنوان الاجتماع:</strong> ${escapeHtml(m.title)}</p>`;
+    html += `<p><strong>التاريخ:</strong> ${formatDate(m.date)}</p>`;
+    if (m.decisions.length) {
+      html += '<h4>القرارات:</h4><ul>';
+      m.decisions.forEach(d => { html += `<li>${escapeHtml(d.text)}${d.deadline ? ' <span class="badge">موعد: '+escapeHtml(d.deadline)+'</span>' : ''}</li>`; });
+      html += '</ul>';
+    }
+    if (m.tasks.length) {
+      html += '<h4>المهام المستخرجة:</h4><ul>';
+      m.tasks.forEach(t => { html += `<li>${escapeHtml(t.text)}${t.assignee ? ' <span class="badge">مسؤول: '+escapeHtml(t.assignee)+'</span>' : ''}${t.deadline ? ' <span class="badge">موعد: '+escapeHtml(t.deadline)+'</span>' : ''}</li>`; });
+      html += '</ul>';
+    }
+    if (!m.decisions.length && !m.tasks.length) html += '<div class="empty">لم يتم استخراج بنود من النص المقدم.</div>';
+    el.minutesOut.innerHTML = html;
+  }
+  function renderTasks() {
+    if (!state.tasks.length) { el.tasksBoard.innerHTML = '<div class="empty">لا توجد مهام. أضف مهمة أو استخرج من محضر.</div>'; return; }
+    let html = '';
+    state.tasks.forEach(t => {
+      html += `<div class="task-card" data-id="${t.id}">
+        <div class="task-header">
+          <span class="badge ${t.done ? 'done' : 'pending'}">${t.done ? 'منجز' : 'قيد التنفيذ'}</span>
+          ${t.priority ? `<span class="badge ${t.priority}">${t.priority === 'high' ? 'عاجل' : t.priority}</span>` : ''}
+        </div>
+        <div class="task-field"><label>نص المهمة</label><textarea data-field="text">${escapeHtml(t.text)}</textarea></div>
+        <div class="task-field"><label>المسؤول</label><input type="text" data-field="assignee" value="${escapeHtml(t.assignee||'')}"></div>
+        <div class="task-field"><label>الموعد النهائي</label><input type="date" data-field="deadline" value="${t.deadline||''}"></div>
+        <div class="task-field"><label>الأولوية</label><select data-field="priority"><option value="">عادي</option><option value="high" ${t.priority==='high'?'selected':''}>عاجل</option><option value="low" ${t.priority==='low'?'selected':''}>منخفض</option></select></div>
+        <div class="task-actions">
+          <button class="button sec btn-toggle" data-id="${t.id}">${t.done ? 'تراجع عن الإنجاز' : 'تعليم كمنجز'}</button>
+          <button class="button sec btn-link-crm" data-id="${t.id}">ربط بـ CRM</button>
+          <button class="button sec btn-delete" data-id="${t.id}">حذف</button>
+        </div>
+      </div>`;
+    });
+    el.tasksBoard.innerHTML = html;
+    el.tasksBoard.querySelectorAll('.btn-toggle').forEach(b => b.onclick = e => toggleTask(e.currentTarget.dataset.id));
+    el.tasksBoard.querySelectorAll('.btn-delete').forEach(b => b.onclick = e => deleteTask(e.currentTarget.dataset.id));
+    el.tasksBoard.querySelectorAll('.btn-link-crm').forEach(b => b.onclick = e => linkTaskToCRM(e.currentTarget.dataset.id));
+    el.tasksBoard.querySelectorAll('[data-field]').forEach(inp => inp.onchange = e => updateTaskField(e.target.closest('.task-card').dataset.id, e.target.dataset.field, e.target.value));
+  }
+  function toggleTask(id) { const t = state.tasks.find(x => x.id === id); if (t) { t.done = !t.done; save(LS_KEYS.tasks, state.tasks); renderTasks(); } }
+  function deleteTask(id) { if (!confirm('حذف المهمة؟')) return; state.tasks = state.tasks.filter(x => x.id !== id); save(LS_KEYS.tasks, state.tasks); renderTasks(); }
+  function updateTaskField(id, field, value) { const t = state.tasks.find(x => x.id === id); if (t) { t[field] = value; save(LS_KEYS.tasks, state.tasks); } }
+  function linkTaskToCRM(id) { const t = state.tasks.find(x => x.id === id); if (!t) return; const name = prompt('اسم جهة الاتصال أو الفرصة للربط:', t.assignee || ''); if (!name) return; const exists = state.crm.find(c => c.name === name); if (exists) { t.crmId = exists.id; save(LS_KEYS.tasks, state.tasks); renderTasks(); renderCRM(); alert('تم الربط بالسجل الموجود.'); } else { if (confirm('السجل غير موجود. إنشاؤه كجهة اتصال جديدة؟')) { const rec = { id: uid(), type: 'contact', name, company: '', phone: '', email: '', status: 'new', lastContact: '', reminder: '', createdAt: Date.now() }; state.crm.push(rec); t.crmId = rec.id; save(LS_KEYS.crm, state.crm); save(LS_KEYS.tasks, state.tasks); renderTasks(); renderCRM(); alert('تم إنشاء السجل وربطه.'); } } }
+  function renderCRM() {
+    if (!state.crm.length) { el.crmList.innerHTML = '<div class="empty">لا توجد سجلات CRM. أضف سجلاً من النموذج أعلاه.</div>'; return; }
+    let html = '';
+    state.crm.forEach(c => {
+      const linkedTasks = state.tasks.filter(t => t.crmId === c.id).length;
+      html += `<div class="crm-card" data-id="${c.id}">
+        <div class="task-field"><label>النوع</label><select data-field="type"><option value="contact" ${c.type==='contact'?'selected':''}>جهة اتصال</option><option value="opportunity" ${c.type==='opportunity'?'selected':''}>فرصة بيع</option></select></div>
+        <div class="task-field"><label>الاسم</label><input type="text" data-field="name" value="${escapeHtml(c.name)}"></div>
+        <div class="task-field"><label>الشركة</label><input type="text" data-field="company" value="${escapeHtml(c.company||'')}"></div>
+        <div class="task-field"><label>الهاتف</label><input type="text" data-field="phone" value="${escapeHtml(c.phone||'')}"></div>
+        <div class="task-field"><label>البريد</label><input type="email" data-field="email" value="${escapeHtml(c.email||'')}"></div>
+        <div class="task-field"><label>الحالة</label><select data-field="status"><option value="new" ${c.status==='new'?'selected':''}>جديد</option><option value="contacted" ${c.status==='contacted'?'selected':''}>تم التواصل</option><option value="negotiating" ${c.status==='negotiating'?'selected':''}>تفاوض</option><option value="won" ${c.status==='won'?'selected':''}>مكسب</option><option value="lost" ${c.status==='lost'?'selected':''}>خاسر</option></select></div>
+        <div class="task-field"><label>آخر تواصل</label><input type="date" data-field="lastContact" value="${c.lastContact||''}"></div>
+        <div class="task-field"><label>تذكير</label><input type="date" data-field="reminder" value="${c.reminder||''}"></div>
+        <div class="crm-actions">
+          <span class="badge">${linkedTasks} مهمة مرتبطة</span>
+          <button class="button sec btn-delete-crm" data-id="${c.id}">حذف السجل</button>
+        </div>
+      </div>`;
+    });
+    el.crmList.innerHTML = html;
+    el.crmList.querySelectorAll('[data-field]').forEach(inp => inp.onchange = e => updateCRMField(e.target.closest('.crm-card').dataset.id, e.target.dataset.field, e.target.value));
+    el.crmList.querySelectorAll('.btn-delete-crm').forEach(b => b.onclick = e => deleteCRM(e.currentTarget.dataset.id));
+  }
+  function updateCRMField(id, field, value) { const c = state.crm.find(x => x.id === id); if (c) { c[field] = value; save(LS_KEYS.crm, state.crm); } }
+  function deleteCRM(id) { if (!confirm('حذف سجل CRM؟ سيتم فك الربط من المهام المرتبطة.')) return; state.tasks.forEach(t => { if (t.crmId === id) t.crmId = null; }); state.crm = state.crm.filter(x => x.id !== id); save(LS_KEYS.crm, state.crm); save(LS_KEYS.tasks, state.tasks); renderCRM(); renderTasks(); }
+  function renderArchive(list) {
+    if (!list.length) { el.archiveList.innerHTML = '<div class="empty">الأرشيف فارغ.</div>'; return; }
+    let html = '';
+    list.slice().reverse().forEach(m => {
+      html += `<div class="archive-item" data-id="${m.id}">
+        <div class="archive-title">${escapeHtml(m.title)}</div>
+        <div class="archive-meta">
+          <span>التاريخ: ${formatDate(m.date)}</span>
+          <span>المهام: ${m.tasks?.length || 0}</span>
+          <span>القرارات: ${m.decisions?.length || 0}</span>
+        </div>
+      </div>`;
+    });
+    el.archiveList.innerHTML = html;
+    el.archiveList.querySelectorAll('.archive-item').forEach(div => div.onclick = e => loadMeeting(e.currentTarget.dataset.id));
+  }
+  function loadMeeting(id) { const m = state.meetings.find(x => x.id === id); if (!m) return; el.meetingTitle.value = m.title; el.meetingDate.value = m.date || ''; el.meetingNotes.value = m.rawNotes || ''; state.tasks = m.tasks.map(t => ({...t, id: t.id || uid()})); save(LS_KEYS.tasks, state.tasks); renderMinutes(m); renderTasks(); window.scrollTo({top:0, behavior:'smooth'}); }
+  function exportCSV(data, filename) { if (!data.length) { alert('لا توجد بيانات للتصدير.'); return; } const headers = Object.keys(data[0]).join(','); const rows = data.map(o => Object.values(o).map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob = new Blob(['\uFEFF'+headers+'\n'+rows], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
+  function init() {
+    el.meetingDate.valueAsDate = new Date();
+    el.crmLastContact.valueAsDate = new Date();
+    el.btnExtract.onclick = () => {
+      const title = el.meetingTitle.value.trim() || 'اجتماع بدون عنوان';
+      const date = el.meetingDate.value;
+      const notes = el.meetingNotes.value.trim();
+      if (!notes) { alert('أدخل ملاحظات الاجتماع أولاً.'); return; }
+      const extracted = extractItems(notes);
+      const meeting = { id: uid(), title, date, rawNotes: notes, tasks: extracted.tasks, decisions: extracted.decisions, createdAt: Date.now() };
+      state.meetings.unshift(meeting); save(LS_KEYS.meetings, state.meetings);
+      state.tasks = extracted.tasks.map(t => ({...t, id: uid()})); save(LS_KEYS.tasks, state.tasks);
+      renderMinutes(meeting); renderTasks(); renderArchive(state.meetings);
+      alert('تم استخراج البنود وحفظ المحضر في الأرشيف.');
+    };
+    el.btnClear.onclick = () => { el.meetingTitle.value=''; el.meetingDate.valueAsDate=new Date(); el.meetingNotes.value=''; el.minutesOut.innerHTML='<div class="empty">سيظهر المحضر هنا بعد الاستخراج.</div>'; state.tasks=[]; save(LS_KEYS.tasks, state.tasks); renderTasks(); };
+    el.btnAddTask.onclick = () => { const t = { id: uid(), text: '', assignee: '', deadline: '', priority: '', done: false }; state.tasks.unshift(t); save(LS_KEYS.tasks, state.tasks); renderTasks(); };
+    el.btnExportCSV.onclick = () => exportCSV(state.tasks.map(t => ({ النص: t.text, المسؤول: t.assignee, الموعد: t.deadline, الأولوية: t.priority, الحالة: t.done ? 'منجز' : 'قيد التنفيذ', مرتبطبCRM: t.crmId ? 'نعم' : 'لا' })), 'tasks-' + Date.now() + '.csv');
+    el.btnExportMinutes.onclick = () => { const m = state.meetings[0]; if (!m) { alert('لا يوجد محضر حالي للتصدير.'); return; } exportCSV([{ العنوان: m.title, التاريخ: m.date, القرارات: m.decisions.map(d=>d.text).join('; '), المهام: m.tasks.map(t=>t.text).join('; ') }], 'minutes-' + Date.now() + '.csv'); };
+    el.btnPrint.onclick = () => { window.print(); };
+    el.btnSaveCRM.onclick = () => {
+      const name = el.crmName.value.trim(); if (!name) { alert('الاسم مطلوب.'); return; }
+      const rec = { id: uid(), type: el.crmType.value, name, company: el.crmCompany.value.trim(), phone: el.crmPhone.value.trim(), email: el.crmEmail.value.trim(), status: el.crmStatus.value, lastContact: el.crmLastContact.value, reminder: el.crmReminder.value, createdAt: Date.now() };
+      state.crm.unshift(rec); save(LS_KEYS.crm, state.crm);
+      el.crmName.value=''; el.crmCompany.value=''; el.crmPhone.value=''; el.crmEmail.value=''; el.crmReminder.value='';
+      renderCRM(); alert('تم حفظ السجل.');
+    };
+    el.btnSearch.onclick = () => { const q = el.searchArchive.value.trim().toLowerCase(); if (!q) { renderArchive(state.meetings); return; } const filtered = state.meetings.filter(m => m.title.toLowerCase().includes(q) || (m.rawNotes||'').toLowerCase().includes(q) || m.tasks.some(t=>t.text.toLowerCase().includes(q)) || m.decisions.some(d=>d.text.toLowerCase().includes(q))); renderArchive(filtered); };
+    el.btnShowAll.onclick = () => { el.searchArchive.value = ''; renderArchive(state.meetings); };
+    renderMinutes(state.meetings[0] || null); renderTasks(); renderCRM(); renderArchive(state.meetings);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
