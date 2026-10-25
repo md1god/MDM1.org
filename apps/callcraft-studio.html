@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو مساعد استقبال هاتفي عربي - بناء واختبار محلي | MDM1</title>
+<meta name="description" content="أداة عربية RTL لبناء مساعد استقبال هاتفي قواعدي مع مخطط محادثة مرئي، محاكاة مكالمات، حجز مواعيد ICS، التقاط عملاء CSV، وحفظ محلي.">
+<link rel="canonical" href="https://mdm1.org/apps/callcraft-studio.html">
+<meta property="og:title" content="استوديو مساعد استقبال هاتفي عربي - بناء واختبار محلي">
+<meta property="og:description" content="أداة عربية RTL لبناء مساعد استقبال هاتفي قواعدي مع مخطط محادثة مرئي، محاكاة مكالمات، حجز مواعيد ICS، التقاط عملاء CSV، وحفظ محلي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/callcraft-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.app-panel{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.app-panel[hidden]{display:none}
+#flow-canvas{cursor:crosshair}
+.flow-node{position:absolute;min-width:140px;padding:8px 12px;background:var(--dark);border:2px solid var(--gold);border-radius:10px;color:var(--light);font-size:0.8rem;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .1s,border-color .1s}
+.flow-node.selected{border-color:var(--gold-bright);box-shadow:0 0 0 2px var(--gold-dim),0 4px 12px rgba(0,0,0,.3)}
+.flow-node .port{width:10px;height:10px;background:var(--gold);border-radius:50%;position:absolute;top:50%;transform:translateY(-50%);cursor:pointer}
+.flow-node .port.in{left:-5px}
+.flow-node .port.out{right:-5px}
+.flow-node .port:hover{background:var(--gold-bright);transform:translateY(-50%) scale(1.3)}
+.sim-msg{padding:8px 12px;margin:6px 0;border-radius:10px;max-width:85%;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.sim-msg.bot{background:var(--gold-dim);color:var(--dark);margin-right:auto;border-bottom-right-radius:2px}
+.sim-msg.user{background:var(--gold);color:var(--dark);margin-left:auto;border-bottom-left-radius:2px;text-align:right}
+.sim-msg.system{background:var(--dark);color:var(--gold-dim);font-size:0.8rem;text-align:center;margin:auto;border-radius:6px}
+#exp-output{max-height:300px;overflow-y:auto}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو بناء مساعد الاستقبال الهاتفي", "url": "https://mdm1.org/apps/callcraft-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل محلياً في المتصفح باستخدام localStorage وWeb Speech API للنطق، ولا يحتاج أي خادم أو اتصال خارجي."}}, {"@type": "Question", "name": "كيف أضيف خدمة جديدة للحجز؟", "acceptedAnswer": {"@type": "Answer", "text": "في تبويب \"بيانات المشروع\"، املأ اسم الخدمة والوصف والمدة والسعر، ثم اضغط \"إضافة خدمة\". ستظهر في القائمة وتصبح متاحة في عقدة الحجز بمخطط المحادثة."}}, {"@type": "Question", "name": "كيف أربط العقد في مخطط المحادثة؟", "acceptedAnswer": {"@type": "Answer", "text": "انقر على المخرج ◎ يمين العقدة الأولى واسحب إلى المدخل ◎ يسار العقدة الثانية. أو استخدم \"ربط تلقائي\" لترتيب العقد حسب النوع."}}, {"@type": "Question", "name": "هل يمكن تصدير الويدجت واستخدامه في موقع آخر؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر \"توليد الويدجت المستقل\" يصدر ملف HTML كامل يحتوي على الإعدادات والمحرك، يعمل محلياً عند فتحه في أي متصفح حديث."}}, {"@type": "Question", "name": "أين تُحفظ بيانات المواعيد والعملاء؟", "acceptedAnswer": {"@type": "Answer", "text": "في localStorage المتصفح تحت مفتاح 'ar_phone_assistant_v1'. أزرار التصدير (ICS/CSV) تستخرج البيانات الحالية، ويمكن مسحها بزر \"مسح البيانات المحفوظة\"."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو بناء مساعد الاستقبال الهاتفي</h1>
+  <p class="page-sub">أداة عربية RTL لبناء مساعد استقبال هاتفي قواعدي مع مخطط محادثة مرئي، محاكاة مكالمات، حجز مواعيد ICS، التقاط عملاء CSV، وحفظ محلي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا الاستوديو يمكنك من بناء مساعد استقبال هاتفي ذكي بالكامل في المتصفح دون خادم أو حساب. ابدأ بإدخال بيانات النشاط وساعات العمل والخدمات، ثم أضف قاعدة الأسئلة والأجوبة، وارسم مخطط المحادثة المتفرع على اللوحة المرئية. اختبر المساعد بمحاكاة المكالمات الواردة كتابةً مع نطق الردود محلياً، واحجز المواعيد وفق قواعدك مع تصدير تقويم ICS، والتقط بيانات العملاء المحتملين مع تصدير CSV. كل شيء يحفظ في localStorage وتستطيع توليد دليل مكالمة وملف إعداد وويدجت HTML مستقل يعمل محلياً.</p>
+
+<div class="app-tabs" role="tablist" aria-label="أقسام الاستوديو">
+  <button class="button" role="tab" aria-selected="true" id="tab-project" data-tab="project">📋 بيانات المشروع</button>
+  <button class="button sec" role="tab" aria-selected="false" id="tab-faq" data-tab="faq">❓ الأسئلة والأجوبة</button>
+  <button class="button sec" role="tab" aria-selected="false" id="tab-flow" data-tab="flow">🔀 مخطط المحادثة</button>
+  <button class="button sec" role="tab" aria-selected="false" id="tab-sim" data-tab="sim">📞 محاكاة المكالمة</button>
+  <button class="button sec" role="tab" aria-selected="false" id="tab-export" data-tab="export">💾 تصدير ومشاركة</button>
+</div>
+
+<div class="card app-panel" id="panel-project" role="tabpanel" aria-labelledby="tab-project">
+  <div class="row"><label for="proj-name">اسم النشاط التجاري</label><input type="text" id="proj-name" placeholder="مثال: عيادة الأسنان الحديثة"></div>
+  <div class="row"><label for="proj-tagline">الشعار / الوصف القصير</label><input type="text" id="proj-tagline" placeholder="رعايتك الصحية أولويتنا"></div>
+  <div class="row"><label for="proj-phone">رقم الهاتف</label><input type="tel" id="proj-phone" placeholder="+966 50 123 4567"></div>
+  <div class="row"><label for="proj-email">البريد الإلكتروني</label><input type="email" id="proj-email" placeholder="info@example.com"></div>
+  <div class="row"><label for="proj-address">العنوان</label><textarea id="proj-address" rows="2" placeholder="الرياض، حي الملز، شارع الملك فهد"></textarea></div>
+  <hr class="divider">
+  <h4>ساعات العمل</h4>
+  <div class="row"><label for="hours-sat">السبت</label><input type="text" id="hours-sat" placeholder="09:00-17:00"></div>
+  <div class="row"><label for="hours-sun">الأحد</label><input type="text" id="hours-sun" placeholder="09:00-17:00"></div>
+  <div class="row"><label for="hours-mon">الاثنين</label><input type="text" id="hours-mon" placeholder="09:00-17:00"></div>
+  <div class="row"><label for="hours-tue">الثلاثاء</label><input type="text" id="hours-tue" placeholder="09:00-17:00"></div>
+  <div class="row"><label for="hours-wed">الأربعاء</label><input type="text" id="hours-wed" placeholder="09:00-17:00"></div>
+  <div class="row"><label for="hours-thu">الخميس</label><input type="text" id="hours-thu" placeholder="09:00-13:00"></div>
+  <div class="row"><label for="hours-fri">الجمعة</label><input type="text" id="hours-fri" placeholder="مغلق"></div>
+  <hr class="divider">
+  <h4>الخدمات</h4>
+  <div class="row"><label for="svc-name">اسم الخدمة</label><input type="text" id="svc-name" placeholder="تنظيف الأسنان"></div>
+  <div class="row"><label for="svc-desc">الوصف</label><input type="text" id="svc-desc" placeholder="تنظيف وتلميع شامل"></div>
+  <div class="row"><label for="svc-dur">المدة (دقيقة)</label><input type="number" id="svc-dur" value="30" min="5" max="240"></div>
+  <div class="row"><label for="svc-price">السعر</label><input type="text" id="svc-price" placeholder="200 ريال"></div>
+  <button class="button" id="btn-add-svc">إضافة خدمة</button>
+  <div id="svc-list" class="out" style="min-height:60px"></div>
+</div>
+
+<div class="card app-panel" id="panel-faq" role="tabpanel" aria-labelledby="tab-faq" hidden>
+  <div class="row"><label for="faq-q">السؤال</label><input type="text" id="faq-q" placeholder="ما هي أوقات العمل؟"></div>
+  <div class="row"><label for="faq-a">الجواب</label><textarea id="faq-a" rows="2" placeholder="نعمل من السبت للأربعاء 9ص-5م، والخميس 9ص-1م"></textarea></div>
+  <div class="row"><label for="faq-tags">الكلمات المفتاحية (مفصولة بفواصل)</label><input type="text" id="faq-tags" placeholder="أوقات, دوام, مواعيد"></div>
+  <button class="button" id="btn-add-faq">إضافة سؤال</button>
+  <div id="faq-list" class="out" style="min-height:80px"></div>
+</div>
+
+<div class="card app-panel" id="panel-flow" role="tabpanel" aria-labelledby="tab-flow" hidden>
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <button class="button sec" id="flow-add-node">➕ إضافة عقدة</button>
+    <button class="button sec" id="flow-clear">🗑️ مسح اللوحة</button>
+    <button class="button sec" id="flow-auto">🔗 ربط تلقائي</button>
+    <span class="badge" id="flow-node-count">العقد: 0</span>
+  </div>
+  <canvas id="flow-canvas" width="800" height="450" style="background:var(--dark);border:1px solid var(--gold-dim);border-radius:8px;touch-action:none"></canvas>
+  <div class="row" style="margin-top:8px">
+    <label for="flow-node-type">نوع العقدة المحددة</label>
+    <select id="flow-node-type">
+      <option value="greeting">ترحيب</option>
+      <option value="menu">قائمة خيارات</option>
+      <option value="faq">سؤال وجواب</option>
+      <option value="booking">حجز موعد</option>
+      <option value="lead">التقاط بيانات</option>
+      <option value="transfer">تحويل بشري</option>
+      <option value="ending">إنهاء</option>
+    </select>
+  </div>
+  <div class="row" id="flow-node-props" style="display:none">
+    <label for="flow-node-text">نص العقدة / الرسالة</label>
+    <textarea id="flow-node-text" rows="2" placeholder="مرحباً بك في..."></textarea>
+    <label for="flow-node-options">الخيارات (لنوع القائمة، سطر لكل خيار: نص|معرف_الهدف)</label>
+    <textarea id="flow-node-options" rows="3" placeholder="حجز موعد|node-booking&#10;استفسار|node-faq"></textarea>
+    <label for="flow-node-service">الخدمة المرتبطة (للحجز)</label>
+    <select id="flow-node-service"><option value="">-- اختر خدمة --</option></select>
+    <label for="flow-node-field">الحقل المطلوب (لالتقاط البيانات)</label>
+    <select id="flow-node-field">
+      <option value="name">الاسم</option>
+      <option value="phone">الهاتف</option>
+      <option value="email">البريد</option>
+      <option value="service">الخدمة المطلوبة</option>
+      <option value="date">التاريخ المفضل</option>
+      <option value="notes">ملاحظات</option>
+    </select>
+    <button class="button" id="flow-update-node">تحديث العقدة</button>
+    <button class="button sec" id="flow-delete-node">حذف العقدة</button>
+  </div>
+  <p style="font-size:0.85rem;color:var(--gold-dim);margin-top:8px">اسحب العقد لتحريكها. انقر على عقدة لتحديدها. اسحب من ◎ لعقدة أخرى للربط.</p>
+</div>
+
+<div class="card app-panel" id="panel-sim" role="tabpanel" aria-labelledby="tab-sim" hidden>
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <button class="button" id="sim-start">▶️ بدء مكالمة جديدة</button>
+    <button class="button sec" id="sim-reset">↺ إعادة تعيين</button>
+    <button class="button sec" id="sim-tts-toggle" aria-pressed="true">🔊 تفعيل النطق</button>
+    <span class="badge" id="sim-state">الحالة: في الانتظار</span>
+  </div>
+  <div id="sim-transcript" class="out" style="min-height:250px;max-height:350px;overflow-y:auto;font-family:monospace;line-height:1.6"></div>
+  <div class="row" style="margin-top:8px">
+    <label for="sim-input">رد المتصل</label>
+    <input type="text" id="sim-input" placeholder="اكتب رد المتصل هنا..." style="flex:1">
+    <button class="button" id="sim-send">إرسال</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <label for="sim-speed">سرعة النطق</label>
+    <input type="range" id="sim-speed" min="0.5" max="2" step="0.1" value="1">
+    <label for="sim-voice">الصوت</label>
+    <select id="sim-voice" style="flex:1"></select>
+  </div>
+</div>
+
+<div class="card app-panel" id="panel-export" role="tabpanel" aria-labelledby="tab-export" hidden>
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <button class="button" id="exp-save">💾 حفظ المشروع</button>
+    <button class="button sec" id="exp-load">📂 تحميل مشروع</button>
+    <button class="button sec" id="exp-new">🆕 مشروع جديد</button>
+    <input type="file" id="exp-file" accept=".json" hidden>
+  </div>
+  <hr class="divider" style="margin:12px 0">
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <button class="button" id="exp-guide">📖 توليد دليل المكالمة</button>
+    <button class="button sec" id="exp-config">⚙️ تصدير ملف الإعداد</button>
+    <button class="button sec" id="exp-widget">🧩 توليد الويدجت المستقل</button>
+  </div>
+  <hr class="divider" style="margin:12px 0">
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <button class="button" id="exp-ics">📅 تصدير المواعيد (ICS)</button>
+    <button class="button sec" id="exp-leads">👥 تصدير العملاء (CSV)</button>
+    <button class="button sec" id="exp-clear-data">🗑️ مسح البيانات المحفوظة</button>
+  </div>
+  <div id="exp-output" class="out" style="min-height:100px;margin-top:12px;white-space:pre-wrap;font-family:monospace;font-size:0.85rem"></div>
+</div>
+
+<div id="toast" class="badge" style="position:fixed;bottom:20px;left:20px;z-index:1000;display:none;padding:12px 20px;font-size:0.9rem"></div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل محلياً في المتصفح باستخدام localStorage وWeb Speech API للنطق، ولا يحتاج أي خادم أو اتصال خارجي.</p><h3>كيف أضيف خدمة جديدة للحجز؟</h3><p>في تبويب &quot;بيانات المشروع&quot;، املأ اسم الخدمة والوصف والمدة والسعر، ثم اضغط &quot;إضافة خدمة&quot;. ستظهر في القائمة وتصبح متاحة في عقدة الحجز بمخطط المحادثة.</p><h3>كيف أربط العقد في مخطط المحادثة؟</h3><p>انقر على المخرج ◎ يمين العقدة الأولى واسحب إلى المدخل ◎ يسار العقدة الثانية. أو استخدم &quot;ربط تلقائي&quot; لترتيب العقد حسب النوع.</p><h3>هل يمكن تصدير الويدجت واستخدامه في موقع آخر؟</h3><p>نعم، زر &quot;توليد الويدجت المستقل&quot; يصدر ملف HTML كامل يحتوي على الإعدادات والمحرك، يعمل محلياً عند فتحه في أي متصفح حديث.</p><h3>أين تُحفظ بيانات المواعيد والعملاء؟</h3><p>في localStorage المتصفح تحت مفتاح &#x27;ar_phone_assistant_v1&#x27;. أزرار التصدير (ICS/CSV) تستخرج البيانات الحالية، ويمكن مسحها بزر &quot;مسح البيانات المحفوظة&quot;.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="voice-call-receptionist-sim.html" style="color:var(--gold-bright);font-weight:700">موظف استقبال هاتفي ذكي</a><span style="opacity:.75"> — تطبيق عربي يعمل كلياً في المتصفح: سجّل مكالمات افتراضية، ردّ عليها بنصوص قابلة للتخصيص، احجز المواعيد في…</span></li><li style="margin:.5rem 0"><a href="dynamic-form-studio.html" style="color:var(--gold-bright);font-weight:700">محرر واستوديو نماذج عربي في المتصفح مع JSON وتحقق وحسابات</a><span style="opacity:.75"> — أنشئ استبيانات واختبارات ونماذج متعددة الخطوات عبر تعريف JSON في متصفحك، مع تحقق ومنطق شرطي وحسابات وحفظ…</span></li><li style="margin:.5rem 0"><a href="layerloom-paint-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو «ليرلوم»: بكسل‑آرت في المتصفح</a><span style="opacity:.75"> — محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي…</span></li><li style="margin:.5rem 0"><a href="local-client-pipeline.html" style="color:var(--gold-bright);font-weight:700">تطبيق CRM عربي لإدارة العملاء والصفقات محلياً</a><span style="opacity:.75"> — تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث…</span></li><li style="margin:.5rem 0"><a href="local-dataset-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو معالجة بيانات داخل المتصفح</a><span style="opacity:.75"> — يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const STATE_KEY = 'ar_phone_assistant_v1';
+  const $ = (id) => document.getElementById(id);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  let project = {
+    name: '', tagline: '', phone: '', email: '', address: '',
+    hours: { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '' },
+    services: [], faqs: [], flow: { nodes: [], edges: [] },
+    appointments: [], leads: []
+  };
+  let selectedNodeId = null;
+  let simState = { currentNode: null, history: [], collecting: null, collected: {}, ttsEnabled: true };
+  let dragState = { dragging: false, nodeId: null, offsetX: 0, offsetY: 0, connecting: false, fromPort: null };
+
+  const canvas = $('flow-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 800 * dpr; canvas.height = 450 * dpr; canvas.style.width = '800px'; canvas.style.height = '450px'; ctx.scale(dpr, dpr);
+
+  function save() {
+    try { localStorage.setItem(STATE_KEY, JSON.stringify(project)); toast('تم الحفظ'); } catch (e) { toast('فشل الحفظ: ' + e.message); }
+  }
+  function load() {
+    try {
+      const data = localStorage.getItem(STATE_KEY);
+      if (data) { project = JSON.parse(data); hydrate(); toast('تم التحميل'); }
+    } catch (e) { toast('فشل التحميل: ' + e.message); }
+  }
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.style.display = 'block'; t.style.background = 'var(--gold)'; t.style.color = 'var(--dark)';
+    setTimeout(() => { t.style.display = 'none'; }, 2500);
+  }
+
+  function hydrate() {
+    $('proj-name').value = project.name || '';
+    $('proj-tagline').value = project.tagline || '';
+    $('proj-phone').value = project.phone || '';
+    $('proj-email').value = project.email || '';
+    $('proj-address').value = project.address || '';
+    Object.keys(project.hours).forEach(d => $(`hours-${d}`).value = project.hours[d] || '');
+    renderServices(); renderFAQs(); renderFlow(); updateServiceSelects(); renderSimTranscript();
+  }
+
+  function gatherProject() {
+    project.name = $('proj-name').value.trim();
+    project.tagline = $('proj-tagline').value.trim();
+    project.phone = $('proj-phone').value.trim();
+    project.email = $('proj-email').value.trim();
+    project.address = $('proj-address').value.trim();
+    ['sat','sun','mon','tue','wed','thu','fri'].forEach(d => project.hours[d] = $(`hours-${d}`).value.trim());
+  }
+
+  function renderServices() {
+    const el = $('svc-list'); el.innerHTML = '';
+    project.services.forEach((s, i) => {
+      const div = document.createElement('div'); div.className = 'row'; div.style.alignItems = 'center'; div.style.gap = '8px';
+      div.innerHTML = `<span class="badge">${i+1}</span><strong>${s.name}</strong><span>${s.desc}</span><span>${s.dur}د</span><span>${s.price}</span>`;
+      const btn = document.createElement('button'); btn.className = 'button sec'; btn.textContent = 'حذف'; btn.onclick = () => { project.services.splice(i,1); renderServices(); updateServiceSelects(); save(); };
+      div.appendChild(btn); el.appendChild(div);
+    });
+  }
+  $('btn-add-svc').onclick = () => {
+    const name = $('svc-name').value.trim(), desc = $('svc-desc').value.trim(), dur = parseInt($('svc-dur').value) || 30, price = $('svc-price').value.trim();
+    if (!name) return toast('أدخل اسم الخدمة');
+    project.services.push({ name, desc, dur, price }); renderServices(); updateServiceSelects(); save();
+    $('svc-name').value = ''; $('svc-desc').value = ''; $('svc-price').value = '';
+  };
+
+  function renderFAQs() {
+    const el = $('faq-list'); el.innerHTML = '';
+    project.faqs.forEach((f, i) => {
+      const div = document.createElement('div'); div.className = 'card'; div.style.marginBottom = '8px'; div.style.padding = '12px';
+      div.innerHTML = `<strong>س${i+1}:</strong> ${f.q}<br><strong>ج:</strong> ${f.a}<br><small>كلمات: ${f.tags.join(', ')}</small>`;
+      const btn = document.createElement('button'); btn.className = 'button sec'; btn.style.marginTop = '8px'; btn.textContent = 'حذف'; btn.onclick = () => { project.faqs.splice(i,1); renderFAQs(); save(); };
+      div.appendChild(btn); el.appendChild(div);
+    });
+  }
+  $('btn-add-faq').onclick = () => {
+    const q = $('faq-q').value.trim(), a = $('faq-a').value.trim(), tags = $('faq-tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+    if (!q || !a) return toast('أكمل السؤال والجواب');
+    project.faqs.push({ q, a, tags }); renderFAQs(); save(); $('faq-q').value = ''; $('faq-a').value = ''; $('faq-tags').value = '';
+  };
+
+  function updateServiceSelects() {
+    const sel = $('flow-node-service'); const val = sel.value; sel.innerHTML = '<option value="">-- اختر خدمة --</option>';
+    project.services.forEach(s => { const o = document.createElement('option'); o.value = s.name; o.textContent = `${s.name} (${s.dur}د، ${s.price})`; sel.appendChild(o); });
+    sel.value = val;
+  }
+
+  function renderFlow() {
+    ctx.clearRect(0, 0, 800, 450);
+    project.flow.edges.forEach(e => {
+      const from = project.flow.nodes.find(n => n.id === e.from), to = project.flow.nodes.find(n => n.id === e.to);
+      if (!from || !to) return;
+      ctx.beginPath(); ctx.moveTo(from.x + from.w, from.y + from.h/2); ctx.lineTo(to.x, to.y + to.h/2); ctx.strokeStyle = 'var(--gold-dim)'; ctx.lineWidth = 2; ctx.stroke();
+      const angle = Math.atan2((to.y + to.h/2) - (from.y + from.h/2), to.x - (from.x + from.w));
+      ctx.beginPath(); ctx.moveTo(to.x, to.y + to.h/2); ctx.lineTo(to.x - 10*Math.cos(angle) + 5*Math.sin(angle), to.y + to.h/2 - 10*Math.sin(angle) - 5*Math.cos(angle)); ctx.lineTo(to.x - 10*Math.cos(angle) - 5*Math.sin(angle), to.y + to.h/2 - 10*Math.sin(angle) + 5*Math.cos(angle)); ctx.fillStyle = 'var(--gold-dim)'; ctx.fill();
+    });
+    project.flow.nodes.forEach(n => {
+      const selected = n.id === selectedNodeId;
+      ctx.fillStyle = selected ? 'var(--gold)' : 'var(--dark)'; ctx.strokeStyle = selected ? 'var(--gold-bright)' : 'var(--gold)'; ctx.lineWidth = selected ? 3 : 2;
+      const r = 8; ctx.beginPath(); ctx.roundRect(n.x, n.y, n.w, n.h, r); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = selected ? 'var(--dark)' : 'var(--light)'; ctx.font = '12px system-ui'; ctx.textAlign = 'center'; ctx.fillText(n.label, n.x + n.w/2, n.y + n.h/2 + 4);
+      ctx.fillStyle = 'var(--gold)'; ctx.beginPath(); ctx.arc(n.x, n.y + n.h/2, 5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(n.x + n.w, n.y + n.h/2, 5, 0, Math.PI*2); ctx.fill();
+    });
+    $('flow-node-count').textContent = `العقد: ${project.flow.nodes.length}`;
+  }
+
+  function hitTest(x, y) {
+    for (let i = project.flow.nodes.length - 1; i >= 0; i--) {
+      const n = project.flow.nodes[i];
+      if (x >= n.x && x <= n.x + n.w && y >= n.y && y <= n.y + n.h) return { node: n, port: x < n.x + 15 ? 'in' : x > n.x + n.w - 15 ? 'out' : null };
+    }
+    return null;
+  }
+
+  canvas.onmousedown = e => {
+    const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const hit = hitTest(x, y);
+    if (hit) {
+      if (hit.port === 'out') { dragState.connecting = true; dragState.fromPort = hit.node.id; return; }
+      selectedNodeId = hit.node.id; showNodeProps(hit.node); dragState.dragging = true; dragState.nodeId = hit.node.id; dragState.offsetX = x - hit.node.x; dragState.offsetY = y - hit.node.y; renderFlow(); return;
+    }
+    selectedNodeId = null; hideNodeProps(); renderFlow();
+  };
+  window.onmousemove = e => {
+    if (dragState.dragging) {
+      const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      const n = project.flow.nodes.find(n => n.id === dragState.nodeId); if (n) { n.x = Math.max(0, Math.min(800 - n.w, x - dragState.offsetX)); n.y = Math.max(0, Math.min(450 - n.h, y - dragState.offsetY)); renderFlow(); }
+    }
+  };
+  window.onmouseup = e => {
+    if (dragState.connecting) {
+      const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left, y = e.clientY - rect.top; const hit = hitTest(x, y);
+      if (hit && hit.port === 'in' && hit.node.id !== dragState.fromPort) {
+        project.flow.edges.push({ from: dragState.fromPort, to: hit.node.id }); renderFlow(); save();
+      }
+      dragState.connecting = false; dragState.fromPort = null;
+    }
+    dragState.dragging = false; dragState.nodeId = null;
+  };
+
+  function showNodeProps(n) { $('flow-node-props').style.display = 'block'; $('flow-node-type').value = n.type; $('flow-node-text').value = n.text || ''; $('flow-node-options').value = (n.options||[]).map(o=>`${o.label}|${o.target}`).join('\n'); $('flow-node-service').value = n.service || ''; $('flow-node-field').value = n.field || 'name'; }
+  function hideNodeProps() { $('flow-node-props').style.display = 'none'; }
+  $('flow-update-node').onclick = () => {
+    const n = project.flow.nodes.find(n => n.id === selectedNodeId); if (!n) return;
+    n.type = $('flow-node-type').value; n.label = n.type; n.text = $('flow-node-text').value.trim();
+    n.options = $('flow-node-options').value.split('\n').filter(s=>s.trim()).map(s=>{ const [l,t]=s.split('|'); return {label:l.trim(), target:t.trim()}; });
+    n.service = $('flow-node-service').value || null; n.field = $('flow-node-field').value; renderFlow(); save(); toast('تم تحديث العقدة');
+  };
+  $('flow-delete-node').onclick = () => {
+    if (!selectedNodeId) return; project.flow.nodes = project.flow.nodes.filter(n=>n.id!==selectedNodeId); project.flow.edges = project.flow.edges.filter(e=>e.from!==selectedNodeId&&e.to!==selectedNodeId); selectedNodeId=null; hideNodeProps(); renderFlow(); save();
+  };
+  $('flow-add-node').onclick = () => {
+    const id = 'n_' + Date.now(); const type = $('flow-node-type').value || 'greeting';
+    project.flow.nodes.push({ id, type, label: type, x: 100 + Math.random()*500, y: 100 + Math.random()*250, w: 140, h: 44, text: '', options: [], service: null, field: 'name' }); renderFlow(); save();
+  };
+  $('flow-clear').onclick = () => { if (confirm('مسح كل المخطط؟')) { project.flow = { nodes: [], edges: [] }; selectedNodeId = null; hideNodeProps(); renderFlow(); save(); }};
+  $('flow-auto').onclick = () => {
+    const byType = {}; project.flow.nodes.forEach(n=>{ if(!byType[n.type]) byType[n.type]=[]; byType[n.type].push(n); });
+    const order = ['greeting','menu','faq','booking','lead','transfer','ending']; let prev = null;
+    order.forEach(t => { (byType[t]||[]).forEach(n=>{ if(prev) project.flow.edges.push({from:prev.id,to:n.id}); prev=n; }); }); renderFlow(); save();
+  };
+
+  function speak(text) { if (!simState.ttsEnabled) return; if (!('speechSynthesis' in window)) return; const u = new SpeechSynthesisUtterance(text); u.lang = 'ar-SA'; u.rate = parseFloat($('sim-speed').value) || 1; const voices = speechSynthesis.getVoices(); const arVoice = voices.find(v=>v.lang.startsWith('ar')); if (arVoice) u.voice = arVoice; speechSynthesis.speak(u); }
+  function addSimMsg(role, text) { const div = document.createElement('div'); div.className = `sim-msg ${role}`; div.textContent = text; $('sim-transcript').appendChild(div); $('sim-transcript').scrollTop = $('sim-transcript').scrollHeight; }
+  function renderSimTranscript() { $('sim-transcript').innerHTML = ''; simState.history.forEach(m=>addSimMsg(m.role,m.text)); }
+
+  function findStartNode() { return project.flow.nodes.find(n=>n.type==='greeting') || project.flow.nodes[0]; }
+  function getNextNode(currentId, input) {
+    const node = project.flow.nodes.find(n=>n.id===currentId); if (!node) return null;
+    if (node.type === 'menu' && node.options.length) {
+      const match = node.options.find(o=>o.label.includes(input) || input.includes(o.label) || o.target===input); if (match) return project.flow.nodes.find(n=>n.id===match.target);
+      return project.flow.nodes.find(n=>n.id===node.options[0].target);
+    }
+    const edge = project.flow.edges.find(e=>e.from===currentId); return edge ? project.flow.nodes.find(n=>n.id===edge.to) : null;
+  }
+  function processNode(node) {
+    simState.currentNode = node.id;
+    if (node.type === 'greeting' || node.type === 'faq' || node.type === 'ending' || node.type === 'transfer') { addSimMsg('bot', node.text || '...'); speak(node.text); }
+    else if (node.type === 'menu') { const opts = (node.options||[]).map(o=>o.label).join('، '); const msg = `${node.text || 'اختر:'} (${opts})`; addSimMsg('bot', msg); speak(msg); }
+    else if (node.type === 'booking') { const svc = project.services.find(s=>s.name===node.service); const msg = svc ? `لحجز ${svc.name}، يرجى ذكر التاريخ والوقت المفضلين` : node.text || 'الحجز متاح للخدمات المحددة'; addSimMsg('bot', msg); speak(msg); simState.collecting = 'booking'; simState.collected.service = node.service; }
+    else if (node.type === 'lead') { const labels = {name:'الاسم',phone:'الهاتف',email:'البريد الإلكتروني',service:'الخدمة',date:'التاريخ',notes:'ملاحظات'}; const msg = node.text || `يرجى تزويدي بـ ${labels[node.field]||node.field}`; addSimMsg('bot', msg); speak(msg); simState.collecting = 'lead'; simState.collectingField = node.field; }
+    simState.history.push({role:'bot',text:node.text||''});
+  }
+
+  $('sim-start').onclick = () => {
+    gatherProject(); simState = { currentNode: null, history: [], collecting: null, collected: {}, ttsEnabled: true }; $('sim-state').textContent = 'الحالة: جارية';
+    const start = findStartNode(); if (!start) return toast('أضف عقدة ترحيب في المخطط أولاً'); processNode(start);
+  };
+  $('sim-reset').onclick = () => { simState = { currentNode: null, history: [], collecting: null, collected: {}, ttsEnabled: true }; $('sim-transcript').innerHTML = ''; $('sim-state').textContent = 'الحالة: في الانتظار'; };
+  $('sim-tts-toggle').onclick = function() { simState.ttsEnabled = !simState.ttsEnabled; this.textContent = simState.ttsEnabled ? '🔊 تفعيل النطق' : '🔇 كتم النطق'; this.setAttribute('aria-pressed', simState.ttsEnabled); };
+  function sendInput() { const txt = $('sim-input').value.trim(); if (!txt) return; $('sim-input').value = ''; addSimMsg('user', txt); simState.history.push({role:'user',text:txt});
+    if (simState.collecting === 'booking') { simState.collected[simState.collectingField || 'date'] = txt; simState.collecting = null; const next = getNextNode(simState.currentNode, txt); if (next) processNode(next); else { addSimMsg('bot', 'تم استلام طلب الحجز، سنتواصل معك للتأكيد'); speak('تم استلام طلب الحجز، سنتواصل معك للتأكيد'); project.appointments.push({...simState.collected, date:new Date().toISOString()}); save(); } }
+    else if (simState.collecting === 'lead') { simState.collected[simState.collectingField] = txt; simState.collecting = null; const next = getNextNode(simState.currentNode, txt); if (next) processNode(next); else { addSimMsg('bot', 'شكراً لك، تم تسجيل بياناتك'); speak('شكراً لك، تم تسجيل بياناتك'); project.leads.push({...simState.collected, date:new Date().toISOString()}); save(); } }
+    else { const next = getNextNode(simState.currentNode, txt); if (next) processNode(next); else { const faq = project.faqs.find(f=>f.tags.some(t=>txt.includes(t)) || f.q.includes(txt) || txt.includes(f.q)); if (faq) { addSimMsg('bot', faq.a); speak(faq.a); } else { addSimMsg('bot', 'عذراً، لم أفهم. هل يمكنك إعادة الصياغة؟'); speak('عذراً، لم أفهم. هل يمكنك إعادة الصياغة؟'); } } }
+  }
+  $('sim-send').onclick = sendInput; $('sim-input').onkeydown = e => { if (e.key === 'Enter') sendInput(); };
+
+  speechSynthesis.onvoiceschanged = () => { const sel = $('sim-voice'); sel.innerHTML = '<option value="">افتراضي</option>'; speechSynthesis.getVoices().filter(v=>v.lang.startsWith('ar')).forEach(v=>{ const o=document.createElement('option'); o.value=v.name; o.textContent=v.name; sel.appendChild(o); }); };
+  $('sim-voice').onchange = () => { /* voice selected via utterance */ };
+
+  $('exp-save').onclick = () => { gatherProject(); save(); };
+  $('exp-load').onclick = () => { $('exp-file').click(); };
+  $('exp-file').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ()=>{ try { project = JSON.parse(r.result); hydrate(); toast('تم التحميل من ملف'); } catch(err){ toast('ملف غير صالح'); } }; r.readAsText(f); e.target.value = ''; };
+  $('exp-new').onclick = () => { if (confirm('بدء مشروع جديد؟ سيُفقد الحالي.')) { project = { name: '', tagline: '', phone: '', email: '', address: '', hours: { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '' }, services: [], faqs: [], flow: { nodes: [], edges: [] }, appointments: [], leads: [] }; selectedNodeId = null; hideNodeProps(); hydrate(); save(); toast('مشروع جديد'); }};
+
+  function generateGuide() {
+    let md = `# دليل المكالمة: ${project.name}\n\n`;
+    md += `**الشعار:** ${project.tagline}\n**الهاتف:** ${project.phone}\n**البريد:** ${project.email}\n**العنوان:** ${project.address}\n\n## ساعات العمل\n`;
+    Object.entries(project.hours).forEach(([k,v])=>{ if(v) md+=`- ${k}: ${v}\n`; });
+    md += `\n## الخدمات\n`; project.services.forEach(s=>md+=`- **${s.name}** (${s.dur}د، ${s.price}): ${s.desc}\n`);
+    md += `\n## الأسئلة الشائعة\n`; project.faqs.forEach((f,i)=>md+=`${i+1}. **س:** ${f.q}\n   **ج:** ${f.a}\n   *الكلمات:* ${f.tags.join(', ')}\n\n`);
+    md += `## مخطط المحادثة\n`; project.flow.nodes.forEach(n=>{ md+=`- [${n.type}] ${n.id}: ${n.text||'(فارغ)'}\n  `; if(n.options.length) md+=`  الخيارات: ${n.options.map(o=>`${o.label}→${o.target}`).join(', ')}\n`; });
+    return md;
+  }
+  $('exp-guide').onclick = () => { gatherProject(); const md = generateGuide(); $('exp-output').textContent = md; download(md, 'call-guide.md', 'text/markdown'); toast('تم توليد الدليل'); };
+  function download(content, filename, mime) { const blob = new Blob([content], {type:mime}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
+  $('exp-config').onclick = () => { gatherProject(); const cfg = JSON.stringify(project, null, 2); $('exp-output').textContent = cfg; download(cfg, 'assistant-config.json', 'application/json'); toast('تم تصدير الإعداد'); };
+  $('exp-widget').onclick = () => {
+    gatherProject(); const widget = generateWidget(); $('exp-output').textContent = widget; download(widget, 'assistant-widget.html', 'text/html'); toast('تم توليد الويدجت');
+  };
+  function generateWidget() {
+    const cfg = JSON.stringify(project).replace(/"/g, '&quot;');
+    return `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${project.name} - مساعد الاستقبال</title>
+<style>
+*{box-sizing:border-box}body{font-family:system-ui;margin:0;background:#111;color:#eee}
+.widget{max-width:420px;margin:20px auto;background:#1a1a1a;border:1px solid #c9a84c;border-radius:12px;overflow:hidden;font-size:14px;line-height:1.5}
+.header{background:#c9a84c;color:#111;padding:16px;font-weight:bold;text-align:center}
+.messages{padding:16px;height:350px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.msg{padding:10px 14px;border-radius:12px;max-width:85%;animation:pop .2s}@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+.msg.bot{background:#c9a84c;color:#111;align-self:flex-start;border-bottom-left-radius:2px}
+.msg.user{background:#333;color:#eee;align-self:flex-end;border-bottom-right-radius:2px;text-align:right}
+.input-area{display:flex;border-top:1px solid #333;padding:10px;gap:8px}
+.input-area input{flex:1;background:#222;border:1px solid #444;color:#eee;padding:10px 12px;border-radius:8px;outline:none}
+.input-area button{background:#c9a84c;color:#111;border:none;padding:10px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
+.input-area button:active{background:#b8973f}
+</style></head><body>
+<div class="widget"><div class="header">${project.name}</div><div class="messages" id="msgs"></div>
+<div class="input-area"><input id="inp" placeholder="اكتب رسالتك..."><button id="snd">إرسال</button></div></div>
+<script>
+const CONFIG = JSON.parse("${cfg}");
+let state = { node: null, collecting: null, field: null, data: {} };
+const msgs = document.getElementById('msgs'), inp = document.getElementById('inp'), snd = document.getElementById('snd');
+function add(role, text) { const d = document.createElement('div'); d.className = 'msg ' + role; d.textContent = text; msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; }
+function speak(t) { if('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(t); u.lang='ar-SA'; speechSynthesis.speak(u); } }
+function findStart() { return CONFIG.flow.nodes.find(n=>n.type==='greeting') || CONFIG.flow.nodes[0]; }
+function nextNode(id, input) { const n = CONFIG.flow.nodes.find(x=>x.id===id); if(!n) return null; if(n.type==='menu' && n.options.length) { const m = n.options.find(o=>o.label.includes(input)||input.includes(o.label)||o.target===input); if(m) return CONFIG.flow.nodes.find(x=>x.id===m.target); return CONFIG.flow.nodes.find(x=>x.id===n.options[0].target); } const e = CONFIG.flow.edges.find(x=>x.from===id); return e ? CONFIG.flow.nodes.find(x=>x.id===e.to) : null; }
+function process(n) { state.node = n.id; if(['greeting','faq','ending','transfer'].includes(n.type)) { add('bot', n.text||'...'); speak(n.text); } else if(n.type==='menu') { const opts = (n.options||[]).map(o=>o.label).join('، '); add('bot', (n.text||'اختر:')+' ('+opts+')'); speak((n.text||'اختر:')+' '+opts); } else if(n.type==='booking') { const svc = CONFIG.services.find(s=>s.name===n.service); add('bot', svc ? 'لحجز '+svc.name+'، يرجى ذكر التاريخ والوقت' : n.text||'الحجز متاح'); speak(svc ? 'لحجز '+svc.name+'، يرجى ذكر التاريخ والوقت' : n.text||'الحجز متاح'); state.collecting='booking'; state.data.service=n.service; } else if(n.type==='lead') { const labels={name:'الاسم',phone:'الهاتف',email:'البريد',service:'الخدمة',date:'التاريخ',notes:'ملاحظات'}; add('bot', n.text||'يرجى تزويدي بـ '+(labels[n.field]||n.field)); speak(n.text||'يرجى تزويدي بـ '+(labels[n.field]||n.field)); state.collecting='lead'; state.field=n.field; } }
+function handle(input) { add('user', input); if(state.collecting==='booking') { state.data[state.field||'date']=input; state.collecting=null; const nxt=nextNode(state.node,input); if(nxt) process(nxt); else { add('bot','تم استلام طلب الحجز، سنتواصل معك'); speak('تم استلام طلب الحجز، سنتواصل معك'); } return; } if(state.collecting==='lead') { state.data[state.field]=input; state.collecting=null; const nxt=nextNode(state.node,input); if(nxt) process(nxt); else { add('bot','شكراً، تم تسجيل بياناتك'); speak('شكراً، تم تسجيل بياناتك'); } return; } const nxt=nextNode(state.node,input); if(nxt) process(nxt); else { const faq=CONFIG.faqs.find(f=>f.tags.some(t=>input.includes(t))||f.q.includes(input)||input.includes(f.q)); if(faq) { add('bot',faq.a); speak(faq.a); } else { add('bot','عذراً، لم أفهم. أعد الصياغة؟'); speak('عذراً، لم أفهم. أعد الصياغة؟'); } } }
+process(findStart());
+snd.onclick=()=>{const v=inp.value.trim();if(v){handle(v);inp.value=''}};inp.onkeydown=e=>{if(e.key==='Enter'){const v=inp.value.trim();if(v){handle(v);inp.value=''}}};
+<\/script></body></html>`;
+  }
+
+  $('exp-ics').onclick = () => {
+    if (!project.appointments.length) return toast('لا توجد مواعيد محفوظة');
+    let ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Arabic Phone Assistant//AR\nCALSCALE:GREGORIAN\n';
+    project.appointments.forEach((a, i) => {
+      const dt = new Date(a.date); const stamp = dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+      ics += `BEGIN:VEVENT\nUID:appt-${i}-${stamp}@assistant\nDTSTAMP:${stamp}\nDTSTART:${stamp}\nSUMMARY:حجز: ${a.service||'خدمة'}\nDESCRIPTION:العميل: ${a.name||'-'}\\nالهاتف: ${a.phone||'-'}\\nالبريد: ${a.email||'-'}\\nالتاريخ المفضل: ${a.date||'-'}\\nملاحظات: ${a.notes||'-'}\nEND:VEVENT\n`;
+    });
+    ics += 'END:VCALENDAR'; $('exp-output').textContent = ics; download(ics, 'appointments.ics', 'text/calendar'); toast('تم تصدير المواعيد');
+  };
+  $('exp-leads').onclick = () => {
+    if (!project.leads.length) return toast('لا توجد عملاء محفوظين');
+    const headers = ['التاريخ','الاسم','الهاتف','البريد','الخدمة','التاريخ المفضل','ملاحظات'];
+    let csv = headers.join(',') + '\n';
+    project.leads.forEach(l => { csv += [l.date, l.name||'', l.phone||'', l.email||'', l.service||'', l.date||'', l.notes||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',') + '\n'; });
+    $('exp-output').textContent = csv; download(csv, 'leads.csv', 'text/csv'); toast('تم تصدير العملاء');
+  };
+  $('exp-clear-data').onclick = () => { if (confirm('مسح كل المواعيد والعملاء المحفوظة؟')) { project.appointments = []; project.leads = []; save(); toast('تم المسح'); }};
+
+  // Tabs
+  $$('.app-tabs button').forEach(btn => btn.onclick = () => {
+    $$('.app-tabs button').forEach(b => { b.classList.remove('button'); b.classList.add('button','sec'); b.setAttribute('aria-selected','false'); });
+    btn.classList.remove('sec'); btn.classList.add('button'); btn.setAttribute('aria-selected','true');
+    $$('.app-panel').forEach(p => p.hidden = true); $(`panel-${btn.dataset.tab}`).hidden = false;
+  });
+
+  load();
+  if (!project.flow.nodes.length) {
+    project.flow.nodes.push({id:'n_start',type:'greeting',label:'greeting',x:100,y:100,w:140,h:44,text:'مرحباً بك في '+ (project.name||'شركتنا') +'، كيف أساعدك؟',options:[],service:null,field:'name'});
+    project.flow.nodes.push({id:'n_menu',type:'menu',label:'menu',x:300,y:100,w:140,h:44,text:'اختر خدمة:',options:[{label:'حجز موعد',target:'n_booking'},{label:'استفسار',target:'n_faq'}],service:null,field:'name'});
+    project.flow.nodes.push({id:'n_booking',type:'booking',label:'booking',x:500,y:50,w:140,h:44,text:'',options:[],service:null,field:'name'});
+    project.flow.nodes.push({id:'n_faq',type:'faq',label:'faq',x:500,y:150,w:140,h:44,text:'',options:[],service:null,field:'name'});
+    project.flow.nodes.push({id:'n_end',type:'ending',label:'ending',x:700,y:100,w:140,h:44,text:'شكراً لتواصلكم، إلى اللقاء!',options:[],service:null,field:'name'});
+    project.flow.edges.push({from:'n_start',to:'n_menu'},{from:'n_menu',to:'n_booking'},{from:'n_menu',to:'n_faq'},{from:'n_booking',to:'n_end'},{from:'n_faq',to:'n_end'});
+    save(); renderFlow();
+  }
+  hydrate();
+})();
+</script>
+</body>
+</html>
