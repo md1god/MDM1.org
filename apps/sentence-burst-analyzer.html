@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كاشف الانتظام الإحصائي للنصوص العربية - تحليل مجاني | MDM1</title>
+<meta name="description" content="أداة عربية تعمل بالمتصفح لتحليل النصوص وكشف الأنماط غير الطبيعية عبر مقاييس إحصائية دقيقة مع تظليل الجمل المنتظمة وحفظ التحليل محلياً.">
+<link rel="canonical" href="https://mdm1.org/apps/sentence-burst-analyzer.html">
+<meta property="og:title" content="كاشف الانتظام الإحصائي للنصوص العربية - تحليل مجاني">
+<meta property="og:description" content="أداة عربية تعمل بالمتصفح لتحليل النصوص وكشف الأنماط غير الطبيعية عبر مقاييس إحصائية دقيقة مع تظليل الجمل المنتظمة وحفظ التحليل محلياً.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/sentence-burst-analyzer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-sentence-regular { background:rgba(255,215,0,.25); border-radius:3px; padding:0 2px; }
+.app-sentence-high { background:rgba(255,215,0,.4); border-radius:3px; padding:0 2px; font-weight:600; }
+.app-metric-row { display:flex; justify-content:space-between; padding:.25rem 0; border-bottom:1px solid rgba(255,215,0,.1) }
+.app-metric-label { color:var(--gold-dim) }
+.app-metric-value { font-weight:600; color:var(--gold) }
+.app-probability-high { color:#ff4444 }
+.app-probability-medium { color:var(--gold) }
+.app-probability-low { color:#44cc44 }
+@media (max-width:600px) {
+  .app-metric-row { font-size:.85rem }
+  #app-highlighted { font-size:.9rem }
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "كاشف الانتظام الإحصائي للنصوص العربية", "url": "https://mdm1.org/apps/sentence-burst-analyzer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما المقاييس الإحصائية التي تستخدمها الأداة؟", "acceptedAnswer": {"@type": "Answer", "text": "تحسب الأداة تباين أطوال الجمل (معامل التباين)، تنوع المفردات (نسبة النوع للرمز TTR)، نسبة الكلمات المكررة، وانتظام كل جملة على حدة، ثم تجمعها في درجة احتمالية موحدة."}}, {"@type": "Question", "name": "هل تحتاج الأداة لاتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الأداة تعمل بالكامل داخل متصفحك دون أي طلبات شبكة، وتخزن آخر تحليل في localStorage محلياً على جهازك فقط."}}, {"@type": "Question", "name": "ما معنى تظليل الجمل بالألوان؟", "acceptedAnswer": {"@type": "Answer", "text": "الجمل المظللة بالذهبي الفاتح هي جمل منتظمة نسبياً، والجمل بالذهبي الداكن هي الأكثر انتظاماً (أعلى درجة)، مما يساعدك على تحديد الأجزاء المشبوهة بصرياً."}}, {"@type": "Question", "name": "كيف أفسر درجة الاحتمالية؟", "acceptedAnswer": {"@type": "Answer", "text": "أقل من 35% = نص طبيعي متنوع، 35-65% = بعض الأنماط المنتظمة، فوق 65% = انتظام غير طبيعي قوي يشير لتوليد آلي أو كتابة مفرطة التنميط."}}, {"@type": "Question", "name": "هل يتم حفظ النص الذي أدخله؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم حفظ آخر تحليل فقط في localStorage على متصفحك، ولا يغادر جهازك أبداً، ويمكنك مسحه بزر \"مسح الكل\" في أي وقت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">كاشف الانتظام الإحصائي للنصوص العربية</h1>
+  <p class="page-sub">أداة عربية تعمل بالمتصفح لتحليل النصوص وكشف الأنماط غير الطبيعية عبر مقاييس إحصائية دقيقة مع تظليل الجمل المنتظمة وحفظ التحليل محلياً.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>أداة مجانية بالكامل تعمل داخل متصفحك دون الحاجة للإنترنت أو خادم خارجي، تحلل النص العربي وتكشف احتمالية الانتظام غير الطبيعي عبر حساب تباين أطوال الجمل، وتنوع المفردات، ونسبة التكرار، ثم تعرض درجة احتمالية إحصائية واضحة مع تظليل الجمل الأكثر انتظاماً بلون مميز، وتحفظ آخر تحليل تلقائياً في الذاكرة المحلية للرجوع إليه لاحقاً.</p>
+
+<div class="card" style="margin-top:1rem">
+  <div class="row" style="gap:1rem; flex-wrap:wrap; align-items:flex-end">
+    <div style="flex:1; min-width:280px">
+      <label for="app-text" style="display:block; margin-bottom:.5rem; font-weight:600">النص المراد تحليله</label>
+      <textarea id="app-text" class="textarea" rows="8" placeholder="أدخل النص العربي هنا... (حد أدنى 50 حرفاً، حد أقصى 50000 حرف)" dir="rtl"></textarea>
+      <p id="app-char-count" style="margin:.5rem 0 0; font-size:.85rem; color:var(--gold-dim); text-align:left">0 حرف — 0 جملة — 0 كلمة</p>
+    </div>
+  </div>
+
+  <div class="row" style="gap:.75rem; margin-top:1rem; flex-wrap:wrap">
+    <button id="app-analyze" class="button" type="button">تحليل النص</button>
+    <button id="app-clear" class="button sec" type="button" disabled>مسح الكل</button>
+    <button id="app-load-last" class="button sec" type="button" disabled>تحميل آخر تحليل</button>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1rem; display:none" id="app-results">
+  <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:.5rem">
+    <h2 style="margin:0; font-size:1.25rem">نتائج التحليل</h2>
+    <span id="app-score-badge" class="badge" style="font-size:1rem; padding:.4rem .8rem"></span>
+  </div>
+
+  <div class="row" style="gap:1.5rem; flex-wrap:wrap; margin-bottom:1rem">
+    <div class="out" style="flex:1; min-width:180px; text-align:center">
+      <div class="big" id="app-probability">—</div>
+      <div style="font-size:.8rem; color:var(--gold-dim)">احتمالية الانتظام</div>
+    </div>
+    <div class="out" style="flex:1; min-width:180px; text-align:center">
+      <div class="big" id="app-sentence-var">—</div>
+      <div style="font-size:.8rem; color:var(--gold-dim)">تباين طول الجمل</div>
+    </div>
+    <div class="out" style="flex:1; min-width:180px; text-align:center">
+      <div class="big" id="app-vocab-diversity">—</div>
+      <div style="font-size:.8rem; color:var(--gold-dim)">تنوع المفردات</div>
+    </div>
+    <div class="out" style="flex:1; min-width:180px; text-align:center">
+      <div class="big" id="app-repetition">—</div>
+      <div style="font-size:.8rem; color:var(--gold-dim)">نسبة التكرار</div>
+    </div>
+  </div>
+
+  <div class="divider" style="margin:1rem 0"></div>
+
+  <label for="app-highlighted" style="display:block; margin-bottom:.5rem; font-weight:600">النص مع تظليل الجمل الأكثر انتظاماً</label>
+  <div id="app-highlighted" class="out" style="min-height:120px; max-height:300px; overflow-y:auto; line-height:1.8; direction:rtl; text-align:justify; white-space:pre-wrap; font-family:inherit"></div>
+
+  <div class="divider" style="margin:1rem 0"></div>
+
+  <details style="margin-top:.5rem">
+    <summary style="cursor:pointer; color:var(--gold); font-weight:600">تفاصيل المقاييس الإحصائية</summary>
+    <div id="app-details" style="margin-top:.75rem; font-size:.9rem; line-height:2; color:var(--light); direction:rtl"></div>
+  </details>
+</div>
+
+<div id="app-error" class="card" style="margin-top:1rem; display:none; background:rgba(220,50,50,.15); border:1px solid rgba(220,50,50,.4)">
+  <p id="app-error-msg" style="margin:0; color:#e88"></p>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما المقاييس الإحصائية التي تستخدمها الأداة؟</h3><p>تحسب الأداة تباين أطوال الجمل (معامل التباين)، تنوع المفردات (نسبة النوع للرمز TTR)، نسبة الكلمات المكررة، وانتظام كل جملة على حدة، ثم تجمعها في درجة احتمالية موحدة.</p><h3>هل تحتاج الأداة لاتصال بالإنترنت؟</h3><p>لا، الأداة تعمل بالكامل داخل متصفحك دون أي طلبات شبكة، وتخزن آخر تحليل في localStorage محلياً على جهازك فقط.</p><h3>ما معنى تظليل الجمل بالألوان؟</h3><p>الجمل المظللة بالذهبي الفاتح هي جمل منتظمة نسبياً، والجمل بالذهبي الداكن هي الأكثر انتظاماً (أعلى درجة)، مما يساعدك على تحديد الأجزاء المشبوهة بصرياً.</p><h3>كيف أفسر درجة الاحتمالية؟</h3><p>أقل من 35% = نص طبيعي متنوع، 35-65% = بعض الأنماط المنتظمة، فوق 65% = انتظام غير طبيعي قوي يشير لتوليد آلي أو كتابة مفرطة التنميط.</p><h3>هل يتم حفظ النص الذي أدخله؟</h3><p>يتم حفظ آخر تحليل فقط في localStorage على متصفحك، ولا يغادر جهازك أبداً، ويمكنك مسحه بزر &quot;مسح الكل&quot; في أي وقت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="arabic-rtl-ui-builder.html" style="color:var(--gold-bright);font-weight:700">منشئ مكوّنات الواجهات العربية</a><span style="opacity:.75"> — أنشئ مكوّنات واجهات عربية بالسحب والإفلات مع معاينة حيّة تدعم RTL، وخصّص الألوان والخطوط والزوايا، ثم صدّر…</span></li><li style="margin:.5rem 0"><a href="arabic-text-authenticity-lab.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل النصوص العربية</a><span style="opacity:.75"> — أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية…</span></li><li style="margin:.5rem 0"><a href="seo-lab-local-workbench.html" style="color:var(--gold-bright);font-weight:700">مختبر SEO داخل المتصفح</a><span style="opacity:.75"> — يعمل المختبر بالكامل داخل المتصفح لتوليد الكلمات المفتاحية وتحليل نيتها وصعوبتها ومقارنتها نسبياً وتتبع…</span></li><li style="margin:.5rem 0"><a href="skyweave-drone-lab.html" style="color:var(--gold-bright);font-weight:700">محاكي طيران مسيّر تفاعلي داخل المتصفح</a><span style="opacity:.75"> — محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات…</span></li><li style="margin:.5rem 0"><a href="smart-heating-planner.html" style="color:var(--gold-bright);font-weight:700">تدفئة منزل ذكية</a><span style="opacity:.75"> — تطبيق ويب محلي لإدارة تدفئة المنزل، حساب وقت فتح الصمامات، عرض الرسوم البيانية، وحفظ الإعدادات محليًا</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const textEl = document.getElementById('app-text');
+  const analyzeBtn = document.getElementById('app-analyze');
+  const clearBtn = document.getElementById('app-clear');
+  const loadBtn = document.getElementById('app-load-last');
+  const resultsEl = document.getElementById('app-results');
+  const errorEl = document.getElementById('app-error');
+  const errorMsg = document.getElementById('app-error-msg');
+  const charCount = document.getElementById('app-char-count');
+  const highlightedEl = document.getElementById('app-highlighted');
+  const detailsEl = document.getElementById('app-details');
+  const scoreBadge = document.getElementById('app-score-badge');
+  const probabilityEl = document.getElementById('app-probability');
+  const sentenceVarEl = document.getElementById('app-sentence-var');
+  const vocabDivEl = document.getElementById('app-vocab-diversity');
+  const repetitionEl = document.getElementById('app-repetition');
+
+  const STORAGE_KEY = 'arabic_regularity_last_analysis';
+
+  function splitSentences(text) {
+    return text.split(/[.!?।؟]+/).map(s => s.trim()).filter(s => s.length > 0);
+  }
+
+  function countWords(text) {
+    return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  }
+
+  function getUniqueWords(sentences) {
+    const words = new Set();
+    sentences.forEach(s => {
+      s.split(/\s+/).forEach(w => {
+        const clean = w.replace(/[،؛:()\[\]{}"']/g, '').trim();
+        if (clean.length > 1) words.add(clean);
+      });
+    });
+    return words;
+  }
+
+  function calculateMetrics(text) {
+    const sentences = splitSentences(text);
+    if (sentences.length < 3) return null;
+
+    const lengths = sentences.map(s => countWords(s));
+    const meanLen = lengths.reduce((a,b) => a+b, 0) / lengths.length;
+    const variance = lengths.reduce((a,b) => a + Math.pow(b - meanLen, 2), 0) / lengths.length;
+    const stdDev = Math.sqrt(variance);
+    const cv = meanLen > 0 ? stdDev / meanLen : 0;
+
+    const allWords = [];
+    sentences.forEach(s => {
+      s.split(/\s+/).forEach(w => {
+        const clean = w.replace(/[،؛:()\[\]{}"']/g, '').trim();
+        if (clean.length > 0) allWords.push(clean);
+      });
+    });
+    const uniqueWords = new Set(allWords);
+    const vocabDiversity = allWords.length > 0 ? uniqueWords.size / allWords.length : 0;
+
+    const wordFreq = {};
+    allWords.forEach(w => { wordFreq[w] = (wordFreq[w] || 0) + 1; });
+    const repeatedWords = Object.values(wordFreq).filter(c => c > 1).length;
+    const repetitionRatio = uniqueWords.size > 0 ? repeatedWords / uniqueWords.size : 0;
+
+    const sentenceRegularity = sentences.map((s, i) => {
+      const len = lengths[i];
+      const words = s.split(/\s+/).filter(w => w.length > 0);
+      const uniqueInSent = new Set(words.map(w => w.replace(/[،؛:()\[\]{}"']/g, '').trim())).size;
+      const localDiversity = words.length > 0 ? uniqueInSent / words.length : 0;
+      const lenDev = meanLen > 0 ? Math.abs(len - meanLen) / meanLen : 0;
+      return { index: i, text: s, length: len, lenDev, localDiversity, regularityScore: (1 - lenDev) * 0.6 + localDiversity * 0.4 };
+    });
+
+    const avgRegularity = sentenceRegularity.reduce((a,b) => a + b.regularityScore, 0) / sentenceRegularity.length;
+    const highRegularityCount = sentenceRegularity.filter(s => s.regularityScore > 0.75).length;
+    const highRegularityRatio = sentenceRegularity.length > 0 ? highRegularityCount / sentenceRegularity.length : 0;
+
+    let probability = 0;
+    probability += Math.min(cv * 3, 0.35);
+    probability += Math.min((1 - vocabDiversity) * 0.4, 0.35);
+    probability += Math.min(repetitionRatio * 0.8, 0.2);
+    probability += Math.min(highRegularityRatio * 0.5, 0.1);
+    probability = Math.min(Math.max(probability, 0), 1);
+
+    return {
+      sentences,
+      lengths,
+      meanLen,
+      stdDev,
+      cv,
+      vocabDiversity,
+      repetitionRatio,
+      sentenceRegularity,
+      avgRegularity,
+      highRegularityRatio,
+      probability,
+      totalWords: allWords.length,
+      uniqueWords: uniqueWords.size
+    };
+  }
+
+  function formatNumber(n, decimals = 2) {
+    return n.toLocaleString('ar-EG', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+
+  function formatPercent(n) {
+    return (n * 100).toLocaleString('ar-EG', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+  }
+
+  function updateCharCount() {
+    const text = textEl.value;
+    const sentences = splitSentences(text);
+    const words = countWords(text);
+    charCount.textContent = `${text.length.toLocaleString('ar-EG')} حرف — ${sentences.length.toLocaleString('ar-EG')} جملة — ${words.toLocaleString('ar-EG')} كلمة`;
+  }
+
+  function renderHighlighted(metrics) {
+    const { sentences, sentenceRegularity } = metrics;
+    let html = '';
+    sentences.forEach((s, i) => {
+      const reg = sentenceRegularity[i];
+      let cls = 'app-sentence-regular';
+      if (reg.regularityScore > 0.85) cls = 'app-sentence-high';
+      else if (reg.regularityScore < 0.4) cls = '';
+      html += `<span class="${cls}">${s}</span> `;
+    });
+    highlightedEl.innerHTML = html.trim();
+  }
+
+  function renderDetails(metrics) {
+    const { sentences, lengths, meanLen, stdDev, cv, vocabDiversity, repetitionRatio, avgRegularity, highRegularityRatio, totalWords, uniqueWords } = metrics;
+    detailsEl.innerHTML = `
+      <div class="app-metric-row"><span class="app-metric-label">عدد الجمل</span><span class="app-metric-value">${sentences.length.toLocaleString('ar-EG')}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">إجمالي الكلمات</span><span class="app-metric-value">${totalWords.toLocaleString('ar-EG')}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">مفردات فريدة</span><span class="app-metric-value">${uniqueWords.toLocaleString('ar-EG')}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">متوسط طول الجملة</span><span class="app-metric-value">${formatNumber(meanLen, 1)} كلمة</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">الانحراف المعياري للأطوال</span><span class="app-metric-value">${formatNumber(stdDev, 2)}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">معامل التباين (CV)</span><span class="app-metric-value">${formatNumber(cv, 3)}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">تنوع المفردات (TTR)</span><span class="app-metric-value">${formatPercent(vocabDiversity)}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">نسبة الكلمات المكررة</span><span class="app-metric-value">${formatPercent(repetitionRatio)}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">معدل انتظام الجمل</span><span class="app-metric-value">${formatNumber(avgRegularity, 3)}</span></div>
+      <div class="app-metric-row"><span class="app-metric-label">نسبة الجمل عالية الانتظام</span><span class="app-metric-value">${formatPercent(highRegularityRatio)}</span></div>
+    `;
+  }
+
+  function renderResults(metrics) {
+    const prob = metrics.probability;
+    probabilityEl.textContent = formatPercent(prob);
+    sentenceVarEl.textContent = formatNumber(metrics.cv, 3);
+    vocabDivEl.textContent = formatPercent(metrics.vocabDiversity);
+    repetitionEl.textContent = formatPercent(metrics.repetitionRatio);
+
+    probabilityEl.className = 'big ' + (prob > 0.65 ? 'app-probability-high' : prob > 0.35 ? 'app-probability-medium' : 'app-probability-low');
+    scoreBadge.textContent = prob > 0.65 ? 'احتمالية عالية' : prob > 0.35 ? 'احتمالية متوسطة' : 'احتمالية منخفضة';
+    scoreBadge.style.background = prob > 0.65 ? 'rgba(220,50,50,.3)' : prob > 0.35 ? 'rgba(255,215,0,.3)' : 'rgba(68,204,68,.3)';
+    scoreBadge.style.borderColor = prob > 0.65 ? '#ff4444' : prob > 0.35 ? 'var(--gold)' : '#44cc44';
+
+    renderHighlighted(metrics);
+    renderDetails(metrics);
+    resultsEl.style.display = 'block';
+    errorEl.style.display = 'none';
+  }
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorEl.style.display = 'block';
+    resultsEl.style.display = 'none';
+  }
+
+  function saveAnalysis(text, metrics) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ text, metrics, timestamp: Date.now() }));
+      loadBtn.disabled = false;
+    } catch (e) { /* ignore */ }
+  }
+
+  function loadLastAnalysis() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (!data) return false;
+      const parsed = JSON.parse(data);
+      if (parsed.text && parsed.metrics) {
+        textEl.value = parsed.text;
+        updateCharCount();
+        renderResults(parsed.metrics);
+        clearBtn.disabled = false;
+        analyzeBtn.disabled = false;
+        return true;
+      }
+    } catch (e) { /* ignore */ }
+    return false;
+  }
+
+  function analyze() {
+    const text = textEl.value.trim();
+    if (text.length < 50) { showError('النص قصير جداً. الحد الأدنى 50 حرفاً.'); return; }
+    if (text.length > 50000) { showError('النص طويل جداً. الحد الأقصى 50000 حرف.'); return; }
+
+    const metrics = calculateMetrics(text);
+    if (!metrics) { showError('تعذر التحليل: عدد الجمل قليل جداً (أقل من 3 جمل).'); return; }
+
+    renderResults(metrics);
+    saveAnalysis(text, metrics);
+    clearBtn.disabled = false;
+    loadBtn.disabled = false;
+  }
+
+  function clearAll() {
+    textEl.value = '';
+    updateCharCount();
+    resultsEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    clearBtn.disabled = true;
+    analyzeBtn.disabled = false;
+    textEl.focus();
+  }
+
+  textEl.addEventListener('input', updateCharCount);
+  analyzeBtn.addEventListener('click', analyze);
+  clearBtn.addEventListener('click', clearAll);
+  loadBtn.addEventListener('click', loadLastAnalysis);
+
+  updateCharCount();
+  loadLastAnalysis();
+})();
+</script>
+</body>
+</html>
