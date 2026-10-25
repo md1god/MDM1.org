@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة قياس حضور العلامة في إجابات المساعدات الذكية | MDM1</title>
+<meta name="description" content="أداة عربية محلية لقياس ذكر علامتك ومنافسيك في إجابات المساعدات الذكية، مع تحليل النبرة وكشف الفجوات ورسم بياني وحفظ الجلسات وتصدير CSV.">
+<link rel="canonical" href="https://mdm1.org/apps/ai-citation-compass.html">
+<meta property="og:title" content="أداة قياس حضور العلامة في إجابات المساعدات الذكية">
+<meta property="og:description" content="أداة عربية محلية لقياس ذكر علامتك ومنافسيك في إجابات المساعدات الذكية، مع تحليل النبرة وكشف الفجوات ورسم بياني وحفظ الجلسات وتصدير CSV.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ai-citation-compass.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app #queryBankList,.app #answersCount,.app #results,.app #sessionsList{white-space:pre-wrap;word-break:break-word}
+.app .chart-wrap{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.app .chart{flex:1;min-width:260px;height:220px;border:1px solid var(--gold-dim);border-radius:8px;background:rgba(0,0,0,.3);padding:6px}
+.app .chart canvas{width:100%;height:100%}
+.app table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.9rem}
+.app th,.app td{border:1px solid var(--gold-dim);padding:6px;text-align:right}
+.app th{background:rgba(201,168,76,.15);color:var(--gold-bright)}
+.app .gap{padding:6px 0;border-bottom:1px solid var(--gold-dim)}
+.app .session{padding:8px;margin:6px 0;background:rgba(0,0,0,.2);border:1px solid var(--gold-dim);border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.app .session .meta{font-size:.8rem;opacity:.7}
+.app .badge.pos{background:#1e7d32;color:#fff}
+.app .badge.neg{background:#c62828;color:#fff}
+.app .badge.neu{background:#546e7a;color:#fff}
+.app .badge.warn{background:#b26a00;color:#fff}
+.app h3{color:var(--gold-bright);margin:10px 0 6px}
+.app textarea{min-height:90px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "قياس حضور العلامة في إجابات المساعدات الذكية", "url": "https://mdm1.org/apps/ai-citation-compass.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع التحليلات تتم محلياً في المتصفح دون أي طلب شبكة أو حسابات."}}, {"@type": "Question", "name": "ما تنسيق ملف CSV المطلوب؟", "acceptedAnswer": {"@type": "Answer", "text": "الأعمدة: query, model, answer, links (الروابط مفصولة بفاصلة منقوطة). أعمدة query وanswer ضروريان."}}, {"@type": "Question", "name": "كيف تُحلل النبرة؟", "acceptedAnswer": {"@type": "Answer", "text": "باستخدام معجم عربي وإنجليزي للكلمات الإيجابية والسلبية، وحساب درجة بناءً على ظهورها."}}, {"@type": "Question", "name": "أين تُحفظ الجلسات؟", "acceptedAnswer": {"@type": "Answer", "text": "في localStorage تحت المفتاح brandPresenceSessions، وتبقى حتى تمسح بيانات المتصفح."}}, {"@type": "Question", "name": "هل يمكن تصدير النتائج؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن تصدير CSV وتقرير نصي، بالإضافة إلى طباعة تقرير من المتصفح."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">قياس حضور العلامة في إجابات المساعدات الذكية</h1>
+  <p class="page-sub">أداة عربية محلية لقياس ذكر علامتك ومنافسيك في إجابات المساعدات الذكية، مع تحليل النبرة وكشف الفجوات ورسم بياني وحفظ الجلسات وتصدير CSV.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة المختصرة: هذه الأداة تقيس حضور علامتك في إجابات المساعدات الذكية بحساب نسبة ذكرها وذكر المنافسين، وتحليل النبرة، وكشف الفجوات، ورسم بياني على Canvas، مع حفظ الجلسات محلياً وتصدير CSV وتقرير قابل للطباعة، وكل ذلك محلياً بدون شبكة. لصق إجابات جاهزة من عدة نماذج لكل استعلام أو استيرادها من ملف CSV، لتستخرج الأداة الروابط والاستشهادات، وتقيس تكرار ذكر العلامة والمنافسين، وتحلل النبرة بالعربية والإنجليزية، وتكشف الفجوات ونسب الحضور، مع بنك استعلامات قابل للتخصيص، ومقارنة بين النماذج والاستعلامات، ولوحة رسم بياني، وحفظ الجلسات محلياً، واستيراد وتصدير CSV، وتقرير قابل للطباعة. جميع التحليلات بقواعد محلية دون حسابات أو شبكة أو استدعاء نماذج.</p>
+<div class="app" id="appRoot">
+  <div class="row">
+    <label for="brandName">اسم العلامة (البراند)</label>
+    <input type="text" id="brandName" placeholder="مثال: شركة النور" />
+  </div>
+  <div class="row">
+    <label for="competitors">المنافسون (مفصولة بفواصل)</label>
+    <input type="text" id="competitors" placeholder="منافس1، منافس2" />
+  </div>
+  <div class="row">
+    <label for="modelsList">النماذج (مفصولة بفواصل)</label>
+    <input type="text" id="modelsList" value="GPT, Claude, Gemini" />
+  </div>
+  <div class="divider"></div>
+  <h3>بنك الاستعلامات</h3>
+  <div class="row">
+    <label for="newQuery">استعلام جديد</label>
+    <input type="text" id="newQuery" placeholder="أدخل استعلامًا" />
+    <button id="addQueryBtn" class="button sec">إضافة استعلام</button>
+  </div>
+  <div class="row">
+    <label for="querySelect">اختر استعلامًا</label>
+    <select id="querySelect"></select>
+    <button id="removeQueryBtn" class="button sec">حذف استعلام</button>
+  </div>
+  <div id="queryBankList" class="out"></div>
+  <div class="divider"></div>
+  <h3>إدخال الإجابات</h3>
+  <div class="row">
+    <label for="inputMode">طريقة الإدخال</label>
+    <select id="inputMode">
+      <option value="single">إجابة واحدة</option>
+      <option value="bulk">إجابات JSON</option>
+      <option value="csv">استيراد CSV</option>
+    </select>
+  </div>
+  <div id="singleMode">
+    <div class="row">
+      <label for="answerQuery">الاستعلام</label>
+      <select id="answerQuery"></select>
+    </div>
+    <div class="row">
+      <label for="answerModel">النموذج</label>
+      <select id="answerModel"></select>
+    </div>
+    <div class="row">
+      <label for="answerText">نص الإجابة</label>
+      <textarea id="answerText" rows="6" placeholder="الصق إجابة المساعد هنا"></textarea>
+    </div>
+    <div class="row">
+      <label for="answerLinks">روابط/استشهادات (واحد في كل سطر)</label>
+      <textarea id="answerLinks" rows="3" placeholder="https://example.com"></textarea>
+    </div>
+    <div class="row">
+      <button id="addAnswerBtn" class="button">إضافة إجابة</button>
+    </div>
+  </div>
+  <div id="bulkMode" style="display:none">
+    <div class="row">
+      <label for="bulkText">إجابات JSON</label>
+      <textarea id="bulkText" rows="8" placeholder='[{"query":"...","model":"GPT","answer":"...","links":["..."]}]'></textarea>
+    </div>
+    <div class="row">
+      <button id="importBulkBtn" class="button">استيراد JSON</button>
+    </div>
+  </div>
+  <div id="csvMode" style="display:none">
+    <div class="row">
+      <label for="csvFile">ملف CSV</label>
+      <input type="file" id="csvFile" accept=".csv,.txt" />
+    </div>
+    <div class="row">
+      <button id="importCsvBtn" class="button">استيراد CSV</button>
+    </div>
+  </div>
+  <div class="row">
+    <button id="clearAnswersBtn" class="button sec">مسح الإجابات</button>
+  </div>
+  <div id="answersCount" class="out"></div>
+  <div class="divider"></div>
+  <div class="row">
+    <button id="analyzeBtn" class="button">تحليل</button>
+    <button id="saveSessionBtn" class="button sec">حفظ الجلسة</button>
+    <button id="loadSessionBtn" class="button sec">تحميل آخر جلسة</button>
+    <button id="exportCsvBtn" class="button sec">تصدير CSV</button>
+    <button id="printBtn" class="button sec">طباعة تقرير</button>
+  </div>
+  <div class="divider"></div>
+  <div id="results" class="out"></div>
+  <div class="chart-wrap">
+    <div class="chart"><canvas id="presenceChart" width="400" height="220"></canvas></div>
+    <div class="chart"><canvas id="voiceChart" width="400" height="220"></canvas></div>
+  </div>
+  <div class="divider"></div>
+  <h3>الجلسات المحفوظة</h3>
+  <div id="sessionsList" class="out"></div>
+  <div class="divider"></div>
+  <div class="row">
+    <button id="exportReportBtn" class="button sec">تصدير تقرير نصي</button>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة بدون إنترنت؟</h3><p>نعم، جميع التحليلات تتم محلياً في المتصفح دون أي طلب شبكة أو حسابات.</p><h3>ما تنسيق ملف CSV المطلوب؟</h3><p>الأعمدة: query, model, answer, links (الروابط مفصولة بفاصلة منقوطة). أعمدة query وanswer ضروريان.</p><h3>كيف تُحلل النبرة؟</h3><p>باستخدام معجم عربي وإنجليزي للكلمات الإيجابية والسلبية، وحساب درجة بناءً على ظهورها.</p><h3>أين تُحفظ الجلسات؟</h3><p>في localStorage تحت المفتاح brandPresenceSessions، وتبقى حتى تمسح بيانات المتصفح.</p><h3>هل يمكن تصدير النتائج؟</h3><p>نعم، يمكن تصدير CSV وتقرير نصي، بالإضافة إلى طباعة تقرير من المتصفح.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="arabic-text-authenticity-lab.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل النصوص العربية</a><span style="opacity:.75"> — أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية…</span></li><li style="margin:.5rem 0"><a href="bashar-text-humanizer.html" style="color:var(--gold-bright);font-weight:700">أداة إعادة صياغة النصوص الآلية</a><span style="opacity:.75"> — أداة عربية تعمل في المتصفح لإعادة صياغة النصوص الآلية بأسلوب طبيعي مع مقبض ضبط النبرة ولوحة تحقق فورية</span></li><li style="margin:.5rem 0"><a href="canvas-sign-local.html" style="color:var(--gold-bright);font-weight:700">أداة توقيع إلكتروني مجانية</a><span style="opacity:.75"> — أنشئ وارفع وارسم توقيعاتك على المستندات محلياً دون خوادم. قوالب محفوظة وأثر تدقيق تلقائي وتصدير PDF/HTML…</span></li><li style="margin:.5rem 0"><a href="comic-bubble-rewriter.html" style="color:var(--gold-bright);font-weight:700">أداة ترجمة المانجا والقصص المصورة</a><span style="opacity:.75"> — محرر مرئي داخل المتصفح لفتح صفحات المانجا، رسم الفقاعات والصناديق، تحرير النص، إزالة النص القديم، وإدارة…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  const LS_KEY = 'brandPresenceSessions';
+  const AR_POS = new Set(['ممتاز','رائع','جيد','إيجابي','مفيد','قوي','أفضل','محبوب','موثوق','ناجح','متميز','رائد','مبتكر','عالي','كبير','قيمة','ثقة','رضا','سعيد','ممتازة','ناجحة','قوية']);
+  const AR_NEG = new Set(['سيء','ضعيف','سلبي','ضار','خطر','مشكلة','خطأ','فشل','أسوأ','مخيب','مقلق','منخفض','قليل','مفقود','غير','مضلل','معقد','صعب','بطيء','مكلف','ضعيفة','سيئة']);
+  const EN_POS = new Set(['excellent','great','good','positive','helpful','strong','best','loved','trusted','successful','outstanding','leading','innovative','high','large','valuable','trust','satisfaction','happy','grateful','reliable']);
+  const EN_NEG = new Set(['bad','weak','negative','harmful','risk','problem','error','failure','worst','disappointing','concerning','low','little','missing','unreliable','misleading','complex','difficult','slow','expensive','poor']);
+
+  let queries = [];
+  let answers = [];
+  let lastAnalysis = null;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function msg(text){ const r=$('results'); if(r) r.textContent = text; }
+
+  function syncModels(){
+    const raw = ($('modelsList').value||'').split(/[,،]/).map(s=>s.trim()).filter(Boolean);
+    const ms = raw.length?raw:['GPT','Claude','Gemini'];
+    const sel = $('answerModel');
+    const cur = sel.value;
+    sel.innerHTML = '';
+    ms.forEach(m=>{ const o=document.createElement('option'); o.value=m; o.textContent=m; sel.appendChild(o); });
+    if(ms.indexOf(cur)>=0) sel.value=cur;
+  }
+
+  function syncQuerySelects(){
+    const qs = queries.length?queries:[''];
+    ['querySelect','answerQuery'].forEach(id=>{
+      const sel=$(id); if(!sel) return;
+      const cur=sel.value;
+      sel.innerHTML='';
+      queries.forEach(q=>{ const o=document.createElement('option'); o.value=q; o.textContent=q; sel.appendChild(o); });
+      if(queries.indexOf(cur)>=0) sel.value=cur;
+    });
+    renderQueryBank();
+  }
+
+  function renderQueryBank(){
+    const el=$('queryBankList');
+    if(!queries.length){ el.textContent='لا توجد استعلامات في البنك.'; return; }
+    el.innerHTML = queries.map((q,i)=>'<div>'+ (i+1) +'. '+esc(q)+'</div>').join('');
+  }
+
+  function renderAnswersCount(){
+    const el=$('answersCount');
+    if(!answers.length){ el.textContent='لا توجد إجابات محفوظة.'; return; }
+    const models = Array.from(new Set(answers.map(a=>a.model)));
+    el.textContent = 'عدد الإجابات: '+answers.length+' | النماذج: '+models.join('، ');
+  }
+
+  function addQuery(){
+    const v=$('newQuery').value.trim();
+    if(!v){ msg('أدخل استعلامًا.'); return; }
+    if(queries.indexOf(v)>=0){ msg('الاستعلام موجود.'); return; }
+    queries.push(v);
+    $('newQuery').value='';
+    syncQuerySelects();
+  }
+
+  function removeQuery(){
+    const v=$('querySelect').value;
+    const i=queries.indexOf(v);
+    if(i<0){ msg('اختر استعلامًا للحذف.'); return; }
+    queries.splice(i,1);
+    answers = answers.filter(a=>a.query!==v);
+    syncQuerySelects();
+    renderAnswersCount();
+  }
+
+  function addAnswer(){
+    const q=$('answerQuery').value;
+    const m=$('answerModel').value;
+    const t=$('answerText').value.trim();
+    if(!q){ msg('اختر استعلامًا.'); return; }
+    if(!t){ msg('أدخل نص الإجابة.'); return; }
+    const links=$('answerLinks').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    answers.push({query:q,model:m,answer:t,links:links});
+    $('answerText').value='';
+    $('answerLinks').value='';
+    renderAnswersCount();
+    msg('تمت إضافة الإجابة.');
+  }
+
+  function importBulk(){
+    const txt=$('bulkText').value.trim();
+    if(!txt){ msg('أدخل JSON.'); return; }
+    let data;
+    try{ data=JSON.parse(txt); }catch(e){ msg('JSON غير صالح: '+e.message); return; }
+    if(!Array.isArray(data)){ msg('يجب أن يكون مصفوفة.'); return; }
+    let n=0;
+    data.forEach(item=>{
+      if(!item || typeof item.answer!=='string') return;
+      const q=item.query||item.question||'';
+      const m=item.model||item.assistant||item.source||'غير محدد';
+      const links=Array.isArray(item.links)?item.links:(item.links?String(item.links).split(/\r?\n/).filter(Boolean):[]);
+      answers.push({query:q,model:m,answer:item.answer,links:links});
+      n++;
+    });
+    renderAnswersCount();
+    msg('تم استيراد '+n+' إجابة.');
+  }
+
+  function csvToRows(text){
+    const rows=[]; let row=[]; let cell=''; let inQ=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i];
+      if(inQ){
+        if(c==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else inQ=false; }
+        else cell+=c;
+      } else {
+        if(c==='"') inQ=true;
+        else if(c===','){ row.push(cell); cell=''; }
+        else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+        else if(c==='\r'){ /* skip */ }
+        else cell+=c;
+      }
+    }
+    if(cell!=='' || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(r=>r.some(c=>String(c).trim()!==''));
+  }
+
+  function colIndex(headers, names){
+    for(let i=0;i<names.length;i++){ const idx=headers.indexOf(names[i]); if(idx>=0) return idx; }
+    return -1;
+  }
+
+  function importCsv(){
+    const file=$('csvFile').files[0];
+    if(!file){ msg('اختر ملف CSV.'); return; }
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const rows=csvToRows(e.target.result);
+      if(rows.length<2){ msg('ملف CSV فارغ أو غير صالح.'); return; }
+      const headers=rows[0].map(h=>String(h).trim().toLowerCase());
+      const qIdx=colIndex(headers,['query','question','استعلام']);
+      const mIdx=colIndex(headers,['model','assistant','source','model_name']);
+      const aIdx=colIndex(headers,['answer','response','text','إجابة']);
+      const lIdx=colIndex(headers,['links','citations','urls','استشهادات']);
+      let n=0;
+      for(let i=1;i<rows.length;i++){
+        const cols=rows[i];
+        const q=qIdx>=0? (cols[qIdx]||'') : '';
+        const m=mIdx>=0? (cols[mIdx]||'') : 'غير محدد';
+        const a=aIdx>=0? (cols[aIdx]||'') : '';
+        const l=lIdx>=0? (cols[lIdx]||'') : '';
+        if(!a.trim()) continue;
+        const links=l.split(/[;\n]/).map(s=>s.trim()).filter(Boolean);
+        answers.push({query:q.trim(),model:m.trim()||'غير محدد',answer:a,links:links});
+        n++;
+      }
+      renderAnswersCount();
+      msg('تم استيراد '+n+' إجابة من CSV.');
+    };
+    reader.readAsText(file);
+  }
+
+  function clearAnswers(){ answers=[]; renderAnswersCount(); msg('تم مسح الإجابات.'); }
+
+  function sentiment(text){
+    const words=text.toLowerCase().match(/[\u0600-\u06FFa-zA-Z]+/g)||[];
+    let pos=0,neg=0;
+    for(const w of words){
+      if(AR_POS.has(w)||EN_POS.has(w)) pos++;
+      else if(AR_NEG.has(w)||EN_NEG.has(w)) neg++;
+    }
+    const score=pos-neg;
+    const label = score>0?'positive':(score<0?'negative':'neutral');
+    return {label:label,score:score,pos:pos,neg:neg};
+  }
+
+  function countMentions(text,term){
+    if(!term) return 0;
+    const re=new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+    const m=text.match(re);
+    return m?m.length:0;
+  }
+
+  function extractLinks(text){
+    const re=/https?:\/\/[^\s<>"')]+/g;
+    const m=text.match(re)||[];
+    const out=[]; const seen=new Set();
+    m.forEach(u=>{ if(!seen.has(u)){ seen.add(u); out.push(u); } });
+    return out;
+  }
+
+  function analyze(){
+    const brand=$('brandName').value.trim();
+    const competitors=$('competitors').value.split(/[,،]/).map(s=>s.trim()).filter(Boolean);
+    if(!brand){ msg('أدخل اسم العلامة.'); return; }
+    if(!answers.length){ msg('أضف إجابات أولاً.'); return; }
+    const all=[brand].concat(competitors);
+    const rows=answers.map(a=>{
+      const mentions={};
+      all.forEach(b=>{ mentions[b]=countMentions(a.answer,b); });
+      const brandMentioned=mentions[brand]>0;
+      const compMentioned=competitors.filter(c=>mentions[c]>0);
+      const s=sentiment(a.answer);
+      const links=extractLinks(a.answer).concat(a.links||[]);
+      const uniqLinks=[]; const seen=new Set();
+      links.forEach(u=>{ if(!seen.has(u)){ seen.add(u); uniqLinks.push(u); } });
+      return {query:a.query,model:a.model,answer:a.answer,mentions:mentions,brandMentioned:brandMentioned,compMentioned:compMentioned,sentiment:s,links:uniqLinks};
+    });
+
+    const total=rows.length;
+    const brandAnswers=rows.filter(r=>r.brandMentioned).length;
+    const presencePct=total? (brandAnswers/total*100) : 0;
+
+    const modelMap={};
+    rows.forEach(r=>{
+      if(!modelMap[r.model]) modelMap[r.model]={answers:0,brand:0,mentions:0,sent:0,cit:0};
+      const m=modelMap[r.model];
+      m.answers++;
+      if(r.brandMentioned) m.brand++;
+      m.mentions+=r.mentions[brand];
+      m.sent+=r.sentiment.score;
+      m.cit+=r.links.length;
+    });
+    const modelStats=Object.keys(modelMap).map(m=>({
+      model:m, answers:modelMap[m].answers, presence:modelMap[m].answers?(modelMap[m].brand/modelMap[m].answers*100):0,
+      mentions:modelMap[m].mentions, avgSent:modelMap[m].answers?(modelMap[m].sent/modelMap[m].answers):0, citations:modelMap[m].cit
+    }));
+
+    const queryMap={};
+    rows.forEach(r=>{
+      if(!queryMap[r.query]) queryMap[r.query]={answers:0,brandModels:0,competitors:new Set(),sent:0,cit:0,models:new Set()};
+      const q=queryMap[r.query];
+      q.answers++;
+      if(r.brandMentioned) q.brandModels++;
+      r.compMentioned.forEach(c=>q.competitors.add(c));
+      q.sent+=r.sentiment.score;
+      q.cit+=r.links.length;
+      q.models.add(r.model);
+    });
+    const queryStats=Object.keys(queryMap).map(q=>({
+      query:q, answers:queryMap[q].answers, brandModels:queryMap[q].brandModels,
+      competitors:Array.from(queryMap[q].competitors), avgSent:queryMap[q].answers?(queryMap[q].sent/queryMap[q].answers):0,
+      citations:queryMap[q].cit, models:queryMap[q].models.size
+    }));
+
+    const voice={};
+    all.forEach(b=>{ voice[b]=rows.reduce((s,r)=>s+r.mentions[b],0); });
+
+    const gaps=queryStats.filter(q=>q.brandModels===0 && q.competitors.length>0);
+
+    const allLinks=[]; const linkSeen=new Set();
+    rows.forEach(r=>r.links.forEach(u=>{ if(!linkSeen.has(u)){ linkSeen.add(u); allLinks.push(u); } }));
+    const domains=new Set(allLinks.map(u=>{ try{return new URL(u).hostname;}catch(e){return u;} }));
+
+    const sentDist={positive:0,negative:0,neutral:0};
+    rows.forEach(r=>sentDist[r.sentiment.label]++);
+
+    lastAnalysis={brand:brand,competitors:competitors,total:total,brandAnswers:brandAnswers,presencePct:presencePct,
+      modelStats:modelStats,queryStats:queryStats,voice:voice,gaps:gaps,rows:rows,allLinks:allLinks,domains:domains,
+      sentDist:sentDist,citationsTotal:allLinks.length};
+
+    renderResults(lastAnalysis);
+    drawCharts(lastAnalysis);
+  }
+
+  function renderResults(a){
+    const el=$('results');
+    let html='';
+    html+='<div class="stat-grid">';
+    html+='<div class="stat-card"><div class="label">إجمالي الإجابات</div><div class="value">'+a.total+'</div></div>';
+    html+='<div class="stat-card"><div class="label">نسبة حضور العلامة</div><div class="value">'+a.presencePct.toFixed(1)+'%</div></div>';
+    html+='<div class="stat-card"><div class="label">إجابات ذكرت العلامة</div><div class="value">'+a.brandAnswers+'</div></div>';
+    html+='<div class="stat-card"><div class="label">الروابط/الاستشهادات</div><div class="value">'+a.citationsTotal+'</div></div>';
+    html+='</div>';
+
+    html+='<h3>مقارنة النماذج</h3>';
+    html+='<table><thead><tr><th>النموذج</th><th>إجابات</th><th>نسبة الحضور</th><th>ذكر العلامة</th><th>متوسط النبرة</th><th>استشهادات</th></tr></thead><tbody>';
+    a.modelStats.forEach(m=>{
+      html+='<tr><td>'+esc(m.model)+'</td><td>'+m.answers+'</td><td>'+m.presence.toFixed(1)+'%</td><td>'+m.mentions+'</td><td>'+m.avgSent.toFixed(2)+'</td><td>'+m.citations+'</td></tr>';
+    });
+    html+='</tbody></table>';
+
+    html+='<h3>مقارنة الاستعلامات</h3>';
+    html+='<table><thead><tr><th>الاستعلام</th><th>نماذج</th><th>ذكر العلامة (نماذج)</th><th>المنافسون المذكورون</th><th>متوسط النبرة</th></tr></thead><tbody>';
+    a.queryStats.forEach(q=>{
+      html+='<tr><td>'+esc(q.query||'(بدون)')+'</td><td>'+q.models+'</td><td>'+q.brandModels+'</td><td>'+esc(q.competitors.join('، ')||'-')+'</td><td>'+q.avgSent.toFixed(2)+'</td></tr>';
+    });
+    html+='</tbody></table>';
+
+    html+='<h3>حصة الصوت (إجمالي الذكر)</h3>';
+    html+='<div>';
+    Object.keys(a.voice).forEach(b=>{
+      html+='<div class="mention-row"><span>'+esc(b)+'</span><span>'+a.voice[b]+'</span></div>';
+    });
+    html+='</div>';
+
+    html+='<h3>توزيع النبرة</h3>';
+    html+='<div>';
+    html+='<span class="badge pos">إيجابي: '+a.sentDist.positive+'</span> ';
+    html+='<span class="badge neg">سلبي: '+a.sentDist.negative+'</span> ';
+    html+='<span class="badge neu">محايد: '+a.sentDist.neutral+'</span>';
+    html+='</div>';
+
+    html+='<h3>الفجوات (استعلامات لم تذكر فيها العلامة)</h3>';
+    if(!a.gaps.length){ html+='<div>لا توجد فجوات مكتشفة.</div>'; }
+    else {
+      a.gaps.forEach(g=>{
+        html+='<div class="gap">• '+esc(g.query||'(بدون)')+' — منافسون مذكورون: '+esc(g.competitors.join('، '))+'</div>';
+      });
+    }
+
+    html+='<h3>الروابط المستخرجة (نطاقات: '+a.domains.size+')</h3>';
+    if(!a.allLinks.length){ html+='<div>لا توجد روابط.</div>'; }
+    else {
+      a.allLinks.slice(0,50).forEach(u=>{ html+='<div>'+esc(u)+'</div>'; });
+    }
+
+    el.innerHTML=html;
+  }
+
+  function drawBarChart(canvas, labels, values, title){
+    const ctx=canvas.getContext('2d');
+    const w=canvas.width, h=canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#c9a84c';
+    ctx.font='bold 12px sans-serif';
+    ctx.textAlign='right';
+    ctx.fillText(title,w-8,14);
+    if(!values.length){ ctx.fillStyle='#aaa'; ctx.fillText('لا توجد بيانات',w/2,h/2); return; }
+    const max=Math.max(1,Math.max.apply(null,values));
+    const padL=30, padB=30, padT=22, padR=8;
+    const plotW=w-padL-padR, plotH=h-padT-padB;
+    const barW=Math.max(8, plotW/values.length*0.6);
+    const gap=(plotW-barW*values.length)/(values.length+1);
+    ctx.strokeStyle='rgba(201,168,76,.3)';
+    ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,h-padB); ctx.lineTo(w-padR,h-padB); ctx.stroke();
+    values.forEach((v,i)=>{
+      const bh=(v/max)*plotH;
+      const x=padL+gap*(i+1)+barW*i;
+      const y=h-padB-bh;
+      const grad=ctx.createLinearGradient(0,y,0,y+bh);
+      grad.addColorStop(0,'#c9a84c'); grad.addColorStop(1,'#8b6914');
+      ctx.fillStyle=grad;
+      ctx.fillRect(x,y,barW,bh);
+      ctx.fillStyle='#e8e0d0';
+      ctx.font='10px sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText(String(v.toFixed? (Math.round(v*10)/10) : v), x+barW/2, y-4);
+      ctx.save();
+      ctx.translate(x+barW/2, h-padB+4);
+      ctx.rotate(-0.5);
+      ctx.textAlign='right';
+      ctx.fillText(String(labels[i]||'').slice(0,10),0,0);
+      ctx.restore();
+    });
+  }
+
+  function drawCharts(a){
+    const c1=$('presenceChart'); const c2=$('voiceChart');
+    const labels=a.modelStats.map(m=>m.model);
+    const vals=a.modelStats.map(m=>m.presence);
+    drawBarChart(c1,labels,vals,'نسبة الحضور حسب النموذج');
+    const vLabels=Object.keys(a.voice);
+    const vVals=vLabels.map(k=>a.voice[k]);
+    drawBarChart(c2,vLabels,vVals,'حصة الصوت');
+  }
+
+  function collectState(){
+    return {brand:$('brandName').value, competitors:$('competitors').value, models:$('modelsList').value,
+      queries:queries.slice(), answers:answers.map(a=>({query:a.query,model:a.model,answer:a.answer,links:a.links.slice()})),
+      savedAt:new Date().toISOString()};
+  }
+  function saveSession(){
+    try{
+      const raw=localStorage.getItem(LS_KEY);
+      const sessions=raw?JSON.parse(raw):[];
+      sessions.unshift(collectState());
+      if(sessions.length>20) sessions.length=20;
+      localStorage.setItem(LS_KEY,JSON.stringify(sessions));
+      renderSessions();
+      msg('تم حفظ الجلسة.');
+    }catch(e){ msg('تعذر الحفظ: '+e.message); }
+  }
+  function loadLastSession(){
+    try{
+      const raw=localStorage.getItem(LS_KEY);
+      const sessions=raw?JSON.parse(raw):[];
+      if(!sessions.length){ msg('لا توجد جلسات محفوظة.'); return; }
+      applySession(sessions[0]);
+      msg('تم تحميل آخر جلسة.');
+    }catch(e){ msg('تعذر التحميل: '+e.message); }
+  }
+  function applySession(s){
+    $('brandName').value=s.brand||'';
+    $('competitors').value=s.competitors||'';
+    $('modelsList').value=s.models||'';
+    queries=(s.queries||[]).slice();
+    answers=(s.answers||[]).map(a=>({query:a.query,model:a.model,answer:a.answer,links:(a.links||[]).slice()}));
+    syncModels();
+    syncQuerySelects();
+    renderAnswersCount();
+  }
+  function renderSessions(){
+    const el=$('sessionsList');
+    let sessions=[];
+    try{ const raw=localStorage.getItem(LS_KEY); sessions=raw?JSON.parse(raw):[]; }catch(e){ sessions=[]; }
+    if(!sessions.length){ el.textContent='لا توجد جلسات محفوظة.'; return; }
+    el.innerHTML='';
+    sessions.forEach((s,i)=>{
+      const div=document.createElement('div');
+      div.className='session';
+      const meta=document.createElement('div');
+      meta.className='meta';
+      meta.textContent=(s.savedAt||'')+' — إجابات: '+(s.answers?s.answers.length:0)+' — استعلامات: '+(s.queries?s.queries.length:0);
+      const info=document.createElement('div');
+      info.textContent='جلسة '+(i+1);
+      const left=document.createElement('div');
+      left.appendChild(info); left.appendChild(meta);
+      const btns=document.createElement('div');
+      const lb=document.createElement('button'); lb.className='button sec'; lb.id='sessionLoadBtn'+i; lb.textContent='تحميل';
+      lb.addEventListener('click',function(){ applySession(sessions[i]); msg('تم تحميل الجلسة '+(i+1)); });
+      const db=document.createElement('button'); db.className='button sec'; db.id='sessionDeleteBtn'+i; db.textContent='حذف';
+      db.addEventListener('click',function(){
+        try{
+          const raw=localStorage.getItem(LS_KEY); const arr=raw?JSON.parse(raw):[];
+          arr.splice(i,1); localStorage.setItem(LS_KEY,JSON.stringify(arr)); renderSessions(); msg('تم الحذف.');
+        }catch(e){ msg('تعذر الحذف: '+e.message); }
+      });
+      btns.appendChild(lb); btns.appendChild(db);
+      div.appendChild(left); div.appendChild(btns);
+      el.appendChild(div);
+    });
+  }
+
+  function exportCSV(){
+    if(!lastAnalysis){ msg('قم بالتحليل أولاً.'); return; }
+    const a=lastAnalysis;
+    const rows=[['query','model','brand_mentioned','brand_mentions','competitors','sentiment','links']];
+    a.rows.forEach(r=>{
+      rows.push([r.query,r.model,r.brandMentioned?'1':'0',r.mentions[a.brand],r.compMentioned.join(';'),r.sentiment.label,r.links.join(';')]);
+    });
+    const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    downloadText('brand-presence.csv',csv,'text/csv');
+    msg('تم تصدير CSV.');
+  }
+
+  function exportReport(){
+    if(!lastAnalysis){ msg('قم بالتحليل أولاً.'); return; }
+    const a=lastAnalysis;
+    let t='تقرير حضور العلامة\n';
+    t+='العلامة: '+a.brand+'\n';
+    t+='المنافسون: '+a.competitors.join('، ')+'\n';
+    t+='إجمالي الإجابات: '+a.total+'\n';
+    t+='نسبة الحضور: '+a.presencePct.toFixed(1)+'%\n';
+    t+='إجابات ذكرت العلامة: '+a.brandAnswers+'\n';
+    t+='الروابط/الاستشهادات: '+a.citationsTotal+'\n\n';
+    t+='مقارنة النماذج:\n';
+    a.modelStats.forEach(m=>{ t+=m.model+' — إجابات:'+m.answers+' حضور:'+m.presence.toFixed(1)+'% ذكر:'+m.mentions+' نبرة:'+m.avgSent.toFixed(2)+'\n'; });
+    t+='\nحصة الصوت:\n';
+    Object.keys(a.voice).forEach(b=>{ t+=b+': '+a.voice[b]+'\n'; });
+    t+='\nالفجوات:\n';
+    if(!a.gaps.length) t+='لا توجد فجوات.\n';
+    else a.gaps.forEach(g=>{ t+='• '+(g.query||'')+' — '+g.competitors.join('، ')+'\n'; });
+    downloadText('brand-presence-report.txt',t,'text/plain');
+    msg('تم تصدير التقرير.');
+  }
+
+  function downloadText(name,content,type){
+    try{
+      const blob=new Blob([content],{type:type+';charset=utf-8'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download=name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }catch(e){ msg('تعذر التنزيل: '+e.message); }
+  }
+
+  function printReport(){ window.print(); }
+
+  function init(){
+    syncModels();
+    syncQuerySelects();
+    renderAnswersCount();
+    renderSessions();
+
+    $('addQueryBtn').addEventListener('click',addQuery);
+    $('removeQueryBtn').addEventListener('click',removeQuery);
+    $('addAnswerBtn').addEventListener('click',addAnswer);
+    $('importBulkBtn').addEventListener('click',importBulk);
+    $('importCsvBtn').addEventListener('click',importCsv);
+    $('clearAnswersBtn').addEventListener('click',clearAnswers);
+    $('analyzeBtn').addEventListener('click',analyze);
+    $('saveSessionBtn').addEventListener('click',saveSession);
+    $('loadSessionBtn').addEventListener('click',loadLastSession);
+    $('exportCsvBtn').addEventListener('click',exportCSV);
+    $('exportReportBtn').addEventListener('click',exportReport);
+    $('printBtn').addEventListener('click',printReport);
+    $('modelsList').addEventListener('change',syncModels);
+    $('modelsList').addEventListener('keyup',syncModels);
+    $('inputMode').addEventListener('change',function(){
+      const v=this.value;
+      $('singleMode').style.display = v==='single'?'':'none';
+      $('bulkMode').style.display = v==='bulk'?'':'none';
+      $('csvMode').style.display = v==='csv'?'':'none';
+    });
+    $('newQuery').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); addQuery(); } });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+</body>
+</html>
