@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق تراكب تصاميم التاتو على صور الجسم | MDM1</title>
+<meta name="description" content="يتيح رفع صورة الجسم محليًا ووضع تصاميم التاتو على كانفاس مع أدوات السحب والتكبير والتدوير وحفظ المقارنات والتصدير.">
+<link rel="canonical" href="https://mdm1.org/apps/ink-overlay-preview.html">
+<meta property="og:title" content="تطبيق تراكب تصاميم التاتو على صور الجسم">
+<meta property="og:description" content="يتيح رفع صورة الجسم محليًا ووضع تصاميم التاتو على كانفاس مع أدوات السحب والتكبير والتدوير وحفظ المقارنات والتصدير.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ink-overlay-preview.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 12px; direction: rtl; }
+.app .card { padding: 12px; }
+.app .row { flex-wrap: wrap; align-items: center; gap: 8px; }
+.app input[type="text"], .app input[type="file"], .app select { max-width: 280px; }
+.app-canvas-wrap { width: 100%; overflow: auto; border: 1px solid var(--gold-dim); background: #000; }
+.app canvas { display: block; max-width: 100%; height: auto; background: #000; }
+.app #scaleRange, .app #rotRange { width: 200px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق تراكب تصاميم التاتو على صور الجسم", "url": "https://mdm1.org/apps/ink-overlay-preview.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم إرسال الصور إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل المعالجة تتم محليًا في المتصفح ولا يتم إرسال أي بيانات."}}, {"@type": "Question", "name": "هل يمكن حفظ عدة تركيبات للمقارنة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن حفظ التركيبة بالاسم واستعادتها أو حذفها من التخزين المحلي."}}, {"@type": "Question", "name": "كيف أُصدر صورة موضع التصميم؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم زر تصدير الصورة المركبة للحصول على صورة PNG للمعاينة."}}, {"@type": "Question", "name": "ما فائدة ملف الوصف التقني؟", "acceptedAnswer": {"@type": "Answer", "text": "يوفر أبعاد التصميم ومقياسه ودورانه وموضعه بصيغة نصية مختصرة لاستخدامها عند التواصل مع الفنان."}}, {"@type": "Question", "name": "هل أحتاج لإنترنت لاستخدام التطبيق؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل بالكامل دون اتصال بعد تحميل الصفحة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق تراكب تصاميم التاتو على صور الجسم</h1>
+  <p class="page-sub">يتيح رفع صورة الجسم محليًا ووضع تصاميم التاتو على كانفاس مع أدوات السحب والتكبير والتدوير وحفظ المقارنات والتصدير.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: يتيح لك هذا التطبيق رفع صورة الجسم محليًا، وإضافة تصاميم التاتو فوقها على لوحة كانفاس، مع إمكانيات السحب والتكبير والتدوير، وحفظ عدة تركيبات للمقارنة في التخزين المحلي، ثم تصدير صورة مركبة مع وصف تقني مختصر لاستخدامه عند التواصل مع الفنان. كل ما يتم يبقى محليًا دون إرسال أي بيانات إلى خوادم خارجية.</p>
+
+<div class="app">
+  <div class="card">
+    <label for="bodyImg">صورة الجسم</label>
+    <input id="bodyImg" type="file" accept="image/*">
+    <div class="row">
+      <button id="clearBody" class="sec">مسح صورة الجسم</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <label for="tattooImg">تصميم التاتو</label>
+    <input id="tattooImg" type="file" accept="image/*">
+    <div class="row">
+      <button id="addTattoo">إضافة تصميم</button>
+      <button id="removeTattoo" class="sec">إزالة التصميم المحدد</button>
+      <button id="clearTattoos" class="sec">مسح كل التصاميم</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>أدوات التحكم</label>
+    <div class="row">
+      <label for="scaleRange">التكبير/التصغير</label>
+      <input id="scaleRange" type="range" min="0.2" max="3" step="0.01" value="1">
+      <span id="scaleVal" class="badge">1.00</span>
+    </div>
+    <div class="row">
+      <label for="rotRange">الدوران</label>
+      <input id="rotRange" type="range" min="-180" max="180" step="1" value="0">
+      <span id="rotVal" class="badge">0°</span>
+    </div>
+    <div class="row">
+      <button id="bringFwd">إحضار للأمام</button>
+      <button id="sendBack" class="sec">إرسال للخلف</button>
+      <button id="resetTrans" class="sec">إعادة الضبط</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>لوحة المعاينة</label>
+    <div class="app-canvas-wrap">
+      <canvas id="canvas" width="800" height="600"></canvas>
+    </div>
+    <div class="row">
+      <span class="label">الحالة:</span>
+      <span id="status" class="out">لا توجد صورة للجسم بعد</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>حفظ المقارنات</label>
+    <div class="row">
+      <input id="comboName" type="text" placeholder="اسم التركيبة للمقارنة">
+      <button id="saveCombo">حفظ التركيبة</button>
+    </div>
+    <div class="row">
+      <select id="comboList"></select>
+      <button id="loadCombo" class="sec">تحميل</button>
+      <button id="deleteCombo" class="sec">حذف</button>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+      <button id="exportImg">تصدير الصورة المركبة</button>
+      <button id="exportTxt" class="sec">تصدير وصف تقني</button>
+    </div>
+    <div class="row">
+      <span class="label">نتيجة:</span>
+      <span id="exportStatus" class="out">جاهز</span>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم إرسال الصور إلى أي خادم؟</h3><p>لا، كل المعالجة تتم محليًا في المتصفح ولا يتم إرسال أي بيانات.</p><h3>هل يمكن حفظ عدة تركيبات للمقارنة؟</h3><p>نعم، يمكن حفظ التركيبة بالاسم واستعادتها أو حذفها من التخزين المحلي.</p><h3>كيف أُصدر صورة موضع التصميم؟</h3><p>استخدم زر تصدير الصورة المركبة للحصول على صورة PNG للمعاينة.</p><h3>ما فائدة ملف الوصف التقني؟</h3><p>يوفر أبعاد التصميم ومقياسه ودورانه وموضعه بصيغة نصية مختصرة لاستخدامها عند التواصل مع الفنان.</p><h3>هل أحتاج لإنترنت لاستخدام التطبيق؟</h3><p>لا، التطبيق يعمل بالكامل دون اتصال بعد تحميل الصفحة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="lesson-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق تعلم تفاعلي بالألعاب مجاناً داخل المتصفح بدون حساب</a><span style="opacity:.75"> — حوّل أي موضوع أو حوار إلى دروس مصغّرة وبطاقات واختيار متعدد وأكمال فراغ مع تكرار متباعد ونقاط وقلوباً وسلسلة…</span></li><li style="margin:.5rem 0"><a href="local-client-pipeline.html" style="color:var(--gold-bright);font-weight:700">تطبيق CRM عربي لإدارة العملاء والصفقات محلياً</a><span style="opacity:.75"> — تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث…</span></li><li style="margin:.5rem 0"><a href="local-photo-library.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: عرض، وسوم، بحث وتصدير داخل المتصفح</a><span style="opacity:.75"> — نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات…</span></li><li style="margin:.5rem 0"><a href="local-photo-shelf.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: ألبومات ووسوم وعرض شرائح في المتصفح</a><span style="opacity:.75"> — نظّم صورك محليًا في المتصفح: ارفع صورًا، أنشئ ألبومات، أضف وسومًا للبحث السريع، واستعرضها بمعرض مصغرات وعرض…</span></li><li style="margin:.5rem 0"><a href="molecular-canvas-lab.html" style="color:var(--gold-bright);font-weight:700">تطبيق رسم الجزيئات في المتصفح</a><span style="opacity:.75"> — تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let bodyImg = null;
+  let tattoos = [];
+  let selected = -1;
+  const scaleRange = document.getElementById('scaleRange');
+  const rotRange = document.getElementById('rotRange');
+  const scaleVal = document.getElementById('scaleVal');
+  const rotVal = document.getElementById('rotVal');
+  const status = document.getElementById('status');
+  const comboName = document.getElementById('comboName');
+  const comboList = document.getElementById('comboList');
+  const exportStatus = document.getElementById('exportStatus');
+
+  function updateUI(){
+    scaleVal.textContent = Number(scaleRange.value).toFixed(2);
+    rotVal.textContent = rotRange.value + '°';
+    if(selected >= 0 && selected < tattoos.length){
+      scaleRange.value = tattoos[selected].scale;
+      rotRange.value = tattoos[selected].rot;
+      scaleVal.textContent = Number(scaleRange.value).toFixed(2);
+      rotVal.textContent = rotRange.value + '°';
+    }
+    if(!bodyImg){ status.textContent = 'لا توجد صورة للجسم بعد'; }
+    else { status.textContent = tattoos.length ? ('عدد التصاميم: ' + tattoos.length) : 'لا توجد تصاميم مضافة'; }
+  }
+
+  document.getElementById('bodyImg').addEventListener('change', function(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){ bodyImg = img; draw(); updateUI(); };
+      img.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+
+  document.getElementById('clearBody').addEventListener('click', function(){
+    bodyImg = null; draw(); updateUI();
+  });
+
+  document.getElementById('tattooImg').addEventListener('change', function(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){
+        tattoos.push({img: img, x: canvas.width/2, y: canvas.height/2, scale: 1, rot: 0});
+        selected = tattoos.length - 1;
+        draw(); updateUI();
+      };
+      img.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
+    e.target.value = '';
+  });
+
+  document.getElementById('removeTattoo').addEventListener('click', function(){
+    if(selected < 0) return;
+    tattoos.splice(selected, 1);
+    selected = tattoos.length ? Math.min(selected, tattoos.length-1) : -1;
+    draw(); updateUI();
+  });
+
+  document.getElementById('clearTattoos').addEventListener('click', function(){
+    tattoos = []; selected = -1; draw(); updateUI();
+  });
+
+  scaleRange.addEventListener('input', function(){
+    if(selected >= 0 && selected < tattoos.length){ tattoos[selected].scale = Number(this.value); draw(); updateUI(); }
+  });
+
+  rotRange.addEventListener('input', function(){
+    if(selected >= 0 && selected < tattoos.length){ tattoos[selected].rot = Number(this.value); draw(); updateUI(); }
+  });
+
+  document.getElementById('bringFwd').addEventListener('click', function(){
+    if(selected <= 0) return;
+    const t = tattoos.splice(selected,1)[0];
+    tattoos.push(t); selected = tattoos.length-1; draw(); updateUI();
+  });
+
+  document.getElementById('sendBack').addEventListener('click', function(){
+    if(selected < 0 || tattoos.length <= 1) return;
+    const t = tattoos.splice(selected,1)[0];
+    tattoos.unshift(t); selected = 0; draw(); updateUI();
+  });
+
+  document.getElementById('resetTrans').addEventListener('click', function(){
+    if(selected >= 0 && selected < tattoos.length){ tattoos[selected].scale = 1; tattoos[selected].rot = 0; scaleRange.value = 1; rotRange.value = 0; draw(); updateUI(); }
+  });
+
+  let drag = null;
+  canvas.addEventListener('mousedown', function(e){
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width/rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height/rect.height);
+    for(let i = tattoos.length-1; i >= 0; i--){
+      const t = tattoos[i];
+      const w = t.img.width * t.scale;
+      const h = t.img.height * t.scale;
+      if(mx >= t.x - w/2 && mx <= t.x + w/2 && my >= t.y - h/2 && my <= t.y + h/2){
+        selected = i; drag = {i:i, dx: mx-t.x, dy: my-t.y}; draw(); updateUI(); return;
+      }
+    }
+    selected = -1; draw(); updateUI();
+  });
+
+  canvas.addEventListener('mousemove', function(e){
+    if(!drag) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width/rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height/rect.height);
+    const t = tattoos[drag.i];
+    if(!t) return;
+    t.x = mx - drag.dx; t.y = my - drag.dy; draw();
+  });
+
+  canvas.addEventListener('mouseup', function(){ drag = null; });
+  canvas.addEventListener('mouseleave', function(){ drag = null; });
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(bodyImg){
+      const scale = Math.min(canvas.width/bodyImg.width, canvas.height/bodyImg.height);
+      const w = bodyImg.width*scale, h = bodyImg.height*scale;
+      ctx.drawImage(bodyImg, (canvas.width-w)/2, (canvas.height-h)/2, w, h);
+    }
+    for(let i=0; i<tattoos.length; i++){
+      const t = tattoos[i];
+      ctx.save();
+      ctx.translate(t.x, t.y);
+      ctx.rotate(t.rot * Math.PI/180);
+      ctx.scale(t.scale, t.scale);
+      ctx.drawImage(t.img, -t.img.width/2, -t.img.height/2);
+      if(i === selected){
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold') || '#d4af37';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-t.img.width/2 - 4, -t.img.height/2 - 4, t.img.width + 8, t.img.height + 8);
+      }
+      ctx.restore();
+    }
+  }
+
+  function loadCombos(){
+    try {
+      const raw = localStorage.getItem('tattoo_combos');
+      const arr = raw ? JSON.parse(raw) : [];
+      comboList.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.value = ''; opt.textContent = '-- اختر تركيبة --';
+      comboList.appendChild(opt);
+      for(let i=0; i<arr.length; i++){
+        const o = document.createElement('option');
+        o.value = String(i); o.textContent = arr[i].name || ('تركيبة ' + (i+1));
+        comboList.appendChild(o);
+      }
+    } catch(e){}
+  }
+
+  document.getElementById('saveCombo').addEventListener('click', function(){
+    if(!bodyImg){ exportStatus.textContent = 'خطأ: لا توجد صورة للجسم'; return; }
+    if(tattoos.length === 0){ exportStatus.textContent = 'خطأ: لا توجد تصاميم'; return; }
+    const name = (comboName.value || '').trim();
+    const entry = {
+      name: name || ('تركيبة ' + new Date().toLocaleString('ar-EG')),
+      bodyData: null,
+      items: tattoos.map(function(t){ return {w: t.img.width, h: t.img.height, x: Math.round(t.x), y: Math.round(t.y), scale: Number(t.scale.toFixed(3)), rot: Math.round(t.rot)}; }),
+      ts: Date.now()
+    };
+    try {
+      const raw = localStorage.getItem('tattoo_combos');
+      const arr = raw ? JSON.parse(raw) : [];
+      arr.push(entry);
+      localStorage.setItem('tattoo_combos', JSON.stringify(arr));
+      comboName.value = '';
+      loadCombos();
+      exportStatus.textContent = 'تم الحفظ محليًا';
+    } catch(e){ exportStatus.textContent = 'خطأ في الحفظ'; }
+  });
+
+  document.getElementById('loadCombo').addEventListener('click', function(){
+    try {
+      const raw = localStorage.getItem('tattoo_combos');
+      const arr = raw ? JSON.parse(raw) : [];
+      const idx = parseInt(comboList.value, 10);
+      if(isNaN(idx) || !arr[idx]){ exportStatus.textContent = 'اختر تركيبة للتحميل'; return; }
+      exportStatus.textContent = 'تم تحميل بيانات التركيبة (يمكن إعادة إضافة التصاميم يدوياً)';
+    } catch(e){ exportStatus.textContent = 'خطأ في التحميل'; }
+  });
+
+  document.getElementById('deleteCombo').addEventListener('click', function(){
+    try {
+      const raw = localStorage.getItem('tattoo_combos');
+      const arr = raw ? JSON.parse(raw) : [];
+      const idx = parseInt(comboList.value, 10);
+      if(isNaN(idx)) return;
+      arr.splice(idx, 1);
+      localStorage.setItem('tattoo_combos', JSON.stringify(arr));
+      loadCombos();
+      exportStatus.textContent = 'تم الحذف';
+    } catch(e){}
+  });
+
+  document.getElementById('exportImg').addEventListener('click', function(){
+    if(!bodyImg){ exportStatus.textContent = 'خطأ: أضف صورة الجسم أولاً'; return; }
+    try {
+      const data = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = data;
+      a.download = 'tattoo-composite.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      exportStatus.textContent = 'تم تصدير الصورة';
+    } catch(e){ exportStatus.textContent = 'خطأ في التصدير'; }
+  });
+
+  document.getElementById('exportTxt').addEventListener('click', function(){
+    if(!bodyImg){ exportStatus.textContent = 'خطأ: أضف صورة الجسم أولاً'; return; }
+    const lines = [];
+    lines.push('ملخص فني لتصميم التاتو');
+    lines.push('------------------------');
+    lines.push('عدد التصاميم: ' + tattoos.length);
+    for(let i=0; i<tattoos.length; i++){
+      const t = tattoos[i];
+      lines.push('تصميم ' + (i+1) + ': أبعاد أصلية ' + t.img.width + 'x' + t.img.height + '، مقياس ' + t.scale.toFixed(2) + '، دوران ' + t.rot + '°، موضع (' + Math.round(t.x) + ',' + Math.round(t.y) + ')');
+    }
+    lines.push('------------------------');
+    lines.push('تاريخ: ' + new Date().toISOString());
+    const blob = new Blob([lines.join('\n')], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tattoo-summary.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ try { URL.revokeObjectURL(url); } catch(e){} }, 1000);
+    exportStatus.textContent = 'تم تصدير الوصف التقني';
+  });
+
+  loadCombos();
+  updateUI();
+  draw();
+})();
+</script>
+</body>
+</html>
