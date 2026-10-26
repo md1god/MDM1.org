@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حافظ البصمة - حساب البصمة الكربونية | MDM1</title>
+<meta name="description" content="احسب بصمتك الكربونية اليومية من الكهرباء والنقل والطعام، وراقب التغيرات محليًا مع رسوم بيانية تفاعلية.">
+<link rel="canonical" href="https://mdm1.org/apps/hafiz-baeath.html">
+<meta property="og:title" content="حافظ البصمة - حساب البصمة الكربونية">
+<meta property="og:description" content="احسب بصمتك الكربونية اليومية من الكهرباء والنقل والطعام، وراقب التغيرات محليًا مع رسوم بيانية تفاعلية.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/hafiz-baeath.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 12px; }
+.app h2 { margin: 4px 0 10px 0; font-size: 1.1rem; color: var(--light); }
+.app .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.app .row > div { flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px; }
+.app .row-actions { gap: 8px; }
+.app .label { color: var(--light); opacity: 0.9; }
+.app .input, .app .select { background: transparent; color: var(--light); border: 1px solid var(--gold-dim); padding: 8px 10px; border-radius: 6px; }
+.app .out { text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.app .big { font-size: 2.2rem; color: var(--gold-bright); }
+.app .split { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.app .chartWrap { display: flex; justify-content: center; margin-top: 10px; }
+.app .hist { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.app .hist-item { display: flex; justify-content: space-between; padding: 8px 10px; border: 1px solid var(--gold-dim); border-radius: 6px; }
+.app .err { color: #ff6b6b; min-height: 18px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق حافظ البصمة", "url": "https://mdm1.org/apps/hafiz-baeath.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف تحسب عوامل الانبعاث؟", "acceptedAnswer": {"@type": "Answer", "text": "نستخدم عوامل انبعاثية مدمجة مسبقًا شائعة الاستخدام: الكهرباء حسب مصدرها، والنقل حسب الوسيلة، والطعام حسب النمط، مع تحويلها إلى كيلوغرامات ثاني أكسيد الكربون المكافئ."}}, {"@type": "Question", "name": "هل تحفظ البيانات على الإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل الحسابات والحفظ تتم محليًا على جهازك فقط باستخدام localStorage، ولا يتم إرسال أي بيانات عبر الشبكة."}}, {"@type": "Question", "name": "هل يمكنني مقارنة النتائج عبر الأيام؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، احفظ النتيجة بعد كل حساب ثم اعرض السجل لتمييز التغيرات ومتابعة الجهود البيئية مع مرور الوقت."}}, {"@type": "Question", "name": "ماذا لو أدخلت قيم غير صحيحة؟", "acceptedAnswer": {"@type": "Answer", "text": "يتحقق التطبيق من القيم ويعرض رسالة خطأ واضحة، مع إبقاء النتائج السابقة حتى تصحح المدخلات."}}, {"@type": "Question", "name": "هل يعمل التطبيق دون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل كاملًا بدون اتصال بالإنترنت لأنه يعتمد على كود محلي وجافا سكريبت عادي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق حافظ البصمة</h1>
+  <p class="page-sub">احسب بصمتك الكربونية اليومية من الكهرباء والنقل والطعام، وراقب التغيرات محليًا مع رسوم بيانية تفاعلية.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: يمكنك حساب بصمتك الكربونية اليومية بدقة خلال دقائق قليلة من خلال إدخال استهلاكك اليومي من الكهرباء، ووسائل التنقل، ونوع الطعام، وسنقوم بتحويل هذه المدخلات إلى كيلوغرامات من ثاني أكسيد الكربون المكافئ باستخدام عوامل انبعاثية مدمجة مسبقًا وموثوقة، ثم عرض النتيجة في لوحة واضحة مع توزيع الانبعاثات حسب المصدر، وإمكانية حفظها محليًا على جهازك لمقارنة التغيرات مع مرور الأيام، ومتابعة مدى تقدم جهودك البيئية بشكل ملموس دون الحاجة إلى إنشاء حساب أو إرسال بيانات عبر الإنترنت.</p>
+<div class="app">
+  <section class="card">
+    <h2>١. استهلاك الكهرباء</h2>
+    <div class="row">
+      <div>
+        <label class="label" for="elecKwh">استهلاك الكهرباء اليومي (كيلوواط/ساعة)</label>
+        <input id="elecKwh" class="input" type="number" min="0" step="0.1" placeholder="مثال: ١٥">
+      </div>
+      <div>
+        <label class="label" for="elecFactor">مصدر الكهرباء</label>
+        <select id="elecFactor" class="select">
+          <option value="0.45" selected>شبكة عامة (متوسط)</option>
+          <option value="0.25">مختلط أقل انبعاثًا</option>
+          <option value="0.08">طاقة متجددة غالبًا</option>
+        </select>
+      </div>
+    </div>
+  </section>
+  <div class="divider"></div>
+  <section class="card">
+    <h2>٢. النقل اليومي</h2>
+    <div class="row">
+      <div>
+        <label class="label" for="transMode">وسيلة التنقل</label>
+        <select id="transMode" class="select">
+          <option value="none" selected>بدون تنقل</option>
+          <option value="carPetrol">سيارة بنزين</option>
+          <option value="carDiesel">سيارة ديزل</option>
+          <option value="bus">حافلة</option>
+          <option value="metro">مترو</option>
+          <option value="motorbike">دراجة نارية</option>
+          <option value="walkBike">مشياً أو دراجة</option>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="transKm">المسافة اليومي (كيلومتر)</label>
+        <input id="transKm" class="input" type="number" min="0" step="0.1" placeholder="مثال: ٢٠">
+      </div>
+    </div>
+  </section>
+  <div class="divider"></div>
+  <section class="card">
+    <h2>٣. الطعام اليومي</h2>
+    <div class="row">
+      <div>
+        <label class="label" for="foodType">نمط الطعام</label>
+        <select id="foodType" class="select">
+          <option value="mixed" selected>مختلط عادي</option>
+          <option value="heavyMeat">غني باللحوم</option>
+          <option value="lightMeat">قليل اللحوم</option>
+          <option value="pescatarian">أسماك فقط</option>
+          <option value="vegetarian">نباتي</option>
+          <option value="vegan">نباتي صرف</option>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="foodPortions">عامل حجم الوجبة (٠٫٥ إلى ٢٫٠)</label>
+        <input id="foodPortions" class="input" type="number" min="0.5" max="2" step="0.1" value="1.0">
+      </div>
+    </div>
+  </section>
+  <div class="divider"></div>
+  <section class="card">
+    <div class="row row-actions">
+      <button id="calcBtn" class="button">احسب البصمة</button>
+      <button id="saveBtn" class="button sec">حفظ النتيجة</button>
+      <button id="clearBtn" class="button sec">مسح المدخلات</button>
+    </div>
+    <p id="errMsg" class="err" aria-live="polite"></p>
+  </section>
+  <div class="divider"></div>
+  <section class="card">
+    <h2>النتيجة اليومية</h2>
+    <div class="out">
+      <div class="big" id="totalKg">٠٫٠٠</div>
+      <div>كيلوغرام ثاني أكسيد الكربون المكافئ</div>
+      <div class="split">
+        <span class="badge">كهرباء: <span id="elecKg">٠٫٠٠</span> كغم</span>
+        <span class="badge">نقل: <span id="transKg">٠٫٠٠</span> كغم</span>
+        <span class="badge">طعام: <span id="foodKg">٠٫٠٠</span> كغم</span>
+      </div>
+    </div>
+    <div class="chartWrap">
+      <canvas id="pieChart" width="260" height="260" aria-label="رسم بياني لتوزيع الانبعاثات"></canvas>
+    </div>
+  </section>
+  <div class="divider"></div>
+  <section class="card">
+    <h2>السجل المحفوظ محليًا</h2>
+    <div class="row">
+      <button id="loadHistBtn" class="button sec">عرض السجل</button>
+      <button id="clearHistBtn" class="button sec">مسح السجل</button>
+    </div>
+    <div id="histList" class="hist"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف تحسب عوامل الانبعاث؟</h3><p>نستخدم عوامل انبعاثية مدمجة مسبقًا شائعة الاستخدام: الكهرباء حسب مصدرها، والنقل حسب الوسيلة، والطعام حسب النمط، مع تحويلها إلى كيلوغرامات ثاني أكسيد الكربون المكافئ.</p><h3>هل تحفظ البيانات على الإنترنت؟</h3><p>لا، كل الحسابات والحفظ تتم محليًا على جهازك فقط باستخدام localStorage، ولا يتم إرسال أي بيانات عبر الشبكة.</p><h3>هل يمكنني مقارنة النتائج عبر الأيام؟</h3><p>نعم، احفظ النتيجة بعد كل حساب ثم اعرض السجل لتمييز التغيرات ومتابعة الجهود البيئية مع مرور الوقت.</p><h3>ماذا لو أدخلت قيم غير صحيحة؟</h3><p>يتحقق التطبيق من القيم ويعرض رسالة خطأ واضحة، مع إبقاء النتائج السابقة حتى تصحح المدخلات.</p><h3>هل يعمل التطبيق دون اتصال؟</h3><p>نعم، يعمل كاملًا بدون اتصال بالإنترنت لأنه يعتمد على كود محلي وجافا سكريبت عادي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="hisabat-mahali-erp.html" style="color:var(--gold-bright);font-weight:700">إدارة الفواتير والعملاء محليًا</a><span style="opacity:.75"> — تطبيق عربي RTL لإدارة الفواتير وعروض الأسعار والعملاء والمدفوعات وحفظها محليًا في المتصفح مع لوحة إحصائيات…</span></li><li style="margin:.5rem 0"><a href="hook-blueprint-kit.html" style="color:var(--gold-bright);font-weight:700">منشئ منشورات لينكدإن محليًا</a><span style="opacity:.75"> — أداة تعمل بالكامل داخل المتصفح لإنشاء منشورات لينكدإن مع قوالب وخطاف ومحتوى ودعوة للإجراء ومحفظة وسوم ومخطط…</span></li><li style="margin:.5rem 0"><a href="image-format-converter.html" style="color:var(--gold-bright);font-weight:700">محول صيغ الصور PNG وJPG وWebP مع ضغط وجودة محلي</a><span style="opacity:.75"> — حوّل صورك بين صيغ PNG وJPG وWebP مباشرة في متصفحك، مع اختيار جودة الضغط ومعاينة الحجم قبل وبعد، وتنزيل فردي…</span></li><li style="margin:.5rem 0"><a href="ink-overlay-preview.html" style="color:var(--gold-bright);font-weight:700">تطبيق تراكب تصاميم التاتو على صور الجسم</a><span style="opacity:.75"> — يتيح رفع صورة الجسم محليًا ووضع تصاميم التاتو على كانفاس مع أدوات السحب والتكبير والتدوير وحفظ المقارنات…</span></li><li style="margin:.5rem 0"><a href="job-application-studio.html" style="color:var(--gold-bright);font-weight:700">مركز توظيف شخصي للبحث عن العمل</a><span style="opacity:.75"> — تطبيق عربي داخل المتصفح لتخزين إعلانات الوظائف ومقارنة السيرة الذاتية وإدارة الطلبات محلياً دون حسابات</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-26 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var transFactors = { none:0, carPetrol:0.192, carDiesel:0.171, bus:0.089, metro:0.014, motorbike:0.103, walkBike:0 };
+  var foodFactors = { heavyMeat:7.2, lightMeat:4.7, pescatarian:3.4, mixed:3.9, vegetarian:2.3, vegan:1.7 };
+  function num(v){ var n = parseFloat(v); return isNaN(n)?0:n; }
+  function fmt(n){ return n.toFixed(2); }
+  function drawPie(e,f,t){
+    var c = document.getElementById('pieChart'); var ctx = c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    var total = e+f+t; if(total <= 0){ ctx.fillStyle = 'rgba(255,215,128,0.4)'; ctx.beginPath(); ctx.arc(130,130,90,0,Math.PI*2); ctx.fill(); return; }
+    var data=[{v:e,c:'#ffd780'},{v:f,c:'#b9a05d'},{v:t,c:'#7f6f3a'}];
+    var start= -Math.PI/2; var cx=130, cy=130, r=90;
+    for(var i=0;i<data.length;i++){ var d=data[i]; if(d.v<=0) continue; var ang=(d.v/total)*Math.PI*2; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,start+ang); ctx.closePath(); ctx.fillStyle=d.c; ctx.fill(); start+=ang; }
+  }
+  document.getElementById('calcBtn').addEventListener('click', function(){
+    var err = document.getElementById('errMsg'); err.textContent='';
+    var ek = num(document.getElementById('elecKwh').value);
+    var ef = num(document.getElementById('elecFactor').value);
+    var tm = document.getElementById('transMode').value; var tk = num(document.getElementById('transKm').value);
+    var ft = document.getElementById('foodType').value; var fp = num(document.getElementById('foodPortions').value);
+    if(ek < 0 || tk < 0 || fp < 0.5 || fp > 2){ err.textContent='تحقق من القيم المدخلة: الاستهلاك والمسافة غير سالبة، وحجم الوجبة بين ٠٫٥ و٢٫٠.'; return; }
+    var ekg = ek * ef;
+    var tkg = tk * (transFactors[tm]||0);
+    var fkg = (foodFactors[ft]||0) * fp;
+    if(tm !== 'none' && tk === 0){ /* allow zero */ }
+    var total = ekg + tkg + fkg;
+    document.getElementById('elecKg').textContent = fmt(ekg);
+    document.getElementById('transKg').textContent = fmt(tkg);
+    document.getElementById('foodKg').textContent = fmt(fkg);
+    document.getElementById('totalKg').textContent = fmt(total);
+    drawPie(ekg,tkg,fkg);
+    document.getElementById('calcBtn').dataset.total = fmt(total);
+    document.getElementById('calcBtn').dataset.e = fmt(ekg);
+    document.getElementById('calcBtn').dataset.f = fmt(fkg);
+    document.getElementById('calcBtn').dataset.t = fmt(tkg);
+  });
+  document.getElementById('saveBtn').addEventListener('click', function(){
+    var err = document.getElementById('errMsg'); err.textContent='';
+    var total = document.getElementById('calcBtn').dataset.total;
+    if(!total){ err.textContent='احسب النتيجة أولاً قبل الحفظ.'; return; }
+    try {
+      var hist = localStorage.getItem('hifz_bsm_hist');
+      var arr = hist ? JSON.parse(hist) : [];
+      arr.unshift({ d: new Date().toISOString(), total: total, e: document.getElementById('calcBtn').dataset.e, t: document.getElementById('calcBtn').dataset.t, f: document.getElementById('calcBtn').dataset.f });
+      if(arr.length > 50) arr = arr.slice(0,50);
+      localStorage.setItem('hifz_bsm_hist', JSON.stringify(arr));
+      err.textContent='تم حفظ النتيجة محليًا.';
+    } catch(e){ err.textContent='تعذر الحفظ على هذا الجهاز.'; }
+  });
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    document.getElementById('elecKwh').value='';
+    document.getElementById('transKm').value='';
+    document.getElementById('foodPortions').value='1.0';
+    document.getElementById('transMode').value='none';
+    document.getElementById('foodType').value='mixed';
+    document.getElementById('elecFactor').value='0.45';
+    document.getElementById('elecKg').textContent='٠٫٠٠';
+    document.getElementById('transKg').textContent='٠٫٠٠';
+    document.getElementById('foodKg').textContent='٠٫٠٠';
+    document.getElementById('totalKg').textContent='٠٫٠٠';
+    document.getElementById('errMsg').textContent='';
+    var c=document.getElementById('pieChart'); var ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);
+    delete document.getElementById('calcBtn').dataset.total;
+  });
+  document.getElementById('loadHistBtn').addEventListener('click', function(){
+    var list = document.getElementById('histList'); list.innerHTML='';
+    try {
+      var hist = localStorage.getItem('hifz_bsm_hist');
+      var arr = hist ? JSON.parse(hist) : [];
+      if(arr.length === 0){ list.textContent='لا توجد نتائج محفوظة بعد.'; return; }
+      for(var i=0;i<arr.length;i++){ var it=arr[i]; var div=document.createElement('div'); div.className='hist-item'; var dt=new Date(it.d); var ds=dt.getFullYear()+'/'+(dt.getMonth()+1)+'/'+dt.getDate()+' '+dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0'); div.innerHTML='<span>'+ds+'</span><span>'+it.total+' كغم</span>'; list.appendChild(div); }
+    } catch(e){ list.textContent='تعذر قراءة السجل.'; }
+  });
+  document.getElementById('clearHistBtn').addEventListener('click', function(){
+    try { localStorage.removeItem('hifz_bsm_hist'); document.getElementById('histList').innerHTML='تم مسح السجل.'; } catch(e){ document.getElementById('histList').innerHTML='تعذر المسح.'; }
+  });
+  drawPie(0,0,0);
+})();
+</script>
+</body>
+</html>
