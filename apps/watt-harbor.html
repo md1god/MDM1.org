@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة قياس استهلاك الطاقة والكيلوواط/ساعة والبصمة الكربونية محليًا | MDM1</title>
+<meta name="description" content="قِس استهلاك الطاقة تقديريًا لأجهزتك وتطبيقاتك محليًا في المتصفح: ملفات عتاد، جلسات قياس حية، حاسبة كيلوواط/ساعة وبصمة كربونية حسب مصدر الكهرباء، وتصدير JSON وPrometheus.">
+<link rel="canonical" href="https://mdm1.org/apps/watt-harbor.html">
+<meta property="og:title" content="أداة قياس استهلاك الطاقة والكيلوواط/ساعة والبصمة الكربونية محليًا">
+<meta property="og:description" content="قِس استهلاك الطاقة تقديريًا لأجهزتك وتطبيقاتك محليًا في المتصفح: ملفات عتاد، جلسات قياس حية، حاسبة كيلوواط/ساعة وبصمة كربونية حسب مصدر الكهرباء، وتصدير JSON وPrometheus.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/watt-harbor.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:12px;font-family:inherit}
+.app h2{color:var(--gold);margin:8px 0 4px}
+.app .row{flex-wrap:wrap;gap:8px;align-items:center}
+.app .row label{min-width:180px;color:var(--light)}
+.app .row input,.app .row select,.app .row textarea{background:var(--dark);color:var(--light);border:1px solid var(--gold-dim);border-radius:6px;padding:6px 8px;min-width:160px}
+.app .out{background:var(--dark);border:1px solid var(--gold-dim);border-radius:8px;padding:10px;color:var(--light);white-space:pre-wrap;word-break:break-word}
+.app .big{font-size:1.4rem;color:var(--gold-bright);font-weight:bold}
+.app .badge{background:var(--gold-dim);color:var(--dark);border-radius:999px;padding:4px 10px;font-size:.85rem}
+.app .divider{border-top:1px solid var(--gold-dim);margin:6px 0}
+.app button{cursor:pointer}
+.app section[hidden]{display:none}
+.app .device-item{display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--gold-dim)}
+.app .device-item span{flex:1}
+.app .empty{opacity:.7;font-style:italic}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة قياس استهلاك الطاقة للأجهزة والتطبيقات مع حساب الكربون", "url": "https://mdm1.org/apps/watt-harbor.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تحتاج هذه الأداة إلى اتصال بالإنترنت أو إنشاء حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تعمل الأداة بالكامل داخل متصفحك دون أي طلبات شبكة أو تسجيل دخول، وتُحفظ النتائج فقط في localStorage الخاص بمتصفحك."}}, {"@type": "Question", "name": "كيف أحسب استهلاك جهاز معين بالكيلوواط/ساعة؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل اسم الجهاز وقدرته بالواط وساعات التشغيل اليومية، فتحسب الأداة الطاقة اليومية والشهرية تقديريًا بمعادلة: الواط × الساعات ÷ 1000."}}, {"@type": "Question", "name": "ما هي كثافة الكربون وكيف أستخدمها؟", "acceptedAnswer": {"@type": "Answer", "text": "كثافة الكربون هي جرامات ثاني أكسيد الكربون لكل كيلوواط/ساعة تنتجها شبكة الكهرباء في بلدك؛ اختر بلدك أو أدخل قيمة مخصصة لحساب البصمة الكربونية."}}, {"@type": "Question", "name": "هل يمكنني تصدير النتائج لاستخدامها في أنظمة المراقبة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر «تصدير Prometheus» يولّد نصًا متوافقًا بمؤشرات قياسية، وزر «تصدير JSON» يمنحك البيانات كاملة للمعالجة أو الأرشفة."}}, {"@type": "Question", "name": "ماذا يحدث إذا مسحت بيانات المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "إذا مسحت بيانات الموقع أو استخدمت وضع التصفير في متصفحك، ستُحذف البيانات المحفوظة محليًا؛ صدّر JSON واحتفظ بنسخة احتياطية لاستعادتها لاحقًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة قياس استهلاك الطاقة للأجهزة والتطبيقات مع حساب الكربون</h1>
+  <p class="page-sub">قِس استهلاك الطاقة تقديريًا لأجهزتك وتطبيقاتك محليًا في المتصفح: ملفات عتاد، جلسات قياس حية، حاسبة كيلوواط/ساعة وبصمة كربونية حسب مصدر الكهرباء، وتصدير JSON وPrometheus.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: يمكنك الآن تقدير استهلاك الطاقة لأجهزتك وتطبيقاتك بالكيلوواط/ساعة (kWh) وحساب البصمة الكربونية بالجرام ثاني أكسيد الكربون حسب مصدر الكهرباء في بلدك، دون أي خادم أو حساب أو اتصال بالشبكة. تعمل الأداة بالكامل داخل متصفحك وتحفظ نتائجك محليًا. ابدأ بملء ملف تعريف العتاد، أو شغّل جلسة قياس حية أثناء استخدام جهاز، ثم وزّع ميزانية الطاقة على الأجهزة واحصل على نتائج فورية قابلة للتصدير بصيغة JSON أو نص متوافق مع Prometheus. صُممت هذه الصفحة لتكون أداة عملية للمهندسين والهاوين والمطوّرين الراغبين بقياس الأثر البيئي لاستخدامهم اليومي للطاقة الرقمية.</p>
+
+<div class="app">
+  <!-- تبويبات -->
+  <div class="row" role="tablist" aria-label="أقسام الأداة">
+    <button id="tabHardware" class="button" role="tab" aria-selected="true">ملف العتاد</button>
+    <button id="tabLive" class="button sec" role="tab" aria-selected="false">جلسة قياس حية</button>
+    <button id="tabBudget" class="button sec" role="tab" aria-selected="false">ميزانية الطاقة</button>
+    <button id="tabResults" class="button sec" role="tab" aria-selected="false">النتائج والتصدير</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ملف العتاد -->
+  <section id="panelHardware" role="tabpanel" aria-labelledby="tabHardware">
+    <h2>ملف تعريف العتاد</h2>
+    <div class="row">
+      <label for="deviceName">اسم الجهاز أو التطبيق</label>
+      <input id="deviceName" type="text" placeholder="مثال: حاسوب محمول للعمل" />
+    </div>
+    <div class="row">
+      <label for="deviceCategory">الفئة</label>
+      <select id="deviceCategory">
+        <option value="laptop">حاسوب محمول</option>
+        <option value="desktop">حاسوب مكتبي</option>
+        <option value="monitor">شاشة</option>
+        <option value="phone">هاتف ذكي</option>
+        <option value="tablet">جهاز لوحي</option>
+        <option value="server">خادم / NAS</option>
+        <option value="router">موجّه شبكة</option>
+        <option value="tv">تلفاز</option>
+        <option value="app">تطبيق / خدمة سحابية</option>
+        <option value="other">أخرى</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="deviceWatts">قدرة الاستهلاك (واط)</label>
+      <input id="deviceWatts" type="number" min="0" step="0.1" placeholder="مثال: 65" />
+    </div>
+    <div class="row">
+      <label for="deviceHours">ساعات التشغيل اليومية المتوقعة</label>
+      <input id="deviceHours" type="number" min="0" max="24" step="0.5" placeholder="مثال: 8" />
+    </div>
+    <div class="row">
+      <button id="btnAddDevice" class="button">إضافة الجهاز إلى القائمة</button>
+      <button id="btnClearDevices" class="button sec">مسح القائمة</button>
+    </div>
+    <div id="deviceList" class="out" role="list" aria-live="polite">لا توجد أجهزة مضافة بعد.</div>
+  </section>
+
+  <!-- جلسة قياس حية -->
+  <section id="panelLive" role="tabpanel" aria-labelledby="tabLive" hidden>
+    <h2>جلسة قياس حية</h2>
+    <p>اختر جهازًا من القائمة ثم اضغط «بدء القياس» لتقدير الطاقة المستهلكة أثناء الجلسة الفعلية.</p>
+    <div class="row">
+      <label for="liveDeviceSelect">الجهاز المراد قياسه</label>
+      <select id="liveDeviceSelect"><option value="">— اختر جهازًا —</option></select>
+    </div>
+    <div class="row">
+      <button id="btnStartLive" class="button">بدء القياس</button>
+      <button id="btnPauseLive" class="button sec" disabled>إيقاف مؤقت</button>
+      <button id="btnStopLive" class="button sec" disabled>إنهاء الجلسة</button>
+      <button id="btnResetLive" class="button sec">تصفير</button>
+    </div>
+    <div id="liveStatus" class="out" aria-live="polite">الحالة: متوقف — لم تبدأ أي جلسة.</div>
+    <div id="liveResult" class="out big">الطاقة المستهلكة: 0.000000 kWh</div>
+    <div id="liveHistory" class="out">لا توجد جلسات سابقة.</div>
+  </section>
+
+  <!-- ميزانية الطاقة -->
+  <section id="panelBudget" role="tabpanel" aria-labelledby="tabBudget" hidden>
+    <h2>توزيع ميزانية الطاقة</h2>
+    <div class="row">
+      <label for="budgetTotal">ميزانية الطاقة الشهرية (kWh)</label>
+      <input id="budgetTotal" type="number" min="0" step="1" placeholder="مثال: 300" />
+    </div>
+    <div class="row">
+      <label for="budgetCompute">نسبة الحوسبة السحابية (%)</label>
+      <input id="budgetCompute" type="number" min="0" max="100" step="1" value="50" />
+    </div>
+    <div class="row">
+      <label for="budgetLocal">نسبة الأجهزة المحلية (%)</label>
+      <input id="budgetLocal" type="number" min="0" max="100" step="1" value="50" />
+    </div>
+    <div class="row">
+      <label for="budgetCountry">بلد مصدر الكهرباء</label>
+      <select id="budgetCountry">
+        <option value="0">— اختر —</option>
+        <option value="400">السعودية (~400 gCO₂/kWh)</option>
+        <option value="450">مصر (~450 gCO₂/kWh)</option>
+        <option value="500">الإمارات (~500 gCO₂/kWh)</option>
+        <option value="350">المغرب (~350 gCO₂/kWh)</option>
+        <option value="600">العراق (~600 gCO₂/kWh)</option>
+        <option value="200">فرنسا (~200 gCO₂/kWh)</option>
+        <option value="250">ألمانيا (~250 gCO₂/kWh)</option>
+        <option value="100">النرويج (~100 gCO₂/kWh)</option>
+        <option value="custom">قيمة مخصصة</option>
+      </select>
+    </div>
+    <div class="row" id="customIntensityRow" hidden>
+      <label for="customIntensity">كثافة كربون مخصصة (gCO₂/kWh)</label>
+      <input id="customIntensity" type="number" min="0" step="1" placeholder="مثال: 420" />
+    </div>
+    <div class="row">
+      <button id="btnCalcBudget" class="button">حساب الميزانية والكربون</button>
+    </div>
+    <div id="budgetResult" class="out" aria-live="polite">أدخل القيم ثم اضغط «حساب».</div>
+  </section>
+
+  <!-- النتائج والتصدير -->
+  <section id="panelResults" role="tabpanel" aria-labelledby="tabResults" hidden>
+    <h2>النتائج والتصدير</h2>
+    <div class="row">
+      <button id="btnExportJson" class="button">تصدير JSON</button>
+      <button id="btnExportProm" class="button sec">تصدير Prometheus</button>
+      <button id="btnCopyOut" class="button sec">نسخ الناتج</button>
+      <button id="btnSaveLocal" class="button sec">حفظ في المتصفح</button>
+      <button id="btnLoadLocal" class="button sec">استرجاع المحفوظ</button>
+    </div>
+    <div id="exportOutput" class="out" aria-label="ناتج التصدير">لا يوجد ناتج بعد.</div>
+    <div id="saveStatus" class="badge" aria-live="polite">الحفظ المحلي: لا شيء محفوظ.</div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تحتاج هذه الأداة إلى اتصال بالإنترنت أو إنشاء حساب؟</h3><p>لا، تعمل الأداة بالكامل داخل متصفحك دون أي طلبات شبكة أو تسجيل دخول، وتُحفظ النتائج فقط في localStorage الخاص بمتصفحك.</p><h3>كيف أحسب استهلاك جهاز معين بالكيلوواط/ساعة؟</h3><p>أدخل اسم الجهاز وقدرته بالواط وساعات التشغيل اليومية، فتحسب الأداة الطاقة اليومية والشهرية تقديريًا بمعادلة: الواط × الساعات ÷ 1000.</p><h3>ما هي كثافة الكربون وكيف أستخدمها؟</h3><p>كثافة الكربون هي جرامات ثاني أكسيد الكربون لكل كيلوواط/ساعة تنتجها شبكة الكهرباء في بلدك؛ اختر بلدك أو أدخل قيمة مخصصة لحساب البصمة الكربونية.</p><h3>هل يمكنني تصدير النتائج لاستخدامها في أنظمة المراقبة؟</h3><p>نعم، زر «تصدير Prometheus» يولّد نصًا متوافقًا بمؤشرات قياسية، وزر «تصدير JSON» يمنحك البيانات كاملة للمعالجة أو الأرشفة.</p><h3>ماذا يحدث إذا مسحت بيانات المتصفح؟</h3><p>إذا مسحت بيانات الموقع أو استخدمت وضع التصفير في متصفحك، ستُحذف البيانات المحفوظة محليًا؛ صدّر JSON واحتفظ بنسخة احتياطية لاستعادتها لاحقًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="ai-citation-compass.html" style="color:var(--gold-bright);font-weight:700">أداة قياس حضور العلامة في إجابات المساعدات الذكية</a><span style="opacity:.75"> — أداة عربية محلية لقياس ذكر علامتك ومنافسيك في إجابات المساعدات الذكية، مع تحليل النبرة وكشف الفجوات ورسم…</span></li><li style="margin:.5rem 0"><a href="polished-dictation-desk.html" style="color:var(--gold-bright);font-weight:700">أداة إملاء صوتي تنظّف النص وتعلم تصحيحاتك محليًا</a><span style="opacity:.75"> — أداة إملاء صوتي عربية تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم…</span></li><li style="margin:.5rem 0"><a href="private-newsletter-vault.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور</a><span style="opacity:.75"> — أنشئ رسائل إخبارية عربية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-26 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var devices=[];
+  var live={running:false,paused:false,elapsedMs:0,lastTick:0,timer:null,deviceWatts:0};
+  var history=[];
+  var $=function(id){return document.getElementById(id);};
+  var tabs=[['tabHardware','panelHardware'],['tabLive','panelLive'],['tabBudget','panelBudget'],['tabResults','panelResults']];
+  tabs.forEach(function(t){
+    $(t[0]).addEventListener('click',function(){
+      tabs.forEach(function(x){
+        var on=(x[0]===t[0]);
+        $(x[0]).setAttribute('aria-selected',on?'true':'false');
+        $(x[0]).className=on?'button':'button sec';
+        $(x[1]).hidden=!on;
+      });
+    });
+  });
+  function fmt(n,d){return (Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);}
+  function refreshDeviceSelect(){
+    var sel=$('liveDeviceSelect');
+    sel.innerHTML='';
+    var opt=document.createElement('option');opt.value='';opt.textContent='— اختر جهازًا —';sel.appendChild(opt);
+    if(!devices.length){return;}
+    devices.forEach(function(d,i){
+      var o=document.createElement('option');o.value=String(i);o.textContent=d.name+' ('+fmt(d.watts,1)+' W)';sel.appendChild(o);
+    });
+  }
+  function renderDevices(){
+    var box=$('deviceList');
+    if(!devices.length){box.innerHTML='<span class="empty">لا توجد أجهزة مضافة بعد.</span>';refreshDeviceSelect();return;}
+    var html='';
+    devices.forEach(function(d,i){
+      html+='<div class="device-item" role="listitem"><span>'+d.name+' — '+fmt(d.watts,1)+' W — '+fmt(d.hours,1)+' س/يوم</span><button class="button sec" data-idx="'+i+'" data-act="del">حذف</button></div>';
+    });
+    box.innerHTML=html;
+    refreshDeviceSelect();
+  }
+  $('deviceList').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-act="del"]');if(!b)return;
+    var i=parseInt(b.getAttribute('data-idx'),10);
+    if(!isNaN(i)){devices.splice(i,1);renderDevices();}
+  });
+  $('btnAddDevice').addEventListener('click',function(){
+    var name=$('deviceName').value.trim();
+    var cat=$('deviceCategory').value;
+    var w=parseFloat($('deviceWatts').value);
+    var h=parseFloat($('deviceHours').value);
+    if(!name){alert('الرجاء إدخال اسم الجهاز.');return;}
+    if(isNaN(w)||w<0){alert('الرجاء إدخال قدرة صحيحة بالواط.');return;}
+    if(isNaN(h)||h<0||h>24){alert('الرجاء إدخال ساعات بين 0 و24.');return;}
+    devices.push({name:name,category:cat,watts:w,hours:h});
+    $('deviceName').value='';$('deviceWatts').value='';$('deviceHours').value='';
+    renderDevices();
+  });
+  $('btnClearDevices').addEventListener('click',function(){devices=[];renderDevices();});
+  function tick(){
+    if(!live.running||live.paused)return;
+    var now=Date.now();
+    live.elapsedMs+=now-live.lastTick;
+    live.lastTick=now;
+    updateLiveUI();
+  }
+  function updateLiveUI(){
+    var kwh=live.deviceWatts*(live.elapsedMs/3600000)/1000;
+    $('liveResult').textContent='الطاقة المستهلكة: '+fmt(kwh,6)+' kWh';
+  }
+  $('btnStartLive').addEventListener('click',function(){
+    var idx=$('liveDeviceSelect').value;
+    if(idx===''||isNaN(parseInt(idx,10))){alert('اختر جهازًا أولًا من ملف العتاد.');return;}
+    var d=devices[parseInt(idx,10)];
+    live.deviceWatts=d.watts;live.running=true;live.paused=false;live.elapsedMs=0;live.lastTick=Date.now();
+    if(live.timer)clearInterval(live.timer);
+    live.timer=setInterval(tick,250);
+    $('liveStatus').textContent='الحالة: يعمل — جهاز: '+d.name;
+    $('btnStartLive').disabled=true;$('btnPauseLive').disabled=false;$('btnStopLive').disabled=false;
+    updateLiveUI();
+  });
+  $('btnPauseLive').addEventListener('click',function(){
+    if(!live.running)return;
+    live.paused=!live.paused;
+    if(!live.paused){live.lastTick=Date.now();}
+    $('liveStatus').textContent=live.paused?'الحالة: متوقف مؤقتًا.':'الحالة: يعمل.';
+    $('btnPauseLive').textContent=live.paused?'استئناف':'إيقاف مؤقت';
+  });
+  $('btnStopLive').addEventListener('click',function(){
+    if(!live.running)return;
+    live.running=false;
+    if(live.timer){clearInterval(live.timer);live.timer=null;}
+    var kwh=live.deviceWatts*(live.elapsedMs/3600000)/1000;
+    history.push({kwh:kwh,ts:new Date().toISOString()});
+    $('liveStatus').textContent='الحالة: انتهت الجلسة. الطاقة: '+fmt(kwh,6)+' kWh';
+    var lh='';
+    if(!history.length){lh='<span class="empty">لا توجد جلسات سابقة.</span>';}
+    else{history.forEach(function(h,i){lh+='<div>جلسة '+(i+1)+': '+fmt(h.kwh,6)+' kWh — '+h.ts+'</div>';});}
+    $('liveHistory').innerHTML=lh;
+    $('btnStartLive').disabled=false;$('btnPauseLive').disabled=true;$('btnStopLive').disabled=true;
+    $('btnPauseLive').textContent='إيقاف مؤقت';
+  });
+  $('btnResetLive').addEventListener('click',function(){
+    if(live.timer){clearInterval(live.timer);live.timer=null;}
+    live.running=false;live.paused=false;live.elapsedMs=0;live.deviceWatts=0;
+    $('liveResult').textContent='الطاقة المستهلكة: 0.000000 kWh';
+    $('liveStatus').textContent='الحالة: متوقف — تم التصفير.';
+    $('btnStartLive').disabled=false;$('btnPauseLive').disabled=true;$('btnStopLive').disabled=true;
+  });
+  $('budgetCountry').addEventListener('change',function(){
+    $('customIntensityRow').hidden=(this.value!=='custom');
+  });
+  $('btnCalcBudget').addEventListener('click',function(){
+    var total=parseFloat($('budgetTotal').value);
+    var pc=parseFloat($('budgetCompute').value);
+    var pl=parseFloat($('budgetLocal').value);
+    var ci=$('budgetCountry').value;
+    var intensity;
+    if(ci==='0'){$('budgetResult').textContent='الرجاء اختيار بلد مصدر الكهرباء.';return;}
+    if(ci==='custom'){intensity=parseFloat($('customIntensity').value);if(isNaN(intensity)||intensity<0){$('budgetResult').textContent='أدخل كثافة كربون مخصصة صحيحة.';return;}}
+    else{intensity=parseFloat(ci);}
+    if(isNaN(total)||total<0){$('budgetResult').textContent='أدخل ميزانية شهرية صحيحة بالكيلوواط/ساعة.';return;}
+    if(isNaN(pc)||pc<0||pc>100||isNaN(pl)||pl<0||pl>100){$('budgetResult').textContent='نسب الميزانية يجب أن تكون بين 0 و100.';return;}
+    var sum=pc+pl;
+    if(sum<=0){$('budgetResult').textContent='مجموع النسب يجب أن يكون أكبر من صفر.';return;}
+    var kWhCompute=total*(pc/sum);
+    var kWhLocal=total*(pl/sum);
+    var totalLocalKwh=0;devices.forEach(function(d){totalLocalKwh+=d.watts*d.hours*30/1000;});
+    var co2Compute=kWhCompute*intensity;
+    var co2Local=kWhLocal*intensity;
+    var msg='ميزانية شهرية: '+fmt(total,2)+' kWh\n';
+    msg+='— الحوسبة السحابية: '+fmt(kWhCompute,2)+' kWh ('+fmt(pc,0)+'%)\n';
+    msg+='— الأجهزة المحلية: '+fmt(kWhLocal,2)+' kWh ('+fmt(pl,0)+'%)\n';
+    msg+='كثافة الكربون: '+fmt(intensity,0)+' gCO₂/kWh\n';
+    msg+='بصمة الكربون التقديرية: '+fmt((co2Compute+co2Local)/1000,3)+' kgCO₂\n';
+    msg+='استهلاك أجهزتك المُعرَّفة (30 يومًا): '+fmt(totalLocalKwh,2)+' kWh';
+    $('budgetResult').textContent=msg;
+  });
+  function collectData(){
+    var totalLocal=0;devices.forEach(function(d){totalLocal+=d.watts*d.hours*30/1000;});
+    var liveTotal=0;history.forEach(function(h){liveTotal+=h.kwh;});
+    return {devices:devices.slice(),liveSessions:history.slice(),totalLocalMonthlyKwh:totalLocal,totalLiveKwh:liveTotal,exportedAt:new Date().toISOString()};
+  }
+  $('btnExportJson').addEventListener('click',function(){
+    $('exportOutput').textContent=JSON.stringify(collectData(),null,2);
+  });
+  $('btnExportProm').addEventListener('click',function(){
+    var data=collectData();
+    var lines=['# HELP energy_devices_total Total number of devices',' # TYPE energy_devices_total gauge'.trim(),'energy_devices_total '+data.devices.length,
+    '# HELP energy_local_monthly_kwh Estimated local monthly kWh',' # TYPE energy_local_monthly_kwh gauge'.trim(),'energy_local_monthly_kwh '+fmt(data.totalLocalMonthlyKwh,4),
+    '# HELP energy_live_session_kwh Live session total kWh',' # TYPE energy_live_session_kwh gauge'.trim(),'energy_live_session_kwh '+fmt(data.totalLiveKwh,4)];
+    data.devices.forEach(function(d,i){
+      lines.push('energy_device_watts{device="'+d.name.replace(/"/g,'')+'",category="'+d.category+'"} '+d.watts);
+      lines.push('energy_device_hours_daily{device="'+d.name.replace(/"/g,'')+'"} '+d.hours);
+    });
+    $('exportOutput').textContent=lines.join('\n');
+  });
+  $('btnCopyOut').addEventListener('click',function(){
+    var t=$('exportOutput').textContent;
+    if(!t||t==='لا يوجد ناتج بعد.'){$('saveStatus').textContent='لا يوجد نص لنسخه.';return;}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){$('saveStatus').textContent='تم النسخ.';},function(){$('saveStatus').textContent='تعذّر النسخ.';});}
+    else{$('saveStatus').textContent='النسخ غير مدعوم في هذا المتصفح.';}
+  });
+  $('btnSaveLocal').addEventListener('click',function(){
+    try{localStorage.setItem('energy_app_data',JSON.stringify(collectData()));$('saveStatus').textContent='تم الحفظ في المتصفح بنجاح.';}
+    catch(e){$('saveStatus').textContent='تعذّر الحفظ محليًا.';}
+  });
+  $('btnLoadLocal').addEventListener('click',function(){
+    try{
+      var raw=localStorage.getItem('energy_app_data');
+      if(!raw){$('saveStatus').textContent='لا توجد بيانات محفوظة.';return;}
+      var data=JSON.parse(raw);
+      devices=data.devices||[];history=data.liveSessions||[];
+      renderDevices();
+      var lh='';
+      if(!history.length){lh='<span class="empty">لا توجد جلسات سابقة.</span>';}
+      else{history.forEach(function(h,i){lh+='<div>جلسة '+(i+1)+': '+fmt(h.kwh,6)+' kWh — '+h.ts+'</div>';});}
+      $('liveHistory').innerHTML=lh;
+      $('saveStatus').textContent='تم استرجاع '+devices.length+' جهازًا و'+history.length+' جلسة.';
+    }catch(e){$('saveStatus').textContent='تعذّر قراءة البيانات المحفوظة.';}
+  });
+  renderDevices();
+})();
+</script>
+</body>
+</html>
