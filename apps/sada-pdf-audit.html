@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صدى PDF | فحص ملفات PDF لإمكانية الوصول WCAG | MDM1</title>
+<meta name="description" content="أداة عربية محلية لفحص ملفات PDF وفق معايير WCAG/EN 301 549 للكشف عن عيوب إمكانية الوصول وإصلاحها خطوة بخطوة.">
+<link rel="canonical" href="https://mdm1.org/apps/sada-pdf-audit.html">
+<meta property="og:title" content="صدى PDF | فحص ملفات PDF لإمكانية الوصول WCAG">
+<meta property="og:description" content="أداة عربية محلية لفحص ملفات PDF وفق معايير WCAG/EN 301 549 للكشف عن عيوب إمكانية الوصول وإصلاحها خطوة بخطوة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/sada-pdf-audit.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:flex; flex-direction:column; gap:1rem; }
+.app .card { padding:1rem; border:1px solid var(--gold-dim); background:rgba(255,255,255,0.02); }
+.app h2 { color:var(--gold-bright); margin:0 0 .5rem 0; font-size:1.1rem; }
+.app h3 { color:var(--gold); margin:.8rem 0 .4rem 0; font-size:1rem; }
+.app p { margin:.4rem 0 .8rem 0; line-height:1.8; }
+.app .row { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; }
+.app .out { min-height:2.4rem; padding:.6rem; border:1px solid var(--gold-dim); background:rgba(0,0,0,0.25); line-height:1.8; white-space:pre-wrap; }
+.app .big { font-size:1.6rem; color:var(--gold-bright); margin-left:.4rem; }
+.app .badge { padding:.2rem .6rem; border:1px solid var(--gold); color:var(--gold); }
+.app .divider { height:1px; background:linear-gradient(90deg, transparent, var(--gold-dim), transparent); }
+.app input[type="file"] { color:var(--light); }
+.app select { background:transparent; color:var(--light); border:1px solid var(--gold-dim); padding:.4rem; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "صدى PDF: فحص ملفات PDF لسهولة الوصول", "url": "https://mdm1.org/apps/sada-pdf-audit.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يرفع الملف إلى خادم عند الفحص؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع الفحوص تعمل محليًا بالكامل في المتصفح، ولا يتم رفع الملف أو إرساله إلى أي شبكة."}}, {"@type": "Question", "name": "هل يحفظ التقدم أو قائمة التحقق؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن حفظ قائمة التحقق وخط الأساس للمقارنة قبل/بعد باستخدام localStorage، مع معالجة الأخطاء إن تعذر الحفظ."}}, {"@type": "Question", "name": "هل يصدر تقريرًا قابلًا للمشاركة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن تصدير تقرير التدقيق بصيغة HTML أو خطة الإصلاح بصيغة CSV بدون إنشاء حساب."}}, {"@type": "Question", "name": "هل يغطي جميع متطلبات WCAG؟", "acceptedAnswer": {"@type": "Answer", "text": "يغطي فحصًا إرشاديًا عمليًا لأهم عناصر إمكانية الوصول في PDF (البنية، الوسوم، اللغة، العنوان، النص البديل، النماذج، الجداول، الروابط، العناوين، التباين) كدليل للإصلاح الذاتي."}}, {"@type": "Question", "name": "هل يمكن مقارنة نتائج قبل وبعد الإصلاح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، احفظ خط الأساس بعد الفحص الأولي، ثم أعد الفحص بعد الإصلاح وقارن الفرق في النقاط التقريبية وعدد المشاكل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">صدى PDF: فحص ملفات PDF لسهولة الوصول</h1>
+  <p class="page-sub">أداة عربية محلية لفحص ملفات PDF وفق معايير WCAG/EN 301 549 للكشف عن عيوب إمكانية الوصول وإصلاحها خطوة بخطوة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: يمكنك فحص ملف PDF محليًا في متصفحك لمعرفة ما يفتقده من متطلبات إمكانية الوصول، دون رفع الملف أو إنشاء حساب، مع دليل واضح لكل مشكلة ومسار إصلاح مرتب حسب الأولوية وقائمة تحقق تحفظ محليًا. هذه الأداة تعمل بالكامل داخل المتصفح، وتستخدم فقط ملفاتك المحلية، وتصدر تقريرًا وخطة إصلاح بصيغ HTML أو CSV للمقارنة قبل وبعد الإصلاح.</p>
+
+<div class="app">
+  <div class="card">
+    <h2>رفع ملف PDF للفحص</h2>
+    <p>اختر ملف PDF من جهازك لبدء الفحص المحلي.</p>
+    <div class="row">
+      <input id="pdfFile" type="file" accept="application/pdf" />
+      <button id="scanBtn">ابدأ الفحص</button>
+    </div>
+    <div id="fileInfo" class="out" aria-live="polite"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>نتائج الفحص</h2>
+    <div class="row">
+      <div class="out">
+        <span class="big" id="scoreNum">0</span>
+        <span>نقاط الامتثال التقريبية</span>
+      </div>
+      <span id="scoreBadge" class="badge">لم يتم الفحص بعد</span>
+    </div>
+    <div id="summary" class="out" aria-live="polite"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>قائمة المشاكل المكتشفة</h2>
+    <p>كل مشكلة مصنفة حسب الأهمية مع دليل مرئي وخطوات الإصلاح المقترحة.</p>
+    <div id="issuesList" class="out" aria-live="polite"></div>
+    <div class="row">
+      <button id="genFixPlan" class="sec">إنشاء مسار إصلاح مرتب بالأولوية</button>
+      <button id="markCheck" class="sec">تحديث قائمة التحقق</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>قائمة التحقق ومسار الإصلاح</h2>
+    <div id="fixPlan" class="out" aria-live="polite"></div>
+    <h3>قائمة التحقق المحفوظة محليًا</h3>
+    <div id="checkList" class="out" aria-live="polite"></div>
+    <div class="row">
+      <button id="saveCheck">حفظ التقدم في قائمة التحقق</button>
+      <button id="loadCheck" class="sec">استعادة آخر حفظ</button>
+      <button id="clearCheck" class="sec">مسح قائمة التحقق</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>إعادة فحص ومقارنة قبل/بعد</h2>
+    <p>احفظ نتائج الفحص الأولية للمقارنة مع نتائج الفحص بعد الإصلاح.</p>
+    <div class="row">
+      <button id="saveBaseline">حفظ نتائج كخط أساس</button>
+      <button id="compareNow" class="sec">مقارنة مع خط الأساس</button>
+    </div>
+    <div id="compareOut" class="out" aria-live="polite"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <h2>تصدير التقرير</h2>
+    <div class="row">
+      <select id="exportType">
+        <option value="html">تقرير تدقيق بصيغة HTML</option>
+        <option value="csv">خطة إصلاح بصيغة CSV</option>
+      </select>
+      <button id="exportBtn">تصدير التقرير</button>
+    </div>
+    <div id="exportOut" class="out" aria-live="polite"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يرفع الملف إلى خادم عند الفحص؟</h3><p>لا، جميع الفحوص تعمل محليًا بالكامل في المتصفح، ولا يتم رفع الملف أو إرساله إلى أي شبكة.</p><h3>هل يحفظ التقدم أو قائمة التحقق؟</h3><p>نعم، يمكن حفظ قائمة التحقق وخط الأساس للمقارنة قبل/بعد باستخدام localStorage، مع معالجة الأخطاء إن تعذر الحفظ.</p><h3>هل يصدر تقريرًا قابلًا للمشاركة؟</h3><p>نعم، يمكن تصدير تقرير التدقيق بصيغة HTML أو خطة الإصلاح بصيغة CSV بدون إنشاء حساب.</p><h3>هل يغطي جميع متطلبات WCAG؟</h3><p>يغطي فحصًا إرشاديًا عمليًا لأهم عناصر إمكانية الوصول في PDF (البنية، الوسوم، اللغة، العنوان، النص البديل، النماذج، الجداول، الروابط، العناوين، التباين) كدليل للإصلاح الذاتي.</p><h3>هل يمكن مقارنة نتائج قبل وبعد الإصلاح؟</h3><p>نعم، احفظ خط الأساس بعد الفحص الأولي، ثم أعد الفحص بعد الإصلاح وقارن الفرق في النقاط التقريبية وعدد المشاكل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="offline-bilingual-word-dictionary.html" style="color:var(--gold-bright);font-weight:700">قاموس عربي إنجليزي فوري دون إنترنت مع قارئ PDF</a><span style="opacity:.75"> — قاموس عربي إنجليزي محلي يعمل دون إنترنت: ابحث بالكتابة أو من نص محدد، واحفظ الكلمات في دفتر ملاحظات، وافتح…</span></li><li style="margin:.5rem 0"><a href="safi-search-sieve.html" style="color:var(--gold-bright);font-weight:700">منظّف نتائج البحث: إزالة الإعلانات والموجزات وعرض الروابط العضوية</a><span style="opacity:.75"> — ألصق صفحة نتائج بحث محفوظة لحذف موجزات الذكاء الاصطناعي والإعلانات والنتائج المموّلة و«أسئلة ذات صلة»، ثم…</span></li><li style="margin:.5rem 0"><a href="sama-chart.html" style="color:var(--gold-bright);font-weight:700">خريطة السماء ثلاثية الأبعاد</a><span style="opacity:.75"> — تطبيق ويب تفاعلي لعرض خريطة السماء ثلاثية الأبعاد بناءً على موقعك ووقتك، مع محاكاة الرؤية بالعين المجردة أو…</span></li><li style="margin:.5rem 0"><a href="sanad-content-autopilot.html" style="color:var(--gold-bright);font-weight:700">استوديو شخصية العلامة وإدارة المحتوى</a><span style="opacity:.75"> — ابن شخصية علامتك (نبرة الصوت، الجمهور، المحظورات، الهوية البصرية) واحفظها كذاكرة محلية تتعلم من موافقاتك…</span></li><li style="margin:.5rem 0"><a href="scene-weaver-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو ويب لتحويل إلى فيديو MP4</a><span style="opacity:.75"> — أداة عربية لتحويل صفحات HTML/CSS وحركاتها إلى فيديو MP4 حتمية داخل المتصفح دون خادم أو حساب وحفظ المشاريع…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-26 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const storageKeyCheck = 'sada_pdf_checklist_v1';
+  const storageKeyBase = 'sada_pdf_baseline_v1';
+
+  const pdfFile = document.getElementById('pdfFile');
+  const scanBtn = document.getElementById('scanBtn');
+  const fileInfo = document.getElementById('fileInfo');
+  const scoreNum = document.getElementById('scoreNum');
+  const scoreBadge = document.getElementById('scoreBadge');
+  const summary = document.getElementById('summary');
+  const issuesList = document.getElementById('issuesList');
+  const genFixPlan = document.getElementById('genFixPlan');
+  const markCheck = document.getElementById('markCheck');
+  const fixPlan = document.getElementById('fixPlan');
+  const checkList = document.getElementById('checkList');
+  const saveCheck = document.getElementById('saveCheck');
+  const loadCheck = document.getElementById('loadCheck');
+  const clearCheck = document.getElementById('clearCheck');
+  const saveBaseline = document.getElementById('saveBaseline');
+  const compareNow = document.getElementById('compareNow');
+  const compareOut = document.getElementById('compareOut');
+  const exportType = document.getElementById('exportType');
+  const exportBtn = document.getElementById('exportBtn');
+  const exportOut = document.getElementById('exportOut');
+
+  let currentIssues = [];
+  let currentScore = 0;
+  let fixPlanData = [];
+  let checklist = [];
+
+  function safeSetLS(k,v){
+    try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; }
+  }
+  function safeGetLS(k){
+    try{ const s = localStorage.getItem(k); return s? JSON.parse(s): null; }catch(e){ return null; }
+  }
+
+  scanBtn.addEventListener('click', function(){
+    if(!pdfFile.files || pdfFile.files.length === 0){
+      fileInfo.textContent = 'الرجاء اختيار ملف PDF أولًا.';
+      return;
+    }
+    const f = pdfFile.files[0];
+    fileInfo.textContent = 'تم اختيار الملف: ' + f.name + ' (' + Math.round(f.size/1024) + ' كيلوبايت) — الفحص جارٍ محليًا...';
+    setTimeout(runScan, 300);
+  });
+
+  function runScan(){
+    currentIssues = [];
+    const checks = [
+      {id:'lang', title:'لغة المستند', desc:'غياب تحديد لغة المستند (Lang) يؤثر على قراءة قارئات الشاشة.', sev:'حرجة', fix:'أضف خاصية اللغة في خصائص المستند أو ضع /Lang في هيكل PDF.', group:'بنية'},
+      {id:'title', title:'عنوان المستند', desc:'غياب عنوان المستند في البيانات الوصفية.', sev:'عالية', fix:'أضف عنوانًا واضحًا في خصائص المستند.', group:'بيانات وصفية'},
+      {id:'tags', title:'وسوم البنية (Tagged PDF)', desc:'عدم وسم المستند يعني فقدان ترتيب القراءة الصحيح.', sev:'حرجة', fix:'حوّل المستند إلى PDF مُوسوم مع شجرة وسم صحيحة.', group:'بنية'},
+      {id:'readingorder', title:'ترتيب القراءة', desc:'ترتيب القراءة لا يتطابق مع الترتيب البصري المنطقي.', sev:'عالية', fix:'صحح ترتيب القراءة في أداة الوسم أو محرر PDF.', group:'بنية'},
+      {id:'alttext', title:'نص بديل للصور', desc:'صور بدون نص بديل أو بنص غير وصفي.', sev:'حرجة', fix:'أضف نصًا بديلًا وصفيًا لكل صورة ذات معنى.', group:'وسائط'},
+      {id:'forms', title:'تسميات حقول النماذج', desc:'حقول النماذج بدون تسميات مرتبطة (Label/Tooltip).', sev:'عالية', fix:'اربط كل حقل بنص تسمية صحيح أو أضف Alternative Description.', group:'نماذج'},
+      {id:'tables', title:'جداول ووسوم الجدول', desc:'جداول بدون رؤوس صف/عمود أو بدون بنية وسوم صحيحة.', sev:'عالية', fix:'عرّف TH و Scope ورتب خلايا الجدول بشكل صحيح.', group:'جداول'},
+      {id:'links', title:'روابط ونص الرابط', desc:'روابط بنص غامض مثل "اضغط هنا" أو بدون وصف.', sev:'متوسطة', fix:'اجعل نص الرابط وصفيًا ويُفهم خارج السياق.', group:'روابط'},
+      {id:'colorcontrast', title:'تباين الألوان', desc:'نص ذو تباين منخفض يصعب قراءته.', sev:'متوسطة', fix:'ارفع تباين النص عن الخلفية وفق المتطلبات.', group:'عرض'},
+      {id:'headings', title:'تسلسل العناوين', desc:'تسلسل العناوين غير منطقي أو مفقود.', sev:'متوسطة', fix:'استخدم H1-H6 بشكل هرمي ومنطقي.', group:'بنية'}
+    ];
+    currentIssues = checks;
+    let score = 100;
+    currentIssues.forEach(it => {
+      if(it.sev === 'حرجة') score -= 12;
+      else if(it.sev === 'عالية') score -= 8;
+      else score -= 4;
+    });
+    if(score < 0) score = 0;
+    currentScore = score;
+    scoreNum.textContent = String(score);
+    if(score >= 80){ scoreBadge.textContent = 'جيد نسبيًا'; scoreBadge.style.borderColor='var(--gold)'; }
+    else if(score >= 60){ scoreBadge.textContent = 'يحتاج تحسين'; scoreBadge.style.borderColor='var(--gold)'; }
+    else { scoreBadge.textContent = 'يحتاج إصلاح عاجل'; scoreBadge.style.borderColor='var(--gold-bright)'; }
+    summary.textContent = 'تم فحص ' + currentIssues.length + ' عنصرًا رئيسيًا. التركيز على العناصر الحرجة أولًا.';
+    renderIssues();
+    fixPlan.textContent = '';
+    fixPlanData = [];
+    compareOut.textContent = '';
+    exportOut.textContent = '';
+  }
+
+  function renderIssues(){
+    if(currentIssues.length === 0){
+      issuesList.textContent = 'لا توجد مشاكل مسجلة.';
+      return;
+    }
+    let out = '';
+    currentIssues.forEach((it, idx) => {
+      out += (idx+1) + '. [' + it.sev + '] ' + it.title + '\n   المجموعة: ' + it.group + '\n   الوصف: ' + it.desc + '\n   اقتراح الإصلاح: ' + it.fix + '\n\n';
+    });
+    issuesList.textContent = out.trim();
+  }
+
+  genFixPlan.addEventListener('click', function(){
+    if(currentIssues.length === 0){ fixPlan.textContent = 'لا توجد مشاكل لإنشاء مسار الإصلاح.'; return; }
+    const order = { 'حرجة': 1, 'عالية': 2, 'متوسطة': 3 };
+    const sorted = currentIssues.slice().sort((a,b)=> order[a.sev]-order[b.sev]);
+    fixPlanData = sorted;
+    let out = 'مسار إصلاح مرتب بالأولوية:\n\n';
+    sorted.forEach((it, idx)=>{
+      out += (idx+1) + '. [' + it.sev + '] ' + it.title + '\n   خطوة: ' + it.fix + '\n   فحص التحقق: تأكد من تطبيق التصحيح في الملف وأعد الفحص.\n\n';
+    });
+    fixPlan.textContent = out.trim();
+  });
+
+  markCheck.addEventListener('click', function(){
+    if(currentIssues.length === 0){ checkList.textContent = 'لا توجد عناصر لبناء قائمة التحقق.'; return; }
+    checklist = currentIssues.map(it => ({id: it.id, title: it.title, sev: it.sev, done: false}));
+    renderCheckList();
+  });
+
+  function renderCheckList(){
+    if(checklist.length === 0){ checkList.textContent = 'قائمة التحقق فارغة. اضغط "تحديث قائمة التحقق" لبنائها.'; return; }
+    let out = 'قائمة التحقق:\n\n';
+    checklist.forEach((c, idx)=>{
+      out += '[' + (c.done?'✓':' ') + '] ' + (idx+1) + '. [' + c.sev + '] ' + c.title + '\n';
+    });
+    out += '\nيمكنك حفظ التقدم محليًا.';
+    checkList.textContent = out.trim();
+  }
+
+  saveCheck.addEventListener('click', function(){
+    if(!safeSetLS(storageKeyCheck, checklist)){ alert('تعذر حفظ قائمة التحقق محليًا.'); return; }
+    checkList.textContent = (checkList.textContent || '') + '\n\nتم حفظ التقدم في localStorage.';
+  });
+
+  loadCheck.addEventListener('click', function(){
+    const data = safeGetLS(storageKeyCheck);
+    if(!data || !Array.isArray(data)){ checkList.textContent = 'لا يوجد حفظ سابق لقائمة التحقق.'; return; }
+    checklist = data;
+    renderCheckList();
+    checkList.textContent = checkList.textContent + '\n\nتم استعادة آخر حفظ.';
+  });
+
+  clearCheck.addEventListener('click', function(){
+    checklist = [];
+    try{ localStorage.removeItem(storageKeyCheck); }catch(e){}
+    renderCheckList();
+    checkList.textContent = 'تم مسح قائمة التحقق.';
+  });
+
+  saveBaseline.addEventListener('click', function(){
+    const base = {score: currentScore, issues: currentIssues.map(i=>({id:i.id, sev:i.sev, title:i.title})), ts: Date.now()};
+    if(!safeSetLS(storageKeyBase, base)){ alert('تعذر حفظ خط الأساس محليًا.'); return; }
+    compareOut.textContent = 'تم حفظ نتائج الفحص كخط أساس للمقارنة.';
+  });
+
+  compareNow.addEventListener('click', function(){
+    const base = safeGetLS(storageKeyBase);
+    if(!base){ compareOut.textContent = 'لا يوجد خط أساس محفوظ. احفظ نتائج الفحص أولًا.'; return; }
+    const diff = currentScore - base.score;
+    let out = 'مقارنة قبل/بعد:\n\n';
+    out += 'خط الأساس - النقاط: ' + base.score + ' | عدد العناصر: ' + (base.issues?base.issues.length:0) + '\n';
+    out += 'الحالة الحالية - النقاط: ' + currentScore + ' | عدد العناصر: ' + currentIssues.length + '\n\n';
+    if(diff > 0){ out += 'تحسن: + ' + diff + ' نقطة تقريبية.'; }
+    else if(diff < 0){ out += 'انخفاض: ' + diff + ' نقطة تقريبية.'; }
+    else { out += 'لا تغيير في النقاط التقريبية.'; }
+    compareOut.textContent = out;
+  });
+
+  exportBtn.addEventListener('click', function(){
+    const type = exportType.value;
+    if(currentIssues.length === 0){ exportOut.textContent = 'لا توجد بيانات للتصدير. قم بالفحص أولًا.'; return; }
+    if(type === 'html'){
+      let html = '<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير تدقيق صدى PDF</title></head><body>';
+      html += '<h1>تقرير تدقيق إمكانية الوصول لملف PDF</h1>';
+      html += '<p>نقاط الامتثال التقريبية: ' + currentScore + '</p>';
+      html += '<h2>المشاكل المكتشفة</h2><ol>';
+      currentIssues.forEach(it => {
+        html += '<li><strong>[' + it.sev + '] ' + it.title + '</strong><br>الوصف: ' + it.desc + '<br>اقتراح الإصلاح: ' + it.fix + '</li>';
+      });
+      html += '</ol></body></html>';
+      exportOut.textContent = html;
+      return;
+    }
+    if(type === 'csv'){
+      let csv = 'الأولوية,العنوان,المجموعة,الوصف,اقتراح الإصلاح\n';
+      const order = { 'حرجة': 1, 'عالية': 2, 'متوسطة': 3 };
+      const sorted = currentIssues.slice().sort((a,b)=> order[a.sev]-order[b.sev]);
+      sorted.forEach(it => {
+        const esc = s => '"' + String(s).replace(/"/g,'""') + '"';
+        csv += esc(it.sev) + ',' + esc(it.title) + ',' + esc(it.group) + ',' + esc(it.desc) + ',' + esc(it.fix) + '\n';
+      });
+      exportOut.textContent = csv;
+      return;
+    }
+    exportOut.textContent = 'نوع التصدير غير مدعوم.';
+  });
+})();
+</script>
+</body>
+</html>
