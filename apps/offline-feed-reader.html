@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قارئ خلاصات ذكي للمتصفح | MDM1</title>
+<meta name="description" content="تطبيق عربي داخل المتصفح لاستيراد RSS وAtom وJSON Feed وتنظيم المقالات والبحث والحفظ محليًا مع قارئ مريح وOPML ونسخ احتياطي دون حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-feed-reader.html">
+<meta property="og:title" content="قارئ خلاصات ذكي للمتصفح">
+<meta property="og:description" content="تطبيق عربي داخل المتصفح لاستيراد RSS وAtom وJSON Feed وتنظيم المقالات والبحث والحفظ محليًا مع قارئ مريح وOPML ونسخ احتياطي دون حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-feed-reader.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; color: var(--light); }
+.app .card { margin: 8px 0; padding: 10px; }
+.app .row { flex-wrap: wrap; gap: 8px; align-items: center; }
+.app .row textarea { min-height: 90px; width: 100%; }
+.app .row input, .app .row select { min-width: 160px; }
+.app #list-articles { display: flex; flex-direction: column; gap: 8px; }
+.app .art { padding: 8px; border: 1px solid var(--gold-dim); }
+.app .art-title { color: var(--gold-bright); cursor: default; }
+.app .art-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.app .hidden { display: none; }
+.app.reader-dark { background: var(--dark); }
+.app.reader-light { background: #151515; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "قارئ خلاصات عربي يعمل كاملًا دون خادم", "url": "https://mdm1.org/apps/offline-feed-reader.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون خادم أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل داخل المتصفح ويخزن كل البيانات محليًا فقط دون أي خادم أو تسجيل حساب."}}, {"@type": "Question", "name": "هل يدعم استيراد ملفات OPML ونسخًا احتياطيًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يدعم استيراد وتصدير OPML، واستيراد وتصدير نسخة احتياطية كاملة بصيغة JSON."}}, {"@type": "Question", "name": "كيف يتعامل مع التكرار ومعلمات التتبع؟", "acceptedAnswer": {"@type": "Answer", "text": "يقوم التطبيق بإزالة المقالات المكررة تلقائيًا، ويُطهر الروابط من معلمات التتبع الشائعة عند التحليل والعرض."}}, {"@type": "Question", "name": "هل يدعم البحث ووقت القراءة ووضع القراءة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يوفر بحثًا فوريًا، ويحسب وقت القراءة التقريبي، ويدعم تبديل وضع القراءة الفاتح والداكن مع قارئ مريح."}}, {"@type": "Question", "name": "هل يحتاج إلى إنترنت بعد التحليل؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، بعد لصق النص أو رفع الملف لا يحتاج إلى اتصال بالشبكة، وكل الوظائف تعمل دون طلبات خارجية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">قارئ خلاصات عربي يعمل كاملًا دون خادم</h1>
+  <p class="page-sub">تطبيق عربي داخل المتصفح لاستيراد RSS وAtom وJSON Feed وتنظيم المقالات والبحث والحفظ محليًا مع قارئ مريح وOPML ونسخ احتياطي دون حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابتك السريعة: لا تحتاج إلى خادم أو حساب لقراءة خلاصاتك، فكل شيء يبقى في هذا المتصفح فقط. صُمم هذا التطبيق ليعمل بالكامل داخل صفحة الموقع الحالية بالاتجاه RTL، ويتيح لك لصق نص الخلاصة أو رفع ملفها مباشرةً من جهازك، ثم يحوّلها إلى قائمة مقالات مرتبة يسهل تصفحها. يقوم التطبيق بتطهير الروابط من معلمات التتبع الشائعة، ويحسب وقت القراءة التقريبي لكل مقال بناءً على محتواه، كما يتيح لك حفظ المقالات كإشارة مرجعية، وتنظيمها في تصنيفات مخصصة، وإجراء بحث فوري بين العناوين والوصف. مع دعم وضع القراءة الفاتح والداكن، واختصارات لوحة المفاتيح، واستيراد وتصدير OPML، ونسخ احتياطي كامل للبيانات، وإزالة التكرار التلقائي، يصبح لديك قارئ ذكي مخصص لك وحدك دون أي تتبع خارجي.</p>
+
+<div class="app" id="app-root">
+  <div class="card" id="card-import">
+    <div class="row">
+      <label class="label" id="label-source">مصدر الخلاصة</label>
+      <select id="select-feed-type">
+        <option value="auto">اكتشاف تلقائي</option>
+        <option value="rss">RSS</option>
+        <option value="atom">Atom</option>
+        <option value="json">JSON Feed</option>
+      </select>
+      <input id="input-feed-name" placeholder="اسم الخلاصة المخصص" />
+      <input id="input-feed-cat" placeholder="تصنيف الخلاصة" />
+    </div>
+    <div class="row">
+      <textarea id="textarea-source" placeholder="الصق نص RSS أو Atom أو JSON Feed هنا"></textarea>
+    </div>
+    <div class="row">
+      <input id="input-file" type="file" />
+      <button id="btn-parse">تحليل وإضافة المقالات</button>
+      <button class="sec" id="btn-clear-source">مسح الحقل</button>
+    </div>
+    <div class="out" id="out-import"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card" id="card-tools">
+    <div class="row">
+      <input id="input-search" placeholder="بحث فوري في العناوين والوصف" />
+      <select id="select-view-cat"></select>
+      <button class="sec" id="btn-only-book">عرض الإشارات المرجعية فقط</button>
+      <button class="sec" id="btn-show-all">عرض الكل</button>
+      <button class="sec" id="btn-toggle-theme">تبديل وضع القراءة</button>
+    </div>
+    <div class="row">
+      <button class="sec" id="btn-import-opml">استيراد OPML</button>
+      <input id="input-opml-file" type="file" />
+      <button class="sec" id="btn-export-opml">تصدير OPML</button>
+      <button class="sec" id="btn-backup-export">تصدير نسخة احتياطية</button>
+      <input id="input-backup-file" type="file" />
+      <button class="sec" id="btn-backup-import">استيراد نسخة احتياطية</button>
+    </div>
+    <div class="out" id="out-tools"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <div class="big" id="count-articles">0</div>
+    <span class="badge" id="badge-feeds">عدد الخلاصات: 0</span>
+    <span class="badge" id="badge-dup">المكررة المحذوفة: 0</span>
+  </div>
+
+  <div class="card" id="card-list">
+    <div class="row">
+      <label class="label">قائمة المقالات</label>
+    </div>
+    <div id="list-articles"></div>
+    <div class="out" id="out-list"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card" id="card-reader">
+    <div class="row">
+      <button class="sec" id="btn-reader-close">إغلاق قارئ القراءة</button>
+      <button class="sec" id="btn-book-toggle">تبديل الإشارة المرجعية</button>
+      <span class="badge" id="badge-readtime"></span>
+    </div>
+    <h3 id="reader-title"></h3>
+    <div id="reader-meta"></div>
+    <div class="out" id="reader-body"></div>
+    <div class="out" id="out-reader"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون خادم أو حساب؟</h3><p>نعم، يعمل بالكامل داخل المتصفح ويخزن كل البيانات محليًا فقط دون أي خادم أو تسجيل حساب.</p><h3>هل يدعم استيراد ملفات OPML ونسخًا احتياطيًا؟</h3><p>نعم، يدعم استيراد وتصدير OPML، واستيراد وتصدير نسخة احتياطية كاملة بصيغة JSON.</p><h3>كيف يتعامل مع التكرار ومعلمات التتبع؟</h3><p>يقوم التطبيق بإزالة المقالات المكررة تلقائيًا، ويُطهر الروابط من معلمات التتبع الشائعة عند التحليل والعرض.</p><h3>هل يدعم البحث ووقت القراءة ووضع القراءة؟</h3><p>نعم، يوفر بحثًا فوريًا، ويحسب وقت القراءة التقريبي، ويدعم تبديل وضع القراءة الفاتح والداكن مع قارئ مريح.</p><h3>هل يحتاج إلى إنترنت بعد التحليل؟</h3><p>لا، بعد لصق النص أو رفع الملف لا يحتاج إلى اتصال بالشبكة، وكل الوظائف تعمل دون طلبات خارجية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="quiet-reader-view.html" style="color:var(--gold-bright);font-weight:700">قارئ هادئ: حوّل أي نص إلى واجهة قراءة نظيفة بدون إعلانات</a><span style="opacity:.75"> — الصق أي نص أو محتوى صفحة وحوّله فوراً إلى واجهة قراءة نظيفة خالية من الإعلانات، مع ضبط الخط والتباعد…</span></li><li style="margin:.5rem 0"><a href="voice-call-receptionist-sim.html" style="color:var(--gold-bright);font-weight:700">موظف استقبال هاتفي ذكي</a><span style="opacity:.75"> — تطبيق عربي يعمل كلياً في المتصفح: سجّل مكالمات افتراضية، ردّ عليها بنصوص قابلة للتخصيص، احجز المواعيد في…</span></li><li style="margin:.5rem 0"><a href="bilingual-reading-companion.html" style="color:var(--gold-bright);font-weight:700">قارئ نصوص ثنائي اللغة مع قاموس وترجمة مقارنة</a><span style="opacity:.75"> — تطبيق ويب عربي لقراءة النصوص بلغتين جنباً لجنب مع قاموس مدمج، تحديد كلمات للترجمة الفورية، وحفظ المصطلحات…</span></li><li style="margin:.5rem 0"><a href="garden-local-tracker.html" style="color:var(--gold-bright);font-weight:700">تطبيق حديقة ذكي لتسجيل المحاصيل وتقييم التوافق</a><span style="opacity:.75"> — تطبيق حديقة ذكي يتيح لمزارعي الأقاليم الصغار تسجيل محاصيلهم وزراعاتهم موسمًا بعد موسم، وتقييم توافق…</span></li><li style="margin:.5rem 0"><a href="offline-bilingual-word-dictionary.html" style="color:var(--gold-bright);font-weight:700">قاموس عربي إنجليزي فوري دون إنترنت مع قارئ PDF</a><span style="opacity:.75"> — قاموس عربي إنجليزي محلي يعمل دون إنترنت: ابحث بالكتابة أو من نص محدد، واحفظ الكلمات في دفتر ملاحظات، وافتح…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-26 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  'use strict';
+  var root = document.getElementById('app-root');
+  var selType = document.getElementById('select-feed-type');
+  var inName = document.getElementById('input-feed-name');
+  var inCat = document.getElementById('input-feed-cat');
+  var taSrc = document.getElementById('textarea-source');
+  var inFile = document.getElementById('input-file');
+  var btnParse = document.getElementById('btn-parse');
+  var btnClear = document.getElementById('btn-clear-source');
+  var outImp = document.getElementById('out-import');
+  var inSearch = document.getElementById('input-search');
+  var selCat = document.getElementById('select-view-cat');
+  var btnOnly = document.getElementById('btn-only-book');
+  var btnAll = document.getElementById('btn-show-all');
+  var btnTheme = document.getElementById('btn-toggle-theme');
+  var btnOpmlImp = document.getElementById('btn-import-opml');
+  var inOpml = document.getElementById('input-opml-file');
+  var btnOpmlExp = document.getElementById('btn-export-opml');
+  var btnBakExp = document.getElementById('btn-backup-export');
+  var inBak = document.getElementById('input-backup-file');
+  var btnBakImp = document.getElementById('btn-backup-import');
+  var outTools = document.getElementById('out-tools');
+  var cArt = document.getElementById('count-articles');
+  var bFeeds = document.getElementById('badge-feeds');
+  var bDup = document.getElementById('badge-feeds');
+  var bDup2 = document.getElementById('badge-dup');
+  var listArt = document.getElementById('list-articles');
+  var outList = document.getElementById('out-list');
+  var reader = document.getElementById('card-reader');
+  var rClose = document.getElementById('btn-reader-close');
+  var rBook = document.getElementById('btn-book-toggle');
+  var rTime = document.getElementById('badge-readtime');
+  var rTitle = document.getElementById('reader-title');
+  var rMeta = document.getElementById('reader-meta');
+  var rBody = document.getElementById('reader-body');
+  var outR = document.getElementById('out-reader');
+
+  var state = { feeds: [], articles: [], bookmarks: {}, viewCat: 'all', onlyBook: false, theme: 'dark', dup: 0, cur: null };
+  function lsGet(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  function load(){ state = lsGet('mdr_state',{feeds:[],articles:[],bookmarks:{},viewCat:'all',onlyBook:false,theme:'dark',dup:0,cur:null}); applyTheme(); buildCat(); render(); }
+  function save(){ lsSet('mdr_state',state); }
+  function applyTheme(){ root.classList.remove('reader-light','reader-dark'); root.classList.add(state.theme==='light'?'reader-light':'reader-dark'); }
+  function hash(s){ var h=0; for(var i=0;i<s.length;i++){ h=(h*131542391+s.charCodeAt(i))>>>0; } return String(h); }
+  function cleanUrl(u){ if(!u)return''; try{ var p=u.split('?')[0]+'?'+(u.split('?')[1]||'').replace(/(utm_[^&]+|fbclid|gclid|mc_eid|_ga|tracking_id)=[^&]*&?/g,'').replace(/&$/,''); return p.indexOf('?')===p.length-1?p.slice(0,-1):p; }catch(e){return u;} }
+  function rtime(t){ var c=(t||'').replace(/\s+/g,' ').trim(); var w=c.length/5; var m=Math.max(1,Math.round(w/200)); return m+' دق'; }
+  function extract(xml,tag){ var re=new RegExp('<'+tag+'[^>]*>([\\s\\S]*?)<\/'+tag+'>','i'); var m=xml.match(re); return m?m[1]:''; }
+  function strip(s){ return (s||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(); }
+  function parseAll(txt){
+    var res=[];
+    if(!txt) return res;
+    try{
+      var j=JSON.parse(txt);
+      if(j && j.items && Array.isArray(j.items)){
+        for(var x=0;x<j.items;x++){ var it=j.items[x]; res.push({id:hash((it.url||it.id||'')+(it.title||'')), title:it.title||'', desc:strip(it.summary||it.content_text||it.content_html||''), url:cleanUrl(it.url||''), feed:'', cat:'', time:Date.now()}); }
+      }
+    }catch(e){}
+    var items=txt.match(/<item[\s\S]*?<\/item>/gi)||txt.match(/<entry[\s\S]*?<\/entry>/gi)||[];
+    for(var i=0;i<items.length;i++){ var itx=items[i]; var ttl=extract(itx,'title'); var dsc=extract(itx,'description')||extract(itx,'summary')||extract(itx,'content'); var lnk=extract(itx,'link')||extract(itx,'id'); ttl=strip(ttl); dsc=strip(dsc); lnk=(lnk.match(/href=["']([^"']+)["']/)||[,''])[1]||strip(lnk); res.push({id:hash((lnk||ttl)), title:ttl, desc:dsc, url:cleanUrl(lnk), feed:'', cat:'', time:Date.now()}); }
+    return res;
+  }
+  function dedup(list){ var seen={}, out=[], d=0; for(var i=0;i<list.length;i++){ var k=list[i].id; if(seen[k]){ d++; continue; } seen[k]=1; out.push(list[i]); } state.dup = d; return out; }
+  btnParse.onclick=function(){
+    var txt=taSrc.value||'';
+    if(inFile.files&&inFile.files[0]){
+      var fr=new FileReader();
+      fr.onload=function(ev){ var t=ev.target.result||''; doParse(t); };
+      fr.readAsText(inFile.files[0]);
+      return;
+    }
+    doParse(txt);
+  };
+  function doParse(txt){
+    var arr=parseAll(txt);
+    if(arr.length===0){ outImp.textContent='لا يوجد مقالات قابلة للتحليل.'; return; }
+    var fn=inName.value.trim()||'خلاصة مخصصة';
+    var fc=inCat.value.trim()||'عام';
+    for(var i=0;i<arr.length;i++){ arr[i].feed=fn; arr[i].cat=fc; }
+    var all=state.articles.concat(arr);
+    all=dedup(all);
+    state.articles=all;
+    if(state.feeds.indexOf(fn)===-1) state.feeds.push(fn);
+    save(); buildCat(); render(); outImp.textContent='تمت الإضافة: '+arr.length+' مقالًا.'; 
+  }
+  btnClear.onclick=function(){ taSrc.value=''; inFile.value=''; outImp.textContent=''; };
+  inSearch.oninput=function(){ render(); };
+  selCat.onchange=function(){ state.viewCat=selCat.value; save(); render(); };
+  btnOnly.onclick=function(){ state.onlyBook=true; save(); render(); };
+  btnAll.onclick=function(){ state.onlyBook=false; state.viewCat='all'; selCat.value='all'; save(); render(); };
+  btnTheme.onclick=function(){ state.theme=state.theme==='dark'?'light':'dark'; save(); applyTheme(); outTools.textContent='تم تغيير وضع القراءة.'; };
+  btnOpmlExp.onclick=function(){
+    var s='<?xml version="1.0" encoding="UTF-8"?><opml version="1.0"><head><title>mdr-opml</title></head><body>';
+    for(var i=0;i<state.feeds.length;i++){ s+='<outline text="'+state.feeds[i]+'" title="'+state.feeds[i]+'" type="rss"/>'; }
+    s+='</body></opml>';
+    var blob=new Blob([s],{type:'text/xml'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mdr-feeds.opml'; a.click();
+    outTools.textContent='تم تصدير OPML.';
+  };
+  btnOpmlImp.onclick=function(){
+    if(!inOpml.files||!inOpml.files[0]){ outTools.textContent='اختر ملف OPML أولاً.'; return; }
+    var fr=new FileReader(); fr.onload=function(ev){ var t=ev.target.result||''; var ms=t.match(/text="([^"]+)"/g)||[]; for(var i=0;i<ms.length;i++){ var n=ms[i].slice(6,-1); if(state.feeds.indexOf(n)===-1) state.feeds.push(n); } save(); buildCat(); render(); outTools.textContent='تم استيراد قوائم الخلاصات من OPML.'; }; fr.readAsText(inOpml.files[0]);
+  };
+  btnBakExp.onclick=function(){
+    var b={feeds:state.feeds,articles:state.articles,bookmarks:state.bookmarks};
+    var blob=new Blob([JSON.stringify(b)],{type:'application/json'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mdr-backup.json'; a.click(); outTools.textContent='تم تصدير النسخة الاحتياطية.';
+  };
+  btnBakImp.onclick=function(){
+    if(!inBak.files||!inBak.files[0]){ outTools.textContent='اختر ملف النسخة الاحتياطية أولاً.'; return; }
+    var fr=new FileReader(); fr.onload=function(ev){ try{ var b=JSON.parse(ev.target.result||'{}'); if(b.feeds) state.feeds=b.feeds; if(b.articles){ state.articles=dedup(state.articles.concat(b.articles)); } if(b.bookmarks){ for(var k in b.bookmarks){ state.bookmarks[k]=b.bookmarks[k]; } } save(); buildCat(); render(); outTools.textContent='تم استيراد النسخة الاحتياطية.'; }catch(e){ outTools.textContent='ملف غير صالح.'; } }; fr.readAsText(inBak.files[0]);
+  };
+  function buildCat(){
+    selCat.innerHTML='';
+    var opt=document.createElement('option'); opt.value='all'; opt.textContent='كل التصنيفات'; selCat.appendChild(opt);
+    var set={}; for(var i=0;i<state.articles.length;i++){ set[state.articles[i].cat]=1; }
+    for(var c in set){ var o=document.createElement('option'); o.value=c; o.textContent=c; if(state.viewCat===c) o.selected=true; selCat.appendChild(o); }
+    if(selCat.value!==state.viewCat) selCat.value='all';
+  }
+  function render(){
+    var q=(inSearch.value||'').toLowerCase();
+    var list=[];
+    for(var i=0;i<state.articles.length;i++){ var a=state.articles[i]; if(state.viewCat!=='all'&&a.cat!==state.viewCat) continue; if(state.onlyBook&&!state.bookmarks[a.id]) continue; if(q){ var s=(a.title+a.desc).toLowerCase(); if(s.indexOf(q)===-1) continue; } list.push(a); }
+    cArt.textContent=String(list.length);
+    bFeeds.textContent='عدد الخلاصات: '+state.feeds.length;
+    bDup2.textContent='المكررة المحذوفة: '+state.dup;
+    listArt.innerHTML='';
+    if(list.length===0){ outList.textContent='لا توجد مقالات مطابقة للعرض.'; return; } else { outList.textContent=''; }
+    for(var j=0;j<list.length;j++){ var ar=list[j]; var div=document.createElement('div'); div.className='art'; var t=document.createElement('div'); t.className='art-title'; t.textContent=ar.title||'(بدون عنوان)'; var m=document.createElement('div'); m.className='art-meta'; var sp1=document.createElement('span'); sp1.className='badge'; sp1.textContent=ar.feed+' | '+ar.cat; var sp2=document.createElement('span'); sp2.className='badge'; sp2.textContent=rtime(ar.desc); var sp3=document.createElement('span'); sp3.className='badge'; sp3.textContent=state.bookmarks[ar.id]?'مُعلّم':'غير مُعلّم'; var btnv=document.createElement('button'); btnv.className='sec'; btnv.textContent='فتح في قارئ القراءة'; btnv.setAttribute('data-id',ar.id); btnv.onclick=(function(x){ return function(){ openReader(x); }; })(ar); m.appendChild(sp1); m.appendChild(sp2); m.appendChild(sp3); m.appendChild(btnv); div.appendChild(t); div.appendChild(m); listArt.appendChild(div); }
+  }
+  function openReader(ar){
+    state.cur=ar; save();
+    rTitle.textContent=ar.title||'(بدون عنوان)';
+    rMeta.textContent='الخلاصة: '+ar.feed+' | التصنيف: '+ar.cat+' | وقت القراءة: '+rtime(ar.desc);
+    rBody.textContent=ar.desc||'لا يوجد وصف متاح.';
+    rTime.textContent=rtime(ar.desc);
+    rBook.textContent=state.bookmarks[ar.id]?'إزالة الإشارة المرجعية':'إضافة كإشارة مرجعية';
+    reader.scrollIntoView({behavior:'auto',block:'start'});
+    outR.textContent='';
+  }
+  rClose.onclick=function(){ state.cur=null; save(); outR.textContent='تم إغلاق قارئ القراءة.'; };
+  rBook.onclick=function(){ if(!state.cur) return; if(state.bookmarks[state.cur.id]){ delete state.bookmarks[state.cur.id]; } else { state.bookmarks[state.cur.id]=true; } save(); rBook.textContent=state.bookmarks[state.cur.id]?'إزالة الإشارة المرجعية':'إضافة كإشارة مرجعية'; render(); outR.textContent='تم تحديث الإشارة المرجعية.'; };
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/' && document.activeElement!==taSrc && document.activeElement!==inSearch){ e.preventDefault(); inSearch.focus(); }
+    if(e.key==='r' && state.cur){ openReader(state.cur); }
+    if(e.key==='b' && state.cur){ rBook.click(); }
+    if(e.key==='t'){ btnTheme.click(); }
+  });
+  load();
+})();
+</script>
+</body>
+</html>
