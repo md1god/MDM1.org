@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فحص وتنظيف الأجهزة المحلية | MDM1</title>
+<meta name="description" content="تطبيق محلي لفحص برمجيات المراقبة والتطبيقات غير الضرورية حسب نوع الجهاز مع تتبع خطوات التنظيف والتصدير">
+<link rel="canonical" href="https://mdm1.org/apps/saytara-mahalli.html">
+<meta property="og:title" content="فحص وتنظيف الأجهزة المحلية">
+<meta property="og:description" content="تطبيق محلي لفحص برمجيات المراقبة والتطبيقات غير الضرورية حسب نوع الجهاز مع تتبع خطوات التنظيف والتصدير">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/saytara-mahalli.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:flex; flex-direction:column; gap:1rem; }
+.app h2 { margin:0 0 0.5rem 0; color:var(--gold-bright); }
+.app .note { margin:0.3rem 0 0 0; color:var(--gold-dim); }
+.app .itemRow { display:flex; align-items:flex-start; gap:0.7rem; margin:0.5rem 0; padding:0.6rem; border:1px solid var(--gold-dim); border-radius:6px; background:rgba(255,215,0,0.03); }
+.app .itemInfo { flex:1; }
+.app .itemTitle { display:block; font-weight:bold; color:var(--light); }
+.app .itemDesc { display:block; color:var(--gold-dim); margin-top:0.2rem; }
+.app .itemRisk { min-width:80px; text-align:center; padding:0.2rem 0.4rem; border-radius:4px; }
+.app .risk-high { background:rgba(255,80,80,0.15); color:#ff6b6b; border:1px solid rgba(255,80,80,0.4); }
+.app .risk-med { background:rgba(255,180,0,0.15); color:#ffb300; border:1px solid rgba(255,180,0,0.4); }
+.app .risk-low { background:rgba(0,200,120,0.15); color:#00c878; border:1px solid rgba(0,200,120,0.4); }
+.app .trackItem { display:flex; align-items:center; gap:0.6rem; margin:0.4rem 0; padding:0.5rem; border:1px solid var(--gold-dim); border-radius:6px; }
+.app .trackLabel { flex:1; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "فاحص الخصوصية والأجهزة", "url": "https://mdm1.org/apps/saytara-mahalli.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل هذا التطبيق دون اتصال إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل محليًا بالكامل داخل المتصفح، ولا يحتاج إلى اتصال إنترنت أو إنشاء حساب."}}, {"@type": "Question", "name": "هل يتم حفظ بياناتي على خوادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يتم حفظ التقدم فقط في localStorage الخاص بالمتصفح إن قمت بحفظه، ويمكنك مسحه في أي وقت."}}, {"@type": "Question", "name": "هل تشمل القائمة جميع التطبيقات على جهازي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، هذه قائمة مدمجة مسبقًا لأكثر العناصر شيوعًا حسب نوع الجهاز، وتُستخدم كدليل للتوجيه."}}, {"@type": "Question", "name": "هل يمكنني تصدير الخطة وطباعتها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تصدير خطة التنظيف الشخصية كملف نصي وطباعته أو مشاركته مع نفسك."}}, {"@type": "Question", "name": "هل يغطي التطبيق جميع أنواع المخاطر؟", "acceptedAnswer": {"@type": "Answer", "text": "يصنف العناصر إلى مخاطر عالية ومتوسطة ومنخفضة كدليل عام، ويُنصح بمراجعة إعدادات الجهاز الفعلية دائمًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">فاحص الخصوصية والأجهزة</h1>
+  <p class="page-sub">تطبيق محلي لفحص برمجيات المراقبة والتطبيقات غير الضرورية حسب نوع الجهاز مع تتبع خطوات التنظيف والتصدير</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الجواب السريع: هذا التطبيق يعمل محليًا بالكامل، يتيح لك اختيار نوع جهازك ومعرفة أي برمجيات المراقبة أو التطبيقات غير الضرورية الموجودة مع تصنيف مخاطرها، وتتعقب خطوات التعطيل الخاصة بك خطوة بخطوة، وتحفظ التقدم في متصفحك، وتصدر خطة التنظيف الشخصية كملف نصي للتنزيل دون الحاجة إلى اتصال إنترنت أو حساب.</p>
+<div class="app">
+  <section class="card">
+    <h2>اختيار نوع الجهاز</h2>
+    <div class="row">
+      <label for="appDeviceType">نوع الجهاز</label>
+      <select id="appDeviceType">
+        <option value="">اختر نوع الجهاز</option>
+        <option value="tv">تلفاز ذكي</option>
+        <option value="android">أندرويد</option>
+        <option value="windows">ويندوز</option>
+      </select>
+      <button id="appLoadList">عرض القائمة</button>
+    </div>
+    <p class="note">يتم تحميل قائمة مدمجة مسبقًا وفقًا لنوع الجهاز المحدد، ويُصنف كل عنصر حسب مستوى المخاطر.</p>
+  </section>
+  <section class="card" id="appListSection" style="display:none">
+    <h2>قائمة العناصر المقترحة</h2>
+    <div id="appListContainer"></div>
+  </section>
+  <section class="card" id="appTrackSection" style="display:none">
+    <h2>متابعة خطوات التنظيف</h2>
+    <div class="row">
+      <span class="badge" id="appProgressBadge">0 / 0 مكتملة</span>
+      <button id="appSaveProgress" class="sec">حفظ التقدم</button>
+      <button id="appLoadProgress" class="sec">استعادة التقدم المحفوظ</button>
+    </div>
+    <div id="appTrackList"></div>
+  </section>
+  <section class="card" id="appExportSection" style="display:none">
+    <h2>تصدير خطة التنظيف الشخصية</h2>
+    <div class="row">
+      <button id="appExportTxt">تنزيل خطة التنظيف كملف نصي</button>
+      <button id="appClearAll" class="sec">مسح جميع البيانات المحلية</button>
+    </div>
+    <div id="appExportMsg" class="out" style="display:none"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل هذا التطبيق دون اتصال إنترنت؟</h3><p>نعم، يعمل محليًا بالكامل داخل المتصفح، ولا يحتاج إلى اتصال إنترنت أو إنشاء حساب.</p><h3>هل يتم حفظ بياناتي على خوادم؟</h3><p>لا، يتم حفظ التقدم فقط في localStorage الخاص بالمتصفح إن قمت بحفظه، ويمكنك مسحه في أي وقت.</p><h3>هل تشمل القائمة جميع التطبيقات على جهازي؟</h3><p>لا، هذه قائمة مدمجة مسبقًا لأكثر العناصر شيوعًا حسب نوع الجهاز، وتُستخدم كدليل للتوجيه.</p><h3>هل يمكنني تصدير الخطة وطباعتها؟</h3><p>نعم، يمكنك تصدير خطة التنظيف الشخصية كملف نصي وطباعته أو مشاركته مع نفسك.</p><h3>هل يغطي التطبيق جميع أنواع المخاطر؟</h3><p>يصنف العناصر إلى مخاطر عالية ومتوسطة ومنخفضة كدليل عام، ويُنصح بمراجعة إعدادات الجهاز الفعلية دائمًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-code-map.html" style="color:var(--gold-bright);font-weight:700">أداة توثيق الأكواد المحلية</a><span style="opacity:.75"> — توثيق ملفات المشروع تلقائياً وإنشاء فهرس وREADME ورسم تخطيطي للهيكل مع حفظ محلي دون إنترنت أو حسابات</span></li><li style="margin:.5rem 0"><a href="scene-weaver-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو ويب لتحويل إلى فيديو MP4</a><span style="opacity:.75"> — أداة عربية لتحويل صفحات HTML/CSS وحركاتها إلى فيديو MP4 حتمية داخل المتصفح دون خادم أو حساب وحفظ المشاريع…</span></li><li style="margin:.5rem 0"><a href="sentence-burst-analyzer.html" style="color:var(--gold-bright);font-weight:700">كاشف الانتظام الإحصائي للنصوص العربية</a><span style="opacity:.75"> — أداة عربية تعمل بالمتصفح لتحليل النصوص وكشف الأنماط غير الطبيعية عبر مقاييس إحصائية دقيقة مع تظليل الجمل…</span></li><li style="margin:.5rem 0"><a href="seo-lab-local-workbench.html" style="color:var(--gold-bright);font-weight:700">مختبر SEO داخل المتصفح</a><span style="opacity:.75"> — يعمل المختبر بالكامل داخل المتصفح لتوليد الكلمات المفتاحية وتحليل نيتها وصعوبتها ومقارنتها نسبياً وتتبع…</span></li><li style="margin:.5rem 0"><a href="skyweave-drone-lab.html" style="color:var(--gold-bright);font-weight:700">محاكي طيران مسيّر تفاعلي داخل المتصفح</a><span style="opacity:.75"> — محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-27 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const DATA = {
+    tv: [
+      {id:'tv1', title:'خدمة تجميع بيانات الاستخدام', desc:'تجمع بيانات المشاهدة والإعدادات وتُرسلها للمصنع', risk:'عالي'},
+      {id:'tv2', title:'إعلانات مخصصة', desc:'تعرض إعلانات بناءً على سجل المشاهدة', risk:'متوسط'},
+      {id:'tv3', title:'خدمة البحث الصوتي التلقائي', desc:'قد تُفعّل الميكروفون لأغراض جمع بيانات', risk:'عالي'},
+      {id:'tv4', title:'تطبيقات طرف ثالث مدمجة', desc:'تطبيقات غير ضرورية غالبًا ما تأتي مُفعّلة', risk:'متوسط'},
+      {id:'tv5', title:'مزامنة سحابة المصنع', desc:'تحفظ إعدادات الجهاز على خوادم خارجية', risk:'متوسط'}
+    ],
+    android: [
+      {id:'an1', title:'مُجمّع بيانات OEM', desc:'يُجمع معلومات الاستخدام ويشاركها مع المصنع', risk:'عالي'},
+      {id:'an2', title:'خدمة تتبع الموقع الخلفية', desc:'تُفعّل موقع الجهاز حتى بدون إذن نشط', risk:'عالي'},
+      {id:'an3', title:'تحليلات مسبقة التثبيت', desc:'تطبيقات تحليل تأتي مُثبّتة ولا غنى عنها غالبًا', risk:'متوسط'},
+      {id:'an4', title:'إعلانات النظام', desc:'عروض إعلانية داخل إعدادات أو تطبيقات النظام', risk:'متوسط'},
+      {id:'an5', title:'خدمة نسخ احتياطي تلقائي', desc:'قد تحفظ بيانات حساسة في حساب المصنع', risk:'متوسط'}
+    ],
+    windows: [
+      {id:'win1', title:'خدمة تشخيصية موسعة', desc:'تجمع بيانات الأخطاء والتطبيقات وتُرسلها', risk:'عالي'},
+      {id:'win2', title:'إعلانات مقترحة', desc:'تظهر اقتراحات وإعلانات داخل القوائم والإعدادات', risk:'متوسط'},
+      {id:'win3', title:'تتبع نشاط التطبيقات', desc:'يسجل استخدام البرامج لأغراض التحليل', risk:'عالي'},
+      {id:'win4', title:'مزامنة حساب الشركة/البريد', desc:'قد تُفعّل تلقائياً مع بيانات أكثر من اللازم', risk:'متوسط'},
+      {id:'win5', title:'خدمة تحديثات تحليلية', desc:'تجمع إحصائيات الاستخدام مع التحديثات', risk:'متوسط'}
+    ]
+  };
+
+  const deviceSelect = document.getElementById('appDeviceType');
+  const loadBtn = document.getElementById('appLoadList');
+  const listSection = document.getElementById('appListSection');
+  const listContainer = document.getElementById('appListContainer');
+  const trackSection = document.getElementById('appTrackSection');
+  const trackList = document.getElementById('appTrackList');
+  const progressBadge = document.getElementById('appProgressBadge');
+  const saveBtn = document.getElementById('appSaveProgress');
+  const loadBtn2 = document.getElementById('appLoadProgress');
+  const exportSection = document.getElementById('appExportSection');
+  const exportBtn = document.getElementById('appExportTxt');
+  const clearBtn = document.getElementById('appClearAll');
+  const exportMsg = document.getElementById('appExportMsg');
+
+  let currentDevice = '';
+  let currentItems = [];
+  let trackState = {};
+
+  function getRiskClass(r){
+    if(r === 'عالي') return 'risk-high';
+    if(r === 'متوسط') return 'risk-med';
+    return 'risk-low';
+  }
+
+  loadBtn.addEventListener('click', function(){
+    const val = deviceSelect.value;
+    if(!val){
+      alert('يرجى اختيار نوع الجهاز أولاً');
+      return;
+    }
+    currentDevice = val;
+    currentItems = DATA[val] || [];
+    renderList();
+    listSection.style.display = 'block';
+    initTrack();
+    trackSection.style.display = 'block';
+    exportSection.style.display = 'block';
+    exportMsg.style.display = 'none';
+  });
+
+  function renderList(){
+    listContainer.innerHTML = '';
+    if(currentItems.length === 0){
+      const p = document.createElement('p');
+      p.textContent = 'لا توجد عناصر في القائمة لهذا النوع.';
+      listContainer.appendChild(p);
+      return;
+    }
+    currentItems.forEach(function(item){
+      const row = document.createElement('div');
+      row.className = 'itemRow';
+      const info = document.createElement('div');
+      info.className = 'itemInfo';
+      const title = document.createElement('span');
+      title.className = 'itemTitle';
+      title.textContent = item.title;
+      const desc = document.createElement('span');
+      desc.className = 'itemDesc';
+      desc.textContent = item.desc;
+      info.appendChild(title);
+      info.appendChild(desc);
+      const risk = document.createElement('span');
+      risk.className = 'itemRisk ' + getRiskClass(item.risk);
+      risk.textContent = 'مخاطر: ' + item.risk;
+      row.appendChild(info);
+      row.appendChild(risk);
+      listContainer.appendChild(row);
+    });
+  }
+
+  function initTrack(){
+    trackState = {};
+    currentItems.forEach(function(item){
+      trackState[item.id] = false;
+    });
+    renderTrack();
+    updateProgress();
+  }
+
+  function renderTrack(){
+    trackList.innerHTML = '';
+    if(currentItems.length === 0){
+      const p = document.createElement('p');
+      p.textContent = 'لا توجد خطوات للمتابعة.';
+      trackList.appendChild(p);
+      return;
+    }
+    currentItems.forEach(function(item){
+      const row = document.createElement('div');
+      row.className = 'trackItem';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.id = 'track_' + item.id;
+      cb.checked = !!trackState[item.id];
+      cb.addEventListener('change', function(){
+        trackState[item.id] = cb.checked;
+        updateProgress();
+      });
+      const label = document.createElement('label');
+      label.className = 'trackLabel';
+      label.setAttribute('for', 'track_' + item.id);
+      label.textContent = 'تعطيل / تعطيل تفعيل: ' + item.title;
+      row.appendChild(cb);
+      row.appendChild(label);
+      trackList.appendChild(row);
+    });
+  }
+
+  function updateProgress(){
+    const total = currentItems.length;
+    let done = 0;
+    for(let k in trackState){
+      if(trackState[k]) done++;
+    }
+    progressBadge.textContent = done + ' / ' + total + ' مكتملة';
+  }
+
+  saveBtn.addEventListener('click', function(){
+    try {
+      const data = {
+        device: currentDevice,
+        items: currentItems,
+        track: trackState,
+        ts: Date.now()
+      };
+      localStorage.setItem('app_privacy_cleaner_v1', JSON.stringify(data));
+      showMsg('تم حفظ التقدم في المتصفح بنجاح.');
+    } catch(e) {
+      showMsg('تعذر حفظ التقدم. تحقق من إعدادات التخزين.');
+    }
+  });
+
+  loadBtn2.addEventListener('click', function(){
+    try {
+      const raw = localStorage.getItem('app_privacy_cleaner_v1');
+      if(!raw){
+        showMsg('لا يوجد تقدم محفوظ سابقًا.');
+        return;
+      }
+      const data = JSON.parse(raw);
+      if(!data || !data.device){
+        showMsg('بيانات محفوظة غير صالحة.');
+        return;
+      }
+      currentDevice = data.device;
+      deviceSelect.value = currentDevice;
+      currentItems = Array.isArray(data.items) ? data.items : (DATA[currentDevice] || []);
+      trackState = data.track || {};
+      renderList();
+      listSection.style.display = 'block';
+      renderTrack();
+      trackSection.style.display = 'block';
+      exportSection.style.display = 'block';
+      updateProgress();
+      showMsg('تم استعادة التقدم المحفوظ بنجاح.');
+    } catch(e) {
+      showMsg('تعذر استعادة التقدم المحفوظ.');
+    }
+  });
+
+  exportBtn.addEventListener('click', function(){
+    if(currentItems.length === 0){
+      showMsg('لا توجد عناصر لتصديرها. اختر نوع الجهاز أولاً.');
+      return;
+    }
+    let text = 'خطة التنظيف الشخصية - فاحص الخصوصية والأجهزة\n';
+    text += '==========================================\n\n';
+    text += 'نوع الجهاز: ';
+    if(currentDevice === 'tv') text += 'تلفاز ذكي';
+    else if(currentDevice === 'android') text += 'أندرويد';
+    else if(currentDevice === 'windows') text += 'ويندوز';
+    else text += currentDevice;
+    text += '\n\n';
+    text += 'قائمة العناصر مع حالة التنفيذ:\n';
+    text += '-----------------------------\n\n';
+    currentItems.forEach(function(item, idx){
+      const done = trackState[item.id] ? 'مكتمل' : 'غير مكتمل';
+      text += (idx+1) + '. ' + item.title + '\n';
+      text += '   الوصف: ' + item.desc + '\n';
+      text += '   مستوى المخاطر: ' + item.risk + '\n';
+      text += '   حالة التنفيذ: ' + done + '\n';
+      text += '   خطوات مقترحة: تعطيل الخدمة / إيقاف إذن غير ضروري / إزالة تطبيق غير ضروري حسب إعدادات الجهاز\n\n';
+    });
+    text += 'ملاحظات:\n';
+    text += '- هذا الملف تم إنشاؤه محليًا بواسطة التطبيق دون اتصال إنترنت أو حساب.\n';
+    text += '- راجع إعدادات جهازك الفعلية للتأكد من تطبيق الخطوات.\n';
+    text += '- احتفظ بهذا الملف كمرجع لك.\n';
+    try {
+      const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'خطة-تنظيف-خصوصية.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      showMsg('تم تنزيل ملف خطة التنظيف بنجاح.');
+    } catch(e) {
+      showMsg('تعذر إنشاء ملف التنزيل. تأكد من دعم المتصفح.');
+    }
+  });
+
+  clearBtn.addEventListener('click', function(){
+    try {
+      localStorage.removeItem('app_privacy_cleaner_v1');
+      showMsg('تم مسح جميع البيانات المحلية المحفوظة.');
+    } catch(e) {
+      showMsg('تعذر مسح البيانات المحلية.');
+    }
+  });
+
+  function showMsg(msg){
+    exportMsg.textContent = msg;
+    exportMsg.style.display = 'block';
+    setTimeout(function(){
+      exportMsg.style.display = 'none';
+    }, 4000);
+  }
+})();
+</script>
+</body>
+</html>
