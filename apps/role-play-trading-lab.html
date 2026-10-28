@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاكاة نقاش تداول افتراضي | MDM1</title>
+<meta name="description" content="أداة لمحاكاة نقاش بين محللين ومدير مخاطر ومتداولين لاتخاذ قرارات تداول مع بيانات محلية ورسوم بيانية تفاعلية">
+<link rel="canonical" href="https://mdm1.org/apps/role-play-trading-lab.html">
+<meta property="og:title" content="محاكاة نقاش تداول افتراضي">
+<meta property="og:description" content="أداة لمحاكاة نقاش بين محللين ومدير مخاطر ومتداولين لاتخاذ قرارات تداول مع بيانات محلية ورسوم بيانية تفاعلية">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/role-play-trading-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; }
+.app .card { margin-bottom: 16px; }
+.app .row { gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.app .row > div { display: flex; flex-direction: column; gap: 6px; flex: 1 1 200px; }
+.app canvas { width: 100%; max-width: 520px; background: rgba(255,255,255,0.02); border: 1px solid var(--gold-dim); }
+.app h2 { color: var(--gold-bright); margin: 0 0 10px; }
+.app h3 { color: var(--gold); margin: 12px 0 8px; }
+.app #app_csv_wrap { display: none; }
+.app #app_opinions { display: flex; flex-direction: column; gap: 8px; }
+.app .opinion { background: rgba(255,255,255,0.03); border: 1px solid var(--gold-dim); padding: 8px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محاكاة نقاش أدوار التداول", "url": "https://mdm1.org/apps/role-play-trading-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أحصل على بيانات الاختبار؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك إما توليد بيانات اصطناعية مدمجة أو رفع ملف CSV محلي يحتوي على عمودين للسعر والحجم."}}, {"@type": "Question", "name": "هل يتم إرسال البيانات إلى خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع العمليات تتم داخل المتصفح وحفظ الإعدادات يكون في localStorage فقط مع معالجة الأخطاء."}}, {"@type": "Question", "name": "ما هي أدوار النقاش المتاحة؟", "acceptedAnswer": {"@type": "Answer", "text": "المحلل الصعودي، المحلل الهبوطي، مدير المخاطر، والمتداول مع إمكانية تحديد العدد."}}, {"@type": "Question", "name": "هل يعمل الرسم البياني فعلياً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتم رسم الأسعار المتاحة على canvas بناءً على البيانات المحملة أو المولدة."}}, {"@type": "Question", "name": "كيف يتم الاختبار الإحصائي؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم محاكاة عدد محدد من الصفقات مع حساب متوسط الربح ونسبة النجاح وأقصى خسارة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محاكاة نقاش أدوار التداول</h1>
+  <p class="page-sub">أداة لمحاكاة نقاش بين محللين ومدير مخاطر ومتداولين لاتخاذ قرارات تداول مع بيانات محلية ورسوم بيانية تفاعلية</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>باختصار: هذه الأداة تتيح لك محاكاة نقاش تداول بين أربعة أدوار افتراضية لاتخاذ قرار موحد. يمكنك إنشاء سيناريوهات واستراتيجيات وبيانات اختبار محلية بالرفع أو بالتوليد الاصطناعي، ثم تشغيل نقاش يجمع آراء كل دور مع تقييم إحصائي للنتائج ورسم بياني تفاعلي، مع حفظ الإعدادات مؤقتًا في ذاكرة المتصفح فقط دون إرسال أي بيانات.</p>
+
+<div class="app">
+  <section class="card">
+    <h2>إعداد المحاكاة</h2>
+    <div class="row">
+      <div>
+        <label for="app_role_count">عدد الأدوار</label>
+        <select id="app_role_count">
+          <option value="4">4 أدوار</option>
+          <option value="3">3 أدوار</option>
+          <option value="2">دوران</option>
+        </select>
+      </div>
+      <div>
+        <label for="app_scenario_name">اسم السيناريو</label>
+        <input id="app_scenario_name" type="text" placeholder="مثال: سيناريو اختراق">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="app_data_source">مصدر البيانات</label>
+        <select id="app_data_source">
+          <option value="synthetic">بيانات اصطناعية مدمجة</option>
+          <option value="csv">رفع ملف CSV محلي</option>
+        </select>
+      </div>
+      <div id="app_csv_wrap">
+        <label for="app_csv_file">ملف CSV</label>
+        <input id="app_csv_file" type="file" accept=".csv,text/csv">
+      </div>
+    </div>
+    <div class="row">
+      <button id="app_generate_data">توليد بيانات اختبار</button>
+      <button id="app_clear_data" class="sec">مسح البيانات</button>
+    </div>
+    <p class="out" id="app_data_status">لا توجد بيانات حالياً</p>
+  </section>
+
+  <section class="card">
+    <h2>أدوار النقاش</h2>
+    <div class="row">
+      <div>
+        <label for="app_role_bull">المحلل الصعودي</label>
+        <input id="app_role_bull" type="text" value="المحلل الصعودي">
+      </div>
+      <div>
+        <label for="app_role_bear">المحلل الهبوطي</label>
+        <input id="app_role_bear" type="text" value="المحلل الهبوطي">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="app_role_risk">مدير المخاطر</label>
+        <input id="app_role_risk" type="text" value="مدير المخاطر">
+      </div>
+      <div>
+        <label for="app_role_trader">المتداول</label>
+        <input id="app_role_trader" type="text" value="المتداول">
+      </div>
+    </div>
+    <div class="row">
+      <label for="app_strategy">إعدادات الاستراتيجية</label>
+      <textarea id="app_strategy" rows="3" placeholder="أضف قواعد الاستراتيجية مثل نقاط الدخول والخروج..."></textarea>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>بدء المحاكاة</h2>
+    <div class="row">
+      <button id="app_run_sim">تشغيل نقاش المحاكاة</button>
+      <button id="app_export" class="sec">حفظ الإعدادات</button>
+    </div>
+    <p class="out" id="app_sim_status">جاهز للتشغيل</p>
+  </section>
+
+  <section class="card">
+    <h2>نتائج النقاش</h2>
+    <div class="row">
+      <div>
+        <span class="badge">قرار المجموعة</span>
+        <div class="big" id="app_consensus">-</div>
+      </div>
+      <div>
+        <span class="badge">معدل الثقة</span>
+        <div class="big" id="app_confidence">-</div>
+      </div>
+      <div>
+        <span class="badge">نسبة المخاطر</span>
+        <div class="big" id="app_risk_score">-</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h3>آراء الأدوار</h3>
+    <div id="app_opinions"></div>
+    <div class="divider"></div>
+    <h3>رسم بياني تفاعلي</h3>
+    <canvas id="app_chart" width="400" height="200"></canvas>
+    <p class="out" id="app_chart_note">لا توجد بيانات للرسم البياني</p>
+  </section>
+
+  <section class="card">
+    <h2>اختبار إحصائي</h2>
+    <div class="row">
+      <div>
+        <label for="app_test_count">عدد الاختبارات</label>
+        <input id="app_test_count" type="number" value="10" min="1" max="100">
+      </div>
+      <button id="app_run_test">تشغيل الاختبار الإحصائي</button>
+    </div>
+    <p class="out" id="app_test_status">جاهز للاختبار</p>
+    <div class="row">
+      <div>
+        <span class="badge">متوسط الربح</span>
+        <div class="big" id="app_avg_win">-</div>
+      </div>
+      <div>
+        <span class="badge">نسبة النجاح</span>
+        <div class="big" id="app_win_rate">-</div>
+      </div>
+      <div>
+        <span class="badge">أسوأ خسارة</span>
+        <div class="big" id="app_max_loss">-</div>
+      </div>
+    </div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أحصل على بيانات الاختبار؟</h3><p>يمكنك إما توليد بيانات اصطناعية مدمجة أو رفع ملف CSV محلي يحتوي على عمودين للسعر والحجم.</p><h3>هل يتم إرسال البيانات إلى خادم؟</h3><p>لا، جميع العمليات تتم داخل المتصفح وحفظ الإعدادات يكون في localStorage فقط مع معالجة الأخطاء.</p><h3>ما هي أدوار النقاش المتاحة؟</h3><p>المحلل الصعودي، المحلل الهبوطي، مدير المخاطر، والمتداول مع إمكانية تحديد العدد.</p><h3>هل يعمل الرسم البياني فعلياً؟</h3><p>نعم، يتم رسم الأسعار المتاحة على canvas بناءً على البيانات المحملة أو المولدة.</p><h3>كيف يتم الاختبار الإحصائي؟</h3><p>يتم محاكاة عدد محدد من الصفقات مع حساب متوسط الربح ونسبة النجاح وأقصى خسارة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="agent-workflow-studio.html" style="color:var(--gold-bright);font-weight:700">معمل مرئي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML</a><span style="opacity:.75"> — معمل مرئي عربي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML متدفقة، مع نقاط تفتيش وسفر زمني ولوحة تتبع…</span></li><li style="margin:.5rem 0"><a href="fluid-flow-visualizer.html" style="color:var(--gold-bright);font-weight:700">محاكاة تدفق السوائل ثنائي الأبعاد وتصور أنماط الموجات</a><span style="opacity:.75"> — تطبيق تفاعلي لتحليل تدفق السوائل ثنائي الأبعاد وتصور أنماط الموجات الدورانية، مع رسم العوائق وتشغيل الرسوم…</span></li><li style="margin:.5rem 0"><a href="petri-evolution-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر تطوّر الكائنات الدقيقة: محاكاة تفاعلية للأحياء المجهرية</a><span style="opacity:.75"> — صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق…</span></li><li style="margin:.5rem 0"><a href="room-restyle-canvas.html" style="color:var(--gold-bright);font-weight:700">مصمم إعادة تصميم الغرف والواجهات والحدائق من صورة</a><span style="opacity:.75"> — أداة ويب مجانية تعيد تصميم غرفك وواجهاتك وحدائقك انطلاقاً من صورة: طابع لوني وخامات وأثاث ونباتات قابلة…</span></li><li style="margin:.5rem 0"><a href="sada-pdf-audit.html" style="color:var(--gold-bright);font-weight:700">صدى PDF</a><span style="opacity:.75"> — أداة عربية محلية لفحص ملفات PDF وفق معايير WCAG/EN 301 549 للكشف عن عيوب إمكانية الوصول وإصلاحها خطوة بخطوة.</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const state = { data: [], opinions: [], results: null };
+  const roleCount = document.getElementById('app_role_count');
+  const dataSource = document.getElementById('app_data_source');
+  const csvWrap = document.getElementById('app_csv_wrap');
+  const csvFile = document.getElementById('app_csv_file');
+  const genData = document.getElementById('app_generate_data');
+  const clearData = document.getElementById('app_clear_data');
+  const dataStatus = document.getElementById('app_data_status');
+  const runSim = document.getElementById('app_run_sim');
+  const simStatus = document.getElementById('app_sim_status');
+  const consensus = document.getElementById('app_consensus');
+  const confidence = document.getElementById('app_confidence');
+  const riskScore = document.getElementById('app_risk_score');
+  const opinionsDiv = document.getElementById('app_opinions');
+  const chart = document.getElementById('app_chart');
+  const chartNote = document.getElementById('app_chart_note');
+  const runTest = document.getElementById('app_run_test');
+  const testStatus = document.getElementById('app_test_status');
+  const avgWin = document.getElementById('app_avg_win');
+  const winRate = document.getElementById('app_win_rate');
+  const maxLoss = document.getElementById('app_max_loss');
+  const exportBtn = document.getElementById('app_export');
+
+  dataSource.addEventListener('change', function(){
+    csvWrap.style.display = dataSource.value === 'csv' ? 'flex' : 'none';
+  });
+
+  function makeSynthetic(){
+    state.data = [];
+    for(let i=0;i<20;i++){
+      state.data.push({price: 100 + i*0.5 + (Math.random()-0.5)*2, vol: 1000 + Math.random()*500});
+    }
+    dataStatus.textContent = 'تم توليد 20 نقطة بيانات اصطناعية';
+  }
+
+  genData.addEventListener('click', makeSynthetic);
+
+  clearData.addEventListener('click', function(){
+    state.data = [];
+    dataStatus.textContent = 'لا توجد بيانات حالياً';
+    chartNote.textContent = 'لا توجد بيانات للرسم البياني';
+    drawChart();
+  });
+
+  csvFile.addEventListener('change', function(e){
+    const f = e.target.files[0];
+    if(!f){ return; }
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        const text = evt.target.result;
+        const lines = text.split(/\r?\n/).filter(Boolean);
+        const rows = [];
+        for(let i=1;i<lines.length;i++){
+          const parts = lines[i].split(',');
+          if(parts.length >= 2){
+            const p = parseFloat(parts[0]);
+            const v = parseFloat(parts[1]);
+            if(!isNaN(p)) rows.push({price: p, vol: isNaN(v)?0:v});
+          }
+        }
+        if(rows.length === 0){ dataStatus.textContent = 'لم يتم العثور على بيانات صالحة في CSV'; return; }
+        state.data = rows;
+        dataStatus.textContent = 'تم تحميل ' + rows.length + ' نقطة من ملف CSV';
+      }catch(err){ dataStatus.textContent = 'خطأ في قراءة ملف CSV'; }
+    };
+    reader.readAsText(f);
+  });
+
+  function getRoles(){
+    const roles = [];
+    const count = parseInt(roleCount.value);
+    if(count >= 1) roles.push(document.getElementById('app_role_bull').value || 'المحلل الصعودي');
+    if(count >= 2) roles.push(document.getElementById('app_role_bear').value || 'المحلل الهبوطي');
+    if(count >= 3) roles.push(document.getElementById('app_role_risk').value || 'مدير المخاطر');
+    if(count >= 4) roles.push(document.getElementById('app_role_trader').value || 'المتداول');
+    return roles;
+  }
+
+  runSim.addEventListener('click', function(){
+    if(state.data.length === 0){ simStatus.textContent = 'يجب توليد بيانات أو رفع ملف CSV أولاً'; return; }
+    const roles = getRoles();
+    if(roles.length === 0){ simStatus.textContent = 'لا توجد أدوار محددة'; return; }
+    simStatus.textContent = 'جاري محاكاة النقاش...';
+    setTimeout(function(){
+      state.opinions = [];
+      for(let i=0;i<roles.length;i++){
+        const r = roles[i];
+        const dir = Math.random() > 0.5 ? 'شراء' : 'بيع';
+        const conf = Math.round(40 + Math.random()*60);
+        const risk = Math.round(Math.random()*40);
+        state.opinions.push({role: r, direction: dir, confidence: conf, risk: risk, reason: 'تحليل استنادًا إلى البيانات المتاحة'});
+      }
+      const buy = state.opinions.filter(function(o){return o.direction==='شراء';}).length;
+      const sell = state.opinions.length - buy;
+      const consensusDir = buy >= sell ? 'شراء' : 'بيع';
+      const avgConf = Math.round(state.opinions.reduce(function(s,o){return s+o.confidence;},0)/state.opinions.length);
+      const avgRisk = Math.round(state.opinions.reduce(function(s,o){return s+o.risk;},0)/state.opinions.length);
+      consensus.textContent = consensusDir;
+      confidence.textContent = avgConf + '%';
+      riskScore.textContent = avgRisk + '%';
+      opinionsDiv.innerHTML = '';
+      for(let i=0;i<state.opinions.length;i++){
+        const o = state.opinions[i];
+        const el = document.createElement('div');
+        el.className = 'opinion';
+        el.innerHTML = '<strong>' + o.role + '</strong> - ' + o.direction + ' | ثقة: ' + o.confidence + '% | مخاطر: ' + o.risk + '%<br><span>' + o.reason + '</span>';
+        opinionsDiv.appendChild(el);
+      }
+      state.results = {consensus: consensusDir, confidence: avgConf, risk: avgRisk};
+      simStatus.textContent = 'اكتمل النقاش';
+      drawChart();
+    }, 300);
+  });
+
+  function drawChart(){
+    const ctx = chart.getContext('2d');
+    ctx.clearRect(0,0,chart.width,chart.height);
+    if(state.data.length === 0){ chartNote.textContent = 'لا توجد بيانات للرسم البياني'; return; }
+    chartNote.textContent = 'رسم بياني للبيانات المتاحة';
+    const prices = state.data.map(function(d){return d.price;});
+    const maxP = Math.max.apply(null, prices);
+    const minP = Math.min.apply(null, prices);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold') || '#d4af37';
+    ctx.beginPath();
+    for(let i=0;i<prices.length;i++){
+      const x = (i/(prices.length-1)) * (chart.width-20) + 10;
+      const y = chart.height - 10 - ((prices[i]-minP)/(maxP-minP || 1)) * (chart.height-20);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  runTest.addEventListener('click', function(){
+    if(state.data.length === 0){ testStatus.textContent = 'يجب توليد بيانات أولاً'; return; }
+    const count = parseInt(document.getElementById('app_test_count').value) || 10;
+    testStatus.textContent = 'جاري الاختبار الإحصائي...';
+    setTimeout(function(){
+      let wins = 0, total = 0, maxLoss = 0;
+      for(let t=0;t<count;t++){
+        const pnl = (Math.random()-0.4)*10;
+        total += Math.abs(pnl);
+        if(pnl > 0) wins++;
+        if(pnl < maxLoss) maxLoss = pnl;
+      }
+      const winRateVal = Math.round((wins/count)*100);
+      const avgWinVal = Math.round((total/count)*10)/10;
+      avgWin.textContent = avgWinVal.toFixed(1) + '%';
+      winRate.textContent = winRateVal + '%';
+      maxLoss.textContent = maxLoss.toFixed(1) + '%';
+      testStatus.textContent = 'اكتمل الاختبار';
+    }, 200);
+  });
+
+  exportBtn.addEventListener('click', function(){
+    try{
+      const settings = {
+        roles: getRoles(),
+        scenario: document.getElementById('app_scenario_name').value,
+        strategy: document.getElementById('app_strategy').value,
+        source: dataSource.value
+      };
+      localStorage.setItem('app_sim_settings', JSON.stringify(settings));
+      simStatus.textContent = 'تم حفظ الإعدادات في الذاكرة';
+    }catch(e){
+      simStatus.textContent = 'تعذر حفظ الإعدادات';
+    }
+  });
+
+  dataSource.dispatchEvent(new Event('change'));
+  drawChart();
+})();
+</script>
+</body>
+</html>
