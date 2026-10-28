@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جدولة منشورات المحتوى الذكي | MDM1</title>
+<meta name="description" content="أداة شاملة لجدولة المنشورات واختيار القوالب ومعاينة المحتوى وإدارة الهاشتاجات مع حفظ البيانات محليًا">
+<link rel="canonical" href="https://mdm1.org/apps/content-pulse-planner.html">
+<meta property="og:title" content="جدولة منشورات المحتوى الذكي">
+<meta property="og:description" content="أداة شاملة لجدولة المنشورات واختيار القوالب ومعاينة المحتوى وإدارة الهاشتاجات مع حفظ البيانات محليًا">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/content-pulse-planner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 12px; }
+.app-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.app-cal-day { padding: 8px; text-align: center; border: 1px solid var(--gold-dim); cursor: pointer; border-radius: 4px; }
+.app-cal-day.empty { border: none; cursor: default; }
+.app-cal-day.has-post { background: rgba(212, 175, 55, 0.2); border-color: var(--gold); }
+.app-cal-day.selected { background: var(--gold); color: var(--dark); font-weight: bold; }
+.app-legend { margin-top: 8px; }
+.app-preview { border: 1px solid var(--gold-dim); padding: 10px; border-radius: 6px; min-height: 120px; }
+.app-preview-header { color: var(--gold); font-weight: bold; margin-bottom: 6px; }
+.app-preview-platform { color: var(--light); opacity: 0.8; margin-bottom: 4px; }
+.app-preview-title { font-weight: bold; margin-bottom: 4px; }
+.app-preview-caption { white-space: pre-wrap; margin-bottom: 6px; }
+.app-preview-tags { color: var(--gold); }
+.app-hashtag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.app-hashtag-item { padding: 4px 8px; background: rgba(212, 175, 55, 0.2); border: 1px solid var(--gold-dim); border-radius: 4px; display: flex; gap: 6px; align-items: center; }
+.app-hashtag-remove { cursor: pointer; color: var(--gold); }
+.app-stat { flex: 1; text-align: center; padding: 6px; }
+.app-scheduled { display: flex; flex-direction: column; gap: 6px; }
+.app-sched-item { padding: 8px; border: 1px solid var(--gold-dim); border-radius: 4px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق تخطيط المنشورات العربي", "url": "https://mdm1.org/apps/content-pulse-planner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم حفظ البيانات في السحابة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع البيانات تحفظ محليًا على جهازك فقط باستخدام localStorage ولا ترسل لأي خادم."}}, {"@type": "Question", "name": "هل أحتاج إلى إنشاء حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل بالكامل بدون حسابات أو تسجيل دخول."}}, {"@type": "Question", "name": "هل يمكنني تعديل منشور محفوظ؟", "acceptedAnswer": {"@type": "Answer", "text": "حالياً يمكنك إضافة منشورات جديدة وحذف الهاشتاجات، ويمكنك تتبع إحصائيات كل منشور بشكل منفصل."}}, {"@type": "Question", "name": "هل يدعم التطبيق جميع المنصات؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم القوالب ومعاينة للإنستغرام وإكس ولينكدإن و تيك توك ويوتيوب شورتس."}}, {"@type": "Question", "name": "هل يعمل التطبيق دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل في المتصفح ولا يحتاج إلى اتصال بالإنترنت بعد تحميل الصفحة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق تخطيط المنشورات العربي</h1>
+  <p class="page-sub">أداة شاملة لجدولة المنشورات واختيار القوالب ومعاينة المحتوى وإدارة الهاشتاجات مع حفظ البيانات محليًا</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بسرعة، يمكنك الآن تنظيم جدول منشوراتك بالكامل في متصفحك دون الحاجة إلى حساب أو خادم خارجي. يتيح لك هذا التطبيق التفاعل مع تقويم شهري لاختيار تواريخ النشر المناسبة، واختيار قالب جاهز يناسب كل منصة من المنصات الاجتماعية المختلفة، ومشاهدة معاينة مباشرة للشكل النهائي للمنشور قبل النشر. كما يمكنك بناء مكتبة خاصة بك من الهاشتاجات شائعة الاستخدام، وحفظها وإضافتها بسرعة، بالإضافة إلى تتبع إحصائيات التفاعل يدوياً مثل المشاهدات والإعجابات والتعليقات والمشاركات لقياس أداء محتواك بمرور الوقت. كل البيانات محفوظة تلقائياً على جهازك فقط، مما يضمن الخصوصية الكاملة.</p>
+
+<div class="app">
+  <div class="card">
+    <label for="monthSelect">اختر الشهر</label>
+    <div class="row">
+      <select id="monthSelect"></select>
+      <select id="yearSelect"></select>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>تقويم جدولة المنشورات</label>
+    <div id="calendarGrid" class="app-calendar"></div>
+    <div class="app-legend">
+      <span class="badge">منشور مجدول</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <label for="postDate">تاريخ النشر المحدد</label>
+    <input id="postDate" type="date" readonly>
+    <label for="platformSelect">اختر المنصة</label>
+    <select id="platformSelect">
+      <option value="">اختر منصة</option>
+      <option value="instagram">إنستغرام</option>
+      <option value="twitter">إكس</option>
+      <option value="linkedin">لينكدإن</option>
+      <option value="tiktok">تيك توك</option>
+      <option value="youtube">يوتيوب شورتس</option>
+    </select>
+    <label for="postTitle">عنوان المنشور</label>
+    <input id="postTitle" type="text" placeholder="أدخل عنوان المنشور">
+    <label for="postCaption">نص المنشور</label>
+    <textarea id="postCaption" rows="4" placeholder="اكتب نص المنشور هنا"></textarea>
+    <label for="templateSelect">قالب جاهز</label>
+    <select id="templateSelect">
+      <option value="">بدون قالب</option>
+      <option value="promo">عرض ترويجي</option>
+      <option value="tips">نصائح</option>
+      <option value="question">سؤال للمشاهدين</option>
+      <option value="announcement">إعلان</option>
+    </select>
+    <div class="row">
+      <button id="savePostBtn" type="button">حفظ المنشور</button>
+      <button id="clearPostBtn" type="button" class="sec">مسح الحقول</button>
+    </div>
+    <div id="postMsg" class="out"></div>
+  </div>
+
+  <div class="card">
+    <label>معاينة مباشرة</label>
+    <div id="previewArea" class="app-preview">
+      <div class="app-preview-header">معاينة المنشور</div>
+      <div id="previewPlatform" class="app-preview-platform"></div>
+      <div id="previewTitle" class="app-preview-title"></div>
+      <div id="previewCaption" class="app-preview-caption"></div>
+      <div id="previewTags" class="app-preview-tags"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>مكتبة الهاشتاجات</label>
+    <div class="row">
+      <input id="hashtagInput" type="text" placeholder="أضف هاشتاج بدون #">
+      <button id="addHashtagBtn" type="button">إضافة</button>
+    </div>
+    <div id="hashtagList" class="app-hashtag-list"></div>
+    <div id="hashtagMsg" class="out"></div>
+  </div>
+
+  <div class="card">
+    <label>إحصائيات التفاعل يدوياً</label>
+    <label for="statsPostSelect">اختر منشور</label>
+    <select id="statsPostSelect">
+      <option value="">اختر منشورًا مجدولًا</option>
+    </select>
+    <label for="viewsInput">المشاهدات</label>
+    <input id="viewsInput" type="number" min="0" placeholder="0">
+    <label for="likesInput">الإعجابات</label>
+    <input id="likesInput" type="number" min="0" placeholder="0">
+    <label for="commentsInput">التعليقات</label>
+    <input id="commentsInput" type="number" min="0" placeholder="0">
+    <label for="sharesInput">المشاركات</label>
+    <input id="sharesInput" type="number" min="0" placeholder="0">
+    <button id="saveStatsBtn" type="button">حفظ الإحصائيات</button>
+    <div class="divider"></div>
+    <div class="row">
+      <div class="app-stat">
+        <div class="big" id="statViews">0</div>
+        <div>مشاهدة</div>
+      </div>
+      <div class="app-stat">
+        <div class="big" id="statLikes">0</div>
+        <div>إعجاب</div>
+      </div>
+      <div class="app-stat">
+        <div class="big" id="statComments">0</div>
+        <div>تعليق</div>
+      </div>
+      <div class="app-stat">
+        <div class="big" id="statShares">0</div>
+        <div>مشاركة</div>
+      </div>
+    </div>
+    <div id="statsMsg" class="out"></div>
+  </div>
+
+  <div class="card">
+    <label>المنشورات المجدولة</label>
+    <div id="scheduledList" class="app-scheduled"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم حفظ البيانات في السحابة؟</h3><p>لا، جميع البيانات تحفظ محليًا على جهازك فقط باستخدام localStorage ولا ترسل لأي خادم.</p><h3>هل أحتاج إلى إنشاء حساب؟</h3><p>لا، التطبيق يعمل بالكامل بدون حسابات أو تسجيل دخول.</p><h3>هل يمكنني تعديل منشور محفوظ؟</h3><p>حالياً يمكنك إضافة منشورات جديدة وحذف الهاشتاجات، ويمكنك تتبع إحصائيات كل منشور بشكل منفصل.</p><h3>هل يدعم التطبيق جميع المنصات؟</h3><p>يدعم القوالب ومعاينة للإنستغرام وإكس ولينكدإن و تيك توك ويوتيوب شورتس.</p><h3>هل يعمل التطبيق دون اتصال بالإنترنت؟</h3><p>نعم، يعمل بالكامل في المتصفح ولا يحتاج إلى اتصال بالإنترنت بعد تحميل الصفحة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="dish-blurb-maker.html" style="color:var(--gold-bright);font-weight:700">مولد أوصاف أطباق القائمة الذكي</a><span style="opacity:.75"> — أنشئ أوصاف جذابة لأطباقك من اسم الطبق ومكوناته باستخدام قوالب جاهزة وبنك كلمات عربي، مع إمكانية النسخ والحفظ…</span></li><li style="margin:.5rem 0"><a href="glp1-shot-pill-companion.html" style="color:var(--gold-bright);font-weight:700">منظم جرعات أدوية السكر والوزن: جدولة وتدوير مواضع الحقن</a><span style="opacity:.75"> — تطبيق مجاني لجدولة جرعات أدوية السكر والوزن وتدوير مواضع الحقن وتقدير تركيز الدواء، مع تسجيل الآثار الجانبية…</span></li><li style="margin:.5rem 0"><a href="hook-blueprint-kit.html" style="color:var(--gold-bright);font-weight:700">منشئ منشورات لينكدإن محليًا</a><span style="opacity:.75"> — أداة تعمل بالكامل داخل المتصفح لإنشاء منشورات لينكدإن مع قوالب وخطاف ومحتوى ودعوة للإجراء ومحفظة وسوم ومخطط…</span></li><li style="margin:.5rem 0"><a href="local-campaign-planner.html" style="color:var(--gold-bright);font-weight:700">أداة منشورات موحدة لعدة منصات</a><span style="opacity:.75"> — أداة شاملة لتأليف منشورات متعددة المنصات مع معاينة وأحصائيات وجدول حملات محليًا في المتصفح دون خوادم أو حسابات</span></li><li style="margin:.5rem 0"><a href="post-lift-lens.html" style="color:var(--gold-bright);font-weight:700">محلل منشورات التواصل الاجتماعي</a><span style="opacity:.75"> — حلل منشوراتك عربيًا دون اتصال: درجة انتشار، تفكيك الجملة الافتتاحية، مقارنة تفاعل، خريطة أوقات، إعادة صياغة…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  try {
+    var monthSelect = document.getElementById('monthSelect');
+    var yearSelect = document.getElementById('yearSelect');
+    var calendarGrid = document.getElementById('calendarGrid');
+    var postDate = document.getElementById('postDate');
+    var platformSelect = document.getElementById('platformSelect');
+    var postTitle = document.getElementById('postTitle');
+    var postCaption = document.getElementById('postCaption');
+    var templateSelect = document.getElementById('templateSelect');
+    var savePostBtn = document.getElementById('savePostBtn');
+    var clearPostBtn = document.getElementById('clearPostBtn');
+    var postMsg = document.getElementById('postMsg');
+    var previewPlatform = document.getElementById('previewPlatform');
+    var previewTitle = document.getElementById('previewTitle');
+    var previewCaption = document.getElementById('previewCaption');
+    var previewTags = document.getElementById('previewTags');
+    var hashtagInput = document.getElementById('hashtagInput');
+    var addHashtagBtn = document.getElementById('addHashtagBtn');
+    var hashtagList = document.getElementById('hashtagList');
+    var hashtagMsg = document.getElementById('hashtagMsg');
+    var statsPostSelect = document.getElementById('statsPostSelect');
+    var viewsInput = document.getElementById('viewsInput');
+    var likesInput = document.getElementById('likesInput');
+    var commentsInput = document.getElementById('commentsInput');
+    var sharesInput = document.getElementById('sharesInput');
+    var saveStatsBtn = document.getElementById('saveStatsBtn');
+    var statViews = document.getElementById('statViews');
+    var statLikes = document.getElementById('statLikes');
+    var statComments = document.getElementById('statComments');
+    var statShares = document.getElementById('statShares');
+    var statsMsg = document.getElementById('statsMsg');
+    var scheduledList = document.getElementById('scheduledList');
+
+    var months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    var now = new Date();
+    var currentYear = now.getFullYear();
+    var currentMonth = now.getMonth();
+
+    for (var y = currentYear - 1; y <= currentYear + 2; y++) {
+      var oy = document.createElement('option');
+      oy.value = y;
+      oy.textContent = y;
+      if (y === currentYear) oy.selected = true;
+      yearSelect.appendChild(oy);
+    }
+    for (var m = 0; m < 12; m++) {
+      var om = document.createElement('option');
+      om.value = m;
+      om.textContent = months[m];
+      if (m === currentMonth) om.selected = true;
+      monthSelect.appendChild(om);
+    }
+
+    function loadData() {
+      try {
+        var d = localStorage.getItem('md_posts');
+        if (d) return JSON.parse(d);
+      } catch(e){}
+      return [];
+    }
+    function saveData(arr) {
+      try { localStorage.setItem('md_posts', JSON.stringify(arr)); } catch(e){}
+    }
+    function loadTags() {
+      try {
+        var t = localStorage.getItem('md_tags');
+        if (t) return JSON.parse(t);
+      } catch(e){}
+      return ['سعودية','محتوى','تسويق'];
+    }
+    function saveTags(arr) {
+      try { localStorage.setItem('md_tags', JSON.stringify(arr)); } catch(e){}
+    }
+    function loadStats() {
+      try {
+        var s = localStorage.getItem('md_stats');
+        if (s) return JSON.parse(s);
+      } catch(e){}
+      return {};
+    }
+    function saveStats(obj) {
+      try { localStorage.setItem('md_stats', JSON.stringify(obj)); } catch(e){}
+    }
+
+    var posts = loadData();
+    var tags = loadTags();
+    var stats = loadStats();
+    var selectedDate = '';
+
+    function renderCalendar() {
+      calendarGrid.innerHTML = '';
+      var year = parseInt(yearSelect.value);
+      var month = parseInt(monthSelect.value);
+      var first = new Date(year, month, 1);
+      var last = new Date(year, month + 1, 0);
+      var startDay = first.getDay();
+      if (startDay === 6) startDay = -1;
+      if (startDay === 0) startDay = 6;
+      for (var i = 0; i < startDay; i++) {
+        var ed = document.createElement('div');
+        ed.className = 'app-cal-day empty';
+        calendarGrid.appendChild(ed);
+      }
+      for (var d = 1; d <= last.getDate(); d++) {
+        var day = document.createElement('div');
+        day.className = 'app-cal-day';
+        day.textContent = d;
+        var ds = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        for (var p = 0; p < posts.length; p++) {
+          if (posts[p].date === ds) { day.classList.add('has-post'); break; }
+        }
+        (function(dateStr, el){
+          el.addEventListener('click', function(){
+            selectedDate = dateStr;
+            postDate.value = dateStr;
+            var days = calendarGrid.querySelectorAll('.app-cal-day');
+            for (var x = 0; x < days.length; x++) {
+              if (days[x].classList.contains('app-cal-day') && !days[x].classList.contains('empty')) {
+                days[x].classList.remove('selected');
+              }
+            }
+            el.classList.add('selected');
+            updatePostSelect();
+            updatePreview();
+          });
+        })(ds, day);
+        calendarGrid.appendChild(day);
+      }
+    }
+
+    function renderTags() {
+      hashtagList.innerHTML = '';
+      for (var i = 0; i < tags.length; i++) {
+        (function(idx, tag){
+          var item = document.createElement('div');
+          item.className = 'app-hashtag-item';
+          var span = document.createElement('span');
+          span.textContent = '#' + tag;
+          var rem = document.createElement('span');
+          rem.className = 'app-hashtag-remove';
+          rem.textContent = '×';
+          rem.addEventListener('click', function(){
+            tags.splice(idx, 1);
+            saveTags(tags);
+            renderTags();
+            updatePreview();
+            updatePostSelect();
+          });
+          item.appendChild(span);
+          item.appendChild(rem);
+          hashtagList.appendChild(item);
+        })(i, tags[i]);
+      }
+    }
+
+    function updatePreview() {
+      var plat = platformSelect.value;
+      var t = postTitle.value;
+      var c = postCaption.value;
+      var pmap = {instagram:'إنستغرام', twitter:'إكس', linkedin:'لينكدإن', tiktok:'تيك توك', youtube:'يوتيوب شورتس'};
+      previewPlatform.textContent = plat ? pmap[plat] : 'لم يتم اختيار منصة';
+      previewTitle.textContent = t || 'عنوان المنشور';
+      previewCaption.textContent = c || 'نص المنشور سيظهر هنا';
+      var tagStr = '';
+      for (var i = 0; i < tags.length; i++) tagStr += '#' + tags[i] + ' ';
+      previewTags.textContent = tagStr.trim();
+    }
+
+    function updatePostSelect() {
+      statsPostSelect.innerHTML = '<option value="">اختر منشورًا مجدولًا</option>';
+      for (var i = 0; i < posts.length; i++) {
+        var op = document.createElement('option');
+        op.value = posts[i].id;
+        op.textContent = posts[i].date + ' - ' + (posts[i].title || posts[i].platform);
+        statsPostSelect.appendChild(op);
+      }
+    }
+
+    function renderScheduled() {
+      scheduledList.innerHTML = '';
+      if (posts.length === 0) {
+        scheduledList.textContent = 'لا توجد منشورات مجدولة';
+        return;
+      }
+      for (var i = 0; i < posts.length; i++) {
+        var item = document.createElement('div');
+        item.className = 'app-sched-item';
+        var txt = document.createElement('div');
+        txt.textContent = posts[i].date + ' | ' + posts[i].platform + ' | ' + (posts[i].title || '(بدون عنوان)');
+        item.appendChild(txt);
+        scheduledList.appendChild(item);
+      }
+    }
+
+    function updateStatsDisplay() {
+      var pid = statsPostSelect.value;
+      var s = stats[pid] || {views:0,likes:0,comments:0,shares:0};
+      statViews.textContent = s.views || 0;
+      statLikes.textContent = s.likes || 0;
+      statComments.textContent = s.comments || 0;
+      statShares.textContent = s.shares || 0;
+      viewsInput.value = s.views || '';
+      likesInput.value = s.likes || '';
+      commentsInput.value = s.comments || '';
+      sharesInput.value = s.shares || '';
+    }
+
+    monthSelect.addEventListener('change', renderCalendar);
+    yearSelect.addEventListener('change', renderCalendar);
+    platformSelect.addEventListener('change', updatePreview);
+    postTitle.addEventListener('input', updatePreview);
+    postCaption.addEventListener('input', updatePreview);
+    templateSelect.addEventListener('change', function(){
+      var tpl = templateSelect.value;
+      if (tpl === 'promo') postCaption.value = 'عرض خاص لفترة محدودة. لا تفوت الفرصة!';
+      else if (tpl === 'tips') postCaption.value = 'نصيحة اليوم: ركز على قيمة حقيقية لمتابعيك.';
+      else if (tpl === 'question') postCaption.value = 'ما رأيك في هذا الموضوع؟ شاركنا برأيك في التعليقات.';
+      else if (tpl === 'announcement') postCaption.value = 'خبر هام: هناك تحديث جديد قريباً.';
+      updatePreview();
+    });
+
+    savePostBtn.addEventListener('click', function(){
+      if (!selectedDate) {
+        postMsg.textContent = 'يرجى اختيار تاريخ من التقويم أولاً';
+        return;
+      }
+      if (!platformSelect.value) {
+        postMsg.textContent = 'يرجى اختيار منصة';
+        return;
+      }
+      var post = {
+        id: Date.now().toString(),
+        date: selectedDate,
+        platform: platformSelect.value,
+        title: postTitle.value,
+        caption: postCaption.value,
+        template: templateSelect.value
+      };
+      posts.push(post);
+      saveData(posts);
+      postMsg.textContent = 'تم حفظ المنشور بنجاح';
+      renderCalendar();
+      updatePostSelect();
+      renderScheduled();
+      setTimeout(function(){ postMsg.textContent=''; }, 2000);
+    });
+
+    clearPostBtn.addEventListener('click', function(){
+      postTitle.value = '';
+      postCaption.value = '';
+      templateSelect.value = '';
+      updatePreview();
+      postMsg.textContent = '';
+    });
+
+    addHashtagBtn.addEventListener('click', function(){
+      var h = hashtagInput.value.replace(/#/g,'').trim();
+      if (!h) {
+        hashtagMsg.textContent = 'يرجى إدخال هاشتاج';
+        setTimeout(function(){ hashtagMsg.textContent=''; }, 1500);
+        return;
+      }
+      if (tags.indexOf(h) !== -1) {
+        hashtagMsg.textContent = 'هذا الهاشتاج موجود بالفعل';
+        setTimeout(function(){ hashtagMsg.textContent=''; }, 1500);
+        return;
+      }
+      tags.push(h);
+      saveTags(tags);
+      hashtagInput.value = '';
+      renderTags();
+      updatePreview();
+      hashtagMsg.textContent = 'تمت الإضافة';
+      setTimeout(function(){ hashtagMsg.textContent=''; }, 1500);
+    });
+
+    statsPostSelect.addEventListener('change', updateStatsDisplay);
+
+    saveStatsBtn.addEventListener('click', function(){
+      var pid = statsPostSelect.value;
+      if (!pid) {
+        statsMsg.textContent = 'يرجى اختيار منشور';
+        setTimeout(function(){ statsMsg.textContent=''; }, 1500);
+        return;
+      }
+      stats[pid] = {
+        views: parseInt(viewsInput.value) || 0,
+        likes: parseInt(likesInput.value) || 0,
+        comments: parseInt(commentsInput.value) || 0,
+        shares: parseInt(sharesInput.value) || 0
+      };
+      saveStats(stats);
+      updateStatsDisplay();
+      statsMsg.textContent = 'تم حفظ الإحصائيات';
+      setTimeout(function(){ statsMsg.textContent=''; }, 1500);
+    });
+
+    renderCalendar();
+    renderTags();
+    updatePreview();
+    updatePostSelect();
+    renderScheduled();
+    updateStatsDisplay();
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>
