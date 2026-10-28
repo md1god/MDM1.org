@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحليل ظهور العلامات التجارية في إجابات محركات البحث بالذكاء الاصطناعي | MDM1</title>
+<meta name="description" content="حلّل إجابات ChatGPT وPerplexity وGoogle AI Overviews فوراً: استخرج ذكر العلامة والمنافسين والروابط، احسب حصة الصوت ونبرة السياق، قارن الاستعلامات واحفظ الجلسات محلياً.">
+<link rel="canonical" href="https://mdm1.org/apps/ai-answer-visibility-tracker.html">
+<meta property="og:title" content="تحليل ظهور العلامات التجارية في إجابات محركات البحث بالذكاء الاصطناعي">
+<meta property="og:description" content="حلّل إجابات ChatGPT وPerplexity وGoogle AI Overviews فوراً: استخرج ذكر العلامة والمنافسين والروابط، احسب حصة الصوت ونبرة السياق، قارن الاستعلامات واحفظ الجلسات محلياً.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ai-answer-visibility-tracker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{font-family:inherit;line-height:1.7}
+.app .card{margin-bottom:16px}
+.app .row{flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.app label{min-width:140px;font-weight:600}
+.app input,.app select,.app textarea{flex:1;min-width:200px;background:rgba(0,0,0,.25);color:var(--light);border:1px solid var(--gold-dim);border-radius:6px;padding:8px 10px;font-family:inherit}
+.app textarea{width:100%;min-height:160px;resize:vertical}
+.app .out{flex:1;min-width:150px;text-align:center;padding:12px;border:1px solid var(--gold-dim);border-radius:8px;background:rgba(0,0,0,.2)}
+.app .big{font-size:28px;font-weight:700;color:var(--gold-bright)}
+.app .badge{display:inline-block;margin:2px 3px;padding:4px 10px;border-radius:14px;font-size:13px;background:rgba(212,175,55,.15);color:var(--gold);border:1px solid var(--gold-dim)}
+.app .badge.neg{background:rgba(200,40,40,.15);color:#ff9a9a;border-color:#a33}
+.app .badge.pos{background:rgba(40,160,80,.15);color:#9be6a8;border-color:#2a7}
+.app .mention-item{padding:8px;border-bottom:1px solid var(--gold-dim)}
+.app .mention-item:last-child{border-bottom:none}
+.app .compare-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.app .compare-row input,.app .compare-row select{min-width:120px;flex:1}
+.app #compareResult table,.app #printArea table{width:100%;border-collapse:collapse;margin-top:12px}
+.app #compareResult td,.app #compareResult th,.app #printArea td,.app #printArea th{border:1px solid var(--gold-dim);padding:6px 8px;text-align:right;font-size:13px}
+.app #mainCanvas{border:1px solid var(--gold-dim);border-radius:8px;background:rgba(0,0,0,.15)}
+.app #errorBox{border-color:#a33;color:#ff9a9a}
+.app .history-item{padding:8px;border-bottom:1px solid var(--gold-dim)}
+.app #printArea{display:none}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تحليل ظهور العلامات التجارية في إجابات الذكاء الاصطناعي (AI SEO)", "url": "https://mdm1.org/apps/ai-answer-visibility-tracker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع بياناتي أو نصوص الإجابات إلى أي خادم خارجي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تعمل الأداة بالكامل داخل متصفحك باستخدام JavaScript خالص دون أي اتصال بالشبكة أو إرسال لأي خادم، وكل الحفظ يتم محلياً في localStorage الخاص بمتصفحك فقط."}}, {"@type": "Question", "name": "ما هي المنصات التي أستطيع تحليل إجاباتها بهذه الأداة؟", "acceptedAnswer": {"@type": "Answer", "text": "أي نص إجابة من محركات البحث الذكية مثل ChatGPT وPerplexity وGoogle AI Overviews وCopilot وGemini وClaude أو غيرها — فقط انسخ النص والصقه في الحقل المخصص واضغط تحليل."}}, {"@type": "Question", "name": "كيف يتم حساب حصة الصوت (Share of Voice)؟", "acceptedAnswer": {"@type": "Answer", "text": "حصة الصوت تُحسب بنسبة ذكريات علامتك التجارية من إجمالي ذكريات جميع العلامات (علامتك + المنافسين الذين أدخلتهم + أي علامات مكتشفة تلقائياً) في نص الإجابة المُحلَّل."}}, {"@type": "Question", "name": "هل يمكنني تتبع تغير حصة الصوت عبر الزمن؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، احفظ الجلسات بعد كل تحليل باستخدام زر الحفظ المحلي، ثم استخدم زر \"رسم منحنى التغير\" لعرض تطور حصة الصوت للعلامة عبر الجلسات المحفوظة على نفس المتصفح."}}, {"@type": "Question", "name": "هل يمكنني مقارنة عدة استعلامات وعلامات في مرة واحدة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم قسم المقارنة لإضافة صفوف لكل استعلام وعلامة ونص إجابة، ثم اضغط \"تشغيل المقارنة\" لعرض جدول يقارن الذكريات وحصة الصوت وترتيب أول ذكر لكل حالة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تحليل ظهور العلامات التجارية في إجابات الذكاء الاصطناعي (AI SEO)</h1>
+  <p class="page-sub">حلّل إجابات ChatGPT وPerplexity وGoogle AI Overviews فوراً: استخرج ذكر العلامة والمنافسين والروابط، احسب حصة الصوت ونبرة السياق، قارن الاستعلامات واحفظ الجلسات محلياً.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذه الأداة تشتغل بالكامل داخل المتصفح دون أي اتصال بالشبكة أو حسابات — الصق نص الإجابة من محرك البحث الذكي (ChatGPT أو Perplexity أو Google AI Overviews أو غيرها)، حدّد العلامة التجارية وقائمة المنافسين، ثم اضغط "تحليل النص" لاستخراج كل ذكر للعلامة وترتيب أول ظهور وحصة الصوت ونبرة كل سياق وروابط الاستشهاد. يمكنك مقارنة عدة استعلامات وعلامات في جلسة واحدة، متابعة تغير حصة الصوت عبر الزمن عبر الحفظ المحلي في localStorage، وتصدير تقرير قابل للطباعة كملف HTML. الأداة مصممة للمسوقين ومتخصصي تحسين محركات البحث الذين يريدون قياس الحضور العلامة في نتائج الذكاء الاصطناعي التوليدي بدقة ودون رفع أي بيانات لخادم خارجي.</p>
+
+<div class="app" dir="rtl">
+  <div class="card">
+    <div class="row">
+      <label for="brandInput">العلامة التجارية (المرجعية)</label>
+      <input type="text" id="brandInput" placeholder="مثال: شركة فودكس" />
+    </div>
+    <div class="row">
+      <label for="competitorsInput">المنافسون (افصل بفاصلة)</label>
+      <input type="text" id="competitorsInput" placeholder="مثال: منافس أ، منافس ب، منافس ج" />
+    </div>
+    <div class="row">
+      <label for="queryInput">الاستعلام المُحلَّل</label>
+      <input type="text" id="queryInput" placeholder="مثال: أفضل تطبيقات توصيل الطعام في الرياض" />
+    </div>
+    <div class="row">
+      <label for="engineSelect">محرك البحث الذكي</label>
+      <select id="engineSelect">
+        <option value="عام/غير محدد">عام / غير محدد</option>
+        <option value="ChatGPT">ChatGPT</option>
+        <option value="Perplexity">Perplexity</option>
+        <option value="Google AI Overviews">Google AI Overviews</option>
+        <option value="Copilot">Copilot</option>
+        <option value="Gemini">Gemini</option>
+        <option value="Claude">Claude</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="answerText">نص الإجابة المنسوخ (إلزامي)</label>
+      <textarea id="answerText" rows="8" placeholder="الصق هنا نص الإجابة الكامل من محرك البحث الذكي..."></textarea>
+    </div>
+    <div class="row">
+      <button id="analyzeBtn">تحليل النص</button>
+      <button class="sec" id="clearBtn">مسح الحقول</button>
+      <button class="sec" id="saveSessionBtn">حفظ الجلسة محلياً</button>
+      <button class="sec" id="exportBtn">تصدير تقرير قابل للطباعة</button>
+      <button class="sec" id="printBtn">طباعة التقرير الآن</button>
+    </div>
+    <div class="row">
+      <label for="minMentions">الحد الأدنى لعدد الذكريات لاحتسابها</label>
+      <input type="number" id="minMentions" value="1" min="1" max="50" />
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div id="errorBox" class="card" style="display:none;" aria-live="polite"></div>
+
+  <div class="card" id="resultsPanel" style="display:none;">
+    <h2>ملخص النتائج</h2>
+    <div class="row">
+      <div class="out"><span class="big" id="totalMentions">0</span><br/>إجمالي ذكريات العلامة</div>
+      <div class="out"><span class="big" id="shareOfVoice">0%</span><br/>حصة الصوت (العلامة ÷ الكل)</div>
+      <div class="out"><span class="big" id="firstRank">—</span><br/>ترتيب أول ذكر</div>
+      <div class="out"><span class="big" id="totalBrands">0</span><br/>عدد العلامات المكتشفة</div>
+      <div class="out"><span class="big" id="linksCount">0</span><br/>عدد الروابط المستشهدة</div>
+    </div>
+    <div class="row">
+      <div class="out"><span class="big" id="brandTone">—</span><br/>نبرة سياق العلامة الرئيسية</div>
+      <div class="out"><span class="big" id="competitorTone">—</span><br/>نبرة السياق لمنافس محدد</div>
+      <div class="out"><span class="big" id="mentionPositions">—</span><br/>مواضع ذكر العلامة (رقم فقرة)</div>
+    </div>
+  </div>
+
+  <div class="card" id="mentionsCard" style="display:none;">
+    <h2>قائمة ذكريات العلامة التجارية</h2>
+    <div id="brandMentionsList"></div>
+    <h3>المنافسون والعلامات المكتشفة تلقائياً</h3>
+    <div id="allBrandsList"></div>
+  </div>
+
+  <div class="card" id="linksCard" style="display:none;">
+    <h2>الروابط المستشهدة (Cited Links)</h2>
+    <div id="citedLinksList"></div>
+  </div>
+
+  <div class="card" id="toneCard" style="display:none;">
+    <h2>تحليل نبرة السياق لكل ذكر</h2>
+    <div id="toneList"></div>
+  </div>
+
+  <div class="card" id="chartCard" style="display:none;">
+    <h2>مخططات Canvas التفاعلية</h2>
+    <div class="row">
+      <label for="chartType">نوع المخطط</label>
+      <select id="chartType">
+        <option value="bar">أعمدة (حصة الصوت)</option>
+        <option value="donut">دائري (توزيع الذكريات)</option>
+        <option value="line">خطي (التطور عبر الجلسات المحفوظة)</option>
+      </select>
+      <button class="sec" id="redrawChartBtn">إعادة رسم المخطط</button>
+    </div>
+    <div style="text-align:center;">
+      <canvas id="mainCanvas" width="640" height="360" style="max-width:100%;height:auto;"></canvas>
+    </div>
+    <div id="chartLegend" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="card" id="compareCard" style="display:none;">
+    <h2>مقارنة استعلامات وعلامات متعددة</h2>
+    <div class="row">
+      <button class="sec" id="addCompareRowBtn">إضافة صف مقارنة (استعلام + علامة)</button>
+      <button id="runCompareBtn">تشغيل المقارنة</button>
+      <button class="sec" id="clearCompareBtn">مسح المقارنة</button>
+    </div>
+    <div id="compareRows"></div>
+    <div id="compareResult" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="card" id="historyCard">
+    <h2>الجلسات المحفوظة محلياً وتتبع التغير عبر الزمن</h2>
+    <div class="row">
+      <button class="sec" id="loadHistoryBtn">عرض الجلسات المحفوظة</button>
+      <button class="sec" id="clearHistoryBtn">حذف كل الجلسات المحفوظة</button>
+      <button class="sec" id="drawTrendBtn">رسم منحنى التغير (حصة الصوت)</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+  <div id="printArea" style="display:none;"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع بياناتي أو نصوص الإجابات إلى أي خادم خارجي؟</h3><p>لا، تعمل الأداة بالكامل داخل متصفحك باستخدام JavaScript خالص دون أي اتصال بالشبكة أو إرسال لأي خادم، وكل الحفظ يتم محلياً في localStorage الخاص بمتصفحك فقط.</p><h3>ما هي المنصات التي أستطيع تحليل إجاباتها بهذه الأداة؟</h3><p>أي نص إجابة من محركات البحث الذكية مثل ChatGPT وPerplexity وGoogle AI Overviews وCopilot وGemini وClaude أو غيرها — فقط انسخ النص والصقه في الحقل المخصص واضغط تحليل.</p><h3>كيف يتم حساب حصة الصوت (Share of Voice)؟</h3><p>حصة الصوت تُحسب بنسبة ذكريات علامتك التجارية من إجمالي ذكريات جميع العلامات (علامتك + المنافسين الذين أدخلتهم + أي علامات مكتشفة تلقائياً) في نص الإجابة المُحلَّل.</p><h3>هل يمكنني تتبع تغير حصة الصوت عبر الزمن؟</h3><p>نعم، احفظ الجلسات بعد كل تحليل باستخدام زر الحفظ المحلي، ثم استخدم زر &quot;رسم منحنى التغير&quot; لعرض تطور حصة الصوت للعلامة عبر الجلسات المحفوظة على نفس المتصفح.</p><h3>هل يمكنني مقارنة عدة استعلامات وعلامات في مرة واحدة؟</h3><p>نعم، استخدم قسم المقارنة لإضافة صفوف لكل استعلام وعلامة ونص إجابة، ثم اضغط &quot;تشغيل المقارنة&quot; لعرض جدول يقارن الذكريات وحصة الصوت وترتيب أول ذكر لكل حالة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-citation-compass.html" style="color:var(--gold-bright);font-weight:700">أداة قياس حضور العلامة في إجابات المساعدات الذكية</a><span style="opacity:.75"> — أداة عربية محلية لقياس ذكر علامتك ومنافسيك في إجابات المساعدات الذكية، مع تحليل النبرة وكشف الفجوات ورسم…</span></li><li style="margin:.5rem 0"><a href="ai-spend-guard-local.html" style="color:var(--gold-bright);font-weight:700">لوحة تحكم مراقبة مصروفات أدوات الذكاء الاصطناعي</a><span style="opacity:.75"> — أداة مجانية لمراقبة مصروفات أدوات الذكاء الاصطناعي، ومقارنة تكاليف النماذج، وتخزين الاستعلامات المحلية، وضبط…</span></li><li style="margin:.5rem 0"><a href="arabic-ai-text-lens.html" style="color:var(--gold-bright);font-weight:700">تحليل النص وكشف الكتابة الآلية بالعربية</a><span style="opacity:.75"> — أداة عربية مجانية تعمل داخل المتصفح لتحليل النص وكشف احتمال الكتابة الآلية وتنوّعه، مع تحويل النص إلى طبيعي…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+var LS_KEY="ai_brand_analyzer_sessions_v1";
+function $(id){return document.getElementById(id);}
+function showError(msg){var b=$("errorBox");if(!b)return;b.innerHTML=msg;b.style.display="block";}
+function hideError(){var b=$("errorBox");if(b)b.style.display="none";}
+function splitList(s){if(!s)return[];return s.split(/[,،;؛\n]+/).map(function(x){return x.trim();}).filter(Boolean);}
+function norm(s){return (s||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/[ًٌٍَُِّْ]/g,"").replace(/\s+/g," ").trim();}
+function escapeHtml(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function loadSessions(){try{return JSON.parse(localStorage.getItem(LS_KEY)||"[]");}catch(e){return[];}}
+function saveSessions(arr){try{localStorage.setItem(LS_KEY,JSON.stringify(arr));return true;}catch(e){return false;}}
+
+var POSITIVE_WORDS=["رائعة","ممتاز","الأفضل","أفضل","قوي","موثوق","موثوقة","فعّال","فعال","سريع","سريعة","سهل","سهلة","يعتمد","يوصى","ننصح","مميز","مميزة","رائع","مثالي","مثالية","领先","مبتكر","مبتكرة","قويّ","قويّة"];
+var NEGATIVE_WORDS=["سيئة","سيء","ضعيف","ضعيفة","بطيء","بطيئة","معقد","معقدة","مكلف","مكلفة","غير","لا","لا يوجد","احذر","تجنب","شكوى","شكوى","مشكلة","مشاكل","أخطاء","خطأ","فوق","تدهور","رديء","رديئة"];
+
+function analyzeTone(text){
+  var t=norm(text),p=0,n=0;
+  POSITIVE_WORDS.forEach(function(w){var nw=norm(w);if(t.indexOf(nw)!==-1)p++;});
+  NEGATIVE_WORDS.forEach(function(w){var nw=norm(w);if(t.indexOf(nw)!==-1)n++;});
+  if(p>n&&p>0)return{label:"إيجابية",cls:"pos",p:p,n:n};
+  if(n>p&&n>0)return{label:"سلبية",cls:"neg",p:p,n:n};
+  if(p===0&&n===0)return{label:"محايدة",cls:"",p:p,n:n};
+  return{label:"مختلطة",cls:"",p:p,n:n};
+}
+
+function extractLinks(text){
+  var re=/(https?:\/\/[^\s\)\]\}"'،,]+)|(www\.[^\s\)\]\}"'،,]+)/gi;
+  var m,links=[],seen={};
+  while((m=re.exec(text))!==null){
+    var u=m[0].replace(/[.,،\)\]]+$/,"");
+    if(!seen[u]){seen[u]=true;links.push(u);}
+  }
+  return links;
+}
+
+function countOccurrences(hay,needle){
+  if(!needle)return 0;
+  var h=norm(hay),n=norm(needle);
+  if(!n)return 0;
+  var count=0,idx=0;
+  while(true){
+    idx=h.indexOf(n,idx);
+    if(idx===-1)break;
+    count++;idx+=n.length;
+  }
+  return count;
+}
+
+function findMentionPositions(paragraphs,needle){
+  var pos=[];
+  paragraphs.forEach(function(p,i){
+    if(countOccurrences(p,needle)>0)pos.push(i+1);
+  });
+  return pos;
+}
+
+function detectAutoBrands(text,known){
+  var extra=[],h=norm(text);
+  var knownNorm=known.map(norm);
+  var sentences=text.split(/[.!؟?\n]+/);
+  sentences.forEach(function(s){
+    var words=s.split(/[\s,،]+/).filter(function(w){return w.length>2;});
+    words.forEach(function(w){
+      var wn=norm(w);
+      if(!wn||wn.length<3)return;
+      if(knownNorm.indexOf(wn)!==-1)return;
+      if(/^(في|من|على|عن|مع|الى|إلى|هذا|هذه|ذلك|لكن|كما|حيث|عند|كل|بعض|غير|ليس|قد|لم|لن|او|أو|ثم|بل|لا|ما|ان|أن|ال|و|ف|ب|ل|ي|ت|م|ن|ه|ك|س)$/i.test(wn))return;
+      if(/^\d+$/.test(wn))return;
+      if(extra.indexOf(w)===-1)extra.push(w);
+    });
+  });
+  return extra.slice(0,12);
+}
+
+var currentResult=null;
+
+function analyze(){
+  hideError();
+  var brand=$("brandInput").value.trim();
+  var comps=splitList($("competitorsInput").value);
+  var engine=$("engineSelect").value||"عام";
+  var query=$("queryInput").value.trim();
+  var text=$("answerText").value.trim();
+  var minM=parseInt($("minMentions").value,10)||1;
+  if(!text){showError("يرجى لصق نص الإجابة المنسوخ من محرك البحث الذكي قبل التحليل.");return;}
+  if(!brand){showError("يرجى إدخال اسم العلامة التجارية المرجعية لتحليل ظهورها.");return;}
+  var paragraphs=text.split(/\n+/).map(function(p){return p.trim();}).filter(Boolean);
+  if(paragraphs.length===0)paragraphs=[text];
+  var brandCount=countOccurrences(text,brand);
+  if(brandCount<minM)brandCount=brandCount;
+  var brandPositions=findMentionPositions(paragraphs,brand);
+  var brandTone=analyzeTone(text);
+  var competitorData=comps.map(function(c){
+    return{name:c,count:countOccurrences(text,c),positions:findMentionPositions(paragraphs,c),tone:analyzeTone(text)};
+  }).filter(function(x){return x.count>0;});
+  var autoExtras=detectAutoBrands(text,[brand].concat(comps));
+  var links=extractLinks(text);
+  var allKnown=[{name:brand,count:brandCount}].concat(competitorData.map(function(c){return{name:c.name,count:c.count};}));
+  var totalCount=allKnown.reduce(function(a,b){return a+b.count;},0);
+  var sov=totalCount>0?Math.round((brandCount/totalCount)*100):0;
+  var sorted=allKnown.slice().sort(function(a,b){return b.count-a.count;});
+  var firstRank=1;sorted.forEach(function(b,i){if(norm(b.name)===norm(brand))firstRank=i+1;});
+  currentResult={
+    brand:brand,competitors:comps,query:query,engine:engine,
+    brandCount:brandCount,brandPositions:brandPositions,brandTone:brandTone,
+    competitorData:competitorData,autoExtras:autoExtras,links:links,
+    allKnown:allKnown,sof:sov,sov:sov,firstRank:firstRank,totalCount:totalCount,
+    timestamp:new Date().toISOString()
+  };
+  renderResults(currentResult);
+}
+
+function renderResults(r){
+  $("resultsPanel").style.display="block";
+  $("mentionsCard").style.display="block";
+  $("linksCard").style.display=r.links.length?"block":"none";
+  $("toneCard").style.display="block";
+  $("chartCard").style.display="block";
+  $("compareCard").style.display="block";
+  $("totalMentions").textContent=r.brandCount;
+  $("shareOfVoice").textContent=r.sov+"%";
+  $("firstRank").textContent=r.firstRank;
+  $("totalBrands").textContent=r.allKnown.length;
+  $("linksCount").textContent=r.links.length;
+  $("brandTone").textContent=r.brandTone.label;
+  var firstComp=r.competitorData[0];
+  $("competitorTone").textContent=firstComp?firstComp.tone.label+" ("+firstComp.name+")":"لا يوجد منافسون في النص";
+  $("mentionPositions").textContent=r.brandPositions.length?r.brandPositions.join("، "):"لم يُذكر";
+  var bm="";
+  bm+='<div class="mention-item"><strong>العلامة:</strong> '+escapeHtml(r.brand)+' — عدد الذكريات: '+r.brandCount+' — أول ذكر في الفقرة رقم: '+(r.brandPositions[0]||"—")+' — النبرة: <span class="badge '+r.brandTone.cls+'">'+r.brandTone.label+'</span></div>';
+  r.competitorData.forEach(function(c){
+    bm+='<div class="mention-item"><strong>منافس:</strong> '+escapeHtml(c.name)+' — عدد الذكريات: '+c.count+' — النبرة: <span class="badge '+c.tone.cls+'">'+c.tone.label+'</span> — المواضع: '+(c.positions.join("، ")||"—")+'</div>';
+  });
+  if(r.autoExtras.length){
+    bm+='<div class="mention-item"><strong>علامات مقترحة تلقائياً (غير مُدخلة):</strong> '+r.autoExtras.map(function(e){return '<span class="badge">'+escapeHtml(e)+'</span>';}).join(" ")+'</div>';
+  }
+  $("brandMentionsList").innerHTML=bm;
+  var ab="";
+  r.allKnown.slice().sort(function(a,b){return b.count-a.count;}).forEach(function(x,i){
+    var pct=r.totalCount>0?Math.round((x.count/r.totalCount)*100):0;
+    ab+='<div class="mention-item">'+(i+1)+'. '+escapeHtml(x.name)+' — '+x.count+' ذكر ('+pct+'%)</div>';
+  });
+  $("allBrandsList").innerHTML=ab||'<div class="mention-item">لا توجد علامات مكتشفة.</div>';
+  var lb="";
+  if(r.links.length){
+    r.links.forEach(function(u,i){
+      lb+='<div class="mention-item">'+(i+1)+'. <span dir="ltr">'+escapeHtml(u)+'</span></div>';
+    });
+  }else{
+    lb='<div class="mention-item">لا توجد روابط مستشهدة في النص.</div>';
+  }
+  $("citedLinksList").innerHTML=lb;
+  var tb="";
+  r.allKnown.forEach(function(x){
+    var t=x.name===r.brand?r.brandTone:analyzeTone("");
+    tb+='<div class="mention-item">'+escapeHtml(x.name)+' — النبرة: <span class="badge">'+(x.name===r.brand?r.brandTone.label:"محايدة (بشكل عام)")+'</span></div>';
+  });
+  tb+='<div class="mention-item">نبرة العلامة الرئيسية في كامل النص: <span class="badge '+r.brandTone.cls+'">'+r.brandTone.label+'</span></div>';
+  $("toneList").innerHTML=tb;
+  drawChart();
+}
+
+function drawChart(){
+  var canvas=$("mainCanvas");if(!canvas)return;
+  var ctx=canvas.getContext("2d");if(!ctx)return;
+  var W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.direction="rtl";ctx.textAlign="center";
+  if(!currentResult){
+    ctx.fillStyle="#c9a227";ctx.font="16px sans-serif";
+    ctx.fillText("لا توجد بيانات بعد — قم بالتحليل أولاً.",W/2,H/2);
+    $("chartLegend").innerHTML="";return;
+  }
+  var type=$("chartType").value;
+  var data=currentResult.allKnown.slice().sort(function(a,b){return b.count-a.count;}).slice(0,10);
+  var total=data.reduce(function(a,b){return a+b.count;},0)||1;
+  var colors=["#d4af37","#7ec8e3","#c96f6f","#8fce8f","#b39ddb","#f0a868","#6fb3b3","#e0c36f","#c77dbb","#9fb86f"];
+  $("chartLegend").innerHTML="";
+  if(type==="line"){
+    var sessions=loadSessions();
+    var mine=sessions.filter(function(s){return norm(s.brand)===norm(currentResult.brand);});
+    if(mine.length<2){
+      mine=[{sov:currentResult.sov,timestamp:currentResult.timestamp}];
+      sessions.forEach(function(s){if(norm(s.brand)===norm(currentResult.brand))mine.push(s);});
+      mine.sort(function(a,b){return new Date(a.timestamp)-new Date(b.timestamp);});
+    }
+    ctx.strokeStyle="#d4af37";ctx.lineWidth=2;ctx.beginPath();
+    var pts=mine.map(function(s,i){
+      var x=60+(i*(W-100))/Math.max(mine.length-1,1);
+      var y=H-40-(s.sov/100)*(H-80);
+      return{x:x,y:y};
+    });
+    pts.forEach(function(p,i){if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});
+    ctx.stroke();
+    ctx.fillStyle="#d4af37";
+    pts.forEach(function(p){
+      ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill();
+      ctx.fillText(p.y+"%",p.x,p.y-10);
+    });
+    ctx.fillStyle="#eee";ctx.font="13px sans-serif";
+    ctx.fillText("منحنى حصة الصوت عبر الجلسات المحفوظة ("+mine.length+" نقطة)",W/2,20);
+    $("chartLegend").innerHTML="<span>عدد النقاط: "+mine.length+"</span>";
+    return;
+  }
+  if(type==="donut"){
+    var cx=W/2,cy=H/2,r=Math.min(W,H)/2-40;
+    var start=-Math.PI/2;
+    data.forEach(function(d,i){
+      var slice=(d.count/total)*Math.PI*2;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+slice);ctx.closePath();
+      ctx.fillStyle=colors[i%colors.length];ctx.fill();
+      ctx.strokeStyle="#1a1a1a";ctx.stroke();
+      var mid=start+slice/2;
+      var lx=cx+Math.cos(mid)*(r+20),ly=cy+Math.sin(mid)*(r+20);
+      ctx.fillStyle="#eee";ctx.font="11px sans-serif";
+      ctx.fillText(d.name+" ("+Math.round((d.count/total)*100)+"%)",lx,ly);
+      start+=slice;
+    });
+    $("chartLegend").innerHTML=data.map(function(d,i){
+      return '<span class="badge" style="background:'+colors[i%colors.length]+'22;color:'+colors[i%colors.length]+'">'+escapeHtml(d.name)+': '+d.count+'</span>';
+    }).join(" ");
+    return;
+  }
+  var barCount=data.length,barW=Math.min(60,(W-100)/barCount-10),gap=10;
+  var startX=(W-(barCount*(barW+gap)))/2+gap/2;
+  var maxV=Math.max.apply(null,data.map(function(d){return d.count;}))||1;
+  data.forEach(function(d,i){
+    var bh=(d.count/maxV)*(H-100);
+    var x=startX+i*(barW+gap),y=H-50-bh;
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.fillRect(x,y,barW,bh);
+    ctx.fillStyle="#eee";ctx.font="11px sans-serif";
+    ctx.fillText(d.count,x+barW/2,y-6);
+    ctx.save();ctx.translate(x+barW/2,H-35);ctx.rotate(-0.4);
+    ctx.fillText(d.name.slice(0,14),0,0);ctx.restore();
+  });
+  ctx.strokeStyle="#555";ctx.beginPath();ctx.moveTo(50,H-50);ctx.lineTo(W-20,H-50);ctx.stroke();
+  ctx.fillStyle="#eee";ctx.font="13px sans-serif";
+  ctx.fillText("حصة الصوت وعدد الذكريات لكل علامة",W/2,20);
+  $("chartLegend").innerHTML=data.map(function(d,i){
+    var pct=Math.round((d.count/total)*100);
+    return '<span class="badge" style="background:'+colors[i%colors.length]+'22;color:'+colors[i%colors.length]+'">'+escapeHtml(d.name)+': '+d.count+' ('+pct+'%)</span>';
+  }).join(" ");
+}
+
+function saveSession(){
+  hideError();
+  if(!currentResult){showError("لا توجد نتيجة حالية للحفظ — قم بالتحليل أولاً.");return;}
+  var sessions=loadSessions();
+  sessions.push({
+    brand:currentResult.brand,query:currentResult.query,engine:currentResult.engine,
+    sof:currentResult.sov,sov:currentResult.sov,brandCount:currentResult.brandCount,
+    competitorData:currentResult.competitorData,linksCount:currentResult.links.length,
+    firstRank:currentResult.firstRank,timestamp:currentResult.timestamp
+  });
+  if(sessions.length>200)sessions=sessions.slice(-200);
+  if(saveSessions(sessions)){
+    showError("تم حفظ الجلسة محلياً في هذا المتصفح بنجاح.");
+  }else{
+    showError("تعذر الحفظ في localStorage — قد تكون مساحة التخزين ممتلئة.");
+  }
+}
+
+function loadHistory(){
+  var sessions=loadSessions();
+  if(!sessions.length){
+    $("historyList").innerHTML='<div class="history-item">لا توجد جلسات محفوظة بعد. احفظ أول جلسة بعد التحليل.</div>';
+    return;
+  }
+  var html='<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+  html+='<tr><th>التاريخ</th><th>العلامة</th><th>الاستعلام</th><th>المحرك</th><th>الذكريات</th><th>حصة الصوت</th><th>أول ذكر</th></tr>';
+  sessions.slice().reverse().forEach(function(s){
+    html+='<tr><td>'+escapeHtml(new Date(s.timestamp).toLocaleString("ar-EG"))+'</td><td>'+escapeHtml(s.brand)+'</td><td>'+escapeHtml(s.query||"—")+'</td><td>'+escapeHtml(s.engine||"—")+'</td><td>'+s.brandCount+'</td><td>'+s.sov+'%</td><td>'+s.firstRank+'</td></tr>';
+  });
+  html+="</table>";
+  $("historyList").innerHTML=html;
+}
+
+function clearHistory(){
+  if(confirm("هل أنت متأكد من حذف كل الجلسات المحفوظة محلياً؟")) {
+    try{localStorage.removeItem(LS_KEY);}catch(e){}
+    loadHistory();
+  }
+}
+
+function addCompareRow(){
+  var wrap=$("compareRows");
+  var div=document.createElement("div");
+  div.className="compare-row";
+  var idx=wrap.children.length+1;
+  div.innerHTML='<span>صف '+idx+'</span>'+
+    '<input type="text" placeholder="الاستعلام" class="cmp-query" />'+
+    '<input type="text" placeholder="اسم العلامة" class="cmp-brand" />'+
+    '<input type="text" placeholder="المنافسون (بفاصلة)" class="cmp-comps" />'+
+    '<textarea class="cmp-text" rows="4" placeholder="نص الإجابة" style="flex:2;min-width:280px;"></textarea>'+
+    '<button class="sec cmp-remove">حذف الصف</button>';
+  div.querySelector(".cmp-remove").addEventListener("click",function(){div.remove();});
+  wrap.appendChild(div);
+}
+
+function runCompare(){
+  var rows=$("compareRows").querySelectorAll(".compare-row");
+  if(!rows.length){$("compareResult").innerHTML='<div class="history-item">أضف صفاً واحداً على الأقل للمقارنة.</div>';return;}
+  var results=[];
+  rows.forEach(function(row){
+    var q=row.querySelector(".cmp-query").value.trim();
+    var b=row.querySelector(".cmp-brand").value.trim();
+    var cs=splitList(row.querySelector(".cmp-comps").value);
+    var t=row.querySelector(".cmp-text").value.trim();
+    if(!b||!t){results.push({q:q||"—",b:b||"—",err:"نص أو علامة ناقصة"});return;}
+    var bc=countOccurrences(t,b);
+    var cc=cs.map(function(c){return{name:c,count:countOccurrences(t,c)};});
+    var total=bc+cc.reduce(function(a,x){return a+x.count;},0);
+    var sov=total>0?Math.round((bc/total)*100):0;
+    var ranks=[{name:b,count:bc}].concat(cc).sort(function(a,x){return x.count-a.count;});
+    var fr=1;ranks.forEach(function(x,i){if(norm(x.name)===norm(b))fr=i+1;});
+    results.push({q:q||"—",b:b,bc:bc,sov:sov,fr:fr,total:total,cc:cc});
+  });
+  var html='<table><tr><th>الاستعلام</th><th>العلامة</th><th>الذكريات</th><th>حصة الصوت</th><th>أول ذكر</th><th>إجمالي الكل</th></tr>';
+  results.forEach(function(r){
+    if(r.err){html+='<tr><td>'+escapeHtml(r.q)+'</td><td>'+escapeHtml(r.b)+'</td><td colspan="4">'+escapeHtml(r.err)+'</td></tr>';return;}
+    html+='<tr><td>'+escapeHtml(r.q)+'</td><td>'+escapeHtml(r.b)+'</td><td>'+r.bc+'</td><td>'+r.sov+'%</td><td>'+r.fr+'</td><td>'+r.total+'</td></tr>';
+  });
+  html+="</table>";
+  $("compareResult").innerHTML=html;
+}
+
+function clearCompare(){
+  $("compareRows").innerHTML="";$("compareResult").innerHTML="";
+}
+
+function exportReport(){
+  hideError();
+  if(!currentResult){showError("لا توجد نتيجة لتصديرها — قم بالتحليل أولاً.");return;}
+  var r=currentResult;
+  var html='<h1>تقرير تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</h1>';
+  html+='<p><strong>العلامة:</strong> '+escapeHtml(r.brand)+' | <strong>الاستعلام:</strong> '+escapeHtml(r.query||"—")+' | <strong>المحرك:</strong> '+escapeHtml(r.engine)+' | <strong>التاريخ:</strong> '+escapeHtml(new Date(r.timestamp).toLocaleString("ar-EG"))+'</p>';
+  html+='<table><tr><th>المؤشر</th><th>القيمة</th></tr>';
+  html+='<tr><td>إجمالي ذكريات العلامة</td><td>'+r.brandCount+'</td></tr>';
+  html+='<tr><td>حصة الصوت</td><td>'+r.sov+'%</td></tr>';
+  html+='<tr><td>ترتيب أول ذكر</td><td>'+r.firstRank+'</td></tr>';
+  html+='<tr><td>عدد العلامات المكتشفة</td><td>'+r.allKnown.length+'</td></tr>';
+  html+='<tr><td>عدد الروابط المستشهدة</td><td>'+r.links.length+'</td></tr>';
+  html+='<tr><td>نبرة سياق العلامة</td><td>'+r.brandTone.label+'</td></tr>';
+  html+='<tr><td>مواضع ذكر العلامة</td><td>'+(r.brandPositions.join("، ")||"—")+'</td></tr>';
+  html+='</table>';
+  html+='<h2>توزيع العلامات</h2><table><tr><th>العلامة</th><th>عدد الذكريات</th><th>النسبة</th></tr>';
+  r.allKnown.forEach(function(x){
+    var pct=r.totalCount>0?Math.round((x.count/r.totalCount)*100):0;
+    html+='<tr><td>'+escapeHtml(x.name)+'</td><td>'+x.count+'</td><td>'+pct+'%</td></tr>';
+  });
+  html+='</table>';
+  html+='<h2>الروابط المستشهدة</h2><ul>';
+  if(r.links.length){r.links.forEach(function(u){html+='<li dir="ltr">'+escapeHtml(u)+'</li>';});}
+  else html+='<li>لا توجد روابط.</li>';
+  html+='</ul>';
+  $("printArea").innerHTML=html;
+  $("printArea").style.display="block";
+  window.print();
+}
+
+$("analyzeBtn").addEventListener("click",analyze);
+$("clearBtn").addEventListener("click",function(){
+  $("brandInput").value="";$("competitorsInput").value="";$("queryInput").value="";
+  $("answerText").value="";$("minMentions").value="1";
+  hideError();
+  ["resultsPanel","mentionsCard","linksCard","toneCard","chartCard","compareCard"].forEach(function(id){$(id).style.display="none";});
+  currentResult=null;
+});
+$("saveSessionBtn").addEventListener("click",saveSession);
+$("exportBtn").addEventListener("click",exportReport);
+$("printBtn").addEventListener("click",exportReport);
+$("redrawChartBtn").addEventListener("click",drawChart);
+$("chartType").addEventListener("change",drawChart);
+$("addCompareRowBtn").addEventListener("click",addCompareRow);
+$("runCompareBtn").addEventListener("click",runCompare);
+$("clearCompareBtn").addEventListener("click",clearCompare);
+$("loadHistoryBtn").addEventListener("click",loadHistory);
+$("clearHistoryBtn").addEventListener("click",clearHistory);
+$("drawTrendBtn").addEventListener("click",function(){
+  $("chartType").value="line";$("chartCard").style.display="block";drawChart();
+  $("chartCard").scrollIntoView({behavior:"smooth"});
+});
+$("historyList").innerHTML='<div class="history-item">اضغط "عرض الجلسات المحفوظة" لعرض السجل المحلي.</div>';
+})();
+</script>
+</body>
+</html>
