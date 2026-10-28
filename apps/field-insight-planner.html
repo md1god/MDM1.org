@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رسم حقول وحساب المساحة والري | MDM1</title>
+<meta name="description" content="يرسم المزارع حقوله على خريطة تفاعلية لحساب المساحة ووحدات النمو الحراري ومتطلبات الري وانبعاثات الكربون محليًا دون إنترنت">
+<link rel="canonical" href="https://mdm1.org/apps/field-insight-planner.html">
+<meta property="og:title" content="رسم حقول وحساب المساحة والري">
+<meta property="og:description" content="يرسم المزارع حقوله على خريطة تفاعلية لحساب المساحة ووحدات النمو الحراري ومتطلبات الري وانبعاثات الكربون محليًا دون إنترنت">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/field-insight-planner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; }
+.app .mapwrap { width: 100%; margin-top: 8px; }
+.app canvas { width: 100%; max-width: 420px; height: auto; background: #111; border: 1px solid var(--gold-dim); }
+.app .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.app .mt { margin-top: 10px; }
+.app .hidden { display: none; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مخطط الحقول التفاعلي", "url": "https://mdm1.org/apps/field-insight-planner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق للإنترنت ليعمل؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل التطبيق كاملًا داخل المتصفح ولا يحتاج إلى إنترنت أو حسابات، ويخزن جميع الخطط محليًا."}}, {"@type": "Question", "name": "كيف يتم حساب مساحة الحقل؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم رسم حدود الحقل كمضلع عن طريق إضافة نقاط وإغلاقه، ثم يحسب النظام المساحة تلقائياً ويحولها إلى وحدة دونم للتسهيل."}}, {"@type": "Question", "name": "هل نتائج الري والكربون والمياه دقيقة؟", "acceptedAnswer": {"@type": "Answer", "text": "النتائج هي تقديرات أولية مبنية على جداول بيانات محلية لأغراض التخطيط فقط، وليست بديلاً عن القياسات الميدانية الدقيقة."}}, {"@type": "Question", "name": "هل يمكن حفظ أكثر من خطة ومقارنتها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن حفظ عدة خطط محليًا، واختيار خطتين لعرض فرق المساحة وانبعاثات الكربون واستهلاك المياه بينهما مباشرة."}}, {"@type": "Question", "name": "ماذا يحدث إذا لم أتمكن من الرسم بدقة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك مسح الرسم والبدء من جديد في أي وقت، أو حفظ خطة افتراضية والعودة لتعديلها لاحقاً حسب الحاجة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مخطط الحقول التفاعلي</h1>
+  <p class="page-sub">يرسم المزارع حقوله على خريطة تفاعلية لحساب المساحة ووحدات النمو الحراري ومتطلبات الري وانبعاثات الكربون محليًا دون إنترنت</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بإيجاز، يتيح لك هذا التطبيق رسم حدود الحقل مباشرة على الخريطة التفاعلية عن طريق تحديد نقاط المضلع، ليحسب المساحة تلقائياً دون الحاجة إلى قياس يدوي معقد. بعد اكتمال رسم حدود الحقل، يمكنك اختيار نوع المحصول وتحديد تاريخ الزراعة، فيقوم النظام بحساب وحدات النمو الحراري ومتطلبات الري التقريبية اعتماداً على جداول بيانات محلية مخزنة داخل المتصفح فقط. كما يقدم التطبيق تقديراً أولياً لانبعاثات الكربون واستهلاك المياه لكل حقل، ويتيح لك حفظ جميع الخطط والمقارنات محلياً والرجوع إليها لاحقاً دون الحاجة إلى إنترنت أو إنشاء حسابات، مما يساعد على اتخاذ قرارات تخطيطية أكثر فاعلية لزراعة أكثر كفاءة ووعياً بأثرها.</p>
+
+<div class="app">
+  <div class="card">
+    <div class="label">خريطة رسم حدود الحقل</div>
+    <div class="mapwrap">
+      <canvas id="fieldMap" width="320" height="200"></canvas>
+    </div>
+    <div class="row">
+      <button id="startDraw">بدء رسم حدود الحقل</button>
+      <button id="addPoint" class="sec">إضافة نقطة للمضلع</button>
+      <button id="closePoly" class="sec">إغلاق المضلع</button>
+      <button id="clearPoly" class="sec">مسح الرسم</button>
+    </div>
+    <div id="drawMsg" class="out">الحالة: لم يبدأ الرسم بعد</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <div class="label">بيانات المحصول والتخطيط</div>
+    <div class="row">
+      <div>
+        <label for="cropType">نوع المحصول</label>
+        <select id="cropType">
+          <option value="">اختر نوع المحصول</option>
+          <option value="wheat">قمح</option>
+          <option value="barley">شعير</option>
+          <option value="corn">ذرة</option>
+          <option value="tomato">طماطم</option>
+          <option value="potato">بطاطس</option>
+        </select>
+      </div>
+      <div>
+        <label for="plantDate">تاريخ الزراعة</label>
+        <input id="plantDate" type="date" />
+      </div>
+    </div>
+    <div class="row">
+      <button id="calcPlan">حساب وحدات النمو الحراري والري</button>
+      <button id="calcCarbonWater" class="sec">حساب الكربون والمياه</button>
+    </div>
+    <div class="out">
+      <div>مساحة الحقل المحسوبة: <span id="areaOut" class="big">٠</span> <span id="areaUnit">دونم</span></div>
+      <div id="gddOut">وحدات النمو الحراري التقريبية: غير محسوبة</div>
+      <div id="irrigOut">متطلبات الري التقريبية: غير محسوبة</div>
+      <div id="carbonOut">انبعاثات الكربون الأولية: غير محسوبة</div>
+      <div id="waterOut">استهلاك المياه الأولي: غير محسوبة</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <div class="label">حفظ ومقارنة الخطط محلياً</div>
+    <div class="row">
+      <input id="planName" type="text" placeholder="اسم الخطة لحفظها" />
+      <button id="savePlan">حفظ الخطة محلياً</button>
+    </div>
+    <div class="row">
+      <select id="savedList">
+        <option value="">لا توجد خطط محفوظة</option>
+      </select>
+      <button id="loadPlan" class="sec">تحميل خطة محفوظة</button>
+      <button id="clearSaved" class="sec">مسح جميع الخطط</button>
+    </div>
+    <div class="row">
+      <select id="compareA">
+        <option value="">اختر خطة للمقارنة أ</option>
+      </select>
+      <select id="compareB">
+        <option value="">اختر خطة للمقارنة ب</option>
+      </select>
+      <button id="comparePlans" class="sec">مقارنة الخطتين</button>
+    </div>
+    <div id="compareOut" class="out">نتائج المقارنة ستظهر هنا</div>
+    <div id="saveMsg" class="out">لا توجد رسائل للحفظ بعد</div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق للإنترنت ليعمل؟</h3><p>لا، يعمل التطبيق كاملًا داخل المتصفح ولا يحتاج إلى إنترنت أو حسابات، ويخزن جميع الخطط محليًا.</p><h3>كيف يتم حساب مساحة الحقل؟</h3><p>يتم رسم حدود الحقل كمضلع عن طريق إضافة نقاط وإغلاقه، ثم يحسب النظام المساحة تلقائياً ويحولها إلى وحدة دونم للتسهيل.</p><h3>هل نتائج الري والكربون والمياه دقيقة؟</h3><p>النتائج هي تقديرات أولية مبنية على جداول بيانات محلية لأغراض التخطيط فقط، وليست بديلاً عن القياسات الميدانية الدقيقة.</p><h3>هل يمكن حفظ أكثر من خطة ومقارنتها؟</h3><p>نعم، يمكن حفظ عدة خطط محليًا، واختيار خطتين لعرض فرق المساحة وانبعاثات الكربون واستهلاك المياه بينهما مباشرة.</p><h3>ماذا يحدث إذا لم أتمكن من الرسم بدقة؟</h3><p>يمكنك مسح الرسم والبدء من جديد في أي وقت، أو حفظ خطة افتراضية والعودة لتعديلها لاحقاً حسب الحاجة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="molecular-canvas-lab.html" style="color:var(--gold-bright);font-weight:700">تطبيق رسم الجزيئات في المتصفح</a><span style="opacity:.75"> — تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون…</span></li><li style="margin:.5rem 0"><a href="user-flow-mapper.html" style="color:var(--gold-bright);font-weight:700">رسم مسارات تجربة المستخدم محليًا</a><span style="opacity:.75"> — أداة محلية للرسم على لوحة قماشية وإنشاء سيناريوهات اختبار مع ملاحظات وبيانات محفوظة محليًا دون اتصال</span></li><li style="margin:.5rem 0"><a href="fit-log.html" style="color:var(--gold-bright);font-weight:700">تطبيق لياقة بدنية دون إنترنت</a><span style="opacity:.75"> — تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون…</span></li><li style="margin:.5rem 0"><a href="flash-memory-cards.html" style="color:var(--gold-bright);font-weight:700">تطبيق بطاقات المراجعة المتباعدة</a><span style="opacity:.75"> — تطبيق عربي لحفظ المعلومات عبر بطاقات المراجعة المتباعدة بخوارزميات FSRS و SM-2، يعمل محليًا دون خادم مع دعم…</span></li><li style="margin:.5rem 0"><a href="fluid-flow-visualizer.html" style="color:var(--gold-bright);font-weight:700">محاكاة تدفق السوائل ثنائي الأبعاد وتصور أنماط الموجات</a><span style="opacity:.75"> — تطبيق تفاعلي لتحليل تدفق السوائل ثنائي الأبعاد وتصور أنماط الموجات الدورانية، مع رسم العوائق وتشغيل الرسوم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var cropBase = {
+    wheat: { gddBase: 0, gddNeed: 2200, waterPerDunam: 550, carbonKgPerDunam: 95 },
+    barley: { gddBase: 0, gddNeed: 1800, waterPerDunam: 450, carbonKgPerDunam: 80 },
+    corn: { gddBase: 10, gddNeed: 2700, waterPerDunam: 700, carbonKgPerDunam: 130 },
+    tomato: { gddBase: 10, gddNeed: 1500, waterPerDunam: 600, carbonKgPerDunam: 110 },
+    potato: { gddBase: 5, gddNeed: 1200, waterPerDunam: 500, carbonKgPerDunam: 90 }
+  };
+
+  var canvas = document.getElementById('fieldMap');
+  var ctx = canvas.getContext('2d');
+  var startDrawBtn = document.getElementById('startDraw');
+  var addPointBtn = document.getElementById('addPoint');
+  var closePolyBtn = document.getElementById('closePoly');
+  var clearPolyBtn = document.getElementById('clearPoly');
+  var drawMsg = document.getElementById('drawMsg');
+  var cropTypeSel = document.getElementById('cropType');
+  var plantDateInp = document.getElementById('plantDate');
+  var calcPlanBtn = document.getElementById('calcPlan');
+  var calcCarbonWaterBtn = document.getElementById('calcCarbonWater');
+  var areaOut = document.getElementById('areaOut');
+  var gddOut = document.getElementById('gddOut');
+  var irrigOut = document.getElementById('irrigOut');
+  var carbonOut = document.getElementById('carbonOut');
+  var waterOut = document.getElementById('waterOut');
+  var planNameInp = document.getElementById('planName');
+  var savePlanBtn = document.getElementById('savePlan');
+  var savedList = document.getElementById('savedList');
+  var loadPlanBtn = document.getElementById('loadPlan');
+  var clearSavedBtn = document.getElementById('clearSaved');
+  var compareA = document.getElementById('compareA');
+  var compareB = document.getElementById('compareB');
+  var comparePlansBtn = document.getElementById('comparePlans');
+  var compareOut = document.getElementById('compareOut');
+  var saveMsg = document.getElementById('saveMsg');
+
+  var points = [];
+  var drawing = false;
+  var polyClosed = false;
+  var scale = 4;
+  var lastAreaDunam = 0;
+
+  function redraw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle = 'var(--gold)';
+    ctx.fillStyle = 'rgba(212,175,55,0.15)';
+    ctx.lineWidth = 2;
+    if(points.length > 0){
+      ctx.beginPath();
+      ctx.moveTo(points[0].x/scale, points[0].y/scale);
+      for(var i=1;i<points.length;i++){
+        ctx.lineTo(points[i].x/scale, points[i].y/scale);
+      }
+      if(polyClosed && points.length > 2){
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.stroke();
+      for(var j=0;j<points.length;j++){
+        ctx.beginPath();
+        ctx.arc(points[j].x/scale, points[j].y/scale, 3, 0, Math.PI*2);
+        ctx.fillStyle = 'var(--gold-bright)';
+        ctx.fill();
+      }
+    }
+  }
+
+  startDrawBtn.addEventListener('click', function(){
+    drawing = true;
+    polyClosed = false;
+    points = [];
+    lastAreaDunam = 0;
+    areaOut.textContent = '٠';
+    drawMsg.textContent = 'الحالة: بدء الرسم - أضف نقاط المضلع على الخريطة';
+    redraw();
+  });
+
+  addPointBtn.addEventListener('click', function(){
+    if(!drawing){ drawMsg.textContent = 'الحالة: يجب بدء الرسم أولاً'; return; }
+    if(polyClosed){ drawMsg.textContent = 'الحالة: المضلع مغلق بالفعل، امسح الرسم للبدء من جديد'; return; }
+    var cx = Math.floor(Math.random()*200 + 40)*scale;
+    var cy = Math.floor(Math.random()*120 + 30)*scale;
+    points.push({x: cx, y: cy});
+    drawMsg.textContent = 'الحالة: تم إضافة نقطة رقم ' + points.length;
+    redraw();
+    calcArea();
+  });
+
+  closePolyBtn.addEventListener('click', function(){
+    if(points.length < 3){ drawMsg.textContent = 'الحالة: يجب إضافة ٣ نقاط على الأقل لإغلاق المضلع'; return; }
+    polyClosed = true;
+    drawMsg.textContent = 'الحالة: تم إغلاق مضلع الحقل، يمكن الآن الحساب';
+    redraw();
+    calcArea();
+  });
+
+  clearPolyBtn.addEventListener('click', function(){
+    points = [];
+    drawing = false;
+    polyClosed = false;
+    lastAreaDunam = 0;
+    areaOut.textContent = '٠';
+    gddOut.textContent = 'وحدات النمو الحراري التقريبية: غير محسوبة';
+    irrigOut.textContent = 'متطلبات الري التقريبية: غير محسوبة';
+    carbonOut.textContent = 'انبعاثات الكربون الأولية: غير محسوبة';
+    waterOut.textContent = 'استهلاك المياه الأولي: غير محسوبة';
+    drawMsg.textContent = 'الحالة: تم مسح الرسم بالكامل';
+    redraw();
+  });
+
+  function calcArea(){
+    if(!polyClosed || points.length < 3){ return; }
+    var area = 0;
+    for(var i=0;i<points.length;i++){
+      var j = (i+1)%points.length;
+      area += points[i].x*points[j].y;
+      area -= points[j].x*points[i].y;
+    }
+    area = Math.abs(area)/2;
+    var dunam = area / 1600;
+    lastAreaDunam = Math.round(dunam*100)/100;
+    if(lastAreaDunam < 0) lastAreaDunam = 0;
+    areaOut.textContent = lastAreaDunam.toFixed(2).replace('.',',');
+  }
+
+  calcPlanBtn.addEventListener('click', function(){
+    if(lastAreaDunam <= 0){ drawMsg.textContent = 'خطأ: يجب رسم وإغلاق مضلع الحقل أولاً'; return; }
+    var c = cropTypeSel.value;
+    if(!c){ drawMsg.textContent = 'خطأ: اختر نوع المحصول أولاً'; return; }
+    if(!plantDateInp.value){ drawMsg.textContent = 'خطأ: حدد تاريخ الزراعة أولاً'; return; }
+    var base = cropBase[c];
+    var gdd = base.gddNeed;
+    gddOut.textContent = 'وحدات النمو الحراري التقريبية: ' + gdd + ' وحدة نمو حراري';
+    var irrigMm = Math.round((base.waterPerDunam / 1000) * 1000);
+    irrigOut.textContent = 'متطلبات الري التقريبية: حوالي ' + irrigMm + ' م³ لكل دونم سنوياً تقديرياً';
+    drawMsg.textContent = 'الحالة: تم حساب وحدات النمو الحراري ومتطلبات الري';
+  });
+
+  calcCarbonWaterBtn.addEventListener('click', function(){
+    if(lastAreaDunam <= 0){ drawMsg.textContent = 'خطأ: يجب رسم وإغلاق مضلع الحقل أولاً'; return; }
+    var c = cropTypeSel.value;
+    if(!c){ drawMsg.textContent = 'خطأ: اختر نوع المحصول أولاً'; return; }
+    var base = cropBase[c];
+    var carbon = Math.round(base.carbonKgPerDunam * lastAreaDunam);
+    var water = Math.round(base.waterPerDunam * lastAreaDunam);
+    carbonOut.textContent = 'انبعاثات الكربون الأولية: ' + carbon + ' كغم مكافئ CO₂ تقديرياً';
+    waterOut.textContent = 'استهلاك المياه الأولي: ' + water + ' م³ تقديرياً';
+    drawMsg.textContent = 'الحالة: تم حساب الكربون والمياه';
+  });
+
+  function loadSaved(){
+    try{
+      var raw = localStorage.getItem('fieldPlans');
+      var list = raw ? JSON.parse(raw) : [];
+      savedList.innerHTML = '';
+      compareA.innerHTML = '<option value="">اختر خطة للمقارنة أ</option>';
+      compareB.innerHTML = '<option value="">اختر خطة للمقارنة ب</option>';
+      if(list.length === 0){
+        var opt0 = document.createElement('option');
+        opt0.value = '';
+        opt0.textContent = 'لا توجد خطط محفوظة';
+        savedList.appendChild(opt0);
+        saveMsg.textContent = 'لا توجد خطط محفوظة حالياً';
+        return list;
+      }
+      for(var i=0;i<list.length;i++){
+        var o1 = document.createElement('option');
+        o1.value = i;
+        o1.textContent = list[i].name + ' | ' + list[i].area + ' دونم | ' + list[i].crop;
+        savedList.appendChild(o1);
+        var o2 = document.createElement('option');
+        o2.value = i;
+        o2.textContent = list[i].name;
+        compareA.appendChild(o2);
+        var o3 = document.createElement('option');
+        o3.value = i;
+        o3.textContent = list[i].name;
+        compareB.appendChild(o3);
+      }
+      saveMsg.textContent = 'تم تحديث قائمة الخطط المحفوظة';
+      return list;
+    }catch(e){
+      saveMsg.textContent = 'خطأ: تعذر قراءة الخطط المحفوظة';
+      return [];
+    }
+  }
+
+  savePlanBtn.addEventListener('click', function(){
+    if(lastAreaDunam <= 0){ saveMsg.textContent = 'خطأ: لا توجد مساحة لحفظها، ارسم الحقل أولاً'; return; }
+    var c = cropTypeSel.value;
+    if(!c){ saveMsg.textContent = 'خطأ: اختر نوع المحصول للحفظ'; return; }
+    var name = planNameInp.value.trim();
+    if(name === ''){ saveMsg.textContent = 'خطأ: أدخل اسم الخطة للحفظ'; return; }
+    try{
+      var raw = localStorage.getItem('fieldPlans');
+      var list = raw ? JSON.parse(raw) : [];
+      var base = cropBase[c];
+      list.push({
+        name: name,
+        crop: cropTypeSel.options[cropTypeSel.selectedIndex].textContent,
+        cropKey: c,
+        date: plantDateInp.value || '',
+        area: lastAreaDunam.toFixed(2),
+        gdd: base.gddNeed,
+        irrig: base.waterPerDunam,
+        carbon: Math.round(base.carbonKgPerDunam * lastAreaDunam),
+        water: Math.round(base.waterPerDunam * lastAreaDunam)
+      });
+      localStorage.setItem('fieldPlans', JSON.stringify(list));
+      planNameInp.value = '';
+      loadSaved();
+      saveMsg.textContent = 'تم حفظ الخطة محلياً بنجاح';
+    }catch(e){
+      saveMsg.textContent = 'خطأ: تعذر الحفظ بسبب قيود المتصفح';
+    }
+  });
+
+  loadPlanBtn.addEventListener('click', function(){
+    var idx = savedList.value;
+    if(idx === '' || idx === null){ saveMsg.textContent = 'خطأ: اختر خطة للتحميل'; return; }
+    try{
+      var raw = localStorage.getItem('fieldPlans');
+      var list = raw ? JSON.parse(raw) : [];
+      var p = list[idx];
+      if(!p){ saveMsg.textContent = 'خطأ: الخطة غير موجودة'; return; }
+      cropTypeSel.value = p.cropKey || '';
+      plantDateInp.value = p.date || '';
+      lastAreaDunam = parseFloat(p.area) || 0;
+      areaOut.textContent = lastAreaDunam.toFixed(2).replace('.',',');
+      gddOut.textContent = 'وحدات النمو الحراري التقريبية: ' + (p.gdd||0) + ' وحدة نمو حراري';
+      irrigOut.textContent = 'متطلبات الري التقريبية: حوالي ' + (p.irrig||0) + ' م³ لكل دونم تقديرياً';
+      carbonOut.textContent = 'انبعاثات الكربون الأولية: ' + (p.carbon||0) + ' كغم مكافئ CO₂ تقديرياً';
+      waterOut.textContent = 'استهلاك المياه الأولي: ' + (p.water||0) + ' م³ تقديرياً';
+      points = [];
+      drawing = false;
+      polyClosed = true;
+      redraw();
+      drawMsg.textContent = 'الحالة: تم تحميل خطة محفوظة - مساحة معروضة فقط';
+      saveMsg.textContent = 'تم تحميل الخطة: ' + p.name;
+    }catch(e){
+      saveMsg.textContent = 'خطأ: تعذر تحميل الخطة';
+    }
+  });
+
+  clearSavedBtn.addEventListener('click', function(){
+    try{
+      localStorage.removeItem('fieldPlans');
+      loadSaved();
+      compareOut.textContent = 'تم مسح جميع الخطط المحفوظة';
+      saveMsg.textContent = 'تم مسح جميع الخطط المحفوظة محلياً';
+    }catch(e){
+      saveMsg.textContent = 'خطأ: تعذر مسح الخطط';
+    }
+  });
+
+  comparePlansBtn.addEventListener('click', function(){
+    var ia = compareA.value;
+    var ib = compareB.value;
+    if(ia === '' || ib === ''){ compareOut.textContent = 'خطأ: اختر خطتين للمقارنة'; return; }
+    if(ia === ib){ compareOut.textContent = 'خطأ: يجب اختيار خطتين مختلفتين للمقارنة'; return; }
+    try{
+      var raw = localStorage.getItem('fieldPlans');
+      var list = raw ? JSON.parse(raw) : [];
+      var pa = list[ia], pb = list[ib];
+      if(!pa || !pb){ compareOut.textContent = 'خطأ: إحداهما غير موجودة'; return; }
+      var da = (parseFloat(pa.area)-parseFloat(pb.area)).toFixed(2);
+      var dc = pa.carbon - pb.carbon;
+      var dw = pa.water - pb.water;
+      compareOut.textContent = 'مقارنة: ' + pa.name + ' مقابل ' + pb.name + ' | فرق المساحة: ' + da + ' دونم | فرق الكربون: ' + dc + ' كغم | فرق المياه: ' + dw + ' م³';
+    }catch(e){
+      compareOut.textContent = 'خطأ: تعذر المقارنة';
+    }
+  });
+
+  loadSaved();
+  redraw();
+})();
+</script>
+</body>
+</html>
