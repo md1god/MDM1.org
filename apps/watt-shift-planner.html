@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جدولة تشغيل الأجهزة حسب الكهرباء | MDM1</title>
+<meta name="description" content="تقترح أفضل أوقات تشغيل الأجهزة بناءً على أسعار الكهرباء وسعة البطارية وإنتاج الألواح الشمسية لتقليل التكلفة">
+<link rel="canonical" href="https://mdm1.org/apps/watt-shift-planner.html">
+<meta property="og:title" content="جدولة تشغيل الأجهزة حسب الكهرباء">
+<meta property="og:description" content="تقترح أفضل أوقات تشغيل الأجهزة بناءً على أسعار الكهرباء وسعة البطارية وإنتاج الألواح الشمسية لتقليل التكلفة">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/watt-shift-planner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { margin: 12px 0; }
+.app .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.app .row > div { display: flex; flex-direction: column; min-width: 180px; flex: 1; }
+.app canvas { width: 100%; max-width: 800px; background: var(--dark); border: 1px solid var(--gold-dim); }
+.app h3 { margin: 6px 0 10px 0; }
+.app #devList { min-height: 48px; }
+.app #planMsg { margin-top: 8px; display: inline-block; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة جدولة تشغيل الأجهزة المنزلية", "url": "https://mdm1.org/apps/watt-shift-planner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل هذه الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تعمل بالكامل داخل المتصفح دون خوادم أو حسابات، وتحفظ الإعدادات محليًا فقط."}}, {"@type": "Question", "name": "كيف يتم تحديد أفضل أوقات التشغيل؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم ترتيب الأجهزة حسب الأولوية، ثم إعطاء الأولوية لاستخدام إنتاج الألواح، ثم شحن البطارية المتاح، وأخيرًا الشبكة مع مراعاة سعر كل فترة."}}, {"@type": "Question", "name": "هل يمكن حفظ الإعدادات واستعادتها لاحقًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، باستخدام زر حفظ جميع الإعدادات وزر استعادة الإعدادات المحفوظة عبر تخزين المتصفح المحلي."}}, {"@type": "Question", "name": "ماذا يعني ألوان المخطط الزمني؟", "acceptedAnswer": {"@type": "Answer", "text": "الأخضر للألواح، والأصفر للبطارية، والذهبي للشبكة خارج الذروة، والأحمر للشبكة وقت الذروة."}}, {"@type": "Question", "name": "هل يتم مراعاة سعة البطارية الحالية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يأخذ الاقتراح بعين الاعتبار سعة البطارية القصوى والشحن الحالي قبل اللجوء إلى الشبكة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة جدولة تشغيل الأجهزة المنزلية</h1>
+  <p class="page-sub">تقترح أفضل أوقات تشغيل الأجهزة بناءً على أسعار الكهرباء وسعة البطارية وإنتاج الألواح الشمسية لتقليل التكلفة</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: هذه الأداة تساعدك على تحديد أفضل الأوقات لتشغيل أجهزتك المنزلية بالتركيز على تقليل التكلفة قدر الإمكان. يعتمد الاقتراح على أسعار الكهرباء بالساعة، وإنتاج الألواح الشمسية المتوقعة، وسعة البطارية المتاحة، وأولويات الأجهزة التي تضيفها مع ساعات التشغيل المطلوبة لكل جهاز. بعد إدخال البيانات، سيعرض المخطط الزمني التفاعلي على القماش أوقات التشغيل المقترحة، ويحسب التكلفة التقديرية وفقًا للوقت المختار، مع إمكانية حفظ جميع الإعدادات محليًا في متصفحك دون الحاجة إلى خوادم أو حسابات.</p>
+
+<div class="app card">
+  <div class="row">
+    <div>
+      <label for="pricePeak">سعر الكهرباء وقت الذروة بالريال/كيلوواط</label>
+      <input id="pricePeak" type="number" step="0.01" min="0" />
+    </div>
+    <div>
+      <label for="priceOff">سعر الكهرباء خارج الذروة بالريال/كيلوواط</label>
+      <input id="priceOff" type="number" step="0.01" min="0" />
+    </div>
+    <div>
+      <label for="pvNow">إنتاج الألواح المتاح بالساعة بالكيلوواط</label>
+      <input id="pvNow" type="number" step="0.01" min="0" />
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <label for="batCap">سعة البطارية القصوى بالكيلوواط/ساعة</label>
+      <input id="batCap" type="number" step="0.01" min="0" />
+    </div>
+    <div>
+      <label for="batCur">شحن البطارية الحالي بالكيلوواط/ساعة</label>
+      <input id="batCur" type="number" step="0.01" min="0" />
+    </div>
+    <div>
+      <label for="hoursCount">عدد الساعات للتخطيط</label>
+      <input id="hoursCount" type="number" min="1" max="24" value="24" />
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <div>
+      <label for="devName">اسم الجهاز</label>
+      <input id="devName" type="text" />
+    </div>
+    <div>
+      <label for="devLoad">قدرة الجهاز بالكيلوواط</label>
+      <input id="devLoad" type="number" step="0.01" min="0" />
+    </div>
+    <div>
+      <label for="devHours">ساعات التشغيل المطلوبة</label>
+      <input id="devHours" type="number" min="1" max="24" />
+    </div>
+    <div>
+      <label for="devPri">أولوية الجهاز</label>
+      <select id="devPri">
+        <option value="1">أولوية عالية</option>
+        <option value="2">أولوية متوسطة</option>
+        <option value="3">أولوية منخفضة</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <button id="addDev">إضافة الجهاز</button>
+    <button id="clearDev" class="sec">مسح قائمة الأجهزة</button>
+    <button id="saveSet">حفظ جميع الإعدادات</button>
+    <button id="loadSet" class="sec">استعادة الإعدادات المحفوظة</button>
+    <button id="runPlan">اقتراح أفضل أوقات التشغيل</button>
+  </div>
+  <div id="devList" class="out">لا توجد أجهزة مضافة بعد</div>
+</div>
+
+<div class="app card">
+  <h3>مخطط زمني تفاعلي على القماش</h3>
+  <canvas id="timeCanvas" width="800" height="160"></canvas>
+  <div class="row">
+    <span class="badge">أخضر: تشغيل بالألواح</span>
+    <span class="badge">أصفر: تشغيل بالبطارية</span>
+    <span class="badge">ذهبي: تشغيل من الشبكة خارج الذروة</span>
+    <span class="badge">أحمر: تشغيل من الشبكة وقت الذروة</span>
+  </div>
+</div>
+
+<div class="app card">
+  <h3>التكلفة التقديرية</h3>
+  <div class="out">
+    <div>التكلفة الإجمالية التقديرية: <span id="costTotal" class="big">٠.٠٠</span> ريال</div>
+    <div>استهلاك من الألواح: <span id="usePv">٠.٠٠</span> كيلوواط/ساعة</div>
+    <div>استهلاك من البطارية: <span id="useBat">٠.٠٠</span> كيلوواط/ساعة</div>
+    <div>استهلاك من الشبكة خارج الذروة: <span id="useOff">٠.٠٠</span> كيلوواط/ساعة</div>
+    <div>استهلاك من الشبكة وقت الذروة: <span id="usePeak">٠.٠٠</span> كيلوواط/ساعة</div>
+    <div id="planMsg" class="badge">أدخل البيانات ثم اضغط على اقتراح أفضل أوقات التشغيل</div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل هذه الأداة دون اتصال بالإنترنت؟</h3><p>نعم، تعمل بالكامل داخل المتصفح دون خوادم أو حسابات، وتحفظ الإعدادات محليًا فقط.</p><h3>كيف يتم تحديد أفضل أوقات التشغيل؟</h3><p>يتم ترتيب الأجهزة حسب الأولوية، ثم إعطاء الأولوية لاستخدام إنتاج الألواح، ثم شحن البطارية المتاح، وأخيرًا الشبكة مع مراعاة سعر كل فترة.</p><h3>هل يمكن حفظ الإعدادات واستعادتها لاحقًا؟</h3><p>نعم، باستخدام زر حفظ جميع الإعدادات وزر استعادة الإعدادات المحفوظة عبر تخزين المتصفح المحلي.</p><h3>ماذا يعني ألوان المخطط الزمني؟</h3><p>الأخضر للألواح، والأصفر للبطارية، والذهبي للشبكة خارج الذروة، والأحمر للشبكة وقت الذروة.</p><h3>هل يتم مراعاة سعة البطارية الحالية؟</h3><p>نعم، يأخذ الاقتراح بعين الاعتبار سعة البطارية القصوى والشحن الحالي قبل اللجوء إلى الشبكة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="agent-swarm.html" style="color:var(--gold-bright);font-weight:700">منصة سير عمل وكلاء افتراضيين مع سياق مشترك وإعادة تشغيل</a><span style="opacity:.75"> — منصة عربية تفسير سير عمل وكلاء افتراضيين عبر سياق مشترك متبادل مع اعادة تشغيل تلقائية للأعطال وتتبع التكلفة…</span></li><li style="margin:.5rem 0"><a href="content-pulse-planner.html" style="color:var(--gold-bright);font-weight:700">جدولة منشورات المحتوى الذكي</a><span style="opacity:.75"> — أداة شاملة لجدولة المنشورات واختيار القوالب ومعاينة المحتوى وإدارة الهاشتاجات مع حفظ البيانات محليًا</span></li><li style="margin:.5rem 0"><a href="glp1-shot-pill-companion.html" style="color:var(--gold-bright);font-weight:700">منظم جرعات أدوية السكر والوزن: جدولة وتدوير مواضع الحقن</a><span style="opacity:.75"> — تطبيق مجاني لجدولة جرعات أدوية السكر والوزن وتدوير مواضع الحقن وتقدير تركيز الدواء، مع تسجيل الآثار الجانبية…</span></li><li style="margin:.5rem 0"><a href="prayer-times-qibla.html" style="color:var(--gold-bright);font-weight:700">أوقات الصلاة واتجاه القبلة حسب موقعك</a><span style="opacity:.75"> — احسب أوقات الصلاة الخمس وزاوية القبلة حسب موقعك والتاريخ (بدون إنترنت)، مع حفظ الإحداثيات محلياً في المتصفح…</span></li><li style="margin:.5rem 0"><a href="saytara-mahalli.html" style="color:var(--gold-bright);font-weight:700">فحص وتنظيف الأجهزة المحلية</a><span style="opacity:.75"> — تطبيق محلي لفحص برمجيات المراقبة والتطبيقات غير الضرورية حسب نوع الجهاز مع تتبع خطوات التنظيف والتصدير</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var devs = [];
+  function byId(x){ return document.getElementById(x); }
+  function num(v){ var n = parseFloat(v); return isNaN(n)?0:n; }
+  function intv(v){ var n = parseInt(v,10); return isNaN(n)?0:n; }
+
+  function saveLocal(){
+    try{
+      var obj = {
+        pricePeak: byId('pricePeak').value,
+        priceOff: byId('priceOff').value,
+        pvNow: byId('pvNow').value,
+        batCap: byId('batCap').value,
+        batCur: byId('batCur').value,
+        hoursCount: byId('hoursCount').value,
+        devs: devs
+      };
+      localStorage.setItem('md_sched_v1', JSON.stringify(obj));
+    }catch(e){}
+  }
+
+  function loadLocal(){
+    try{
+      var raw = localStorage.getItem('md_sched_v1');
+      if(!raw) return false;
+      var obj = JSON.parse(raw);
+      byId('pricePeak').value = obj.pricePeak||'';
+      byId('priceOff').value = obj.priceOff||'';
+      byId('pvNow').value = obj.pvNow||'';
+      byId('batCap').value = obj.batCap||'';
+      byId('batCur').value = obj.batCur||'';
+      byId('hoursCount').value = obj.hoursCount||'24';
+      devs = Array.isArray(obj.devs)?obj.devs:[];
+      renderDevs();
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function renderDevs(){
+    var list = byId('devList');
+    if(devs.length===0){ list.textContent = 'لا توجد أجهزة مضافة بعد'; return; }
+    var html = [];
+    for(var i=0;i<devs.length;i++){
+      var d = devs[i];
+      html.push((i+1)+'. '+d.name+' - قدرة '+d.load+' كيلوواط - ساعات '+d.hours+' - أولوية '+d.pri);
+    }
+    list.textContent = html.join(' | ');
+  }
+
+  byId('addDev').addEventListener('click', function(){
+    var name = byId('devName').value.trim();
+    var load = num(byId('devLoad').value);
+    var hours = intv(byId('devHours').value);
+    var pri = byId('devPri').value;
+    if(name==='' || load<=0 || hours<=0){
+      byId('planMsg').textContent = 'يرجى إدخال اسم الجهاز وقدرته وساعات التشغيل المطلوبة بشكل صحيح';
+      return;
+    }
+    devs.push({name:name, load:load, hours:hours, pri:pri});
+    byId('devName').value=''; byId('devLoad').value=''; byId('devHours').value='';
+    renderDevs();
+    byId('planMsg').textContent = 'تمت إضافة الجهاز إلى القائمة';
+  });
+
+  byId('clearDev').addEventListener('click', function(){
+    devs = [];
+    renderDevs();
+    byId('planMsg').textContent = 'تم مسح قائمة الأجهزة';
+    draw([]);
+  });
+
+  byId('saveSet').addEventListener('click', function(){
+    saveLocal();
+    byId('planMsg').textContent = 'تم حفظ جميع الإعدادات في هذا المتصفح';
+  });
+
+  byId('loadSet').addEventListener('click', function(){
+    if(loadLocal()){ byId('planMsg').textContent = 'تم استعادة الإعدادات المحفوظة'; }
+    else { byId('planMsg').textContent = 'لا توجد إعدادات محفوظة أو حدث خطأ في الاستعادة'; }
+  });
+
+  function draw(plan){
+    var c = byId('timeCanvas');
+    var ctx = c.getContext('2d');
+    var w = c.width, h = c.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold-dim')||'#b9a06c';
+    for(var i=0;i<24;i++){
+      ctx.fillRect(i*(w/24)+2, 10, (w/24)-4, h-40);
+    }
+    if(!Array.isArray(plan) || plan.length===0) return;
+    for(var j=0;j<plan.length && j<24;j++){
+      var p = plan[j];
+      var x = j*(w/24)+2;
+      var barH = Math.max(10, (p.loadShare||0)*(h-60));
+      if(p.src==='pv'){ ctx.fillStyle = '#3fb950'; }
+      else if(p.src==='bat'){ ctx.fillStyle = '#d4b942'; }
+      else if(p.src==='off'){ ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#d9b54c'; }
+      else { ctx.fillStyle = '#d14343'; }
+      ctx.fillRect(x, h-20-barH, (w/24)-4, barH);
+    }
+  }
+
+  byId('runPlan').addEventListener('click', function(){
+    var pricePeak = num(byId('pricePeak').value);
+    var priceOff = num(byId('priceOff').value);
+    var pvNow = num(byId('pvNow').value);
+    var batCap = num(byId('batCap').value);
+    var batCur = num(byId('batCur').value);
+    var hoursCount = intv(byId('hoursCount').value);
+    if(hoursCount<1) hoursCount=24;
+    if(devs.length===0){
+      byId('planMsg').textContent = 'لا يمكن الاقتراح بدون إضافة أجهزة. أضف جهازًا واحدًا على الأقل';
+      draw([]);
+      byId('costTotal').textContent='٠.٠٠';
+      byId('usePv').textContent='٠.٠٠'; byId('useBat').textContent='٠.٠٠'; byId('useOff').textContent='٠.٠٠'; byId('usePeak').textContent='٠.٠٠';
+      return;
+    }
+    var order = devs.slice().sort(function(a,b){ return parseInt(a.pri,10)-parseInt(b.pri,10); });
+    var batLeft = Math.min(batCap, Math.max(0, batCur));
+    var planArr = [];
+    var usePv=0,useBat=0,useOff=0,usePeak=0;
+    for(var h=0; h<hoursCount; h++){
+      var loadNeed = 0;
+      for(var d=0; d<order.length && loadNeed<10; d++){
+        if(order[d]._left===undefined) order[d]._left = order[d].hours;
+        if(order[d]._left>0){
+          loadNeed += order[d].load;
+          order[d]._left -= 1;
+        }
+      }
+      var takePv = Math.min(loadNeed, pvNow);
+      loadNeed -= takePv; usePv += takePv;
+      var takeBat = 0;
+      if(loadNeed>0 && batLeft>0){
+        takeBat = Math.min(loadNeed, batLeft);
+        batLeft -= takeBat; loadNeed -= takeBat; useBat += takeBat;
+      }
+      if(loadNeed>0){
+        if(h>=17 && h<=21 && pricePeak>0){
+          usePeak += loadNeed; planArr.push({src:'peak', loadShare: loadNeed});
+        }else if(priceOff>=0){
+          useOff += loadNeed; planArr.push({src:'off', loadShare: loadNeed});
+        }else{
+          usePeak += loadNeed; planArr.push({src:'peak', loadShare: loadNeed});
+        }
+      }else if(takePv>0){
+        planArr.push({src:'pv', loadShare: takePv + (takeBat>0?takeBat*0.0001:0)});
+      }else if(takeBat>0){
+        planArr.push({src:'bat', loadShare: takeBat});
+      }else{
+        planArr.push({src:'none', loadShare: 0});
+      }
+    }
+    for(var k=0;k<order.length;k++) order[k]._left = undefined;
+    var cost = usePv*0 + useBat*0 + useOff*priceOff + usePeak*pricePeak;
+    byId('costTotal').textContent = cost.toFixed(2);
+    byId('usePv').textContent = usePv.toFixed(2);
+    byId('useBat').textContent = useBat.toFixed(2);
+    byId('useOff').textContent = useOff.toFixed(2);
+    byId('usePeak').textContent = usePeak.toFixed(2);
+    byId('planMsg').textContent = 'تم اقتراح التوزيع حسب الأولويات، والألواح، والبطارية، ثم الشبكة';
+    draw(planArr);
+  });
+
+  renderDevs();
+  draw([]);
+  loadLocal();
+})();
+</script>
+</body>
+</html>
