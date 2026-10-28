@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة بناء سلاسل الخطوات الآلية | MDM1</title>
+<meta name="description" content="أداة تفاعلية لبناء وتشغيل سلاسل خطوات يدوية لأتمتة المهام المتكررة وحفظ القوالب محليًا في المتصفح بسرعة">
+<link rel="canonical" href="https://mdm1.org/apps/workflow-weaver.html">
+<meta property="og:title" content="أداة بناء سلاسل الخطوات الآلية">
+<meta property="og:description" content="أداة تفاعلية لبناء وتشغيل سلاسل خطوات يدوية لأتمتة المهام المتكررة وحفظ القوالب محليًا في المتصفح بسرعة">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/workflow-weaver.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 0.75rem; }
+.app .card { display: flex; flex-direction: column; gap: 0.5rem; }
+.app .row { flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.app .out { min-height: 4rem; white-space: pre-wrap; direction: rtl; }
+.app #app-canvas { min-height: 6rem; border: 1px solid var(--gold-dim); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة بناء سلاسل الخطوات اليدوية لأتمتة المهام", "url": "https://mdm1.org/apps/workflow-weaver.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تحفظ الأداة بياناتي؟", "acceptedAnswer": {"@type": "Answer", "text": "تحفظ القوالب والمحفزات محليًا في المتصفح فقط عبر localStorage ولا ترسل أي بيانات خارج الجهاز."}}, {"@type": "Question", "name": "هل يمكنني تشغيل السلسلة على أي موقع؟", "acceptedAnswer": {"@type": "Answer", "text": "الأداة تبني سلسلة الخطوات وتتيح المحاكاة على القماش، لكن التنفيذ الفعلي يتطلب تطبيق الإجراءات في سياق الموقع المستهدف وفق تصميمك."}}, {"@type": "Question", "name": "كيف أستخدم المحفز بنقرة واحدة؟", "acceptedAnswer": {"@type": "Answer", "text": "احفظ خطوات السلسلة كقالب أو احفظها كمحفز، ثم استخدم زر تشغيل بنقرة واحدة لاستدعاءها فورًا."}}, {"@type": "Question", "name": "هل يمكنني تغيير ترتيب الخطوات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، حدد آخر خطوة أو استخدم أزرار تحريك لأعلى ولأسفل لإعادة ترتيب السلسلة قبل الحفظ أو التشغيل."}}, {"@type": "Question", "name": "هل تعمل الأداة بدون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع الوظائف تعمل داخل المتصفح محليًا دون اتصال بالشبكة ولا تحتاج إلى طلبات خارجية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة بناء سلاسل الخطوات اليدوية لأتمتة المهام</h1>
+  <p class="page-sub">أداة تفاعلية لبناء وتشغيل سلاسل خطوات يدوية لأتمتة المهام المتكررة وحفظ القوالب محليًا في المتصفح بسرعة</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>بإجابتنا السريعة، هذه الأداة تتيح لك إنشاء سلسلة من الخطوات اليدوية على شكل خريطة تفاعلية تعمل على قماش، حيث يمكنك ربط كل خطوة بالتي تليها لتكوين مسار واضح لأتمتة مهمة متكررة عبر أي موقع ويب. تقوم الأداة بحفظ قوالب المسارات والمحفزات محليًا في المتصفح فقط دون إرسال أي بيانات، مما يتيح لك إعادة تشغيل السلسلة بنقرة واحدة مع إمكانية تعديل كل خطوة لتناسب بنية الموقع المستهدف. يمكنك بناء المسار خطوة بخطوة، حفظه، استدعاؤه، وتشغيل محاكاة له على القماش لرؤية تسلسل الإجراءات قبل التنفيذ الفعلي، مع التحكم الكامل في ترتيب الخطوات وإضافة وصف لكل إجراء.</p>
+<div class="app">
+  <div class="card">
+    <label for="app-step-name">اسم الخطوة</label>
+    <input id="app-step-name" type="text" placeholder="مثل: النقر على زر البحث">
+    <label for="app-step-type">نوع الإجراء</label>
+    <select id="app-step-type">
+      <option value="click">نقر</option>
+      <option value="fill">ملء حقل</option>
+      <option value="select">اختيار قيمة</option>
+      <option value="wait">انتظار</option>
+      <option value="scroll">تمرير</option>
+    </select>
+    <label for="app-step-selector">محدد العنصر أو وصف الموقع</label>
+    <input id="app-step-selector" type="text" placeholder="وصف للمكان داخل الصفحة المستهدفة">
+    <label for="app-step-value">قيمة الإجراء عند الحاجة</label>
+    <input id="app-step-value" type="text" placeholder="نص أو قيمة اختيار">
+    <div class="row">
+      <button id="app-add-step">إضافة خطوة</button>
+      <button id="app-clear-steps" class="sec">مسح الخطوات</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <label>قائمة الخطوات</label>
+    <div id="app-steps-list" class="out"></div>
+    <div class="row">
+      <button id="app-move-up">تحريك لأعلى</button>
+      <button id="app-move-down">تحريك لأسفل</button>
+      <button id="app-remove-step" class="sec">حذف خطوة</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <label for="app-template-name">اسم القالب</label>
+    <input id="app-template-name" type="text" placeholder="اسم القالب للحفظ">
+    <div class="row">
+      <button id="app-save-template">حفظ القالب محليًا</button>
+      <button id="app-load-template" class="sec">استدعاء القالب</button>
+      <button id="app-delete-template" class="sec">حذف القالب</button>
+    </div>
+    <label for="app-templates-select">القوالب المحفوظة</label>
+    <select id="app-templates-select"></select>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <label for="app-trigger-name">اسم المحفز</label>
+    <input id="app-trigger-name" type="text" placeholder="اسم سريع لتشغيل السلسلة">
+    <div class="row">
+      <button id="app-save-trigger">حفظ المحفز</button>
+      <button id="app-run-trigger" class="sec">تشغيل بنقرة واحدة</button>
+      <button id="app-clear-trigger" class="sec">مسح المحفز</button>
+    </div>
+    <span class="badge" id="app-trigger-status">لا يوجد محفز محفوظ</span>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <label>محاكاة على القماش</label>
+    <div class="row">
+      <button id="app-sim-start">بدء المحاكاة</button>
+      <button id="app-sim-stop" class="sec">إيقاف</button>
+      <button id="app-sim-reset" class="sec">إعادة</button>
+    </div>
+    <div id="app-canvas" class="out"></div>
+    <span class="badge" id="app-sim-status">جاهز</span>
+  </div>
+  <div class="divider"></div>
+  <div class="card">
+    <label>نتائج التشغيل</label>
+    <div id="app-run-log" class="out"></div>
+    <div class="row">
+      <span class="big" id="app-step-count">0</span>
+      <span>خطوة</span>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تحفظ الأداة بياناتي؟</h3><p>تحفظ القوالب والمحفزات محليًا في المتصفح فقط عبر localStorage ولا ترسل أي بيانات خارج الجهاز.</p><h3>هل يمكنني تشغيل السلسلة على أي موقع؟</h3><p>الأداة تبني سلسلة الخطوات وتتيح المحاكاة على القماش، لكن التنفيذ الفعلي يتطلب تطبيق الإجراءات في سياق الموقع المستهدف وفق تصميمك.</p><h3>كيف أستخدم المحفز بنقرة واحدة؟</h3><p>احفظ خطوات السلسلة كقالب أو احفظها كمحفز، ثم استخدم زر تشغيل بنقرة واحدة لاستدعاءها فورًا.</p><h3>هل يمكنني تغيير ترتيب الخطوات؟</h3><p>نعم، حدد آخر خطوة أو استخدم أزرار تحريك لأعلى ولأسفل لإعادة ترتيب السلسلة قبل الحفظ أو التشغيل.</p><h3>هل تعمل الأداة بدون اتصال؟</h3><p>نعم، جميع الوظائف تعمل داخل المتصفح محليًا دون اتصال بالشبكة ولا تحتاج إلى طلبات خارجية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="bashar-text-humanizer.html" style="color:var(--gold-bright);font-weight:700">أداة إعادة صياغة النصوص الآلية</a><span style="opacity:.75"> — أداة عربية تعمل في المتصفح لإعادة صياغة النصوص الآلية بأسلوب طبيعي مع مقبض ضبط النبرة ولوحة تحقق فورية</span></li><li style="margin:.5rem 0"><a href="form-field-mapper.html" style="color:var(--gold-bright);font-weight:700">أداة بناء النماذج الديناميكية</a><span style="opacity:.75"> — أداة بسيطة لبناء وإدارة نماذج ديناميكية مع حقول وأنواع وقواعد تحقق وحفظ محلي في المتصفح دون إعادة تحميل أو…</span></li><li style="margin:.5rem 0"><a href="voice-agent-studio.html" style="color:var(--gold-bright);font-weight:700">أداة بناء وكيل مكالمة صوتي بدون كود للمشاريع الصغيرة</a><span style="opacity:.75"> — اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-citation-compass.html" style="color:var(--gold-bright);font-weight:700">أداة قياس حضور العلامة في إجابات المساعدات الذكية</a><span style="opacity:.75"> — أداة عربية محلية لقياس ذكر علامتك ومنافسيك في إجابات المساعدات الذكية، مع تحليل النبرة وكشف الفجوات ورسم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  try {
+    var steps = [];
+    var selectedIndex = -1;
+    var simTimer = null;
+    var simIndex = 0;
+    var trigger = null;
+
+    var stepName = document.getElementById('app-step-name');
+    var stepType = document.getElementById('app-step-type');
+    var stepSelector = document.getElementById('app-step-selector');
+    var stepValue = document.getElementById('app-step-value');
+    var addStep = document.getElementById('app-add-step');
+    var clearSteps = document.getElementById('app-clear-steps');
+    var stepsList = document.getElementById('app-steps-list');
+    var moveUp = document.getElementById('app-move-up');
+    var moveDown = document.getElementById('app-move-down');
+    var removeStep = document.getElementById('app-remove-step');
+    var templateName = document.getElementById('app-template-name');
+    var saveTemplate = document.getElementById('app-save-template');
+    var loadTemplate = document.getElementById('app-load-template');
+    var deleteTemplate = document.getElementById('app-delete-template');
+    var templatesSelect = document.getElementById('app-templates-select');
+    var triggerName = document.getElementById('app-trigger-name');
+    var saveTrigger = document.getElementById('app-save-trigger');
+    var runTrigger = document.getElementById('app-run-trigger');
+    var clearTrigger = document.getElementById('app-clear-trigger');
+    var triggerStatus = document.getElementById('app-trigger-status');
+    var simStart = document.getElementById('app-sim-start');
+    var simStop = document.getElementById('app-sim-stop');
+    var simReset = document.getElementById('app-sim-reset');
+    var canvas = document.getElementById('app-canvas');
+    var simStatus = document.getElementById('app-sim-status');
+    var runLog = document.getElementById('app-run-log');
+    var stepCount = document.getElementById('app-step-count');
+
+    function renderSteps() {
+      if (!stepsList) return;
+      if (steps.length === 0) {
+        stepsList.textContent = 'لا توجد خطوات بعد. أضف خطوة للبدء.';
+        selectedIndex = -1;
+        if (stepCount) stepCount.textContent = '0';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < steps.length; i++) {
+        var s = steps[i];
+        var mark = (i === selectedIndex) ? ' [محدد]' : '';
+        html += (i + 1) + '. ' + s.type + ' | ' + s.name + mark + '\n';
+      }
+      stepsList.textContent = html.trim();
+      if (stepCount) stepCount.textContent = String(steps.length);
+    }
+
+    function refreshTemplates() {
+      if (!templatesSelect) return;
+      templatesSelect.innerHTML = '';
+      var list = [];
+      try {
+        var raw = localStorage.getItem('app_steps_templates');
+        if (raw) list = JSON.parse(raw);
+      } catch(e) { list = []; }
+      var opt0 = document.createElement('option');
+      opt0.value = '';
+      opt0.textContent = '-- اختر قالبًا --';
+      templatesSelect.appendChild(opt0);
+      for (var i = 0; i < list.length; i++) {
+        var o = document.createElement('option');
+        o.value = String(i);
+        o.textContent = list[i].name || ('قالب ' + (i + 1));
+        templatesSelect.appendChild(o);
+      }
+    }
+
+    function loadTriggerState() {
+      try {
+        var raw = localStorage.getItem('app_steps_trigger');
+        if (raw) {
+          trigger = JSON.parse(raw);
+          if (triggerName) triggerName.value = trigger.name || '';
+          if (triggerStatus) triggerStatus.textContent = 'محفز محفوظ: ' + (trigger.name || 'بدون اسم');
+        } else {
+          trigger = null;
+          if (triggerStatus) triggerStatus.textContent = 'لا يوجد محفز محفوظ';
+        }
+      } catch(e) {
+        trigger = null;
+        if (triggerStatus) triggerStatus.textContent = 'لا يوجد محفز محفوظ';
+      }
+    }
+
+    if (addStep) {
+      addStep.onclick = function() {
+        var name = stepName ? stepName.value.trim() : '';
+        var type = stepType ? stepType.value : 'click';
+        var selector = stepSelector ? stepSelector.value.trim() : '';
+        var value = stepValue ? stepValue.value.trim() : '';
+        if (name === '') name = 'خطوة بدون اسم';
+        steps.push({ name: name, type: type, selector: selector, value: value });
+        if (runLog) runLog.textContent = 'تمت إضافة خطوة: ' + name;
+        renderSteps();
+      };
+    }
+
+    if (clearSteps) {
+      clearSteps.onclick = function() {
+        steps = [];
+        selectedIndex = -1;
+        if (runLog) runLog.textContent = 'تم مسح جميع الخطوات';
+        renderSteps();
+      };
+    }
+
+    if (stepsList) {
+      stepsList.onclick = function() {
+        if (steps.length === 0) return;
+        selectedIndex = steps.length - 1;
+        renderSteps();
+        if (runLog) runLog.textContent = 'تم تحديد آخر خطوة للتعديل عبر الترتيب';
+      };
+    }
+
+    if (moveUp) {
+      moveUp.onclick = function() {
+        if (selectedIndex <= 0 || steps.length < 2) return;
+        var tmp = steps[selectedIndex - 1];
+        steps[selectedIndex - 1] = steps[selectedIndex];
+        steps[selectedIndex] = tmp;
+        selectedIndex = selectedIndex - 1;
+        if (runLog) runLog.textContent = 'تم تحريك الخطوة لأعلى';
+        renderSteps();
+      };
+    }
+
+    if (moveDown) {
+      moveDown.onclick = function() {
+        if (selectedIndex < 0 || selectedIndex >= steps.length - 1) return;
+        var tmp = steps[selectedIndex + 1];
+        steps[selectedIndex + 1] = steps[selectedIndex];
+        steps[selectedIndex] = tmp;
+        selectedIndex = selectedIndex + 1;
+        if (runLog) runLog.textContent = 'تم تحريك الخطوة لأسفل';
+        renderSteps();
+      };
+    }
+
+    if (removeStep) {
+      removeStep.onclick = function() {
+        if (selectedIndex < 0 || selectedIndex >= steps.length) return;
+        var removed = steps.splice(selectedIndex, 1)[0];
+        selectedIndex = -1;
+        if (runLog) runLog.textContent = 'تم حذف خطوة: ' + (removed ? removed.name : '');
+        renderSteps();
+      };
+    }
+
+    if (saveTemplate) {
+      saveTemplate.onclick = function() {
+        var tname = templateName ? templateName.value.trim() : '';
+        if (steps.length === 0) {
+          if (runLog) runLog.textContent = 'لا يمكن حفظ قالب فارغ';
+          return;
+        }
+        if (tname === '') tname = 'قالب ' + Date.now();
+        var list = [];
+        try {
+          var raw = localStorage.getItem('app_steps_templates');
+          if (raw) list = JSON.parse(raw);
+        } catch(e) { list = []; }
+        list.push({ name: tname, steps: JSON.parse(JSON.stringify(steps)) });
+        try {
+          localStorage.setItem('app_steps_templates', JSON.stringify(list));
+          if (runLog) runLog.textContent = 'تم حفظ القالب: ' + tname;
+        } catch(e) {
+          if (runLog) runLog.textContent = 'تعذر الحفظ في المتصفح';
+        }
+        refreshTemplates();
+      };
+    }
+
+    if (loadTemplate) {
+      loadTemplate.onclick = function() {
+        if (!templatesSelect) return;
+        var idx = templatesSelect.value;
+        if (idx === '' || idx === null) {
+          if (runLog) runLog.textContent = 'اختر قالبًا للاستدعاء';
+          return;
+        }
+        var list = [];
+        try {
+          var raw = localStorage.getItem('app_steps_templates');
+          if (raw) list = JSON.parse(raw);
+        } catch(e) { list = []; }
+        var tpl = list[parseInt(idx, 10)];
+        if (!tpl) {
+          if (runLog) runLog.textContent = 'القالب غير موجود';
+          return;
+        }
+        steps = JSON.parse(JSON.stringify(tpl.steps || []));
+        selectedIndex = -1;
+        if (runLog) runLog.textContent = 'تم استدعاء القالب: ' + (tpl.name || '');
+        renderSteps();
+      };
+    }
+
+    if (deleteTemplate) {
+      deleteTemplate.onclick = function() {
+        if (!templatesSelect) return;
+        var idx = templatesSelect.value;
+        if (idx === '' || idx === null) {
+          if (runLog) runLog.textContent = 'اختر قالبًا للحذف';
+          return;
+        }
+        var list = [];
+        try {
+          var raw = localStorage.getItem('app_steps_templates');
+          if (raw) list = JSON.parse(raw);
+        } catch(e) { list = []; }
+        list.splice(parseInt(idx, 10), 1);
+        try {
+          localStorage.setItem('app_steps_templates', JSON.stringify(list));
+          if (runLog) runLog.textContent = 'تم حذف القالب';
+        } catch(e) {
+          if (runLog) runLog.textContent = 'تعذر الحذف';
+        }
+        refreshTemplates();
+      };
+    }
+
+    if (saveTrigger) {
+      saveTrigger.onclick = function() {
+        if (steps.length === 0) {
+          if (runLog) runLog.textContent = 'لا يمكن حفظ محفز بدون خطوات';
+          return;
+        }
+        var tname = triggerName ? triggerName.value.trim() : '';
+        if (tname === '') tname = 'محفز سريع';
+        trigger = { name: tname, steps: JSON.parse(JSON.stringify(steps)) };
+        try {
+          localStorage.setItem('app_steps_trigger', JSON.stringify(trigger));
+          if (triggerStatus) triggerStatus.textContent = 'محفز محفوظ: ' + tname;
+          if (runLog) runLog.textContent = 'تم حفظ المحفز: ' + tname;
+        } catch(e) {
+          if (runLog) runLog.textContent = 'تعذر حفظ المحفز';
+        }
+      };
+    }
+
+    if (runTrigger) {
+      runTrigger.onclick = function() {
+        if (!trigger || !trigger.steps || trigger.steps.length === 0) {
+          if (runLog) runLog.textContent = 'لا يوجد محفز صالح للتشغيل';
+          return;
+        }
+        steps = JSON.parse(JSON.stringify(trigger.steps));
+        selectedIndex = -1;
+        renderSteps();
+        if (runLog) runLog.textContent = 'تم تشغيل المحفز بنقرة واحدة - ' + (trigger.name || '') + ' (' + steps.length + ' خطوة)';
+      };
+    }
+
+    if (clearTrigger) {
+      clearTrigger.onclick = function() {
+        try { localStorage.removeItem('app_steps_trigger'); } catch(e) {}
+        trigger = null;
+        if (triggerName) triggerName.value = '';
+        if (triggerStatus) triggerStatus.textContent = 'لا يوجد محفز محفوظ';
+        if (runLog) runLog.textContent = 'تم مسح المحفز';
+      };
+    }
+
+    function simRender() {
+      if (!canvas) return;
+      if (steps.length === 0) {
+        canvas.textContent = 'أضف خطوات لعرضها على القماش';
+        if (simStatus) simStatus.textContent = 'فارغ';
+        return;
+      }
+      var out = 'قماش المحاكاة:\n';
+      for (var i = 0; i < steps.length; i++) {
+        var s = steps[i];
+        var active = (simTimer && i === simIndex) ? ' <نشط>' : '';
+        out += '- ' + (i + 1) + ': ' + s.type + ' - ' + s.name + active + '\n';
+      }
+      canvas.textContent = out.trim();
+    }
+
+    if (simStart) {
+      simStart.onclick = function() {
+        if (steps.length === 0) {
+          if (runLog) runLog.textContent = 'لا توجد خطوات للمحاكاة';
+          return;
+        }
+        if (simTimer) return;
+        simIndex = 0;
+        if (simStatus) simStatus.textContent = 'يعمل';
+        simRender();
+        simTimer = setInterval(function() {
+          simIndex = (simIndex + 1) % steps.length;
+          simRender();
+          if (runLog) runLog.textContent = 'محاكاة: خطوة ' + (simIndex + 1) + ' من ' + steps.length;
+        }, 800);
+      };
+    }
+
+    if (simStop) {
+      simStop.onclick = function() {
+        if (simTimer) {
+          clearInterval(simTimer);
+          simTimer = null;
+        }
+        if (simStatus) simStatus.textContent = 'متوقف';
+        if (runLog) runLog.textContent = 'تم إيقاف المحاكاة';
+      };
+    }
+
+    if (simReset) {
+      simReset.onclick = function() {
+        if (simTimer) {
+          clearInterval(simTimer);
+          simTimer = null;
+        }
+        simIndex = 0;
+        if (simStatus) simStatus.textContent = 'جاهز';
+        simRender();
+        if (runLog) runLog.textContent = 'تم إعادة المحاكاة';
+      };
+    }
+
+    refreshTemplates();
+    loadTriggerState();
+    renderSteps();
+    simRender();
+  } catch(e) {
+    // silent
+  }
+})();
+</script>
+</body>
+</html>
