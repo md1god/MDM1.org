@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رف الأخبار — قارئ خلاصات وب عربي داخل المتصفح | MDM1</title>
+<meta name="description" content="استورد ملفات OPML وXML محلية، ونظم الاشتراكات في مجلدات، وتابع المقالات، وابحث بالتعبيرات النمطية، واقرأ بوضوح، وأدر القواعد والاختصارات والوضع الداكن، مع نسخ احتياطية JSON وتخزين محلي.">
+<link rel="canonical" href="https://mdm1.org/apps/raf-al-akhbar.html">
+<meta property="og:title" content="رف الأخبار — قارئ خلاصات وب عربي داخل المتصفح">
+<meta property="og:description" content="استورد ملفات OPML وXML محلية، ونظم الاشتراكات في مجلدات، وتابع المقالات، وابحث بالتعبيرات النمطية، واقرأ بوضوح، وأدر القواعد والاختصارات والوضع الداكن، مع نسخ احتياطية JSON وتخزين محلي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/raf-al-akhbar.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: grid; gap: .75rem; }
+.app-layout { display: grid; grid-template-columns: 260px 1fr 320px; gap: .75rem; }
+.app-sidebar, .app-main, .app-reader { min-width: 0; }
+.app-list { display: grid; gap: .5rem; max-height: 62vh; overflow: auto; }
+.app-item, .app-article { padding: .6rem; border: 1px solid rgba(255,255,255,.14); border-radius: .5rem; }
+.app-article.selected { outline: 2px solid var(--gold); }
+.app-reader-content { white-space: pre-wrap; line-height: 1.7; max-height: 52vh; overflow: auto; }
+.app--light { background: #f6f1e6; color: #1f1a12; }
+.app--light .app-item, .app--light .app-article { border-color: rgba(0,0,0,.16); }
+.app .row { gap: .5rem; flex-wrap: wrap; align-items: center; }
+@media (max-width: 900px) { .app-layout { grid-template-columns: 1fr; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "رف الأخبار: قارئ خلاصات وب عربي", "url": "https://mdm1.org/apps/raf-al-akhbar.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أستورد خلاصات without شبكة؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر ملفات OPML أو XML من جهازك عبر حقل الاستيراد؛ يحلل التطبيق المقالات داخل المتصفح ويحفظها محليًا."}}, {"@type": "Question", "name": "هل يمكن تنظيم الاشتراكات في مجلدات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استورد OPML مع outlines متداخلة أو أضف مجلدات يدويًا، ثم رشّح حسب المجلد أو الاشتراك."}}, {"@type": "Question", "name": "كيف تعمل قواعد الإخفاء والتعليم؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل regex وحقلًا وإجراءً؛ تُطبّق القاعدة على المقالات المستوردة وتُحدّث القائمة فورًا."}}, {"@type": "Question", "name": "كيف أنسخ البيانات or استعيدها؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم تصدير إلى النص لنسخ JSON، أو الصق JSON/استورد ملف .json لاستعادة كل البيانات."}}, {"@type": "Question", "name": "ما الاختصارات المتاحة؟", "acceptedAnswer": {"@type": "Answer", "text": "j/k للتنقل، Enter للقراءة، r للقراءة، s للتمييز، h للإخفاء، / للبحث، Esc للإغلاق، d للوضع، ? للمساعدة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">رف الأخبار: قارئ خلاصات وب عربي</h1>
+  <p class="page-sub">استورد ملفات OPML وXML محلية، ونظم الاشتراكات في مجلدات، وتابع المقالات، وابحث بالتعبيرات النمطية، واقرأ بوضوح، وأدر القواعد والاختصارات والوضع الداكن، مع نسخ احتياطية JSON وتخزين محلي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p id="intro">رف الأخبار هو قارئ خلاصات وب يعمل داخل المتصفح: استورد ملفات OPML أو XML محلية، ونظم الاشتراكات في مجلدات، وتابع المقالات كمقروءة أو مميزة، وابحث بالتعبيرات النمطية، وصفِّ حسب الحالة، واقرأ في عرض نظيف، وأدر قواعد إخفاء أو تعليم تلقائية، واستخدم اختصارات لوحة المفاتيح، وبدّل الوضع الداكن، وصدّر أو استعد نسخة JSON، مع حفظ كل البيانات في التخزين المحلي دون شبكة أو حسابات. يمكنك استيراد عدة ملفات دفعة واحدة، وإضافة مجلدات، وحذف اشتراكات، وتطبيق قواعد على العنوان أو المؤلف أو الملخص أو المحتوى أو الرابط، ونسخ نسخة احتياطية إلى الحافظة، واستعادتها من ملف أو نص، مع حالات فارغة ورسائل خطأ واضحة.</p>
+<div class="app" id="app" data-theme="dark">
+  <section class="card" id="importCard">
+    <h2>استيراد ونسخ احتياطية</h2>
+    <div class="row">
+      <label for="fileInput">ملفات OPML/XML/JSON</label>
+      <input id="fileInput" type="file" accept=".opml,.xml,.rss,.atom,.json,application/xml,text/xml,application/json" multiple>
+      <button id="importBtn" type="button">استيراد</button>
+      <span id="importStatus" class="badge">جاهز</span>
+    </div>
+    <div class="row">
+      <label for="backupText">نسخة احتياطية JSON</label>
+      <textarea id="backupText" rows="4" placeholder="الصق JSON هنا أو صدّر"></textarea>
+      <button id="importBackupBtn" type="button" class="sec">استعادة من النص</button>
+      <button id="exportBackupBtn" type="button" class="sec">تصدير إلى النص</button>
+      <button id="copyBackupBtn" type="button" class="sec">نسخ</button>
+    </div>
+  </section>
+  <section class="card" id="workspaceCard">
+    <div class="app-layout">
+      <aside class="app-sidebar">
+        <h2>المجلدات</h2>
+        <div id="folderList" class="app-list"></div>
+        <div class="row">
+          <label for="newFolderName">مجلد جديد</label>
+          <input id="newFolderName" type="text" placeholder="اسم المجلد">
+          <button id="addFolderBtn" type="button" class="sec">إضافة</button>
+        </div>
+        <h2>الاشتراكات</h2>
+        <div id="feedList" class="app-list"></div>
+      </aside>
+      <main class="app-main">
+        <div class="row">
+          <label for="searchInput">بحث regex</label>
+          <input id="searchInput" type="search" placeholder="عنوان|مؤلف|محتوى">
+          <label for="statusFilter">الحالة</label>
+          <select id="statusFilter">
+            <option value="all">الكل</option>
+            <option value="unread">غير مقروء</option>
+            <option value="read">مقروء</option>
+            <option value="starred">مميز</option>
+            <option value="hidden">مخفي</option>
+          </select>
+          <button id="markAllReadBtn" type="button" class="sec">تعليم الكل مقروء</button>
+          <button id="clearFiltersBtn" type="button" class="sec">مسح</button>
+          <span id="resultCount" class="badge">0</span>
+        </div>
+        <div id="searchError" class="out" hidden></div>
+        <div id="articleList" class="app-list"></div>
+        <div id="emptyState" class="out">لا توجد مقالات. استورد ملف XML لبدء القراءة.</div>
+      </main>
+      <aside class="app-reader">
+        <div class="row">
+          <h2>قراءة</h2>
+          <button id="closeReaderBtn" type="button" class="sec">إغلاق</button>
+        </div>
+        <h3 id="readerTitle">اختر مقالة للقراءة</h3>
+        <div id="readerMeta" class="badge"></div>
+        <div id="readerContent" class="app-reader-content">استخدم j/k للتنقل، Enter للقراءة.</div>
+        <div class="row">
+          <button id="readerMarkReadBtn" type="button" class="sec">تبديل مقروء</button>
+          <button id="readerStarBtn" type="button" class="sec">تبديل تمييز</button>
+          <button id="readerHideBtn" type="button" class="sec">تبديل إخفاء</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <section class="card" id="rulesCard">
+    <h2>قواعد تلقائية</h2>
+    <div class="row">
+      <label for="ruleName">اسم</label>
+      <input id="ruleName" type="text" placeholder="قاعدة">
+      <label for="ruleField">حقل</label>
+      <select id="ruleField">
+        <option value="title">العنوان</option>
+        <option value="author">المؤلف</option>
+        <option value="summary">الملخص</option>
+        <option value="content">المحتوى</option>
+        <option value="link">الرابط</option>
+      </select>
+      <label for="rulePattern">نمط</label>
+      <input id="rulePattern" type="text" placeholder="regex">
+      <label for="ruleFlags">أعلام</label>
+      <input id="ruleFlags" type="text" value="i" placeholder="i">
+      <label for="ruleAction">إجراء</label>
+      <select id="ruleAction">
+        <option value="hide">إخفاء</option>
+        <option value="read">تعليم مقروء</option>
+        <option value="star">تمييز</option>
+      </select>
+      <button id="addRuleBtn" type="button">إضافة قاعدة</button>
+    </div>
+    <div id="ruleError" class="out" hidden></div>
+    <div id="ruleList" class="app-list"></div>
+  </section>
+  <section class="card" id="settingsCard">
+    <h2>الإعدادات والاختصارات</h2>
+    <div class="row">
+      <button id="themeToggleBtn" type="button" class="sec">تبديل الوضع الداكن</button>
+      <button id="shortcutsBtn" type="button" class="sec">إظهار الاختصارات</button>
+      <button id="resetBtn" type="button" class="sec">إعادة ضبط</button>
+    </div>
+    <div id="shortcutsHelp" class="out" hidden>j/k تنقل، Enter/o قراءة، r مقروء، s تمييز، h إخفاء، / بحث، Esc إغلاق، d وضع، ? مساعدة.</div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أستورد خلاصات without شبكة؟</h3><p>اختر ملفات OPML أو XML من جهازك عبر حقل الاستيراد؛ يحلل التطبيق المقالات داخل المتصفح ويحفظها محليًا.</p><h3>هل يمكن تنظيم الاشتراكات في مجلدات؟</h3><p>نعم، استورد OPML مع outlines متداخلة أو أضف مجلدات يدويًا، ثم رشّح حسب المجلد أو الاشتراك.</p><h3>كيف تعمل قواعد الإخفاء والتعليم؟</h3><p>أدخل regex وحقلًا وإجراءً؛ تُطبّق القاعدة على المقالات المستوردة وتُحدّث القائمة فورًا.</p><h3>كيف أنسخ البيانات or استعيدها؟</h3><p>استخدم تصدير إلى النص لنسخ JSON، أو الصق JSON/استورد ملف .json لاستعادة كل البيانات.</p><h3>ما الاختصارات المتاحة؟</h3><p>j/k للتنقل، Enter للقراءة، r للقراءة، s للتمييز، h للإخفاء، / للبحث، Esc للإغلاق، d للوضع، ? للمساعدة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li><li style="margin:.5rem 0"><a href="recipe-meal-planner.html" style="color:var(--gold-bright);font-weight:700">مدير الوصفات وتخطيط الوجبات الأسبوعية وقوائم التسوّق</a><span style="opacity:.75"> — نظّم وصفاتك بالوسوم والبحث، خطّط وجبات الأسبوع في تقويم، وابنِ قوائم تسوّق تلقائية من الوصفات أو الخطة، مع…</span></li><li style="margin:.5rem 0"><a href="remote-desk-toolkit.html" style="color:var(--gold-bright);font-weight:700">أدوات تجهيز جلسات الدعم عن بُعد</a><span style="opacity:.75"> — أداة ويب محلية تجمع توليد الجلسات ومفاتيح التشفير وإدارة الأجهزة ومشاركة إعدادات التوجيه وحاسبة المنافذ…</span></li><li style="margin:.5rem 0"><a href="retro-audio-deck.html" style="color:var(--gold-bright);font-weight:700">مشغّل صوتيات محلي بأسلوب الثمانينيات مع محلل طيف ومعادل صوت</a><span style="opacity:.75"> — مشغّل صوتيات يعمل بالكامل في متصفحك: اسحب ملفاتك MP3 وFLAC وOGG وWAV، واستمتع بقائمة تشغيل ومحلل طيف حيّ…</span></li><li style="margin:.5rem 0"><a href="reversible-photo-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور بطبقات غير متلفة داخل المتصفح</a><span style="opacity:.75"> — حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-29 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  'use strict';
+  const STORAGE_KEY = 'raf_akhbar_v1';
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    app: $('app'),
+    fileInput: $('fileInput'),
+    importBtn: $('importBtn'),
+    importStatus: $('importStatus'),
+    backupText: $('backupText'),
+    importBackupBtn: $('importBackupBtn'),
+    exportBackupBtn: $('exportBackupBtn'),
+    copyBackupBtn: $('copyBackupBtn'),
+    folderList: $('folderList'),
+    feedList: $('feedList'),
+    newFolderName: $('newFolderName'),
+    addFolderBtn: $('addFolderBtn'),
+    searchInput: $('searchInput'),
+    statusFilter: $('statusFilter'),
+    markAllReadBtn: $('markAllReadBtn'),
+    clearFiltersBtn: $('clearFiltersBtn'),
+    resultCount: $('resultCount'),
+    searchError: $('searchError'),
+    articleList: $('articleList'),
+    emptyState: $('emptyState'),
+    readerTitle: $('readerTitle'),
+    readerMeta: $('readerMeta'),
+    readerContent: $('readerContent'),
+    closeReaderBtn: $('closeReaderBtn'),
+    readerMarkReadBtn: $('readerMarkReadBtn'),
+    readerStarBtn: $('readerStarBtn'),
+    readerHideBtn: $('readerHideBtn'),
+    ruleName: $('ruleName'),
+    ruleField: $('ruleField'),
+    rulePattern: $('rulePattern'),
+    ruleFlags: $('ruleFlags'),
+    ruleAction: $('ruleAction'),
+    addRuleBtn: $('addRuleBtn'),
+    ruleList: $('ruleList'),
+    ruleError: $('ruleError'),
+    themeToggleBtn: $('themeToggleBtn'),
+    shortcutsBtn: $('shortcutsBtn'),
+    resetBtn: $('resetBtn'),
+    shortcutsHelp: $('shortcutsHelp')
+  };
+
+  const state = {
+    feeds: [],
+    articles: [],
+    folders: ['عام'],
+    rules: [],
+    settings: { theme: 'dark', folder: 'all', feed: 'all', status: 'all', search: '', selectedArticleId: null }
+  };
+
+  function uid(prefix) { return prefix + '_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+  function esc(value) { return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function sanitizeFlags(flags) { return String(flags || '').replace(/[^gimsuy]/g, ''); }
+
+  function normalizeFeed(feed) {
+    return {
+      id: feed && feed.id ? String(feed.id) : uid('feed'),
+      title: String(feed?.title || 'خلاصة'),
+      folder: String(feed?.folder || 'عام'),
+      url: feed?.url ? String(feed.url) : null,
+      createdAt: Number(feed?.createdAt || Date.now()),
+      lastImported: feed?.lastImported ? Number(feed.lastImported) : null
+    };
+  }
+
+  function normalizeArticle(article) {
+    return {
+      id: article && article.id ? String(article.id) : uid('art'),
+      feedId: String(article?.feedId || ''),
+      title: String(article?.title || 'بدون عنوان'),
+      link: String(article?.link || ''),
+      author: String(article?.author || ''),
+      published: String(article?.published || ''),
+      date: Number(article?.date || Date.now()),
+      summary: String(article?.summary || ''),
+      content: String(article?.content || ''),
+      read: !!article?.read,
+      starred: !!article?.starred,
+      hidden: !!article?.hidden,
+      importedAt: Number(article?.importedAt || Date.now())
+    };
+  }
+
+  function normalizeRule(rule) {
+    if (!rule || typeof rule !== 'object') return null;
+    const flags = sanitizeFlags(rule.flags || 'i') || 'i';
+    try { new RegExp(String(rule.pattern || ''), flags); } catch (e) { return null; }
+    return {
+      id: rule.id ? String(rule.id) : uid('rule'),
+      name: String(rule.name || 'قاعدة'),
+      field: ['title', 'author', 'summary', 'content', 'link'].includes(rule.field) ? rule.field : 'title',
+      pattern: String(rule.pattern || ''),
+      flags,
+      action: ['hide', 'read', 'star'].includes(rule.action) ? rule.action : 'hide',
+      enabled: rule.enabled !== false
+    };
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        feeds: state.feeds,
+        articles: state.articles,
+        folders: state.folders,
+        rules: state.rules,
+        settings: state.settings
+      }));
+    } catch (e) { }
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed.feeds)) state.feeds = parsed.feeds.map(normalizeFeed);
+      if (Array.isArray(parsed.articles)) state.articles = parsed.articles.map(normalizeArticle);
+      if (Array.isArray(parsed.folders)) state.folders = parsed.folders.map(String).filter(Boolean);
+      if (!state.folders.length) state.folders = ['عام'];
+      if (Array.isArray(parsed.rules)) state.rules = parsed.rules.map(normalizeRule).filter(Boolean);
+      if (parsed.settings && typeof parsed.settings === 'object') {
+        state.settings = { ...state.settings, ...parsed.settings };
+      }
+    } catch (e) { }
+  }
+
+  function feedById(id) { return state.feeds.find((feed) => feed.id === id) || null; }
+  function findFeed(title, url) {
+    return state.feeds.find((feed) => (url && feed.url === url) || (!url && feed.title === title)) || null;
+  }
+  function createFeed(title, folder, url) {
+    const existing = findFeed(title, url);
+    if (existing) {
+      if (folder && !existing.folder) existing.folder = folder;
+      return existing;
+    }
+    const feed = normalizeFeed({ title: title || url || 'خلاصة', folder: folder || 'عام', url });
+    state.feeds.push(feed);
+    if (!state.folders.includes(feed.folder)) state.folders.push(feed.folder);
+    return feed;
+  }
+
+  function readFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
+      reader.readAsText(file);
+    });
+  }
+
+  function stripHtml(html) {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(String(html), 'text/html');
+      return String(doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch (e) {
+      return String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+
+  function parseDate(value) {
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? Date.now() : date.getTime();
+  }
+
+  function parseOpml(text) {
+    const doc = new DOMParser().parseFromString(text, 'text/xml');
+    if (doc.querySelector('parsererror')) throw new Error('ملف OPML غير صالح');
+    const outlines = [...doc.querySelectorAll('outline')];
+    let count = 0;
+    outlines.forEach((outline) => {
+      const xmlUrl = outline.getAttribute('xmlUrl') || outline.getAttribute('xmlurl') || outline.getAttribute('xmlURL');
+      if (!xmlUrl) return;
+      const title = outline.getAttribute('title') || outline.getAttribute('text') || xmlUrl;
+      let folder = 'عام';
+      let parent = outline.parentElement;
+      while (parent && parent.nodeName.toLowerCase() !== 'body') {
+        if (parent.nodeName.toLowerCase() === 'outline') {
+          const parentUrl = parent.getAttribute('xmlUrl') || parent.getAttribute('xmlurl') || parent.getAttribute('xmlURL');
+          if (!parentUrl) {
+            folder = parent.getAttribute('title') || parent.getAttribute('text') || folder;
+            break;
+          }
+        }
+        parent = parent.parentElement;
+      }
+      createFeed(title, folder, xmlUrl);
+      count += 1;
+    });
+    outlines.forEach((outline) => {
+      const xmlUrl = outline.getAttribute('xmlUrl') || outline.getAttribute('xmlurl') || outline.getAttribute('xmlURL');
+      if (xmlUrl) return;
+      const name = outline.getAttribute('title') || outline.getAttribute('text');
+      if (name && !state.folders.includes(name)) state.folders.push(name);
+    });
+    return count;
+  }
+
+  function parseFeedXml(text) {
+    const doc = new DOMParser().parseFromString(text, 'text/xml');
+    if (doc.querySelector('parsererror')) throw new Error('XML غير صالح');
+    const rootName = doc.documentElement.nodeName.toLowerCase();
+    if (rootName.includes('opml')) return parseOpml(text);
+    let feedTitle = 'خلاصة مستوردة';
+    let items = [];
+    const channel = doc.querySelector('channel');
+    if (channel) {
+      feedTitle = channel.querySelector('title')?.textContent?.trim() || feedTitle;
+      items = [...doc.querySelectorAll('item')];
+    } else if (rootName === 'feed') {
+      feedTitle = doc.querySelector('feed > title')?.textContent?.trim() || feedTitle;
+      items = [...doc.querySelectorAll('entry')];
+    } else {
+      items = [...doc.querySelectorAll('item')];
+    }
+    const feed = createFeed(feedTitle, 'مستورد', null);
+    let added = 0;
+    items.forEach((item) => {
+      const title = item.querySelector('title')?.textContent?.trim() || 'بدون عنوان';
+      let link = '';
+      const linkNodes = [...item.querySelectorAll('link')];
+      const altLink = linkNodes.find((node) => (node.getAttribute('rel') || 'alternate') === 'alternate');
+      if (altLink) link = altLink.getAttribute('href') || '';
+      else if (linkNodes.length) {
+        const first = linkNodes[0];
+        link = first.getAttribute('href') || first.textContent.trim();
+      }
+      let description = '';
+      const descNode = item.querySelector('description') || item.querySelector('summary');
+      if (descNode) description = descNode.textContent || '';
+      let content = '';
+      const encoded = item.getElementsByTagName('content:encoded')[0];
+      const contentNode = encoded || item.querySelector('content') || item.querySelector('encoded');
+      if (contentNode) content = contentNode.textContent || '';
+      if (!content) content = description;
+      let author = '';
+      const authorNode = item.querySelector('author') || item.querySelector('creator');
+      if (authorNode) author = authorNode.querySelector('name')?.textContent?.trim() || authorNode.textContent.trim();
+      const dcCreator = item.getElementsByTagName('dc:creator')[0];
+      if (dcCreator) author = dcCreator.textContent.trim();
+      const published = item.querySelector('pubDate')?.textContent?.trim()
+        || item.querySelector('published')?.textContent?.trim()
+        || item.querySelector('updated')?.textContent?.trim()
+        || '';
+      const id = link ? (feed.id + '::' + link) : uid('art');
+      if (state.articles.some((article) => article.id === id)) return;
+      const article = normalizeArticle({
+        id,
+        feedId: feed.id,
+        title,
+        link,
+        author,
+        published,
+        date: parseDate(published),
+        summary: stripHtml(description),
+        content: stripHtml(content),
+        read: false,
+        starred: false,
+        hidden: false,
+        importedAt: Date.now()
+      });
+      applyRulesToArticle(article);
+      state.articles.push(article);
+      added += 1;
+    });
+    feed.lastImported = Date.now();
+    return added;
+  }
+
+  function regexFrom(pattern, flags) {
+    try { return new RegExp(pattern, sanitizeFlags(flags) || 'i'); }
+    catch (e) { return null; }
+  }
+
+  function applyRule(rule, article) {
+    if (!rule || !rule.enabled) return;
+    const rx = regexFrom(rule.pattern, rule.flags);
+    if (!rx) return;
+    const value = String(article[rule.field] ?? '');
+    rx.lastIndex = 0;
+    if (!rx.test(value)) return;
+    if (rule.action === 'hide') article.hidden = true;
+    if (rule.action === 'read') article.read = true;
+    if (rule.action === 'star') article.starred = true;
+  }
+
+  function applyRulesToArticle(article) { state.rules.forEach((rule) => applyRule(rule, article)); }
+  function applyAllRules() { state.articles.forEach((article) => state.rules.forEach((rule) => applyRule(rule, article))); }
+
+  function importBackupObject(obj) {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) throw new Error('JSON غير صالح');
+    state.feeds = Array.isArray(obj.feeds) ? obj.feeds.map(normalizeFeed) : [];
+    state.articles = Array.isArray(obj.articles) ? obj.articles.map(normalizeArticle) : [];
+    state.folders = Array.isArray(obj.folders) ? obj.folders.map(String).filter(Boolean) : ['عام'];
+    if (!state.folders.length) state.folders = ['عام'];
+    state.rules = Array.isArray(obj.rules) ? obj.rules.map(normalizeRule).filter(Boolean) : [];
+    if (obj.settings && typeof obj.settings === 'object') state.settings = { ...state.settings, ...obj.settings };
+    state.feeds.forEach((feed) => { if (feed.folder && !state.folders.includes(feed.folder)) state.folders.push(feed.folder); });
+    saveState();
+  }
+
+  function filteredArticles() {
+    const settings = state.settings;
+    let list = state.articles.slice();
+    if (settings.folder && settings.folder !== 'all') {
+      list = list.filter((article) => {
+        const feed = feedById(article.feedId);
+        return feed && feed.folder === settings.folder;
+      });
+    }
+    if (settings.feed && settings.feed !== 'all') list = list.filter((article) => article.feedId === settings.feed);
+    if (settings.status === 'unread') list = list.filter((article) => !article.read && !article.hidden);
+    if (settings.status === 'read') list = list.filter((article) => article.read);
+    if (settings.status === 'starred') list = list.filter((article) => article.starred);
+    if (settings.status === 'hidden') list = list.filter((article) => article.hidden);
+    const query = String(settings.search || '').trim();
+    if (query) {
+      let rx;
+      try { rx = new RegExp(query, 'i'); }
+      catch (e) {
+        if (els.searchError) { els.searchError.hidden = false; els.searchError.textContent = 'تعبير نمطي غير صالح'; }
+        return [];
+      }
+      if (els.searchError) els.searchError.hidden = true;
+      list = list.filter((article) => {
+        rx.lastIndex = 0;
+        return rx.test(article.title + ' ' + article.summary + ' ' + article.content + ' ' + article.author + ' ' + article.link);
+      });
+    } else if (els.searchError) {
+      els.searchError.hidden = true;
+    }
+    list.sort((a, b) => b.date - a.date);
+    return list;
+  }
+
+  function renderFolders() {
+    const selected = state.settings.folder;
+    const counts = {};
+    state.articles.forEach((article) => {
+      const feed = feedById(article.feedId);
+      if (!feed) return;
+      if (!article.read) counts[feed.folder] = (counts[feed.folder] || 0) + 1;
+    });
+    const allUnread = state.articles.filter((a) => !a.read).length;
+    let html = '<button type="button" id="folder-all" class="' + (selected === 'all' ? '' : 'sec') + '" data-folder="all">الكل (' + allUnread + ' غير مقروء)</button>';
+    state.folders.forEach((folder, index) => {
+      html += '<button type="button" id="folder-' + index + '" class="' + (selected === folder ? '' : 'sec') + '" data-folder="' + esc(folder) + '">' + esc(folder) + ' (' + (counts[folder] || 0) + ')</button>';
+    });
+    els.folderList.innerHTML = html;
+  }
+
+  function renderFeeds() {
+    const selectedFeed = state.settings.feed;
+    const selectedFolder = state.settings.folder;
+    let html = '<button type="button" id="feed-all" class="' + (selectedFeed === 'all' ? '' : 'sec') + '" data-feed="all">كل الاشتراكات</button>';
+    state.feeds
+      .filter((feed) => selectedFolder === 'all' || feed.folder === selectedFolder)
+      .forEach((feed, index) => {
+        const unread = state.articles.filter((a) => a.feedId === feed.id && !a.read).length;
+        html += '<div class="app-item" id="feed-item-' + index + '">'
+          + '<button type="button" id="feed-' + index + '" class="' + (selectedFeed === feed.id ? '' : 'sec') + '" data-feed="' + esc(feed.id) + '">' + esc(feed.title) + ' (' + unread + ')</button>'
+          + '<button type="button" class="sec" id="feed-delete-' + index + '" data-feed-delete="' + esc(feed.id) + '" title="حذف">×</button>'
+          + '</div>';
+      });
+    els.feedList.innerHTML = html;
+  }
+
+  function renderArticles() {
+    const list = filteredArticles();
+    els.resultCount.textContent = list.length + ' / ' + state.articles.length;
+    if (!list.length) {
+      els.articleList.innerHTML = '';
+      els.emptyState.hidden = false;
+      els.emptyState.textContent = state.articles.length ? 'لا توجد نتائج مطابقة.' : 'لا توجد مقالات. استورد ملف XML لبدء القراءة.';
+      return;
+    }
+    els.emptyState.hidden = true;
+    els.articleList.innerHTML = list.map((article, index) => {
+      const feed = feedById(article.feedId);
+      const selected = article.id === state.settings.selectedArticleId ? ' selected' : '';
+      return '<article class="app-article' + selected + '" data-article-id="' + esc(article.id) + '" id="article-row-' + index + '">'
+        + '<div class="row"><strong>' + esc(article.title) + '</strong><span class="badge">' + esc(feed ? feed.title : 'خلاصة') + '</span>'
+        + (article.read ? '<span class="badge">مقروء</span>' : '')
+        + (article.starred ? '<span class="badge">مميز</span>' : '')
+        + (article.hidden ? '<span class="badge">مخفي</span>' : '')
+        + '</div>'
+        + '<div>' + esc(article.summary.slice(0, 180)) + '</div>'
+        + '<div class="row">'
+        + '<button type="button" class="sec" id="article-read-' + index + '" data-action="toggle-read" data-id="' + esc(article.id) + '">' + (article.read ? 'غير مقروء' : 'مقروء') + '</button>'
+        + '<button type="button" class="sec" id="article-star-' + index + '" data-action="toggle-star" data-id="' + esc(article.id) + '">' + (article.starred ? 'إلغاء تمييز' : 'تمييز') + '</button>'
+        + '<button type="button" class="sec" id="article-hide-' + index + '" data-action="toggle-hide" data-id="' + esc(article.id) + '">' + (article.hidden ? 'إظهار' : 'إخفاء') + '</button>'
+        + '<button type="button" id="article-open-' + index + '" data-action="open-reader" data-id="' + esc(article.id) + '">قراءة</button>'
+        + '</div></article>';
+    }).join('');
+  }
+
+  function renderReader() {
+    const article = state.articles.find((a) => a.id === state.settings.selectedArticleId);
+    if (!article) {
+      els.readerTitle.textContent = 'اختر مقالة للقراءة';
+      els.readerMeta.textContent = '';
+      els.readerContent.textContent = 'استخدم j/k للتنقل، Enter للقراءة.';
+      return;
+    }
+    const feed = feedById(article.feedId);
+    els.readerTitle.textContent = article.title;
+    els.readerMeta.textContent = [feed ? feed.title : '', article.author, article.published, article.link].filter(Boolean).join(' — ');
+    els.readerContent.textContent = article.content || article.summary || 'لا يوجد محتوى.';
+  }
+
+  function renderRules() {
+    if (!state.rules.length) {
+      els.ruleList.innerHTML = '<div class="out">لا توجد قواعد. أضف قاعدة regex للإخفاء أو التعليم.</div>';
+      return;
+    }
+    els.ruleList.innerHTML = state.rules.map((rule, index) => (
+      '<div class="app-item" id="rule-item-' + index + '">'
+      + '<div class="row"><strong>' + esc(rule.name) + '</strong><span class="badge">' + esc(rule.field) + '</span><span class="badge">' + esc(rule.action) + '</span><span class="badge">' + (rule.enabled ? 'مفعلة' : 'متوقفة') + '</span></div>'
+      + '<div><span class="badge">' + esc(rule.pattern) + '</span> <span class="badge">' + esc(rule.flags) + '</span></div>'
+      + '<div class="row">'
+      + '<button type="button" class="sec" id="rule-toggle-' + index + '" data-rule-toggle="' + esc(rule.id) + '">' + (rule.enabled ? 'تعطيل' : 'تفعيل') + '</button>'
+      + '<button type="button" class="sec" id="rule-delete-' + index + '" data-rule-delete="' + esc(rule.id) + '">حذف</button>'
+      + '</div></div>'
+    )).join('');
+  }
+
+  function renderAll() {
+    renderFolders();
+    renderFeeds();
+    renderArticles();
+    renderReader();
+    renderRules();
+    applyTheme();
+  }
+
+  function selectArticle(id) {
+    state.settings.selectedArticleId = id;
+    renderArticles();
+    renderReader();
+  }
+
+  function toggleRead(id) {
+    const article = state.articles.find((a) => a.id === id);
+    if (!article) return;
+    article.read = !article.read;
+    saveState();
+    renderAll();
+  }
+
+  function toggleStar(id) {
+    const article = state.articles.find((a) => a.id === id);
+    if (!article) return;
+    article.starred = !article.starred;
+    saveState();
+    renderAll();
+  }
+
+  function toggleHidden(id) {
+    const article = state.articles.find((a) => a.id === id);
+    if (!article) return;
+    article.hidden = !article.hidden;
+    saveState();
+    renderAll();
+  }
+
+  function markAllRead() {
+    filteredArticles().forEach((article) => { article.read = true; });
+    saveState();
+    renderAll();
+  }
+
+  function clearFilters() {
+    state.settings.search = '';
+    state.settings.status = 'all';
+    els.searchInput.value = '';
+    els.statusFilter.value = 'all';
+    saveState();
+    renderAll();
+  }
+
+  function toggleTheme() {
+    state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+    applyTheme();
+    saveState();
+  }
+
+  function applyTheme() {
+    els.app.classList.toggle('app--dark', state.settings.theme === 'dark');
+    els.app.classList.toggle('app--light', state.settings.theme !== 'dark');
+    els.app.dataset.theme = state.settings.theme;
+  }
+
+  function toggleShortcuts() {
+    els.shortcutsHelp.hidden = !els.shortcutsHelp.hidden;
+  }
+
+  function closeReader() {
+    state.settings.selectedArticleId = null;
+    renderArticles();
+    renderReader();
+  }
+
+  function setStatus(text) { els.importStatus.textContent = text; }
+
+  async function handleImportFiles() {
+    const files = [...(els.fileInput.files || [])];
+    if (!files.length) { setStatus('اختر ملفات أولاً'); return; }
+    let feeds = 0;
+    let articles = 0;
+    let backups = 0;
+    const errors = [];
+    for (const file of files) {
+      try {
+        const text = await readFile(file);
+        let parsed = null;
+        try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && (Array.isArray(parsed.feeds) || Array.isArray(parsed.articles) || Array.isArray(parsed.rules))) {
+          importBackupObject(parsed);
+          backups += 1;
+          continue;
+        }
+        const doc = new DOMParser().parseFromString(text, 'text/xml');
+        if (doc.querySelector('parsererror')) throw new Error('XML غير صالح');
+        const root = doc.documentElement.nodeName.toLowerCase();
+        if (root.includes('opml')) {
+          feeds += parseOpml(text);
+        } else {
+          articles += parseFeedXml(text);
+        }
+      } catch (e) {
+        errors.push(file.name + ': ' + (e && e.message ? e.message : 'خطأ'));
+      }
+    }
+    setStatus('تم استيراد ' + feeds + ' اشتراكًا و ' + articles + ' مقالًا' + (backups ? ' و ' + backups + ' نسخة' : '') + (errors.length ? '؛ أخطاء: ' + errors.join('، ') : ''));
+    els.fileInput.value = '';
+    saveState();
+    renderAll();
+  }
+
+  function bindEvents() {
+    els.importBtn.addEventListener('click', async () => {
+      try { await handleImportFiles(); }
+      catch (e) { setStatus('خطأ: ' + (e && e.message ? e.message : 'استيراد فاشل')); }
+    });
+
+    els.importBackupBtn.addEventListener('click', () => {
+      try {
+        const parsed = JSON.parse(els.backupText.value);
+        importBackupObject(parsed);
+        setStatus('تمت استعادة النسخة الاحتياطية');
+        renderAll();
+      } catch (e) {
+        setStatus('JSON غير صالح');
+      }
+    });
+
+    els.exportBackupBtn.addEventListener('click', () => {
+      els.backupText.value = JSON.stringify({ feeds: state.feeds, articles: state.articles, folders: state.folders, rules: state.rules, settings: state.settings }, null, 2);
+      setStatus('تم التصدير إلى النص');
+    });
+
+    els.copyBackupBtn.addEventListener('click', async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(els.backupText.value);
+        setStatus('تم النسخ');
+      } catch (e) {
+        setStatus('تعذر النسخ');
+      }
+    });
+
+    els.addFolderBtn.addEventListener('click', () => {
+      const name = els.newFolderName.value.trim();
+      if (!name) return;
+      if (!state.folders.includes(name)) state.folders.push(name);
+      els.newFolderName.value = '';
+      saveState();
+      renderAll();
+    });
+
+    els.folderList.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-folder]');
+      if (!target) return;
+      state.settings.folder = target.dataset.folder;
+      state.settings.feed = 'all';
+      saveState();
+      renderAll();
+    });
+
+    els.feedList.addEventListener('click', (event) => {
+      const deleteBtn = event.target.closest('[data-feed-delete]');
+      if (deleteBtn) {
+        const id = deleteBtn.dataset.feedDelete;
+        state.feeds = state.feeds.filter((feed) => feed.id !== id);
+        state.articles = state.articles.filter((article) => article.feedId !== id);
+        if (state.settings.feed === id) state.settings.feed = 'all';
+        saveState();
+        renderAll();
+        return;
+      }
+      const feedBtn = event.target.closest('[data-feed]');
+      if (feedBtn) {
+        state.settings.feed = feedBtn.dataset.feed;
+        saveState();
+        renderAll();
+      }
+    });
+
+    els.statusFilter.addEventListener('change', () => {
+      state.settings.status = els.statusFilter.value;
+      saveState();
+      renderArticles();
+    });
+
+    els.searchInput.addEventListener('input', () => {
+      state.settings.search = els.searchInput.value;
+      renderArticles();
+    });
+
+    els.markAllReadBtn.addEventListener('click', markAllRead);
+    els.clearFiltersBtn.addEventListener('click', clearFilters);
+
+    els.articleList.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-action]');
+      if (button) {
+        const id = button.dataset.id;
+        const action = button.dataset.action;
+        if (action === 'toggle-read') toggleRead(id);
+        else if (action === 'toggle-star') toggleStar(id);
+        else if (action === 'toggle-hide') toggleHidden(id);
+        else if (action === 'open-reader') selectArticle(id);
+        return;
+      }
+      const row = event.target.closest('[data-article-id]');
+      if (row) selectArticle(row.dataset.articleId);
+    });
+
+    els.closeReaderBtn.addEventListener('click', closeReader);
+    els.readerMarkReadBtn.addEventListener('click', () => { if (state.settings.selectedArticleId) toggleRead(state.settings.selectedArticleId); });
+    els.readerStarBtn.addEventListener('click', () => { if (state.settings.selectedArticleId) toggleStar(state.settings.selectedArticleId); });
+    els.readerHideBtn.addEventListener('click', () => { if (state.settings.selectedArticleId) toggleHidden(state.settings.selectedArticleId); });
+
+    els.addRuleBtn.addEventListener('click', () => {
+      const name = els.ruleName.value.trim() || 'قاعدة';
+      const field = els.ruleField.value;
+      const pattern = els.rulePattern.value.trim();
+      const flags = els.ruleFlags.value.trim() || 'i';
+      const action = els.ruleAction.value;
+      if (!pattern) { els.ruleError.hidden = false; els.ruleError.textContent = 'أدخل نمطًا'; return; }
+      try { new RegExp(pattern, sanitizeFlags(flags) || 'i'); }
+      catch (e) { els.ruleError.hidden = false; els.ruleError.textContent = 'نمط غير صالح'; return; }
+      els.ruleError.hidden = true;
+      const rule = normalizeRule({ id: uid('rule'), name, field, pattern, flags, action, enabled: true });
+      if (!rule) return;
+      state.rules.push(rule);
+      applyAllRules();
+      els.ruleName.value = '';
+      els.rulePattern.value = '';
+      saveState();
+      renderAll();
+    });
+
+    els.ruleList.addEventListener('click', (event) => {
+      const toggle = event.target.closest('[data-rule-toggle]');
+      if (toggle) {
+        const rule = state.rules.find((r) => r.id === toggle.dataset.ruleToggle);
+        if (rule) { rule.enabled = !rule.enabled; if (rule.enabled) applyAllRules(); saveState(); renderAll(); }
+        return;
+      }
+      const del = event.target.closest('[data-rule-delete]');
+      if (del) {
+        state.rules = state.rules.filter((r) => r.id !== del.dataset.ruleDelete);
+        saveState();
+        renderAll();
+      }
+    });
+
+    els.themeToggleBtn.addEventListener('click', toggleTheme);
+    els.shortcutsBtn.addEventListener('click', toggleShortcuts);
+    els.resetBtn.addEventListener('click', () => {
+      state.feeds = [];
+      state.articles = [];
+      state.folders = ['عام'];
+      state.rules = [];
+      state.settings = { theme: state.settings.theme, folder: 'all', feed: 'all', status: 'all', search: '', selectedArticleId: null };
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) { }
+      saveState();
+      renderAll();
+      setStatus('تمت إعادة الضبط');
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+        if (event.key !== 'Escape') return;
+      }
+      const list = filteredArticles();
+      let index = list.findIndex((article) => article.id === state.settings.selectedArticleId);
+      const selected = index >= 0 ? list[index] : null;
+      if (event.key === 'j') {
+        if (list.length) {
+          if (index < 0) index = 0;
+          else index = Math.min(list.length - 1, index + 1);
+          selectArticle(list[index].id);
+        }
+        event.preventDefault();
+      } else if (event.key === 'k') {
+        if (list.length) {
+          if (index < 0) index = list.length - 1;
+          else index = Math.max(0, index - 1);
+          selectArticle(list[index].id);
+        }
+        event.preventDefault();
+      } else if (event.key === 'Enter' || event.key === 'o') {
+        if (selected) selectArticle(selected.id);
+      } else if (event.key === 'r') {
+        if (selected) toggleRead(selected.id);
+      } else if (event.key === 's') {
+        if (selected) toggleStar(selected.id);
+      } else if (event.key === 'h') {
+        if (selected) toggleHidden(selected.id);
+      } else if (event.key === '/') {
+        els.searchInput.focus();
+        event.preventDefault();
+      } else if (event.key === 'Escape') {
+        closeReader();
+      } else if (event.key === 'd') {
+        toggleTheme();
+      } else if (event.key === '?') {
+        toggleShortcuts();
+      }
+    });
+  }
+
+  function init() {
+    loadState();
+    if (!state.folders.length) state.folders = ['عام'];
+    if (!state.folders.includes('عام')) state.folders.unshift('عام');
+    els.statusFilter.value = state.settings.status || 'all';
+    els.searchInput.value = state.settings.search || '';
+    els.shortcutsHelp.hidden = true;
+    bindEvents();
+    renderAll();
+    setStatus('جاهز');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
