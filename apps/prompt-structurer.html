@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بناء برومبت منسّق جاهز للنسخ | MDM1</title>
+<meta name="description" content="أداة عربية لبناء برومبت جاهز للنسخ عبر حقول دور ومهمة وسياق وقيود مع قوالب ومعاينة وحفظ محلي">
+<link rel="canonical" href="https://mdm1.org/apps/prompt-structurer.html">
+<meta property="og:title" content="بناء برومبت منسّق جاهز للنسخ">
+<meta property="og:description" content="أداة عربية لبناء برومبت جاهز للنسخ عبر حقول دور ومهمة وسياق وقيود مع قوالب ومعاينة وحفظ محلي">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/prompt-structurer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 12px; }
+.app .card { display: flex; flex-direction: column; gap: 8px; }
+.app .row { align-items: center; flex-wrap: wrap; gap: 8px; }
+.app .out { min-height: 140px; resize: vertical; }
+.app .secListItem { display: flex; align-items: center; gap: 6px; border: 1px solid var(--gold-dim); padding: 6px; border-radius: 6px; }
+.app .secInput { flex: 1; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منشئ البرومبت المنهجي", "url": "https://mdm1.org/apps/prompt-structurer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تحفظ الأداة بياناتي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، كل الحفظ يتم محليًا عبر localStorage على جهازك فقط ولا تُرسل أي بيانات."}}, {"@type": "Question", "name": "هل أحتاج اتصال إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التطبيق يعمل بالكامل داخل المتصفح دون اتصال بعد التحميل."}}, {"@type": "Question", "name": "هل يمكنني إعادة ترتيب الأقسام؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، أضف قسمًا مخصصًا ثم استخدم أزرار رفع وخفض القسم لتغيير الترتيب."}}, {"@type": "Question", "name": "كيف أنسخ البرومبت؟", "acceptedAnswer": {"@type": "Answer", "text": "أنشئ البرومبت ثم اضغط زر نسخ النتيجة لنسخه مباشرة."}}, {"@type": "Question", "name": "هل يمكنني استخدام قوالب جاهزة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر قالبًا من القائمة واضغط قوالب جاهزة ليتم ملء الحقول تلقائيًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منشئ البرومبت المنهجي</h1>
+  <p class="page-sub">أداة عربية لبناء برومبت جاهز للنسخ عبر حقول دور ومهمة وسياق وقيود مع قوالب ومعاينة وحفظ محلي</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: تبني هذه الأداة برومبتًا منسّقًا جاهزًا للنسخ مباشرة، بدون خبرة مسبقة، وبكل سهولة داخل متصفحك فقط. بدلًا من كتابة تعليمات عشوائية للذكاء الاصطناعي، يمكنك ملء حقول واضحة مثل الدور والمهمة والسياق والقيود وصيغة الإخراج، ليُولّد التطبيق نصًا منسّقًا وواضحًا يوجّه النموذج بدقة أكبر ويقلل إعادة الصياغة. تدعم الأداة قوالب جاهزة لمهام شائعة، ومعاينة فورية للنتيجة قبل النسخ، وحفظ المسودات محليًا على جهازك دون إرسال أي بيانات خارج المتصفح. كما يمكنك إعادة ترتيب أقسام البرومبت وتخصيصها حسب الحاجة، وتعديلها في أي وقت. كل ما تفعله يبقى محليًا، ويعمل بالكامل دون اتصال أو تسجيل، ليمنحك برومبتًا جاهزًا وفعّالًا في ثوانٍ.</p>
+
+<div class="app" id="app">
+  <div class="card">
+    <div class="row">
+      <button type="button" id="tmplBtn">قوالب جاهزة</button>
+      <button type="button" id="loadDraftBtn" class="sec">استعادة مسودة</button>
+      <button type="button" id="saveDraftBtn" class="sec">حفظ مسودة</button>
+      <button type="button" id="clearBtn" class="sec">مسح الحقول</button>
+    </div>
+    <label for="tplSelect">اختر قالبًا</label>
+    <select id="tplSelect">
+      <option value="">بدون قالب</option>
+      <option value="summarize">تلخيص نص</option>
+      <option value="translate">ترجمة دقيقة</option>
+      <option value="email">كتابة بريد رسمي</option>
+      <option value="code">مساعدة برمجية</option>
+    </select>
+    <div class="divider"></div>
+    <div class="row">
+      <button type="button" id="addSecBtn" class="sec">إضافة قسم مخصص</button>
+      <button type="button" id="moveUpBtn" class="sec">رفع القسم</button>
+      <button type="button" id="moveDownBtn" class="sec">خفض القسم</button>
+    </div>
+    <div id="sectionsList"></div>
+  </div>
+
+  <div class="card">
+    <label for="roleInput">الدور</label>
+    <input id="roleInput" type="text" placeholder="مثال: خبير تسويق رقمي">
+    <label for="taskInput">المهمة</label>
+    <textarea id="taskInput" placeholder="صف المهمة المطلوب إنجازها بدقة"></textarea>
+    <label for="contextInput">السياق</label>
+    <textarea id="contextInput" placeholder="أضف خلفية أو معلومات مهمة"></textarea>
+    <label for="constraintsInput">القيود</label>
+    <textarea id="constraintsInput" placeholder="مثال: لا تستخدم مصطلحات معقدة، حد أقصى 100 كلمة"></textarea>
+    <label for="formatInput">صيغة الإخراج</label>
+    <textarea id="formatInput" placeholder="مثال: نقاط مرقّمة، جدول، JSON"></textarea>
+    <label for="toneInput">النبرة</label>
+    <select id="toneInput">
+      <option value="">افتراضي</option>
+      <option value="رسمي">رسمي</option>
+      <option value="ودود">ودود</option>
+      <option value="مختصر">مختصر</option>
+      <option value="تعليمي">تعليمي</option>
+    </select>
+    <label for="audInput">الجمهور</label>
+    <input id="audInput" type="text" placeholder="مثال: مبتدئ، متخصص">
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button type="button" id="genBtn">إنشاء البرومبت</button>
+      <button type="button" id="previewBtn" class="sec">معاينة فورية</button>
+      <button type="button" id="copyBtn" class="sec">نسخ النتيجة</button>
+    </div>
+    <label>معاينة البرومبت</label>
+    <textarea id="outPrev" class="out" readonly></textarea>
+    <div class="row">
+      <span class="badge">عدد الأحرف</span>
+      <span class="big" id="charCount">0</span>
+    </div>
+    <label>البرومبت النهائي جاهز للنسخ</label>
+    <textarea id="outFinal" class="out" readonly></textarea>
+    <div id="msgBox"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تحفظ الأداة بياناتي؟</h3><p>لا، كل الحفظ يتم محليًا عبر localStorage على جهازك فقط ولا تُرسل أي بيانات.</p><h3>هل أحتاج اتصال إنترنت؟</h3><p>لا، التطبيق يعمل بالكامل داخل المتصفح دون اتصال بعد التحميل.</p><h3>هل يمكنني إعادة ترتيب الأقسام؟</h3><p>نعم، أضف قسمًا مخصصًا ثم استخدم أزرار رفع وخفض القسم لتغيير الترتيب.</p><h3>كيف أنسخ البرومبت؟</h3><p>أنشئ البرومبت ثم اضغط زر نسخ النتيجة لنسخه مباشرة.</p><h3>هل يمكنني استخدام قوالب جاهزة؟</h3><p>نعم، اختر قالبًا من القائمة واضغط قوالب جاهزة ليتم ملء الحقول تلقائيًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="virtual-bricks-builder.html" style="color:var(--gold-bright);font-weight:700">بناء نماذج مكعبات تركيب ثلاثية الأبعاد في المتصفح</a><span style="opacity:.75"> — تطبيق ويب عربي لبناء نماذج مكعبات تركيب ثلاثية الأبعاد بالسحب والإفلات، مع تدوير وتكبير وحفظ تلقائي وتصدير…</span></li><li style="margin:.5rem 0"><a href="voice-agent-studio.html" style="color:var(--gold-bright);font-weight:700">أداة بناء وكيل مكالمة صوتي بدون كود للمشاريع الصغيرة</a><span style="opacity:.75"> — اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً…</span></li><li style="margin:.5rem 0"><a href="workflow-weaver.html" style="color:var(--gold-bright);font-weight:700">أداة بناء سلاسل الخطوات الآلية</a><span style="opacity:.75"> — أداة تفاعلية لبناء وتشغيل سلاسل خطوات يدوية لأتمتة المهام المتكررة وحفظ القوالب محليًا في المتصفح بسرعة</span></li><li style="margin:.5rem 0"><a href="drag-form-studio.html" style="color:var(--gold-bright);font-weight:700">بناء نماذج ويب بصريًا بالعربية</a><span style="opacity:.75"> — أنشئ نماذج ويب قابلة للسحب والإفلات، احفظ القوالب محليًا، وقم بتصديرها كملف HTML مستقل جاهز للتشغيل مباشرةً</span></li><li style="margin:.5rem 0"><a href="form-field-mapper.html" style="color:var(--gold-bright);font-weight:700">أداة بناء النماذج الديناميكية</a><span style="opacity:.75"> — أداة بسيطة لبناء وإدارة نماذج ديناميكية مع حقول وأنواع وقواعد تحقق وحفظ محلي في المتصفح دون إعادة تحميل أو…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-30 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var roleInput=document.getElementById('roleInput');
+  var taskInput=document.getElementById('taskInput');
+  var contextInput=document.getElementById('contextInput');
+  var constraintsInput=document.getElementById('constraintsInput');
+  var formatInput=document.getElementById('formatInput');
+  var toneInput=document.getElementById('toneInput');
+  var audInput=document.getElementById('audInput');
+  var tplSelect=document.getElementById('tplSelect');
+  var tmplBtn=document.getElementById('tmplBtn');
+  var addSecBtn=document.getElementById('addSecBtn');
+  var moveUpBtn=document.getElementById('moveUpBtn');
+  var moveDownBtn=document.getElementById('moveDownBtn');
+  var genBtn=document.getElementById('genBtn');
+  var previewBtn=document.getElementById('previewBtn');
+  var copyBtn=document.getElementById('copyBtn');
+  var saveDraftBtn=document.getElementById('saveDraftBtn');
+  var loadDraftBtn=document.getElementById('loadDraftBtn');
+  var clearBtn=document.getElementById('clearBtn');
+  var sectionsList=document.getElementById('sectionsList');
+  var outPrev=document.getElementById('outPrev');
+  var outFinal=document.getElementById('outFinal');
+  var charCount=document.getElementById('charCount');
+  var msgBox=document.getElementById('msgBox');
+
+  var customSections=[];
+  var selectedSec=-1;
+
+  var templates={
+    summarize:{role:'خبير تلخيص دقيق',task:'لخص النص التالي مع الحفاظ على المعاني الأساسية',context:'',constraints:'قدم ملخصًا موجزًا، استخدم نقاطًا إن لزم الأمر',format:'نقاط رئيسية ثم خلاصة',tone:'مختصر',aud:'عام'},
+    translate:{role:'مترجم محترف',task:'ترجم النص بدقة مع مراعاة السياق',context:'',constraints:'حافظ على المصطلحات التقنية، لا تضف تفسيرات',format:'نص مترجم فقط',tone:'رسمي',aud:'متخصص'},
+    email:{role:'كاتب بريد رسمي',task:'اكتب بريدًا إلكترونيًا واضحًا ومهنيًا',context:'',constraints:'مختصر، مباشر، خالٍ من التحيات الزائدة',format:'موضوع + نص البريد',tone:'رسمي',aud:'مهني'},
+    code:{role:'مهندس برمجيات مساعد',task:'اشرح أو أصلح الكود حسب الطلب',context:'',constraints:'أجب بخطوات واضحة، اذكر السبب إن وُجد خطأ',format:'شرح + كود جاهز للتشغيل',tone:'مختصر',aud:'مطور'}
+  };
+
+  function msg(t){ msgBox.textContent=t; setTimeout(function(){msgBox.textContent='';},1600); }
+
+  function renderSections(){
+    sectionsList.innerHTML='';
+    for(var i=0;i<customSections.length;i++){
+      (function(idx){
+        var wrap=document.createElement('div');
+        wrap.className='secListItem';
+        var inp=document.createElement('input');
+        inp.className='secInput';
+        inp.type='text';
+        inp.value=customSections[idx].title;
+        inp.oninput=function(){ customSections[idx].title=this.value; };
+        inp.onclick=function(){ selectedSec=idx; };
+        var lab=document.createElement('label');
+        lab.textContent='عنوان';
+        wrap.appendChild(lab); wrap.appendChild(inp);
+        sectionsList.appendChild(wrap);
+      })(i);
+    }
+  }
+
+  tmplBtn.onclick=function(){
+    var v=tplSelect.value;
+    if(!v){ msg('اختر قالبًا أولًا'); return; }
+    var t=templates[v];
+    if(!t){ msg('قالب غير متوفر'); return; }
+    roleInput.value=t.role||'';
+    taskInput.value=t.task||'';
+    contextInput.value=t.context||'';
+    constraintsInput.value=t.constraints||'';
+    formatInput.value=t.format||'';
+    toneInput.value=t.tone||'';
+    audInput.value=t.aud||'';
+    msg('تم تطبيق القالب');
+  };
+
+  addSecBtn.onclick=function(){
+    customSections.push({title:'قسم مخصص', body:''});
+    selectedSec=customSections.length-1;
+    renderSections();
+    msg('أضيف قسم مخصص');
+  };
+
+  moveUpBtn.onclick=function(){
+    if(selectedSec<=0){ msg('لا يمكن الرفع'); return; }
+    var a=customSections[selectedSec-1], b=customSections[selectedSec];
+    customSections[selectedSec-1]=b; customSections[selectedSec]=a;
+    selectedSec--;
+    renderSections();
+  };
+
+  moveDownBtn.onclick=function(){
+    if(selectedSec<0 || selectedSec>=customSections.length-1){ msg('لا يمكن الخفض'); return; }
+    var a=customSections[selectedSec], b=customSections[selectedSec+1];
+    customSections[selectedSec]=b; customSections[selectedSec+1]=a;
+    selectedSec++;
+    renderSections();
+  };
+
+  function build(){
+    var parts=[];
+    parts.push('# برومبت منسّق');
+    if(roleInput.value.trim()){ parts.push('## الدور\n'+roleInput.value.trim()); }
+    if(taskInput.value.trim()){ parts.push('## المهمة\n'+taskInput.value.trim()); }
+    if(contextInput.value.trim()){ parts.push('## السياق\n'+contextInput.value.trim()); }
+    if(constraintsInput.value.trim()){ parts.push('## القيود\n'+constraintsInput.value.trim()); }
+    if(formatInput.value.trim()){ parts.push('## صيغة الإخراج\n'+formatInput.value.trim()); }
+    if(toneInput.value){ parts.push('## النبرة\n'+toneInput.value); }
+    if(audInput.value.trim()){ parts.push('## الجمهور المستهدف\n'+audInput.value.trim()); }
+    for(var i=0;i<customSections.length;i++){
+      var cs=customSections[i];
+      if(cs.title.trim()){ parts.push('## '+cs.title.trim()+'\n'+(cs.body&&cs.body.trim()?cs.body.trim():'يرجى اتباع القسم حسب الحاجة')); }
+    }
+    parts.push('## تعليمات نهائية\nنفّذ الطلب بدقة، وقدم النتيجة وفق صيغة الإخراج المطلوبة دون إضافات غير ضرورية.');
+    return parts.join('\n\n');
+  }
+
+  previewBtn.onclick=function(){
+    var txt=build();
+    outPrev.value=txt;
+    charCount.textContent=String(txt.length);
+    msg('تم التحديث');
+  };
+
+  genBtn.onclick=function(){
+    var txt=build();
+    outFinal.value=txt;
+    outPrev.value=txt;
+    charCount.textContent=String(txt.length);
+    if(!txt.trim()){ msg('أضف معلومات أولًا'); return; }
+    msg('تم إنشاء البرومبت');
+  };
+
+  copyBtn.onclick=function(){
+    try{
+      var txt=outFinal.value||outPrev.value;
+      if(!txt){ msg('لا يوجد نص للنسخ'); return; }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){ msg('نُسخ بنجاح'); }, function(){ msg('تعذّر النسخ'); });
+      }else{
+        var ta=document.createElement('textarea');
+        ta.value=txt; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); msg('نُسخ بنجاح'); }catch(e){ msg('تعذّر النسخ'); }
+        document.body.removeChild(ta);
+      }
+    }catch(e){ msg('تعذّر النسخ'); }
+  };
+
+  saveDraftBtn.onclick=function(){
+    try{
+      var data={
+        role:roleInput.value,task:taskInput.value,context:contextInput.value,
+        constraints:constraintsInput.value,format:formatInput.value,
+        tone:toneInput.value,aud:audInput.value,sections:customSections
+      };
+      localStorage.setItem('promptBuilderDraft', JSON.stringify(data));
+      msg('حُفظت المسودة محليًا');
+    }catch(e){ msg('تعذّر الحفظ'); }
+  };
+
+  loadDraftBtn.onclick=function(){
+    try{
+      var raw=localStorage.getItem('promptBuilderDraft');
+      if(!raw){ msg('لا توجد مسودة محفوظة'); return; }
+      var data=JSON.parse(raw);
+      roleInput.value=data.role||'';
+      taskInput.value=data.task||'';
+      contextInput.value=data.context||'';
+      constraintsInput.value=data.constraints||'';
+      formatInput.value=data.format||'';
+      toneInput.value=data.tone||'';
+      audInput.value=data.aud||'';
+      customSections=data.sections||[];
+      selectedSec=customSections.length>0?0:-1;
+      renderSections();
+      msg('استُعيدت المسودة');
+    }catch(e){ msg('تعذّر الاستعادة'); }
+  };
+
+  clearBtn.onclick=function(){
+    roleInput.value=''; taskInput.value=''; contextInput.value='';
+    constraintsInput.value=''; formatInput.value=''; toneInput.value=''; audInput.value='';
+    customSections=[]; selectedSec=-1; renderSections();
+    outPrev.value=''; outFinal.value=''; charCount.textContent='0';
+    msg('مُسحت الحقول');
+  };
+
+  renderSections();
+})();
+</script>
+</body>
+</html>
