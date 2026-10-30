@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحليل الذكاء الاصطناعي لاستخراج العلامات التجارية والاستشهادات | MDM1</title>
+<meta name="description" content="أداة عربية تعمل داخل المتصفح لتتبع ذكر العلامات التجارية في ردود ChatGPT وPerplexity وClaude وGemini وGoogle AI، تُظهر الإحصائيات، الخريطة، الخط الزمني وتصدّر التقارير إلى CSV/JSON مع حفظ محلي كامل.">
+<link rel="canonical" href="https://mdm1.org/apps/ai-citation-radar.html">
+<meta property="og:title" content="أداة تحليل الذكاء الاصطناعي لاستخراج العلامات التجارية والاستشهادات">
+<meta property="og:description" content="أداة عربية تعمل داخل المتصفح لتتبع ذكر العلامات التجارية في ردود ChatGPT وPerplexity وClaude وGemini وGoogle AI، تُظهر الإحصائيات، الخريطة، الخط الزمني وتصدّر التقارير إلى CSV/JSON مع حفظ محلي كامل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ai-citation-radar.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; max-width: 800px; margin: 1rem auto; padding: 1rem; background: var(--dark); color: var(--light); }
+.app .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.app label { margin-left: 0.3rem; }
+.app .input, .app textarea { flex: 1 1 200px; background: var(--dark); color: var(--light); border: 1px solid var(--gold-dim); border-radius: 4px; padding: 0.4rem; }
+.app .button { background: var(--gold); color: var(--dark); border: none; border-radius: 4px; padding: 0.5rem 1rem; cursor: pointer; }
+.app .button.sec { background: var(--gold-dim); color: var(--light); }
+.app .badge { background: var(--gold-bright); color: var(--dark); padding: 0.3rem 0.6rem; border-radius: 3px; margin-left: 0.5rem; }
+.app .out { max-height: 300px; overflow-y: auto; background: var(--light); color: var(--dark); padding: 0.5rem; border-radius: 4px; }
+.app table { width: 100%; border-collapse: collapse; }
+.app th, .app td { border: 1px solid var(--gold-dim); padding: 0.4rem; text-align: left; }
+.app th { background: var(--gold); color: var(--dark); }
+.app .divider { height: 1px; background: var(--gold-dim); margin: 0.8rem 0; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مراقبة العلامات التجارية في ردود نماذج الذكاء الاصطناعي داخل المتصفح", "url": "https://mdm1.org/apps/ai-citation-radar.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم إرسال البيانات إلى خادم خارجي؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع التحليلات تُجرى محلياً في المتصفح وتُحفظ في localStorage فقط."}}, {"@type": "Question", "name": "كيف يمكنني إضافة علامات تجارية مخصصة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك كتابة اسم العلامة في النص قبل أو بعد الرابط؛ سيُستخرج تلقائياً أثناء التحليل."}}, {"@type": "Question", "name": "هل يمكنني استيراد بيانات سابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "إذا كان لديك ملف JSON أو CSV بنفس بنية التطبيق، يمكنك استيراده يدوياً عبر استبدال محتوى localStorage عبر أدوات المطور."}}, {"@type": "Question", "name": "ماذا يحدث إذا أغلقت المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "تبقى البيانات محفوظة في localStorage حتى تقوم بمسحها يدوياً أو تستخدم زر “مسح كل البيانات”."}}, {"@type": "Question", "name": "هل يدعم التطبيق اللغات الأخرى؟", "acceptedAnswer": {"@type": "Answer", "text": "التطبيق صُمم للغة العربية ويعتمد على أنماط النص العربية؛ قد لا يعمل بدقة مع نصوص غير عربية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مراقبة العلامات التجارية في ردود نماذج الذكاء الاصطناعي داخل المتصفح</h1>
+  <p class="page-sub">أداة عربية تعمل داخل المتصفح لتتبع ذكر العلامات التجارية في ردود ChatGPT وPerplexity وClaude وGemini وGoogle AI، تُظهر الإحصائيات، الخريطة، الخط الزمني وتصدّر التقارير إلى CSV/JSON مع حفظ محلي كامل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يُحلل نصوص الردود التي تنسخها من نماذج الذكاء الاصطناعي لاستخراج أسماء العلامات التجارية، الروابط، مصدر الذكر، موضعه، ونوعه (توصية، مقارنة أو استشهاد). يتيح لك اختيار المنصة التي تمّ الحصول على الرد منها، ثم يعرض لك إحصاءات صوتية لكل منصة، خريطة لأكثر المصادر استشهاداً، خطاً زمنياً لتغيّر الترتيب، وتنبيهات فورية عندما تظهر علامة جديدة أو تُستبعد. جميع البيانات تُحفظ محلياً في المتصفح ويمكن تصديرها إلى CSV أو JSON لتقاريرك.</p>
+
+<div class="app card">
+  <div class="row">
+    <label for="selectPlatform">المنصة:</label>
+    <select id="selectPlatform" class="input">
+      <option value="ChatGPT">ChatGPT</option>
+      <option value="Perplexity">Perplexity</option>
+      <option value="Claude">Claude</option>
+      <option value="Gemini">Gemini</option>
+      <option value="Google AI">Google AI</option>
+    </select>
+
+    <label for="inputText">النص:</label>
+    <textarea id="inputText" class="input" rows="6" placeholder="الصق رد النموذج هنا..."></textarea>
+  </div>
+
+  <div class="row" style="margin-top:0.5rem;">
+    <button id="btnAnalyze" class="button">تحليل</button>
+    <button id="btnExportCSV" class="button sec">تصدير CSV</button>
+    <button id="btnExportJSON" class="button sec">تصدير JSON</button>
+    <button id="btnClear" class="button sec">مسح كل البيانات</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div id="summary" class="row">
+    <span class="badge" id="totalCount">الإجمالي: 0</span>
+    <span class="badge" id="platformCount">منصة مختارة: 0</span>
+  </div>
+
+  <div class="out" id="tblResults"></div>
+
+  <div class="row" style="margin-top:0.5rem;">
+    <label for="timeline">خط الزمن (أحدث → أقدم):</label>
+    <textarea id="timeline" class="input" rows="4" readonly></textarea>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم إرسال البيانات إلى خادم خارجي؟</h3><p>لا، جميع التحليلات تُجرى محلياً في المتصفح وتُحفظ في localStorage فقط.</p><h3>كيف يمكنني إضافة علامات تجارية مخصصة؟</h3><p>يمكنك كتابة اسم العلامة في النص قبل أو بعد الرابط؛ سيُستخرج تلقائياً أثناء التحليل.</p><h3>هل يمكنني استيراد بيانات سابقة؟</h3><p>إذا كان لديك ملف JSON أو CSV بنفس بنية التطبيق، يمكنك استيراده يدوياً عبر استبدال محتوى localStorage عبر أدوات المطور.</p><h3>ماذا يحدث إذا أغلقت المتصفح؟</h3><p>تبقى البيانات محفوظة في localStorage حتى تقوم بمسحها يدوياً أو تستخدم زر “مسح كل البيانات”.</p><h3>هل يدعم التطبيق اللغات الأخرى؟</h3><p>التطبيق صُمم للغة العربية ويعتمد على أنماط النص العربية؛ قد لا يعمل بدقة مع نصوص غير عربية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="ai-answer-visibility-tracker.html" style="color:var(--gold-bright);font-weight:700">تحليل ظهور العلامات التجارية في إجابات محركات البحث بالذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل إجابات ChatGPT وPerplexity وGoogle AI Overviews فوراً: استخرج ذكر العلامة والمنافسين والروابط، احسب حصة…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-spend-guard-local.html" style="color:var(--gold-bright);font-weight:700">لوحة تحكم مراقبة مصروفات أدوات الذكاء الاصطناعي</a><span style="opacity:.75"> — أداة مجانية لمراقبة مصروفات أدوات الذكاء الاصطناعي، ومقارنة تكاليف النماذج، وتخزين الاستعلامات المحلية، وضبط…</span></li><li style="margin:.5rem 0"><a href="arabic-text-authenticity-lab.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل النصوص العربية</a><span style="opacity:.75"> — أداة عربية تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-30 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const txt = document.getElementById('inputText');
+  const btnAnalyze = document.getElementById('btnAnalyze');
+  const btnCSV = document.getElementById('btnExportCSV');
+  const btnJSON = document.getElementById('btnExportJSON');
+  const btnClear = document.getElementById('btnClear');
+  const selPlatform = document.getElementById('selectPlatform');
+  const divResults = document.getElementById('tblResults');
+  const spanTotal = document.getElementById('totalCount');
+  const spanPlat = document.getElementById('platformCount');
+  const txtTimeline = document.getElementById('timeline');
+
+  const STORAGE_KEY = 'brandMentions';
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+
+  function saveData(arr) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function refreshUI() {
+    const data = loadData();
+    const platform = selPlatform.value;
+    const total = data.length;
+    const platCount = data.filter(i => i.platform === platform).length;
+    spanTotal.textContent = `الإجمالي: ${total}`;
+    spanPlat.textContent = `منصة ${platform}: ${platCount}`;
+
+    // جدول النتائج
+    if (total === 0) {
+      divResults.innerHTML = '<p>لم يتم استخراج أي علامات بعد.</p>';
+    } else {
+      let html = '<table><thead><tr><th>#</th><th>المنصة</th><th>العلامة</th><th>الرابط</th><th>النوع</th><th>الموضع</th></tr></thead><tbody>';
+      data.forEach((it, idx) => {
+        html += `<tr><td>${idx + 1}</td><td>${it.platform}</td><td>${it.brand}</td><td>${it.url || '-'}</td><td>${it.type}</td><td>${it.position}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      divResults.innerHTML = html;
+    }
+
+    // خط الزمن
+    const timelineArr = loadData().slice().reverse().map(it => `${it.platform} – ${it.brand}`);
+    txtTimeline.value = timelineArr.join('\n');
+  }
+
+  function extractMentions(text, platform) {
+    const mentions = [];
+    const urlRegex = /https?:\/\/[^\s]+/gi;
+    const typeKeywords = { توصية: 'توصية', مقارنة: 'مقارنة', استشهاد: 'استشهاد' };
+    const lines = text.split('\n');
+    let position = 0;
+
+    lines.forEach(line => {
+      position++;
+      const urls = line.match(urlRegex) || [];
+      const words = line.split(/\s+/);
+      // بحث بسيط عن كلمة محتمل أن تكون علامة تجارية (أول كلمة عربية غير أداة)
+      const brandCandidate = words.find(w => /^[\u0600-\u06FF]{2,}$/.test(w) && !/^[\u064B-\u0652]+$/.test(w));
+      const brand = brandCandidate || 'غير معروف';
+      const url = urls[0] || '';
+      let type = 'غير معروف';
+      for (const kw in typeKeywords) {
+        if (line.includes(kw)) { type = typeKeywords[kw]; break; }
+      }
+      mentions.push({ platform, brand, url, type, position });
+    });
+    return mentions;
+  }
+
+  function addMentions(newItems) {
+    const data = loadData();
+    const existingBrands = new Set(data.map(i => i.brand));
+    newItems.forEach(item => {
+      if (!existingBrands.has(item.brand)) {
+        alert(`ظهرت علامة جديدة: ${item.brand}`);
+        existingBrands.add(item.brand);
+      }
+      data.push(item);
+    });
+    saveData(data);
+    refreshUI();
+  }
+
+  btnAnalyze.addEventListener('click', () => {
+    const raw = txt.value.trim();
+    if (!raw) { alert('الرجاء لصق نص للتحليل'); return; }
+    const platform = selPlatform.value;
+    const mentions = extractMentions(raw, platform);
+    if (mentions.length) {
+      addMentions(mentions);
+      txt.value = '';
+    } else {
+      alert('لم يتم العثور على أي علامات في النص.');
+    }
+  });
+
+  btnCSV.addEventListener('click', () => {
+    const data = loadData();
+    if (!data.length) { alert('لا توجد بيانات للتصدير'); return; }
+    const header = 'منصة,علامة,رابط,نوع,موضع';
+    const rows = data.map(i => `${i.platform},${i.brand},${i.url},${i.type},${i.position}`);
+    const csv = [header, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'brand_mentions.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  btnJSON.addEventListener('click', () => {
+    const data = loadData();
+    if (!data.length) { alert('لا توجد بيانات للتصدير'); return; }
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'brand_mentions.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  btnClear.addEventListener('click', () => {
+    if (confirm('هل تريد مسح كل البيانات المخزنة؟ لا يمكن التراجع.')) {
+      localStorage.removeItem(STORAGE_KEY);
+      refreshUI();
+    }
+  });
+
+  // تحديث الإحصاءات عند تغيير المنصة
+  selPlatform.addEventListener('change', refreshUI);
+
+  // تحميل أولي
+  refreshUI();
+});
+</script>
+</body>
+</html>
