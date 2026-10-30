@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو تحليل بيانات محلي في المتصفح | MDM1</title>
+<meta name="description" content="استوديو تحليلي يعمل بالكامل في المتصفح لاستيراد CSV/JSON وبناء نموذج دلالي واستعلام البيانات وإنشاء رسوم ولوحات وتصديرها دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/local-semantic-analytics.html">
+<meta property="og:title" content="استوديو تحليل بيانات محلي في المتصفح">
+<meta property="og:description" content="استوديو تحليلي يعمل بالكامل في المتصفح لاستيراد CSV/JSON وبناء نموذج دلالي واستعلام البيانات وإنشاء رسوم ولوحات وتصديرها دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-semantic-analytics.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:8px}
+.app-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.app-tab{cursor:pointer}
+.app-tab.active{outline:2px solid var(--gold)}
+.app-panel{padding:8px 0}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.app-card{border:1px solid var(--gold-dim);border-radius:8px;padding:8px;background:var(--dark)}
+.app table{width:100%;border-collapse:collapse;font-size:13px}
+.app th,.app td{border:1px solid var(--gold-dim);padding:4px;text-align:right}
+.app th{background:var(--gold-dim);color:var(--light)}
+.app canvas{max-width:100%;background:#111;border-radius:6px}
+.out{min-height:24px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو تحليل البيانات (محلي)", "url": "https://mdm1.org/apps/local-semantic-analytics.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع العمليات (الاستيراد والتحليل والرسوم) تتم محليًا في المتصفح دون أي اتصال شبكي."}}, {"@type": "Question", "name": "ما صيغ البيانات المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم CSV وJSON، مع إمكانية لصق النص مباشرة أو رفع ملف."}}, {"@type": "Question", "name": "كيف أحفظ عملي؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحفظ تلقائيًا في localStorage، ويمكن تصدير النموذج كملف JSON ومشاركته."}}, {"@type": "Question", "name": "هل يمكن معاينة واجهات API؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُولَّد تعريفات REST/GraphQL من النموذج دون اتصال."}}, {"@type": "Question", "name": "هل البيانات آمنة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، لا تُرسل أي بيانات إلى خادم؛ كل شيء يبقى في متصفحك."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو تحليل البيانات (محلي)</h1>
+  <p class="page-sub">استوديو تحليلي يعمل بالكامل في المتصفح لاستيراد CSV/JSON وبناء نموذج دلالي واستعلام البيانات وإنشاء رسوم ولوحات وتصديرها دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذه أداة تحليل بيانات محلية تعمل بالكامل داخل المتصفح: استورد ملفات CSV أو JSON، أنشئ نموذجًا دلاليًا للجداول والعلاقات والأبعاد والمقاييس وقواعد الوصول، ثم استعلم البيانات بلغة شبيهة بـSQL أو منشئ استعلامات، وحوّل النتائج إلى رسوم ولوحات معلومات، واحفظها واستعدها دون خادم أو حساب. يمكنك أيضًا تصدير النموذج والاستعلامات كملفات قابلة للمشاركة، ومعاينة تعريفات واجهات REST أو GraphQL دون أي اتصال شبكي. كل شيء يُخزَّن محليًا في متصفحك.</p>
+<div class="app" id="appRoot">
+  <div class="app-tabs">
+    <button id="tabImport" class="app-tab">استيراد</button>
+    <button id="tabModel" class="app-tab">النموذج</button>
+    <button id="tabQuery" class="app-tab">استعلام</button>
+    <button id="tabCharts" class="app-tab">رسوم</button>
+    <button id="tabDash" class="app-tab">لوحة</button>
+    <button id="tabExport" class="app-tab">تصدير</button>
+    <button id="tabApi" class="app-tab">معاينة API</button>
+  </div>
+
+  <section id="panelImport" class="app-panel">
+    <h2>استيراد البيانات</h2>
+    <div class="row">
+      <label>ملف CSV/JSON</label>
+      <input id="fileInput" type="file" accept=".csv,.json,application/json,text/csv" />
+      <button id="btnImportFile">استيراد ملف</button>
+    </div>
+    <div class="row">
+      <label>اسم الجدول</label>
+      <input id="tableNameInput" type="text" placeholder="اسم الجدول" />
+    </div>
+    <label>أو الصق البيانات</label>
+    <textarea id="pasteData" rows="6" placeholder="CSV أو JSON"></textarea>
+    <div class="row">
+      <button id="btnImportPaste">استيراد من النص</button>
+      <button id="btnClearData" class="sec">مسح الكل</button>
+    </div>
+    <div id="importStatus" class="out"></div>
+  </section>
+
+  <section id="panelModel" class="app-panel" hidden>
+    <h2>النموذج الدلالي</h2>
+    <div id="tablesList" class="out"></div>
+    <div class="divider"></div>
+    <h3>العلاقات</h3>
+    <div class="row">
+      <label>من جدول</label><select id="relFromTable"></select>
+      <label>عمود</label><select id="relFromCol"></select>
+      <label>إلى جدول</label><select id="relToTable"></select>
+      <label>عمود</label><select id="relToCol"></select>
+      <label>نوع</label><select id="relType"><option>1:N</option><option>N:1</option><option>N:N</option></select>
+      <button id="btnAddRel">إضافة علاقة</button>
+    </div>
+    <div id="relsList" class="out"></div>
+    <div class="divider"></div>
+    <h3>المقاييس</h3>
+    <div class="row">
+      <label>اسم المقياس</label><input id="measureName" type="text" />
+      <label>جدول</label><select id="measureTable"></select>
+      <label>عمود</label><select id="measureCol"></select>
+      <label>تجميع</label><select id="measureAgg"><option>sum</option><option>avg</option><option>count</option><option>min</option><option>max</option></select>
+      <button id="btnAddMeasure">إضافة مقياس</button>
+    </div>
+    <div id="measuresList" class="out"></div>
+    <div class="divider"></div>
+    <h3>قواعد الوصول</h3>
+    <div class="row">
+      <label>دور</label><input id="ruleRole" type="text" placeholder="admin" />
+      <label>جدول</label><select id="ruleTable"></select>
+      <label>عمود (اختياري)</label><select id="ruleCol"></select>
+      <label>صلاحية</label><select id="rulePerm"><option>read</option><option>write</option><option>none</option></select>
+      <button id="btnAddRule">إضافة قاعدة</button>
+    </div>
+    <div id="rulesList" class="out"></div>
+  </section>
+
+  <section id="panelQuery" class="app-panel" hidden>
+    <h2>استعلام البيانات</h2>
+    <label>استعلام SQL-like</label>
+    <textarea id="queryInput" rows="4" placeholder="SELECT name, amount FROM sales WHERE amount > 100 ORDER BY amount DESC LIMIT 20"></textarea>
+    <div class="row">
+      <button id="btnRunQuery">تشغيل</button>
+      <input id="queryName" type="text" placeholder="اسم الاستعلام" />
+      <button id="btnSaveQuery">حفظ استعلام</button>
+      <select id="savedQueries"></select>
+      <button id="btnLoadQuery">تحميل</button>
+    </div>
+    <div id="queryResult" class="out"></div>
+    <div class="row">
+      <button id="btnToChart">إرسال للرسوم</button>
+    </div>
+  </section>
+
+  <section id="panelCharts" class="app-panel" hidden>
+    <h2>الرسوم البيانية</h2>
+    <div class="row">
+      <label>نوع الرسم</label><select id="chartType"><option value="bar">أعمدة</option><option value="line">خط</option><option value="pie">دائري</option></select>
+      <label>محور X</label><select id="chartX"></select>
+      <label>محور Y</label><select id="chartY"></select>
+      <button id="btnDrawChart">رسم</button>
+    </div>
+    <canvas id="chartCanvas" width="640" height="320"></canvas>
+    <div class="row">
+      <input id="chartName" type="text" placeholder="اسم الرسم" />
+      <button id="btnSaveChart">حفظ الرسم</button>
+    </div>
+    <div id="chartsList" class="out"></div>
+  </section>
+
+  <section id="panelDash" class="app-panel" hidden>
+    <h2>لوحة المعلومات</h2>
+    <div class="row"><button id="btnRefreshDashboard">تحديث</button></div>
+    <div id="dashboardGrid" class="app-grid"></div>
+  </section>
+
+  <section id="panelExport" class="app-panel" hidden>
+    <h2>تصدير / استيراد النموذج</h2>
+    <div class="row">
+      <button id="btnExportModel">توليد تصدير</button>
+      <button id="btnDownloadModel">تنزيل ملف</button>
+      <button id="btnCopyExport">نسخ</button>
+    </div>
+    <textarea id="exportArea" rows="10" placeholder="JSON"></textarea>
+    <div class="row">
+      <input id="importModelFile" type="file" accept=".json,application/json" />
+      <button id="btnImportModel">استيراد نموذج</button>
+    </div>
+    <div id="exportStatus" class="out"></div>
+  </section>
+
+  <section id="panelApi" class="app-panel" hidden>
+    <h2>معاينة واجهات API</h2>
+    <div class="row">
+      <label>نمط</label><select id="apiStyle"><option value="rest">REST</option><option value="graphql">GraphQL</option></select>
+      <button id="btnGenApi">توليد</button>
+    </div>
+    <textarea id="apiPreview" rows="12" readonly></textarea>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة بدون إنترنت؟</h3><p>نعم، جميع العمليات (الاستيراد والتحليل والرسوم) تتم محليًا في المتصفح دون أي اتصال شبكي.</p><h3>ما صيغ البيانات المدعومة؟</h3><p>تدعم CSV وJSON، مع إمكانية لصق النص مباشرة أو رفع ملف.</p><h3>كيف أحفظ عملي؟</h3><p>يُحفظ تلقائيًا في localStorage، ويمكن تصدير النموذج كملف JSON ومشاركته.</p><h3>هل يمكن معاينة واجهات API؟</h3><p>نعم، تُولَّد تعريفات REST/GraphQL من النموذج دون اتصال.</p><h3>هل البيانات آمنة؟</h3><p>نعم، لا تُرسل أي بيانات إلى خادم؛ كل شيء يبقى في متصفحك.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-dataset-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو معالجة بيانات داخل المتصفح</a><span style="opacity:.75"> — يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ…</span></li><li style="margin:.5rem 0"><a href="offline-courseware-quiz-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح</a><span style="opacity:.75"> — تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات…</span></li><li style="margin:.5rem 0"><a href="error-watch-dashboard.html" style="color:var(--gold-bright);font-weight:700">لوحة مراقبة أخطاء المتصفح: التقاط وتحليل وتصدير محلي</a><span style="opacity:.75"> — التقط رسائل الخطأ والاستثناءات في متصفحك واعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع، مع فلترة وبحث…</span></li><li style="margin:.5rem 0"><a href="layerloom-paint-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو «ليرلوم»: بكسل‑آرت في المتصفح</a><span style="opacity:.75"> — محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي…</span></li><li style="margin:.5rem 0"><a href="local-content-studio.html" style="color:var(--gold-bright);font-weight:700">محرر محتوى محلي في المتصفح لإدارة المقالات والصفحات</a><span style="opacity:.75"> — محرر محتوى محلي يعمل بالكامل داخل المتصفح: عرّف نماذج YAML أو JSON، أنشئ مقالات وصفحات، احفظ في…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-30 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const KEY='md_studio_state_v1';
+  const state={tables:[],relationships:[],dimensions:[],measures:[],accessRules:[],queries:[],charts:[],lastResult:null,lastCols:[]};
+
+  function $(id){return document.getElementById(id);}
+  function saveState(){try{localStorage.setItem(KEY,JSON.stringify({tables:state.tables,relationships:state.relationships,dimensions:state.dimensions,measures:state.measures,accessRules:state.accessRules,queries:state.queries,charts:state.charts}));}catch(e){}}
+  function loadState(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const j=JSON.parse(raw);Object.assign(state,j);state.lastResult=null;}catch(e){}}
+  function status(msg,el){const e=el||$('importStatus');if(e)e.textContent=msg;}
+
+  function parseCSV(text){
+    const rows=[];let row=[];let field='';let inQ=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i];
+      if(inQ){if(c==='"'){if(text[i+1]==='"'){field+='"';i++;}else inQ=false;}else field+=c;}
+      else{if(c==='"')inQ=true;else if(c===','){row.push(field);field='';}else if(c==='\n'){row.push(field);rows.push(row);row=[];field='';}else if(c==='\r'){}else field+=c;}
+    }
+    if(field!==''||row.length){row.push(field);rows.push(row);}
+    return rows.filter(r=>r.some(x=>String(x).trim()!==''));
+  }
+  function inferType(vals){
+    let num=0,total=0;
+    for(const v of vals){if(v===''||v==null)continue;total++;if(!isNaN(Number(v)))num++;}
+    return total>0&&num===total?'number':'text';
+  }
+  function addTable(name,cols,data){
+    const columns=cols.map(c=>({name:c,type:inferType(data.map(r=>r[c]))}));
+    const ndata=data.map(r=>{const o={};columns.forEach(c=>{const v=r[c.name];o[c.name]=(c.type==='number'&&v!==''&&v!=null)?Number(v):v;});return o;});
+    const t={name,columns,rows:ndata};
+    const idx=state.tables.findIndex(x=>x.name===name);
+    if(idx>=0)state.tables[idx]=t;else state.tables.push(t);
+    if(!state.dimensions.some(d=>d.table===name)) state.dimensions.push(...columns.map(c=>({table:name,column:c.name})));
+    refreshModelUI();saveState();
+  }
+  function importCSV(text,name){
+    const rows=parseCSV(text);
+    if(rows.length<2)throw new Error('ملف CSV فارغ أو غير صالح');
+    const header=rows[0].map(h=>String(h).trim());
+    const data=rows.slice(1).map(r=>{const o={};header.forEach((h,i)=>{o[h]=r[i]!==undefined?r[i]:'';});return o;});
+    addTable(name||'table',header,data);
+  }
+  function importJSON(text,name){
+    const j=JSON.parse(text);
+    if(Array.isArray(j)){
+      if(!j.length)throw new Error('JSON فارغ');
+      addTable(name||'data',Object.keys(j[0]),j);
+    }else if(j&&typeof j==='object'){
+      let n=0;
+      for(const k of Object.keys(j)){if(Array.isArray(j[k])&&j[k].length){addTable(k,Object.keys(j[k][0]),j[k]);n++;}}
+      if(!n)throw new Error('JSON لا يحتوي مصفوفات');
+    }else throw new Error('JSON غير مدعوم');
+  }
+
+  function fillSelect(sel,options,placeholder){
+    if(!sel)return;sel.innerHTML='';
+    if(placeholder){const o=document.createElement('option');o.value='';o.textContent=placeholder;sel.appendChild(o);}
+    (options||[]).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
+  }
+  function allTableNames(){return state.tables.map(t=>t.name);}
+  function colsOf(name){const t=state.tables.find(x=>x.name===name);return t?t.columns.map(c=>c.name):[];}
+
+  function refreshModelUI(){
+    // tables list
+    const tl=$('tablesList');
+    if(tl){
+      if(!state.tables.length){tl.textContent='لا توجد جداول. استورد بيانات أولاً.';}
+      else{
+        tl.innerHTML='';
+        state.tables.forEach(t=>{
+          const d=document.createElement('div');
+          d.innerHTML='<b>'+t.name+'</b> ('+t.rows.length+' صف) - '+t.columns.map(c=>c.name+'('+c.type+')').join(', ');
+          tl.appendChild(d);
+        });
+      }
+    }
+    // selects
+    fillSelect($('relFromTable'),allTableNames());
+    fillSelect($('relToTable'),allTableNames());
+    fillSelect($('measureTable'),allTableNames());
+    fillSelect($('ruleTable'),allTableNames());
+    updateRelCols();updateMeasureCols();updateRuleCols();
+    // measures list
+    const ml=$('measuresList');
+    if(ml){ml.innerHTML='';if(!state.measures.length)ml.textContent='لا توجد مقاييس.';state.measures.forEach(m=>{const d=document.createElement('div');d.textContent=m.name+' = '+m.agg+'('+m.column+') على '+m.table;ml.appendChild(d);});}
+    const rl=$('relsList');
+    if(rl){rl.innerHTML='';if(!state.relationships.length)rl.textContent='لا توجد علاقات.';state.relationships.forEach(r=>{const d=document.createElement('div');d.textContent=r.fromTable+'.'+r.fromCol+' -> '+r.toTable+'.'+r.toCol+' ('+r.type+')';rl.appendChild(d);});}
+    const rul=$('rulesList');
+    if(rul){rul.innerHTML='';if(!state.accessRules.length)rul.textContent='لا توجد قواعد.';state.accessRules.forEach(r=>{const d=document.createElement('div');d.textContent=r.role+' | '+r.table+'.'+(r.column||'*')+' : '+r.perm;rul.appendChild(d);});}
+    // query saved
+    fillSelect($('savedQueries'),state.queries.map(q=>q.name));
+    // charts
+    refreshChartsList();
+    // chart axes from last result or first table
+    refreshChartAxes();
+  }
+  function updateRelCols(){
+    fillSelect($('relFromCol'),colsOf($('relFromTable').value));
+    fillSelect($('relToCol'),colsOf($('relToTable').value));
+  }
+  function updateMeasureCols(){fillSelect($('measureCol'),colsOf($('measureTable').value));}
+  function updateRuleCols(){
+    const cols=['*'].concat(colsOf($('ruleTable').value));
+    fillSelect($('ruleCol'),cols);
+  }
+
+  function refreshChartAxes(){
+    const cs=$('chartX');const cy=$('chartY');
+    if(state.lastResult&&state.lastResult.columns.length){
+      fillSelect(cs,state.lastResult.columns);fillSelect(cy,state.lastResult.columns);
+    }else if(state.tables.length){
+      const c=state.tables[0].columns.map(x=>x.name);
+      fillSelect(cs,c);fillSelect(cy,c);
+    }
+  }
+
+  function evalWhere(row,expr){
+    return expr.split(/\s+AND\s+/i).every(part=>evalCond(row,part.trim()));
+  }
+  function evalCond(row,part){
+    if(/\s+OR\s+/i.test(part)){return part.split(/\s+OR\s+/i).some(p=>evalCond(row,p.trim()));}
+    const m=part.match(/^(.+?)\s*(>=|<=|!=|<>|=|>|<|LIKE|IN)\s*(.+)$/i);
+    if(!m)return true;
+    const col=m[1].trim();const op=m[2].toUpperCase();const raw=m[3].trim();
+    const left=row[col];
+    let right=raw;
+    if(/^'.*'$/.test(raw)||/^".*"$/.test(raw))right=raw.slice(1,-1);
+    else if(!isNaN(Number(raw))&&raw!=='')right=Number(raw);
+    if(op==='LIKE'){const re=new RegExp('^'+right.replace(/%/g,'.*').replace(/_/g,'.')+'$','i');return re.test(String(left));}
+    if(op==='IN'){const vals=raw.replace(/[()]/g,'').split(',').map(v=>v.trim().replace(/^['"]|['"]$/g,''));return vals.includes(String(left));}
+    switch(op){case '=':return left==right;case '!=':case '<>':return left!=right;case '>':return left>right;case '<':return left<right;case '>=':return left>=right;case '<=':return left<=right;}
+    return false;
+  }
+  function computeAgg(fn,col,rows){
+    if(fn==='COUNT')return col==='*'?rows.length:rows.filter(r=>r[col]!=null&&r[col]!=='').length;
+    const nums=rows.map(r=>Number(r[col])).filter(n=>!isNaN(n));
+    if(fn==='SUM')return nums.reduce((a,b)=>a+b,0);
+    if(fn==='AVG')return nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:0;
+    if(fn==='MIN')return nums.length?Math.min(...nums):null;
+    if(fn==='MAX')return nums.length?Math.max(...nums):null;
+    return null;
+  }
+  function runQuery(sql){
+    const m=sql.trim().match(/^SELECT\s+(.+?)\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+?))?(?:\s+GROUP\s+BY\s+(.+?))?(?:\s+ORDER\s+BY\s+(.+?))?(?:\s+LIMIT\s+(\d+))?$/i);
+    if(!m)throw new Error('صيغة الاستعلام غير مدعومة');
+    const selectPart=m[1].trim();
+    const tableName=m[2].trim();
+    const wherePart=m[3]?m[3].trim():null;
+    const groupPart=m[4]?m[4].trim():null;
+    const orderPart=m[5]?m[5].trim():null;
+    const limit=m[6]?parseInt(m[6]):null;
+    const table=state.tables.find(t=>t.name===tableName);
+    if(!table)throw new Error('جدول غير موجود: '+tableName);
+    let rows=table.rows.slice();
+    if(wherePart)rows=rows.filter(r=>evalWhere(r,wherePart));
+    const selCols=selectPart==='*'?table.columns.map(c=>c.name):selectPart.split(',').map(s=>s.trim());
+    const hasAgg=selCols.some(s=>/^\w+\s*\(/.test(s));
+    if(groupPart||hasAgg){
+      const groupCols=groupPart?groupPart.split(',').map(s=>s.trim()):[];
+      const groups=new Map();
+      for(const r of rows){
+        const key=groupCols.length?groupCols.map(c=>r[c]).join('\u0001'):'__all__';
+        if(!groups.has(key))groups.set(key,{keyVals:groupCols.map(c=>r[c]),rows:[]});
+        groups.get(key).rows.push(r);
+      }
+      const outRows=[];
+      for(const g of groups.values()){
+        const obj={};
+        groupCols.forEach((c,i)=>{obj[c]=g.keyVals[i];});
+        for(const expr of selCols){
+          const am=expr.match(/^(\w+)\s*\(\s*(\*|\w+)\s*\)$/i);
+          if(am){obj[expr]=computeAgg(am[1].toLowerCase(),am[2],g.rows);}
+          else if(!(expr in obj)){obj[expr]=g.rows[0]?g.rows[0][expr]:null;}
+        }
+        outRows.push(obj);
+      }
+      rows=outRows;
+    }else{
+      rows=rows.map(r=>{const o={};selCols.forEach(c=>{o[c]=r[c];});return o;});
+    }
+    if(orderPart){
+      const om=orderPart.match(/^(\w+)\s*(ASC|DESC)?$/i);
+      const col=om[1];const dir=(om[2]||'ASC').toUpperCase()==='DESC'?-1:1;
+      rows.sort((a,b)=>{const av=a[col],bv=b[col];return (av>bv?1:av<bv?-1:0)*dir;});
+    }
+    if(limit!==null)rows=rows.slice(0,limit);
+    const columns=hasAgg||groupPart?selCols:(selectPart==='*'?table.columns.map(c=>c.name):selCols);
+    return {columns,rows};
+  }
+  function renderTable(container,res){
+    if(!res||!res.rows.length){container.innerHTML='<div class="out">لا توجد نتائج</div>';return;}
+    const table=document.createElement('table');
+    const thead=document.createElement('thead');const tr=document.createElement('tr');
+    res.columns.forEach(c=>{const th=document.createElement('th');th.textContent=c;tr.appendChild(th);});
+    thead.appendChild(tr);table.appendChild(thead);
+    const tbody=document.createElement('tbody');
+    res.rows.forEach(r=>{
+      const trr=document.createElement('tr');
+      res.columns.forEach(c=>{const td=document.createElement('td');td.textContent=r[c]==null?'':r[c];trr.appendChild(td);});
+      tbody.appendChild(trr);
+    });
+    table.appendChild(tbody);
+    container.innerHTML='';container.appendChild(table);
+  }
+
+  function drawChart(canvas,type,xCol,yCol,res){
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(!res||!res.rows.length){ctx.fillStyle='#ccc';ctx.fillText('لا توجد بيانات',10,20);return;}
+    const labels=res.rows.map(r=>String(r[xCol]));
+    const vals=res.rows.map(r=>Number(r[yCol]));
+    if(type==='bar'){
+      const max=Math.max(...vals,1);const w=canvas.width/(vals.length||1);
+      vals.forEach((v,i)=>{const h=(v/max)*(canvas.height-40);ctx.fillStyle='var(--gold)'||'#c9a227';ctx.fillStyle='#c9a227';ctx.fillRect(i*w+4,canvas.height-20-h,w-8,h);ctx.fillStyle='#fff';ctx.font='10px sans-serif';ctx.fillText(labels[i],i*w+4,canvas.height-4);});
+    }else if(type==='line'){
+      const max=Math.max(...vals,1);const min=Math.min(...vals,0);const range=(max-min)||1;
+      ctx.strokeStyle='#c9a227';ctx.beginPath();
+      vals.forEach((v,i)=>{const x=i*(canvas.width/(vals.length-1||1));const y=canvas.height-20-((v-min)/range)*(canvas.height-40);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+      ctx.stroke();
+      vals.forEach((v,i)=>{const x=i*(canvas.width/(vals.length-1||1));const y=canvas.height-20-((v-min)/range)*(canvas.height-40);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();});
+    }else if(type==='pie'){
+      const total=vals.reduce((a,b)=>a+(isNaN(b)?0:b),0)||1;
+      let ang=0;const cx=canvas.width/2;const cy=canvas.height/2;const r=Math.min(cx,cy)-10;
+      vals.forEach((v,i)=>{
+        const slice=(v/total)*Math.PI*2;
+        ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,ang,ang+slice);ctx.closePath();
+        ctx.fillStyle='hsl('+(i*60)+',60%,50%)';ctx.fill();ang+=slice;
+      });
+    }
+  }
+
+  function refreshChartsList(){
+    const cl=$('chartsList');
+    if(!cl)return;
+    cl.innerHTML='';
+    if(!state.charts.length){cl.textContent='لا توجد رسوم محفوظة.';return;}
+    state.charts.forEach((ch,i)=>{
+      const d=document.createElement('div');
+      d.textContent=(i+1)+'. '+ch.name+' ('+ch.type+')';
+      cl.appendChild(d);
+    });
+  }
+
+  function refreshAll(){refreshModelUI();}
+  function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+  function gqlType(t){return t==='number'?'Float':'String';}
+
+  // tabs
+  function showPanel(name){
+    document.querySelectorAll('.app-panel').forEach(p=>p.hidden=true);
+    const el=$('panel'+name);if(el)el.hidden=false;
+    document.querySelectorAll('.app-tab').forEach(b=>b.classList.remove('active'));
+    const tab=$('tab'+name);if(tab)tab.classList.add('active');
+  }
+
+  // init
+  loadState();
+  // wire events
+  function wire(){
+    const tabs=[['Import','Import'],['Model','Model'],['Query','Query'],['Charts','Charts'],['Dash','Dash'],['Export','Export'],['Api','Api']];
+    // map tab ids
+    const map={Import:'Import',Model:'Model',Query:'Query',Charts:'Charts',Dash:'Dash',Export:'Export',Api:'Api'};
+    ['Import','Model','Query','Charts','Dash','Export','Api'].forEach(n=>{
+      const b=$('tab'+n);if(b)b.addEventListener('click',()=>showPanel(n));
+    });
+    // import
+    $('btnImportFile').addEventListener('click',()=>{
+      const f=$('fileInput').files[0];
+      if(!f){status('اختر ملفًا أولاً.');return;}
+      const r=new FileReader();
+      r.onload=e=>{
+        try{
+          const name=$('tableNameInput').value.trim()||f.name.replace(/\.[^.]+$/,'');
+          if(f.name.toLowerCase().endsWith('.json'))importJSON(e.target.result,name);
+          else importCSV(e.target.result,name);
+          status('تم استيراد '+name);
+        }catch(err){status('خطأ: '+err.message);}
+      };
+      r.readAsText(f);
+    });
+    $('btnImportPaste').addEventListener('click',()=>{
+      const text=$('pasteData').value.trim();
+      if(!text){status('الصق بيانات أولاً.');return;}
+      const name=$('tableNameInput').value.trim()||'pasted';
+      try{
+        if(text.trim().startsWith('[')||text.trim().startsWith('{'))importJSON(text,name);
+        else importCSV(text,name);
+        status('تم الاستيراد.');
+      }catch(err){status('خطأ: '+err.message);}
+    });
+    $('btnClearData').addEventListener('click',()=>{
+      if(!confirm('مسح جميع البيانات؟'))return;
+      state.tables=[];state.relationships=[];state.dimensions=[];state.measures=[];state.accessRules=[];state.queries=[];state.charts=[];state.lastResult=null;
+      saveState();refreshAll();status('تم المسح.');
+    });
+    // model selects
+    $('relFromTable').addEventListener('change',updateRelCols);
+    $('relToTable').addEventListener('change',updateRelCols);
+    $('measureTable').addEventListener('change',updateMeasureCols);
+    $('ruleTable').addEventListener('change',updateRuleCols);
+    $('btnAddRel').addEventListener('click',()=>{
+      const r={fromTable:$('relFromTable').value,fromCol:$('relFromCol').value,toTable:$('relToTable').value,toCol:$('relToCol').value,type:$('relType').value};
+      if(!r.fromTable||!r.toTable){status('اختر جداول.');return;}
+      state.relationships.push(r);refreshModelUI();saveState();status('تمت إضافة العلاقة.');
+    });
+    $('btnAddMeasure').addEventListener('click',()=>{
+      const m={name:$('measureName').value.trim()||('m'+(state.measures.length+1)),table:$('measureTable').value,column:$('measureCol').value,agg:$('measureAgg').value};
+      if(!m.table||!m.column){status('اختر جدول وعمود.');return;}
+      state.measures.push(m);refreshModelUI();saveState();status('تمت إضافة المقياس.');
+    });
+    $('btnAddRule').addEventListener('click',()=>{
+      const r={role:$('ruleRole').value.trim()||'user',table:$('ruleTable').value,column:$('ruleCol').value,perm:$('rulePerm').value};
+      if(!r.table){status('اختر جدول.');return;}
+      state.accessRules.push(r);refreshModelUI();saveState();status('تمت إضافة القاعدة.');
+    });
+    // query
+    $('btnRunQuery').addEventListener('click',()=>{
+      const sql=$('queryInput').value.trim();
+      if(!sql){status('أدخل استعلامًا.');return;}
+      try{
+        const res=runQuery(sql);
+        state.lastResult=res;state.lastCols=res.columns;
+        renderTable($('queryResult'),res);
+        refreshChartAxes();
+        status('تم تنفيذ الاستعلام: '+res.rows.length+' صف.');
+      }catch(err){$('queryResult').innerHTML='<div class="out">خطأ: '+err.message+'</div>';}
+    });
+    $('btnSaveQuery').addEventListener('click',()=>{
+      const name=$('queryName').value.trim();
+      if(!name){status('أدخل اسمًا.');return;}
+      const q={name,sql:$('queryInput').value.trim()};
+      const idx=state.queries.findIndex(x=>x.name===name);
+      if(idx>=0)state.queries[idx]=q;else state.queries.push(q);
+      refreshModelUI();saveState();status('تم حفظ الاستعلام.');
+    });
+    $('btnLoadQuery').addEventListener('click',()=>{
+      const name=$('savedQueries').value;
+      const q=state.queries.find(x=>x.name===name);
+      if(q){$('queryInput').value=q.sql;status('تم التحميل.');}
+    });
+    $('btnToChart').addEventListener('click',()=>{showPanel('Charts');refreshChartAxes();});
+    // charts
+    $('btnDrawChart').addEventListener('click',()=>{
+      const type=$('chartType').value;const x=$('chartX').value;const y=$('chartY').value;
+      if(!state.lastResult){status('لا توجد نتائج. نفّذ استعلامًا first.');return;}
+      drawChart($('chartCanvas'),type,x,y,state.lastResult);
+    });
+    $('btnSaveChart').addEventListener('click',()=>{
+      if(!state.lastResult){status('لا توجد نتائج.');return;}
+      const name=$('chartName').value.trim()||('رسم'+(state.charts.length+1));
+      state.charts.push({name,type:$('chartType').value,x:$('chartX').value,y:$('chartY').value,data:state.lastResult});
+      refreshChartsList();saveState();status('تم حفظ الرسم.');
+    });
+    // dashboard
+    $('btnRefreshDashboard').addEventListener('click',()=>{
+      const grid=$('dashboardGrid');grid.innerHTML='';
+      if(!state.charts.length){grid.innerHTML='<div class="out">لا توجد رسوم. احفظ رسمًا أولاً.</div>';return;}
+      state.charts.forEach(ch=>{
+        const card=document.createElement('div');card.className='app-card';
+        const h=document.createElement('h4');h.textContent=ch.name;card.appendChild(h);
+        const c=document.createElement('canvas');c.width=320;c.height=180;card.appendChild(c);
+        grid.appendChild(card);
+        drawChart(c,ch.type,ch.x,ch.y,ch.data);
+      });
+    });
+    // export
+    $('btnExportModel').addEventListener('click',()=>{
+      const data=JSON.stringify({tables:state.tables,relationships:state.relationships,dimensions:state.dimensions,measures:state.measures,accessRules:state.accessRules,queries:state.queries,charts:state.charts},null,2);
+      $('exportArea').value=data;status('تم توليد التصدير.','exportStatus');
+    });
+    $('btnDownloadModel').addEventListener('click',()=>{
+      const data=$('exportArea').value||JSON.stringify({tables:state.tables,relationships:state.relationships,dimensions:state.dimensions,measures:state.measures,accessRules:state.accessRules,queries:state.queries,charts:state.charts},null,2);
+      const blob=new Blob([data],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='model.json';a.click();URL.revokeObjectURL(url);
+    });
+    $('btnCopyExport').addEventListener('click',()=>{
+      try{navigator.clipboard.writeText($('exportArea').value);}catch(e){}
+    });
+    $('btnImportModel').addEventListener('click',()=>{
+      const f=$('importModelFile').files[0];
+      if(!f){status('اختر ملفًا.','exportStatus');return;}
+      const r=new FileReader();
+      r.onload=e=>{
+        try{
+          const j=JSON.parse(e.target.result);
+          state.tables=j.tables||[];state.relationships=j.relationships||[];state.dimensions=j.dimensions||[];state.measures=j.measures||[];state.accessRules=j.accessRules||[];state.queries=j.queries||[];state.charts=j.charts||[];state.lastResult=null;
+          saveState();refreshAll();status('تم استيراد النموذج.','exportStatus');
+        }catch(err){status('خطأ: '+err.message,'exportStatus');}
+      };
+      r.readAsText(f);
+    });
+    // api
+    $('btnGenApi').addEventListener('click',()=>{
+      const style=$('apiStyle').value;let text='';
+      if(style==='rest'){
+        text='REST endpoints (معاينة):\n';
+        state.tables.forEach(t=>{
+          text+='GET    /api/'+t.name+'\nGET    /api/'+t.name+'/{id}\nPOST   /api/'+t.name+'\nPUT    /api/'+t.name+'/{id}\nDELETE /api/'+t.name+'/{id}\n';
+        });
+        if(state.relationships.length){text+='\nRelations:\n';state.relationships.forEach(r=>{text+=r.fromTable+' -> '+r.toTable+' ('+r.type+')\n';});}
+      }else{
+        text='type Query {\n';
+        state.tables.forEach(t=>{text+='  '+t.name+'(id: ID): '+cap(t.name)+'\n  '+t.name+'List: ['+cap(t.name)+']\n';});
+        text+='}\n\ntype Mutation {\n';
+        state.tables.forEach(t=>{text+='  create'+cap(t.name)+'(input: '+cap(t.name)+'Input): '+cap(t.name)+'\n';});
+        text+='}\n';
+        state.tables.forEach(t=>{
+          text+='\ntype '+cap(t.name)+' {\n';
+          t.columns.forEach(c=>{text+='  '+c.name+': '+gqlType(c.type)+'\n';});
+          state.relationships.filter(r=>r.fromTable===t.name).forEach(r=>{text+='  '+r.toTable+': '+cap(r.toTable)+'\n';});
+          text+='}\n';
+        });
+      }
+      if(!state.tables.length)text='لا توجد جداول. استورد بيانات أولاً.';
+      $('apiPreview').value=text;
+    });
+  }
+  wire();
+  refreshAll();
+  showPanel('Import');
+})();
+</script>
+</body>
+</html>
