@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشغّل فيديو محلي بترجمتين متزامنتين وقاموس كلمات عربي | MDM1</title>
+<meta name="description" content="شغّل فيديوهاتك المحلية مع ترجمتين متزامنتين من SRT/VTT، وابحث داخل الترجمة، وانتقل بين الأسطر، واضغط أي كلمة لترجمتها من قاموسك، واحفظ المفردات والملاحظات وتقدّم المشاهدة محليًا في المتصفح.">
+<link rel="canonical" href="https://mdm1.org/apps/subtitle-study-player.html">
+<meta property="og:title" content="مشغّل فيديو محلي بترجمتين متزامنتين وقاموس كلمات عربي">
+<meta property="og:description" content="شغّل فيديوهاتك المحلية مع ترجمتين متزامنتين من SRT/VTT، وابحث داخل الترجمة، وانتقل بين الأسطر، واضغط أي كلمة لترجمتها من قاموسك، واحفظ المفردات والملاحظات وتقدّم المشاهدة محليًا في المتصفح.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/subtitle-study-player.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-wrap{position:relative;margin:0 auto;max-width:820px}
+.app-wrap video{width:100%;max-height:420px;background:#000;display:block;border:1px solid var(--gold-dim)}
+.app-overlay{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;padding:8px}
+.app-overlay.pos-bottom{bottom:48px;justify-content:flex-end}
+.app-overlay.pos-middle{top:50%;transform:translateY(-50%)}
+.app-overlay.pos-top{top:8px}
+.app-line{color:#fff;text-align:center;text-shadow:0 1px 3px #000;max-width:95%}
+.app-bar{flex-wrap:wrap;gap:8px}
+.app-results{max-height:180px;overflow:auto;font-size:14px}
+.app-results button{margin:2px;padding:4px 10px}
+.app-vocab{list-style:none;margin:0;padding:0;max-height:200px;overflow:auto}
+.app-vocab li{border-bottom:1px solid var(--gold-dim);padding:6px 4px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.app-cues{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.app-cuep{min-height:70px;line-height:2;font-size:15px;cursor:default}
+.app-cuep .w{cursor:pointer;padding:0 3px;border-radius:4px;display:inline-block}
+.app-cuep .w:hover{background:var(--gold);color:#111}
+.app-cuep .w.act{background:var(--gold-bright);color:#111}
+.app-cuep em{opacity:.7}
+@media (max-width:640px){.app-cues{grid-template-columns:1fr}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مشغّل الفيديو التفاعلي للتعلم اللغوي بترجمتين", "url": "https://mdm1.org/apps/subtitle-study-player.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج المشغّل إلى إنترنت أو حساب مستخدم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، يعمل كل شيء محليًا داخل المتصفح: الفيديو والترجمات والقاموس والحفظ في ذاكرة المتصفح دون أي اتصال بالشبكة أو تسجيل دخول."}}, {"@type": "Question", "name": "ما صيغ ملفات الترجمة المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم ملفات SRT وVTT معًا، ويمكن تحميل ترجمتين مختلفتين في الوقت نفسه لعرضهما متزامنتين فوق الفيديو وفي لوحتين قابلتين للنقر."}}, {"@type": "Question", "name": "كيف أضيف ترجمات للكلمات؟", "acceptedAnswer": {"@type": "Answer", "text": "استورد ملف JSON بصيغة {\"كلمة\":\"معنى\"} أو مصفوفة تحوي word وtrans، ثم اضغط أي كلمة في لوحة النقر لتظهر ترجمتها فورًا."}}, {"@type": "Question", "name": "أين تُحفظ مفرداتي وتقدّم المشاهدة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في localStorage داخل متصفحك فقط، ويمكنك تصدير قائمة الكلمات كملف نصي أو مسحها في أي وقت من الأزرار المتاحة."}}, {"@type": "Question", "name": "ما اختصارات لوحة المفاتيح المتاحة؟", "acceptedAnswer": {"@type": "Answer", "text": "مسافة تشغيل/إيقاف، الأسهم للتقديم والرجوع وضبط الصوت، وحرف N لحرف P للتنقل بين الأسطر التالية والسابقة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مشغّل الفيديو التفاعلي للتعلم اللغوي بترجمتين</h1>
+  <p class="page-sub">شغّل فيديوهاتك المحلية مع ترجمتين متزامنتين من SRT/VTT، وابحث داخل الترجمة، وانتقل بين الأسطر، واضغط أي كلمة لترجمتها من قاموسك، واحفظ المفردات والملاحظات وتقدّم المشاهدة محليًا في المتصفح.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذا المشغّل يعمل بالكامل داخل متصفحك دون حساب أو إنترنت، تختار ملف الفيديو ثم ملفَي الترجمة SRT أو VTT فيظهر النصان متزامنين فوق الفيديو وفي لوحة نصية قابلة للنقر، وكل كلمة تضغط عليها تُترجم فورًا من قاموسك المحلي المستورد بصيغة JSON، مع البحث داخل الترجمة، والتنقل السريع بين الأسطر، وحفظ المفردات والملاحظات ومواضع المشاهدة تلقائيًا في ذاكرة المتصفح، وضبط الخط والحجم وموضع الترجمة، وتصدير قائمة الكلمات لاحقًا، وكل ذلك باختصارات لوحة مفاتيح مريحة وواجهة عربية تدعم الاتجاه من اليمين إلى اليسار.</p>
+<div class="card app" id="appRoot">
+  <div class="row">
+    <div><label for="videoFile">ملف الفيديو المحلي</label><input type="file" id="videoFile" accept="video/*"></div>
+    <div><label for="subFile1">الترجمة الأولى (SRT/VTT)</label><input type="file" id="subFile1" accept=".srt,.vtt,text/*"></div>
+    <div><label for="subFile2">الترجمة الثانية (اختياري)</label><input type="file" id="subFile2" accept=".srt,.vtt,text/*"></div>
+  </div>
+  <p id="statusBox" class="out" role="status">لم يُحمَّل فيديو بعد. اختر ملف فيديو من جهازك ثم ملفَي ترجمة للبدء.</p>
+  <div id="playerWrap" class="app-wrap">
+    <video id="player" controls playsinline></video>
+    <div id="subOverlay" class="app-overlay" aria-live="polite">
+      <div id="subLine1" class="app-line"></div>
+      <div id="subLine2" class="app-line"></div>
+    </div>
+  </div>
+  <div class="row app-bar">
+    <button id="btnPlay" type="button">تشغيل / إيقاف</button>
+    <button id="btnBack5" type="button" class="sec">رجوع 5 ثوانٍ</button>
+    <button id="btnFwd5" type="button" class="sec">تقديم 5 ثوانٍ</button>
+    <button id="btnPrevLine" type="button" class="sec">السطر السابق</button>
+    <button id="btnNextLine" type="button" class="sec">السطر التالي</button>
+  </div>
+  <div class="divider"></div>
+  <div class="row">
+    <div><label for="searchInput">ابحث داخل الترجمة</label><input type="search" id="searchInput" placeholder="اكتب كلمة أو جملة"></div>
+    <div><label for="btnSearch">&nbsp;</label><button id="btnSearch" type="button">بحث</button></div>
+    <div><label for="btnClearSearch">&nbsp;</label><button id="btnClearSearch" type="button" class="sec">مسح البحث</button></div>
+  </div>
+  <div id="searchResults" class="out app-results" aria-live="polite">لا توجد نتائج بعد.</div>
+  <div class="divider"></div>
+  <div class="row">
+    <div><label for="dictFile">استيراد قاموس JSON</label><input type="file" id="dictFile" accept=".json,application/json"></div>
+    <div><label for="fontSizeSelect">حجم خط الترجمة</label>
+      <select id="fontSizeSelect"><option value="16">16</option><option value="20">20</option><option value="24" selected>24</option><option value="30">30</option><option value="38">38</option></select></div>
+    <div><label for="fontFamilySelect">نوع الخط</label>
+      <select id="fontFamilySelect"><option value="Tahoma, Arial, sans-serif" selected>طahoma</option><option value="Arial, sans-serif">Arial</option><option value="Georgia, serif">Georgia</option><option value="'Courier New', monospace">Courier New</option></select></div>
+    <div><label for="subPosSelect">موضع الترجمة</label>
+      <select id="subPosSelect"><option value="bottom" selected>أسفل الفيديو</option><option value="middle">وسط الفيديو</option><option value="top">أعلى الفيديو</option></select></div>
+  </div>
+  <div class="divider"></div>
+  <div id="wordBox" class="out">
+    <p id="selectedWordText">اضغط أي كلمة في الترجمة لعرض ترجمتها من القاموس.</p>
+    <p><strong>المعنى:</strong> <span id="wordMeaning" class="badge">—</span></p>
+  </div>
+  <div class="row">
+    <div><label for="wordTransInput">ترجمة الكلمة (حفظها في قائمتك)</label><input type="text" id="wordTransInput" placeholder="اكتب المعنى ثم احفظ"></div>
+    <div><label for="btnSaveWord">&nbsp;</label><button id="btnSaveWord" type="button">حفظ الكلمة</button></div>
+  </div>
+  <div class="row">
+    <div><label for="noteText">ملاحظة على الكلمة / السطر</label><textarea id="noteText" rows="2" placeholder="ملاحظتك الخاصة..."></textarea></div>
+    <div><label for="btnSaveNote">&nbsp;</label><button id="btnSaveNote" type="button" class="sec">حفظ الملاحظة</button></div>
+  </div>
+  <div class="row">
+    <button id="btnExportWords" type="button">تصدير قائمة الكلمات</button>
+    <button id="btnClearVocab" type="button" class="sec">مسح قائمة الكلمات</button>
+    <button id="btnClearProgress" type="button" class="sec">مسح تقدّم المشاهدة</button>
+  </div>
+  <div class="divider"></div>
+  <h2>قائمة المفردات المحفوظة</h2>
+  <ul id="vocabList" class="app-vocab"></ul>
+  <div class="divider"></div>
+  <h2>لوحة النقر داخل الترجمة</h2>
+  <div class="app-cues">
+    <div id="cuePanel1" class="out app-cuep"><em>الترجمة الأولى ستظهر هنا بنقرة على الكلمات.</em></div>
+    <div id="cuePanel2" class="out app-cuep"><em>الترجمة الثانية ستظهر هنا بنقرة على الكلمات.</em></div>
+  </div>
+  <p id="lineInfo" class="badge">السطر الحالي: لا يوجد</p>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج المشغّل إلى إنترنت أو حساب مستخدم؟</h3><p>لا، يعمل كل شيء محليًا داخل المتصفح: الفيديو والترجمات والقاموس والحفظ في ذاكرة المتصفح دون أي اتصال بالشبكة أو تسجيل دخول.</p><h3>ما صيغ ملفات الترجمة المدعومة؟</h3><p>يدعم ملفات SRT وVTT معًا، ويمكن تحميل ترجمتين مختلفتين في الوقت نفسه لعرضهما متزامنتين فوق الفيديو وفي لوحتين قابلتين للنقر.</p><h3>كيف أضيف ترجمات للكلمات؟</h3><p>استورد ملف JSON بصيغة {&quot;كلمة&quot;:&quot;معنى&quot;} أو مصفوفة تحوي word وtrans، ثم اضغط أي كلمة في لوحة النقر لتظهر ترجمتها فورًا.</p><h3>أين تُحفظ مفرداتي وتقدّم المشاهدة؟</h3><p>تُحفظ في localStorage داخل متصفحك فقط، ويمكنك تصدير قائمة الكلمات كملف نصي أو مسحها في أي وقت من الأزرار المتاحة.</p><h3>ما اختصارات لوحة المفاتيح المتاحة؟</h3><p>مسافة تشغيل/إيقاف، الأسهم للتقديم والرجوع وضبط الصوت، وحرف N لحرف P للتنقل بين الأسطر التالية والسابقة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="timeline-video-editor.html" style="color:var(--gold-bright);font-weight:700">محرّر فيديو عربي داخل المتصفح: اقتطاع وترتيب وتصدير بدون رفع</a><span style="opacity:.75"> — استورد مقاطعك واقتطعها وقسّمها ورتّبها بالسحب على خط زمني مرئي، وأضف عناوين عربية وترجمات وفلاتر وانتقالات…</span></li><li style="margin:.5rem 0"><a href="retro-audio-deck.html" style="color:var(--gold-bright);font-weight:700">مشغّل صوتيات محلي بأسلوب الثمانينيات مع محلل طيف ومعادل صوت</a><span style="opacity:.75"> — مشغّل صوتيات يعمل بالكامل في متصفحك: اسحب ملفاتك MP3 وFLAC وOGG وWAV، واستمتع بقائمة تشغيل ومحلل طيف حيّ…</span></li><li style="margin:.5rem 0"><a href="text-to-flashcards.html" style="color:var(--gold-bright);font-weight:700">بطاقات مراجعة واختبارات تلقائية من أي نص عربي</a><span style="opacity:.75"> — الصق أي نص عربي لتحصل فوراً على بطاقات مراجعة وأسئلة اختيار من متعدد وتمارين ملء فراغ، مع حفظ محلي ونظام…</span></li><li style="margin:.5rem 0"><a href="voice-feed-studio.html" style="color:var(--gold-bright);font-weight:700">مختبر إدارة حسابات اجتماعية: تحرير وجدولة وتحليل محلي</a><span style="opacity:.75"> — مختبر عربي يعمل داخل المتصفح لبناء منشورات بنبرتك عبر قوالب ومحرك قواعد محلي، مع اقتراح وسوم وجدول نشر…</span></li><li style="margin:.5rem 0"><a href="arabic-daily-planner.html" style="color:var(--gold-bright);font-weight:700">تطبيق مهام عربي بسيط لحفظ وتنظيم المهام اليومية</a><span style="opacity:.75"> — تطبيق ويب عربي محلي يساعد على تنظيم المهام وتصنيفها وتحديد أولوياتها وحفظها تلقائياً في المتصفح دون اتصال…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-31 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+'use strict';
+var K_V='lv_vocab_v1',K_P='lv_prog_v1',K_S='lv_set_v1',K_D='lv_dict_v1';
+function lsGet(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var $=function(id){return document.getElementById(id);};
+var player=$('player'),statusBox=$('statusBox'),sub1=$('subLine1'),sub2=$('subLine2'),
+overlay=$('subOverlay'),panel1=$('cuePanel1'),panel2=$('cuePanel2'),lineInfo=$('lineInfo'),
+searchResults=$('searchResults'),selectedWordText=$('selectedWordText'),wordMeaning=$('wordMeaning'),
+vocabList=$('vocabList'),wordTransInput=$('wordTransInput'),noteText=$('noteText');
+var cues1=[],cues2=[],dict={},vocab=lsGet(K_V,[]),prog=lsGet(K_P,{}),set=lsGet(K_S,{fs:24,ff:'Tahoma, Arial, sans-serif',pos:'bottom'});
+var videoKey='',selectedWord='',activeIdx=-1,lastTrack=[];
+function say(t,err){statusBox.textContent=t;statusBox.style.color=err?'#f0b0b0':'inherit';}
+function fmt(s){s=Math.max(0,s||0);var m=Math.floor(s/60),x=Math.floor(s%60),ms=Math.round((s%1)*1000);return (m<10?'0':'')+m+':'+(x<10?'0':'')+x+','+(ms<100?(ms<10?'00':'0'):'')+ms;}
+function toSec(h,mn,s,ms){return (h?parseInt(h,10)*3600:0)+parseInt(mn,10)*60+parseInt(s,10)+parseInt((ms+'00').slice(0,3),10)/1000;}
+function parseSub(text){
+  text=String(text||'').replace(/^﻿/,'').replace(/\r\n?/g,'\n');
+  if(/^WEBVTT/.test(text)){var i=text.indexOf('\n');if(i>0)text=text.slice(i+1);}
+  var out=[],blocks=text.split(/\n{2,}/);
+  for(var b=0;b<blocks.length;b++){
+    var lines=blocks[b].split('\n').filter(function(l){return l.trim()!=='';});
+    if(!lines.length)continue;
+    var idx=0;
+    if(/^\d+$/.test(lines[0].trim())&&lines.length>1&&lines[1].indexOf('-->')>-1)idx=1;
+    var m=lines[idx]&&lines[idx].match(/((\d{1,2}):)?(\d{1,2}):(\d{2})[.,](\d{1,3})\s*-->\s*((\d{1,2}):)?(\d{1,2}):(\d{2})[.,](\d{1,3})/);
+    if(!m)continue;
+    var st=toSec(m[2],m[3],m[4],m[5]),en=toSec(m[7],m[8],m[9],m[10]);
+    var txt=lines.slice(idx+1).join(' ').replace(/<[^>]+>/g,'').trim();
+    if(txt)out.push({start:st,end:en,text:txt});
+  }
+  out.sort(function(a,b){return a.start-b.start;});
+  return out;
+}
+function clean(w){return w.replace(/[^\p{L}\p{N}\u0600-\u06FF'-]/gu,'').replace(/^[-'']+|[-'']+$/g,'').toLowerCase();}
+function lookup(word){
+  var w=clean(word);if(!w)return null;
+  if(dict[w])return dict[w];
+  if(dict[word])return dict[word];
+  for(var k in dict){if(clean(k)===w)return dict[k];}
+  return null;
+}
+function renderCue(el,panel,cue,which){
+  if(!cue){el.textContent='';panel.innerHTML='<em>لا يوجد سطر في هذا التوقيت.</em>';return;}
+  el.textContent=cue.text;
+  var parts=cue.text.split(/(\s+)/),html='';
+  for(var i=0;i<parts.length;i++){
+    var p=parts[i];
+    if(/^\s+$/.test(p)||p===''){html+=p;continue;}
+    html+='<span class="w" data-w="'+p.replace(/"/g,'&quot;')+'">'+p+'</span>';
+  }
+  panel.innerHTML=html;
+  panel.setAttribute('data-t',String(cue.start));
+  panel.setAttribute('data-which',which);
+}
+function currentCue(){
+  var t=player.currentTime||0;
+  var list=lastTrack;
+  for(var i=0;i<list.length;i++){if(t>=list[i].start-0.05&&t<=list[i].end)return i;}
+  return -1;
+}
+function refreshCues(){
+  var t=player.currentTime||0;
+  function find(list){for(var i=0;i<list.length;i++){if(t>=list[i].start-0.05&&t<=list[i].end)return list[i];}return null;}
+  var c1=find(cues1),c2=find(cues2);
+  renderCue(sub1,panel1,c1,'1');
+  renderCue(sub2,panel2,c2,'2');
+  var idx=currentCue();
+  activeIdx=idx;
+  if(idx>-1&&lastTrack.length){
+    lineInfo.textContent='السطر الحالي: '+(idx+1)+' من '+lastTrack.length+' — '+fmt(lastTrack[idx].start)+' → '+lastTrack[idx].end.toFixed(1)+'s';
+  }else{lineInfo.textContent='السطر الحالي: لا يوجد';}
+}
+function applySet(){
+  overlay.className='app-overlay pos-'+(set.pos||'bottom');
+  sub1.style.fontSize=(set.fs||24)+'px';sub2.style.fontSize=(Math.round((set.fs||24)*0.85))+'px';
+  sub1.style.fontFamily=set.ff||'Tahoma, Arial, sans-serif';sub2.style.fontFamily=set.ff||'Tahoma, Arial, sans-serif';
+  $('fontSizeSelect').value=String(set.fs||24);$('fontFamilySelect').value=set.ff||'Tahoma, Arial, sans-serif';$('subPosSelect').value=set.pos||'bottom';
+}
+function renderVocab(){
+  if(!vocab.length){vocabList.innerHTML='<li>قائمة المفردات فارغة بعد. احفظ كلمة بالضغط عليها ثم "حفظ الكلمة".</li>';return;}
+  var h='';
+  for(var i=0;i<vocab.length;i++){
+    var v=vocab[i];
+    h+='<li><span><strong>'+v.word+'</strong> — '+v.trans+(v.note?' <em>['+v.note+']</em>':'')+'</span><button type="button" class="sec" data-del="'+i+'">حذف</button></li>';
+  }
+  vocabList.innerHTML=h;
+}
+function selectWord(w){
+  selectedWord=w;
+  selectedWordText.textContent='الكلمة المختارة: '+w;
+  var t=lookup(w);
+  wordMeaning.textContent=t?t:'لا توجد ترجمة في القاموس المستورد';
+  wordTransInput.value=t?t:'';
+}
+function onPanelClick(e){
+  var t=e.target;
+  while(t&&t!==e.currentTarget&&!t.getAttribute('data-w'))t=t.parentNode;
+  if(!t||!t.getAttribute)return;
+  var w=t.getAttribute('data-w');if(!w)return;
+  var all=e.currentTarget.querySelectorAll('.w');
+  for(var i=0;i<all.length;i++)all[i].classList.remove('act');
+  t.classList.add('act');
+  selectWord(w);
+}
+function saveVocab(fromNote){
+  var w=clean(selectedWord);
+  if(!w){say('اضغط كلمة من الترجمة أولًا قبل الحفظ.',true);return;}
+  var trans=(wordTransInput.value||'').trim();
+  var note=(noteText.value||'').trim();
+  if(!fromNote&&!trans){say('اكتب ترجمة الكلمة قبل الحفظ.',true);return;}
+  var found=-1;
+  for(var i=0;i<vocab.length;i++){if(clean(vocab[i].word)===w){found=i;break;}}
+  var rec={word:selectedWord,trans:trans|| (found>-1?vocab[found].trans:''),note:note|| (found>-1?vocab[found].note:''),t:Date.now()};
+  if(found>-1)vocab[found]=rec;else vocab.push(rec);
+  lsSet(K_V,vocab);renderVocab();
+  say(found>-1?'تم تحديث الكلمة في قائمتك.':'تم حفظ الكلمة في قائمتك.');
+}
+function doSearch(){
+  var q=(searchResults.getAttribute('data-q')||$('searchInput').value||'').trim();
+  var qq=($('searchInput').value||'').trim();
+  if(!qq){searchResults.textContent='اكتب نصًا للبحث داخل الترجمة.';return;}
+  var res=[];
+  function scan(list,label){
+    var lq=qq.toLowerCase();
+    for(var i=0;i<list.length;i++){
+      if(list[i].text.toLowerCase().indexOf(lq)>-1)res.push({i:i,start:list[i].start,text:list[i].text,label:label});
+    }
+  }
+  scan(cues1,'ت1');scan(cues2,'ت2');
+  res.sort(function(a,b){return a.start-b.start;});
+  var uniq=[],seen={};
+  for(var j=0;j<res.length;j++){var k=res[j].label+res[j].i;if(seen[k])continue;seen[k]=1;uniq.push(res[j]);}
+  if(!uniq.length){searchResults.textContent='لا توجد نتائج مطابقة لـ «'+qq+'».';return;}
+  var h='عدد النتائج: '+uniq.length+'. اضغط للانتقال:<br>';
+  for(var m=0;m<uniq.length&&m<80;m++){
+    h+='<button type="button" data-seek="'+uniq[m].start+'" data-ci="'+uniq[m].i+'">'+uniq[m].label+' '+fmt(uniq[m].start)+' — '+uniq[m].text.replace(/</g,'&lt;')+'</button>';
+  }
+  searchResults.innerHTML=h;
+}
+function seekLine(dir){
+  if(!lastTrack.length){say('لا توجد ترجمة محمّلة للتنقل بين الأسطر.',true);return;}
+  var i=currentCue();
+  if(i<0){
+    for(var k=0;k<lastTrack.length;k++){if(player.currentTime<lastTrack[k].start){i=dir>0?k:Math.max(0,k-1);break;}}
+    if(i<0)i=lastTrack.length-1;
+  }else i=i+dir;
+  i=Math.max(0,Math.min(lastTrack.length-1,i));
+  player.currentTime=lastTrack[i].start+0.01;
+  refreshCues();
+}
+function exportWords(){
+  if(!vocab.length){say('لا توجد كلمات محفوظة للتصدير.',true);return;}
+  var txt='قائمة المفردات\n';
+  for(var i=0;i<vocab.length;i++){txt+=(i+1)+'. '+vocab[i].word+' = '+vocab[i].trans+(vocab[i].note?' | ملاحظة: '+vocab[i].note:'')+'\n';}
+  var blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='words.txt';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){}},1000);
+  say('تم تصدير قائمة الكلمات إلى ملف نصي.');
+}
+function loadSubs(which,text,name){
+  var parsed=parseSub(text);
+  if(!parsed.length){say('لم يتم قراءة أي سطر من ملف الترجمة «'+name+'». تأكد أنه SRT أو VTT.',true);return;}
+  if(which===1)cues1=parsed;else cues2=parsed;
+  lastTrack=cues1.length?cues1:cues2;
+  say('تم تحميل '+parsed.length+' سطرًا من الترجمة '+which+' ('+name+').');
+  refreshCues();
+}
+$('subFile1').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(){loadSubs(1,r.result,f.name);};r.onerror=function(){say('تعذر قراءة ملف الترجمة الأولى.',true);};r.readAsText(f);
+});
+$('subFile2').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(){loadSubs(2,r.result,f.name);};r.onerror=function(){say('تعذر قراءة ملف الترجمة الثانية.',true);};r.readAsText(f);
+});
+var objUrl='';
+$('videoFile').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  if(objUrl){try{URL.revokeObjectURL(objUrl);}catch(err){}}
+  objUrl=URL.createObjectURL(f);
+  player.src=objUrl;videoKey=f.name+'|'+f.size;
+  if(prog[videoKey]){player.currentTime=prog[videoKey];say('تم فتح الفيديو وتمت العودة إلى الدقيقة المحفوظة '+fmt(prog[videoKey])+'.');}
+  else say('تم فحم الفيديو «'+f.name+'». أضف ملفَي الترجمة للمزامنة.');
+  refreshCues();
+});
+player.addEventListener('timeupdate',function(){
+  if(videoKey){prog[videoKey]=player.currentTime;lsSet(K_P,prog);}
+  refreshCues();
+});
+player.addEventListener('loadedmetadata',function(){if(prog[videoKey]&&prog[videoKey]<player.duration)player.currentTime=prog[videoKey];});
+player.addEventListener('error',function(){say('خطأ في تشغيل الفيديو. جرّب صيغة أخرى مثل MP4.',true);});
+$('btnPlay').addEventListener('click',function(){if(!player.src){say('اختر ملف فيديو أولًا.',true);return;}if(player.paused)player.play();else player.pause();});
+$('btnBack5').addEventListener('click',function(){player.currentTime=Math.max(0,player.currentTime-5);});
+$('btnFwd5').addEventListener('click',function(){player.currentTime=Math.min(player.duration||0,player.currentTime+5);});
+$('btnPrevLine').addEventListener('click',function(){seekLine(-1);});
+$('btnNextLine').addEventListener('click',function(){seekLine(1);});
+panel1.addEventListener('click',onPanelClick);
+panel2.addEventListener('click',onPanelClick);
+$('btnSaveWord').addEventListener('click',function(){saveVocab(false);});
+$('btnSaveNote').addEventListener('click',function(){
+  if(!selectedWord){say('اختر كلمة من الترجمة قبل حفظ ملاحظة.',true);return;}
+  saveVocab(true);
+});
+$('btnSearch').addEventListener('click',function(){doSearch();});
+$('searchInput').addEventListener('keydown',function(e){if(e.key==='Enter')doSearch();});
+$('btnClearSearch').addEventListener('click',function(){$('searchInput').value='';searchResults.textContent='لا توجد نتائج بعد.';});
+searchResults.addEventListener('click',function(e){
+  var t=e.target;if(!t.getAttribute||!t.getAttribute('data-seek'))return;
+  player.currentTime=parseFloat(t.getAttribute('data-seek'))+0.01;refreshCues();
+});
+$('dictFile').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var data=JSON.parse(r.result),n=0;dict={};
+      if(Array.isArray(data)){for(var i=0;i<data.length;i++){if(data[i]&&data[i].word){dict[clean(data[i].word)]=data[i].trans||data[i].meaning||'';n++;}}}
+      else{for(var k in data){if(typeof data[k]==='string'){dict[clean(k)]=data[k];n++;}}}
+      if(!n){say('القاموس فارغ أو صيغته غير مدعومة. استخدم {"كلمة":"معنى"} أو مصفوفة words.',true);return;}
+      lsSet(K_D,dict);say('تم استيراد '+n+/* translators: count */' مدخل من القاموس.');
+    }catch(err){say('ملف القاموس غير صالح. اجعله JSON مثل {"hello":"مرحبًا"}.',true);}
+  };
+  r.onerror=function(){say('تعذر قراءة ملف القاموس.',true);};r.readAsText(f);
+});
+$('btnExportWords').addEventListener('click',exportWords);
+$('btnClearVocab').addEventListener('click',function(){vocab=[];lsSet(K_V,vocab);renderVocab();say('تم مسح قائمة المفردات.');});
+$('btnClearProgress').addEventListener('click',function(){prog={};lsSet(K_P,prog);say('تم مسح بيانات تقدّم المشاهدة.');});
+$('fontSizeSelect').addEventListener('change',function(){set.fs=parseInt(this.value,10)||24;lsSet(K_S,set);applySet();});
+$('fontFamilySelect').addEventListener('change',function(){set.ff=this.value;lsSet(K_S,set);applySet();});
+$('subPosSelect').addEventListener('change',function(){set.pos=this.value;lsSet(K_S,set);applySet();});
+document.addEventListener('keydown',function(e){
+  var t=e.target&&e.target.tagName;
+  if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
+  if(e.key===' '||e.code==='Space'){e.preventDefault();if(player.src){if(player.paused)player.play();else player.pause();}}
+  else if(e.key==='ArrowLeft'){e.preventDefault();player.currentTime=Math.max(0,player.currentTime-5);}
+  else if(e.key==='ArrowRight'){e.preventDefault();player.currentTime=Math.min(player.duration||0,player.currentTime+5);}
+  else if(e.key==='ArrowUp'){e.preventDefault();player.volume=Math.min(1,player.volume+0.1);}
+  else if(e.key==='ArrowDown'){e.preventDefault();player.volume=Math.max(0,player.volume-0.1);}
+  else if(e.key==='n'||e.key==='N'||e.key==='ن'){seekLine(1);}
+  else if(e.key==='p'||e.key==='P'||e.key==='ر'){seekLine(-1);}
+});
+try{var sd=lsGet(K_D,null);if(sd&&typeof sd==='object')dict=sd;}catch(e){}
+renderVocab();applySet();refreshCues();
+})();
+</script>
+</body>
+</html>
