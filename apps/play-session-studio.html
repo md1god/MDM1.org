@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إعدادات لعبة محلية: ملفات شخصية وتعديلات | MDM1</title>
+<meta name="description" content="لوحة محلية لإنشاء ملفات تشغيل مخصصة للعبة: ضبط الرسومات والواجهة والأصوات والمؤشر، معاينة فورية، حفظ ملفات شخصية، تعديلات بالسحب والإفلات، نص حضور، خوادم، تصدير واستيراد.">
+<link rel="canonical" href="https://mdm1.org/apps/play-session-studio.html">
+<meta property="og:title" content="لوحة إعدادات لعبة محلية: ملفات شخصية وتعديلات">
+<meta property="og:description" content="لوحة محلية لإنشاء ملفات تشغيل مخصصة للعبة: ضبط الرسومات والواجهة والأصوات والمؤشر، معاينة فورية، حفظ ملفات شخصية، تعديلات بالسحب والإفلات، نص حضور، خوادم، تصدير واستيراد.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/play-session-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-wrap{display:flex;flex-direction:column;gap:1rem}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.app-intro{line-height:1.7}
+.app-canvas{width:100%;height:220px;border:1px solid var(--gold-dim);border-radius:.4rem;background:#000;display:block}
+.app-mods{list-style:none;padding:0;margin:.5rem 0 0;display:flex;flex-direction:column;gap:.4rem}
+.app-mod{display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;border:1px dashed var(--gold-dim);border-radius:.4rem;cursor:grab;background:rgba(255,255,255,.03);user-select:none}
+.app-mod.dragging{opacity:.45}
+.app-mod.disabled{opacity:.4;text-decoration:line-through}
+.app-mod input{margin:0}
+.app-mod button{padding:.1rem .4rem}
+.app-servers{width:100%;border-collapse:collapse;margin-top:.5rem}
+.app-servers th,.app-servers td{padding:.35rem .5rem;border-bottom:1px solid var(--gold-dim);text-align:right;font-size:.9rem}
+.app-pres{min-height:80px;width:100%;box-sizing:border-box}
+.app-status{min-height:1.2rem}
+.card h2{margin:0 0 .5rem;font-size:1.05rem;color:var(--gold-bright)}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.35rem 0}
+.row label{min-width:90px}
+input[type=range]{flex:1;min-width:120px}
+input[type=color]{width:48px;height:32px;padding:0;border:1px solid var(--gold-dim);background:transparent}
+select,input[type=text],input[type=number],textarea{background:rgba(255,255,255,.04);color:var(--light);border:1px solid var(--gold-dim);border-radius:.3rem;padding:.3rem .4rem}
+button{cursor:pointer}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة إعدادات تشغيل مخصصة للعبة", "url": "https://mdm1.org/apps/play-session-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل اللوحة بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تعتمد على localStorage وواجهات المتصفح فقط ولا تحتاج إلى حسابات أو اتصال بالشبكة."}}, {"@type": "Question", "name": "كيف أحفظ عدة ملفات شخصية؟", "acceptedAnswer": {"@type": "Answer", "text": "أنشئ ملفًا جديدًا باسم مخصص، عدّل الإعدادات ثم اضغط حفظ، ويمكن التبديل بين الملفات من القائمة."}}, {"@type": "Question", "name": "كيف أدير مكتبة التعديلات؟", "acceptedAnswer": {"@type": "Answer", "text": "أضف تعديلًا بالاسم، فعّله أو عطّله، وأعد ترتيبه بالسحب والإفلات، أو احذفه."}}, {"@type": "Question", "name": "كيف أصدر أو أستورد الإعدادات؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط تصدير لتنزيل ملف JSON، أو استيراد لاختيار ملف JSON previously exported."}}, {"@type": "Question", "name": "ماذا تفعل معاينة فورية؟", "acceptedAnswer": {"@type": "Answer", "text": "ترسم مشهدًا يعكس جودة الرسومات ومجال الرؤية والمؤشر والأصوات لتقييم التغييرات فورًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة إعدادات تشغيل مخصصة للعبة</h1>
+  <p class="page-sub">لوحة محلية لإنشاء ملفات تشغيل مخصصة للعبة: ضبط الرسومات والواجهة والأصوات والمؤشر، معاينة فورية، حفظ ملفات شخصية، تعديلات بالسحب والإفلات، نص حضور، خوادم، تصدير واستيراد.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">هذه اللوحة المحلية تتيح لك ضبط إعدادات الرسومات والواجهة والأصوات والمؤشر لملفات تشغيل مخصصة، مع معاينة فورية وحفظ عدة ملفات شخصية. تدير مكتبة تعديلات بالسحب والإفلات، وتولّد نص حضور قابلًا للنسخ، وتسجل مناطق الخوادم وزمن الاستجابة يدويًا، ثم تصدر الإعدادات أو تستوردها من ملف. تعتمد على localStorage وواجهات المتصفح فقط دون حسابات أو اتصال بالشبكة. جميع البيانات تبقى على جهازك ولا تُرسل إلى أي خادم. يمكنك إنشاء ملفات شخصية متعددة وتبديلها بسرعة، وضبط كل التفاصيل بصريًا، ونسخ نص الحضور لمشاركته، ومراقبة أداء الخوادم يدويًا. الواجهة باللغة العربية وتدعم الاتجاه من اليمين إلى اليسار بالكامل.</p>
+<div id="global-status" class="out app-status"></div>
+<div class="app-grid">
+<div class="card">
+<h2>الملفات الشخصية</h2>
+<div class="row"><label for="profile-select">الملف الحالي</label><select id="profile-select"></select></div>
+<div class="row"><label for="profile-name">اسم ملف جديد</label><input id="profile-name" type="text" placeholder="اسم الملف"></div>
+<div class="row"><button id="btn-new-profile">ملف جديد</button><button id="btn-save-profile" class="sec">حفظ</button><button id="btn-delete-profile" class="sec">حذف</button></div>
+</div>
+<div class="card">
+<h2>الرسومات</h2>
+<div class="row"><label for="gfx-resolution">الدقة</label><select id="gfx-resolution"><option>1280x720</option><option>1920x1080</option><option>2560x1440</option><option>3840x2160</option></select></div>
+<div class="row"><label for="gfx-quality">الجودة</label><select id="gfx-quality"><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high">عالية</option><option value="ultra">فائقة</option></select></div>
+<div class="row"><label for="gfx-shadows">الظلال</label><select id="gfx-shadows"><option value="off">إيقاف</option><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high">عالية</option></select></div>
+<div class="row"><label for="gfx-aa">تنعيم الحواف</label><select id="gfx-aa"><option value="off">إيقاف</option><option value="fxaa">FXAA</option><option value="msaa2">MSAA 2x</option><option value="msaa4">MSAA 4x</option></select></div>
+<div class="row"><label for="gfx-fov">مجال الرؤية</label><input id="gfx-fov" type="range" min="60" max="120" value="90"><span id="gfx-fov-val" class="badge">90</span></div>
+<div class="row"><label for="gfx-vsync">مزامنة عمودية</label><input id="gfx-vsync" type="checkbox" checked></div>
+<div class="row"><label for="gfx-fpscap">حد الإطارات</label><select id="gfx-fpscap"><option>30</option><option>60</option><option>120</option><option>144</option><option>unlimited">غير محدود</option></select></div>
+<div class="row"><label for="gfx-texture">القوام</label><select id="gfx-texture"><option value="low">منخفض</option><option value="medium">متوسط</option><option value="high">عالي</option></select></div>
+</div>
+<div class="card">
+<h2>الواجهة</h2>
+<div class="row"><label for="ui-scale">حجم الواجهة</label><input id="ui-scale" type="range" min="75" max="150" value="100"><span id="ui-scale-val" class="badge">100%</span></div>
+<div class="row"><label for="ui-hud">إظهار HUD</label><input id="ui-hud" type="checkbox" checked></div>
+<div class="row"><label for="ui-minimap">الخريطة المصغرة</label><select id="ui-minimap"><option value="off">إيقاف</option><option value="corner">زاوية</option><option value="center">وسط</option></select></div>
+<div class="row"><label for="ui-lang">لغة الواجهة</label><select id="ui-lang"><option value="ar">العربية</option><option value="en">English</option></select></div>
+<div class="row"><label for="ui-tooltips">تلميحات</label><input id="ui-tooltips" type="checkbox" checked></div>
+</div>
+<div class="card">
+<h2>الأصوات</h2>
+<div class="row"><label for="aud-master">الرئيسية</label><input id="aud-master" type="range" min="0" max="100" value="80"><span id="aud-master-val" class="badge">80</span></div>
+<div class="row"><label for="aud-music">الموسيقى</label><input id="aud-music" type="range" min="0" max="100" value="60"><span id="aud-music-val" class="badge">60</span></div>
+<div class="row"><label for="aud-sfx">التأثيرات</label><input id="aud-sfx" type="range" min="0" max="100" value="75"><span id="aud-sfx-val" class="badge">75</span></div>
+<div class="row"><label for="aud-voice">الأصوات</label><input id="aud-voice" type="range" min="0" max="100" value="70"><span id="aud-voice-val" class="badge">70</span></div>
+<div class="row"><label for="aud-mute">كتم الكل</label><input id="aud-mute" type="checkbox"></div>
+</div>
+<div class="card">
+<h2>المؤشر</h2>
+<div class="row"><label for="cur-size">الحجم</label><input id="cur-size" type="range" min="8" max="48" value="24"><span id="cur-size-val" class="badge">24</span></div>
+<div class="row"><label for="cur-sens">الحساسية</label><input id="cur-sens" type="range" min="1" max="100" value="50"><span id="cur-sens-val" class="badge">50</span></div>
+<div class="row"><label for="cur-smooth">التنعيم</label><input id="cur-smooth" type="range" min="0" max="100" value="30"><span id="cur-smooth-val" class="badge">30</span></div>
+<div class="row"><label for="cur-color">اللون</label><input id="cur-color" type="color" value="#ffd700"></div>
+<div class="row"><label for="cur-trail">أثر حركة</label><input id="cur-trail" type="checkbox"></div>
+</div>
+<div class="card">
+<h2>معاينة فورية</h2>
+<canvas id="preview-canvas" class="app-canvas"></canvas>
+<div id="preview-status" class="out"></div>
+</div>
+<div class="card">
+<h2>مكتبة التعديلات</h2>
+<div class="row"><label for="mod-input-name">اسم تعديل</label><input id="mod-input-name" type="text" placeholder="اسم التعديل"><button id="btn-add-mod">إضافة</button></div>
+<ul id="mod-list" class="app-mods"></ul>
+<div id="mod-status" class="out"></div>
+</div>
+<div class="card">
+<h2>نص الحضور</h2>
+<div class="row"><label for="pres-template">القالب</label><textarea id="pres-template" class="app-pres"></textarea></div>
+<div class="row"><button id="btn-gen-pres">توليد</button><button id="btn-copy-pres" class="sec">نسخ</button></div>
+<textarea id="pres-output" class="out app-pres" readonly></textarea>
+</div>
+<div class="card">
+<h2>مناطق الخوادم</h2>
+<div class="row"><label for="srv-region">المنطقة</label><input id="srv-region" type="text" placeholder="اسم المنطقة"><label for="srv-ping">ms</label><input id="srv-ping" type="number" min="0" placeholder="0"><button id="btn-add-srv">إضافة</button></div>
+<table class="app-servers"><thead><tr><th>المنطقة</th><th>الزمن</th><th>التاريخ</th><th></th></tr></thead><tbody id="srv-body"></tbody></table>
+<div class="row"><button id="btn-clear-srv" class="sec">مسح الكل</button></div>
+</div>
+<div class="card">
+<h2>تصدير واستيراد</h2>
+<div class="row"><button id="btn-export">تصدير</button><button id="btn-import" class="sec">استيراد</button><input id="file-import" type="file" accept="application/json" hidden></div>
+<textarea id="export-out" class="out app-pres" readonly></textarea>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل اللوحة بدون إنترنت؟</h3><p>نعم، تعتمد على localStorage وواجهات المتصفح فقط ولا تحتاج إلى حسابات أو اتصال بالشبكة.</p><h3>كيف أحفظ عدة ملفات شخصية؟</h3><p>أنشئ ملفًا جديدًا باسم مخصص، عدّل الإعدادات ثم اضغط حفظ، ويمكن التبديل بين الملفات من القائمة.</p><h3>كيف أدير مكتبة التعديلات؟</h3><p>أضف تعديلًا بالاسم، فعّله أو عطّله، وأعد ترتيبه بالسحب والإفلات، أو احذفه.</p><h3>كيف أصدر أو أستورد الإعدادات؟</h3><p>اضغط تصدير لتنزيل ملف JSON، أو استيراد لاختيار ملف JSON previously exported.</p><h3>ماذا تفعل معاينة فورية؟</h3><p>ترسم مشهدًا يعكس جودة الرسومات ومجال الرؤية والمؤشر والأصوات لتقييم التغييرات فورًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-anime-library-tracker.html" style="color:var(--gold-bright);font-weight:700">مكتبة أنمي شخصية محلية: استيراد ومشاهدة بدون خادم</a><span style="opacity:.75"> — مكتبة أنمي عربية تعمل بالكامل في المتصفح: استورد فيديوهاتك وصورك، تابع التقدم، نظّم السيناريوهات والمدبلج…</span></li><li style="margin:.5rem 0"><a href="private-watch-journal.html" style="color:var(--gold-bright);font-weight:700">مكتبة أفلام ومسلسلات شخصية</a><span style="opacity:.75"> — تطبيق ويب عربي لإدارة مكتبة الأفلام والمسلسلات: أضف أعمالك، استوردها من CSV/JSON، تابع تقدم الحلقات، قيّم…</span></li><li style="margin:.5rem 0"><a href="pulse-home-iot-console.html" style="color:var(--gold-bright);font-weight:700">لوحة تحكم أشياء إنترنت منزلية: أصول وقراءات وأتمتة وتقارير</a><span style="opacity:.75"> — لوحة تحكم أشياء إنترنت: سجّل الأجهزة أصولاً، حاكي الطاقة والحرارة والرطوبة، ابنِ قواعد عندما-ثم، وتابع…</span></li><li style="margin:.5rem 0"><a href="sanad-content-autopilot.html" style="color:var(--gold-bright);font-weight:700">استوديو شخصية العلامة وإدارة المحتوى</a><span style="opacity:.75"> — ابن شخصية علامتك (نبرة الصوت، الجمهور، المحظورات، الهوية البصرية) واحفظها كذاكرة محلية تتعلم من موافقاتك…</span></li><li style="margin:.5rem 0"><a href="swift-key-command-desk.html" style="color:var(--gold-bright);font-weight:700">لوحة أوامر وبحث سريع</a><span style="opacity:.75"> — لوحة أوامر وبحث سريع في المتصفح: بحث ضبابي في اختصارات محفوظة، حساب تعبيرات رياضية فوراً، تصنيف حسب الفئات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-31 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const KEY='gameCfgAppV1';
+  const defaults=function(){return {graphics:{resolution:'1920x1080',quality:'high',shadows:'medium',aa:'fxaa',fov:90,vsync:true,fpscap:'60',texture:'high'},ui:{scale:100,hud:true,minimap:'corner',lang:'ar',tooltips:true},audio:{master:80,music:60,sfx:75,voice:70,mute:false},cursor:{size:24,sens:50,smooth:30,color:'#ffd700',trail:false}};};
+  let state={profiles:{'افتراضي':defaults()},current:'افتراضي',mods:[],servers:[],presence:'أنا ألعب | {profile} | رسومات: {quality} | خادم: {region} ({ping}ms)'};
+  function load(){try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);if(p&&typeof p==='object'){state.profiles=p.profiles||state.profiles;state.current=p.current||state.current;if(!state.profiles[state.current])state.current=Object.keys(state.profiles)[0];state.mods=Array.isArray(p.mods)?p.mods:[];state.servers=Array.isArray(p.servers)?p.servers:[];state.presence=p.presence||state.presence;}}}catch(e){}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  function cur(){return state.profiles[state.current];}
+  function readUI(){const s=cur();s.graphics.resolution=document.getElementById('gfx-resolution').value;s.graphics.quality=document.getElementById('gfx-quality').value;s.graphics.shadows=document.getElementById('gfx-shadows').value;s.graphics.aa=document.getElementById('gfx-aa').value;s.graphics.fov=+document.getElementById('gfx-fov').value;s.graphics.vsync=document.getElementById('gfx-vsync').checked;s.graphics.fpscap=document.getElementById('gfx-fpscap').value;s.graphics.texture=document.getElementById('gfx-texture').value;s.ui.scale=+document.getElementById('ui-scale').value;s.ui.hud=document.getElementById('ui-hud').checked;s.ui.minimap=document.getElementById('ui-minimap').value;s.ui.lang=document.getElementById('ui-lang').value;s.ui.tooltips=document.getElementById('ui-tooltips').checked;s.audio.master=+document.getElementById('aud-master').value;s.audio.music=+document.getElementById('aud-music').value;s.audio.sfx=+document.getElementById('aud-sfx').value;s.audio.voice=+document.getElementById('aud-voice').value;s.audio.mute=document.getElementById('aud-mute').checked;s.cursor.size=+document.getElementById('cur-size').value;s.cursor.sens=+document.getElementById('cur-sens').value;s.cursor.smooth=+document.getElementById('cur-smooth').value;s.cursor.color=document.getElementById('cur-color').value;s.cursor.trail=document.getElementById('cur-trail').checked;}
+  function applyUI(){const s=cur();document.getElementById('gfx-resolution').value=s.graphics.resolution;document.getElementById('gfx-quality').value=s.graphics.quality;document.getElementById('gfx-shadows').value=s.graphics.shadows;document.getElementById('gfx-aa').value=s.graphics.aa;document.getElementById('gfx-fov').value=s.graphics.fov;document.getElementById('gfx-fov-val').textContent=s.graphics.fov;document.getElementById('gfx-vsync').checked=s.graphics.vsync;document.getElementById('gfx-fpscap').value=s.graphics.fpscap;document.getElementById('gfx-texture').value=s.graphics.texture;document.getElementById('ui-scale').value=s.ui.scale;document.getElementById('ui-scale-val').textContent=s.ui.scale+'%';document.getElementById('ui-hud').checked=s.ui.hud;document.getElementById('ui-minimap').value=s.ui.minimap;document.getElementById('ui-lang').value=s.ui.lang;document.getElementById('ui-tooltips').checked=s.ui.tooltips;document.getElementById('aud-master').value=s.audio.master;document.getElementById('aud-master-val').textContent=s.audio.master;document.getElementById('aud-music').value=s.audio.music;document.getElementById('aud-music-val').textContent=s.audio.music;document.getElementById('aud-sfx').value=s.audio.sfx;document.getElementById('aud-sfx-val').textContent=s.audio.sfx;document.getElementById('aud-voice').value=s.audio.voice;document.getElementById('aud-voice-val').textContent=s.audio.voice;document.getElementById('aud-mute').checked=s.audio.mute;document.getElementById('cur-size').value=s.cursor.size;document.getElementById('cur-size-val').textContent=s.cursor.size;document.getElementById('cur-sens').value=s.cursor.sens;document.getElementById('cur-sens-val').textContent=s.cursor.sens;document.getElementById('cur-smooth').value=s.cursor.smooth;document.getElementById('cur-smooth-val').textContent=s.cursor.smooth;document.getElementById('cur-color').value=s.cursor.color;document.getElementById('cur-trail').checked=s.cursor.trail;document.getElementById('profile-select').value=state.current;document.getElementById('pres-template').value=state.presence;}
+  function renderProfiles(){const sel=document.getElementById('profile-select');sel.innerHTML='';Object.keys(state.profiles).forEach(function(n){const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});sel.value=state.current;}
+  function status(msg){const el=document.getElementById('global-status');if(el)el.textContent=msg;}
+  function newProfile(){const name=document.getElementById('profile-name').value.trim();if(!name){status('أدخل اسمًا');return;}if(state.profiles[name]){status('الاسم موجود');return;}state.profiles[name]=defaults();state.current=name;renderProfiles();applyUI();save();updatePreview();genPresence();status('تم إنشاء '+name);}
+  function saveProfile(){readUI();save();status('تم الحفظ');}
+  function deleteProfile(){if(Object.keys(state.profiles).length<=1){status('لا يمكن حذف آخر ملف');return;}delete state.profiles[state.current];state.current=Object.keys(state.profiles)[0];renderProfiles();applyUI();save();updatePreview();genPresence();status('تم الحذف');}
+  function renderMods(){const ul=document.getElementById('mod-list');ul.innerHTML='';state.mods.forEach(function(m,i){const li=document.createElement('li');li.className='app-mod'+(m.enabled?'':' disabled');li.draggable=true;li.dataset.idx=i;const cb=document.createElement('input');cb.type='checkbox';cb.checked=m.enabled;cb.addEventListener('change',function(){m.enabled=cb.checked;save();renderMods();});const span=document.createElement('span');span.textContent=m.name;span.style.flex='1';const del=document.createElement('button');del.textContent='×';del.className='sec';del.addEventListener('click',function(){state.mods.splice(i,1);save();renderMods();});li.appendChild(cb);li.appendChild(span);li.appendChild(del);li.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',String(i));li.classList.add('dragging');});li.addEventListener('dragend',function(){li.classList.remove('dragging');});li.addEventListener('dragover',function(e){e.preventDefault();});li.addEventListener('drop',function(e){e.preventDefault();const from=+e.dataTransfer.getData('text/plain');const to=i;if(isNaN(from)||from===to)return;const item=state.mods.splice(from,1)[0];state.mods.splice(to,0,item);save();renderMods();});ul.appendChild(li);});}
+  function addMod(){const n=document.getElementById('mod-input-name').value.trim();if(!n){status('أدخل اسم تعديل');return;}state.mods.push({id:Date.now(),name:n,enabled:true});document.getElementById('mod-input-name').value='';save();renderMods();status('تمت الإضافة');}
+  function renderServers(){const tbody=document.getElementById('srv-body');tbody.innerHTML='';state.servers.forEach(function(s,i){const tr=document.createElement('tr');const td1=document.createElement('td');td1.textContent=s.region;const td2=document.createElement('td');td2.textContent=s.ping+' ms';const td3=document.createElement('td');td3.textContent=s.date;const td4=document.createElement('td');const del=document.createElement('button');del.textContent='حذف';del.className='sec';del.addEventListener('click',function(){state.servers.splice(i,1);save();renderServers();});td4.appendChild(del);tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tbody.appendChild(tr);});}
+  function addServer(){const r=document.getElementById('srv-region').value.trim();const p=+document.getElementById('srv-ping').value;if(!r||isNaN(p)||p<0){status('بيانات غير صحيحة');return;}state.servers.push({region:r,ping:p,date:new Date().toLocaleString('ar')});document.getElementById('srv-region').value='';document.getElementById('srv-ping').value='';save();renderServers();status('تمت الإضافة');}
+  function updatePreview(){const canvas=document.getElementById('preview-canvas');if(!canvas)return;const ctx=canvas.getContext('2d');const w=canvas.width=Math.max(200,canvas.clientWidth||300);const h=canvas.height=220;const s=cur();ctx.fillStyle='#0b0b0b';ctx.fillRect(0,0,w,h);ctx.strokeStyle='rgba(212,175,55,0.25)';ctx.lineWidth=1;for(let i=0;i<8;i++){ctx.beginPath();ctx.moveTo(0,h/2+i*6);ctx.lineTo(w,h/2+i*6);ctx.stroke();}const q=s.graphics.quality;ctx.fillStyle=q==='low'?'#1f1f1f':q==='medium'?'#2a2a2a':q==='high'?'#3a3a3a':'#4a4a4a';ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w*0.25,h/2-50);ctx.lineTo(w*0.55,h/2-25);ctx.lineTo(w,h/2-60);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fill();ctx.fillStyle='#d4af37';ctx.beginPath();ctx.arc(w*0.78,55,16,0,Math.PI*2);ctx.fill();const cx=w/2,cy=h/2;const size=s.cursor.size;ctx.strokeStyle=s.cursor.color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-size,cy);ctx.lineTo(cx+size,cy);ctx.moveTo(cx,cy-size);ctx.lineTo(cx,cy+size);ctx.stroke();if(s.cursor.trail){ctx.strokeStyle=s.cursor.color+'88';ctx.beginPath();ctx.arc(cx,cy,size+10,0,Math.PI*2);ctx.stroke();}if(s.ui.hud){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='12px sans-serif';ctx.fillText('HUD '+s.ui.scale+'%',10,18);ctx.fillText('FOV '+s.graphics.fov,10,36);ctx.fillText('AA '+s.graphics.aa,10,54);}ctx.fillStyle='#d4af37';ctx.fillRect(10,h-16,Math.max(2,s.audio.master),5);const st=document.getElementById('preview-status');if(st)st.textContent='معاينة: '+s.graphics.quality+' | FOV '+s.graphics.fov+' | صوت '+s.audio.master+(s.audio.mute?' (مكتوم)':'');}
+  function genPresence(){const s=cur();const tpl=document.getElementById('pres-template').value||'';const first=state.servers.length?state.servers[0]:{region:'-',ping:'-'};const text=tpl.replace('{profile}',state.current).replace('{quality}',s.graphics.quality).replace('{region}',first.region).replace('{ping}',first.ping);const out=document.getElementById('pres-output');if(out)out.value=text;}
+  function copyPresence(){const ta=document.getElementById('pres-output');try{navigator.clipboard.writeText(ta.value).then(function(){status('تم النسخ');}).catch(function(){ta.select();document.execCommand('copy');status('تم النسخ');});}catch(e){ta.select();document.execCommand('copy');status('تم النسخ');}}
+  function exportSettings(){readUI();const data=JSON.stringify(state,null,2);const out=document.getElementById('export-out');if(out)out.value=data;try{const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='settings.json';a.click();URL.revokeObjectURL(url);}catch(e){}status('تم التصدير');}
+  function importFile(e){const f=e.target.files&&e.target.files[0];if(!f){return;}const r=new FileReader();r.onload=function(){try{const p=JSON.parse(r.result);if(p&&p.profiles&&typeof p.profiles==='object'){state=p;if(!state.profiles[state.current])state.current=Object.keys(state.profiles)[0];state.mods=Array.isArray(state.mods)?state.mods:[];state.servers=Array.isArray(state.servers)?state.servers:[];renderProfiles();applyUI();renderMods();renderServers();updatePreview();genPresence();save();status('تم الاستيراد');}else{status('ملف غير صحيح');}}catch(err){status('فشل الاستيراد');}};r.readAsText(f);e.target.value='';}
+  function wire(){const on=function(id,ev,fn){const el=document.getElementById(id);if(el)el.addEventListener(ev,fn);};
+    on('profile-select','change',function(e){state.current=e.target.value;applyUI();updatePreview();genPresence();save();});
+    on('btn-new-profile','click',newProfile);
+    on('btn-save-profile','click',saveProfile);
+    on('btn-delete-profile','click',deleteProfile);
+    ['gfx-resolution','gfx-quality','gfx-shadows','gfx-aa','gfx-fpscap','gfx-texture','ui-minimap','ui-lang'].forEach(function(id){on(id,'change',function(){readUI();save();updatePreview();genPresence();});});
+    ['gfx-vsync','ui-hud','ui-tooltips','aud-mute','cur-trail'].forEach(function(id){on(id,'change',function(){readUI();save();updatePreview();});});
+    const ranges=[['gfx-fov','gfx-fov-val',function(v){return v;}],['ui-scale','ui-scale-val',function(v){return v+'%';}],['aud-master','aud-master-val',function(v){return v;}],['aud-music','aud-music-val',function(v){return v;}],['aud-sfx','aud-sfx-val',function(v){return v;}],['aud-voice','aud-voice-val',function(v){return v;}],['cur-size','cur-size-val',function(v){return v;}],['cur-sens','cur-sens-val',function(v){return v;}],['cur-smooth','cur-smooth-val',function(v){return v;}]];
+    ranges.forEach(function(t){const el=document.getElementById(t[0]);const v=document.getElementById(t[1]);if(el&&v)el.addEventListener('input',function(){v.textContent=t[2](el.value);readUI();save();updatePreview();});});
+    on('cur-color','input',function(){readUI();save();updatePreview();});
+    on('btn-add-mod','click',addMod);
+    on('btn-add-srv','click',addServer);
+    on('btn-gen-pres','click',genPresence);
+    on('btn-copy-pres','click',copyPresence);
+    on('btn-export','click',exportSettings);
+    on('btn-import','click',function(){document.getElementById('file-import').click();});
+    on('file-import','change',importFile);
+    on('btn-clear-srv','click',function(){state.servers=[];save();renderServers();status('تم المسح');});
+    on('pres-template','input',function(){state.presence=document.getElementById('pres-template').value;save();genPresence();});
+    window.addEventListener('resize',updatePreview);
+  }
+  function init(){load();if(!state.profiles[state.current])state.current=Object.keys(state.profiles)[0];renderProfiles();applyUI();renderMods();renderServers();wire();updatePreview();genPresence();}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
+</body>
+</html>
