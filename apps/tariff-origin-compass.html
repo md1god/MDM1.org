@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تصنيف HS وحساب الرسوم الجمركية للتجار العرب | MDM1</title>
+<meta name="description" content="تطبيق ويب عربي يساعد التجار على تحديد رمز HS للمنتج، حساب الرسوم والضرائب، حفظ قوائم SKU ومقارنة سيناريوهات الاستيراد مع تنبيهات التغيّر.">
+<link rel="canonical" href="https://mdm1.org/apps/tariff-origin-compass.html">
+<meta property="og:title" content="أداة تصنيف HS وحساب الرسوم الجمركية للتجار العرب">
+<meta property="og:description" content="تطبيق ويب عربي يساعد التجار على تحديد رمز HS للمنتج، حساب الرسوم والضرائب، حفظ قوائم SKU ومقارنة سيناريوهات الاستيراد مع تنبيهات التغيّر.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/tariff-origin-compass.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  direction: rtl;  
+  max-width: 720px;  
+  margin: 1rem auto;  
+  padding: 1rem;  
+  background: var(--dark);  
+  color: var(--light);  
+  border-radius: 8px;  
+}  
+
+.app .row {  
+  display: flex;  
+  align-items: center;  
+  margin-bottom: 0.75rem;  
+  gap: 0.5rem;  
+}  
+
+.app label {  
+  flex: 0 0 140px;  
+  font-weight: 600;  
+}  
+
+.app .input, .app .select, .app .textarea {  
+  flex: 1;  
+  padding: 0.4rem;  
+  border: 1px solid var(--gold-dim);  
+  border-radius: 4px;  
+  background: var(--dark);  
+  color: var(--light);  
+}  
+
+.app .button {  
+  background: var(--gold);  
+  color: var(--dark);  
+  border: none;  
+  padding: 0.5rem 1rem;  
+  border-radius: 4px;  
+  cursor: pointer;  
+}  
+
+.app .button.sec {  
+  background: var(--gold-dim);  
+  color: var(--light);  
+}  
+
+.app .out {  
+  background: var(--gold-dim);  
+  padding: 0.8rem;  
+  margin-top: 0.8rem;  
+  border-radius: 4px;  
+  text-align: center;  
+}  
+
+.app .big {  
+  font-size: 2rem;  
+  font-weight: bold;  
+  color: var(--gold-bright);  
+}  
+
+.app .badge {  
+  background: var(--gold);  
+  color: var(--dark);  
+  padding: 0.2rem 0.5rem;  
+  border-radius: 3px;  
+  font-size: 0.9rem;  
+}  
+
+.app #skuList {  
+  list-style: none;  
+  padding: 0;  
+}  
+
+.app #skuList li {  
+  display: flex;  
+  justify-content: space-between;  
+  align-items: center;  
+  padding: 0.4rem 0;  
+  border-bottom: 1px solid var(--gold-dim);  
+}  
+
+.app #skuList button {  
+  background: var(--gold-bright);  
+  color: var(--dark);  
+  border: none;  
+  padding: 0.2rem 0.5rem;  
+  border-radius: 3px;  
+  cursor: pointer;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تصنيف المنتج وحساب الرسوم الجمركية بسهولة", "url": "https://mdm1.org/apps/tariff-origin-compass.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يمكنني تحديث أسعار الجمارك؟", "acceptedAnswer": {"@type": "Answer", "text": "قم بتحميل ملف JSON جديد يحتوي على الإصدار الأحدث من التعرفة عبر زر “تحميل ملف التعرفة”. سيُخزن الملف محليًا وسيظهر إشعار إذا كان هناك تغيير في الإصدار."}}, {"@type": "Question", "name": "ما هي صيغة ملف التعرفة المطلوبة؟", "acceptedAnswer": {"@type": "Answer", "text": "يجب أن يكون الملف بصيغة JSON ويحتوي على كائن رئيسي بـ\"version\" و\"rates\". مثال بسيط: `{\"version\":\"2024-10\",\"rates\":{\"0101\":{\"rate\":0.05,\"exempt\":1000}}}`."}}, {"@type": "Question", "name": "هل يتم حفظ قوائم الـ SKU على الخادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تُحفظ القوائم محليًا في المتصفح باستخدام localStorage، لذلك لا يتم نقل أي بيانات إلى الخادم."}}, {"@type": "Question", "name": "ماذا يحدث إذا لم يتوفر رمز HS في ملف التعرفة؟", "acceptedAnswer": {"@type": "Answer", "text": "سيظهر رسالة “لا توجد بيانات تعرفة لهذا الرمز” في صندوق النتيجة، ويمكنك إما تعديل ملف التعرفة أو اختيار رمز آخر."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تصنيف المنتج وحساب الرسوم الجمركية بسهولة</h1>
+  <p class="page-sub">تطبيق ويب عربي يساعد التجار على تحديد رمز HS للمنتج، حساب الرسوم والضرائب، حفظ قوائم SKU ومقارنة سيناريوهات الاستيراد مع تنبيهات التغيّر.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="card">هذا التطبيق يساعد التجار على تصنيف منتجاتهم وفق رمز النظام المنسق (HS) وحساب الرسوم الجمركية والضرائب بسرعة وبدقة، مع فحص حدود الإعفاء وقواعد بلد المنشأ والاتفاقيات التجارية. يمكنك حفظ قوائم SKU محليًا، مقارنة سيناريوهات استيراد مختلفة، وتلقي تنبيهات عندما يتغير التصنيف أو الأسعار بعد استيراد حزمة تعريفة محدثة يدويًا. كل ما عليك هو ملء بيانات المنتج، اختيار رمز HS أو تحميل ملف التعرفة، ثم الضغط على زر الحساب.</p>
+
+<div class="app card" dir="rtl">
+  <div class="row">
+    <label for="productName">اسم المنتج</label>
+    <input id="productName" class="input" type="text" placeholder="مثال: هاتف ذكي">
+  </div>
+
+  <div class="row">
+    <label for="productDesc">وصف المنتج</label>
+    <textarea id="productDesc" class="textarea" rows="2" placeholder="وصف مختصر"></textarea>
+  </div>
+
+  <div class="row">
+    <label for="countryOrigin">بلد المنشأ</label>
+    <select id="countryOrigin" class="select">
+      <option value="SA">السعودية</option>
+      <option value="AE">الإمارات</option>
+      <option value="CN">الصين</option>
+      <option value="US">الولايات المتحدة</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label for="productValue">قيمة المنتج (دولار)</label>
+    <input id="productValue" class="input" type="number" min="0" step="0.01">
+  </div>
+
+  <div class="row">
+    <label for="productWeight">الوزن (كغ)</label>
+    <input id="productWeight" class="input" type="number" min="0" step="0.01">
+  </div>
+
+  <div class="row">
+    <label for="hsSelect">رمز HS</label>
+    <select id="hsSelect" class="select">
+      <option value="">— اختر رمز HS —</option>
+      <option value="0101">0101 – الحيوانات الحية</option>
+      <option value="0201">0201 – اللحوم الطازجة</option>
+      <option value="0301">0301 – السمك الطازج</option>
+      <option value="8703">8703 – سيارات ركوب</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <button id="calcBtn" class="button">حساب الرسوم</button>
+    <button id="saveBtn" class="button sec">حفظ SKU</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <label for="tariffFile">تحميل ملف التعرفة (JSON)</label>
+    <input id="tariffFile" class="input" type="file" accept=".json">
+    <span id="tariffStatus" class="badge"></span>
+  </div>
+
+  <div class="out card">
+    <p>النتيجة:</p>
+    <p class="big" id="resultBox">—</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <h2 class="badge">قائمة SKU المحفوظة</h2>
+  <ul id="skuList" class="card"></ul>
+
+  <div class="row">
+    <button id="compareBtn" class="button">مقارنة السيناريوهات</button>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يمكنني تحديث أسعار الجمارك؟</h3><p>قم بتحميل ملف JSON جديد يحتوي على الإصدار الأحدث من التعرفة عبر زر “تحميل ملف التعرفة”. سيُخزن الملف محليًا وسيظهر إشعار إذا كان هناك تغيير في الإصدار.</p><h3>ما هي صيغة ملف التعرفة المطلوبة؟</h3><p>يجب أن يكون الملف بصيغة JSON ويحتوي على كائن رئيسي بـ&quot;version&quot; و&quot;rates&quot;. مثال بسيط: `{&quot;version&quot;:&quot;2024-10&quot;,&quot;rates&quot;:{&quot;0101&quot;:{&quot;rate&quot;:0.05,&quot;exempt&quot;:1000}}}`.</p><h3>هل يتم حفظ قوائم الـ SKU على الخادم؟</h3><p>لا، تُحفظ القوائم محليًا في المتصفح باستخدام localStorage، لذلك لا يتم نقل أي بيانات إلى الخادم.</p><h3>ماذا يحدث إذا لم يتوفر رمز HS في ملف التعرفة؟</h3><p>سيظهر رسالة “لا توجد بيانات تعرفة لهذا الرمز” في صندوق النتيجة، ويمكنك إما تعديل ملف التعرفة أو اختيار رمز آخر.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="tech-clue-archive.html" style="color:var(--gold-bright);font-weight:700">أداة كشف تقنيات المواقع</a><span style="opacity:.75"> — أداة لحفظ وفهرسة بصمات التقنيات للمواقع وتحليلها محلياً دون اتصال بالإنترنت</span></li><li style="margin:.5rem 0"><a href="vertical-clip-reframe-studio.html" style="color:var(--gold-bright);font-weight:700">أداة تقطيع الفيديو وإعادة تأطيره 9:16 مع ترجمات عربية</a><span style="opacity:.75"> — استورد فيديو، قطّعه إلى مقاطع قصيرة، أعد تأطيره 9:16 بالسحب والاقتصاص، أضف ترجمات عربية بتوقيت يدوي، عاين…</span></li><li style="margin:.5rem 0"><a href="vocal-free-studio.html" style="color:var(--gold-bright);font-weight:700">أداة إزالة الصوت الغنائي من ملفات الموسيقى</a><span style="opacity:.75"> — ترفع ملفًا موسيقيًا وتستخلص نسخة خالية تقريبًا من الغناء بالاعتماد على إزالة القناة الوسطى عبر WebAudio، مع…</span></li><li style="margin:.5rem 0"><a href="voice-agent-studio.html" style="color:var(--gold-bright);font-weight:700">أداة بناء وكيل مكالمة صوتي بدون كود للمشاريع الصغيرة</a><span style="opacity:.75"> — اصنع وكيل مكالمة ذكي لمشروعك: ارسم مسار المكالمة، اكتب الردود والأسئلة، احجز المواعيد، وإدارة العملاء محلياً…</span></li><li style="margin:.5rem 0"><a href="watt-harbor.html" style="color:var(--gold-bright);font-weight:700">أداة قياس استهلاك الطاقة والكيلوواط/ساعة والبصمة الكربونية محليًا</a><span style="opacity:.75"> — قِس استهلاك الطاقة تقديريًا لأجهزتك وتطبيقاتك محليًا في المتصفح: ملفات عتاد، جلسات قياس حية، حاسبة…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-31 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){  
+  const ids = ['productName','productDesc','countryOrigin','productValue','productWeight','hsSelect','calcBtn','saveBtn','tariffFile','tariffStatus','resultBox','skuList','compareBtn'];  
+  const el = {};  
+  ids.forEach(i=>{ el[i]=document.getElementById(i); });  
+
+  let tariffData = null; // {version:string, rates:{HS:{rate:number,exempt:number}}}  
+
+  // Load tariff from localStorage  
+  function loadTariff(){  
+    try{  
+      const raw = localStorage.getItem('tariffData');  
+      if(raw){ tariffData = JSON.parse(raw); el.tariffStatus.textContent='إصدار: '+tariffData.version; }  
+    }catch(e){ console.error('خطأ في تحميل التعرفة',e); }  
+  }  
+
+  // Save tariff to localStorage  
+  function saveTariff(data){  
+    try{ localStorage.setItem('tariffData',JSON.stringify(data)); }catch(e){ console.error(e); }  
+  }  
+
+  // Handle tariff file upload  
+  el.tariffFile.addEventListener('change',function(){  
+    const file = this.files[0];  
+    if(!file) return;  
+    const reader = new FileReader();  
+    reader.onload = function(e){  
+      try{  
+        const newData = JSON.parse(e.target.result);  
+        if(!newData.version||!newData.rates){ throw new Error('هيكل غير صالح'); }  
+        const oldVersion = tariffData?tariffData.version:null;  
+        tariffData = newData;  
+        saveTariff(tariffData);  
+        el.tariffStatus.textContent='إصدار: '+tariffData.version;  
+        if(oldVersion && oldVersion!==newData.version){ alert('تم تحديث ملف التعرفة من '+oldVersion+' إلى '+newData.version); }  
+      }catch(err){ alert('ملف التعرفة غير صالح'); console.error(err); }  
+    };  
+    reader.readAsText(file);  
+  });  
+
+  // Calculation logic  
+  function calculate(){  
+    const hs = el.hsSelect.value;  
+    const value = parseFloat(el.productValue.value)||0;  
+    if(!hs){ el.resultBox.textContent='يرجى اختيار رمز HS'; return; }  
+    if(!tariffData || !tariffData.rates[hs]){ el.resultBox.textContent='لا توجد بيانات تعرفة لهذا الرمز'; return; }  
+
+    const {rate,exempt} = tariffData.rates[hs];  
+    const taxable = Math.max(0, value - exempt);  
+    const duty = taxable * rate;  
+    const tax = duty * 0.05; // مثال: 5% من الرسوم كضريبة  
+    const total = duty + tax;  
+
+    el.resultBox.textContent=`رسوم الجمارك: ${duty.toFixed(2)}$, ضريبة إضافية: ${tax.toFixed(2)}$, الإجمالي: ${total.toFixed(2)}$`;  
+  }  
+
+  el.calcBtn.addEventListener('click',calculate);  
+
+  // SKU handling  
+  function loadSkus(){  
+    try{  
+      const raw = localStorage.getItem('skuList');  
+      return raw?JSON.parse(raw):[];  
+    }catch(e){ console.error(e); return []; }  
+  }  
+
+  function saveSkus(list){  
+    try{ localStorage.setItem('skuList',JSON.stringify(list)); }catch(e){ console.error(e); }  
+  }  
+
+  function renderSkus(){  
+    const list = loadSkus();  
+    el.skuList.innerHTML='';  
+    list.forEach((item,i)=>{  
+      const li=document.createElement('li');  
+      li.textContent=`${item.name} – ${item.hs}`;  
+      const rm=document.createElement('button');  
+      rm.textContent='حذف';  
+      rm.addEventListener('click',()=>{ list.splice(i,1); saveSkus(list); renderSkus(); });  
+      li.appendChild(rm);  
+      el.skuList.appendChild(li);  
+    });  
+  }  
+
+  el.saveBtn.addEventListener('click',()=>{  
+    const name = el.productName.value.trim();  
+    const hs = el.hsSelect.value;  
+    if(!name||!hs){ alert('املأ اسم المنتج ورمز HS قبل الحفظ'); return; }  
+    const list = loadSkus();  
+    list.push({name, hs});  
+    saveSkus(list);  
+    renderSkus();  
+    alert('تم حفظ SKU');  
+  });  
+
+  // Comparison of scenarios  
+  el.compareBtn.addEventListener('click',()=>{  
+    const current = {  
+      name: el.productName.value.trim()||'المنتج الحالي',  
+      hs: el.hsSelect.value,  
+      value: parseFloat(el.productValue.value)||0  
+    };  
+    if(!current.hs){ alert('اختر رمز HS للمقارنة'); return; }  
+    const list = loadSkus();  
+    const all = [{...current, saved:false}, ...list.map(s=>({name:s.name, hs:s.hs, saved:true}))];  
+    const lines = all.map(item=>{  
+      if(!tariffData||!tariffData.rates[item.hs]) return `${item.name}: لا توجد بيانات تعرفة`;  
+      const {rate,exempt}=tariffData.rates[item.hs];  
+      const taxable=Math.max(0,item.value-exempt);  
+      const duty=taxable*rate;  
+      const tax=duty*0.05;  
+      const total=(duty+tax).toFixed(2);  
+      return `${item.name} (HS ${item.hs}) → إجمالي الرسوم: ${total}$`;  
+    });  
+    el.resultBox.innerHTML = lines.join('<br>');  
+  });  
+
+  // Initial load  
+  loadTariff();  
+  renderSkus();  
+})();
+</script>
+</body>
+</html>
