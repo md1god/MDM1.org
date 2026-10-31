@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محول SMILES إلى رسوم جزيئات (Canvas) — أداة عربية | MDM1</title>
+<meta name="description" content="أداة عربية محلية لتحويل رموز SMILES إلى رسومات جزيئات على Canvas مع تخصيص الألوان والأحجام والروابط والذرات وإظهار الكربون والهيدروجين وقوالب جاهزة وحفظ محلي وتصدير PNG وعرض دفعات.">
+<link rel="canonical" href="https://mdm1.org/apps/molecule-canvas-studio.html">
+<meta property="og:title" content="محول SMILES إلى رسوم جزيئات (Canvas) — أداة عربية">
+<meta property="og:description" content="أداة عربية محلية لتحويل رموز SMILES إلى رسومات جزيئات على Canvas مع تخصيص الألوان والأحجام والروابط والذرات وإظهار الكربون والهيدروجين وقوالب جاهزة وحفظ محلي وتصدير PNG وعرض دفعات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/molecule-canvas-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:.75rem}
+.app .row{flex-wrap:wrap;gap:.5rem}
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+@media (max-width:760px){.app-grid{grid-template-columns:1fr}}
+.app canvas{max-width:100%;height:auto;border:1px solid var(--gold-dim);border-radius:8px;background:#fff}
+.app-saved{max-height:220px;overflow:auto;display:grid;gap:.5rem}
+.app-saved .row{align-items:center}
+.app-saved span{word-break:break-word}
+.app label{display:inline-flex;align-items:center;gap:.35rem}
+.app input[type="number"]{width:6rem}
+.app input[type="color"]{width:3rem;height:2rem;padding:0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محول SMILES إلى رسوم جزيئات (Canvas)", "url": "https://mdm1.org/apps/molecule-canvas-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت أو خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، التحليل والرسم والحفظ يتم محلياً في المتصفح، ولا تُرسل رموز SMILES أو بيانات الجزيئات إلى أي خادم."}}, {"@type": "Question", "name": "ما أنواع رموز SMILES المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم ذرات وروابط وفروع وإغلاقات حلقات وذرات عضوية شائعة، مع هيدروجين ضمني، وتجاهل بعض علامات stereochemistry غير الضرورية للرسم (two-dimensional)."}}, {"@type": "Question", "name": "كيف أحفظ جزيئاً أو أصدّر صورة؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخل رمز SMILES ثم اضغط \"حفظ الجزيئات\" للتخزين في localStorage، أو \"تصدير PNG\" لحفظ صورة Canvas الحالية."}}, {"@type": "Question", "name": "هل يمكن عرض عدة جزيئات معاً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، ضع كل رمز في سطر مستقل (أو name|SMILES) وسيتم رسمها في شبكة (grid) مع معاينة فورية."}}, {"@type": "Question", "name": "ماذا يحدث عند رمز SMILES غير صالح؟", "acceptedAnswer": {"@type": "Answer", "text": "يعرض التطبيق رسالة خطأ للسطر المعني ويتجاهل الرمز غير الصالح، بينما يرسم الجزيئات الصالحة (valid) إن وجدت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محول SMILES إلى رسوم جزيئات (Canvas)</h1>
+  <p class="page-sub">أداة عربية محلية لتحويل رموز SMILES إلى رسومات جزيئات على Canvas مع تخصيص الألوان والأحجام والروابط والذرات وإظهار الكربون والهيدروجين وقوالب جاهزة وحفظ محلي وتصدير PNG وعرض دفعات.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>يمكنك تحويل رمز SMILES إلى رسم جزيء (two-dimensional) على لوحة Canvas فوراً داخل المتصفح: الصق رمزًا واحدًا أو عدة رموز، اختر قالبًا جاهزًا، ثم عدّل ألوان الذرات والروابط والخلفية والأحجام، وأظهر أو أخفِ الكربون والهيدروجين، واحفظ الجزيئات في المتصفح، وصدّر صورة PNG. لا يحتاج التطبيق إلى خادم أو حساب أو إرسال بيانات؛ كل التحليل والرسم والتخزين تم محلياً، مع معاينة فورية ورسائل خطأ واضحة.</p>
+<div class="app" id="appRoot">
+  <div class="app-grid">
+    <div class="card">
+      <label for="smilesInput">رموز SMILES (سطر لكل جزيء، أو name|SMILES)</label>
+      <textarea id="smilesInput" rows="6" placeholder="مثال: CCO أو c1ccccc1"></textarea>
+      <div class="row">
+        <label for="templateSelect">قالب جاهز</label>
+        <select id="templateSelect">
+          <option value="">اختر قالبًا</option>
+          <option value="O">ماء</option>
+          <option value="CCO">إيثانول</option>
+          <option value="c1ccccc1">بنزين</option>
+          <option value="CC(=O)OC1=CC=CC=C1C(=O)O">أسبرين</option>
+          <option value="Cn1cnc2c1c(=O)n(C)c(=O)n2C">كافيين</option>
+          <option value="OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O">جلوكوز</option>
+          <option value="CC(=O)O">حمض أسيتيك</option>
+        </select>
+        <button id="applyTemplateBtn" type="button">تطبيق القالب</button>
+        <button id="renderBtn" type="button">رسم الآن</button>
+        <button id="clearBtn" type="button" class="sec">مسح</button>
+      </div>
+      <div class="out app-status" id="status">أدخل رمز SMILES لبدء الرسم.</div>
+    </div>
+    <div class="card">
+      <canvas id="molCanvas" width="800" height="600"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row">
+      <label for="atomColor">لون الذرات <input id="atomColor" type="color" value="#1f77b4"></label>
+      <label for="bondColor">لون الروابط <input id="bondColor" type="color" value="#2b2b2b"></label>
+      <label for="bgColor">لون الخلفية <input id="bgColor" type="color" value="#ffffff"></label>
+    </div>
+    <div class="row">
+      <label for="atomRadius">حجم الذرات <input id="atomRadius" type="number" min="6" max="40" value="14"></label>
+      <label for="bondWidth">عرض الروابط <input id="bondWidth" type="number" min="1" max="8" value="2"></label>
+      <label for="fontSize">حجم النص <input id="fontSize" type="number" min="8" max="24" value="12"></label>
+      <label for="canvasW">عرض Canvas <input id="canvasW" type="number" min="320" max="1600" value="800"></label>
+      <label for="canvasH">ارتفاع Canvas <input id="canvasH" type="number" min="240" max="1200" value="600"></label>
+    </div>
+    <div class="row">
+      <label for="showCarbon"><input id="showCarbon" type="checkbox" checked> إظهار الكربون</label>
+      <label for="showHydrogen"><input id="showHydrogen" type="checkbox"> إظهار الهيدروجين</label>
+    </div>
+    <div class="row">
+      <button id="saveBtn" type="button">حفظ الجزيئات</button>
+      <button id="exportBtn" type="button" class="sec">تصدير PNG</button>
+    </div>
+  </div>
+  <div class="card">
+    <label>الجزيئات المحفوظة</label>
+    <div id="savedList" class="app-saved"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت أو خادم؟</h3><p>نعم، التحليل والرسم والحفظ يتم محلياً في المتصفح، ولا تُرسل رموز SMILES أو بيانات الجزيئات إلى أي خادم.</p><h3>ما أنواع رموز SMILES المدعومة؟</h3><p>يدعم ذرات وروابط وفروع وإغلاقات حلقات وذرات عضوية شائعة، مع هيدروجين ضمني، وتجاهل بعض علامات stereochemistry غير الضرورية للرسم (two-dimensional).</p><h3>كيف أحفظ جزيئاً أو أصدّر صورة؟</h3><p>أدخل رمز SMILES ثم اضغط &quot;حفظ الجزيئات&quot; للتخزين في localStorage، أو &quot;تصدير PNG&quot; لحفظ صورة Canvas الحالية.</p><h3>هل يمكن عرض عدة جزيئات معاً؟</h3><p>نعم، ضع كل رمز في سطر مستقل (أو name|SMILES) وسيتم رسمها في شبكة (grid) مع معاينة فورية.</p><h3>ماذا يحدث عند رمز SMILES غير صالح؟</h3><p>يعرض التطبيق رسالة خطأ للسطر المعني ويتجاهل الرمز غير الصالح، بينما يرسم الجزيئات الصالحة (valid) إن وجدت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="pinyin-learning-composer.html" style="color:var(--gold-bright);font-weight:700">محول بينين عربي</a><span style="opacity:.75"> — اكتب باللاتينية واحصل على مرشحين صينيين بالبينين مع معاني بالإنجليزية واليابانية والإسبانية والفيتنامية…</span></li><li style="margin:.5rem 0"><a href="project-lifecycle-board.html" style="color:var(--gold-bright);font-weight:700">منظّم دورة حياة المشاريع: من الفكرة إلى الإطلاق والصيانة</a><span style="opacity:.75"> — نظّم دورة حياة مشروعك من التخطيط والتطوير والاختبار إلى الإطلاق والصيانة عبر مسار بصري وبوابات جاهزية وقوائم…</span></li><li style="margin:.5rem 0"><a href="quiet-reader-view.html" style="color:var(--gold-bright);font-weight:700">قارئ هادئ: حوّل أي نص إلى واجهة قراءة نظيفة بدون إعلانات</a><span style="opacity:.75"> — الصق أي نص أو محتوى صفحة وحوّله فوراً إلى واجهة قراءة نظيفة خالية من الإعلانات، مع ضبط الخط والتباعد…</span></li><li style="margin:.5rem 0"><a href="scene-weaver-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو ويب لتحويل إلى فيديو MP4</a><span style="opacity:.75"> — أداة عربية لتحويل صفحات HTML/CSS وحركاتها إلى فيديو MP4 حتمية داخل المتصفح دون خادم أو حساب وحفظ المشاريع…</span></li><li style="margin:.5rem 0"><a href="image-format-converter.html" style="color:var(--gold-bright);font-weight:700">محول صيغ الصور PNG وJPG وWebP مع ضغط وجودة محلي</a><span style="opacity:.75"> — حوّل صورك بين صيغ PNG وJPG وWebP مباشرة في متصفحك، مع اختيار جودة الضغط ومعاينة الحجم قبل وبعد، وتنزيل فردي…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-31 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const VALENCE = {B:3,C:4,N:3,O:2,P:3,S:2,F:1,CL:1,BR:1,I:1};
+  function clamp(v, min, max) {
+    v = Number(v);
+    if (!isFinite(v)) return min;
+    return Math.max(min, Math.min(max, v));
+  }
+  function parseSmiles(smiles) {
+    const s = String(smiles || '').trim();
+    if (!s) throw new Error('SMILES فارغ');
+    const atoms = [];
+    const bonds = [];
+    let i = 0, n = s.length;
+    let current = null;
+    const branchStack = [];
+    let bondOrder = 1;
+    const ringMap = new Map();
+    function isDigit(ch) { return ch >= '0' && ch <= '9'; }
+    function parseAtom() {
+      if (s[i] === '[') {
+        const end = s.indexOf(']', i);
+        if (end < 0) throw new Error('قوس غير مغلق');
+        const content = s.slice(i + 1, end);
+        i = end + 1;
+        const m = content.match(/^([A-Za-z]+)/);
+        if (!m) throw new Error('ذرة غير صالحة');
+        let symbol = m[1];
+        const aromatic = symbol[0] === symbol[0].toLowerCase();
+        symbol = symbol[0].toUpperCase() + symbol.slice(1).toLowerCase();
+        let hSpec = null;
+        const hm = content.match(/H(\d*)/);
+        if (hm) hSpec = hm[1] ? parseInt(hm[1], 10) : 1;
+        let charge = 0;
+        const cm = content.match(/([+-])(\d*)/);
+        if (cm) charge = (cm[1] === '+' ? 1 : -1) * (cm[2] ? parseInt(cm[2], 10) : 1);
+        return {symbol, aromatic, hSpec, charge};
+      }
+      const c = s[i];
+      if (/[A-Z]/.test(c)) {
+        let symbol = c;
+        i++;
+        if (c === 'C' && i < n && s[i] === 'l') { symbol = 'Cl'; i++; }
+        else if (c === 'B' && i < n && s[i] === 'r') { symbol = 'Br'; i++; }
+        return {symbol, aromatic: false, hSpec: null, charge: 0};
+      }
+      if (/[a-z]/.test(c)) {
+        const symbol = c.toUpperCase();
+        i++;
+        return {symbol, aromatic: true, hSpec: null, charge: 0};
+      }
+      throw new Error('حرف غير متوقع');
+    }
+    while (i < n) {
+      const c = s[i];
+      if (c === '(') { branchStack.push(current); i++; bondOrder = 1; continue; }
+      if (c === ')') {
+        if (!branchStack.length) throw new Error('قوس غير متوازن');
+        current = branchStack.pop();
+        i++;
+        bondOrder = 1;
+        continue;
+      }
+      if (c === '-' || c === '=' || c === '#' || c === ':' || c === '.') {
+        if (c === '-') bondOrder = 1;
+        else if (c === '=') bondOrder = 2;
+        else if (c === '#') bondOrder = 3;
+        else if (c === ':') bondOrder = 1.5;
+        else bondOrder = 1;
+        i++;
+        continue;
+      }
+      if (c === '/' || c === '\\') { i++; continue; }
+      if (c === '@') { i++; continue; }
+      if (isDigit(c) || c === '%') {
+        let ring;
+        if (c === '%') {
+          if (i + 2 >= n || !isDigit(s[i + 1]) || !isDigit(s[i + 2])) throw new Error('إغلاق حلقة غير صالح');
+          ring = s.slice(i + 1, i + 3);
+          i += 3;
+        } else {
+          ring = c;
+          i++;
+        }
+        if (current === null) throw new Error('إغلاق حلقة بدون ذرة');
+        if (ringMap.has(ring)) {
+          const other = ringMap.get(ring);
+          const order = bondOrder === 1 && atoms[other].aromatic && atoms[current].aromatic ? 1.5 : bondOrder;
+          bonds.push({a: other, b: current, order});
+          ringMap.delete(ring);
+        } else {
+          ringMap.set(ring, current);
+        }
+        bondOrder = 1;
+        continue;
+      }
+      const info = parseAtom();
+      const idx = atoms.length;
+      atoms.push({symbol: info.symbol, aromatic: info.aromatic, hSpec: info.hSpec, charge: info.charge, hCount: 0});
+      if (current !== null) {
+        let order = bondOrder;
+        if (order === 1 && atoms[current].aromatic && info.aromatic) order = 1.5;
+        bonds.push({a: current, b: idx, order});
+      }
+      current = idx;
+      bondOrder = 1;
+    }
+    if (branchStack.length) throw new Error('أقواس غير مغلقة');
+    if (ringMap.size) throw new Error('حلقة غير مغلقة');
+    const valenceSum = new Array(atoms.length).fill(0);
+    for (const b of bonds) {
+      const val = b.order === 1.5 ? 1 : b.order;
+      valenceSum[b.a] += val;
+      valenceSum[b.b] += val;
+    }
+    for (let ai = 0; ai < atoms.length; ai++) {
+      const atom = atoms[ai];
+      if (atom.hSpec !== null) {
+        atom.hCount = Math.max(0, atom.hSpec);
+        continue;
+      }
+      let v = VALENCE[atom.symbol.toUpperCase()] || 0;
+      if (atom.aromatic) {
+        v = ({C:3, N:2, O:2, S:2, P:2})[atom.symbol.toUpperCase()] || v;
+      }
+      if (atom.charge > 0) v = Math.max(0, v - atom.charge);
+      if (atom.charge < 0) v += Math.abs(atom.charge);
+      const h = v ? Math.max(0, Math.round(v - valenceSum[ai])) : 0;
+      atom.hCount = h;
+    }
+    return {atoms, bonds};
+  }
+
+  function buildGraph(mol, showH) {
+    const nodes = mol.atoms.map((a) => ({symbol: a.symbol, aromatic: a.aromatic}));
+    const edges = mol.bonds.map((b) => [b.a, b.b, b.order]);
+    if (showH) {
+      let idx = nodes.length;
+      mol.atoms.forEach((a, ai) => {
+        for (let k = 0; k < (a.hCount || 0); k++) {
+          nodes.push({symbol: 'H', aromatic: false});
+          edges.push([ai, idx, 1]);
+          idx++;
+        }
+      });
+    }
+    return {nodes, edges};
+  }
+
+  function layoutGraph(graph) {
+    const n = graph.nodes.length;
+    const pos = Array.from({length: n}, () => [0, 0]);
+    if (n <= 1) return pos;
+    for (let i = 0; i < n; i++) {
+      const a = i * 2.3999632297;
+      const r = 0.35 * Math.sqrt(i + 1);
+      pos[i] = [r * Math.cos(a), r * Math.sin(a)];
+    }
+    const iters = n > 40 ? 120 : 220;
+    const area = 1;
+    const k = Math.sqrt(area / n);
+    const maxT = 0.15;
+    for (let iter = 0; iter < iters; iter++) {
+      const disp = pos.map(() => [0, 0]);
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          let dx = pos[i][0] - pos[j][0];
+          let dy = pos[i][1] - pos[j][1];
+          let dist = Math.hypot(dx, dy);
+          if (dist < 1e-4) { dx = 1e-4; dy = 0; dist = 1e-4; }
+          const force = k * k / dist;
+          disp[i][0] += dx / dist * force;
+          disp[i][1] += dy / dist * force;
+          disp[j][0] -= dx / dist * force;
+          disp[j][1] -= dy / dist * force;
+        }
+      }
+      for (const e of graph.edges) {
+        const a = e[0], b = e[1];
+        let dx = pos[a][0] - pos[b][0];
+        let dy = pos[a][1] - pos[b][1];
+        let dist = Math.hypot(dx, dy);
+        if (dist < 1e-4) dist = 1e-4;
+        const force = dist * dist / k;
+        disp[a][0] -= dx / dist * force;
+        disp[a][1] -= dy / dist * force;
+        disp[b][0] += dx / dist * force;
+        disp[b][1] += dy / dist * force;
+      }
+      const temp = maxT * (1 - iter / iters);
+      for (let i = 0; i < n; i++) {
+        const d = Math.hypot(disp[i][0], disp[i][1]);
+        if (d > 0) {
+          const move = Math.min(d, temp);
+          pos[i][0] += disp[i][0] / d * move;
+          pos[i][1] += disp[i][1] / d * move;
+        }
+      }
+    }
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const p of pos) {
+      minX = Math.min(minX, p[0]); maxX = Math.max(maxX, p[0]);
+      minY = Math.min(minY, p[1]); maxY = Math.max(maxY, p[1]);
+    }
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    for (const p of pos) { p[0] -= cx; p[1] -= cy; }
+    const span = Math.max(maxX - minX, maxY - minY) || 1;
+    const scale = 0.82 / span;
+    for (const p of pos) { p[0] *= scale; p[1] *= scale; }
+    return pos;
+  }
+
+  function parseAll(text) {
+    const lines = String(text || '').split(/\n/).map((x) => x.trim()).filter(Boolean);
+    const results = [];
+    const errors = [];
+    lines.forEach((line, idx) => {
+      let smiles = line, name = '';
+      const parts = line.split('|');
+      if (parts.length > 1) { smiles = parts[0].trim(); name = parts.slice(1).join('|').trim(); }
+      try {
+        const mol = parseSmiles(smiles);
+        mol.name = name || ('جزيء ' + (idx + 1));
+        mol.smiles = smiles;
+        results.push(mol);
+      } catch (e) {
+        errors.push('السطر ' + (idx + 1) + ': ' + (e && e.message ? e.message : 'رمز غير صالح'));
+      }
+    });
+    return {results, errors};
+  }
+
+  function contrastColor(hex) {
+    const h = String(hex || '#000000');
+    const r = parseInt(h.slice(1, 3), 16) || 0;
+    const g = parseInt(h.slice(3, 5), 16) || 0;
+    const b = parseInt(h.slice(5, 7), 16) || 0;
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return lum > 0.55 ? '#111111' : '#ffffff';
+  }
+
+  const input = $('smilesInput');
+  const templateSelect = $('templateSelect');
+  const canvas = $('molCanvas');
+  const ctx = canvas.getContext('2d');
+  const status = $('status');
+
+  function getNum(id, fallback) {
+    const v = parseInt($(id).value, 10);
+    return isFinite(v) ? v : fallback;
+  }
+  function getSaved() {
+    try { return JSON.parse(localStorage.getItem('smilesSavedV1') || '[]'); }
+    catch (e) { return []; }
+  }
+  function setSaved(list) {
+    try { localStorage.setItem('smilesSavedV1', JSON.stringify(list)); }
+    catch (e) { }
+  }
+
+  function renderSaved() {
+    const box = $('savedList');
+    box.innerHTML = '';
+    const saved = getSaved();
+    if (!saved.length) { box.textContent = 'لا توجد جزيئات محفوظة.'; return; }
+    saved.forEach((item) => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      const span = document.createElement('span');
+      span.textContent = item.name + ' — ' + item.smiles;
+      span.style.flex = '1';
+      span.style.minWidth = '0';
+      const loadBtn = document.createElement('button');
+      loadBtn.type = 'button'; loadBtn.className = 'sec'; loadBtn.textContent = 'تحميل'; loadBtn.id = 'loadSaved' + item.id;
+      loadBtn.addEventListener('click', () => { input.value = item.smiles; renderAll(); });
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button'; delBtn.className = 'sec'; delBtn.textContent = 'حذف'; delBtn.id = 'delSaved' + item.id;
+      delBtn.addEventListener('click', () => {
+        setSaved(getSaved().filter((x) => x.id !== item.id));
+        renderSaved();
+      });
+      row.appendChild(span);
+      row.appendChild(loadBtn);
+      row.appendChild(delBtn);
+      box.appendChild(row);
+    });
+  }
+
+  function renderAll() {
+    const w = clamp(getNum('canvasW', 800), 320, 1600);
+    const h = clamp(getNum('canvasH', 600), 240, 1200);
+    canvas.width = w;
+    canvas.height = h;
+    const bg = $('bgColor').value || '#ffffff';
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+    const atomColor = $('atomColor').value || '#1f77b4';
+    const bondColor = $('bondColor').value || '#2b2b2b';
+    const atomRadius = clamp(getNum('atomRadius', 14), 6, 40);
+    const bondWidth = clamp(getNum('bondWidth', 2), 1, 8);
+    const fontSize = clamp(getNum('fontSize', 12), 8, 24);
+    const showCarbon = $('showCarbon').checked;
+    const showHydrogen = $('showHydrogen').checked;
+    const textColor = contrastColor(bg);
+
+    const {results, errors} = parseAll(input.value);
+    if (!results.length) {
+      ctx.fillStyle = textColor;
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(errors.length ? 'لا توجد جزيئات صالحة' : 'أدخل رمز SMILES لعرض الجزيء', w / 2, h / 2);
+      status.textContent = errors.length ? errors.join(' | ') : 'أدخل رمز SMILES لبدء الرسم.';
+      return;
+    }
+
+    const n = results.length;
+    const cols = Math.ceil(Math.sqrt(n));
+    const rows = Math.ceil(n / cols);
+    const cellW = w / cols;
+    const cellH = h / rows;
+
+    results.forEach((mol, mi) => {
+      const col = mi % cols;
+      const row = Math.floor(mi / cols);
+      const x0 = col * cellW;
+      const y0 = row * cellH;
+      const graph = buildGraph(mol, showHydrogen);
+      const pos = layoutGraph(graph);
+      const pad = 20;
+      const scale = Math.min((cellW - pad * 2) / 1.75, (cellH - pad * 2) / 1.75);
+      const cx = x0 + cellW / 2;
+      const cy = y0 + cellH / 2;
+      const P = pos.map((p) => [cx + p[0] * scale, cy + p[1] * scale]);
+
+      ctx.lineWidth = bondWidth;
+      ctx.strokeStyle = bondColor;
+      ctx.lineCap = 'round';
+      for (const e of graph.edges) {
+        const a = e[0], b = e[1], order = e[2];
+        const x1 = P[a][0], y1 = P[a][1];
+        const x2 = P[b][0], y2 = P[b][1];
+        const dx = x2 - x1, dy = y2 - y1;
+        const len = Math.hypot(dx, dy) || 1;
+        const ux = dx / len, uy = dy / len;
+        const nx = -uy, ny = ux;
+        const trim = Math.min(atomRadius * 0.85, len * 0.35);
+        const sx = x1 + ux * trim;
+        const sy = y1 + uy * trim;
+        const ex = x2 - ux * trim;
+        const ey = y2 - uy * trim;
+        if (order === 1 || order === 1.5) {
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(ex, ey);
+          ctx.stroke();
+          if (order === 1.5) {
+            const off = Math.max(3, bondWidth + 2);
+            ctx.beginPath();
+            ctx.moveTo(sx + nx * off, sy + ny * off);
+            ctx.lineTo(ex + nx * off, ey + ny * off);
+            ctx.stroke();
+          }
+        } else if (order === 2) {
+          const off = Math.max(3, bondWidth + 1.5);
+          ctx.beginPath();
+          ctx.moveTo(sx + nx * off, sy + ny * off);
+          ctx.lineTo(ex + nx * off, ey + ny * off);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(sx - nx * off, sy - ny * off);
+          ctx.lineTo(ex - nx * off, ey - ny * off);
+          ctx.stroke();
+        } else if (order === 3) {
+          const off = Math.max(4, bondWidth + 2.5);
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(ex, ey);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(sx + nx * off, sy + ny * off);
+          ctx.lineTo(ex + nx * off, ey + ny * off);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(sx - nx * off, sy - ny * off);
+          ctx.lineTo(ex - nx * off, ey - ny * off);
+          ctx.stroke();
+        }
+      }
+
+      for (let ai = 0; ai < graph.nodes.length; ai++) {
+        const node = graph.nodes[ai];
+        const x = P[ai][0], y = P[ai][1];
+        ctx.fillStyle = atomColor;
+        ctx.beginPath();
+        ctx.arc(x, y, atomRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = bondColor;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        let label = node.symbol;
+        if (node.symbol === 'C' && !showCarbon) label = '';
+        if (label) {
+          ctx.fillStyle = contrastColor(atomColor);
+          ctx.font = fontSize + 'px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(label, x, y);
+        }
+      }
+
+      ctx.fillStyle = textColor;
+      ctx.font = Math.max(12, fontSize) + 'px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(mol.name, x0 + 8, y0 + 8);
+    });
+
+    status.textContent = errors.length
+      ? ('تم رسم ' + results.length + ' جزيء. أخطاء: ' + errors.join(' | '))
+      : ('تم رسم ' + results.length + ' جزيء بنجاح.');
+  }
+
+  $('applyTemplateBtn').addEventListener('click', () => {
+    const v = templateSelect.value;
+    if (v) { input.value = v; renderAll(); }
+  });
+  $('renderBtn').addEventListener('click', renderAll);
+  $('clearBtn').addEventListener('click', () => {
+    input.value = '';
+    const bg = $('bgColor').value || '#ffffff';
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    status.textContent = 'تم المسح.';
+  });
+  $('saveBtn').addEventListener('click', () => {
+    const {results, errors} = parseAll(input.value);
+    if (!results.length) {
+      status.textContent = errors.length ? errors.join(' | ') : 'لا يوجد جزيء للحفظ.';
+      return;
+    }
+    const saved = getSaved();
+    let added = 0;
+    for (const mol of results) {
+      if (!saved.some((x) => x.smiles === mol.smiles)) {
+        saved.push({id: Date.now() + Math.floor(Math.random() * 100000), name: mol.name, smiles: mol.smiles});
+        added++;
+      }
+    }
+    setSaved(saved);
+    renderSaved();
+    status.textContent = added ? ('تم حفظ ' + added + ' جزيء.') : 'هذه الجزيئات محفوظة مسبقاً.';
+  });
+  $('exportBtn').addEventListener('click', () => {
+    try {
+      const a = document.createElement('a');
+      a.download = 'smiles-molecules.png';
+      a.href = canvas.toDataURL('image/png');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      status.textContent = 'تم تصدير الصورة.';
+    } catch (e) {
+      status.textContent = 'تعذر تصدير الصورة.';
+    }
+  });
+
+  ['atomColor', 'bondColor', 'bgColor', 'atomRadius', 'bondWidth', 'fontSize', 'canvasW', 'canvasH', 'showCarbon', 'showHydrogen'].forEach((id) => {
+    const el = $(id);
+    if (el) el.addEventListener('change', renderAll);
+  });
+  let timer = null;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(renderAll, 250);
+  });
+
+  renderSaved();
+  renderAll();
+})();
+</script>
+</body>
+</html>
