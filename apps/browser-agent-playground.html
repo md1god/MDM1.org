@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاكاة مختبر وكلاء التصفح: مقارنة عقول متعددة | MDM1</title>
+<meta name="description" content="أداة عربية في المتصفح لمحاكاة وكلاء التصفح: أدخل مهمة، شاهد صفحة محاكاة وسجل DOM، قارن عقول متعددة، وأعد تشغيل الجلسة وصدّر السجل.">
+<link rel="canonical" href="https://mdm1.org/apps/browser-agent-playground.html">
+<meta property="og:title" content="محاكاة مختبر وكلاء التصفح: مقارنة عقول متعددة">
+<meta property="og:description" content="أداة عربية في المتصفح لمحاكاة وكلاء التصفح: أدخل مهمة، شاهد صفحة محاكاة وسجل DOM، قارن عقول متعددة، وأعد تشغيل الجلسة وصدّر السجل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/browser-agent-playground.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:1rem}
+.app-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:1rem}
+@media (max-width:900px){.app-grid{grid-template-columns:1fr}}
+.app-browser{border:1px solid var(--gold-dim);border-radius:.5rem;overflow:hidden}
+.app-viewport{position:relative;min-height:280px;padding:1rem;background:var(--dark);color:var(--light)}
+.app-cursor{position:absolute;width:18px;height:18px;border:2px solid var(--gold-bright);border-radius:50%;pointer-events:none;transition:left .25s,top .25s;display:none}
+.app-cursor.show{display:block}
+.app-target{outline:2px solid var(--gold-bright);background:rgba(255,215,0,.08)}
+.app-log{max-height:240px;overflow:auto;white-space:pre-wrap;font-family:monospace;font-size:.9rem}
+.app-agents{display:grid;gap:.75rem}
+.app-agent{border:1px solid var(--gold-dim);border-radius:.5rem;padding:.75rem}
+.app-agent h3{margin:0 0 .5rem}
+.app-compare{width:100%;border-collapse:collapse}
+.app-compare th,.app-compare td{border:1px solid var(--gold-dim);padding:.35rem;text-align:right}
+.app-item{border:1px solid var(--gold-dim);border-radius:.4rem;padding:.6rem;margin:.5rem 0}
+.app-item .row{justify-content:space-between;align-items:center}
+.app-address{font-family:monospace;overflow:auto}
+.app-status-ok{color:var(--gold-bright)}
+.app-muted{opacity:.75}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محاكاة مختبر وكلاء التصفح", "url": "https://mdm1.org/apps/browser-agent-playground.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة من دون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل المحاكاة وسجلات DOM والأحداث تُنشأ داخل المتصفح دون أي طلب شبكة."}}, {"@type": "Question", "name": "ماذا أفعل إذا كانت المهمة فارغة؟", "acceptedAnswer": {"@type": "Answer", "text": "ستظهر رسالة خطأ في صندوق الحالة وسجل DOM، ولن يبدأ أي عقل حتى إدخال مهمة."}}, {"@type": "Question", "name": "كيف تتم المقارنة بين العقول؟", "acceptedAnswer": {"@type": "Answer", "text": "تُعرض خطوات كل عقل وأخطاؤه وزمنه وحالته في جدول مقارنة بعد اكتمال التشغيل."}}, {"@type": "Question", "name": "هل يمكن إعادة تشغيل جلسة سابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر إعادة تشغيل الجلسة يعيد عرض الأحداث المسجلة خطوة بخطوة."}}, {"@type": "Question", "name": "كيف أصدّر السجل؟", "acceptedAnswer": {"@type": "Answer", "text": "زر تصدير السجل يضع JSON كاملاً في صندوق التصدير، ويمكن نسخه."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محاكاة مختبر وكلاء التصفح</h1>
+  <p class="page-sub">أداة عربية في المتصفح لمحاكاة وكلاء التصفح: أدخل مهمة، شاهد صفحة محاكاة وسجل DOM، قارن عقول متعددة، وأعد تشغيل الجلسة وصدّر السجل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+<p class="app-intro">يمكنك في هذه الأداة كتابة مهمة بالعربية مثل "ابحث عن أرخص رحلة" ثم مشاهدة صفحة ويب مُحاكاة تتغير خطوة بخطوة، مع سجل DOM وأحداث الوكيل، ومقارنة عدة عقول (تصفح، عناصر، رؤية) حسب الخطوات والأخطاء والزمن، مع إمكانية إعادة تشغيل الجلسة وتصدير السجل. جميع العمليات تتم محلياً في المتصفح دون اتصال، والنتائج توضيحية لتجربة تصميم وكلاء التصفح وفهم سلوكهم قبل التطبيق على مواقع ح real ones. يمكنك تغيير السيناريو (رحلات، متجر، بحث) والسرعة، وتحديد العقول المطلوبة، ثم قراءة سجل DOM التفصيلي ومتابعة مؤشر المحاكاة على العنصر المستهدف.</p>
+<div class="app-grid">
+<section class="card">
+<label class="label" for="appTask">المهمة بالعربية</label>
+<textarea id="appTask" class="textarea" rows="3" placeholder="مثال: ابحث عن أرخص رحلة"></textarea>
+<div class="row">
+<label class="label" for="appScenario">السيناريو</label>
+<select id="appScenario" class="select">
+<option value="flights">حجز رحلات</option>
+<option value="shop">متجر إلكتروني</option>
+<option value="search">محرك بحث</option>
+</select>
+<label class="label" for="appSpeed">السرعة</label>
+<select id="appSpeed" class="select">
+<option value="0.5">0.5×</option>
+<option value="1" selected>1×</option>
+<option value="2">2×</option>
+<option value="4">4×</option>
+</select>
+</div>
+<div class="row">
+<label><input type="checkbox" id="appAgentBrowse" checked> وكيل التصفح</label>
+<label><input type="checkbox" id="appAgentElement" checked> وكيل العناصر</label>
+<label><input type="checkbox" id="appAgentVision" checked> وكيل الرؤية الحاسوبية</label>
+</div>
+<div class="row">
+<button id="appRunAll" class="button" type="button">تشغيل جميع العقول</button>
+<button id="appRunSelected" class="button sec" type="button">تشغيل المحدد</button>
+<button id="appReset" class="button sec" type="button">إعادة تعيين</button>
+</div>
+</section>
+<section class="card">
+<div class="row app-address">
+<span class="badge">محاكاة</span>
+<div id="appAddress" class="out">sim.local</div>
+</div>
+<div id="appViewport" class="app-viewport">
+<div id="appPageTitle" class="big">صفحة محاكاة</div>
+<div id="appPageContent"></div>
+<div id="appCursor" class="app-cursor" hidden></div>
+</div>
+<div id="appStatus" class="out">جاهز</div>
+</section>
+<section class="card">
+<h3>سجل DOM</h3>
+<div id="appDomLog" class="app-log out"></div>
+</section>
+<section class="card">
+<h3>سجل الأحداث</h3>
+<div id="appEventLog" class="app-log out"></div>
+</section>
+<section class="card">
+<h3>العقول</h3>
+<div id="appAgents" class="app-agents"></div>
+</section>
+<section class="card">
+<h3>المقارنة</h3>
+<table class="app-compare">
+<thead><tr><th>العقل</th><th>الخطوات</th><th>الأخطاء</th><th>الزمن</th><th>الحالة</th></tr></thead>
+<tbody id="appCompareBody"></tbody>
+</table>
+</section>
+<section class="card">
+<h3>التصدير</h3>
+<textarea id="appExportArea" class="textarea" rows="6" readonly placeholder="سيظهر السجل المصدّر هنا"></textarea>
+<div class="row">
+<button id="appExport" class="button" type="button">تصدير السجل</button>
+<button id="appCopy" class="button sec" type="button">نسخ السجل</button>
+<button id="appReplay" class="button sec" type="button">إعادة تشغيل الجلسة</button>
+</div>
+<div id="appExportStatus" class="out">جاهز</div>
+</section>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة من دون اتصال؟</h3><p>نعم، كل المحاكاة وسجلات DOM والأحداث تُنشأ داخل المتصفح دون أي طلب شبكة.</p><h3>ماذا أفعل إذا كانت المهمة فارغة؟</h3><p>ستظهر رسالة خطأ في صندوق الحالة وسجل DOM، ولن يبدأ أي عقل حتى إدخال مهمة.</p><h3>كيف تتم المقارنة بين العقول؟</h3><p>تُعرض خطوات كل عقل وأخطاؤه وزمنه وحالته في جدول مقارنة بعد اكتمال التشغيل.</p><h3>هل يمكن إعادة تشغيل جلسة سابقة؟</h3><p>نعم، زر إعادة تشغيل الجلسة يعيد عرض الأحداث المسجلة خطوة بخطوة.</p><h3>كيف أصدّر السجل؟</h3><p>زر تصدير السجل يضع JSON كاملاً في صندوق التصدير، ويمكن نسخه.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="petri-evolution-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر تطوّر الكائنات الدقيقة: محاكاة تفاعلية للأحياء المجهرية</a><span style="opacity:.75"> — صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق…</span></li><li style="margin:.5rem 0"><a href="agent-workflow-studio.html" style="color:var(--gold-bright);font-weight:700">معمل مرئي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML</a><span style="opacity:.75"> — معمل مرئي عربي لتصميم وتشغيل محاكاة وكلاء متعددين عبر مخططات YAML متدفقة، مع نقاط تفتيش وسفر زمني ولوحة تتبع…</span></li><li style="margin:.5rem 0"><a href="browser-image-codec-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر ضغط الصور: تحويل وضغط PNG وJPEG وGIF وWebP داخل المتصفح</a><span style="opacity:.75"> — حوّل واضغط صور PNG وJPEG وGIF وWebP داخل المتصفح مع شريط جودة ومستويات جهد، واعرض نسبة التوفير وحجم الملف…</span></li><li style="margin:.5rem 0"><a href="fluid-flow-visualizer.html" style="color:var(--gold-bright);font-weight:700">محاكاة تدفق السوائل ثنائي الأبعاد وتصور أنماط الموجات</a><span style="opacity:.75"> — تطبيق تفاعلي لتحليل تدفق السوائل ثنائي الأبعاد وتصور أنماط الموجات الدورانية، مع رسم العوائق وتشغيل الرسوم…</span></li><li style="margin:.5rem 0"><a href="local-tab-sandbox-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر متصفح خفيف</a><span style="opacity:.75"> — محرر ويب متكامل يعمل بالكامل في المتصفح، يتيح كتابة وتشغيل كود HTML/CSS/JS مع معاينة فورية، ألسنة تنقل، حفظ…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-31 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const AGENTS = [{key:'browse', name:'وكيل التصفح'}, {key:'element', name:'وكيل العناصر'}, {key:'vision', name:'وكيل الرؤية الحاسوبية'}];
+const SCENARIOS = {
+ flights: {title:'SkySim — حجز رحلات', address:'sim.local/flights', items:[
+  {id:'flight-1', title:'الرياض → Dubai', meta:'مباشر • 3 ساعات', price:420, action:'حجز'},
+  {id:'flight-2', title:'الرياض → Istanbul', meta:'توقف واحد • 7 ساعات', price:690, action:'حجز'},
+  {id:'flight-3', title:'الرياض → Cairo', meta:'مباشر • 4 ساعات', price:510, action:'حجز'}
+ ]},
+ shop: {title:'ShopSim — متجر أجهزة', address:'sim.local/shop', items:[
+  {id:'laptop-1', title:'لابتوب 14 بوصة', meta:'8GB RAM • 256GB', price:2100, action:'أضف للسلة'},
+  {id:'laptop-2', title:'لابتوب 15 بوصة', meta:'16GB RAM • 512GB', price:3400, action:'أضف للسلة'},
+  {id:'laptop-3', title:'لابتوب 13 بوصة', meta:'8GB RAM • 512GB', price:2600, action:'أضف للسلة'}
+ ]},
+ search: {title:'SearchSim — نتائج بحث', address:'sim.local/search', items:[
+  {id:'article-1', title:'مقدمة في الذكاء الاصطناعي', meta:'مقال • 5 دقائق', price:null, action:'فتح'},
+  {id:'article-2', title:'نصائح السفر الاقتصادي', meta:'مقال • 7 دقائق', price:null, action:'فتح'},
+  {id:'article-3', title:'مراجعة أجهزة 2026', meta:'مقال • 6 دقائق', price:null, action:'فتح'}
+ ]}
+};
+const state = {task:'', scenario:'flights', speed:1, agents:{}, selected:new Set(['browse','element','vision']), sessionEvents:[], domLog:[], eventLog:[], running:false, replaying:false, currentScenario:'flights'};
+
+function $(id){return document.getElementById(id);}
+function setText(id,value){const el=$(id); if(el) el.textContent=value;}
+function escapeHtml(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function appendLog(id,arr,text){arr.push(text); const el=$(id); if(el){el.textContent=arr.join('\n'); el.scrollTop=el.scrollHeight;}}
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+function clearHighlights(){document.querySelectorAll('.app-target').forEach(el=>el.classList.remove('app-target'));}
+function moveCursorTo(el){const cursor=$('appCursor'); const viewport=$('appViewport'); if(!cursor||!viewport||!el) return; const r=el.getBoundingClientRect(); const v=viewport.getBoundingClientRect(); cursor.style.left=(r.left-v.left+r.width/2)+'px'; cursor.style.top=(r.top-v.top+r.height/2)+'px'; cursor.classList.add('show'); cursor.hidden=false;}
+function hideCursor(){const cursor=$('appCursor'); if(cursor){cursor.classList.remove('show'); cursor.hidden=true;}}
+function findTarget(scenarioId, task){
+ const s=SCENARIOS[scenarioId];
+ const t=task.toLowerCase();
+ if(scenarioId!=='search' && /أرخص|ارخص/.test(t)){
+  const priced=s.items.filter(x=>typeof x.price==='number');
+  if(priced.length) return priced.reduce((a,b)=>a.price<=b.price?a:b);
+ }
+ if(scenarioId==='search'){
+  const found=s.items.find(x=> /ذكاء|اصطناعي|ai/.test(x.title.toLowerCase()));
+  if(found) return found;
+ }
+ return s.items[0];
+}
+function renderScenario(id){
+ state.currentScenario=id;
+ const s=SCENARIOS[id];
+ setText('appPageTitle', s.title);
+ setText('appAddress', s.address);
+ const content=$('appPageContent');
+ content.innerHTML='';
+ const page=document.createElement('div');
+ const h=document.createElement('h3'); h.textContent='نتائج'; page.appendChild(h);
+ s.items.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='app-item'; div.id=item.id;
+  div.innerHTML='<div><strong>'+escapeHtml(item.title)+'</strong><div class="app-muted">'+escapeHtml(item.meta)+'</div></div>'+(item.price!==null?'<div class="row"><span class="big">'+item.price+'</span><button class="button sec" type="button" data-item="'+item.id+'">'+item.action+'</button></div>':'<div><button class="button sec" type="button" data-item="'+item.id+'">'+item.action+'</button></div>');
+  page.appendChild(div);
+ });
+ content.appendChild(page);
+ clearHighlights(); hideCursor();
+ appendLog('appDomLog', state.domLog, 'تم عرض '+s.items.length+' عناصر في '+s.title);
+}
+function initAgentStates(){
+ AGENTS.forEach(a=>{ state.agents[a.key]={status:'جاهز', total:0, index:0, errors:0, started:0, ended:0, duration:0, current:''}; });
+ const container=$('appAgents'); container.innerHTML='';
+ AGENTS.forEach(a=>{
+  const card=document.createElement('div'); card.className='app-agent'; card.id='appAgentCard-'+a.key;
+  card.innerHTML='<h3>'+a.name+'</h3><div class="app-muted" id="appAgentStatus-'+a.key+'">جاهز</div><div>الخطوات: <span id="appAgentSteps-'+a.key+'">0/0</span></div><div>الأخطاء: <span id="appAgentErrors-'+a.key+'">0</span></div><div>الزمن: <span id="appAgentTime-'+a.key+'">0ms</span></div><div id="appAgentCurrent-'+a.key+'" class="app-muted"></div>';
+  container.appendChild(card);
+ });
+ updateAgents();
+}
+function updateAgents(){
+ AGENTS.forEach(a=>{
+  const m=state.agents[a.key];
+  setText('appAgentStatus-'+a.key, m.status);
+  setText('appAgentSteps-'+a.key, m.index+'/'+m.total);
+  setText('appAgentErrors-'+a.key, String(m.errors));
+  setText('appAgentTime-'+a.key, m.duration+'ms');
+  setText('appAgentCurrent-'+a.key, m.current);
+ });
+ updateCompare();
+}
+function updateCompare(){
+ const tbody=$('appCompareBody'); tbody.innerHTML='';
+ AGENTS.forEach(a=>{
+  const m=state.agents[a.key];
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+a.name+'</td><td>'+m.index+'/'+m.total+'</td><td>'+m.errors+'</td><td>'+m.duration+'ms</td><td>'+m.status+'</td>';
+  tbody.appendChild(tr);
+ });
+}
+function buildPlan(key, scenarioId, task){
+ const target=findTarget(scenarioId, task);
+ const items=SCENARIOS[scenarioId].items;
+ const steps=[];
+ if(key==='browse'){
+  steps.push({id:'open', description:'فتح الصفحة', targetId:null, dur:300, fail:false});
+  steps.push({id:'read-title', description:'قراءة عنوان الصفحة', targetId:null, dur:250, fail:false});
+  items.forEach((it,i)=>steps.push({id:'inspect-'+it.id, description:'فحص العنصر '+(i+1), targetId:it.id, dur:220, fail:false}));
+  steps.push({id:'locate', description:'تحديد الهدف: '+target.title, targetId:target.id, dur:300, fail:false});
+  steps.push({id:'click', description:'النقر على زر الإجراء', targetId:target.id, dur:300, fail:false});
+  steps.push({id:'verify', description:'تأكيد النتيجة', targetId:target.id, dur:250, fail:false});
+ } else if(key==='element'){
+  steps.push({id:'query', description:'الاستعلام عن عناصر النتائج', targetId:null, dur:200, fail:false});
+  steps.push({id:'sort', description:'فرز حسب السعر/الأولوية', targetId:null, dur:250, fail:false});
+  steps.push({id:'locate', description:'تحديد الهدف: '+target.title, targetId:target.id, dur:200, fail:false});
+  steps.push({id:'click', description:'النقر على زر الإجراء', targetId:target.id, dur:250, fail:false});
+  steps.push({id:'verify', description:'تأكيد النتيجة', targetId:target.id, dur:200, fail:false});
+ } else {
+  steps.push({id:'capture', description:'التقاط لقطة بصرية', targetId:null, dur:350, fail:false});
+  steps.push({id:'detect', description:'كشف مناطق النص والصور', targetId:null, dur:400, fail:false});
+  items.forEach((it,i)=>steps.push({id:'vision-inspect-'+it.id, description:'تصنيف العنصر '+(i+1)+' بصرياً', targetId:it.id, dur:260, fail:i===1}));
+  steps.push({id:'locate', description:'تحديد الهدف: '+target.title, targetId:target.id, dur:350, fail:false});
+  steps.push({id:'click', description:'النقر على زر الإجراء', targetId:target.id, dur:300, fail:false});
+  steps.push({id:'verify', description:'تأكيد النتيجة', targetId:target.id, dur:300, fail:false});
+ }
+ return steps;
+}
+async function executeStep(key, step){
+ if(step.targetId){
+  const el=$(step.targetId);
+  if(el){clearHighlights(); el.classList.add('app-target'); moveCursorTo(el);}
+ }
+ if(step.id==='click'){ appendLog('appDomLog', state.domLog, key+': نقر على '+step.targetId); }
+ if(step.fail){ appendLog('appDomLog', state.domLog, key+': خطأ في '+step.description); return {ok:false, detail:'خطأ محاكى'}; }
+ return {ok:true, detail:''};
+}
+async function runAgent(key){
+ const m=state.agents[key];
+ m.status='قيد التشغيل'; m.index=0; m.errors=0; m.started=performance.now(); m.current=''; updateAgents();
+ const plan=buildPlan(key, state.currentScenario, state.task);
+ m.total=plan.length; updateAgents();
+ try{
+  for(let i=0;i<plan.length;i++){
+   if(!state.running) throw new Error('stopped');
+   const step=plan[i];
+   m.index=i+1; m.current=step.description; updateAgents();
+   await wait(step.dur/state.speed);
+   const res=await executeStep(key, step);
+   if(!res.ok) m.errors++;
+   if(!state.replaying) recordEvent(key, step, res);
+  }
+  m.status=m.errors?'مكتمل مع أخطاء':'مكتمل';
+ }catch(e){
+  m.status='متوقف'; m.errors++; 
+  if(!state.replaying) recordEvent(key, {description:e.message, targetId:null}, {ok:false, detail:e.message});
+ }
+ m.ended=performance.now(); m.duration=Math.round(m.ended-m.started); m.current=''; updateAgents();
+}
+function recordEvent(key, step, res){
+ const ev={ts:new Date().toISOString(), agent:key, description:step.description, targetId:step.targetId||null, status:res.ok?'ok':'error', detail:res.detail||''};
+ state.sessionEvents.push(ev);
+ appendLog('appEventLog', state.eventLog, key+': '+step.description+' — '+(res.ok?'نجاح':'خطأ')+(res.detail?' ('+res.detail+')':''));
+}
+function selectedAgents(){
+ return AGENTS.map(a=>a.key).filter(key=>{
+  const box=$('appAgent'+key.charAt(0).toUpperCase()+key.slice(1));
+  return box && box.checked;
+ });
+}
+function resetRunUI(){
+ state.domLog=[]; state.eventLog=[]; state.sessionEvents=[];
+ const dom=$('appDomLog'); if(dom) dom.textContent='';
+ const ev=$('appEventLog'); if(ev) ev.textContent='';
+ initAgentStates();
+ clearHighlights(); hideCursor();
+}
+function setStatus(text){ setText('appStatus', text); }
+async function runAll(){
+ if(state.running) return;
+ const task=$('appTask').value.trim();
+ if(!task){ setStatus('أدخل مهمة أولاً'); appendLog('appDomLog', state.domLog, 'خطأ: المهمة فارغة'); return; }
+ const agents=selectedAgents();
+ if(!agents.length){ setStatus('حدد عقلًا واحدًا على الأقل'); return; }
+ state.task=task; state.scenario=$('appScenario').value; state.speed=Number($('appSpeed').value)||1;
+ resetRunUI();
+ renderScenario(state.scenario);
+ state.running=true; setStatus('قيد التشغيل');
+ await Promise.all(agents.map(key=>runAgent(key)));
+ state.running=false; setStatus('اكتملت المحاكاة');
+ persist();
+}
+function resetAll(){
+ state.running=false; state.replaying=false;
+ resetRunUI();
+ renderScenario($('appScenario').value);
+ state.task=$('appTask').value.trim();
+ setStatus('تمت إعادة التعيين');
+}
+async function replaySession(){
+ if(!state.sessionEvents.length){ setStatus('لا توجد جلسة لإعادة تشغيلها'); return; }
+ if(state.running) return;
+ state.replaying=true; state.running=true;
+ const events=state.sessionEvents.slice();
+ resetRunUI();
+ state.scenario=$('appScenario').value; state.currentScenario=state.scenario;
+ renderScenario(state.scenario);
+ setStatus('إعادة تشغيل الجلسة');
+ const counts={};
+ events.forEach(ev=>{counts[ev.agent]=(counts[ev.agent]||0)+1;});
+ const seen={};
+ for(const ev of events){
+  await wait(250/state.speed);
+  appendLog('appEventLog', state.eventLog, ev.agent+': '+ev.description+' — '+(ev.status==='ok'?'نجاح':'خطأ'));
+  seen[ev.agent]=(seen[ev.agent]||0)+1;
+  const m=state.agents[ev.agent];
+  if(m){ m.index=seen[ev.agent]; m.total=counts[ev.agent]; if(ev.status!=='ok') m.errors++; m.status='إعادة تشغيل'; updateAgents(); }
+  if(ev.targetId){ const el=$(ev.targetId); if(el){ clearHighlights(); el.classList.add('app-target'); moveCursorTo(el); } }
+ }
+ state.running=false; state.replaying=false;
+ AGENTS.forEach(a=>{ const m=state.agents[a.key]; if(m.total) m.status=m.errors?'مكتمل مع أخطاء':'مكتمل'; });
+ updateAgents(); setStatus('اكتملت إعادة التشغيل');
+}
+function exportSession(){
+ const payload={task:state.task, scenario:state.scenario, speed:state.speed, agents:state.agents, events:state.sessionEvents, domLog:state.domLog};
+ $('appExportArea').value=JSON.stringify(payload,null,2);
+ setText('appExportStatus','تم التصدير');
+}
+async function copySession(){
+ try{ await navigator.clipboard.writeText($('appExportArea').value); setText('appExportStatus','تم النسخ'); }
+ catch(e){ setText('appExportStatus','تعذر النسخ'); }
+}
+function persist(){
+ try{ localStorage.setItem('agentLab', JSON.stringify({task:$('appTask').value, scenario:$('appScenario').value, speed:$('appSpeed').value, selected:[...selectedAgents()]})); }catch(e){}
+}
+function restore(){
+ try{
+  const raw=localStorage.getItem('agentLab');
+  if(!raw) return;
+  const data=JSON.parse(raw);
+  if(data.task) $('appTask').value=data.task;
+  if(data.scenario) $('appScenario').value=data.scenario;
+  if(data.speed) $('appSpeed').value=data.speed;
+  if(Array.isArray(data.selected)){ AGENTS.forEach(a=>{ const box=$('appAgent'+a.key.charAt(0).toUpperCase()+a.key.slice(1)); if(box) box.checked=data.selected.includes(a.key); }); }
+ }catch(e){}
+}
+function init(){
+ restore();
+ state.scenario=$('appScenario').value;
+ initAgentStates();
+ renderScenario(state.scenario);
+ $('appRunAll').addEventListener('click', runAll);
+ $('appRunSelected').addEventListener('click', runAll);
+ $('appReset').addEventListener('click', resetAll);
+ $('appReplay').addEventListener('click', replaySession);
+ $('appExport').addEventListener('click', exportSession);
+ $('appCopy').addEventListener('click', copySession);
+ $('appScenario').addEventListener('change', ()=>{ state.scenario=$('appScenario').value; renderScenario(state.scenario); });
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+</script>
+</body>
+</html>
