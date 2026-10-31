@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدير الحافظة: حفظ وبحث ونسخ النصوص محلياً | MDM1</title>
+<meta name="description" content="تطبيق عربي محلي لإدارة الحافظة: احفظ النصوص المنسوخة، ابحث فيها، ثبّتها، احذفها، واستخدم مقتطفات جاهزة وتصنيفات مع تصدير واستيراد دون حسابات.">
+<link rel="canonical" href="https://mdm1.org/apps/browser-clipboard-vault.html">
+<meta property="og:title" content="مدير الحافظة: حفظ وبحث ونسخ النصوص محلياً">
+<meta property="og:description" content="تطبيق عربي محلي لإدارة الحافظة: احفظ النصوص المنسوخة، ابحث فيها، ثبّتها، احذفها، واستخدم مقتطفات جاهزة وتصنيفات مع تصدير واستيراد دون حسابات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/browser-clipboard-vault.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: grid; gap: 1rem; }
+.app-intro { line-height: 1.8; margin: 0 0 1rem; }
+.app-list { display: grid; gap: .75rem; max-height: 460px; overflow: auto; }
+.app-entry, .app-snippet { border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: .85rem; background: rgba(255,255,255,.03); }
+.app-entry__head, .app-snippet__head { display: flex; justify-content: space-between; gap: .5rem; align-items: center; margin-bottom: .5rem; }
+.app-text { white-space: pre-wrap; word-break: break-word; margin: 0 0 .75rem; font-family: inherit; }
+.app-actions { flex-wrap: wrap; }
+.app-error { border-color: var(--gold-bright); color: var(--gold-bright); }
+.app-time { opacity: .75; font-size: .85rem; }
+.app-title { margin: 0 0 .35rem; font-size: 1.05rem; }
+@media (max-width: 640px) { .app .row { flex-direction: column; align-items: stretch; } .app textarea, .app input, .app select { width: 100%; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مدير الحافظة: سجل النصوص المنسوخة", "url": "https://mdm1.org/apps/browser-clipboard-vault.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرسل بياناتي إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل النصوص والمقتطفات تُحفظ في localStorage داخل المتصفح، ولا توجد حسابات أو طلبات شبكة."}}, {"@type": "Question", "name": "كيف أنسخ نصاً بسرعة؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر \"نسخ\" بجوار النص، أو استخدم المقتطفات الجاهزة وأزرار \"نسخ المقتطف\". الاختصارات / للبحث وn للنص الجديد."}}, {"@type": "Question", "name": "ماذا يحدث إذا كانت الحافظة أو التخزين غير متاح؟", "acceptedAnswer": {"@type": "Answer", "text": "يعرض التطبيق رسالة خطأ، ويمكنك لصق النص يدوياً واستخدام السجل في الذاكرة بدون حفظ."}}, {"@type": "Question", "name": "كيف أنسخ احتياطياً أو أنقل البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم \"تصدير JSON\" ثم انسخ النص، أو استورده لاحقاً من ملف أو لصق JSON. يمكنك اختيار استبدال البيانات أو دمجها."}}, {"@type": "Question", "name": "هل يمكن تثبيت النصوص المهمة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. زر \"تثبيت\" يجعل النص يظهر أولاً، ويمكن إلغاء التثبيت في أي وقت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مدير الحافظة: سجل النصوص المنسوخة</h1>
+  <p class="page-sub">تطبيق عربي محلي لإدارة الحافظة: احفظ النصوص المنسوخة، ابحث فيها، ثبّتها، احذفها، واستخدم مقتطفات جاهزة وتصنيفات مع تصدير واستيراد دون حسابات.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl" lang="ar">
+<p class="app-intro">هذا التطبيق يحفظ نصوصك المنسوخة محلياً في المتصفح ويتيح البحث والتثبيت والحذف وإعادة النسخ بسرعة، مع مقتطفات جاهزة وتصنيفات وتصدير واستيراد، دون حسابات أو خوادم. يمكنك إضافة نص يدوياً أو لصقه من الحافظة، ثم تنظيمه حسب التصنيف والبحث فيه فوراً. التثبيت يبقي النصوص المهمة في الأعلى، بينما التصدير ينتج JSON قابلاً للنسخ أو الاستيراد لاحقاً. جميع البيانات تبقى في localStorage ما لم تمسحها بنفسك. اختصارات لوحة المفاتيح تسرع الوصول: / للبحث، n للنص الجديد، وCtrl+Enter للحفظ. التطبيق يعمل من دون اتصال، ويعرض حالات فارغة وأخطاء بوضوح.</p>
+
+<section class="card" aria-labelledby="addTitle">
+<h2 id="addTitle">إضافة نص إلى السجل</h2>
+<div class="row">
+<label for="entryText">النص</label>
+<textarea id="entryText" rows="4" placeholder="الصق أو اكتب النص هنا"></textarea>
+</div>
+<div class="row">
+<label for="entryCategory">التصنيف</label>
+<select id="entryCategory"></select>
+<input id="newCategory" type="text" placeholder="تصنيف جديد (اختياري)">
+<button id="addEntryBtn" type="button">إضافة</button>
+<button id="pasteClipboardBtn" class="sec" type="button">لصق من الحافظة</button>
+</div>
+<div id="addStatus" class="out" role="status" aria-live="polite"></div>
+</section>
+
+<section class="card" aria-labelledby="searchTitle">
+<h2 id="searchTitle">البحث والتصفية</h2>
+<div class="row">
+<label for="searchInput">بحث</label>
+<input id="searchInput" type="search" placeholder="ابحث في النصوص والتصنيفات">
+<label for="filterCategory">التصنيف</label>
+<select id="filterCategory"></select>
+<label for="sortSelect">الترتيب</label>
+<select id="sortSelect">
+<option value="recent">الأحدث</option>
+<option value="pinned">المثبت أولاً</option>
+<option value="alpha">أبجدي</option>
+</select>
+<button id="clearSearchBtn" class="sec" type="button">مسح</button>
+</div>
+<div class="row">
+<span class="badge" id="resultsCount">0 نتيجة</span>
+</div>
+</section>
+
+<section class="card" aria-labelledby="entriesTitle">
+<h2 id="entriesTitle">سجل الحافظة</h2>
+<div id="entriesList" class="app-list" aria-live="polite"></div>
+<div id="entriesEmpty" class="out" role="status"></div>
+<div class="row">
+<button id="clearAllBtn" class="sec" type="button">حذف الكل</button>
+</div>
+</section>
+
+<section class="card" aria-labelledby="snippetsTitle">
+<h2 id="snippetsTitle">المقتطفات الجاهزة</h2>
+<div class="row">
+<label for="snippetTitle">عنوان</label>
+<input id="snippetTitle" type="text" placeholder="عنوان مختصر">
+<label for="snippetCategory">التصنيف</label>
+<select id="snippetCategory"></select>
+</div>
+<div class="row">
+<label for="snippetText">النص</label>
+<textarea id="snippetText" rows="3" placeholder="نص المقتطف"></textarea>
+<button id="addSnippetBtn" type="button">حفظ مقتطف</button>
+</div>
+<div id="snippetStatus" class="out" role="status" aria-live="polite"></div>
+<div id="snippetsList" class="app-list" aria-live="polite"></div>
+<div id="snippetsEmpty" class="out" role="status"></div>
+</section>
+
+<section class="card" aria-labelledby="transferTitle">
+<h2 id="transferTitle">تصدير واستيراد</h2>
+<div class="row">
+<button id="exportBtn" type="button">تصدير JSON</button>
+<button id="copyExportBtn" class="sec" type="button">نسخ JSON</button>
+<button id="importFileBtn" class="sec" type="button">استيراد من ملف</button>
+<input id="importFileInput" type="file" accept="application/json,.json" hidden>
+</div>
+<div class="row">
+<label for="replaceOnImport"><input id="replaceOnImport" type="checkbox"> استبدال البيانات الحالية</label>
+</div>
+<div class="row">
+<label for="importText">أو الصق JSON</label>
+<textarea id="importText" rows="4" placeholder="الصق JSON هنا"></textarea>
+<button id="importTextBtn" type="button">استيراد من النص</button>
+</div>
+<textarea id="exportText" rows="6" readonly placeholder="سيظهر JSON هنا"></textarea>
+<div id="transferStatus" class="out" role="status" aria-live="polite"></div>
+</section>
+
+<section class="card" aria-labelledby="shortcutsTitle">
+<h2 id="shortcutsTitle">اختصارات لوحة المفاتيح</h2>
+<button id="toggleShortcutsBtn" class="sec" type="button">إظهار أو إخفاء</button>
+<div id="shortcutsHelp" class="out" role="note"></div>
+</section>
+
+<div id="globalStatus" class="out" role="status" aria-live="polite"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرسل بياناتي إلى أي خادم؟</h3><p>لا. كل النصوص والمقتطفات تُحفظ في localStorage داخل المتصفح، ولا توجد حسابات أو طلبات شبكة.</p><h3>كيف أنسخ نصاً بسرعة؟</h3><p>اضغط زر &quot;نسخ&quot; بجوار النص، أو استخدم المقتطفات الجاهزة وأزرار &quot;نسخ المقتطف&quot;. الاختصارات / للبحث وn للنص الجديد.</p><h3>ماذا يحدث إذا كانت الحافظة أو التخزين غير متاح؟</h3><p>يعرض التطبيق رسالة خطأ، ويمكنك لصق النص يدوياً واستخدام السجل في الذاكرة بدون حفظ.</p><h3>كيف أنسخ احتياطياً أو أنقل البيانات؟</h3><p>استخدم &quot;تصدير JSON&quot; ثم انسخ النص، أو استورده لاحقاً من ملف أو لصق JSON. يمكنك اختيار استبدال البيانات أو دمجها.</p><h3>هل يمكن تثبيت النصوص المهمة؟</h3><p>نعم. زر &quot;تثبيت&quot; يجعل النص يظهر أولاً، ويمكن إلغاء التثبيت في أي وقت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="k8s-visual-sandbox.html" style="color:var(--gold-bright);font-weight:700">تعلم Kubernetes محلياً في المتصفح</a><span style="opacity:.75"> — تعلم واختبار ملفات YAML لمكونات Kubernetes مباشرة في المتصفح مع تصور مرئي وحفظ المشاريع محليًا دون خادم أو…</span></li><li style="margin:.5rem 0"><a href="local-client-pipeline.html" style="color:var(--gold-bright);font-weight:700">تطبيق CRM عربي لإدارة العملاء والصفقات محلياً</a><span style="opacity:.75"> — تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث…</span></li><li style="margin:.5rem 0"><a href="minecraft-instance-manager.html" style="color:var(--gold-bright);font-weight:700">مدير إعدادات ماينكرافت</a><span style="opacity:.75"> — أداة عربية متكاملة لإدارة تثبيتات ماينكرافت داخل المتصفح: أنشئ ملفات تعريف لكل تثبيت، اختر الإصدار والإضافات…</span></li><li style="margin:.5rem 0"><a href="minecraft-launcher-config-manager.html" style="color:var(--gold-bright);font-weight:700">مدير إعدادات مشغّل Minecraft</a><span style="opacity:.75"> — تطبيق عربي يعمل في المتصفح لإدارة نسخ Minecraft: إنشاء ملفات نسخ، ربط إصدارات اللعبة ومسارات Java وحصص…</span></li><li style="margin:.5rem 0"><a href="missed-call-tracker.html" style="color:var(--gold-bright);font-weight:700">مدير المكالمات الفائتة</a><span style="opacity:.75"> — أضف المكالمات الفائتة وخصائص العميل وحالة المتابعة مع إحصائيات محلية دون اتصال بالإنترنت</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-10-31 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  "use strict";
+  const STORAGE_KEY = "clipboardManager:v1";
+  const DEFAULT_CATEGORIES = ["عام", "عمل", "بريد", "كود", "ملاحظات", "شخصي"];
+  const state = { entries: [], snippets: [] };
+  let storageAvailable = false;
+  let shortcutsOpen = true;
+
+  function $(id) { return document.getElementById(id); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function now() { return new Date().toISOString(); }
+  function canUseStorage() {
+    try {
+      const key = "__clipboard_test__";
+      localStorage.setItem(key, "1");
+      localStorage.removeItem(key);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  function setStatus(id, message, isError) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = message || "";
+    el.classList.toggle("app-error", !!isError);
+  }
+  function validEntry(raw) {
+    return !!raw && typeof raw === "object" && typeof raw.text === "string" && raw.text.trim().length > 0;
+  }
+  function normalizeEntry(raw) {
+    const e = raw && typeof raw === "object" ? raw : {};
+    return {
+      id: typeof e.id === "string" && e.id ? e.id : uid(),
+      text: typeof e.text === "string" ? e.text.trim() : "",
+      category: typeof e.category === "string" && e.category.trim() ? e.category.trim() : "عام",
+      pinned: e.pinned === true,
+      created: typeof e.created === "string" && e.created ? e.created : now(),
+      updated: typeof e.updated === "string" ? e.updated : null
+    };
+  }
+  function validSnippet(raw) {
+    return !!raw && typeof raw === "object" && typeof raw.text === "string" && raw.text.trim().length > 0;
+  }
+  function normalizeSnippet(raw) {
+    const s = raw && typeof raw === "object" ? raw : {};
+    return {
+      id: typeof s.id === "string" && s.id ? s.id : uid(),
+      title: typeof s.title === "string" ? s.title.trim() : "",
+      text: typeof s.text === "string" ? s.text.trim() : "",
+      category: typeof s.category === "string" && s.category.trim() ? s.category.trim() : "عام",
+      created: typeof s.created === "string" && s.created ? s.created : now()
+    };
+  }
+  function loadState() {
+    if (!storageAvailable) return;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") throw new Error("bad");
+      state.entries = Array.isArray(parsed.entries) ? parsed.entries.filter(validEntry).map(normalizeEntry) : [];
+      state.snippets = Array.isArray(parsed.snippets) ? parsed.snippets.filter(validSnippet).map(normalizeSnippet) : [];
+    } catch (e) {
+      setStatus("globalStatus", "تعذر قراءة البيانات المحفوظة؛ تم البدء بسجل فارغ.", true);
+    }
+  }
+  function saveState() {
+    if (!storageAvailable) {
+      setStatus("globalStatus", "التخزين المحلي غير متاح؛ التغييرات لن تُحفظ.", true);
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ entries: state.entries, snippets: state.snippets }));
+    } catch (e) {
+      setStatus("globalStatus", "تعذر حفظ البيانات في localStorage.", true);
+    }
+  }
+  function categories() {
+    const set = new Set(DEFAULT_CATEGORIES);
+    state.entries.forEach(function (e) { set.add(e.category); });
+    state.snippets.forEach(function (s) { set.add(s.category); });
+    return Array.from(set).filter(Boolean).sort(function (a, b) { return a.localeCompare(b, "ar"); });
+  }
+  function fillSelect(id, includeAll, preferred) {
+    const select = $(id);
+    if (!select) return;
+    const current = preferred != null ? preferred : select.value;
+    select.innerHTML = "";
+    if (includeAll) {
+      const all = document.createElement("option");
+      all.value = "all";
+      all.textContent = "الكل";
+      select.appendChild(all);
+    }
+    categories().forEach(function (name) {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      if (name === current) option.selected = true;
+      select.appendChild(option);
+    });
+    const hasCurrent = Array.prototype.some.call(select.options, function (o) { return o.value === current; });
+    if (includeAll) {
+      select.value = (current === "all" || !hasCurrent) ? "all" : current;
+    } else if (!hasCurrent && select.options.length) {
+      select.value = select.options[0].value;
+    } else if (hasCurrent) {
+      select.value = current;
+    }
+  }
+  function fillSelects() {
+    fillSelect("entryCategory", false, $("entryCategory").value);
+    fillSelect("filterCategory", true, $("filterCategory").value);
+    fillSelect("snippetCategory", false, $("snippetCategory").value);
+  }
+  function formatDate(iso) {
+    try {
+      return new Intl.DateTimeFormat("ar", { dateStyle: "short", timeStyle: "short" }).format(new Date(iso));
+    } catch (e) {
+      return iso;
+    }
+  }
+  async function copyText(text, statusId) {
+    if (!text) return;
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        await navigator.clipboard.writeText(text);
+        setStatus(statusId, "تم نسخ النص.");
+        return;
+      }
+      throw new Error("no clipboard");
+    } catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+      document.body.removeChild(ta);
+      setStatus(statusId, ok ? "تم نسخ النص." : "تعذر النسخ تلقائياً؛ حدد النص وانسخه يدوياً.", !ok);
+    }
+  }
+  function filteredEntries() {
+    const q = ($("searchInput").value || "").trim().toLowerCase();
+    const cat = $("filterCategory").value || "all";
+    const mode = $("sortSelect").value || "recent";
+    let list = state.entries.filter(function (e) {
+      if (cat !== "all" && e.category !== cat) return false;
+      if (!q) return true;
+      return (e.text + " " + e.category).toLowerCase().indexOf(q) !== -1;
+    });
+    list.sort(function (a, b) {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      if (mode === "alpha") return a.text.localeCompare(b.text, "ar");
+      return new Date(b.created).getTime() - new Date(a.created).getTime();
+    });
+    return list;
+  }
+  function makeButton(id, label, action, entryId, secondary) {
+    const b = document.createElement("button");
+    b.id = id;
+    b.type = "button";
+    b.textContent = label;
+    if (action) b.dataset.action = action;
+    if (entryId) b.dataset.id = entryId;
+    if (secondary) b.className = "sec";
+    return b;
+  }
+  function renderEntries() {
+    const listEl = $("entriesList");
+    const emptyEl = $("entriesEmpty");
+    if (!listEl || !emptyEl) return;
+    listEl.innerHTML = "";
+    const list = filteredEntries();
+    $("resultsCount").textContent = list.length + " نتيجة";
+    if (list.length === 0) {
+      emptyEl.style.display = "block";
+      emptyEl.textContent = state.entries.length ? "لا توجد نتائج مطابقة." : "السجل فارغ. أضف نصاً أو الصق من الحافظة.";
+      return;
+    }
+    emptyEl.style.display = "none";
+    list.forEach(function (e) {
+      const article = document.createElement("article");
+      article.className = "app-entry";
+      const head = document.createElement("div");
+      head.className = "app-entry__head";
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = e.category;
+      const time = document.createElement("time");
+      time.className = "app-time";
+      time.textContent = formatDate(e.created);
+      head.appendChild(badge);
+      head.appendChild(time);
+      const pre = document.createElement("pre");
+      pre.className = "app-text";
+      pre.textContent = e.text;
+      const actions = document.createElement("div");
+      actions.className = "row app-actions";
+      const copyBtn = makeButton("copyEntry-" + e.id, "نسخ", "copy", e.id, false);
+      const pinBtn = makeButton("pinEntry-" + e.id, e.pinned ? "إلغاء التثبيت" : "تثبيت", "pin", e.id, true);
+      const snippetBtn = makeButton("snippetEntry-" + e.id, "تحويل لمقتطف", "snippet", e.id, true);
+      const deleteBtn = makeButton("deleteEntry-" + e.id, "حذف", "delete", e.id, true);
+      actions.appendChild(copyBtn);
+      actions.appendChild(pinBtn);
+      actions.appendChild(snippetBtn);
+      actions.appendChild(deleteBtn);
+      article.appendChild(head);
+      article.appendChild(pre);
+      article.appendChild(actions);
+      listEl.appendChild(article);
+    });
+  }
+  function renderSnippets() {
+    const listEl = $("snippetsList");
+    const emptyEl = $("snippetsEmpty");
+    if (!listEl || !emptyEl) return;
+    listEl.innerHTML = "";
+    if (state.snippets.length === 0) {
+      emptyEl.style.display = "block";
+      emptyEl.textContent = "لا توجد مقتطفات. أضف مقتطفاً أو حول نصاً من السجل.";
+      return;
+    }
+    emptyEl.style.display = "none";
+    state.snippets.forEach(function (s) {
+      const article = document.createElement("article");
+      article.className = "app-snippet";
+      const head = document.createElement("div");
+      head.className = "app-snippet__head";
+      const title = document.createElement("strong");
+      title.className = "app-title";
+      title.textContent = s.title || "مقتطف بدون عنوان";
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = s.category;
+      head.appendChild(title);
+      head.appendChild(badge);
+      const pre = document.createElement("pre");
+      pre.className = "app-text";
+      pre.textContent = s.text;
+      const actions = document.createElement("div");
+      actions.className = "row app-actions";
+      const copyBtn = makeButton("copySnippet-" + s.id, "نسخ المقتطف", "copySnippet", s.id, false);
+      const deleteBtn = makeButton("deleteSnippet-" + s.id, "حذف", "deleteSnippet", s.id, true);
+      actions.appendChild(copyBtn);
+      actions.appendChild(deleteBtn);
+      article.appendChild(head);
+      article.appendChild(pre);
+      article.appendChild(actions);
+      listEl.appendChild(article);
+    });
+  }
+  function renderShortcuts() {
+    const help = $("shortcutsHelp");
+    if (!help) return;
+    help.hidden = !shortcutsOpen;
+    help.textContent = "اختصارات: / أو Ctrl+K للبحث، n للنص الجديد، Ctrl+Enter للحفظ، ? لإظهار الاختصارات، Esc للإغلاق والمسح.";
+  }
+  function addEntry(textOverride) {
+    const text = (textOverride == null ? $("entryText").value : textOverride).trim();
+    if (!text) {
+      setStatus("addStatus", "أدخل نصاً قبل الإضافة.", true);
+      return;
+    }
+    const newCat = ($("newCategory").value || "").trim();
+    const category = newCat || ($("entryCategory").value || "عام");
+    state.entries.unshift({ id: uid(), text: text, category: category, pinned: false, created: now(), updated: null });
+    $("entryText").value = "";
+    $("newCategory").value = "";
+    saveState();
+    fillSelects();
+    renderEntries();
+    setStatus("addStatus", "تمت إضافة النص إلى السجل.");
+  }
+  async function pasteFromClipboard() {
+    if (!navigator.clipboard || typeof navigator.clipboard.readText !== "function") {
+      setStatus("addStatus", "قراءة الحافظة غير متاحة في هذا المتصفح.", true);
+      $("entryText").focus();
+      return;
+    }
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text.trim()) {
+        setStatus("addStatus", "الحافظة فارغة.", true);
+        return;
+      }
+      $("entryText").value = text;
+      setStatus("addStatus", "تم لصق النص من الحافظة. راجعه ثم أضفه.");
+    } catch (e) {
+      setStatus("addStatus", "تعذر قراءة الحافظة. الصق النص يدوياً.", true);
+      $("entryText").focus();
+    }
+  }
+  function addSnippet() {
+    const title = ($("snippetTitle").value || "").trim();
+    const text = ($("snippetText").value || "").trim();
+    if (!text) {
+      setStatus("snippetStatus", "أدخل نص المقتطف قبل الحفظ.", true);
+      return;
+    }
+    const category = $("snippetCategory").value || "عام";
+    state.snippets.unshift({ id: uid(), title: title, text: text, category: category, created: now() });
+    $("snippetTitle").value = "";
+    $("snippetText").value = "";
+    saveState();
+    fillSelects();
+    renderSnippets();
+    setStatus("snippetStatus", "تم حفظ المقتطف.");
+  }
+  function convertEntryToSnippet(entry) {
+    $("snippetTitle").value = entry.text.slice(0, 48);
+    $("snippetText").value = entry.text;
+    try { $("snippetCategory").value = entry.category; } catch (e) {}
+    setStatus("snippetStatus", "تم نقل النص إلى نموذج المقتطف. احفظه أو عدّله.");
+  }
+  function exportData() {
+    const payload = { version: 1, exportedAt: now(), entries: state.entries, snippets: state.snippets };
+    $("exportText").value = JSON.stringify(payload, null, 2);
+    setStatus("transferStatus", "تم إنشاء JSON. انسخه أو استورده لاحقاً.");
+  }
+  function importParsed(parsed, replace) {
+    const importedEntries = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.entries) ? parsed.entries : []);
+    const importedSnippets = (!Array.isArray(parsed) && Array.isArray(parsed.snippets)) ? parsed.snippets : [];
+    if (!importedEntries.length && !importedSnippets.length) {
+      setStatus("transferStatus", "لم يتم العثور على بيانات صالحة للاستيراد.", true);
+      return;
+    }
+    if (replace) {
+      state.entries = importedEntries.filter(validEntry).map(normalizeEntry);
+      state.snippets = importedSnippets.filter(validSnippet).map(normalizeSnippet);
+    } else {
+      const entryIds = new Set(state.entries.map(function (e) { return e.id; }));
+      let addedEntries = 0;
+      importedEntries.filter(validEntry).map(normalizeEntry).forEach(function (e) {
+        if (!entryIds.has(e.id)) {
+          state.entries.unshift(e);
+          entryIds.add(e.id);
+          addedEntries += 1;
+        }
+      });
+      const snippetIds = new Set(state.snippets.map(function (s) { return s.id; }));
+      let addedSnippets = 0;
+      importedSnippets.filter(validSnippet).map(normalizeSnippet).forEach(function (s) {
+        if (!snippetIds.has(s.id)) {
+          state.snippets.unshift(s);
+          snippetIds.add(s.id);
+          addedSnippets += 1;
+        }
+      });
+      setStatus("transferStatus", "تم استيراد " + addedEntries + " نص و" + addedSnippets + " مقتطف.");
+      saveState();
+      fillSelects();
+      renderEntries();
+      renderSnippets();
+      return;
+    }
+    saveState();
+    fillSelects();
+    renderEntries();
+    renderSnippets();
+    setStatus("transferStatus", "تم استبدال البيانات بنجاح.");
+  }
+  function importFromText() {
+    const raw = ($("importText").value || "").trim();
+    if (!raw) {
+      setStatus("transferStatus", "الصق JSON أو اختر ملفاً.", true);
+      return;
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      setStatus("transferStatus", "JSON غير صالح.", true);
+      return;
+    }
+    importParsed(parsed, !!($("replaceOnImport").checked));
+  }
+  function initEvents() {
+    $("addEntryBtn").addEventListener("click", function () { addEntry(); });
+    $("entryText").addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        addEntry();
+      }
+    });
+    $("pasteClipboardBtn").addEventListener("click", function () { pasteFromClipboard(); });
+    $("searchInput").addEventListener("input", renderEntries);
+    $("filterCategory").addEventListener("change", renderEntries);
+    $("sortSelect").addEventListener("change", renderEntries);
+    $("clearSearchBtn").addEventListener("click", function () {
+      $("searchInput").value = "";
+      $("filterCategory").value = "all";
+      $("sortSelect").value = "recent";
+      renderEntries();
+      setStatus("globalStatus", "تم مسح البحث.");
+    });
+    $("clearAllBtn").addEventListener("click", function () {
+      if (!state.entries.length) {
+        setStatus("globalStatus", "السجل فارغ.");
+        return;
+      }
+      if (window.confirm("هل تريد حذف جميع النصوص؟")) {
+        state.entries = [];
+        saveState();
+        fillSelects();
+        renderEntries();
+        setStatus("globalStatus", "تم حذف جميع النصوص.");
+      }
+    });
+    $("entriesList").addEventListener("click", async function (ev) {
+      const btn = ev.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      const entry = state.entries.find(function (x) { return x.id === id; });
+      if (!entry) return;
+      if (action === "copy") {
+        await copyText(entry.text, "globalStatus");
+      } else if (action === "pin") {
+        entry.pinned = !entry.pinned;
+        entry.updated = now();
+        saveState();
+        renderEntries();
+        setStatus("globalStatus", entry.pinned ? "تم تثبيت النص." : "تم إلغاء التثبيت.");
+      } else if (action === "snippet") {
+        convertEntryToSnippet(entry);
+      } else if (action === "delete") {
+        if (window.confirm("هل تريد حذف هذا النص؟")) {
+          state.entries = state.entries.filter(function (x) { return x.id !== id; });
+          saveState();
+          fillSelects();
+          renderEntries();
+          setStatus("globalStatus", "تم حذف النص.");
+        }
+      }
+    });
+    $("addSnippetBtn").addEventListener("click", function () { addSnippet(); });
+    $("snippetText").addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        addSnippet();
+      }
+    });
+    $("snippetsList").addEventListener("click", async function (ev) {
+      const btn = ev.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      const snippet = state.snippets.find(function (x) { return x.id === id; });
+      if (!snippet) return;
+      if (action === "copySnippet") {
+        await copyText(snippet.text, "globalStatus");
+      } else if (action === "deleteSnippet") {
+        if (window.confirm("هل تريد حذف هذا المقتطف؟")) {
+          state.snippets = state.snippets.filter(function (x) { return x.id !== id; });
+          saveState();
+          fillSelects();
+          renderSnippets();
+          setStatus("globalStatus", "تم حذف المقتطف.");
+        }
+      }
+    });
+    $("exportBtn").addEventListener("click", exportData);
+    $("copyExportBtn").addEventListener("click", function () { copyText(($("exportText").value || ""), "transferStatus"); });
+    $("importFileBtn").addEventListener("click", function () { $("importFileInput").click(); });
+    $("importFileInput").addEventListener("change", function (e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener("load", function () {
+        $("importText").value = String(reader.result || "");
+        importFromText();
+      });
+      reader.addEventListener("error", function () {
+        setStatus("transferStatus", "تعذر قراءة الملف.", true);
+      });
+      reader.readAsText(file);
+      e.target.value = "";
+    });
+    $("importTextBtn").addEventListener("click", importFromText);
+    $("toggleShortcutsBtn").addEventListener("click", function () {
+      shortcutsOpen = !shortcutsOpen;
+      renderShortcuts();
+    });
+  }
+  function init() {
+    storageAvailable = canUseStorage();
+    loadState();
+    fillSelects();
+    renderEntries();
+    renderSnippets();
+    renderShortcuts();
+    initEvents();
+    if (!storageAvailable) {
+      setStatus("globalStatus", "التخزين المحلي غير متاح؛ التغييرات لن تُحفظ.", true);
+    } else {
+      setStatus("globalStatus", "جاهز. البيانات محفوظة في هذا المتصفح.");
+    }
+  }
+  document.addEventListener("keydown", function (e) {
+    const active = document.activeElement;
+    const inField = !!active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.tagName === "SELECT" || active.isContentEditable);
+    if (e.key === "Escape") {
+      if (shortcutsOpen) {
+        shortcutsOpen = false;
+        renderShortcuts();
+      }
+      if (active && typeof active.blur === "function") active.blur();
+      const search = $("searchInput");
+      if (search) search.value = "";
+      renderEntries();
+      return;
+    }
+    if (inField) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        if (active.id === "entryText") {
+          e.preventDefault();
+          addEntry();
+        } else if (active.id === "snippetText") {
+          e.preventDefault();
+          addSnippet();
+        }
+      }
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      $("searchInput").focus();
+      return;
+    }
+    if (e.key === "/") {
+      e.preventDefault();
+      $("searchInput").focus();
+      return;
+    }
+    if (e.key === "n" || e.key === "N") {
+      e.preventDefault();
+      $("entryText").focus();
+      return;
+    }
+    if (e.key === "?") {
+      e.preventDefault();
+      shortcutsOpen = !shortcutsOpen;
+      renderShortcuts();
+      return;
+    }
+  });
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
