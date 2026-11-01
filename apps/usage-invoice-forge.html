@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق إدارة العدّادات والتسعير مع فواتير محلية – بدون خادم | MDM1</title>
+<meta name="description" content="تطبيق ويب RTL لحساب واستخدام العدّادات مثل التقارير والعملاء واستدعاءات API، إنشاء خطط أسعار، توليد فواتير قابلة للطباعة وتصدير CSV، كل البيانات محفوظة محليًا في المتصفح.">
+<link rel="canonical" href="https://mdm1.org/apps/usage-invoice-forge.html">
+<meta property="og:title" content="تطبيق إدارة العدّادات والتسعير مع فواتير محلية – بدون خادم">
+<meta property="og:description" content="تطبيق ويب RTL لحساب واستخدام العدّادات مثل التقارير والعملاء واستدعاءات API، إنشاء خطط أسعار، توليد فواتير قابلة للطباعة وتصدير CSV، كل البيانات محفوظة محليًا في المتصفح.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/usage-invoice-forge.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  direction: rtl;
+  text-align: right;
+  margin: 1rem 0;
+}
+.app .card {
+  background: var(--dark);
+  color: var(--light);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+.app .row {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+.app .row label {
+  flex: 0 0 30%;
+  margin-left: 0.5rem;
+}
+.app .row .input,
+.app .row .select {
+  flex: 1;
+  background: var(--light);
+  color: var(--dark);
+  border: none;
+  padding: 0.4rem;
+  border-radius: 0.3rem;
+}
+.app .badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--dark);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+.app .out {
+  background: var(--gold-dim);
+  color: var(--dark);
+  padding: 0.8rem;
+  border-radius: 0.4rem;
+  overflow-x: auto;
+}
+.app .big {
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: center;
+}
+.app .divider {
+  height: 1px;
+  background: var(--gold-bright);
+  margin: 1rem 0;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تتبع الاستخدام وإصدار الفواتير في المتصفح", "url": "https://mdm1.org/apps/usage-invoice-forge.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تبقى البيانات محفوظة إذا قمت بإغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُحفظ جميع الخطط والاستخدامات في localStorage داخل المتصفح، لذا تعود للظهور عند فتح الصفحة مرة أخرى على نفس الجهاز."}}, {"@type": "Question", "name": "كيف يمكنني تعديل أو حذف خطة أو سجل استخدام؟", "acceptedAnswer": {"@type": "Answer", "text": "التطبيق الحالي لا يدعم تعديل أو حذف السجلات لتبسيط الكود، لكن يمكنك مسح التخزين المحلي (localStorage.clear()) لإعادة البدء من الصفر."}}, {"@type": "Question", "name": "هل يمكنني تغيير العملة أو إضافة ضرائب؟", "acceptedAnswer": {"@type": "Answer", "text": "الكود يستخدم الجنيه كعملة ثابتة، ويمكنك تعديل القيم في JavaScript لتطبيق عملة أو نسبة ضريبة أخرى حسب الحاجة."}}, {"@type": "Question", "name": "ما هو الحد الأقصى لعدد السجلات التي يمكن تخزينها؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد على سعة localStorage للمتصفح (تقريبًا 5 ميغابايت). مع بيانات بسيطة، يمكن تخزين آلاف السجلات دون مشكلة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تتبع الاستخدام وإصدار الفواتير في المتصفح</h1>
+  <p class="page-sub">تطبيق ويب RTL لحساب واستخدام العدّادات مثل التقارير والعملاء واستدعاءات API، إنشاء خطط أسعار، توليد فواتير قابلة للطباعة وتصدير CSV، كل البيانات محفوظة محليًا في المتصفح.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة هي: يمكنك الآن تتبع جميع عدّادات الاستخدام الخاصة بموقعك، تعريف خطط أسعار مرنة، وتوليد فواتير مفصلة جاهزة للطباعة أو التصدير إلى CSV دون الحاجة إلى خادم أو حسابات. يوفّر هذا التطبيق واجهة بسيطة تمامًا مع الاعتماد على التخزين المحلي في المتصفح، ما يعني أن جميع البيانات تبقى محمية داخل جهاز المستخدم وتستمر بين الجلسات. يتيح لك إضافة خطط سعرية، تسجيل كل حدث استخدام (مثل تقارير مُولّدة أو عملاء مضافين أو استدعاءات API) مع تحديد الكمية والتاريخ، ثم تجميع هذه الاستخدامات في فترات زمنية لتوليد فواتير تفصيلية تشمل السعر لكل وحدة، المجموع الكلي، وإمكانية طباعة الفاتورة أو تنزيلها كملف CSV. كل ذلك من داخل بطاقة واحدة تتناسق مع التصميم العام للموقع من خلال فئات CSS المتوفرة.</p>
+
+<div class="app">
+  <div class="card">
+    <h2 class="badge">إنشاء خطة سعرية</h2>
+    <div class="row">
+      <label for="planName">اسم الخطة</label>
+      <input type="text" id="planName" class="input" placeholder="مثال: الخطة الأساسية">
+    </div>
+    <div class="row">
+      <label for="planPrice">السعر للوحدة (بالجنيه)</label>
+      <input type="number" id="planPrice" class="input" min="0" step="0.01" placeholder="0.00">
+    </div>
+    <div class="row">
+      <label for="planLimit">حدّ الاستخدام (وحدة)</label>
+      <input type="number" id="planLimit" class="input" min="0" placeholder="0 = لا حدود">
+    </div>
+    <button class="button" id="btnAddPlan">إضافة الخطة</button>
+  </div>
+
+  <div class="card">
+    <h2 class="badge">سجل استخدام</h2>
+    <div class="row">
+      <label for="planSelect">اختر الخطة</label>
+      <select id="planSelect" class="select"></select>
+    </div>
+    <div class="row">
+      <label for="usageType">نوع العدّاد</label>
+      <select id="usageType" class="select">
+        <option value="تقارير">تقارير مُولّدة</option>
+        <option value="عملاء">عملاء مضافين</option>
+        <option value="API">استدعاءات API</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="usageQty">الكمية</label>
+      <input type="number" id="usageQty" class="input" min="1" value="1">
+    </div>
+    <div class="row">
+      <label for="usageDate">التاريخ</label>
+      <input type="date" id="usageDate" class="input">
+    </div>
+    <button class="button" id="btnAddUsage">إضافة الاستخدام</button>
+  </div>
+
+  <div class="card">
+    <h2 class="badge">الفاتورة</h2>
+    <div id="invoiceArea" class="out">
+      <p class="big">لم يتم إنشاء فاتورة بعد</p>
+    </div>
+    <div class="row">
+      <button class="button" id="btnGenerate">توليد الفاتورة</button>
+      <button class="button sec" id="btnPrint">طباعة</button>
+      <button class="button sec" id="btnExport">تصدير CSV</button>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تبقى البيانات محفوظة إذا قمت بإغلاق المتصفح؟</h3><p>نعم، تُحفظ جميع الخطط والاستخدامات في localStorage داخل المتصفح، لذا تعود للظهور عند فتح الصفحة مرة أخرى على نفس الجهاز.</p><h3>كيف يمكنني تعديل أو حذف خطة أو سجل استخدام؟</h3><p>التطبيق الحالي لا يدعم تعديل أو حذف السجلات لتبسيط الكود، لكن يمكنك مسح التخزين المحلي (localStorage.clear()) لإعادة البدء من الصفر.</p><h3>هل يمكنني تغيير العملة أو إضافة ضرائب؟</h3><p>الكود يستخدم الجنيه كعملة ثابتة، ويمكنك تعديل القيم في JavaScript لتطبيق عملة أو نسبة ضريبة أخرى حسب الحاجة.</p><h3>ما هو الحد الأقصى لعدد السجلات التي يمكن تخزينها؟</h3><p>يعتمد على سعة localStorage للمتصفح (تقريبًا 5 ميغابايت). مع بيانات بسيطة، يمكن تخزين آلاف السجلات دون مشكلة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="coop-bike-dispatch.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة طلبات توصيل الدراجات للتعاونيات</a><span style="opacity:.75"> — تطبيق عربي محلي لإدارة طلبات توصيل الطعام بالدراجات: أضف الطلبات، أسندها للسائقين تلقائيًا أو يدويًا، حسّن…</span></li><li style="margin:.5rem 0"><a href="offline-clinic-suite.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة العيادات والصيدليات الصغيرة</a><span style="opacity:.75"> — نظام متكامل لإدارة العيادات والصيدليات الصغيرة داخل المتصفح: سجلات المرضى والمواعيد والوصفات الطبية وطلبات…</span></li><li style="margin:.5rem 0"><a href="offline-hr-desk.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة موارد بشرية</a><span style="opacity:.75"> — تطبيق كامل لإدارة الموارد البشرية يعمل محلياً داخل المتصفح مع الحضور والإجازات والرواتب والتقارير بدون خادم</span></li><li style="margin:.5rem 0"><a href="pocket-microfinance-ledger.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة صناديق الإقراض والادخار الجماعي دون خادم</a><span style="opacity:.75"> — أداة محلية لإدارة صناديق الإقراض والادخار الجماعي: تسجيل الأعضاء والودائع والقروض، حساب الفوائد والأقساط…</span></li><li style="margin:.5rem 0"><a href="vertical-finance-os.html" style="color:var(--gold-bright);font-weight:700">مركز مالي للمشاريع الرأسية: فواتير ورواتب وتمويل</a><span style="opacity:.75"> — مركز مالي عربي متكامل يعمل محليًا في متصفحك دون خادم أو حسابات: إدارة دفعات وفواتير، حاسبة تمويل وسلف…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-01 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const planName = document.getElementById('planName');
+  const planPrice = document.getElementById('planPrice');
+  const planLimit = document.getElementById('planLimit');
+  const btnAddPlan = document.getElementById('btnAddPlan');
+  const planSelect = document.getElementById('planSelect');
+
+  const usageType = document.getElementById('usageType');
+  const usageQty = document.getElementById('usageQty');
+  const usageDate = document.getElementById('usageDate');
+  const btnAddUsage = document.getElementById('btnAddUsage');
+
+  const btnGenerate = document.getElementById('btnGenerate');
+  const btnPrint = document.getElementById('btnPrint');
+  const btnExport = document.getElementById('btnExport');
+  const invoiceArea = document.getElementById('invoiceArea');
+
+  let plans = [];
+  let usages = [];
+
+  // ---------- التخزين المحلي ----------
+  const loadData = () => {
+    try {
+      const p = localStorage.getItem('appPlans');
+      const u = localStorage.getItem('appUsages');
+      plans = p ? JSON.parse(p) : [];
+      usages = u ? JSON.parse(u) : [];
+    } catch (e) {
+      plans = [];
+      usages = [];
+    }
+  };
+  const saveData = () => {
+    try {
+      localStorage.setItem('appPlans', JSON.stringify(plans));
+      localStorage.setItem('appUsages', JSON.stringify(usages));
+    } catch (e) { /* ignore storage errors */ }
+  };
+
+  // ---------- تحديث القوائم ----------
+  const refreshPlanOptions = () => {
+    planSelect.innerHTML = '';
+    if (plans.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'لا توجد خطط';
+      planSelect.appendChild(opt);
+      return;
+    }
+    plans.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} – ${p.price} جنيه/وحدة`;
+      planSelect.appendChild(opt);
+    });
+  };
+
+  // ---------- إضافة خطة ----------
+  btnAddPlan.addEventListener('click', () => {
+    const name = planName.value.trim();
+    const price = parseFloat(planPrice.value);
+    const limit = parseInt(planLimit.value, 10) || 0;
+
+    if (!name || isNaN(price) || price < 0) {
+      alert('يرجى ملء جميع حقول الخطة بصورة صحيحة.');
+      return;
+    }
+    const id = Date.now().toString();
+    plans.push({ id, name, price, limit });
+    saveData();
+    refreshPlanOptions();
+    planName.value = '';
+    planPrice.value = '';
+    planLimit.value = '';
+  });
+
+  // ---------- إضافة استخدام ----------
+  btnAddUsage.addEventListener('click', () => {
+    const planId = planSelect.value;
+    if (!planId) {
+      alert('اختر خطة سعرية أولاً.');
+      return;
+    }
+    const type = usageType.value;
+    const qty = parseInt(usageQty.value, 10);
+    const date = usageDate.value || new Date().toISOString().split('T')[0];
+    if (isNaN(qty) || qty <= 0) {
+      alert('الكمية يجب أن تكون رقمًا موجَبًا.');
+      return;
+    }
+
+    const plan = plans.find(p => p.id === planId);
+    if (plan.limit > 0) {
+      const used = usages
+        .filter(u => u.planId === planId && u.type === type)
+        .reduce((sum, u) => sum + u.qty, 0);
+      if (used + qty > plan.limit) {
+        alert('تجاوزت حدّ الاستخدام لهذه الخطة.');
+        return;
+      }
+    }
+
+    usages.push({ id: Date.now().toString(), planId, type, qty, date });
+    saveData();
+    usageQty.value = '1';
+    usageDate.value = '';
+    alert('تم تسجيل الاستخدام.');
+  });
+
+  // ---------- توليد الفاتورة ----------
+  const generateInvoice = () => {
+    if (usages.length === 0) {
+      invoiceArea.innerHTML = '<p class="big">لا توجد بيانات لإظهارها</p>';
+      return;
+    }
+    let html = '<table style="width:100%;border-collapse:collapse;">';
+    html += '<thead><tr style="background:' + getComputedStyle(document.documentElement).getPropertyValue('--gold') + ';color:' + getComputedStyle(document.documentElement).getPropertyValue('--dark') + ';">';
+    html += '<th>التاريخ</th><th>النوع</th><th>الكمية</th><th>السعر للوحدة</th><th>المجموع</th></tr></thead><tbody>';
+    let total = 0;
+    usages.forEach(u => {
+      const plan = plans.find(p => p.id === u.planId);
+      const unitPrice = plan ? plan.price : 0;
+      const lineTotal = unitPrice * u.qty;
+      total += lineTotal;
+      html += `<tr style="border-bottom:1px solid ${getComputedStyle(document.documentElement).getPropertyValue('--gold-dim')}">`;
+      html += `<td>${u.date}</td><td>${u.type}</td><td>${u.qty}</td><td>${unitPrice.toFixed(2)}</td><td>${lineTotal.toFixed(2)}</td>`;
+      html += '</tr>';
+    });
+    html += '</tbody>';
+    html += `<tfoot><tr style="font-weight:bold;"><td colspan="4">الإجمالي</td><td>${total.toFixed(2)}</td></tr></tfoot>`;
+    html += '</table>';
+    invoiceArea.innerHTML = html;
+  };
+
+  btnGenerate.addEventListener('click', generateInvoice);
+
+  // ---------- طباعة ----------
+  btnPrint.addEventListener('click', () => {
+    window.print();
+  });
+
+  // ---------- تصدير CSV ----------
+  btnExport.addEventListener('click', () => {
+    if (usages.length === 0) {
+      alert('لا توجد بيانات لتصديرها.');
+      return;
+    }
+    const rows = ['التاريخ,النوع,الكمية,السعر للوحدة,المجموع'];
+    usages.forEach(u => {
+      const plan = plans.find(p => p.id === u.planId);
+      const unitPrice = plan ? plan.price : 0;
+      const lineTotal = unitPrice * u.qty;
+      rows.push(`${u.date},${u.type},${u.qty},${unitPrice.toFixed(2)},${lineTotal.toFixed(2)}`);
+    });
+    const total = usages.reduce((sum, u) => {
+      const plan = plans.find(p => p.id === u.planId);
+      const unitPrice = plan ? plan.price : 0;
+      return sum + unitPrice * u.qty;
+    }, 0);
+    rows.push(`,,,"الإجمالي",${total.toFixed(2)}`);
+    const csvContent = rows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'invoice_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ---------- تهيئة ----------
+  loadData();
+  refreshPlanOptions();
+});
+</script>
+</body>
+</html>
