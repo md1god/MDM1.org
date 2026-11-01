@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق ويب لاستيراد وتنظيم رسائل البريد بصيغة EML أو CSV مع محرر مسودات وإدارة الروابط | MDM1</title>
+<meta name="description" content="استورد رسائلك بصيغة EML أو CSV، نظّمها بوسوم وقواعد محلية، اكتشف الرسائل الباردة، احفظ مسودات الردود محليًا، وصدّرها كملفات بريد بسهولة ودون الحاجة إلى خوادم.">
+<link rel="canonical" href="https://mdm1.org/apps/local-inbox-triage.html">
+<meta property="og:title" content="تطبيق ويب لاستيراد وتنظيم رسائل البريد بصيغة EML أو CSV مع محرر مسودات وإدارة الروابط">
+<meta property="og:description" content="استورد رسائلك بصيغة EML أو CSV، نظّمها بوسوم وقواعد محلية، اكتشف الرسائل الباردة، احفظ مسودات الردود محليًا، وصدّرها كملفات بريد بسهولة ودون الحاجة إلى خوادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-inbox-triage.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  direction: rtl;
+  padding: 1rem;
+  background: var(--dark);
+  color: var(--light);
+}
+.app .row {
+  margin-bottom: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+.app .input,
+.app .select,
+.app .textarea {
+  background: var(--dark);
+  border: 1px solid var(--gold-dim);
+  color: var(--light);
+  padding: 0.4rem;
+  flex: 1;
+}
+.app .button,
+.app .button.sec {
+  min-width: 8rem;
+}
+.app .divider {
+  border-top: 1px solid var(--gold-dim);
+  margin: 1rem 0;
+}
+#resultBox {
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--dark);
+  border: 1px solid var(--gold);
+  padding: 0.5rem;
+}
+.rule-item {
+  background: var(--gold-dim);
+  color: var(--dark);
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.3rem;
+  margin: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.rule-item .badge {
+  background: var(--gold-bright);
+  color: var(--dark);
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تنظيم البريد داخل المتصفح بدون خادم", "url": "https://mdm1.org/apps/local-inbox-triage.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يمكنني استيراد أكثر من ملف في آنٍ واحد؟", "acceptedAnswer": {"@type": "Answer", "text": "لا؛ الأداة تدعم استيراد ملف واحد في كل مرة لتبسيط العملية، ويمكنك استيراد ملفات متتابعة بعد الانتهاء من كل واحدة."}}, {"@type": "Question", "name": "أين تُحفظ القواعد والمسودات؟", "acceptedAnswer": {"@type": "Answer", "text": "تُخزن محليًا داخل المتصفح باستخدام localStorage، لذا لا تُنقل إلى أي خادم وتبقى خاصة على جهازك."}}, {"@type": "Question", "name": "هل يمكنني حذف الرسائل أو القواعد؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك حذف قاعدة عبر زر ✕ الموجود بجوار كل قاعدة؛ الرسائل تُعرض مؤقتًا ولا تُحذف من الملف الأصلي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تنظيم البريد داخل المتصفح بدون خادم</h1>
+  <p class="page-sub">استورد رسائلك بصيغة EML أو CSV، نظّمها بوسوم وقواعد محلية، اكتشف الرسائل الباردة، احفظ مسودات الردود محليًا، وصدّرها كملفات بريد بسهولة ودون الحاجة إلى خوادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>الإجابة السريعة: هذه الأداة تسمح لك باستيراد ملفات البريد بصيغة EML أو CSV، تنظيمها وفق وسوم وقواعد مخصصة، اكتشاف الرسائل الباردة، جمع روابط إلغاء الاشتراك، وحفظ مسودات الردود محليًا لتصديرها لاحقًا كملفات بريد، كل ذلك داخل المتصفح دون الحاجة إلى خوادم أو حسابات. بفضل واجهة بسيطة تعتمد على مكونات الموقع الحالية، يمكنك تحميل ملفاتك، ضبط قواعد التصفية، مراجعة الرسائل المجمعة، واستخدام محرر المسودات لحفظ ردودك. جميع البيانات تُحفظ محليًا في المتصفح، مما يحافظ على خصوصيتك وأمان معلوماتك.</p>
+
+<div class="app card">
+  <div class="row">
+    <label for="fileInput">اختر ملفًا (EML أو CSV):</label>
+    <input type="file" id="fileInput" accept=".eml,.csv" class="input">
+    <button id="importBtn" class="button">استيراد</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <label for="ruleSelect">معيار القاعدة:</label>
+    <select id="ruleSelect" class="select">
+      <option value="sender">المرسل</option>
+      <option value="domain">نطاق البريد</option>
+      <option value="keyword">الكلمة المفتاحية</option>
+    </select>
+    <input type="text" id="ruleValue" placeholder="القيمة" class="input">
+    <input type="text" id="ruleTag" placeholder="الوسم" class="input">
+    <button id="addRuleBtn" class="button sec">إضافة قاعدة</button>
+  </div>
+
+  <div class="row" id="ruleList">
+    <!-- سيتم ملء قواعد المستخدم هنا -->
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <label for="draftTextarea">محرر مسودة الرد:</label>
+    <textarea id="draftTextarea" rows="4" class="textarea" placeholder="اكتب ردك هنا..."></textarea>
+    <button id="saveDraftBtn" class="button">حفظ مسودة</button>
+    <button id="exportDraftBtn" class="button sec">تصدير كملف EML</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <button id="showColdBtn" class="button">عرض الرسائل الباردة</button>
+    <button id="showUnsubBtn" class="button sec">عرض روابط إلغاء الاشتراك</button>
+  </div>
+
+  <div class="out" id="resultBox">
+    <!-- نتائج المعالجة تظهر هنا -->
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يمكنني استيراد أكثر من ملف في آنٍ واحد؟</h3><p>لا؛ الأداة تدعم استيراد ملف واحد في كل مرة لتبسيط العملية، ويمكنك استيراد ملفات متتابعة بعد الانتهاء من كل واحدة.</p><h3>أين تُحفظ القواعد والمسودات؟</h3><p>تُخزن محليًا داخل المتصفح باستخدام localStorage، لذا لا تُنقل إلى أي خادم وتبقى خاصة على جهازك.</p><h3>هل يمكنني حذف الرسائل أو القواعد؟</h3><p>نعم، يمكنك حذف قاعدة عبر زر ✕ الموجود بجوار كل قاعدة؛ الرسائل تُعرض مؤقتًا ولا تُحذف من الملف الأصلي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="offline-courseware-quiz-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح</a><span style="opacity:.75"> — تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات…</span></li><li style="margin:.5rem 0"><a href="arabic-daily-planner.html" style="color:var(--gold-bright);font-weight:700">تطبيق مهام عربي بسيط لحفظ وتنظيم المهام اليومية</a><span style="opacity:.75"> — تطبيق ويب عربي محلي يساعد على تنظيم المهام وتصنيفها وتحديد أولوياتها وحفظها تلقائياً في المتصفح دون اتصال…</span></li><li style="margin:.5rem 0"><a href="local-sdr-pipeline-agent.html" style="color:var(--gold-bright);font-weight:700">منصة مبيعات محلية: رسائل مخصصة ومواعيد وصفقات دون إنترنت</a><span style="opacity:.75"> — منصة عربية داخل المتصفح لإدارة العملاء المحتملين، توليد رسائل مخصصة دون إنترنت، محاكاة الردود، حجز…</span></li><li style="margin:.5rem 0"><a href="molecular-canvas-lab.html" style="color:var(--gold-bright);font-weight:700">تطبيق رسم الجزيئات في المتصفح</a><span style="opacity:.75"> — تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون…</span></li><li style="margin:.5rem 0"><a href="murasim-alsuhul.html" style="color:var(--gold-bright);font-weight:700">محرر المخططات الانسيابية ونماذج الواجهات بالسحب والإفلات</a><span style="opacity:.75"> — أنشئ مخططات انسيابية ونماذج واجهات التطبيقات بالسحب والإفلات: أشكال جاهزة وأسهم وألوان، مع حفظ محلي وتصدير…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-01 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const fileInput = document.getElementById('fileInput');
+  const importBtn = document.getElementById('importBtn');
+  const ruleSelect = document.getElementById('ruleSelect');
+  const ruleValue = document.getElementById('ruleValue');
+  const ruleTag = document.getElementById('ruleTag');
+  const addRuleBtn = document.getElementById('addRuleBtn');
+  const ruleList = document.getElementById('ruleList');
+  const draftTextarea = document.getElementById('draftTextarea');
+  const saveDraftBtn = document.getElementById('saveDraftBtn');
+  const exportDraftBtn = document.getElementById('exportDraftBtn');
+  const showColdBtn = document.getElementById('showColdBtn');
+  const showUnsubBtn = document.getElementById('showUnsubBtn');
+  const resultBox = document.getElementById('resultBox');
+
+  let messages = []; // {sender, subject, body, tags:[]}
+  let rules = [];    // {type, value, tag}
+
+  // تحميل القواعد والمسودات من التخزين المحلي
+  const loadState = () => {
+    try {
+      const r = localStorage.getItem('mailRules');
+      if (r) rules = JSON.parse(r);
+      const d = localStorage.getItem('draft');
+      if (d) draftTextarea.value = d;
+    } catch (e) {}
+    renderRules();
+  };
+  const saveRules = () => {
+    try { localStorage.setItem('mailRules', JSON.stringify(rules)); } catch (e) {}
+  };
+  const saveDraft = () => {
+    try { localStorage.setItem('draft', draftTextarea.value); } catch (e) {}
+  };
+
+  const renderRules = () => {
+    ruleList.innerHTML = '';
+    rules.forEach((r, i) => {
+      const div = document.createElement('div');
+      div.className = 'rule-item';
+      div.innerHTML = `${r.type === 'sender' ? 'المرسل' : r.type === 'domain' ? 'النطاق' : 'الكلمة'}: <span class="badge">${r.value}</span> → <span class="badge">${r.tag}</span>`;
+      const del = document.createElement('button');
+      del.textContent = '✕';
+      del.title = 'حذف القاعدة';
+      del.style.background = 'transparent';
+      del.style.border = 'none';
+      del.style.cursor = 'pointer';
+      del.onclick = () => {
+        rules.splice(i, 1);
+        saveRules();
+        renderRules();
+      };
+      div.appendChild(del);
+      ruleList.appendChild(div);
+    });
+  };
+
+  const applyRules = (msg) => {
+    msg.tags = [];
+    rules.forEach(r => {
+      if (r.type === 'sender' && msg.sender === r.value) msg.tags.push(r.tag);
+      else if (r.type === 'domain' && msg.sender.split('@')[1] === r.value) msg.tags.push(r.tag);
+      else if (r.type === 'keyword' && (msg.subject.includes(r.value) || msg.body.includes(r.value))) msg.tags.push(r.tag);
+    });
+  };
+
+  const parseCSV = (text) => {
+    const lines = text.split('\n').filter(l => l.trim());
+    const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const idxSender = header.indexOf('sender');
+    const idxSubject = header.indexOf('subject');
+    const idxBody = header.indexOf('body');
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.trim());
+      const msg = {
+        sender: cols[idxSender] || '',
+        subject: cols[idxSubject] || '',
+        body: cols[idxBody] || '',
+      };
+      applyRules(msg);
+      messages.push(msg);
+    }
+  };
+
+  const parseEML = (text) => {
+    const headerEnd = text.indexOf('\n\n');
+    const header = text.slice(0, headerEnd).split('\n');
+    const body = text.slice(headerEnd + 2);
+    let sender = '';
+    let subject = '';
+    header.forEach(line => {
+      if (line.toLowerCase().startsWith('from:')) sender = line.slice(5).trim();
+      if (line.toLowerCase().startsWith('subject:')) subject = line.slice(8).trim();
+    });
+    const msg = {sender, subject, body};
+    applyRules(msg);
+    messages.push(msg);
+  };
+
+  const importFile = () => {
+    const file = fileInput.files[0];
+    if (!file) return alert('لم يتم اختيار ملف');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      messages = [];
+      const content = e.target.result;
+      if (file.name.endsWith('.csv')) parseCSV(content);
+      else parseEML(content);
+      renderMessages(messages);
+    };
+    reader.readAsText(file);
+  };
+
+  const renderMessages = (list) => {
+    resultBox.innerHTML = '';
+    if (list.length === 0) {
+      resultBox.textContent = 'لا توجد رسائل للعرض.';
+      return;
+    }
+    list.forEach((msg, i) => {
+      const div = document.createElement('div');
+      div.style.borderBottom = '1px solid var(--gold-dim)';
+      div.style.padding = '0.5rem 0';
+      div.innerHTML = `<strong>#${i + 1}</strong> — <span class="badge">${msg.sender}</span> — <em>${msg.subject}</em>`;
+      if (msg.tags && msg.tags.length) {
+        const tagsSpan = document.createElement('span');
+        tagsSpan.innerHTML = ' وسوم: ' + msg.tags.map(t => `<span class="badge">${t}</span>`).join(' ');
+        div.appendChild(tagsSpan);
+      }
+      resultBox.appendChild(div);
+    });
+  };
+
+  const detectCold = () => {
+    const cold = messages.filter(m => {
+      const unknown = !m.sender.includes('@');
+      const listHeader = /list-unsubscribe:/i.test(m.body);
+      const manyRecipients = m.body.includes('To:') && m.body.match(/,/g)?.length > 3;
+      return unknown || listHeader || manyRecipients;
+    });
+    renderMessages(cold);
+  };
+
+  const collectUnsubLinks = () => {
+    const links = new Set();
+    const urlRegex = /https?:\/\/[^\s"']*unsubscribe[^\s"']*/gi;
+    messages.forEach(m => {
+      let match;
+      while ((match = urlRegex.exec(m.body)) !== null) links.add(match[0]);
+    });
+    resultBox.innerHTML = '';
+    if (links.size === 0) {
+      resultBox.textContent = 'لم يتم العثور على روابط إلغاء الاشتراك.';
+      return;
+    }
+    links.forEach(link => {
+      const div = document.createElement('div');
+      div.style.display = 'flex';
+      div.style.justifyContent = 'space-between';
+      div.style.alignItems = 'center';
+      div.style.borderBottom = '1px solid var(--gold-dim)';
+      div.style.padding = '0.4rem 0';
+      const span = document.createElement('span');
+      span.textContent = link;
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'button sec';
+      copyBtn.textContent = 'نسخ';
+      copyBtn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(link);
+          copyBtn.textContent = 'نسخ✔';
+          setTimeout(() => copyBtn.textContent = 'نسخ', 1200);
+        } catch (e) { alert('فشل النسخ'); }
+      };
+      div.appendChild(span);
+      div.appendChild(copyBtn);
+      resultBox.appendChild(div);
+    });
+  };
+
+  const exportDraft = () => {
+    const content = `Subject: مسودة رد\n\n${draftTextarea.value}`;
+    const blob = new Blob([content], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'draft.eml';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // ربط الأحداث
+  importBtn.onclick = importFile;
+  addRuleBtn.onclick = () => {
+    const type = ruleSelect.value;
+    const val = ruleValue.value.trim();
+    const tag = ruleTag.value.trim();
+    if (!val || !tag) return alert('يجب ملء القيمة والوسم');
+    rules.push({type, value: val, tag});
+    saveRules();
+    renderRules();
+    ruleValue.value = '';
+    ruleTag.value = '';
+  };
+  saveDraftBtn.onclick = () => {
+    saveDraft();
+    alert('تم حفظ المسودة محليًا');
+  };
+  exportDraftBtn.onclick = exportDraft;
+  showColdBtn.onclick = detectCold;
+  showUnsubBtn.onclick = collectUnsubLinks;
+
+  // تحميل الحالة عند بدء الصفحة
+  loadState();
+})();
+</script>
+</body>
+</html>
