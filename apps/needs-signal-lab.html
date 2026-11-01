@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرصد الاحتياجات: استخراج احتياجات المستخدمين | MDM1</title>
+<meta name="description" content="أداة محلية لاستخراج عبارات التمني والحلول الالتفافية من المنتديات، تجميعها حسب الكلمات المفتاحية، تقييم الطلب والوضوح والبدائل، وتصدير تقرير أو بطاقات أفكار.">
+<link rel="canonical" href="https://mdm1.org/apps/needs-signal-lab.html">
+<meta property="og:title" content="مرصد الاحتياجات: استخراج احتياجات المستخدمين">
+<meta property="og:description" content="أداة محلية لاستخراج عبارات التمني والحلول الالتفافية من المنتديات، تجميعها حسب الكلمات المفتاحية، تقييم الطلب والوضوح والبدائل، وتصدير تقرير أو بطاقات أفكار.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/needs-signal-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: grid; gap: 1rem; }
+.app-needs { display: grid; gap: .75rem; }
+.app-need { border: 1px solid var(--gold-dim); border-radius: .75rem; padding: .75rem; background: rgba(255,255,255,.03); cursor: pointer; }
+.app-need.selected { outline: 2px solid var(--gold); }
+.app-meta { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0; }
+.app-badge { display: inline-block; padding: .15rem .5rem; border: 1px solid var(--gold-dim); border-radius: 999px; font-size: .85rem; }
+.app-quote { border-right: 3px solid var(--gold-dim); padding: .35rem .6rem; margin: .35rem 0; font-size: .9rem; }
+.app-check { display: flex; align-items: center; gap: .5rem; margin: .25rem 0; }
+.app-intro { line-height: 1.8; }
+.app-empty { text-align: center; padding: 1rem; }
+.app-score { min-width: 5rem; text-align: center; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مرصد الاحتياجات", "url": "https://mdm1.org/apps/needs-signal-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة بدون إنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الاستخراج والتجميع والتقييم يتم في المتصفح، ولا تُرسل أي بيانات إلى خادم."}}, {"@type": "Question", "name": "ما أنواع الملفات المدعومة للاستيراد؟", "acceptedAnswer": {"@type": "Answer", "text": "ملفات نصية (TXT) وCSV، وتُدمج محتوياتها في صندوق الإدخال قبل التحليل."}}, {"@type": "Question", "name": "كيف تُحسب درجة الطلب؟", "acceptedAnswer": {"@type": "Answer", "text": "ترتفع مع تكرار ظهور need في الشواهد، وتُعرض مع الوضوح والبدائل الحالية لاتخاذ قرار متوازن."}}, {"@type": "Question", "name": "هل يمكن حفظ النتائج والعودة إليها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر «حفظ في المتصفح» يخزنها في localStorage، وزر «تحميل المحفوظ» يعيد عرضها."}}, {"@type": "Question", "name": "ماذا أفعل قبل بناء منتج؟", "acceptedAnswer": {"@type": "Answer", "text": "راجع قائمة التحقق، وتأكد من وضوح Need و3 شواهد على الأقل ووجود بدائل حالية وسهولة الوصول للمستخدمين."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مرصد الاحتياجات</h1>
+  <p class="page-sub">أداة محلية لاستخراج عبارات التمني والحلول الالتفافية من المنتديات، تجميعها حسب الكلمات المفتاحية، تقييم الطلب والوضوح والبدائل، وتصدير تقرير أو بطاقات أفكار.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro">الإجابة المختصرة: الصق مقتطفات من المنتديات أو استورد ملفاً نصياً أو CSV، ثم اضغط «تحليل واستخراج» ليجد التطبيق عبارات التمني والحلول الالتفافية، ويجمع المتشابهة حسب الكلمات المفتاحية، ويمنح كل احتياج درجة طلب ووضوح وبدائل حالية، ويعرض لوحة أدلة قابلة للترتيب مع قائمة تحقق قبل البناء. كل المعالجة تتم في المتصفح، ويمكن حفظ النتائج محلياً وتصدير تقرير أو بطاقات أفكار. ابدأ بنسخ 10 إلى 30 مشاركة من forum أو مجتمع، مع تضمين عبارات مثل «أتمنى» أو «أحتاج» أو «حالياً أستخدم»، لأن دقة التجميع ترتفع عندما تكون الشواهد متنوعة ومحددة. بعد التحليل راجع الشواهد الأصلية، وتحقق من قائمة التحقق، ثم صدّر النتيجة للتوثيق أو لاتخاذ قرار البناء.</p>
+<section class="card" id="appInputCard">
+<h2>إدخال المقتطفات</h2>
+<label for="appInput">مقتطفات المنتديات أو الملاحظات</label>
+<textarea id="appInput" rows="9" placeholder="الصق هنا مشاركات أو ملاحظات..."></textarea>
+<div class="row">
+<label for="appFile">استيراد ملف نصي أو CSV</label>
+<input id="appFile" type="file" accept=".txt,.csv,text/plain,text/csv">
+<button id="appImportBtn" class="sec" type="button">اختيار ملف</button>
+</div>
+<div class="row">
+<button id="appAnalyzeBtn" type="button">تحليل واستخراج</button>
+<button id="appClearBtn" class="sec" type="button">مسح</button>
+</div>
+<div id="appStatus" class="out" aria-live="polite">في انتظار إدخال نص.</div>
+</section>
+<section class="card" id="appBoardCard">
+<h2>لوحة الأدلة</h2>
+<div class="row">
+<label for="appSearch">بحث</label>
+<input id="appSearch" type="search" placeholder="ابحث في الاحتياجات...">
+<label for="appSortSelect">ترتيب حسب</label>
+<select id="appSortSelect">
+<option value="demand">درجة الطلب</option>
+<option value="clarity">الوضوح</option>
+<option value="alternatives">البدائل الحالية</option>
+<option value="evidence">عدد الشواهد</option>
+</select>
+</div>
+<div id="appSummary" class="row"></div>
+<div id="appNeeds" class="app-needs"></div>
+<div id="appEmpty" class="out">لا توجد نتائج بعد. أدخل نصاً ثم اضغط «تحليل واستخراج».</div>
+</section>
+<section class="card" id="appDetailCard">
+<h2>تفاصيل الاحتياج المحدد</h2>
+<div id="appNeedDetail" class="out">حدد احتياجاً من اللوحة لعرض شواهده.</div>
+<h3>قائمة تحقق قبل البناء</h3>
+<div id="appChecklist" class="app-checklist"></div>
+<div id="appCheckProgress" class="out">0 / 5</div>
+</section>
+<section class="card" id="appExportCard">
+<h2>تصدير</h2>
+<div class="row">
+<label for="appExportFormat">نوع التصدير</label>
+<select id="appExportFormat">
+<option value="report">تقرير</option>
+<option value="cards">بطاقات أفكار</option>
+</select>
+<button id="appExportBtn" type="button">إنشاء التصدير</button>
+<button id="appCopyBtn" class="sec" type="button">نسخ</button>
+</div>
+<textarea id="appExportOut" rows="12" readonly placeholder="سيظهر التصدير هنا."></textarea>
+</section>
+<section class="card" id="appStorageCard">
+<h2>حفظ محلي</h2>
+<div class="row">
+<button id="appSaveBtn" type="button">حفظ في المتصفح</button>
+<button id="appLoadBtn" class="sec" type="button">تحميل المحفوظ</button>
+<button id="appDeleteBtn" class="sec" type="button">حذف المحفوظ</button>
+</div>
+<div id="appStorageStatus" class="out" aria-live="polite">لم يتم حفظ نتائج بعد.</div>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة بدون إنترنت؟</h3><p>نعم، كل الاستخراج والتجميع والتقييم يتم في المتصفح، ولا تُرسل أي بيانات إلى خادم.</p><h3>ما أنواع الملفات المدعومة للاستيراد؟</h3><p>ملفات نصية (TXT) وCSV، وتُدمج محتوياتها في صندوق الإدخال قبل التحليل.</p><h3>كيف تُحسب درجة الطلب؟</h3><p>ترتفع مع تكرار ظهور need في الشواهد، وتُعرض مع الوضوح والبدائل الحالية لاتخاذ قرار متوازن.</p><h3>هل يمكن حفظ النتائج والعودة إليها؟</h3><p>نعم، زر «حفظ في المتصفح» يخزنها في localStorage، وزر «تحميل المحفوظ» يعيد عرضها.</p><h3>ماذا أفعل قبل بناء منتج؟</h3><p>راجع قائمة التحقق، وتأكد من وضوح Need و3 شواهد على الأقل ووجود بدائل حالية وسهولة الوصول للمستخدمين.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="noise-focus-mixer.html" style="color:var(--gold-bright);font-weight:700">أصوات مهدئة للتركيز ومؤقت بومودورو وقائمة مهام داخل المتصفح</a><span style="opacity:.75"> — أنشئ أصواتاً مهدئة للتركيز مثل المطر والأمواج والرعد دون إنترنت، مع مؤقت بومودورو وخلاط أصوات وقائمة مهام…</span></li><li style="margin:.5rem 0"><a href="nutq-dictation-cleaner.html" style="color:var(--gold-bright);font-weight:700">نُطق</a><span style="opacity:.75"> — نُطق أداة عربية للإملاء الصوتي وتنظيف النصوص: سجّل بصوتك أو الصق نصك، احذف كلمات الحشو، وطبّق علامات الترقيم…</span></li><li style="margin:.5rem 0"><a href="offline-bilingual-word-dictionary.html" style="color:var(--gold-bright);font-weight:700">قاموس عربي إنجليزي فوري دون إنترنت مع قارئ PDF</a><span style="opacity:.75"> — قاموس عربي إنجليزي محلي يعمل دون إنترنت: ابحث بالكتابة أو من نص محدد، واحفظ الكلمات في دفتر ملاحظات، وافتح…</span></li><li style="margin:.5rem 0"><a href="offline-clinic-notebook.html" style="color:var(--gold-bright);font-weight:700">تطبيق محلي لإدارة سجلات المرضى والمواعيد</a><span style="opacity:.75"> — نظام records طبية مصغّر يعمل في المتصفح دون إنترنت، لإدارة المرضى والمواعيد والزيارات والأدوية مع حفظ…</span></li><li style="margin:.5rem 0"><a href="offline-clinic-suite.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة العيادات والصيدليات الصغيرة</a><span style="opacity:.75"> — نظام متكامل لإدارة العيادات والصيدليات الصغيرة داخل المتصفح: سجلات المرضى والمواعيد والوصفات الطبية وطلبات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-01 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const STORAGE_KEY = "mdm1_needs_observatory_v1";
+const CHECK_ITEMS = ["صياغة Need محددة وقابلة للتنفيذ", "هناك 3 شواهد أو أكثر", "البدائل الحالية موثقة", "المستخدمون قابلون للوصول", "التكرار يبرر البناء"];
+const STOPWORDS = new Set(["في", "من", "إلى", "على", "عن", "مع", "هذا", "هذه", "ذلك", "التي", "الذي", "هو", "هي", "أو", "و", "لا", "ما", "قد", "لم", "لن", "إن", "أن", "كل", "أي", "بعد", "قبل", "حتى", "إذا", "لقد", "ثم", "أيضا", "فقط", "جدا", "more", "the", "and", "or", "to", "of", "in", "is", "it", "for", "on", "with", "as", "at", "by", "an", "be", "this", "that"]);
+const WISH_RE = /(أتمنى|اتمنى|أريد|اريد|أحتاج|احاج|لو كان|لماذا لا|لما لا|أرجو|رجاء|need|wish|should have|ideally)/i;
+const ALT_RE = /(أستخدم|استخدم|حاليا|حالياً|بديل|workaround|أضطر|اضطر|currently use|using now)/i;
+let state = { needs: [], selectedId: null, raw: "" };
+const $ = (id) => document.getElementById(id);
+function normalize(s) { return (s || "").replace(/[\u064B-\u065F\u0670]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").toLowerCase(); }
+function tokenize(s) { const n = normalize(s).replace(/[^\u0600-\u06FFa-zA-Z0-9\s]/g, " "); const words = n.match(/[\u0600-\u06FFa-zA-Z0-9]{2,}/g) || []; return words.filter((w) => !STOPWORDS.has(w) && w.length >= 3); }
+function splitSegments(text) {
+  const lines = (text || "").split(/\r?\n/);
+  const out = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) continue;
+    if (t.length > 180) {
+      t.split(/(?<=[.!?؟])\s+/).forEach((s) => { const x = s.trim(); if (x) out.push(x); });
+    } else out.push(t);
+  }
+  return out.length ? out : (text && text.trim() ? [text.trim()] : []);
+}
+function jaccard(a, b) { const A = new Set(a); const B = new Set(b); const inter = [...A].filter((x) => B.has(x)).length; const union = new Set([...A, ...B]).size; return union ? inter / union : 0; }
+function clarityScore(text, kwCount) {
+  let s = 40;
+  const len = (text || "").length;
+  if (len >= 30 && len <= 160) s += 30; else if (len < 30) s += 10; else s += 15;
+  s += Math.min(20, kwCount * 4);
+  if (/[0-9]/.test(text || "")) s += 5;
+  if (/(بشكل|بالضبط|مثلا|example|specific)/i.test(text || "")) s += 5;
+  return Math.min(100, s);
+}
+function buildNeeds(text) {
+  const segments = splitSegments(text);
+  const needsSegs = segments.filter((s) => WISH_RE.test(s));
+  const workSegs = segments.filter((s) => ALT_RE.test(s));
+  const sourceNeeds = needsSegs.length ? needsSegs : segments.filter((s) => s.length >= 15 && !ALT_RE.test(s));
+  const groups = [];
+  for (const seg of sourceNeeds) {
+    const kw = tokenize(seg);
+    if (!kw.length) continue;
+    const set = new Set(kw);
+    let best = null; let bestSim = 0;
+    for (const g of groups) { const sim = jaccard([...g.keywords], kw); if (sim > bestSim) { bestSim = sim; best = g; } }
+    if (best && bestSim >= 0.3) { best.evidence.push(seg); kw.forEach((w) => best.keywords.add(w)); }
+    else groups.push({ statement: seg, keywords: set, evidence: [seg] });
+  }
+  for (const w of workSegs) {
+    const kw = tokenize(w);
+    if (!kw.length || !groups.length) continue;
+    let best = null; let bestSim = 0;
+    for (const g of groups) { const sim = jaccard([...g.keywords], kw); if (sim > bestSim) { bestSim = sim; best = g; } }
+    if (best && bestSim >= 0.15) { best.alternatives = best.alternatives || []; best.alternatives.push(w); }
+  }
+  return groups.map((g, i) => {
+    const evidence = [...new Set(g.evidence)];
+    const alternatives = [...new Set(g.alternatives || [])];
+    const kwArr = [...g.keywords].slice(0, 8);
+    const demand = Math.min(100, evidence.length * 18 + (alternatives.length ? 5 : 0));
+    const clarity = clarityScore(g.statement, kwArr.length);
+    const alternativesScore = Math.min(100, alternatives.length * 25);
+    return { id: "need-" + (i + 1), statement: g.statement, keywords: kwArr, evidence, alternatives, demand, clarity, alternativesScore, checks: new Array(CHECK_ITEMS.length).fill(false) };
+  });
+}
+function sortNeeds() {
+  const key = $("appSortSelect").value;
+  const map = { demand: "demand", clarity: "clarity", alternatives: "alternativesScore", evidence: (n) => n.evidence.length };
+  state.needs.sort((a, b) => {
+    const va = typeof map[key] === "function" ? map[key](a) : a[map[key]];
+    const vb = typeof map[key] === "function" ? map[key](b) : b[map[key]];
+    return vb - va;
+  });
+}
+function el(tag, text, attrs) {
+  const e = document.createElement(tag);
+  if (text !== null && text !== undefined) e.textContent = text;
+  if (attrs) Object.keys(attrs).forEach((k) => { if (k === "class") e.className = attrs[k]; else e.setAttribute(k, attrs[k]); });
+  return e;
+}
+function renderSummary() {
+  const box = $("appSummary");
+  box.innerHTML = "";
+  const total = state.needs.length;
+  const evidence = state.needs.reduce((a, n) => a + n.evidence.length, 0);
+  const avgDemand = total ? Math.round(state.needs.reduce((a, n) => a + n.demand, 0) / total) : 0;
+  box.appendChild(el("span", "احتياجات: " + total, { class: "app-badge" }));
+  box.appendChild(el("span", "شواهد: " + evidence, { class: "app-badge" }));
+  box.appendChild(el("span", "متوسط الطلب: " + avgDemand, { class: "app-badge" }));
+}
+function renderNeeds() {
+  const box = $("appNeeds");
+  const empty = $("appEmpty");
+  box.innerHTML = "";
+  const q = normalize($("appSearch").value || "");
+  const filtered = state.needs.filter((n) => !q || normalize(n.statement + " " + n.keywords.join(" ")).includes(q));
+  if (!filtered.length) { empty.style.display = "block"; empty.textContent = state.needs.length ? "لا توجد نتائج مطابقة." : "لا توجد نتائج بعد. أدخل نصاً ثم اضغط «تحليل واستخراج»."; return; }
+  empty.style.display = "none";
+  for (const n of filtered) {
+    const card = el("div", null, { class: "app-need" + (n.id === state.selectedId ? " selected" : "") });
+    const title = el("strong", n.statement);
+    card.appendChild(title);
+    const meta = el("div", null, { class: "app-meta" });
+    meta.appendChild(el("span", "طلب " + n.demand, { class: "app-badge app-score" }));
+    meta.appendChild(el("span", "وضوح " + n.clarity, { class: "app-badge app-score" }));
+    meta.appendChild(el("span", "بدائل " + n.alternativesScore, { class: "app-badge app-score" }));
+    meta.appendChild(el("span", "شواهد " + n.evidence.length, { class: "app-badge" }));
+    card.appendChild(meta);
+    const kw = el("div", null, { class: "app-meta" });
+    for (const k of n.keywords) kw.appendChild(el("span", k, { class: "app-badge" }));
+    card.appendChild(kw);
+    const btn = el("button", "عرض التفاصيل", { class: "sec", type: "button", id: "appNeedSelect" + n.id });
+    btn.addEventListener("click", () => { state.selectedId = n.id; renderNeeds(); renderDetail(); });
+    card.appendChild(btn);
+    box.appendChild(card);
+  }
+}
+function renderDetail() {
+  const box = $("appNeedDetail");
+  const check = $("appChecklist");
+  const prog = $("appCheckProgress");
+  box.innerHTML = "";
+  check.innerHTML = "";
+  const n = state.needs.find((x) => x.id === state.selectedId);
+  if (!n) { box.textContent = "حدد احتياجاً من اللوحة لعرض شواهده."; prog.textContent = "0 / " + CHECK_ITEMS.length; return; }
+  box.appendChild(el("p", n.statement));
+  const meta = el("div", null, { class: "app-meta" });
+  meta.appendChild(el("span", "درجة الطلب: " + n.demand + "/100", { class: "app-badge" }));
+  meta.appendChild(el("span", "درجة الوضوح: " + n.clarity + "/100", { class: "app-badge" }));
+  meta.appendChild(el("span", "بدائل حالية: " + n.alternativesScore + "/100", { class: "app-badge" }));
+  box.appendChild(meta);
+  if (n.keywords.length) {
+    const kw = el("div", null, { class: "app-meta" });
+    n.keywords.forEach((k) => kw.appendChild(el("span", k, { class: "app-badge" })));
+    box.appendChild(kw);
+  }
+  if (n.evidence.length) {
+    box.appendChild(el("h4", "الشواهد"));
+    for (const q of n.evidence) box.appendChild(el("div", q, { class: "app-quote" }));
+  } else box.appendChild(el("div", "لا توجد شواهد.", { class: "app-quote" }));
+  if (n.alternatives.length) {
+    box.appendChild(el("h4", "البدائل الحالية / الحلول الالتفافية"));
+    for (const q of n.alternatives) box.appendChild(el("div", q, { class: "app-quote" }));
+  } else box.appendChild(el("div", "لم تُرصد بدائل حالية.", { class: "app-quote" }));
+  CHECK_ITEMS.forEach((item, i) => {
+    const row = el("label", null, { class: "app-check" });
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.id = "appCheck" + n.id + "_" + i;
+    cb.checked = !!n.checks[i];
+    cb.addEventListener("change", () => { n.checks[i] = cb.checked; updateProgress(n); saveState(true); });
+    row.appendChild(cb);
+    row.appendChild(document.createTextNode(item));
+    check.appendChild(row);
+  });
+  updateProgress(n);
+}
+function updateProgress(n) {
+  const done = n.checks.filter(Boolean).length;
+  $("appCheckProgress").textContent = done + " / " + CHECK_ITEMS.length;
+}
+function analyze() {
+  const text = $("appInput").value || "";
+  if (!text.trim()) { $("appStatus").textContent = "أدخل مقتطفات أو استورد ملفاً أولاً."; return; }
+  const needs = buildNeeds(text);
+  if (!needs.length) { $("appStatus").textContent = "لم يتم العثور على احتياجات. جرّب عبارات مثل «أتمنى» أو «أحتاج»."; state.needs = []; state.selectedId = null; renderAll(); return; }
+  state.needs = needs;
+  state.selectedId = needs[0].id;
+  state.raw = text;
+  sortNeeds();
+  $("appStatus").textContent = "تم استخراج " + needs.length + " احتياج(ات) من " + needs.reduce((a, n) => a + n.evidence.length, 0) + " شاهد.";
+  renderAll();
+  saveState(true);
+}
+function renderAll() { renderSummary(); renderNeeds(); renderDetail(); }
+function saveState(silent) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ needs: state.needs, raw: $("appInput").value || state.raw || "", savedAt: new Date().toISOString() }));
+    if (!silent) $("appStorageStatus").textContent = "تم الحفظ في المتصفح.";
+  } catch (e) {
+    if (!silent) $("appStorageStatus").textContent = "تعذر الحفظ: " + (e && e.message ? e.message : "خطأ");
+  }
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) { $("appStorageStatus").textContent = "لا توجد نتائج محفوظة."; return; }
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data.needs)) throw new Error("bad");
+    state.needs = data.needs.map((n) => ({ ...n, checks: Array.isArray(n.checks) ? n.checks : new Array(CHECK_ITEMS.length).fill(false) }));
+    state.selectedId = state.needs.length ? state.needs[0].id : null;
+    if (typeof data.raw === "string") $("appInput").value = data.raw;
+    sortNeeds();
+    renderAll();
+    $("appStorageStatus").textContent = "تم تحميل النتائج المحفوظة.";
+  } catch (e) {
+    $("appStorageStatus").textContent = "تعذر التحميل: " + (e && e.message ? e.message : "خطأ");
+  }
+}
+function deleteState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  state.needs = []; state.selectedId = null; $("appInput").value = "";
+  renderAll();
+  $("appStorageStatus").textContent = "تم حذف النتائج المحفوظة.";
+}
+function buildExportText(format) {
+  const needs = state.needs;
+  if (!needs.length) return "لا توجد نتائج للتصدير.";
+  if (format === "cards") {
+    return needs.map((n, i) => "### بطاقة فكرة " + (i + 1) + "\nالعنوان: " + n.statement.slice(0, 80) + "\nالمشكلة: " + n.statement + "\nالدليل: " + n.evidence.length + " شاهد\nدرجة الطلب: " + n.demand + "/100\nالوضوح: " + n.clarity + "/100\nالبدائل الحالية: " + n.alternatives.join(" | ") + "\nMVP: " + n.keywords.join(", ") + "\n").join("\n");
+  }
+  let out = "# تقرير مرصد الاحتياجات\n\n";
+  out += "عدد الاحتياجات: " + needs.length + "\n";
+  out += "عدد الشواهد: " + needs.reduce((a, n) => a + n.evidence.length, 0) + "\n\n";
+  needs.forEach((n, i) => {
+    out += "## " + (i + 1) + ". " + n.statement + "\n";
+    out += "- درجة الطلب: " + n.demand + "/100\n";
+    out += "- الوضوح: " + n.clarity + "/100\n";
+    out += "- البدائل الحالية: " + n.alternativesScore + "/100\n";
+    out += "- الكلمات المفتاحية: " + n.keywords.join(", ") + "\n";
+    out += "- الشواهد:\n" + n.evidence.map((q) => "  - " + q).join("\n") + "\n";
+    out += "- البدائل:\n" + (n.alternatives.length ? n.alternatives.map((q) => "  - " + q).join("\n") : "  - لا توجد") + "\n";
+    out += "- تحقق: " + n.checks.filter(Boolean).length + "/" + CHECK_ITEMS.length + "\n\n";
+  });
+  return out;
+}
+function importFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      let text = String(reader.result || "");
+      if (file.name.toLowerCase().endsWith(".csv")) {
+        text = text.split(/\r?\n/).map((line) => line.split(",").map((c) => c.trim().replace(/^"|"$/g, "")).join(" | ")).join("\n");
+      }
+      const current = $("appInput").value || "";
+      $("appInput").value = current ? current + "\n\n--- " + file.name + " ---\n" + text : text;
+      $("appStatus").textContent = "تم استيراد " + file.name + " (" + text.length + " حرف).";
+    } catch (e) {
+      $("appStatus").textContent = "تعذر قراءة الملف: " + (e && e.message ? e.message : "خطأ");
+    }
+  };
+  reader.onerror = () => { $("appStatus").textContent = "تعذر قراءة الملف."; };
+  reader.readAsText(file, "UTF-8");
+}
+function init() {
+  $("appAnalyzeBtn").addEventListener("click", analyze);
+  $("appClearBtn").addEventListener("click", () => { $("appInput").value = ""; state.needs = []; state.selectedId = null; renderAll(); $("appStatus").textContent = "تم المسح."; });
+  $("appImportBtn").addEventListener("click", () => $("appFile").click());
+  $("appFile").addEventListener("change", (e) => { const f = e.target.files && e.target.files[0]; if (f) importFile(f); e.target.value = ""; });
+  $("appSortSelect").addEventListener("change", () => { sortNeeds(); renderNeeds(); });
+  $("appSearch").addEventListener("input", () => renderNeeds());
+  $("appExportBtn").addEventListener("click", () => { $("appExportOut").value = buildExportText($("appExportFormat").value); });
+  $("appCopyBtn").addEventListener("click", () => {
+    const t = $("appExportOut");
+    t.select();
+    try { document.execCommand("copy"); $("appStorageStatus").textContent = "تم النسخ."; } catch (e) { $("appStorageStatus").textContent = "تعذر النسخ."; }
+  });
+  $("appSaveBtn").addEventListener("click", () => saveState(false));
+  $("appLoadBtn").addEventListener("click", loadState);
+  $("appDeleteBtn").addEventListener("click", deleteState);
+  loadState();
+  if (!state.needs.length) { renderAll(); }
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+</script>
+</body>
+</html>
