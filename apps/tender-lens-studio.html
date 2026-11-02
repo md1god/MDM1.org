@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق ويب لتحليل كراسات المناقصات وإعداد مصفوفة الامتثال العربية | MDM1</title>
+<meta name="description" content="أداة عربية تعمل في المتصفح تستورد ملفات RFP نصية، تستخرج البنود، تبني مصفوفة امتثال قابلة للتحرير مع إشارة المخاطر وتخزين الأجوبة في localStorage وتصدير النتائج إلى CSV أو HTML.">
+<link rel="canonical" href="https://mdm1.org/apps/tender-lens-studio.html">
+<meta property="og:title" content="تطبيق ويب لتحليل كراسات المناقصات وإعداد مصفوفة الامتثال العربية">
+<meta property="og:description" content="أداة عربية تعمل في المتصفح تستورد ملفات RFP نصية، تستخرج البنود، تبني مصفوفة امتثال قابلة للتحرير مع إشارة المخاطر وتخزين الأجوبة في localStorage وتصدير النتائج إلى CSV أو HTML.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/tender-lens-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  direction: rtl;  
+  text-align: right;  
+  padding: 1rem;  
+  background: var(--dark);  
+  color: var(--light);  
+}  
+.app .row {  
+  margin-bottom: 0.75rem;  
+  align-items: center;  
+  gap: 0.5rem;  
+}  
+.app label {  
+  margin-left: 0.5rem;  
+}  
+.app #matrixDiv table {  
+  width: 100%;  
+  border-collapse: collapse;  
+  margin-top: 0.5rem;  
+}  
+.app #matrixDiv th, .app #matrixDiv td {  
+  border: 1px solid var(--gold-dim);  
+  padding: 0.4rem;  
+}  
+.app #matrixDiv th {  
+  background: var(--gold);  
+  color: var(--dark);  
+}  
+.app .badge {  
+  display: inline-block;  
+  padding: 0.2rem 0.5rem;  
+  border-radius: 0.3rem;  
+  font-size: 0.85rem;  
+}  
+.app .badge.ok { background: var(--gold-bright); color: var(--dark); }  
+.app .badge.fail { background: #a33; color: var(--light); }  
+.app .badge.risk { background: #e90; color: var(--dark); }  
+.app textarea {  
+  width: 100%;  
+  min-height: 3rem;  
+}  
+.app .out {  
+  max-height: 300px;  
+  overflow-y: auto;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تحليل كراسات المناقصات وإنشاء مصفوفة امتثال تفاعلية", "url": "https://mdm1.org/apps/tender-lens-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يمكنني استيراد ملفات PDF؟", "acceptedAnswer": {"@type": "Answer", "text": "التطبيق يدعم ملفات النص فقط حالياً؛ ملفات PDF ستظهر رسالة تنبيه لتغيير الصيغة."}}, {"@type": "Question", "name": "أين تُحفظ الأجوبة المكتوبة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُخزن الأجوبة في localStorage المتصفح، لذلك تبقى متاحة طالما لم تُحذف بيانات المتصفح."}}, {"@type": "Question", "name": "هل يمكنني تعديل الردود بعد حفظها؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تعديل أي خلية رد مباشرة في المصفوفة ثم حفظ التغييرات يدوياً أو تصديرها."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تحليل كراسات المناقصات وإنشاء مصفوفة امتثال تفاعلية</h1>
+  <p class="page-sub">أداة عربية تعمل في المتصفح تستورد ملفات RFP نصية، تستخرج البنود، تبني مصفوفة امتثال قابلة للتحرير مع إشارة المخاطر وتخزين الأجوبة في localStorage وتصدير النتائج إلى CSV أو HTML.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يتيح لك استيراد ملف طلب تقديم عرض (RFP) بصيغة نصية، استخراج البنود والالتزامات تلقائيًا باستخدام قواعد بسيطة مدمجة، ثم بناء مصفوفة امتثال قابلة للتعديل تُظهر البنود المستوفاة وغير المستوفاة مع إظهار المخاطر والفجوات. يمكنك كذلك حفظ مكتبة أجوبة سابقة في المتصفح لإعادة استخدامها، وصياغة ردود مسودة مرتبطة بكل بند، ثم تصدير المصفوفة والردود إلى ملف CSV أو HTML للطباعة أو المشاركة. لا حاجة لإنشاء حساب أو اتصال بالإنترنت؛ جميع العمليات تجري محليًا داخل المتصفح.</p>  
+
+<div class="app card">  
+  <div class="row">  
+    <label for="fileInput">اختر ملف RFP (نص أو PDF)</label>  
+    <input type="file" id="fileInput" class="input" accept=".txt,.pdf">  
+    <button id="parseBtn" class="button">استخراج البنود</button>  
+  </div>  
+
+  <div class="divider"></div>  
+
+  <div id="matrixDiv" class="out">  
+    <!-- سيتم ملء المصفوفة هنا -->  
+  </div>  
+
+  <div class="divider"></div>  
+
+  <div class="row">  
+    <textarea id="libraryTextarea" class="textarea" placeholder="اكتب إجابة لتخزينها في المكتبة"></textarea>  
+    <button id="saveAnswerBtn" class="button sec">حفظ في المكتبة</button>  
+  </div>  
+
+  <div id="answerListDiv" class="out">  
+    <!-- قائمة الإجابات المخزنة -->  
+  </div>  
+
+  <div class="row">  
+    <button id="exportCsvBtn" class="button">تصدير CSV</button>  
+    <button id="exportHtmlBtn" class="button sec">تصدير HTML</button>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يمكنني استيراد ملفات PDF؟</h3><p>التطبيق يدعم ملفات النص فقط حالياً؛ ملفات PDF ستظهر رسالة تنبيه لتغيير الصيغة.</p><h3>أين تُحفظ الأجوبة المكتوبة؟</h3><p>تُخزن الأجوبة في localStorage المتصفح، لذلك تبقى متاحة طالما لم تُحذف بيانات المتصفح.</p><h3>هل يمكنني تعديل الردود بعد حفظها؟</h3><p>نعم، يمكنك تعديل أي خلية رد مباشرة في المصفوفة ثم حفظ التغييرات يدوياً أو تصديرها.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-inbox-triage.html" style="color:var(--gold-bright);font-weight:700">تطبيق ويب لاستيراد وتنظيم رسائل البريد بصيغة EML أو CSV مع محرر مسودات وإدارة الروابط</a><span style="opacity:.75"> — استورد رسائلك بصيغة EML أو CSV، نظّمها بوسوم وقواعد محلية، اكتشف الرسائل الباردة، احفظ مسودات الردود محليًا…</span></li><li style="margin:.5rem 0"><a href="offline-courseware-quiz-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح</a><span style="opacity:.75"> — تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات…</span></li><li style="margin:.5rem 0"><a href="usage-invoice-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة العدّادات والتسعير مع فواتير محلية</a><span style="opacity:.75"> — تطبيق ويب RTL لحساب واستخدام العدّادات مثل التقارير والعملاء واستدعاءات API، إنشاء خطط أسعار، توليد فواتير…</span></li><li style="margin:.5rem 0"><a href="arabic-daily-planner.html" style="color:var(--gold-bright);font-weight:700">تطبيق مهام عربي بسيط لحفظ وتنظيم المهام اليومية</a><span style="opacity:.75"> — تطبيق ويب عربي محلي يساعد على تنظيم المهام وتصنيفها وتحديد أولوياتها وحفظها تلقائياً في المتصفح دون اتصال…</span></li><li style="margin:.5rem 0"><a href="arabic-rtl-ui-builder.html" style="color:var(--gold-bright);font-weight:700">منشئ مكوّنات الواجهات العربية</a><span style="opacity:.75"> — أنشئ مكوّنات واجهات عربية بالسحب والإفلات مع معاينة حيّة تدعم RTL، وخصّص الألوان والخطوط والزوايا، ثم صدّر…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-02 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {  
+  const fileInput = document.getElementById('fileInput');  
+  const parseBtn = document.getElementById('parseBtn');  
+  const matrixDiv = document.getElementById('matrixDiv');  
+  const libraryTextarea = document.getElementById('libraryTextarea');  
+  const saveAnswerBtn = document.getElementById('saveAnswerBtn');  
+  const answerListDiv = document.getElementById('answerListDiv');  
+  const exportCsvBtn = document.getElementById('exportCsvBtn');  
+  const exportHtmlBtn = document.getElementById('exportHtmlBtn');  
+
+  let clauses = []; // [{id, text}]  
+  let answers = []; // [{text}]  
+
+  // ---------- تحميل مكتبة الأجوبة من localStorage ----------  
+  const loadAnswers = () => {  
+    try {  
+      const data = localStorage.getItem('rfpAnswers');  
+      answers = data ? JSON.parse(data) : [];  
+    } catch (e) { answers = []; }  
+    renderAnswerList();  
+  };  
+
+  const saveAnswers = () => {  
+    try { localStorage.setItem('rfpAnswers', JSON.stringify(answers)); } catch (e) {}  
+  };  
+
+  const renderAnswerList = () => {  
+    answerListDiv.innerHTML = '';  
+    if (answers.length === 0) { answerListDiv.textContent = 'لا توجد أجوبة محفوظة.'; return; }  
+    const list = document.createElement('ul');  
+    answers.forEach((a, i) => {  
+      const li = document.createElement('li');  
+      li.textContent = a.text;  
+      const useBtn = document.createElement('button');  
+      useBtn.textContent = 'استخدام';  
+      useBtn.className = 'button sec';  
+      useBtn.style.marginRight = '0.5rem';  
+      useBtn.addEventListener('click', () => insertAnswer(i));  
+      li.prepend(useBtn);  
+      list.appendChild(li);  
+    });  
+    answerListDiv.appendChild(list);  
+  };  
+
+  const insertAnswer = (index) => {  
+    const target = document.querySelector('.response-edit.active');  
+    if (target) {  
+      target.value = answers[index].text;  
+      target.dispatchEvent(new Event('input'));  
+    } else {  
+      alert('اختر خانة رد لتدخل الإجابة.');  
+    }  
+  };  
+
+  // ---------- حفظ إجابة جديدة ----------  
+  saveAnswerBtn.addEventListener('click', () => {  
+    const txt = libraryTextarea.value.trim();  
+    if (!txt) return;  
+    answers.push({text: txt});  
+    libraryTextarea.value = '';  
+    saveAnswers();  
+    renderAnswerList();  
+  });  
+
+  // ---------- قراءة الملف واستخراج البنود ----------  
+  const parseFile = (content) => {  
+    // قاعدة بسيطة: كل سطر يبدأ بـ "بند" يعتبر بندًا جديدًا  
+    const lines = content.split(/[\r\n]+/);  
+    clauses = [];  
+    lines.forEach((ln, idx) => {  
+      const match = ln.match(/^\\s*بند\\s*([0-9]+)[:\\.]?\\s*(.*)/i);  
+      if (match) {  
+        clauses.push({id: match[1], text: match[2].trim()});  
+      } else if (clauses.length) {  
+        // إلحاق النص للباد الأخير إذا لم يبدأ بـ "بند"  
+        clauses[clauses.length - 1].text += ' ' + ln.trim();  
+      }  
+    });  
+    renderMatrix();  
+  };  
+
+  parseBtn.addEventListener('click', () => {  
+    const file = fileInput.files[0];  
+    if (!file) { alert('يرجى اختيار ملف أولًا.'); return; }  
+    const reader = new FileReader();  
+    reader.onload = (e) => {  
+      const ext = file.name.split('.').pop().toLowerCase();  
+      if (ext === 'txt') {  
+        parseFile(e.target.result);  
+      } else {  
+        alert('صيغة الملف غير مدعومة. يرجى رفع ملف نصي (.txt).');  
+      }  
+    };  
+    reader.readAsText(file);  
+  });  
+
+  // ---------- بناء مصفوفة الامتثال ----------  
+  const renderMatrix = () => {  
+    matrixDiv.innerHTML = '';  
+    if (!clauses.length) { matrixDiv.textContent = 'لم يتم استخراج أي بنود.'; return; }  
+    const table = document.createElement('table');  
+    const thead = document.createElement('thead');  
+    thead.innerHTML = `<tr><th>رقم البند</th><th>النص</th><th>الرد</th><th>الحالة</th></tr>`;  
+    table.appendChild(thead);  
+    const tbody = document.createElement('tbody');  
+
+    clauses.forEach(cl => {  
+      const tr = document.createElement('tr');  
+
+      const tdId = document.createElement('td'); tdId.textContent = cl.id;  
+      const tdText = document.createElement('td'); tdText.textContent = cl.text;  
+
+      const tdResp = document.createElement('td');  
+      const resp = document.createElement('textarea');  
+      resp.className = 'response-edit textarea';  
+      resp.dataset.clauseId = cl.id;  
+      resp.addEventListener('input', updateStatus);  
+      tdResp.appendChild(resp);  
+
+      const tdStat = document.createElement('td');  
+      const badge = document.createElement('span');  
+      badge.className = 'badge';  
+      badge.textContent = 'غير محدد';  
+      tdStat.appendChild(badge);  
+
+      tr.appendChild(tdId);  
+      tr.appendChild(tdText);  
+      tr.appendChild(tdResp);  
+      tr.appendChild(tdStat);  
+      tbody.appendChild(tr);  
+    });  
+
+    table.appendChild(tbody);  
+    matrixDiv.appendChild(table);  
+  };  
+
+  // ---------- تحديث حالة البند بناءً على النص المدخل ----------  
+  const updateStatus = (e) => {  
+    const textarea = e.target;  
+    const value = textarea.value.trim();  
+    const badge = textarea.parentElement.nextElementSibling.querySelector('.badge');  
+    if (!value) {  
+      badge.textContent = 'غير محدد';  
+      badge.className = 'badge';  
+    } else if (/\\b(عدم|لا|غير)\\b/i.test(value)) {  
+      badge.textContent = 'غير مستوفى';  
+      badge.className = 'badge fail';  
+    } else if (/\\b(خطر|مخاطرة)\\b/i.test(value)) {  
+      badge.textContent = 'مخاطرة';  
+      badge.className = 'badge risk';  
+    } else {  
+      badge.textContent = 'مستوفى';  
+      badge.className = 'badge ok';  
+    }  
+  };  
+
+  // ---------- تصدير CSV ----------  
+  const exportCsv = () => {  
+    if (!clauses.length) { alert('لا توجد بيانات للتصدير.'); return; }  
+    const rows = ['رقم البند,النص,الرد,الحالة'];  
+    const tbody = matrixDiv.querySelector('tbody');  
+    tbody.querySelectorAll('tr').forEach(tr => {  
+      const cells = tr.children;  
+      const id = cells[0].textContent;  
+      const text = cells[1].textContent.replace(/,/g, '؛'); // استبدال الفواصل لتفادي كسر CSV  
+      const resp = cells[2].querySelector('textarea').value.replace(/,/g, '؛');  
+      const status = cells[3].querySelector('.badge').textContent;  
+      rows.push(`${id},${text},${resp},${status}`);  
+    });  
+    const blob = new Blob([rows.join('\\n')], {type: 'text/csv'});  
+    const url = URL.createObjectURL(blob);  
+    const a = document.createElement('a'); a.href = url; a.download = 'matrix.csv'; a.click();  
+    URL.revokeObjectURL(url);  
+  };  
+
+  exportCsvBtn.addEventListener('click', exportCsv);  
+
+  // ---------- تصدير HTML ----------  
+  const exportHtml = () => {  
+    if (!clauses.length) { alert('لا توجد بيانات للتصدير.'); return; }  
+    const html = `<html><head><meta charset=\"UTF-8\"><title>مصفوفة امتثال</title></head><body dir=\"rtl\" style=\"font-family:Arial,Helvetica,sans-serif;background:${getComputedStyle(document.documentElement).getPropertyValue('--dark')};color:${getComputedStyle(document.documentElement).getPropertyValue('--light')};\"><h2>مصفوفة امتثال</h2>` +  
+      matrixDiv.innerHTML +  
+      `</body></html>`;  
+    const blob = new Blob([html], {type: 'text/html'});  
+    const url = URL.createObjectURL(blob);  
+    const a = document.createElement('a'); a.href = url; a.download = 'matrix.html'; a.click();  
+    URL.revokeObjectURL(url);  
+  };  
+
+  exportHtmlBtn.addEventListener('click', exportHtml);  
+
+  // ---------- تفعيل التركيز للرد النشط ----------  
+  document.addEventListener('focusin', (e) => {  
+    if (e.target.classList.contains('response-edit')) {  
+      document.querySelectorAll('.response-edit').forEach(el => el.classList.remove('active'));  
+      e.target.classList.add('active');  
+    }  
+  });  
+
+  // ---------- البداية ----------  
+  loadAnswers();  
+})();
+</script>
+</body>
+</html>
