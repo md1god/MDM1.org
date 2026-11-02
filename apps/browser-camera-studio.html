@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو كاميرا المتصفح: التقاط صور وتسجيل فيديو | MDM1</title>
+<meta name="description" content="استوديو كاميرا يعمل داخل المتصفح لالتقاط الصور وتسجيل الفيديو مع اختيار الجهاز والدقة ومعدل الإطارات ونسبة العرض ومرشحات ونصوص وأشكال ومعرض محلي.">
+<link rel="canonical" href="https://mdm1.org/apps/browser-camera-studio.html">
+<meta property="og:title" content="استوديو كاميرا المتصفح: التقاط صور وتسجيل فيديو">
+<meta property="og:description" content="استوديو كاميرا يعمل داخل المتصفح لالتقاط الصور وتسجيل الفيديو مع اختيار الجهاز والدقة ومعدل الإطارات ونسبة العرض ومرشحات ونصوص وأشكال ومعرض محلي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/browser-camera-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-preview-wrap { position:relative; }
+.app video { display:none; }
+.app canvas { width:100%; max-height:60vh; background:#000; border-radius:8px; display:block; }
+.app-flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; transition:opacity .15s; border-radius:8px; }
+.app-flash.on { opacity:.8; }
+.app-gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin-top:8px; }
+.app-gallery-item { border:1px solid var(--gold-dim); padding:6px; border-radius:8px; }
+.app-gallery-item img, .app-gallery-item video { width:100%; border-radius:4px; }
+.app-overlays { display:flex; flex-direction:column; gap:6px; margin-top:8px; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو الكاميرا داخل المتصفح", "url": "https://mdm1.org/apps/browser-camera-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون إنترنت أو خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل المعالجة والحفظ تتم داخل متصفحك دون أي خادم أو حساب."}}, {"@type": "Question", "name": "أي متصفحات تدعم كشف QR والباركود؟", "acceptedAnswer": {"@type": "Answer", "text": "المتصفحات التي تدعم BarcodeDetector، وإلا تظهر رسالة عدم الدعم."}}, {"@type": "Question", "name": "أين تُحفظ الصور والفيديوهات؟", "acceptedAnswer": {"@type": "Answer", "text": "في معرض محلي داخل المتصفح (IndexedDB) للتنزيل أو الحذف لاحقًا."}}, {"@type": "Question", "name": "هل يمكن اختيار كاميرا ودقة ومعدل إطارات محددة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، من قوائم الاختيار قبل بدء الكاميرا، مع إعادة التشغيل تلقائيًا."}}, {"@type": "Question", "name": "هل يدعم التكبير والوضع الليلي والفلاش؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تكبير سلس ووضع ليلي وفلاش (torch إن دعم الجهاز)."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو الكاميرا داخل المتصفح</h1>
+  <p class="page-sub">استوديو كاميرا يعمل داخل المتصفح لالتقاط الصور وتسجيل الفيديو مع اختيار الجهاز والدقة ومعدل الإطارات ونسبة العرض ومرشحات ونصوص وأشكال ومعرض محلي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: يتيح لك هذا الاستوديو التقاط صور وتسجيل فيديو مباشرة من كاميرا المتصفح دون حساب أو خادم، مع اختيار الجهاز والدقة ومعدل الإطارات ونسبة العرض، وتكبير سلس وفلاش ووضع ليلي، وإضافة مرشحات وألوان ونصوص وأشكال فوق المشهد، وكشف QR والباركود محليًا، وحفظ اللقطات في معرض محلي للتنزيل والحذف. جميع المعالجة تتم على جهازك، ولا تُرسل أي بيانات إلى الإنترنت، وتُحفظ النتائج في متصفحك لاستخدامها لاحقًا. امنح الإذن للكاميرا، اختر الإعدادات، ثم ابدأ التسجيل أو الالتقاط بنقرة واحدة، مع رسائل حالة واضحة وأخطاء مفهومة.</p>
+<div class="app" id="appRoot">
+  <div class="card">
+    <h2>الكاميرا</h2>
+    <div class="row">
+      <label for="appDevice">الجهاز</label>
+      <select id="appDevice"></select>
+      <label for="appFacing">الاتجاه</label>
+      <select id="appFacing">
+        <option value="user">أمامي</option>
+        <option value="environment">خلفي</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="appResolution">الدقة</label>
+      <select id="appResolution">
+        <option value="640x480">640×480</option>
+        <option value="1280x720" selected>1280×720</option>
+        <option value="1920x1080">1920×1080</option>
+      </select>
+      <label for="appFps">معدل الإطارات</label>
+      <select id="appFps">
+        <option value="15">15</option>
+        <option value="24">24</option>
+        <option value="30" selected>30</option>
+        <option value="60">60</option>
+      </select>
+      <label for="appAspect">نسبة العرض</label>
+      <select id="appAspect">
+        <option value="auto">تلقائي</option>
+        <option value="1.777">16:9</option>
+        <option value="1.333">4:3</option>
+        <option value="1">1:1</option>
+        <option value="0.5625">9:16</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="appZoom">التكبير</label>
+      <input id="appZoom" type="range" min="1" max="3" step="0.1" value="1">
+      <span id="appZoomVal">1.0×</span>
+    </div>
+    <div class="row">
+      <button id="appFlash">فلاش: إيقاف</button>
+      <button id="appNight" class="sec">وضع ليلي: إيقاف</button>
+      <button id="appCapture">التقاط صورة</button>
+      <button id="appRecord" class="sec">بدء التسجيل</button>
+      <button id="appScan" class="sec">كشف الرموز</button>
+    </div>
+    <div id="appError" class="out" role="alert"></div>
+    <div id="appStatus" class="out"></div>
+  </div>
+  <div class="card">
+    <h2>المعاينة</h2>
+    <div class="app-preview-wrap">
+      <video id="appVideo" autoplay playsinline muted></video>
+      <canvas id="appPreview"></canvas>
+      <div id="appFlashOverlay" class="app-flash"></div>
+    </div>
+    <div id="appScanResult" class="out"></div>
+  </div>
+  <div class="card">
+    <h2>المرشحات والألوان</h2>
+    <div class="row">
+      <label for="appFilter">مرشح</label>
+      <select id="appFilter">
+        <option value="none">بدون</option>
+        <option value="grayscale">رمادي</option>
+        <option value="sepia">بني</option>
+        <option value="invert">عكسي</option>
+        <option value="warm">دافئ</option>
+        <option value="cool">بارد</option>
+        <option value="vivid">حيوي</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="appBright">السطوع</label>
+      <input id="appBright" type="range" min="0.5" max="2" step="0.05" value="1">
+      <label for="appContrast">التباين</label>
+      <input id="appContrast" type="range" min="0.5" max="2" step="0.05" value="1">
+      <label for="appSaturate">التشبع</label>
+      <input id="appSaturate" type="range" min="0" max="2" step="0.05" value="1">
+    </div>
+  </div>
+  <div class="card">
+    <h2>النصوص والأشكال</h2>
+    <div class="row">
+      <label for="appText">نص</label>
+      <input id="appText" type="text" placeholder="أدخل نصًا">
+      <label for="appTextColor">لون</label>
+      <input id="appTextColor" type="color" value="#ffd700">
+      <label for="appTextSize">حجم</label>
+      <input id="appTextSize" type="number" min="12" max="96" value="28">
+      <button id="appAddText">إضافة نص</button>
+    </div>
+    <div class="row">
+      <label for="appShape">شكل</label>
+      <select id="appShape">
+        <option value="circle">دائرة</option>
+        <option value="rect">مستطيل</option>
+        <option value="arrow">سهم</option>
+      </select>
+      <button id="appAddShape">إضافة شكل</button>
+    </div>
+    <div id="appOverlays"></div>
+  </div>
+  <div class="card">
+    <h2>المعرض المحلي</h2>
+    <div class="row">
+      <button id="appClearGallery" class="sec">مسح المعرض</button>
+    </div>
+    <div id="appGallery" class="app-gallery"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون إنترنت أو خادم؟</h3><p>نعم، كل المعالجة والحفظ تتم داخل متصفحك دون أي خادم أو حساب.</p><h3>أي متصفحات تدعم كشف QR والباركود؟</h3><p>المتصفحات التي تدعم BarcodeDetector، وإلا تظهر رسالة عدم الدعم.</p><h3>أين تُحفظ الصور والفيديوهات؟</h3><p>في معرض محلي داخل المتصفح (IndexedDB) للتنزيل أو الحذف لاحقًا.</p><h3>هل يمكن اختيار كاميرا ودقة ومعدل إطارات محددة؟</h3><p>نعم، من قوائم الاختيار قبل بدء الكاميرا، مع إعادة التشغيل تلقائيًا.</p><h3>هل يدعم التكبير والوضع الليلي والفلاش؟</h3><p>نعم، تكبير سلس ووضع ليلي وفلاش (torch إن دعم الجهاز).</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="error-watch-dashboard.html" style="color:var(--gold-bright);font-weight:700">لوحة مراقبة أخطاء المتصفح: التقاط وتحليل وتصدير محلي</a><span style="opacity:.75"> — التقط رسائل الخطأ والاستثناءات في متصفحك واعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع، مع فلترة وبحث…</span></li><li style="margin:.5rem 0"><a href="layerloom-paint-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو «ليرلوم»: بكسل‑آرت في المتصفح</a><span style="opacity:.75"> — محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي…</span></li><li style="margin:.5rem 0"><a href="local-dataset-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو معالجة بيانات داخل المتصفح</a><span style="opacity:.75"> — يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ…</span></li><li style="margin:.5rem 0"><a href="local-photo-library.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: عرض، وسوم، بحث وتصدير داخل المتصفح</a><span style="opacity:.75"> — نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات…</span></li><li style="margin:.5rem 0"><a href="local-photo-shelf.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: ألبومات ووسوم وعرض شرائح في المتصفح</a><span style="opacity:.75"> — نظّم صورك محليًا في المتصفح: ارفع صورًا، أنشئ ألبومات، أضف وسومًا للبحث السريع، واستعرضها بمعرض مصغرات وعرض…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-02 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const appDevice=$('appDevice'), appFacing=$('appFacing'), appResolution=$('appResolution'), appFps=$('appFps'), appAspect=$('appAspect');
+  const appZoom=$('appZoom'), appZoomVal=$('appZoomVal'), appFlash=$('appFlash'), appNight=$('appNight'), appCapture=$('appCapture'), appRecord=$('appRecord'), appScan=$('appScan');
+  const appVideo=$('appVideo'), appPreview=$('appPreview'), appFlashOverlay=$('appFlashOverlay'), appScanResult=$('appScanResult');
+  const appFilter=$('appFilter'), appBright=$('appBright'), appContrast=$('appContrast'), appSaturate=$('appSaturate');
+  const appText=$('appText'), appTextColor=$('appTextColor'), appTextSize=$('appTextSize'), appAddText=$('appAddText');
+  const appShape=$('appShape'), appAddShape=$('appAddShape'), appOverlays=$('appOverlays');
+  const appGallery=$('appGallery'), appClearGallery=$('appClearGallery'), appStatus=$('appStatus'), appError=$('appError');
+  let stream=null, videoTrack=null, audioTrack=null, rafId=null, recording=false, mediaRecorder=null, chunks=[];
+  let zoomTarget=1, zoomCurrent=1, zoomMax=3, lastZoomApplied=1, night=false, flashOn=false;
+  let filter='none', bright=1, contrast=1, saturate=1, barcodeDetector=null;
+  let overlays=[], db=null;
+  function setStatus(m){ appStatus.textContent=m; }
+  function showError(m){ appError.textContent=m; appError.style.display='block'; clearTimeout(appError._t); appError._t=setTimeout(()=>{appError.style.display='none';},4000); }
+  function openDb(){ return new Promise((res,rej)=>{ if(!('indexedDB' in window)) return rej('no idb'); const r=indexedDB.open('appCameraStudio',1); r.onupgradeneeded=e=>{const d=e.target.result; if(!d.objectStoreNames.contains('items')) d.createObjectStore('items',{keyPath:'id',autoIncrement:true});}; r.onsuccess=e=>{db=e.target.result; res(db);}; r.onerror=()=>rej(r.error); }); }
+  function idbAdd(item){ return new Promise((res,rej)=>{ if(!db) return rej('no db'); const tx=db.transaction('items','readwrite'); const st=tx.objectStore('items'); const r=st.add(item); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+  function idbAll(){ return new Promise((res,rej)=>{ if(!db) return res([]); const tx=db.transaction('items','readonly'); const st=tx.objectStore('items'); const r=st.getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>rej(r.error); }); }
+  function idbDel(id){ return new Promise((res,rej)=>{ if(!db) return res(); const tx=db.transaction('items','readwrite'); const st=tx.objectStore('items'); const r=st.delete(id); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); }); }
+  function idbClear(){ return new Promise((res,rej)=>{ if(!db) return res(); const tx=db.transaction('items','readwrite'); const st=tx.objectStore('items'); const r=st.clear(); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); }); }
+  async function updateDevices(){ try{ const ds=await navigator.mediaDevices.enumerateDevices(); const cams=ds.filter(d=>d.kind==='videoinput'); const prev=appDevice.value; appDevice.innerHTML=''; cams.forEach((d,i)=>{const o=document.createElement('option'); o.value=d.deviceId; o.textContent=d.label||('كاميرا '+(i+1)); appDevice.appendChild(o);}); if(prev) appDevice.value=prev; }catch(e){} }
+  function filterCss(f){ switch(f){ case 'grayscale': return 'grayscale(1)'; case 'sepia': return 'sepia(1)'; case 'invert': return 'invert(1)'; case 'warm': return 'sepia(0.3) saturate(1.4)'; case 'cool': return 'hue-rotate(180deg) saturate(1.2)'; case 'vivid': return 'saturate(1.8) contrast(1.1)'; default: return ''; } }
+  function drawOverlays(ctx,w,h){ overlays.forEach(o=>{ if(o.type==='text'){ ctx.fillStyle=o.color; ctx.font=o.size+'px sans-serif'; ctx.textAlign='center'; ctx.fillText(o.text,o.x*w,o.y*h); } else if(o.type==='circle'){ ctx.strokeStyle=o.color; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(o.x*w,o.y*h,o.size,0,Math.PI*2); ctx.stroke(); } else if(o.type==='rect'){ ctx.strokeStyle=o.color; ctx.lineWidth=4; ctx.strokeRect(o.x*w-o.size,o.y*h-o.size,o.size*2,o.size*2); } else if(o.type==='arrow'){ ctx.strokeStyle=o.color; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(o.x*w-o.size,o.y*h); ctx.lineTo(o.x*w+o.size,o.y*h); ctx.lineTo(o.x*w+o.size*0.4,o.y*h-o.size*0.4); ctx.moveTo(o.x*w+o.size,o.y*h); ctx.lineTo(o.x*w+o.size*0.4,o.y*h+o.size*0.4); ctx.stroke(); } }); }
+  function render(){ if(!stream){ rafId=requestAnimationFrame(render); return; } if(!appVideo.videoWidth){ rafId=requestAnimationFrame(render); return; } if(appPreview.width!==appVideo.videoWidth || appPreview.height!==appVideo.videoHeight){ appPreview.width=appVideo.videoWidth; appPreview.height=appVideo.videoHeight; } const ctx=appPreview.getContext('2d'); ctx.clearRect(0,0,appPreview.width,appPreview.height); zoomCurrent += (zoomTarget-zoomCurrent)*0.15; if(Math.abs(zoomCurrent-zoomTarget)<0.001) zoomCurrent=zoomTarget; const trackZoomSupported=!!(videoTrack && videoTrack.getCapabilities && videoTrack.getCapabilities().zoom); if(trackZoomSupported && Math.abs(zoomCurrent-lastZoomApplied)>0.05){ lastZoomApplied=zoomCurrent; try{ videoTrack.applyConstraints({advanced:[{zoom:zoomCurrent}]}).catch(()=>{}); }catch(e){} } const drawScale=trackZoomSupported?1:zoomCurrent; ctx.save(); ctx.translate(appPreview.width/2,appPreview.height/2); ctx.scale(drawScale,drawScale); ctx.translate(-appPreview.width/2,-appPreview.height/2); ctx.filter='brightness('+bright+') contrast('+contrast+') saturate('+saturate+') '+filterCss(filter)+' '+(night?'brightness(1.35) contrast(1.15)':''); ctx.drawImage(appVideo,0,0,appPreview.width,appPreview.height); ctx.restore(); drawOverlays(ctx,appPreview.width,appPreview.height); rafId=requestAnimationFrame(render); }
+  async function startCamera(){ stopCamera(); if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ showError('الكاميرا غير مدعومة'); return; } const parts=appResolution.value.split('x'); const cons={audio:true,video:{}}; if(appDevice.value) cons.video.deviceId={exact:appDevice.value}; else cons.video.facingMode=appFacing.value||'user'; cons.video.width={ideal:+parts[0]}; cons.video.height={ideal:+parts[1]}; cons.video.frameRate={ideal:+appFps.value}; if(appAspect.value!=='auto') cons.video.aspectRatio={ideal:+appAspect.value}; try{ stream=await navigator.mediaDevices.getUserMedia(cons); }catch(e){ try{ stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true}); }catch(e2){ showError('تعذر الوصول إلى الكاميرا: '+e2.message); return; } } videoTrack=stream.getVideoTracks()[0]; audioTrack=stream.getAudioTracks()[0]; appVideo.srcObject=stream; try{ await appVideo.play(); }catch(e){} const caps=videoTrack.getCapabilities?videoTrack.getCapabilities():{}; zoomMax=caps.zoom?caps.zoom.max:3; appZoom.max=zoomMax; appZoom.step=caps.zoom?(caps.zoom.step||0.1):0.1; if(zoomTarget>zoomMax) zoomTarget=zoomMax; await updateDevices(); startRenderLoop(); setStatus('الكاميرا جاهزة'); initBarcode(); }
+  function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }
+  function startRenderLoop(){ if(rafId) cancelAnimationFrame(rafId); rafId=requestAnimationFrame(render); }
+  function setTorch(on){ return new Promise(async (resolve)=>{ if(!videoTrack) return resolve(false); const caps=videoTrack.getCapabilities?videoTrack.getCapabilities():{}; if(!caps.torch) return resolve(false); try{ await videoTrack.applyConstraints({advanced:[{torch:on}]}); resolve(true); }catch(e){ resolve(false); } }); }
+  async function initBarcode(){ if(!('BarcodeDetector' in window)){ appScanResult.textContent='الكشف غير مدعوم في هذا المتصفح'; return; } try{ const formats=await BarcodeDetector.getSupportedFormats(); barcodeDetector=new BarcodeDetector({formats}); }catch(e){ try{ barcodeDetector=new BarcodeDetector(); }catch(e2){ appScanResult.textContent='تعذر تهيئة الكاشف'; } } }
+  async function scanNow(){ if(!barcodeDetector) await initBarcode(); if(!barcodeDetector) return; try{ const codes=await barcodeDetector.detect(appPreview); if(codes && codes.length) appScanResult.textContent=codes.map(c=>c.format+': '+c.rawValue).join(' | '); else appScanResult.textContent='لم يتم العثور على رموز'; }catch(e){ showError('فشل الكشف: '+e.message); } }
+  function renderOverlays(){ appOverlays.innerHTML=''; if(!overlays.length){ appOverlays.textContent='لا توجد طبقات'; return; } overlays.forEach((o,i)=>{ const row=document.createElement('div'); row.className='row'; const span=document.createElement('span'); span.textContent=o.type==='text'?('نص: '+o.text):('شكل: '+o.type); const btn=document.createElement('button'); btn.className='sec'; btn.textContent='حذف'; btn.addEventListener('click',()=>{ overlays.splice(i,1); renderOverlays(); }); row.appendChild(span); row.appendChild(btn); appOverlays.appendChild(row); }); }
+  async function saveItem(item){ try{ await idbAdd(item); }catch(e){ showError('تعذر الحفظ: '+e); } }
+  async function refreshGallery(){ appGallery.innerHTML=''; let items=[]; try{ items=await idbAll(); }catch(e){ items=[]; } if(!items.length){ appGallery.textContent='لا توجد عناصر محفوظة'; return; } items.sort((a,b)=>b.createdAt-a.createdAt); items.forEach(item=>{ const url=URL.createObjectURL(item.blob); const div=document.createElement('div'); div.className='app-gallery-item'; const media=item.type==='photo'?'<img src="'+url+'" alt="">':'<video src="'+url+'" controls></video>'; div.innerHTML=media+'<div class="row"><button class="sec" id="appDl'+item.id+'">تنزيل</button><button class="sec" id="appDel'+item.id+'">حذف</button></div>'; appGallery.appendChild(div); const dl=$('appDl'+item.id); const del=$('appDel'+item.id); if(dl) dl.addEventListener('click',()=>downloadBlob(item.blob,item.type)); if(del) del.addEventListener('click',async()=>{ try{await idbDel(item.id);}catch(e){} await refreshGallery(); }); }); }
+  function downloadBlob(blob,type){ const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=(type==='photo'?'photo_':'video_')+Date.now()+(type==='photo'?'.png':'.webm'); document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),1000); }
+  async function capturePhoto(){ if(!stream){ showError('الكاميرا غير جاهزة'); return; } const wasFlash=flashOn; if(!flashOn){ appFlashOverlay.classList.add('on'); setTimeout(()=>appFlashOverlay.classList.remove('on'),200); } appPreview.toBlob(async blob=>{ if(!blob){ showError('فشل الالتقاط'); return; } await saveItem({type:'photo',blob:blob,createdAt:Date.now()}); await refreshGallery(); setStatus('تم حفظ اللقطة'); },'image/png'); }
+  async function toggleRecord(){ if(typeof MediaRecorder==='undefined'){ showError('التسجيل غير مدعوم'); return; } if(recording){ if(mediaRecorder) mediaRecorder.stop(); recording=false; appRecord.textContent='بدء التسجيل'; setStatus('تم إيقاف التسجيل'); return; } if(!stream){ showError('الكاميرا غير جاهزة'); return; } chunks=[]; let recStream=null; try{ recStream=appPreview.captureStream(+appFps.value||30); if(audioTrack) recStream.addTrack(audioTrack); }catch(e){ recStream=stream; } const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':(MediaRecorder.isTypeSupported('video/webm')?'video/webm':''); try{ mediaRecorder=mime?new MediaRecorder(recStream,{mimeType:mime}):new MediaRecorder(recStream); }catch(e){ try{ mediaRecorder=new MediaRecorder(recStream); }catch(e2){ showError('التسجيل غير مدعوم'); return; } } mediaRecorder.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); }; mediaRecorder.onstop=async ()=>{ const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'video/webm'}); await saveItem({type:'video',blob:blob,createdAt:Date.now()}); await refreshGallery(); setStatus('تم حفظ الفيديو'); try{ recStream.getTracks().forEach(t=>{ if(t!==audioTrack && t!==videoTrack) t.stop(); }); }catch(e){} }; mediaRecorder.start(1000); recording=true; appRecord.textContent='إيقاف التسجيل'; setStatus('جارٍ التسجيل...'); }
+  function restart(){ startCamera(); }
+  appDevice.addEventListener('change',restart);
+  appFacing.addEventListener('change',restart);
+  appResolution.addEventListener('change',restart);
+  appFps.addEventListener('change',restart);
+  appAspect.addEventListener('change',restart);
+  appZoom.addEventListener('input',()=>{ zoomTarget=+appZoom.value; appZoomVal.textContent=(+appZoom.value).toFixed(1)+'×'; });
+  appFlash.addEventListener('click',async()=>{ flashOn=!flashOn; const ok=await setTorch(flashOn); if(!ok){ flashOn=false; setStatus('الفلاش غير مدعوم'); } appFlash.textContent=flashOn?'فلاش: تشغيل':'فلاش: إيقاف'; });
+  appNight.addEventListener('click',()=>{ night=!night; appNight.textContent=night?'وضع ليلي: تشغيل':'وضع ليلي: إيقاف'; });
+  appFilter.addEventListener('change',()=>{ filter=appFilter.value; });
+  appBright.addEventListener('input',()=>{ bright=+appBright.value; });
+  appContrast.addEventListener('input',()=>{ contrast=+appContrast.value; });
+  appSaturate.addEventListener('input',()=>{ saturate=+appSaturate.value; });
+  appAddText.addEventListener('click',()=>{ const txt=appText.value.trim(); if(!txt) return; overlays.push({type:'text',text:txt,color:appTextColor.value,size:+appTextSize.value||28,x:0.5,y:0.5+overlays.length*0.05}); appText.value=''; renderOverlays(); });
+  appAddShape.addEventListener('click',()=>{ overlays.push({type:appShape.value,color:appTextColor.value,size:40,x:0.5,y:0.5+overlays.length*0.05}); renderOverlays(); });
+  appCapture.addEventListener('click',capturePhoto);
+  appRecord.addEventListener('click',toggleRecord);
+  appScan.addEventListener('click',scanNow);
+  appClearGallery.addEventListener('click',async()=>{ try{await idbClear();}catch(e){} await refreshGallery(); setStatus('تم مسح المعرض'); });
+  async function init(){ try{ await openDb(); }catch(e){ db=null; } renderOverlays(); try{ await startCamera(); }catch(e){ showError('تعذر بدء الكاميرا'); } await refreshGallery(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+</body>
+</html>
