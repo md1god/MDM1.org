@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مصمم وسوم Modbus ومحاكاة القراءات محلياً | MDM1</title>
+<meta name="description" content="تطبيق ويب محلي لبناء إطارات Modbus RTU/TCP وفكّها، تصميم سجلات الوسوم، محاكاة القراءات، أرشفتها وتصدير الإعدادات بدون شبكة.">
+<link rel="canonical" href="https://mdm1.org/apps/industrial-tag-studio.html">
+<meta property="og:title" content="مصمم وسوم Modbus ومحاكاة القراءات محلياً">
+<meta property="og:description" content="تطبيق ويب محلي لبناء إطارات Modbus RTU/TCP وفكّها، تصميم سجلات الوسوم، محاكاة القراءات، أرشفتها وتصدير الإعدادات بدون شبكة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/industrial-tag-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:block; }
+.app-tabs { flex-wrap:wrap; gap:6px; margin:8px 0; }
+.app-tab { background:var(--dark); color:var(--light); border:1px solid var(--gold-dim); padding:6px 10px; cursor:pointer; border-radius:6px; }
+.app-tab.active { background:var(--gold); color:var(--dark); }
+.app-panel { margin-top:10px; }
+.app-board { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; margin-top:8px; }
+.app-card { border:1px solid var(--gold-dim); border-radius:8px; padding:8px; background:var(--dark); }
+.app-val { font-size:1.6rem; color:var(--gold-bright); font-weight:bold; }
+.app-err { color:#ff6b6b; }
+.app-ok { color:#7CFC00; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مصمم خريطة وسوم أجهزة التحكم الصناعية", "url": "https://mdm1.org/apps/industrial-tag-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق بدون اتصال شبكي؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يعمل بالكامل داخل المتصفح ولا يستخدم أي اتصال شبكي."}}, {"@type": "Question", "name": "هل يمكن تصدير الإعدادات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن تصدير الوسوم والقراءات كملفات JSON وCSV."}}, {"@type": "Question", "name": "هل يدعم Modbus RTU وTCP؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يدعم بناء وفك إطارات RTU (مع CRC16) وTCP (مع MBAP)."}}, {"@type": "Question", "name": "أين تُحفظ البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "في التخزين المحلي للمتصفح (localStorage) مع إمكانية المسح."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مصمم خريطة وسوم أجهزة التحكم الصناعية</h1>
+  <p class="page-sub">تطبيق ويب محلي لبناء إطارات Modbus RTU/TCP وفكّها، تصميم سجلات الوسوم، محاكاة القراءات، أرشفتها وتصدير الإعدادات بدون شبكة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يتيح للمهندسين إنشاء خريطة وسوم موحّدة لأجهزة التحكم الصناعية، وبناء إطارات Modbus RTU وTCP وفكّها، وتصميم سجلات العناوين والأنواع، وربط الحقول بلوحات عرض مباشرة، مع أرشيف محلي للقراءات وتصدير الإعدادات كملفات JSON وCSV، وتوليد كود جاهز للوصول إلى الوسوم، وعرض سجل أخطاء الإطار لمساعدة المهندسين على التحقق من إعداداتهم قبل توصيل الأجهزة الحقيقية، le tout sans connexion réseau.</p>
+<div class="app">
+  <div class="app-tabs row">
+    <button id="tab-tags" class="app-tab active">الوسوم</button>
+    <button id="tab-frame" class="app-tab">الإطارات</button>
+    <button id="tab-sim" class="app-tab">المحاكاة</button>
+    <button id="tab-archive" class="app-tab">الأرشيف</button>
+    <button id="tab-export" class="app-tab">التصدير</button>
+    <button id="tab-code" class="app-tab">الكود</button>
+    <button id="tab-log" class="app-tab">الأخطاء</button>
+  </div>
+
+  <section id="panel-tags" class="app-panel">
+    <div class="card">
+      <h3>إضافة وسم</h3>
+      <div class="row">
+        <label class="label">الاسم<input id="tag-name" class="input" placeholder="درجة_الحرارة"/></label>
+        <label class="label">العنوان<input id="tag-addr" class="input" type="number" value="0"/></label>
+        <label class="label">النوع
+          <select id="tag-type" class="select">
+            <option value="holding">Holding Register</option>
+            <option value="input">Input Register</option>
+            <option value="coil">Coil</option>
+            <option value="discrete">Discrete Input</option>
+          </select>
+        </label>
+        <label class="label">نوع البيانات
+          <select id="tag-dtype" class="select">
+            <option value="uint16">uint16</option>
+            <option value="int16">int16</option>
+            <option value="uint32">uint32</option>
+            <option value="int32">int32</option>
+            <option value="float32">float32</option>
+            <option value="bool">bool</option>
+          </select>
+        </label>
+        <label class="label">المعامل<input id="tag-scale" class="input" type="number" step="0.0001" value="1"/></label>
+        <label class="label">الوحدة<input id="tag-unit" class="input" placeholder="°C"/></label>
+      </div>
+      <div class="row">
+        <label class="label" style="flex:1">الوصف<input id="tag-desc" class="input" placeholder="وصف الوسم"/></label>
+        <button id="tag-add" class="button">إضافة</button>
+        <button id="tag-clear" class="button sec">مسح الكل</button>
+      </div>
+      <div id="tag-list" class="out"></div>
+    </div>
+  </section>
+
+  <section id="panel-frame" class="app-panel" hidden>
+    <div class="card">
+      <h3>بناء إطار</h3>
+      <div class="row">
+        <label class="label">البروتوكول
+          <select id="fr-proto" class="select"><option value="rtu">RTU</option><option value="tcp">TCP</option></select>
+        </label>
+        <label class="label">معرف العبد<input id="fr-slave" class="input" type="number" value="1"/></label>
+        <label class="label">الدالة
+          <select id="fr-fc" class="select">
+            <option value="3">03 قراءة Holding</option>
+            <option value="4">04 قراءة Input</option>
+            <option value="1">01 قراءة Coils</option>
+            <option value="2">02 قراءة Discrete</option>
+            <option value="6">06 كتابة Register</option>
+            <option value="5">05 كتابة Coil</option>
+            <option value="16">16 كتابة متعددة</option>
+          </select>
+        </label>
+        <label class="label">العنوان<input id="fr-addr" class="input" type="number" value="0"/></label>
+        <label class="label">الكمية<input id="fr-qty" class="input" type="number" value="1"/></label>
+        <label class="label">القيمة (كتابة)<input id="fr-val" class="input" type="number" value="0"/></label>
+      </div>
+      <div class="row">
+        <button id="fr-build" class="button">بناء</button>
+        <button id="fr-decode" class="button sec">فك الإطار المدخل</button>
+      </div>
+      <div class="row">
+        <label class="label" style="flex:1">إطار hex (للفك)<input id="fr-hex" class="input" placeholder="01 03 00 00 00 01 84 0A"/></label>
+      </div>
+      <div id="fr-out" class="out"></div>
+    </div>
+  </section>
+
+  <section id="panel-sim" class="app-panel" hidden>
+    <div class="card">
+      <h3>محاكاة القراءات</h3>
+      <div class="row">
+        <button id="sim-start" class="button">بدء</button>
+        <button id="sim-stop" class="button sec">إيقاف</button>
+        <button id="sim-tick" class="button sec">قراءة مرة</button>
+        <label class="label">الفاصل (ms)<input id="sim-interval" class="input" type="number" value="1000"/></label>
+      </div>
+      <div id="sim-board" class="app-board"></div>
+      <div id="sim-status" class="out"></div>
+    </div>
+  </section>
+
+  <section id="panel-archive" class="app-panel" hidden>
+    <div class="card">
+      <h3>الأرشيف المحلي</h3>
+      <div class="row">
+        <button id="arc-refresh" class="button sec">تحديث</button>
+        <button id="arc-clear" class="button sec">مسح الأرشيف</button>
+      </div>
+      <div id="arc-list" class="out"></div>
+    </div>
+  </section>
+
+  <section id="panel-export" class="app-panel" hidden>
+    <div class="card">
+      <h3>تصدير</h3>
+      <div class="row">
+        <button id="exp-json" class="button">تصدير JSON</button>
+        <button id="exp-csv" class="button">تصدير CSV</button>
+        <button id="exp-tags-json" class="button sec">تصدير الوسوم JSON</button>
+      </div>
+      <textarea id="exp-out" class="textarea" rows="8" readonly></textarea>
+    </div>
+  </section>
+
+  <section id="panel-code" class="app-panel" hidden>
+    <div class="card">
+      <h3>كود الوصول إلى الوسوم</h3>
+      <div class="row">
+        <label class="label">اللغة
+          <select id="code-lang" class="select"><option value="js">JavaScript</option><option value="py">Python</option></select>
+        </label>
+        <button id="code-gen" class="button">توليد</button>
+      </div>
+      <textarea id="code-out" class="textarea" rows="12" readonly></textarea>
+    </div>
+  </section>
+
+  <section id="panel-log" class="app-panel" hidden>
+    <div class="card">
+      <h3>سجل الأخطاء</h3>
+      <div class="row">
+        <button id="log-clear" class="button sec">مسح</button>
+      </div>
+      <div id="log-list" class="out"></div>
+    </div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق بدون اتصال شبكي؟</h3><p>نعم، يعمل بالكامل داخل المتصفح ولا يستخدم أي اتصال شبكي.</p><h3>هل يمكن تصدير الإعدادات؟</h3><p>نعم، يمكن تصدير الوسوم والقراءات كملفات JSON وCSV.</p><h3>هل يدعم Modbus RTU وTCP؟</h3><p>نعم، يدعم بناء وفك إطارات RTU (مع CRC16) وTCP (مع MBAP).</p><h3>أين تُحفظ البيانات؟</h3><p>في التخزين المحلي للمتصفح (localStorage) مع إمكانية المسح.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="k8s-visual-sandbox.html" style="color:var(--gold-bright);font-weight:700">تعلم Kubernetes محلياً في المتصفح</a><span style="opacity:.75"> — تعلم واختبار ملفات YAML لمكونات Kubernetes مباشرة في المتصفح مع تصور مرئي وحفظ المشاريع محليًا دون خادم أو…</span></li><li style="margin:.5rem 0"><a href="local-client-pipeline.html" style="color:var(--gold-bright);font-weight:700">تطبيق CRM عربي لإدارة العملاء والصفقات محلياً</a><span style="opacity:.75"> — تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث…</span></li><li style="margin:.5rem 0"><a href="nashat-parametric-cad.html" style="color:var(--gold-bright);font-weight:700">مصمم نماذج 3D من مخططات 2D بالقيود والأبعاد</a><span style="opacity:.75"> — ارسم مخططات 2D بالقيود والأبعاد، ثم استخرج نماذج 3D بال extrude والتدوير والقص والتفريغ، مع خط زمني وإعادة…</span></li><li style="margin:.5rem 0"><a href="offline-password-vault.html" style="color:var(--gold-bright);font-weight:700">خزنة كلمات مرور مشفّرة محلياً داخل المتصفح</a><span style="opacity:.75"> — خزنة كلمات مرور تعمل داخل متصفحك بتشفير AES-GCM ومفتاح رئيسي واحد، مع حفظ محلي آمن، بحث فوري، مولّد كلمات…</span></li><li style="margin:.5rem 0"><a href="pipeline-canvas-simulator.html" style="color:var(--gold-bright);font-weight:700">مصمم خط أنابيب نشر واختبار في المتصفح</a><span style="opacity:.75"> — ابنِ خط أنابيب بناء واختبار ونشر في YAML، اسحب قوالب إلى المحرر، شاهد المراحل وسجلات لحظية، واحفظ المشاريع…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-03 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const $ = (id)=>document.getElementById(id);
+  const state = { tags:[], archive:[], logs:[], simTimer:null, simRunning:false };
+
+  function load(){ try{ const t=localStorage.getItem('md_tags'); if(t) state.tags=JSON.parse(t); }catch(e){}; try{ const a=localStorage.getItem('md_archive'); if(a) state.archive=JSON.parse(a); }catch(e){}; }
+  function saveTags(){ try{ localStorage.setItem('md_tags', JSON.stringify(state.tags)); }catch(e){} }
+  function saveArchive(){ try{ localStorage.setItem('md_archive', JSON.stringify(state.archive)); }catch(e){} }
+  function log(msg, level){ state.logs.unshift({t:new Date().toISOString(), msg, level:level||'info'}); if(state.logs.length>200) state.logs.pop(); renderLog(); }
+  function crc16(bytes){ let crc=0xFFFF; for(let i=0;i<bytes.length;i++){ crc ^= bytes[i]; for(let j=0;j<8;j++){ if(crc&1){ crc=(crc>>1)^0xA001;} else crc>>=1; } } return crc; }
+  function bytesToHex(bytes){ return bytes.map(b=>b.toString(16).toUpperCase().padStart(2,'0')).join(' '); }
+  function hexToBytes(s){ const parts=s.trim().split(/[\s,]+/); const out=[]; for(const p of parts){ if(!p) continue; const v=parseInt(p,16); if(isNaN(v)){ return null; } out.push(v&0xFF); } return out; }
+
+  function renderTags(){
+    const el=$('tag-list'); if(!state.tags.length){ el.textContent='لا توجد وسوم.'; return; }
+    el.innerHTML = state.tags.map((t,i)=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--gold-dim);padding:4px 0"><span>${t.name} @${t.addr} ${t.type} ${t.dtype} x${t.scale} ${t.unit}</span><button class="button sec" data-del="${i}">حذف</button></div>`).join('');
+    el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ state.tags.splice(+b.dataset.del,1); saveTags(); renderTags(); log('حذف وسم','info'); }));
+  }
+
+  function addTag(){
+    const name=$('tag-name').value.trim(); if(!name){ log('اسم الوسم مطلوب','error'); return; }
+    const tag={name, addr:parseInt($('tag-addr').value)||0, type:$('tag-type').value, dtype:$('tag-dtype').value, scale:parseFloat($('tag-scale').value)||1, unit:$('tag-unit').value, desc:$('tag-desc').value};
+    state.tags.push(tag); saveTags(); renderTags(); log('إضافة وسم '+name,'info');
+  }
+
+  // Frame building
+  function buildFrame(){
+    const proto=$('fr-proto').value; const slave=parseInt($('fr-slave').value)||1; const fc=parseInt($('fr-fc').value); const addr=parseInt($('fr-addr').value)||0; const qty=parseInt($('fr-qty').value)||1; const val=parseInt($('fr-val').value)||0;
+    let pdu=[];
+    if(fc===1||fc===2){ pdu=[fc, (addr>>8)&0xFF, addr&0xFF, (qty>>8)&0xFF, qty&0xFF]; }
+    else if(fc===3||fc===4){ pdu=[fc, (addr>>8)&0xFF, addr&0xFF, (qty>>8)&0xFF, qty&0xFF]; }
+    else if(fc===5){ pdu=[fc, (addr>>8)&0xFF, addr&0xFF, val?0xFF:0, 0x00]; }
+    else if(fc===6){ pdu=[fc, (addr>>8)&0xFF, addr&0xFF, (val>>8)&0xFF, val&0xFF]; }
+    else if(fc===16){ const regs=[val]; pdu=[fc,(addr>>8)&0xFF,addr&0xFF,(qty>>8)&0xFF,qty&0xFF, (regs.length*2)&0xFF]; for(const r of regs){ pdu.push((r>>8)&0xFF, r&0xFF);} }
+    else { log('دالة غير مدعومة','error'); return; }
+    let out;
+    if(proto==='rtu'){
+      const frame=[slave].concat(pdu); const c=crc16(frame); frame.push(c&0xFF, (c>>8)&0xFF); out=frame;
+    } else {
+      // TCP MBAP
+      const tid=0x0001; const len=pdu.length+1; const mbap=[(tid>>8)&0xFF,tid&0xFF,0,0,(len>>8)&0xFF,len&0xFF,slave]; out=mbap.concat(pdu);
+    }
+    $('fr-out').textContent = (proto.toUpperCase())+' HEX: '+bytesToHex(out)+'\nBytes: '+out.length;
+    log('بناء إطار '+proto+' FC'+fc,'info');
+  }
+
+  function decodeFrame(){
+    const bytes=hexToBytes($('fr-hex').value); if(!bytes){ log('hex غير صالح','error'); $('fr-out').textContent='hex غير صالح'; return; }
+    // Try RTU: last 2 CRC
+    let res='';
+    // Heuristic: if length>=4 try CRC
+    if(bytes.length>=4){
+      const body=bytes.slice(0,bytes.length-2); const crc=bytes[bytes.length-2] | (bytes[bytes.length-1]<<8); const calc=crc16(body);
+      const crcOk = calc===crc;
+      res += 'CRC: '+(crcOk?'OK':'FAIL')+'\n';
+    }
+    // parse slave/fc
+    let idx=0; let slave=bytes[0]; idx=1;
+    // if TCP MBAP? detect: bytes[2]==0 && bytes[3]==0 (protocol id)
+    let proto='RTU';
+    if(bytes.length>7 && bytes[2]===0 && bytes[3]===0){
+      proto='TCP'; const tid=(bytes[0]<<8)|bytes[1]; const len=(bytes[4]<<8)|bytes[5]; slave=bytes[6]; idx=7; res+='TCP TID='+tid+' LEN='+len+'\n';
+    }
+    const fc=bytes[idx]; idx++;
+    res+='Slave='+slave+' FC='+fc+'\n';
+    // address
+    if(bytes.length>idx+1){ const addr=(bytes[idx]<<8)|bytes[idx+1]; idx+=2; res+='Address='+addr+'\n'; }
+    // quantity or value
+    if(fc===3||fc===4||fc===1||fc===2){ if(bytes.length>idx+1){ const q=(bytes[idx]<<8)|bytes[idx+1]; idx+=2; res+='Quantity='+q+'\n'; } }
+    else if(fc===5){ if(bytes.length>idx+1){ const v=(bytes[idx]<<8)|bytes[idx+1]; idx+=2; res+='Value='+(v===0xFF00?'ON':'OFF')+'\n'; } }
+    else if(fc===6){ if(bytes.length>idx+1){ const v=(bytes[idx]<<8)|bytes[idx+1]; idx+=2; res+='Value='+v+'\n'; } }
+    // data bytes for response
+    if(fc>=1 && fc<=4 && bytes.length>idx+1 && bytes[idx] < bytes.length){
+      // maybe byte count
+      const bc=bytes[idx]; idx++; res+='ByteCount='+bc+'\n';
+      const data=bytes.slice(idx, idx+bc); res+='Data hex: '+bytesToHex(data)+'\n';
+      res+='Data dec: '+data.map(b=>b).join(',')+'\n';
+    }
+    if(!crcOk && proto==='RTU') res+='[WARN] CRC mismatch\n';
+    $('fr-out').textContent=res;
+    log('فك إطار '+proto,'info');
+  }
+
+  // Simulation
+  function genValue(tag){
+    if(tag.dtype==='bool') return Math.random()>0.5?1:0;
+    if(tag.dtype==='float32') return (Math.random()*100).toFixed(2);
+    return Math.floor(Math.random()*1000);
+  }
+  function renderBoard(){
+    const el=$('sim-board'); if(!state.tags.length){ el.innerHTML='<div class="out">لا توجد وسوم.</div>'; return; }
+    el.innerHTML=state.tags.map(t=>`<div class="app-card"><div>${t.name}</div><div class="app-val" id="simv-${t.name}">--</div><div>${t.unit}</div></div>`).join('');
+  }
+  function tick(){
+    const readings=[];
+    for(const t of state.tags){
+      const raw=genValue(t); const v=(parseFloat(raw)*t.scale).toFixed(3);
+      const el=document.getElementById('simv-'+t.name); if(el) el.textContent=v+' '+t.unit;
+      readings.push({t:new Date().toISOString(), name:t.name, addr:t.addr, value:v});
+    }
+    state.archive.unshift(...readings); if(state.archive.length>500) state.archive.length=500; saveArchive();
+    $('sim-status').textContent='قراءة '+readings.length+' وسم في '+new Date().toLocaleTimeString();
+  }
+  function startSim(){ if(state.simRunning) return; state.simRunning=true; const iv=parseInt($('sim-interval').value)||1000; state.simTimer=setInterval(tick, iv); log('بدء المحاكاة','info'); }
+  function stopSim(){ state.simRunning=false; if(state.simTimer){ clearInterval(state.simTimer); state.simTimer=null; } log('إيقاف المحاكاة','info'); }
+
+  function renderArchive(){
+    const el=$('arc-list'); if(!state.archive.length){ el.textContent='الأرشيف فارغ.'; return; }
+    el.innerHTML=state.archive.slice(0,50).map(a=>`<div>${a.t} | ${a.name} @${a.addr} = ${a.value}</div>`).join('');
+  }
+
+  function exportJSON(){
+    const data={tags:state.tags, archive:state.archive.slice(0,100)};
+    $('exp-out').value=JSON.stringify(data,null,2);
+    download('export.json', $('exp-out').value, 'application/json');
+  }
+  function exportCSV(){
+    let csv='timestamp,name,address,value\n'; for(const a of state.archive){ csv+=`${a.t},${a.name},${a.addr},${a.value}\n`; }
+    $('exp-out').value=csv; download('export.csv', csv, 'text/csv');
+  }
+  function exportTagsJSON(){
+    $('exp-out').value=JSON.stringify(state.tags,null,2);
+    download('tags.json', $('exp-out').value, 'application/json');
+  }
+  function download(name, content, type){
+    try{ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){ log('فشل التصدير: '+e.message,'error'); }
+  }
+
+  function genCode(){
+    const lang=$('code-lang').value; let out='';
+    if(lang==='js'){
+      out+='// Read tags via Modbus (pseudo)\n';
+      out+='const tags = '+JSON.stringify(state.tags,null,2)+';\n';
+      out+='async function readTag(tag){\n  // build request frame for tag.addr\n  console.log("Reading", tag.name, "at", tag.addr);\n}\n';
+      out+='for(const t of tags){ readTag(t); }\n';
+    } else {
+      out+='import struct\n';
+      out+='tags = '+JSON.stringify(state.tags).replace(/true/g,'True').replace(/false/g,'False')+'\n';
+      out+='def read_tag(tag):\n    print("Reading", tag["name"], "at", tag["addr"])\n';
+      out+='for t in tags:\n    read_tag(t)\n';
+    }
+    $('code-out').value=out;
+  }
+
+  function renderLog(){
+    const el=$('log-list'); if(!state.logs.length){ el.textContent='لا أخطاء.'; return; }
+    el.innerHTML=state.logs.map(l=>`<div class="${l.level==='error'?'app-err':'app-ok'}">${l.t} [${l.level}] ${l.msg}</div>`).join('');
+  }
+
+  // tabs
+  document.querySelectorAll('.app-tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.app-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.app-panel').forEach(p=>p.hidden=true);
+      const id='panel-'+btn.id.replace('tab-','');
+      const p=$(id); if(p) p.hidden=false;
+    });
+  });
+
+  // wire
+  $('tag-add').addEventListener('click', addTag);
+  $('tag-clear').addEventListener('click', ()=>{ state.tags=[]; saveTags(); renderTags(); log('مسح جميع الوسوم','info'); });
+  $('fr-build').addEventListener('click', buildFrame);
+  $('fr-decode').addEventListener('click', decodeFrame);
+  $('sim-start').addEventListener('click', startSim);
+  $('sim-stop').addEventListener('click', stopSim);
+  $('sim-tick').addEventListener('click', ()=>{ renderBoard(); tick(); });
+  $('arc-refresh').addEventListener('click', renderArchive);
+  $('arc-clear').addEventListener('click', ()=>{ state.archive=[]; saveArchive(); renderArchive(); log('مسح الأرشيف','info'); });
+  $('exp-json').addEventListener('click', exportJSON);
+  $('exp-csv').addEventListener('click', exportCSV);
+  $('exp-tags-json').addEventListener('click', exportTagsJSON);
+  $('code-gen').addEventListener('click', genCode);
+  $('log-clear').addEventListener('click', ()=>{ state.logs=[]; renderLog(); });
+
+  load(); renderTags(); renderBoard(); renderArchive(); renderLog();
+  log('تم التحميل','info');
+})();
+</script>
+</body>
+</html>
