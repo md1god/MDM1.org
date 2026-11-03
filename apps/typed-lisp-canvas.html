@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بيئة برمجة Lisp تفاعلية في المتصفح | MDM1</title>
+<meta name="description" content="بيئة برمجة في المتصفح للغة Lisp مع أنواع ثابتة مستنتجة وREPL فوري ومحرر وتتبع الملكية والذاكرة ورسومات Canvas ولوحة أداء.">
+<link rel="canonical" href="https://mdm1.org/apps/typed-lisp-canvas.html">
+<meta property="og:title" content="بيئة برمجة Lisp تفاعلية في المتصفح">
+<meta property="og:description" content="بيئة برمجة في المتصفح للغة Lisp مع أنواع ثابتة مستنتجة وREPL فوري ومحرر وتتبع الملكية والذاكرة ورسومات Canvas ولوحة أداء.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/typed-lisp-canvas.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl}
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.app textarea{width:100%;min-height:180px;font-family:monospace}
+.app canvas{width:100%;height:auto;border:1px solid var(--gold-dim);border-radius:8px;background:#0a0a0a}
+.app .out{min-height:60px;max-height:220px;overflow:auto;white-space:pre-wrap;font-family:monospace}
+.app input[type=number]{width:80px}
+@media(max-width:700px){.app-grid{grid-template-columns:1fr}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "بيئة برمجة تفاعلية للغة Lisp", "url": "https://mdm1.org/apps/typed-lisp-canvas.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما هي هذه الأداة؟", "acceptedAnswer": {"@type": "Answer", "text": "بيئة برمجة تفاعلية في المتصفح للغة شبيهة بـLisp مع REPL فوري ومحرر."}}, {"@type": "Question", "name": "كيف أ evaluّة تعبير؟", "acceptedAnswer": {"@type": "Answer", "text": "أدخله في REPL واضغط تقييم، أو شغّل المحرر целиком."}}, {"@type": "Question", "name": "هل تدعم الأنواع الثابتة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُستنتج الأنواع وتُعرض الأخطاء في لوحة الأخطاء."}}, {"@type": "Question", "name": "كيف تُدار الذاكرة؟", "acceptedAnswer": {"@type": "Answer", "text": "بدون جامع قمامة؛ تُتتبّع الملكية وتُحرّر الخلايا يدويًا أو عند الخروج من النطاق."}}, {"@type": "Question", "name": "هل يمكن حفظ المشاريع؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، محليًا في المتصفح مع إمكانية التحميل والتصدير إلى JavaScript."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">بيئة برمجة تفاعلية للغة Lisp</h1>
+  <p class="page-sub">بيئة برمجة في المتصفح للغة Lisp مع أنواع ثابتة مستنتجة وREPL فوري ومحرر وتتبع الملكية والذاكرة ورسومات Canvas ولوحة أداء.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذه bيئة برمجة تفاعلية في المتصفح للغة شبيهة بـLisp ذات أنواع ثابتة مُستنتجة وREPL فوري، تتيح كتابة الشيفرة وتقييمها مباشرة، وعرض أخطاء الأنواع وتتبّع الملكية والذاكرة بدون جامع قمامة، مع رسومات Canvas حية لتجارب الجسيمات وحلقة لعبة بسيطة، ولوحة أداء تعرض زمن الإطار والذاكرة، وحفظ المشاريع محليًا وتصدير الشيفرة إلى JavaScript. ابدأ بكتابة تعبير في المحرر أو REPL لرؤية النتائج فورًا، أو جرّب الأمثلة المدمجة لاستكشاف الأنواع والملكية والذاكرة والرسومات.</p>
+<div class="app" id="appRoot">
+<div class="row">
+<label for="projName">اسم المشروع</label>
+<input id="projName" class="input" type="text" value="مشروع1">
+<button id="saveBtn" class="button">حفظ</button>
+<button id="loadBtn" class="button sec">تحميل</button>
+<button id="deleteBtn" class="button sec">حذف</button>
+<select id="projList" class="select"></select>
+<button id="exportBtn" class="button sec">تصدير JS</button>
+</div>
+<div class="app-grid">
+<div class="card">
+<label for="codeEditor">المحرر</label>
+<textarea id="codeEditor" class="textarea" rows="12">(define (fact n) (if (<= n 1) 1 (* n (fact (- n 1)))))
+(fact 5)
+(define (sum lst) (if (null? lst) 0 (+ (car lst) (sum (cdr lst)))))
+(sum (range 10))</textarea>
+<div class="row">
+<button id="runBtn" class="button">تشغيل</button>
+<button id="clearBtn" class="button sec">مسح</button>
+</div>
+<div id="typeErrors" class="out"></div>
+</div>
+<div class="card">
+<label for="replInput">REPL</label>
+<div class="row">
+<input id="replInput" class="input" type="text" placeholder="أدخل تعبير Lisp">
+<button id="replRunBtn" class="button">تقييم</button>
+</div>
+<div id="replOut" class="out"></div>
+</div>
+<div class="card">
+<canvas id="canvas" width="480" height="260"></canvas>
+<div class="row">
+<label for="pCount">جسيمات</label>
+<input id="pCount" class="input" type="number" value="80" min="0" max="500">
+<button id="spawnBtn" class="button">إطلاق</button>
+<button id="resetCanvasBtn" class="button sec">إعادة</button>
+<button id="gameToggle" class="button sec">لعبة</button>
+</div>
+</div>
+<div class="card">
+<div id="perfPanel" class="out"></div>
+<div id="memPanel" class="out"></div>
+<div id="exportOut" class="out"></div>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما هي هذه الأداة؟</h3><p>بيئة برمجة تفاعلية في المتصفح للغة شبيهة بـLisp مع REPL فوري ومحرر.</p><h3>كيف أ evaluّة تعبير؟</h3><p>أدخله في REPL واضغط تقييم، أو شغّل المحرر целиком.</p><h3>هل تدعم الأنواع الثابتة؟</h3><p>نعم، تُستنتج الأنواع وتُعرض الأخطاء في لوحة الأخطاء.</p><h3>كيف تُدار الذاكرة؟</h3><p>بدون جامع قمامة؛ تُتتبّع الملكية وتُحرّر الخلايا يدويًا أو عند الخروج من النطاق.</p><h3>هل يمكن حفظ المشاريع؟</h3><p>نعم، محليًا في المتصفح مع إمكانية التحميل والتصدير إلى JavaScript.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="keyboard-nav-trainer.html" style="color:var(--gold-bright);font-weight:700">مدرّب اختصارات المتصفح: نوافذ وتحديات تفاعلية</a><span style="opacity:.75"> — تطبيق تفاعلي يحاكي نافذة متصفح داخل الصفحة للتدرّب على اختصارات لوحة المفاتيح عبر تحديات متدرجة وتصحيح فوري…</span></li><li style="margin:.5rem 0"><a href="virtual-bricks-builder.html" style="color:var(--gold-bright);font-weight:700">بناء نماذج مكعبات تركيب ثلاثية الأبعاد في المتصفح</a><span style="opacity:.75"> — تطبيق ويب عربي لبناء نماذج مكعبات تركيب ثلاثية الأبعاد بالسحب والإفلات، مع تدوير وتكبير وحفظ تلقائي وتصدير…</span></li><li style="margin:.5rem 0"><a href="wave-slice-mix.html" style="color:var(--gold-bright);font-weight:700">محرر مقاطع صوتية داخل المتصفح</a><span style="opacity:.75"> — محرر عربي كامل لرفع وقطع وترتيب ودمج المقاطع الصوتية ومعاينتها وتصديرها محليًا دون خادم أو حساب.</span></li><li style="margin:.5rem 0"><a href="addkit-studio.html" style="color:var(--gold-bright);font-weight:700">محرر إضافات المتصفح</a><span style="opacity:.75"> — أنشئ نافذة منبثقة وصفحة خيارات وسكربتات محتوى وعامل خلفية من قوالب جاهزة، مع معاينة حية وتصدير ZIP قابل…</span></li><li style="margin:.5rem 0"><a href="aqar-site-builder.html" style="color:var(--gold-bright);font-weight:700">مُنشئ مواقع عقارية داخل المتصفح</a><span style="opacity:.75"> — أداة عقارية متكاملة داخل المتصفح لإضافة عقارات للبيع أو الإيجار مع الصور والأسعار والمواصفات، حفظ محلي، بحث…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-03 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const mem={next:1,live:new Map(),alloc:0,free:0,moved:0};
+function cell(type,value,owner){const c={id:mem.next++,type,value,owner:owner||'global',moved:false,freed:false};mem.live.set(c.id,c);mem.alloc++;return c;}
+function freeCell(c){if(c&&mem.live.has(c.id)){mem.live.delete(c.id);mem.free++;c.freed=true;}}
+function deref(c){if(!c)return c;if(c.freed)throw new Error('use after free (#'+c.id+')');if(c.moved)throw new Error('use after move (#'+c.id+')');return c;}
+function Frame(parent){this.parent=parent;this.binds=new Map();this.owned=[];}
+Frame.prototype.get=function(n){if(this.binds.has(n))return this.binds.get(n);return this.parent?this.parent.get(n):undefined;};
+Frame.prototype.set=function(n,c,own){if(this.binds.has(n)){const old=this.binds.get(n);if(old&&old.id!==c.id)freeCell(old);}this.binds.set(n,c);if(own)this.owned.push(c);};
+function setVar(name,c,env){let f=env;while(f){if(f.binds.has(name)){f.set(name,c,false);return true;}f=f.parent;}return false;}
+function tokenize(s){const toks=[];let i=0;while(i<s.length){const ch=s[i];if(/\s/.test(ch)){i++;continue;}if(ch===';'){while(i<s.length&&s[i]!=='\n')i++;continue;}if(ch==='"'){let j=i+1,val='';while(j<s.length&&s[j]!=='"'){if(s[j]==='\\'){val+=s[j+1];j+=2;}else{val+=s[j];j++;}}toks.push({type:'str',value:val});i=j+1;continue;}if(ch==="'"){toks.push({type:'quote'});i++;continue;}if(ch==='('||ch===')'){toks.push({type:ch});i++;continue;}let j=i;while(j<s.length&&!/\s/.test(s[j])&&s[j]!=='('&&s[j]!==')'&&s[j]!==';')j++;const w=s.slice(i,j);if(w==='#t'||w==='#f')toks.push({type:'bool',value:w==='#t'});else if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(w))toks.push({type:'num',value:parseFloat(w)});else toks.push({type:'sym',value:w});i=j;}return toks;}
+function parseTokens(toks){let pos=0;function read(){if(pos>=toks.length)return null;const t=toks[pos++];if(t.type==='('){const arr=[];while(pos<toks.length&&toks[pos].type!==')'){const r=read();if(r!==null)arr.push(r);}pos++;return arr;}if(t.type===')')return null;if(t.type==='quote'){const e=read();return ['quote',e];}return t;}const exprs=[];while(pos<toks.length){const e=read();if(e!==null)exprs.push(e);}return exprs;}
+function parse(s){return parseTokens(tokenize(s));}
+function cellToString(c){if(!c)return 'nil';if(c.freed)return '<freed #'+c.id+'>';if(c.moved)return '<moved #'+c.id+'>';switch(c.type){case 'number':return String(c.value);case 'string':return JSON.stringify(c.value);case 'boolean':return c.value?'#t':'#f';case 'nil':return 'nil';case 'symbol':return c.value;case 'list':return '('+c.value.map(cellToString).join(' ')+')';case 'function':return '<fn>';default:return String(c.value);}}
+let currentPrints=[];
+const BUILTIN_SIG={};
+function reg(name,check,result){BUILTIN_SIG[name]={check,result};}
+const ARITH=['+','-','*','/'];const CMP=['<','>','<=','>=','='];
+for(const op of ARITH)reg(op,(as,errs)=>{as.forEach(t=>{if(t!=='number'&&t!=='unknown')errs.push(op+' expects number, got '+t);});},()=> 'number');
+for(const op of CMP)reg(op,(as,errs)=>{as.forEach(t=>{if(t!=='number'&&t!=='unknown')errs.push(op+' expects number, got '+t);});},()=> 'boolean');
+reg('not',(as,errs)=>{if(as[0]!=='boolean'&&as[0]!=='unknown')errs.push('not expects boolean');},()=> 'boolean');
+reg('and',(as,errs)=>{},()=> 'boolean');reg('or',(as,errs)=>{},()=> 'boolean');
+reg('list',(as,errs)=>{},()=> 'list');reg('car',(as,errs)=>{if(as[0]!=='list'&&as[0]!=='unknown')errs.push('car expects list');},()=> 'unknown');
+reg('cdr',(as,errs)=>{if(as[0]!=='list'&&as[0]!=='unknown')errs.push('cdr expects list');},()=> 'list');
+reg('cons',(as,errs)=>{},()=> 'list');reg('length',(as,errs)=>{if(as[0]!=='list'&&as[0]!=='unknown')errs.push('length expects list');},()=> 'number');
+reg('append',(as,errs)=>{},()=> 'list');reg('range',(as,errs)=>{},()=> 'list');
+reg('type-of',(as,errs)=>{},()=> 'string');reg('print',(as,errs)=>{},()=> 'nil');
+reg('move',(as,errs)=>{},()=> 'unknown');reg('free',(as,errs)=>{},()=> 'nil');
+reg('copy',(as,errs)=>{},()=> 'unknown');
+function inferExpr(expr,env,errors){
+if(!expr)return 'nil';
+if(expr.type==='num')return 'number';
+if(expr.type==='str')return 'string';
+if(expr.type==='bool')return 'boolean';
+if(expr.type==='sym'){if(env.has(expr.value))return env.get(expr.value);if(BUILTIN_SIG[expr.value])return 'function';errors.push('Unknown symbol: '+expr.value);return 'unknown';}
+if(!Array.isArray(expr)||expr.length===0)return 'nil';
+const head=expr[0];
+if(head.type==='sym'){
+const name=head.value;
+if(name==='define'){
+if(expr[1].type==='sym'){const t=inferExpr(expr[2],env,errors);env.set(expr[1].value,t);return t;}
+if(Array.isArray(expr[1])){const params=expr[1].slice(1);const ne=new Map(env);for(const p of params)ne.set(p.value,'unknown');let bt='unknown';for(let i=2;i<expr.length;i++)bt=inferExpr(expr[i],ne,errors);env.set(expr[1][0].value,'function');return 'function';}
+}
+if(name==='lambda'){const params=expr[1];const ne=new Map(env);for(const p of params)ne.set(p.value,'unknown');let bt='unknown';for(let i=2;i<expr.length;i++)bt=inferExpr(expr[i],ne,errors);return 'function';}
+if(name==='if'){const tc=inferExpr(expr[1],env,errors);if(tc!=='boolean'&&tc!=='unknown')errors.push('if condition must be boolean, got '+tc);const tt=inferExpr(expr[2],env,errors);const te=expr[3]?inferExpr(expr[3],env,errors):'nil';return (tt==='unknown')?te:((te==='unknown')?tt:(tt===te?tt:'unknown'));}
+if(name==='let'){const ne=new Map(env);const bindings=expr[1];for(const b of bindings){const t=inferExpr(b[1],ne,errors);ne.set(b[0].value,t);}let bt='unknown';for(let i=2;i<expr.length;i++)bt=inferExpr(expr[i],ne,errors);return bt;}
+if(name==='begin'){let t='nil';for(let i=1;i<expr.length;i++)t=inferExpr(expr[i],env,errors);return t;}
+if(name==='quote')return 'list';
+if(name==='set!'){const t=inferExpr(expr[2],env,errors);if(env.has(expr[1].value))env.set(expr[1].value,t);return t;}
+if(BUILTIN_SIG[name]){const sig=BUILTIN_SIG[name];const at=expr.slice(1).map(e=>inferExpr(e,env,errors));if(sig.check)sig.check(at,errors);return sig.result(at);}
+}
+const at=expr.slice(1).map(e=>inferExpr(e,env,errors));inferExpr(head,env,errors);return 'unknown';
+}
+function inferProgram(code){let exprs=[];try{exprs=parse(code);}catch(e){return {errors:['Parse error: '+e.message]};}const env=new Map();for(const k in BUILTIN_SIG)env.set(k,'function');const errors=[];for(const e of exprs)inferExpr(e,env,errors);return {errors};}
+function quoteToCell(ast){if(ast.type==='num')return cell('number',ast.value);if(ast.type==='str')return cell('string',ast.value);if(ast.type==='bool')return cell('boolean',ast.value);if(ast.type==='sym')return cell('symbol',ast.value);if(Array.isArray(ast))return cell('list',ast.map(quoteToCell));return cell('nil',null);}
+function evalExpr(expr,env,owned){
+if(expr.type==='num')return cell('number',expr.value);
+if(expr.type==='str')return cell('string',expr.value);
+if(expr.type==='bool')return cell('boolean',expr.value);
+if(expr.type==='sym'){const c=env.get(expr.value);if(c===undefined)throw new Error('unknown symbol: '+expr.value);return deref(c);}
+if(!Array.isArray(expr))throw new Error('bad expr');
+if(expr.length===0)return cell('nil',null);
+const head=expr[0];
+if(head.type==='sym'){
+const name=head.value;
+if(name==='quote')return quoteToCell(expr[1]);
+if(name==='define'){
+if(expr[1].type==='sym'){const c=evalExpr(expr[2],env,owned);env.set(expr[1].value,c,true);owned.push(c);return c;}
+if(Array.isArray(expr[1])){const fname=expr[1][0].value;const params=expr[1].slice(1).map(t=>t.value);const body=expr.length>3?['begin',...expr.slice(2)]:expr[2];const fc=cell('function',{params,body,env}, 'fn');env.set(fname,fc,true);owned.push(fc);return fc;}
+}
+if(name==='lambda'){const params=expr[1].map(t=>t.value);const body=expr.length>3?['begin',...expr.slice(2)]:expr[2];return cell('function',{params,body,env},'fn');}
+if(name==='if'){const cond=deref(evalExpr(expr[1],env,owned));if(cond.type!=='boolean')throw new Error('if expects boolean');if(cond.value)return evalExpr(expr[2],env,owned);return expr[3]?evalExpr(expr[3],env,owned):cell('nil',null);}
+if(name==='let'){const frame=new Frame(env);const bindings=expr[1];for(const b of bindings){const c=evalExpr(b[1],env,owned);frame.set(b[0].value,c,true);frame.owned.push(c);}let res;try{res=evalExpr(expr.length>3?['begin',...expr.slice(2)]:expr[2],frame,frame.owned);}finally{if(res)for(const c of frame.owned){if(c.id!==res.id)freeCell(c);}}return res||cell('nil',null);}
+if(name==='begin'){let r=cell('nil',null);for(let i=1;i<expr.length;i++)r=evalExpr(expr[i],env,owned);return r;}
+if(name==='set!'){const c=evalExpr(expr[2],env,owned);if(!setVar(expr[1].value,c,env)){env.set(expr[1].value,c,true);owned.push(c);}return c;}
+if(name==='null?'){const a=deref(evalExpr(expr[1],env,owned));return cell('boolean',a.type==='list'&&a.value.length===0);}
+const bt=['+','-','*','/','<','>','<=','>=','=','not','and','or','list','car','cdr','cons','length','append','range','type-of','print','move','free','copy'];
+if(bt.includes(name))return applyBuiltin(name,expr.slice(1),env,owned);
+}
+const fn=deref(evalExpr(head,env,owned));if(fn.type!=='function')throw new Error('not a function: '+cellToString(fn));
+const fv=fn.value;const args=expr.slice(1).map(e=>evalExpr(e,env,owned));
+const frame=new Frame(fv.env);for(let i=0;i<fv.params.length;i++){frame.set(fv.params[i],args[i],true);frame.owned.push(args[i]);}
+let res;try{res=evalExpr(fv.body,frame,frame.owned);}finally{if(res)for(const c of frame.owned){if(c.id!==res.id)freeCell(c);}}return res||cell('nil',null);
+}
+function applyBuiltin(name,argsAst,env,owned){
+const ev=e=>deref(evalExpr(e,env,owned));
+switch(name){
+case '+':{const vs=argsAst.map(ev);if(vs.some(v=>v.type!=='number'))throw new Error('+ expects numbers');return cell('number',vs.reduce((a,v)=>a+v.value,0));}
+case '-':{const vs=argsAst.map(ev);if(vs.some(v=>v.type!=='number'))throw new Error('- expects numbers');if(vs.length===1)return cell('number',-vs[0].value);return cell('number',vs.slice(1).reduce((a,v)=>a-v.value,vs[0].value));}
+case '*':{const vs=argsAst.map(ev);if(vs.some(v=>v.type!=='number'))throw new Error('* expects numbers');return cell('number',vs.reduce((a,v)=>a*v.value,1));}
+case '/':{const vs=argsAst.map(ev);if(vs.some(v=>v.type!=='number'))throw new Error('/ expects numbers');return cell('number',vs.slice(1).reduce((a,v)=>a/v.value,vs[0].value));}
+case '<':{const a=ev(argsAst[0]),b=ev(argsAst[1]);return cell('boolean',a.value<b.value);}
+case '>':{const a=ev(argsAst[0]),b=ev(argsAst[1]);return cell('boolean',a.value>b.value);}
+case '<=':{const a=ev(argsAst[0]),b=ev(argsAst[1]);return cell('boolean',a.value<=b.value);}
+case '>=':{const a=ev(argsAst[0]),b=ev(argsAst[1]);return cell('boolean',a.value>=b.value);}
+case '=':{const a=ev(argsAst[0]),b=ev(argsAst[1]);return cell('boolean',a.type===b.type&&a.value===b.value);}
+case 'not':{const a=ev(argsAst[0]);return cell('boolean',!a.value);}
+case 'and':{let r=true;for(const e of argsAst){const v=ev(e);if(v.type!=='boolean')throw new Error('and expects booleans');r=r&&v.value;}return cell('boolean',r);}
+case 'or':{let r=false;for(const e of argsAst){const v=ev(e);if(v.type!=='boolean')throw new Error('or expects booleans');r=r||v.value;}return cell('boolean',r);}
+case 'list':{return cell('list',argsAst.map(e=>evalExpr(e,env,owned)));}
+case 'car':{const a=ev(argsAst[0]);if(a.type!=='list'||!a.value.length)throw new Error('car of empty');return a.value[0];}
+case 'cdr':{const a=ev(argsAst[0]);if(a.type!=='list')throw new Error('cdr expects list');return cell('list',a.value.slice(1));}
+case 'cons':{const x=evalExpr(argsAst[0],env,owned);const a=ev(argsAst[1]);if(a.type!=='list')throw new Error('cons expects list');return cell('list',[x,...a.value]);}
+case 'length':{const a=ev(argsAst[0]);if(a.type!=='list')throw new Error('length expects list');return cell('number',a.value.length);}
+case 'append':{const a=ev(argsAst[0]),b=ev(argsAst[1]);if(a.type!=='list'||b.type!=='list')throw new Error('append expects lists');return cell('list',a.value.concat(b.value));}
+case 'range':{const n=ev(argsAst[0]).value;const arr=[];for(let i=0;i<n;i++)arr.push(cell('number',i));return cell('list',arr);}
+case 'type-of':{const a=ev(argsAst[0]);return cell('string',a.type);}
+case 'print':{const a=ev(argsAst[0]);currentPrints.push(cellToString(a));return cell('nil',null);}
+case 'move':{const c=evalExpr(argsAst[0],env,owned);if(c.moved||c.freed)throw new Error('cannot move');c.moved=true;if(mem.live.has(c.id)){mem.live.delete(c.id);mem.moved++;mem.free++;}return cell(c.type,c.value,'moved');}
+case 'free':{const c=evalExpr(argsAst[0],env,owned);freeCell(c);c.freed=true;return cell('nil',null);}
+case 'copy':{const c=ev(argsAst[0]);return cell(c.type,Array.isArray(c.value)?c.value.slice():c.value,'copy');}
+default:throw new Error('unknown builtin: '+name);
+}
+}
+function runCode(code){let exprs=[];try{exprs=parse(code);}catch(e){return {results:['Parse error: '+e.message],errors:['Parse error: '+e.message]};}const env=new Frame(null);const results=[];currentPrints=results;const ti=inferProgram(code);for(const e of exprs){try{const r=evalExpr(e,env,env.owned);results.push(cellToString(r));}catch(err){results.push('Error: '+err.message);}}return {results,errors:ti.errors};}
+const canvas=$('canvas');const ctx=canvas.getContext('2d');let particles=[];let gameMode=false;let game={x:240,y:130,vx:2,vy:1.5,score:0};let last=performance.now(),fps=0,frameTime=0,frameCount=0;
+function spawn(n){for(let i=0;i<n;i++)particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,life:1,color:'hsl('+(Math.random()*360)+',80%,60%)',r:2+Math.random()*3});}
+function resetCanvas(){particles=[];game.score=0;}
+function updateMem(){const lines=['Live memory cells: '+mem.live.size];let i=0;for(const [id,c] of mem.live){if(i++>20){lines.push('...');break;}lines.push('#'+id+' '+c.type+' owner='+c.owner+(c.moved?' (moved)':'')+(c.freed?' (freed)':''));}$('memPanel').textContent=lines.join('\n');}
+function loop(ts){const dt=ts-last;last=ts;frameTime=dt;frameCount++;if(frameCount%10===0)fps=1000/dt;if(gameMode){game.x+=game.vx;game.y+=game.vy;if(game.x<12||game.x>canvas.width-12)game.vx*=-1;if(game.y<12||game.y>canvas.height-12)game.vy*=-1;}for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.life-=0.005;if(p.x<0||p.x>canvas.width)p.vx*=-1;if(p.y<0||p.y>canvas.height)p.vy*=-1;}particles=particles.filter(p=>p.life>0);ctx.fillStyle='rgba(10,10,10,0.25)';ctx.fillRect(0,0,canvas.width,canvas.height);for(const p of particles){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;if(gameMode){ctx.fillStyle='#d4af37';ctx.beginPath();ctx.arc(game.x,game.y,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='14px sans-serif';ctx.fillText('score: '+game.score,10,20);}$('perfPanel').textContent='FPS: '+fps.toFixed(0)+'\nFrame time: '+frameTime.toFixed(2)+' ms\nLive cells: '+mem.live.size+'\nAllocated: '+mem.alloc+'\nFreed: '+mem.free+'\nMoved: '+mem.moved+'\nParticles: '+particles.length;if(frameCount%15===0)updateMem();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+canvas.addEventListener('click',e=>{const rect=canvas.getBoundingClientRect();const x=(e.clientX-rect.left)*(canvas.width/rect.width);const y=(e.clientY-rect.top)*(canvas.height/rect.height);if(gameMode){const d=Math.hypot(x-game.x,y-game.y);if(d<16){game.score++;spawn(20);}}else{spawn(30);}});
+function refreshProjects(){const sel=$('projList');sel.innerHTML='';let store={};try{store=JSON.parse(localStorage.getItem('lispProjects')||'{}');}catch(e){store={};}Object.keys(store).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o);});}
+function saveProject(){const name=$('projName').value.trim()||'project';const code=$('codeEditor').value;try{const store=JSON.parse(localStorage.getItem('lispProjects')||'{}');store[name]=code;localStorage.setItem('lispProjects',JSON.stringify(store));refreshProjects();$('projList').value=name;$('replOut').textContent='Saved: '+name;}catch(e){$('replOut').textContent='Save error: '+e.message;}}
+function loadProject(){const name=$('projList').value;if(!name)return;try{const store=JSON.parse(localStorage.getItem('lispProjects')||'{}');if(store[name]!=null)$('codeEditor').value=store[name];}catch(e){}}
+function deleteProject(){const name=$('projList').value;if(!name)return;try{const store=JSON.parse(localStorage.getItem('lispProjects')||'{}');delete store[name];localStorage.setItem('lispProjects',JSON.stringify(store));refreshProjects();}catch(e){}}
+function transpile(expr){
+if(!expr)return 'null';
+if(expr.type==='num')return String(expr.value);
+if(expr.type==='str')return JSON.stringify(expr.value);
+if(expr.type==='bool')return expr.value?'true':'false';
+if(expr.type==='sym')return expr.value;
+if(!Array.isArray(expr)||expr.length===0)return 'null';
+const head=expr[0];
+if(head.type==='sym'){
+const name=head.value;
+if(name==='define'){
+if(expr[1].type==='sym')return 'const '+expr[1].value+' = '+transpile(expr[2]);
+if(Array.isArray(expr[1])){const fname=expr[1][0].value;const params=expr[1].slice(1).map(t=>t.value).join(', ');const body=expr.length>3?transpile(['begin',...expr.slice(2)]):transpile(expr[2]);return 'function '+fname+'('+params+') { return '+body+'; }';}
+}
+if(name==='lambda'){const params=expr[1].map(t=>t.value).join(', ');const body=expr.length>3?transpile(['begin',...expr.slice(2)]):transpile(expr[2]);return '('+params+') => ('+body+')';}
+if(name==='if')return '('+transpile(expr[1])+' ? '+transpile(expr[2])+' : '+transpile(expr[3]||{type:'sym',value:'null'})+')';
+if(name==='begin')return '('+expr.slice(1).map(transpile).join(', ')+')';
+if(name==='let'){const bindings=expr[1].map(b=>'const '+b[0].value+' = '+transpile(b[1])).join('; ');const body=expr.length>3?transpile(['begin',...expr.slice(2)]):transpile(expr[2]);return '(()=>{ '+bindings+'; return '+body+'; })()';}
+if(name==='quote')return JSON.stringify(astToJS(expr[1]));
+if(['+','-','*','/'].includes(name)&&expr.length===3)return '('+transpile(expr[1])+' '+name+' '+transpile(expr[2])+')';
+if(['<','>','<=','>='].includes(name)&&expr.length===3)return '('+transpile(expr[1])+' '+name+' '+transpile(expr[2])+')';
+if(name==='=')return '('+transpile(expr[1])+' === '+transpile(expr[2])+')';
+}
+const callee=transpile(head);const args=expr.slice(1).map(transpile).join(', ');return callee+'('+args+')';
+}
+function astToJS(ast){if(ast.type==='num')return ast.value;if(ast.type==='str')return ast.value;if(ast.type==='bool')return ast.value;if(ast.type==='sym')return ast.value;if(Array.isArray(ast))return ast.map(astToJS);return null;}
+function exportToJS(code){let exprs=[];try{exprs=parse(code);}catch(e){return 'Parse error: '+e.message;}return exprs.map(transpile).filter(Boolean).join(';\n')+';';}
+$('runBtn').addEventListener('click',()=>{const code=$('codeEditor').value;const r=runCode(code);$('replOut').textContent=(r.results.join('\n'))||'(no output)';$('typeErrors').textContent=r.errors.length?r.errors.join('\n'):'لا أخطاء أنواع';});
+$('clearBtn').addEventListener('click',()=>{$('codeEditor').value='';$('replOut').textContent='';$('typeErrors').textContent='';});
+$('replRunBtn').addEventListener('click',()=>{const code=$('replInput').value.trim();if(!code)return;const r=runCode(code);const te=r.errors.length?'\n[types] '+r.errors.join('; '):'';$('replOut').textContent=((r.results.join('\n'))||'(no output)')+te;});
+$('saveBtn').addEventListener('click',saveProject);
+$('loadBtn').addEventListener('click',loadProject);
+$('deleteBtn').addEventListener('click',deleteProject);
+$('exportBtn').addEventListener('click',()=>{$('exportOut').textContent=exportToJS($('codeEditor').value);});
+$('spawnBtn').addEventListener('click',()=>{const n=parseInt($('pCount').value)||0;spawn(Math.min(500,Math.max(0,n)));});
+$('resetCanvasBtn').addEventListener('click',resetCanvas);
+$('gameToggle').addEventListener('click',()=>{gameMode=!gameMode;if(gameMode){game.x=canvas.width/2;game.y=canvas.height/2;game.score=0;}});
+refreshProjects();
+})();
+</script>
+</body>
+</html>
