@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة إعادة البيع: أوصاف وتسعير وتقويم وملصقات شحن | MDM1</title>
+<meta name="description" content="أدر إعادة البيع من متصفحك: أوصاف إعلانات عربية، تسعير بحد أدنى، تقويم للنشر والتخفيضات، ردود تفاوض، ملصقات شحن، ومزامنة مخزون عبر CSV دون شبكة.">
+<link rel="canonical" href="https://mdm1.org/apps/resale-listing-studio.html">
+<meta property="og:title" content="إدارة إعادة البيع: أوصاف وتسعير وتقويم وملصقات شحن">
+<meta property="og:description" content="أدر إعادة البيع من متصفحك: أوصاف إعلانات عربية، تسعير بحد أدنى، تقويم للنشر والتخفيضات، ردود تفاوض، ملصقات شحن، ومزامنة مخزون عبر CSV دون شبكة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/resale-listing-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{--app-line:rgba(255,255,255,.12);display:block;line-height:1.7}
+.app-intro{max-width:80ch;line-height:1.9;margin:0 0 18px}
+.app-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.app-wide{grid-column:1/-1}
+.app-card{padding:16px;margin-top:16px}
+.app-card h2{font-size:1.15rem;margin:0 0 6px;color:var(--gold-bright)}
+.app-hint{margin:0 0 12px;font-size:.9rem;opacity:.85;line-height:1.7}
+.app-field{display:flex;flex-direction:column;gap:6px}
+.app-field label{font-weight:600;color:var(--gold)}
+.app-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
+.app-status{min-height:1.4em;margin-top:8px;font-size:.85rem;color:var(--gold-bright)}
+.app-out{white-space:pre-wrap;line-height:1.9}
+.app-cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
+.app-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.app-wd{text-align:center;font-size:.75rem;padding:6px 0;color:var(--gold)}
+.app-day{min-height:76px;border:1px solid var(--app-line);border-radius:8px;padding:6px;background:rgba(255,255,255,.02);overflow:hidden}
+.app-dn{font-size:.8rem;color:var(--gold-dim)}
+.app-today{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.app-ev{display:block;margin-top:4px;font-size:.62rem;padding:2px 4px;border-radius:4px;background:rgba(212,175,55,.18);color:var(--gold-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-list{display:grid;gap:8px;margin-top:12px}
+.app-list-item{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--app-line);border-radius:8px;padding:8px 10px}
+.app-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.85rem}
+.app-table th,.app-table td{border-bottom:1px solid var(--app-line);padding:7px;text-align:right}
+.app-table th{color:var(--gold)}
+.app-table tr.app-mismatch td{background:rgba(212,175,55,.12)}
+.app-empty{margin:10px 0;opacity:.8}
+.app-label{max-width:560px;margin:12px auto;border:2px solid var(--gold);border-radius:10px;background:#fff;color:#111;padding:16px;line-height:1.6}
+.app-lh{display:flex;justify-content:space-between;gap:10px;border-bottom:2px dashed #999;padding-bottom:8px}
+.app-lh strong{font-size:1.1rem}
+.app-lcols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.app-lbox{padding:8px;border:1px solid #bbb;border-radius:6px}
+.app-lbox b{display:block;margin-bottom:4px}
+.app-barcode{display:flex;gap:2px;align-items:flex-end;height:48px;margin-top:12px}
+.app-barcode span{display:block;background:#111;flex:0 0 auto}
+.app-code{margin-top:4px;text-align:center;letter-spacing:2px;font-family:monospace}
+.app .big{margin:6px 0;color:var(--gold-bright)}
+@media (max-width:700px){.app-grid,.app-lcols{grid-template-columns:1fr}.app-day{min-height:62px}}
+@media print{.app *{visibility:hidden}.app .app-printable,.app .app-printable *{visibility:visible}.app .app-printable{position:fixed;inset:0;margin:0;border-color:#000}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "إدارة إعادة البيع من متصفحك", "url": "https://mdm1.org/apps/resale-listing-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون إنترنت أو حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الحسابات والتوليد والتقويم تعمل محلياً داخل المتصفح، ولا يحتاج التطبيق إلى تسجيل دخول أو اتصال بالشبكة."}}, {"@type": "Question", "name": "أين تُحفظ المواعيد وبيانات المخزون؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ في localStorage داخل جهازك، ويمكنك مسحها في أي وقت من أزرار حذف المواعيد أو مسح المخزون. قد تختفي البيانات إذا حذفت بيانات المتصفح."}}, {"@type": "Question", "name": "كيف يعمل الحد الأدنى للسعر؟", "acceptedAnswer": {"@type": "Answer", "text": "يُستخدم في حاسبة التسعير للتحذير عند انخفاض السعر المقترح أو عدم تغطيته للتكلفة، وفي مولّد التفاوض لتحديد القبول أو الرفض. يُحفظ آخر حد أدنى أدخلته."}}, {"@type": "Question", "name": "ما صيغة ملف CSV المطلوب للمزامنة؟", "acceptedAnswer": {"@type": "Answer", "text": "يحتاج ملفاً بأعمدة sku وproduct وplatform وqty وprice، ويمكنك تجربة الصيغة عبر زر إدراج بيانات تجريبية ثم استيرادها."}}, {"@type": "Question", "name": "هل يمكن طباعة ملصق الشحن فعلياً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، بعد إنشاء الملصق اضغط طباعة الملصق لتفتح نافذة الطباعة، ويظهر الملصق وحده بتنسيق أبيض مناسب للورق."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">إدارة إعادة البيع من متصفحك</h1>
+  <p class="page-sub">أدر إعادة البيع من متصفحك: أوصاف إعلانات عربية، تسعير بحد أدنى، تقويم للنشر والتخفيضات، ردود تفاوض، ملصقات شحن، ومزامنة مخزون عبر CSV دون شبكة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app app-resale" dir="rtl">
+<p class="app-intro">نعم، يمكنك إدارة إعادة البيع بالكامل داخل متصفحك دون حساب أو اتصال بالشبكة. يقدّم هذا التطبيق ست أدوات مترابطة: مولّد أوصاف إعلانات عربية احترافية، وحاسبة سعر مقترح مع حد أدنى قابل للضبط، وتقويم محلي لجدولة إعادة النشر والتخفيضات، ومولّد ردود تفاوض جاهزة للنسخ، ومنشئ ملصقات شحن قابلة للطباعة، ولوحة مزامنة مخزون بين المنصات عبر ملفات CSV. تُحفظ جداول التقويم والمخزون وأسعارك في localStorage على جهازك، فلا تُرسل أي بيانات إلى خادم. صُمم التطبيق ليعمل بسرعة على الهاتف والحاسوب، ويظهر حالة واضحة عند نقص البيانات أو تعارض الكميات، حتى تبقى قرارات التسعير والتخفيض موثقة وقابلة للمراجعة.</p>
+
+<section class="card app-card" aria-labelledby="adTitle">
+<h2 id="adTitle">١. مولّد وصف الإعلان</h2>
+<p class="app-hint">أدخل بيانات المنتج لتحصل على وصف عربي منظم جاهز للنسخ في إعلانك، مع إبراز الحالة والمقاسات والمميزات.</p>
+<div class="app-grid">
+<div class="app-field"><label class="label" for="adName">اسم المنتج</label><input class="input" id="adName" type="text" placeholder="مثال: سماعة لاسلكية" /></div>
+<div class="app-field"><label class="label" for="adCategory">الفئة</label><select class="select" id="adCategory"><option value="electronics">إلكترونيات</option><option value="fashion">أزياء</option><option value="kids">مستلزمات أطفال</option><option value="home">مستلزمات منزل</option><option value="sport">رياضة ولياقة</option><option value="games">ألعاب</option><option value="cars">قطع سيارات</option><option value="other">منتجات متنوعة</option></select></div>
+<div class="app-field"><label class="label" for="adCondition">الحالة</label><select class="select" id="adCondition"><option value="new">جديد بالكرتونة</option><option value="like_new">كالجديد</option><option value="excellent">مستعمل بحالة ممتازة</option><option value="good">مستعمل بحالة جيدة</option><option value="repair">يحتاج إصلاحاً بسيطاً</option></select></div>
+<div class="app-field"><label class="label" for="adPlatform">منصة النشر</label><select class="select" id="adPlatform"><option value="منصة محلية">منصة محلية</option><option value="منصة اجتماعية">منصة اجتماعية</option><option value="متجر إلكتروني">متجر إلكتروني</option><option value="مجموعة بيع">مجموعة بيع</option><option value="أخرى">أخرى</option></select></div>
+<div class="app-field"><label class="label" for="adSize">المقاس أو الأبعاد</label><input class="input" id="adSize" type="text" placeholder="مثال: 42 أو 30×20 سم" /></div>
+<div class="app-field"><label class="label" for="adColor">اللون</label><input class="input" id="adColor" type="text" placeholder="مثال: أسود مطفي" /></div>
+<div class="app-field"><label class="label" for="adPrice">السعر المطلوب</label><input class="input" id="adPrice" type="number" min="0" step="1" placeholder="مثال: 180" /></div>
+<div class="app-field app-wide"><label class="label" for="adFeatures">أبرز المميزات (كل ميزة في سطر)</label><textarea class="textarea" id="adFeatures" rows="3" placeholder="بطارية تدوم طويلاً&#10;علبة أصلية&#10;ضمان محلي"></textarea></div>
+</div>
+<div class="app-actions"><button id="generateAdBtn" type="button">توليد وصف الإعلان</button><button id="copyAdBtn" type="button" class="sec">نسخ الوصف</button></div>
+<div id="adStatus" class="app-status" aria-live="polite"></div>
+<div id="adOutput" class="out app-out" aria-live="polite">سيظهر الوصف المولّد هنا.</div>
+</section>
+
+<section class="card app-card" aria-labelledby="priceTitle">
+<h2 id="priceTitle">٢. التسعير مع حد أدنى قابل للضبط</h2>
+<p class="app-hint">احسب سعر البيع الذي يحقق ربحك بعد عمولة المنصة والشحن، مع تنبيه إن كان الحد الأدنى لا يغطي التكلفة.</p>
+<div class="app-grid">
+<div class="app-field"><label class="label" for="costInput">سعر الشراء</label><input class="input" id="costInput" type="number" min="0" step="1" placeholder="مثال: 100" /></div>
+<div class="app-field"><label class="label" for="feeInput">عمولة المنصة %</label><input class="input" id="feeInput" type="number" min="0" max="99" step="0.5" value="5" /></div>
+<div class="app-field"><label class="label" for="shipInput">تكلفة الشحن</label><input class="input" id="shipInput" type="number" min="0" step="1" placeholder="مثال: 15" /></div>
+<div class="app-field"><label class="label" for="profitInput">الربح المستهدف</label><input class="input" id="profitInput" type="number" min="0" step="1" placeholder="مثال: 40" /></div>
+<div class="app-field"><label class="label" for="floorInput">الحد الأدنى المقبول للبيع</label><input class="input" id="floorInput" type="number" min="0" step="1" placeholder="مثال: 150" /></div>
+</div>
+<div class="app-actions"><button id="calcPriceBtn" type="button">احسب السعر المقترح</button></div>
+<div id="priceStatus" class="app-status" aria-live="polite"></div>
+<div class="big" id="priceBig">—</div>
+<div class="divider"></div>
+<div id="priceDetail" class="out app-out">أدخل التكلفة والعمولة والربح المستهدف لعرض تفاصيل السعر.</div>
+<div id="priceWarn" class="out app-out" aria-live="polite"></div>
+</section>
+
+<section class="card app-card" aria-labelledby="calTitle">
+<h2 id="calTitle">٣. تقويم إعادة النشر والتخفيضات</h2>
+<p class="app-hint">سجّل مواعيد إعادة النشر أو التخفيضات، وستُحفظ محلياً وتظهر داخل التقويم الشهري.</p>
+<div class="app-grid">
+<div class="app-field"><label class="label" for="eventTitle">اسم المنتج أو الموعد</label><input class="input" id="eventTitle" type="text" placeholder="مثال: حقيبة ظهر" /></div>
+<div class="app-field"><label class="label" for="eventType">نوع الموعد</label><select class="select" id="eventType"><option value="repost">إعادة نشر</option><option value="discount">تخفيض سعر</option><option value="both">إعادة نشر وتخفيض</option></select></div>
+<div class="app-field"><label class="label" for="eventDate">التاريخ</label><input class="input" id="eventDate" type="date" /></div>
+<div class="app-field"><label class="label" for="eventDiscount">نسبة الخصم % (اختياري)</label><input class="input" id="eventDiscount" type="number" min="0" max="90" step="1" placeholder="مثال: 10" /></div>
+</div>
+<div class="app-actions"><button id="addEventBtn" type="button">إضافة الموعد</button><button id="clearEventsBtn" type="button" class="sec">حذف كل المواعيد</button></div>
+<div id="calStatus" class="app-status" aria-live="polite"></div>
+<div class="app-cal-head"><button id="prevMonthBtn" type="button" class="sec">الشهر السابق</button><span id="monthLabel" class="badge"></span><button id="nextMonthBtn" type="button" class="sec">الشهر التالي</button></div>
+<div id="calendarGrid" class="app-cal" aria-label="التقويم الشهري"></div>
+<div id="eventList" class="app-list"></div>
+</section>
+
+<section class="card app-card" aria-labelledby="negoTitle">
+<h2 id="negoTitle">٤. مولّد ردود التفاوض</h2>
+<p class="app-hint">قارن عرض المشتري بسعرك وحدك الأدنى، واحصل على رد مهني جاهز للنسخ: قبول، تفاوض مضاد، أو رفض لطيف.</p>
+<div class="app-grid">
+<div class="app-field"><label class="label" for="negoScenario">سياق التفاوض</label><select class="select" id="negoScenario"><option value="low_offer">عرض أقل من السعر</option><option value="big_discount">طلب خصم كبير</option><option value="defect">استفسار عن العيوب</option><option value="bundle">شراء أكثر من قطعة</option><option value="shipping">طلب شحن مجاني</option></select></div>
+<div class="app-field"><label class="label" for="negoPrice">سعرك المعلن</label><input class="input" id="negoPrice" type="number" min="0" step="1" placeholder="مثال: 180" /></div>
+<div class="app-field"><label class="label" for="negoOffer">عرض المشتري</label><input class="input" id="negoOffer" type="number" min="0" step="1" placeholder="مثال: 140" /></div>
+<div class="app-field"><label class="label" for="negoFloor">حدك الأدنى</label><input class="input" id="negoFloor" type="number" min="0" step="1" placeholder="مثال: 150" /></div>
+</div>
+<div class="app-actions"><button id="genReplyBtn" type="button">توليد رد التفاوض</button><button id="copyReplyBtn" type="button" class="sec">نسخ الرد</button><span id="replyBadge" class="badge"></span></div>
+<div id="replyStatus" class="app-status" aria-live="polite"></div>
+<div id="replyOutput" class="out app-out" aria-live="polite">سيظهر رد التفاوض هنا بعد إدخال القيم.</div>
+</section>
+
+<section class="card app-card" aria-labelledby="labelTitle">
+<h2 id="labelTitle">٥. ملصق شحن قابل للطباعة</h2>
+<p class="app-hint">أنشئ ملصقاً واضحاً ببيانات المرسل والمستلم ورقم الطلب، ثم اطبعه من المتصفح.</p>
+<div class="app-grid">
+<div class="app-field"><label class="label" for="labelOrderId">رقم الطلب</label><input class="input" id="labelOrderId" type="text" placeholder="مثال: ORD-1024" /></div>
+<div class="app-field"><label class="label" for="labelCarrier">شركة الشحن</label><select class="select" id="labelCarrier"><option value="شحن سريع">شحن سريع</option><option value="بريد وطني">بريد وطني</option><option value="شحن محلي">شحن محلي</option><option value="استلام من المتجر">استلام من المتجر</option></select></div>
+<div class="app-field"><label class="label" for="labelSender">اسم المرسل</label><input class="input" id="labelSender" type="text" placeholder="اسمك أو اسم المتجر" /></div>
+<div class="app-field"><label class="label" for="labelRecipient">اسم المستلم</label><input class="input" id="labelRecipient" type="text" placeholder="الاسم الكامل" /></div>
+<div class="app-field"><label class="label" for="labelPhone">هاتف المستلم</label><input class="input" id="labelPhone" type="tel" placeholder="05xxxxxxxx" /></div>
+<div class="app-field"><label class="label" for="labelCity">المدينة</label><input class="input" id="labelCity" type="text" placeholder="مثال: الرياض" /></div>
+<div class="app-field"><label class="label" for="labelWeight">الوزن بالكيلوغرام</label><input class="input" id="labelWeight" type="number" min="0" step="0.1" placeholder="مثال: 1.5" /></div>
+<div class="app-field"><label class="label" for="labelPayment">طريقة الدفع</label><select class="select" id="labelPayment"><option value="مدفوع مسبقاً">مدفوع مسبقاً</option><option value="الدفع عند الاستلام">الدفع عند الاستلام</option></select></div>
+<div class="app-field app-wide"><label class="label" for="labelAddress">عنوان المستلم</label><textarea class="textarea" id="labelAddress" rows="2" placeholder="الحي، الشارع، رقم المبنى"></textarea></div>
+</div>
+<div class="app-actions"><button id="genLabelBtn" type="button">إنشاء الملصق</button><button id="printLabelBtn" type="button" class="sec">طباعة الملصق</button></div>
+<div id="labelStatus" class="app-status" aria-live="polite"></div>
+<div id="labelPreview"><p class="app-empty">سيظهر الملصق هنا بعد إدخال بيانات المستلم.</p></div>
+</section>
+
+<section class="card app-card" aria-labelledby="invTitle">
+<h2 id="invTitle">٦. مزامنة المخزون بين المنصات عبر CSV</h2>
+<p class="app-hint">الصق ملف CSV بالأعمدة: sku, product, platform, qty, price، ثم استورد البيانات ووحّد الكميات لتقليل خطر البيع المزدوج.</p>
+<div class="app-field app-wide"><label class="label" for="csvInput">محتوى CSV</label><textarea class="textarea" id="csvInput" rows="5" placeholder="sku,product,platform,qty,price&#10;SKU-101,سماعة لاسلكية,منصة محلية,4,180"></textarea></div>
+<div class="app-actions"><button id="importCsvBtn" type="button">استيراد CSV</button><button id="sampleCsvBtn" type="button" class="sec">إدراج بيانات تجريبية</button><button id="exportCsvBtn" type="button" class="sec">تصدير CSV ونسخه</button><button id="applySyncBtn" type="button">مزامنة الكميات</button><button id="clearInventoryBtn" type="button" class="sec">مسح المخزون</button></div>
+<div id="csvStatus" class="app-status" aria-live="polite"></div>
+<div id="inventoryWrap"></div>
+<div id="syncReport" class="out app-out" aria-live="polite"></div>
+<div class="app-field app-wide"><label class="label" for="csvOutput">ملف CSV الناتج</label><textarea class="textarea" id="csvOutput" rows="4" readonly placeholder="سيظهر التصدير هنا."></textarea></div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون إنترنت أو حساب؟</h3><p>نعم، كل الحسابات والتوليد والتقويم تعمل محلياً داخل المتصفح، ولا يحتاج التطبيق إلى تسجيل دخول أو اتصال بالشبكة.</p><h3>أين تُحفظ المواعيد وبيانات المخزون؟</h3><p>تُحفظ في localStorage داخل جهازك، ويمكنك مسحها في أي وقت من أزرار حذف المواعيد أو مسح المخزون. قد تختفي البيانات إذا حذفت بيانات المتصفح.</p><h3>كيف يعمل الحد الأدنى للسعر؟</h3><p>يُستخدم في حاسبة التسعير للتحذير عند انخفاض السعر المقترح أو عدم تغطيته للتكلفة، وفي مولّد التفاوض لتحديد القبول أو الرفض. يُحفظ آخر حد أدنى أدخلته.</p><h3>ما صيغة ملف CSV المطلوب للمزامنة؟</h3><p>يحتاج ملفاً بأعمدة sku وproduct وplatform وqty وprice، ويمكنك تجربة الصيغة عبر زر إدراج بيانات تجريبية ثم استيرادها.</p><h3>هل يمكن طباعة ملصق الشحن فعلياً؟</h3><p>نعم، بعد إنشاء الملصق اضغط طباعة الملصق لتفتح نافذة الطباعة، ويظهر الملصق وحده بتنسيق أبيض مناسب للورق.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="room-restyle-canvas.html" style="color:var(--gold-bright);font-weight:700">مصمم إعادة تصميم الغرف والواجهات والحدائق من صورة</a><span style="opacity:.75"> — أداة ويب مجانية تعيد تصميم غرفك وواجهاتك وحدائقك انطلاقاً من صورة: طابع لوني وخامات وأثاث ونباتات قابلة…</span></li><li style="margin:.5rem 0"><a href="usage-invoice-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة العدّادات والتسعير مع فواتير محلية</a><span style="opacity:.75"> — تطبيق ويب RTL لحساب واستخدام العدّادات مثل التقارير والعملاء واستدعاءات API، إنشاء خطط أسعار، توليد فواتير…</span></li><li style="margin:.5rem 0"><a href="voice-feed-studio.html" style="color:var(--gold-bright);font-weight:700">مختبر إدارة حسابات اجتماعية: تحرير وجدولة وتحليل محلي</a><span style="opacity:.75"> — مختبر عربي يعمل داخل المتصفح لبناء منشورات بنبرتك عبر قوالب ومحرك قواعد محلي، مع اقتراح وسوم وجدول نشر…</span></li><li style="margin:.5rem 0"><a href="bashar-text-humanizer.html" style="color:var(--gold-bright);font-weight:700">أداة إعادة صياغة النصوص الآلية</a><span style="opacity:.75"> — أداة عربية تعمل في المتصفح لإعادة صياغة النصوص الآلية بأسلوب طبيعي مع مقبض ضبط النبرة ولوحة تحقق فورية</span></li><li style="margin:.5rem 0"><a href="browser-inventory-erp.html" style="color:var(--gold-bright);font-weight:700">برنامج إدارة المخزون والمبيعات والمشتريات والمالية للمتاجر</a><span style="opacity:.75"> — تطبيق عربي متكامل لإدارة المخزون والمبيعات والمشتريات والعملاء والموردين والمصروفات مع تقارير الأرباح…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-04 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  'use strict';
+  function start() {
+    var $ = function (id) { return document.getElementById(id); };
+    function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function num(id) { var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function isoDate(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+    function money(n) {
+      var v = Number(n) || 0;
+      try { return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(v) + ' ريال'; }
+      catch (e) { return v + ' ريال'; }
+    }
+    function store(key, val) { try { localStorage.setItem('mdResale.v1.' + key, JSON.stringify(val)); } catch (e) {} }
+    function load(key, def) { try { var raw = localStorage.getItem('mdResale.v1.' + key); return raw ? JSON.parse(raw) : def; } catch (e) { return def; } }
+    function copyText(text, statusEl, okMsg) {
+      if (!text) { statusEl.textContent = 'لا يوجد نص للنسخ.'; return; }
+      function fallback() {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          statusEl.textContent = okMsg || 'تم النسخ إلى الحافظة.';
+        } catch (e) { statusEl.textContent = 'تعذّر النسخ التلقائي؛ حدّد النص وانسخه يدوياً.'; }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { statusEl.textContent = okMsg || 'تم النسخ إلى الحافظة.'; }, fallback);
+      } else { fallback(); }
+    }
+
+    var currentAdText = '';
+
+    function buildAd() {
+      var name = $('adName').value.trim();
+      var cat = $('adCategory').value;
+      var cond = $('adCondition').value;
+      var size = $('adSize').value.trim();
+      var color = $('adColor').value.trim();
+      var features = $('adFeatures').value.split(/\n|،|,/).map(function (s) { return s.trim(); }).filter(Boolean);
+      var price = parseFloat($('adPrice').value);
+      var platform = $('adPlatform').value;
+      if (!name) {
+        $('adOutput').textContent = 'يرجى إدخال اسم المنتج أولاً لتوليد الوصف.';
+        $('adStatus').textContent = 'بيانات ناقصة: اسم المنتج مطلوب.';
+        currentAdText = '';
+        return;
+      }
+      var catText = { electronics: 'إلكترونيات', fashion: 'أزياء', kids: 'مستلزمات أطفال', home: 'مستلزمات منزل', sport: 'رياضة ولياقة', games: 'ألعاب', cars: 'قطع سيارات', other: 'منتجات متنوعة' }[cat] || '';
+      var condText = { new: 'جديد بالكرتونة', like_new: 'كالجديد', excellent: 'مستعمل بحالة ممتازة', good: 'مستعمل بحالة جيدة', repair: 'يحتاج إصلاحاً بسيطاً' }[cond] || 'مستعمل';
+      var lines = [];
+      lines.push('السلام عليكم،');
+      lines.push('أعرض لكم ' + name + (catText ? ' من فئة ' + catText : '') + ' بحالة ' + condText + '.');
+      if (features.length) { lines.push('أبرز المميزات: ' + features.join(' • ') + '.'); }
+      var spec = [];
+      if (size) { spec.push('المقاس: ' + size); }
+      if (color) { spec.push('اللون: ' + color); }
+      if (spec.length) { lines.push(spec.join(' — ') + '.'); }
+      if (!isNaN(price) && price > 0) { lines.push('السعر المطلوب ' + money(price) + '، وهناك مجال بسيط للتفاوض الجاد.'); }
+      if (platform) { lines.push('الإعلان منشور على ' + platform + '، والتواصل والاتفاق يتمان عبر المنصة لضمان الحقوق.'); }
+      lines.push('المنتج موضح بالصور، ويسعدني الرد على استفساراتكم وتزويدكم بتفاصيل إضافية عند الحاجة.');
+      lines.push('شكراً لاهتمامكم، وبالتوفيق للجميع.');
+      currentAdText = lines.join('\n');
+      $('adOutput').textContent = currentAdText;
+      $('adStatus').textContent = 'تم توليد الوصف. راجعه ثم انسخه إلى إعلانك.';
+    }
+
+    function calcPrice() {
+      var cost = num('costInput');
+      var fee = num('feeInput');
+      var ship = num('shipInput');
+      var profit = num('profitInput');
+      var floor = num('floorInput');
+      if (cost < 0 || fee < 0 || ship < 0 || profit < 0 || floor < 0) {
+        $('priceWarn').textContent = 'القيم السالبة غير مقبولة. أدخل أرقاماً موجبة.';
+        return;
+      }
+      if (fee >= 100) {
+        $('priceWarn').textContent = 'نسبة العمولة يجب أن تكون أقل من 100%.';
+        return;
+      }
+      if (cost + ship + profit <= 0) {
+        $('priceBig').textContent = '—';
+        $('priceDetail').textContent = 'أدخل تكلفة شراء أو شحناً أو ربحاً مستهدفاً أكبر من صفر.';
+        $('priceWarn').textContent = '';
+        return;
+      }
+      var suggested = Math.ceil((cost + ship + profit) / (1 - fee / 100));
+      var commission = suggested * fee / 100;
+      var net = suggested - commission - cost - ship;
+      $('priceBig').textContent = money(suggested);
+      var detail = [];
+      detail.push('سعر الشراء: ' + money(cost));
+      detail.push('الشحن: ' + money(ship));
+      detail.push('العمولة (' + fee + '%): ' + money(commission));
+      detail.push('صافي الربح المتوقع: ' + money(net));
+      detail.push('الحد الأدنى المقبول: ' + (floor > 0 ? money(floor) : 'غير محدد'));
+      if (floor > 0) { detail.push('صافي الربح عند الحد الأدنى: ' + money(floor - floor * fee / 100 - cost - ship)); }
+      $('priceDetail').textContent = detail.join('\n');
+      var warn = [];
+      if (cost + ship <= 0) { warn.push('لم تُدخل تكلفة شراء أو شحناً؛ راجع افتراضاتك.'); }
+      if (floor > 0 && floor < cost + ship) { warn.push('الحد الأدنى لا يغطي التكلفة والشحن، وقد تبيع بخسارة.'); }
+      if (floor > 0 && suggested < floor) { warn.push('السعر المقترح أقل من حدك الأدنى؛ ارفع الربح المستهدف أو خفّض الحد.'); }
+      if (!warn.length) { warn.push('السعر المقترح يحقق ربحك المستهدف ويبقى عند الحد الأدنى أو فوقه.'); }
+      $('priceWarn').textContent = warn.join(' ');
+      store('floor', floor);
+      $('priceStatus').textContent = 'تم الحساب وحفظ الحد الأدنى على هذا الجهاز.';
+    }
+
+    var AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    var AR_WD = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+    var events = load('events', []);
+    if (!Array.isArray(events)) { events = []; }
+    events = events.filter(function (e) { return e && e.id && e.date; });
+    var viewDate = new Date();
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+
+    function typeLabel(t) {
+      if (t === 'discount') { return 'تخفيض سعر'; }
+      if (t === 'both') { return 'إعادة نشر وتخفيض'; }
+      return 'إعادة نشر';
+    }
+
+    function renderCalendar() {
+      var grid = $('calendarGrid');
+      var y = viewDate.getFullYear();
+      var m = viewDate.getMonth();
+      $('monthLabel').textContent = AR_MONTHS[m] + ' ' + y;
+      grid.innerHTML = '';
+      AR_WD.forEach(function (name) {
+        var wd = document.createElement('div');
+        wd.className = 'app-wd';
+        wd.textContent = name;
+        grid.appendChild(wd);
+      });
+      var start = (new Date(y, m, 1).getDay() + 1) % 7;
+      for (var i = 0; i < start; i++) {
+        var blank = document.createElement('div');
+        blank.className = 'app-day';
+        grid.appendChild(blank);
+      }
+      var days = new Date(y, m + 1, 0).getDate();
+      var todayStr = isoDate(new Date());
+      for (var d = 1; d <= days; d++) {
+        var cell = document.createElement('div');
+        cell.className = 'app-day' + (isoDate(new Date(y, m, d)) === todayStr ? ' app-today' : '');
+        var dn = document.createElement('div');
+        dn.className = 'app-dn';
+        dn.textContent = String(d);
+        cell.appendChild(dn);
+        var dateStr = isoDate(new Date(y, m, d));
+        var dayEvents = events.filter(function (ev) { return ev.date === dateStr; });
+        dayEvents.slice(0, 3).forEach(function (ev) {
+          var b = document.createElement('span');
+          b.className = 'app-ev';
+          if (ev.type === 'repost') { b.textContent = 'نشر: ' + ev.title; }
+          else if (ev.type === 'discount') { b.textContent = 'خصم ' + (ev.discount || 0) + '%: ' + ev.title; }
+          else { b.textContent = 'نشر وخصم: ' + ev.title; }
+          cell.appendChild(b);
+        });
+        if (dayEvents.length > 3) {
+          var more = document.createElement('span');
+          more.className = 'app-ev';
+          more.textContent = '+' + (dayEvents.length - 3) + ' أخرى';
+          cell.appendChild(more);
+        }
+        grid.appendChild(cell);
+      }
+    }
+
+    function renderEvents() {
+      var wrap = $('eventList');
+      wrap.innerHTML = '';
+      if (!events.length) {
+        wrap.innerHTML = '<p class="app-empty">لا توجد مواعيد محفوظة بعد. أضف أول موعد من النموذج أعلاه.</p>';
+        return;
+      }
+      var sorted = events.slice().sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+      sorted.forEach(function (ev) {
+        var item = document.createElement('div');
+        item.className = 'app-list-item';
+        var info = document.createElement('div');
+        info.innerHTML = '<strong>' + esc(ev.title) + '</strong><br><span class="badge">' + esc(typeLabel(ev.type)) + '</span> ' + esc(ev.date) + (ev.type !== 'repost' && ev.discount ? ' — خصم ' + esc(ev.discount) + '%' : '');
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sec';
+        btn.id = 'evDel-' + ev.id;
+        btn.textContent = 'حذف الموعد';
+        btn.setAttribute('data-id', ev.id);
+        btn.addEventListener('click', function () {
+          events = events.filter(function (x) { return x.id !== ev.id; });
+          store('events', events);
+          renderCalendar();
+          renderEvents();
+          $('calStatus').textContent = 'تم حذف الموعد.';
+        });
+        item.appendChild(info);
+        item.appendChild(btn);
+        wrap.appendChild(item);
+      });
+    }
+
+    var inventory = load('inventory', []);
+    if (!Array.isArray(inventory)) { inventory = []; }
+
+    function saveInventory() { store('inventory', inventory); }
+
+    function splitCsvLine(line) {
+      var cells = [];
+      var cur = '';
+      var quoted = false;
+      for (var i = 0; i < line.length; i++) {
+        var c = line.charAt(i);
+        if (c === '"') {
+          if (quoted && line.charAt(i + 1) === '"') { cur += '"'; i++; }
+          else { quoted = !quoted; }
+        } else if (c === ',' && !quoted) {
+          cells.push(cur.trim());
+          cur = '';
+        } else { cur += c; }
+      }
+      cells.push(cur.trim());
+      return cells;
+    }
+
+    function isHeader(cells) {
+      var first = String(cells[0] || '').toLowerCase();
+      return first.indexOf('sku') > -1 || first.indexOf('رمز') > -1 || cells.indexOf('platform') > -1 || cells.indexOf('المنصة') > -1;
+    }
+
+    function renderInventory() {
+      var wrap = $('inventoryWrap');
+      if (!inventory.length) {
+        wrap.innerHTML = '<p class="app-empty">لا توجد بيانات مخزون بعد. الصق ملف CSV أو أدرج بيانات تجريبية ثم اضغط استيراد.</p>';
+        return;
+      }
+      var minBySku = {};
+      inventory.forEach(function (it) {
+        if (minBySku[it.sku] === undefined || it.qty < minBySku[it.sku]) { minBySku[it.sku] = it.qty; }
+      });
+      var html = '<table class="app-table"><thead><tr><th>الرمز</th><th>المنتج</th><th>المنصة</th><th>الكمية</th><th>السعر</th></tr></thead><tbody>';
+      inventory.slice().sort(function (a, b) { return String(a.sku).localeCompare(String(b.sku)) || String(a.platform).localeCompare(String(b.platform)); }).forEach(function (i) {
+        var mismatch = i.qty > minBySku[i.sku];
+        html += '<tr' + (mismatch ? ' class="app-mismatch"' : '') + '><td>' + esc(i.sku) + '</td><td>' + esc(i.product) + '</td><td>' + esc(i.platform) + '</td><td>' + esc(i.qty) + '</td><td>' + esc(money(i.price)) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    function inventoryToCsv() {
+      function cell(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+      var rows = ['"sku","product","platform","qty","price"'];
+      inventory.forEach(function (i) {
+        rows.push([cell(i.sku), cell(i.product), cell(i.platform), cell(i.qty), cell(i.price)].join(','));
+      });
+      return rows.join('\n');
+    }
+
+    function generateReply() {
+      var scenario = $('negoScenario').value;
+      var price = num('negoPrice');
+      var offer = num('negoOffer');
+      var floor = num('negoFloor');
+      var out = $('replyOutput');
+      var badge = $('replyBadge');
+      if (price <= 0) { out.textContent = 'أدخل سعرك المعلن أولاً.'; badge.textContent = ''; return; }
+      if (offer <= 0) { out.textContent = 'أدخل عرض المشتري أولاً حتى أتمكن من اقتراح رد.'; badge.textContent = ''; return; }
+      if (floor <= 0) { out.textContent = 'أدخل الحد الأدنى الذي تقبله.'; badge.textContent = ''; return; }
+      if (floor > price) { out.textContent = 'الحد الأدنى أعلى من السعر المعلن؛ صحّح القيم أولاً.'; badge.textContent = ''; return; }
+      var intro = 'أشكرك على تواصلك واهتمامك بالمنتج. ';
+      if (scenario === 'defect') { intro = 'أشكرك على سؤالك عن حالة المنتج، وقد وضّحت الحالة بكل شفافية في الإعلان. '; }
+      else if (scenario === 'bundle') { intro = 'أشكرك على اهتمامك بشراء أكثر من قطعة، ويسعدني ترتيب ذلك. '; }
+      else if (scenario === 'shipping') { intro = 'أشكرك على تواصلك، وبخصوص الشحن أوضّح التالي. '; }
+      var text = '';
+      var decision = '';
+      if (offer >= price) {
+        decision = 'قبول';
+        text = intro + 'أوافق على عرضك البالغ ' + money(offer) + '، وهو عند سعر الإعلان أو أعلى. أرسل لي تفاصيل الشحن وسأجهّز الطلب فوراً.';
+      } else if (offer >= floor && offer >= price * 0.92) {
+        decision = 'قبول';
+        text = intro + 'أوافق على عرضك البالغ ' + money(offer) + ' لأنه قريب من السعر المعلن ويقع ضمن الحد المقبول. أرسل تفاصيل الشحن لإتمام الطلب.';
+      } else if (offer >= floor) {
+        decision = 'تفاوض مضاد';
+        var counter = Math.max(floor, Math.min(price, Math.ceil((offer + price) / 2)));
+        text = intro + 'عرضك البالغ ' + money(offer) + ' أقل من السعر المطلوب، لكنني أقدّره. أقرب سعر يمكنني تقديمه هو ' + money(counter) + '، وهو يشمل المنتج كما وصفته. هل يناسبك؟';
+      } else {
+        decision = 'رفض لطيف';
+        text = intro + 'أقدّر عرضك البالغ ' + money(offer) + '، لكنه أقل من الحد الذي أستطيع البيع به. أقل سعر ممكن هو ' + money(floor) + '، وإن ناسبك فسأحجز لك المنتج.';
+      }
+      out.textContent = text;
+      badge.textContent = decision;
+      $('replyStatus').textContent = 'تم توليد الرد. راجعه ثم انسخه.';
+    }
+
+    function generateLabel() {
+      var order = $('labelOrderId').value.trim();
+      var sender = $('labelSender').value.trim();
+      var recipient = $('labelRecipient').value.trim();
+      var phone = $('labelPhone').value.trim();
+      var address = $('labelAddress').value.trim();
+      var city = $('labelCity').value.trim();
+      var carrier = $('labelCarrier').value;
+      var weight = $('labelWeight').value.trim();
+      var payment = $('labelPayment').value;
+      if (!recipient || !phone || !address) {
+        $('labelPreview').innerHTML = '<p class="app-empty">أدخل اسم المستلم ورقم الهاتف والعنوان لإنشاء الملصق.</p>';
+        $('labelStatus').textContent = 'بيانات المستلم ناقصة.';
+        return;
+      }
+      var code = (order || 'ORDER').replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 18) || 'ORDER';
+      var bars = '';
+      for (var i = 0; i < Math.min(code.length * 2, 36); i++) {
+        var w = (code.charCodeAt(i % code.length) % 3) + 1;
+        bars += '<span style="width:' + w + 'px"></span>';
+      }
+      var html = '<div class="app-label app-printable">'
+        + '<div class="app-lh"><strong>ملصق شحن</strong><span>' + esc(carrier) + '</span></div>'
+        + '<div class="app-lcols">'
+        + '<div class="app-lbox"><b>المرسل</b>' + esc(sender || 'غير محدد') + (city ? '<br>' + esc(city) : '') + '</div>'
+        + '<div class="app-lbox"><b>المستلم</b>' + esc(recipient) + '<br>' + esc(phone) + (city ? '<br>' + esc(city) : '') + '<br>' + esc(address) + '</div>'
+        + '</div>'
+        + '<div class="app-lbox" style="margin-top:10px"><b>تفاصيل الشحنة</b>رقم الطلب: ' + esc(order || '—') + '<br>الوزن: ' + esc(weight || '—') + ' كغ — الدفع: ' + esc(payment) + '</div>'
+        + '<div class="app-barcode">' + bars + '</div><div class="app-code">' + esc(code) + '</div>'
+        + '</div>';
+      $('labelPreview').innerHTML = html;
+      $('labelStatus').textContent = 'تم إنشاء الملصق. اضغط زر طباعة الملصق.';
+    }
+
+    $('generateAdBtn').addEventListener('click', buildAd);
+    $('copyAdBtn').addEventListener('click', function () { copyText(currentAdText, $('adStatus'), 'تم نسخ وصف الإعلان إلى الحافظة.'); });
+    $('calcPriceBtn').addEventListener('click', calcPrice);
+
+    $('prevMonthBtn').addEventListener('click', function () {
+      viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
+      renderCalendar();
+    });
+    $('nextMonthBtn').addEventListener('click', function () {
+      viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
+      renderCalendar();
+    });
+    $('addEventBtn').addEventListener('click', function () {
+      var title = $('eventTitle').value.trim();
+      var date = $('eventDate').value;
+      var type = $('eventType').value;
+      var discount = parseInt($('eventDiscount').value, 10);
+      if (!title) { $('calStatus').textContent = 'أدخل اسم المنتج أو وصف الموعد.'; return; }
+      if (!date || isNaN(new Date(date + 'T00:00:00').getTime())) { $('calStatus').textContent = 'اختر تاريخاً صحيحاً للموعد.'; return; }
+      if (type !== 'repost' && (isNaN(discount) || discount < 0 || discount > 90)) { $('calStatus').textContent = 'نسبة الخصم يجب أن تكون بين 0 و90.'; return; }
+      events.push({ id: 'ev-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7), title: title, date: date, type: type, discount: type === 'repost' ? 0 : discount });
+      store('events', events);
+      renderCalendar();
+      renderEvents();
+      $('eventTitle').value = '';
+      $('eventDiscount').value = '';
+      $('calStatus').textContent = 'تمت إضافة الموعد إلى التقويم المحلي.';
+    });
+    $('clearEventsBtn').addEventListener('click', function () {
+      if (!events.length) { $('calStatus').textContent = 'لا توجد مواعيد لحذفها.'; return; }
+      events = [];
+      store('events', events);
+      renderCalendar();
+      renderEvents();
+      $('calStatus').textContent = 'تم حذف جميع المواعيد من هذا الجهاز.';
+    });
+
+    $('genReplyBtn').addEventListener('click', generateReply);
+    $('copyReplyBtn').addEventListener('click', function () { copyText($('replyOutput').textContent, $('replyStatus'), 'تم نسخ رد التفاوض إلى الحافظة.'); });
+
+    $('genLabelBtn').addEventListener('click', generateLabel);
+    $('printLabelBtn').addEventListener('click', function () {
+      var hasLabel = $('labelPreview').querySelector('.app-printable');
+      if (!hasLabel) { $('labelStatus').textContent = 'أنشئ الملصق أولاً قبل الطباعة.'; return; }
+      $('labelStatus').textContent = 'جارٍ فتح نافذة الطباعة...';
+      window.print();
+    });
+
+    $('importCsvBtn').addEventListener('click', function () {
+      var text = $('csvInput').value.trim();
+      if (!text) { $('csvStatus').textContent = 'الصق محتوى CSV أولاً.'; return; }
+      var lines = text.replace(/\r/g, '').split('\n').filter(function (l) { return l.trim() !== ''; });
+      var rows = lines.map(splitCsvLine);
+      if (rows.length && isHeader(rows[0])) { rows.shift(); }
+      var added = 0;
+      var updated = 0;
+      var skipped = 0;
+      rows.forEach(function (cells) {
+        if (cells.length < 5) { skipped++; return; }
+        var sku = cells[0];
+        var product = cells[1];
+        var platform = cells[2];
+        var qty = Number(cells[3]);
+        var price = Number(cells[4]);
+        if (!sku || !platform || isNaN(qty) || isNaN(price) || qty < 0 || price < 0) { skipped++; return; }
+        qty = Math.floor(qty);
+        var key = sku + '|' + platform;
+        var existing = null;
+        for (var i = 0; i < inventory.length; i++) { if (inventory[i].key === key) { existing = inventory[i]; break; } }
+        if (existing) {
+          existing.product = product || existing.product;
+          existing.qty = qty;
+          existing.price = price;
+          updated++;
+        } else {
+          inventory.push({ key: key, sku: sku, product: product || sku, platform: platform, qty: qty, price: price });
+          added++;
+        }
+      });
+      saveInventory();
+      renderInventory();
+      $('csvStatus').textContent = 'تم الاستيراد: ' + added + ' صف جديد، ' + updated + ' صف محدّث' + (skipped ? '، و' + skipped + ' صف مستبعد.' : '.');
+    });
+    $('sampleCsvBtn').addEventListener('click', function () {
+      $('csvInput').value = 'sku,product,platform,qty,price\nSKU-101,سماعة لاسلكية,منصة محلية,4,180\nSKU-101,سماعة لاسلكية,متجر إلكتروني,2,185\nSKU-102,حقيبة ظهر,منصة محلية,6,95\nSKU-102,حقيبة ظهر,مجموعة بيع,6,90';
+      $('csvStatus').textContent = 'تم إدراج بيانات تجريبية. اضغط استيراد CSV لمعالجتها.';
+    });
+    $('exportCsvBtn').addEventListener('click', function () {
+      if (!inventory.length) { $('csvStatus').textContent = 'لا توجد بيانات مخزون لتصديرها.'; return; }
+      var csv = inventoryToCsv();
+      $('csvOutput').value = csv;
+      copyText(csv, $('csvStatus'), 'تم إنشاء ملف CSV ونسخه إلى الحافظة.');
+    });
+    $('applySyncBtn').addEventListener('click', function () {
+      if (!inventory.length) { $('syncReport').textContent = 'لا توجد بيانات مخزون لمزامنتها.'; return; }
+      var groups = {};
+      inventory.forEach(function (it) {
+        if (!groups[it.sku]) { groups[it.sku] = []; }
+        groups[it.sku].push(it);
+      });
+      var adjustedGroups = 0;
+      var adjustedRows = 0;
+      Object.keys(groups).forEach(function (sku) {
+        var list = groups[sku];
+        if (list.length < 2) { return; }
+        var min = list[0].qty;
+        list.forEach(function (it) { if (it.qty < min) { min = it.qty; } });
+        var differs = list.some(function (it) { return it.qty !== min; });
+        if (differs) {
+          list.forEach(function (it) { it.qty = min; });
+          adjustedGroups++;
+          adjustedRows += list.length;
+        }
+      });
+      saveInventory();
+      renderInventory();
+      if (adjustedGroups) {
+        $('syncReport').textContent = 'تم توحيد كميات ' + adjustedGroups + ' منتج (' + adjustedRows + ' صف) على أقل كمية متاحة لتقليل خطر البيع المزدوج.';
+      } else {
+        $('syncReport').textContent = 'كل كميات المنتجات متطابقة بين المنصات، ولا حاجة لتعديل.';
+      }
+    });
+    $('clearInventoryBtn').addEventListener('click', function () {
+      if (!inventory.length) { $('csvStatus').textContent = 'لا توجد بيانات مخزون لمسحها.'; return; }
+      inventory = [];
+      saveInventory();
+      renderInventory();
+      $('csvOutput').value = '';
+      $('syncReport').textContent = 'تم مسح بيانات المخزون من هذا الجهاز.';
+      $('csvStatus').textContent = 'تم مسح المخزون.';
+    });
+
+    $('eventDate').value = isoDate(new Date());
+    var savedFloor = load('floor', 0);
+    if (savedFloor && savedFloor > 0) { $('floorInput').value = savedFloor; }
+    renderCalendar();
+    renderEvents();
+    renderInventory();
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', start); }
+  else { start(); }
+})();
+</script>
+</body>
+</html>
