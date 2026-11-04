@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة محلية لإدارة نشر الحاويات ومحاكاة Docker وKubernetes | MDM1</title>
+<meta name="description" content="لوحة محلية لإدارة نشر تطبيقات الحاويات ومحاكاة Docker وKubernetes وPodman، تشمل إصدارات وتراجعًا فوريًا وبيئات اختبار وأسرارًا مشفّرة وجدولة وسجل تدقيق.">
+<link rel="canonical" href="https://mdm1.org/apps/deploy-sandbox.html">
+<meta property="og:title" content="لوحة محلية لإدارة نشر الحاويات ومحاكاة Docker وKubernetes">
+<meta property="og:description" content="لوحة محلية لإدارة نشر تطبيقات الحاويات ومحاكاة Docker وKubernetes وPodman، تشمل إصدارات وتراجعًا فوريًا وبيئات اختبار وأسرارًا مشفّرة وجدولة وسجل تدقيق.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/deploy-sandbox.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl;display:grid;gap:14px;color:var(--light)}
+.app-intro{line-height:1.9;margin:0;opacity:.92}
+.app h2,.app h3{margin:0;font-size:18px;color:var(--gold-bright)}
+.app .card{display:grid;gap:10px}
+.app .row{flex-wrap:wrap;gap:8px;align-items:end}
+.app label{display:flex;flex-direction:column;gap:4px;font-size:13px;flex:1;min-width:130px}
+.app input,.app select,.app textarea{width:100%;box-sizing:border-box}
+.app textarea{min-height:120px;resize:vertical;font-family:ui-monospace,monospace;direction:ltr;text-align:left}
+.app .app-head{justify-content:space-between;align-items:center}
+.app .big{color:var(--gold);font-size:26px;font-weight:700;line-height:1}
+.app .app-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-height:340px;overflow:auto}
+.app .app-item{border:1px solid var(--gold-dim);border-radius:10px;padding:9px 11px;display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.03)}
+.app .app-item .row{flex:0 0 auto}
+.app .app-meta{font-size:12px;opacity:.78;line-height:1.6;word-break:break-word}
+.app .app-tag{color:var(--gold-bright)}
+.app .app-empty{opacity:.65;font-size:13px;padding:10px;border:1px dashed var(--gold-dim);border-radius:10px;list-style:none}
+.app .out{white-space:pre-wrap;min-height:20px;line-height:1.7}
+.app .badge{white-space:nowrap}
+.app button[disabled]{opacity:.45;cursor:not-allowed}
+.app .divider{width:100%}
+.app .app-intro strong{color:var(--gold-bright)}
+@media (max-width:640px){.app .app-item{align-items:flex-start}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة النشر المحلية لتطبيقات الحاويات وبيئات الاختبار", "url": "https://mdm1.org/apps/deploy-sandbox.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ البيانات بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُحفظ الإصدارات وسجل النشر والبيئات المجدولة وسجل التدقيق في التخزين المحلي، بينما تُشفّر الأسرار باستخدام AES-GCM بكلمة مرور لا تُحفظ في المتصفح."}}, {"@type": "Question", "name": "هل يحتاج التطبيق إلى خادم أو اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع العمليات محاكاة محلية داخل الصفحة، ولا تُرسل أي بيانات عبر الشبكة أو إلى خدمة خارجية."}}, {"@type": "Question", "name": "كيف يعمل التراجع الفوري؟", "acceptedAnswer": {"@type": "Answer", "text": "يعتمد على آخر عمليتي نشر؛ زر «تراجع فوري» يعيد نشر الإصدار السابق في البيئة نفسها ويضيف العملية إلى سجل النشر وسجل التدقيق."}}, {"@type": "Question", "name": "هل تنفّذ الجدولة النشر بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، الجدولة تعمل ما دامت الصفحة مفتوحة؛ إذا كانت مغلقة فتبقى المهمة قيد الانتظار حتى تعود وتفتح اللوحة."}}, {"@type": "Question", "name": "ما الفرق بين الأدوار الثلاثة؟", "acceptedAnswer": {"@type": "Answer", "text": "المدير يملك كل الصلاحيات، والمشغّل ينشر ويجدول وينشئ بيئات اختبار، والمشاهد يطّلع فقط دون تعديل أو نشر."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة النشر المحلية لتطبيقات الحاويات وبيئات الاختبار</h1>
+  <p class="page-sub">لوحة محلية لإدارة نشر تطبيقات الحاويات ومحاكاة Docker وKubernetes وPodman، تشمل إصدارات وتراجعًا فوريًا وبيئات اختبار وأسرارًا مشفّرة وجدولة وسجل تدقيق.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+<p class="app-intro">نعم، يمكنك إدارة نشر تطبيقات الحاويات بالكامل من متصفحك دون خادم أو حساب. تحاكي هذه اللوحة بيئات Docker وKubernetes وPodman، وتحفظ الإصدارات وعمليات النشر والتراجع في التخزين المحلي. تتيح لك تحرير إعدادات JSON لكل إصدار، وإنشاء بيئات اختبار سريعة بمدة صلاحية محددة، وتشفير الأسرار محليًا بكلمة مرور، وجدولة عمليات النشر، وتوليد ملاحظات تغيير تلقائية عند حفظ إصدار جديد. كما تسجّل كل عملية في سجل تدقيق، وتطبّق أدوار صلاحيات للمدير والمشغّل والمشاهد. كل شيء يعمل داخل الصفحة، ويمكنك البدء بإنشاء تطبيق ثم حفظ أول إصدار ونشره ثم تجربة التراجع الفوري بضغطة واحدة.</p>
+
+<div class="card">
+<div class="row app-head">
+<span class="badge" id="runtimeBadge">لا تطبيق</span>
+<h2>التطبيق والدور</h2>
+</div>
+<div class="row">
+<label>التطبيق النشط
+<select id="appSelect"></select>
+</label>
+<label>الدور والصلاحية
+<select id="roleSelect">
+<option value="admin">مدير</option>
+<option value="operator">مشغّل</option>
+<option value="viewer">مشاهد</option>
+</select>
+</label>
+</div>
+<div class="divider"></div>
+<div class="row">
+<label>اسم تطبيق جديد
+<input id="appNameInput" placeholder="مثال: متجر الويب" />
+</label>
+<label>محرّك الحاويات
+<select id="runtimeSelect">
+<option value="docker">Docker</option>
+<option value="kubernetes">Kubernetes</option>
+<option value="podman">Podman</option>
+</select>
+</label>
+<button id="createAppBtn">إنشاء تطبيق</button>
+</div>
+<div class="out" id="appMsg" role="status"></div>
+</div>
+
+<div class="card">
+<div class="row app-head">
+<h2>الإصدارات وإعدادات JSON</h2>
+<span class="big" id="verCount">0</span>
+</div>
+<div class="row">
+<label>الإصدار
+<select id="versionSelect"></select>
+</label>
+<button class="sec" id="genNotesBtn">توليد ملاحظات التغيير</button>
+<button id="saveVersionBtn">حفظ إصدار جديد</button>
+</div>
+<label>إعدادات JSON
+<textarea id="configInput" spellcheck="false" placeholder='{"image":"nginx:1.27","replicas":2}'></textarea>
+</label>
+<label>ملاحظات التغيير
+<textarea id="notesInput" placeholder="تُولَّد تلقائيًا عند الحفظ إن تُركت فارغة"></textarea>
+</label>
+<div class="out" id="configMsg" role="status"></div>
+<ul class="app-list" id="versionList"></ul>
+</div>
+
+<div class="card">
+<h2>النشر والتراجع</h2>
+<div class="row">
+<label>البيئة
+<select id="deployEnv">
+<option value="dev">تطوير</option>
+<option value="staging">اختبار</option>
+<option value="prod">إنتاج</option>
+</select>
+</label>
+<button id="deployBtn">نشر الإصدار المحدد</button>
+<button class="sec" id="rollbackBtn">تراجع فوري</button>
+</div>
+<div class="out" id="currentDeploy" role="status"></div>
+<div class="out" id="deployLog" role="log"></div>
+<div class="row app-head">
+<h3>سجل عمليات النشر</h3>
+<span class="big" id="deployCount">0</span>
+</div>
+<ul class="app-list" id="deployHistory"></ul>
+</div>
+
+<div class="card">
+<h2>بيئات اختبار سريعة</h2>
+<div class="row">
+<label>اسم البيئة
+<input id="testName" placeholder="اختياري" />
+</label>
+<label>المدة (دقائق)
+<input id="testTtl" type="number" min="1" max="1440" value="15" />
+</label>
+<button id="createTestBtn">إنشاء بيئة اختبار</button>
+</div>
+<div class="out" id="testMsg" role="status"></div>
+<ul class="app-list" id="testList"></ul>
+</div>
+
+<div class="card">
+<h2>خزنة الأسرار المشفّرة</h2>
+<div class="row">
+<label>كلمة مرور الخزنة
+<input id="vaultPass" type="password" autocomplete="new-password" />
+</label>
+<button class="sec" id="unlockVaultBtn">فتح الخزنة</button>
+</div>
+<div class="out" id="vaultStatus" role="status"></div>
+<div class="row">
+<label>اسم السر
+<input id="secretName" placeholder="مثال: مفتاح الدفع" />
+</label>
+<label>قيمة السر
+<input id="secretValue" type="password" />
+</label>
+<button id="addSecretBtn">تشفير وحفظ السر</button>
+</div>
+<div class="out" id="secretOut" role="status"></div>
+<ul class="app-list" id="secretList"></ul>
+</div>
+
+<div class="card">
+<h2>جدولة النشر</h2>
+<div class="row">
+<label>وقت التنفيذ
+<input id="scheduleAt" type="datetime-local" />
+</label>
+<label>الإصدار
+<select id="scheduleVersion"></select>
+</label>
+<label>البيئة
+<select id="scheduleEnv">
+<option value="dev">تطوير</option>
+<option value="staging">اختبار</option>
+<option value="prod">إنتاج</option>
+</select>
+</label>
+<button id="scheduleBtn">جدولة النشر</button>
+</div>
+<div class="out" id="scheduleMsg" role="status"></div>
+<ul class="app-list" id="scheduleList"></ul>
+</div>
+
+<div class="card">
+<div class="row app-head">
+<h2>سجل التدقيق</h2>
+<button class="sec" id="clearAuditBtn">مسح السجل</button>
+</div>
+<ul class="app-list" id="auditList"></ul>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ البيانات بعد إغلاق المتصفح؟</h3><p>نعم، تُحفظ الإصدارات وسجل النشر والبيئات المجدولة وسجل التدقيق في التخزين المحلي، بينما تُشفّر الأسرار باستخدام AES-GCM بكلمة مرور لا تُحفظ في المتصفح.</p><h3>هل يحتاج التطبيق إلى خادم أو اتصال بالإنترنت؟</h3><p>لا، جميع العمليات محاكاة محلية داخل الصفحة، ولا تُرسل أي بيانات عبر الشبكة أو إلى خدمة خارجية.</p><h3>كيف يعمل التراجع الفوري؟</h3><p>يعتمد على آخر عمليتي نشر؛ زر «تراجع فوري» يعيد نشر الإصدار السابق في البيئة نفسها ويضيف العملية إلى سجل النشر وسجل التدقيق.</p><h3>هل تنفّذ الجدولة النشر بعد إغلاق الصفحة؟</h3><p>لا، الجدولة تعمل ما دامت الصفحة مفتوحة؛ إذا كانت مغلقة فتبقى المهمة قيد الانتظار حتى تعود وتفتح اللوحة.</p><h3>ما الفرق بين الأدوار الثلاثة؟</h3><p>المدير يملك كل الصلاحيات، والمشغّل ينشر ويجدول وينشئ بيئات اختبار، والمشاهد يطّلع فقط دون تعديل أو نشر.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="play-session-studio.html" style="color:var(--gold-bright);font-weight:700">لوحة إعدادات لعبة محلية: ملفات شخصية وتعديلات</a><span style="opacity:.75"> — لوحة محلية لإنشاء ملفات تشغيل مخصصة للعبة: ضبط الرسومات والواجهة والأصوات والمؤشر، معاينة فورية، حفظ ملفات…</span></li><li style="margin:.5rem 0"><a href="error-watch-dashboard.html" style="color:var(--gold-bright);font-weight:700">لوحة مراقبة أخطاء المتصفح: التقاط وتحليل وتصدير محلي</a><span style="opacity:.75"> — التقط رسائل الخطأ والاستثناءات في متصفحك واعرضها مجمّعة بتردداتها وسياق المتصفح وسلسلة التتبع، مع فلترة وبحث…</span></li><li style="margin:.5rem 0"><a href="industrial-tag-studio.html" style="color:var(--gold-bright);font-weight:700">مصمم وسوم Modbus ومحاكاة القراءات محلياً</a><span style="opacity:.75"> — تطبيق ويب محلي لبناء إطارات Modbus RTU/TCP وفكّها، تصميم سجلات الوسوم، محاكاة القراءات، أرشفتها وتصدير…</span></li><li style="margin:.5rem 0"><a href="local-anime-library-tracker.html" style="color:var(--gold-bright);font-weight:700">مكتبة أنمي شخصية محلية: استيراد ومشاهدة بدون خادم</a><span style="opacity:.75"> — مكتبة أنمي عربية تعمل بالكامل في المتصفح: استورد فيديوهاتك وصورك، تابع التقدم، نظّم السيناريوهات والمدبلج…</span></li><li style="margin:.5rem 0"><a href="local-client-pipeline.html" style="color:var(--gold-bright);font-weight:700">تطبيق CRM عربي لإدارة العملاء والصفقات محلياً</a><span style="opacity:.75"> — تطبيق CRM عربي كامل يعمل أوفلاين بحفظ محلي، يدعم جهات اتصال، شركات، صفقات كانبان، ملاحظات وتذكيرات مع بحث…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-04 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const KEY="md_container_dash_v1";
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+const nowISO=()=>new Date().toISOString();
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=iso=>{if(!iso)return "—";try{return new Date(iso).toLocaleString("ar-EG",{dateStyle:"short",timeStyle:"short"});}catch(e){return iso;}};
+const fmtNum=n=>Number(n||0).toLocaleString("ar-EG");
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+function defaultState(){return {apps:[],activeAppId:null,secrets:[],schedules:[],testEnvs:[],audit:[],settings:{role:"admin"}};}
+function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return defaultState();const s=JSON.parse(raw);if(!s||!Array.isArray(s.apps))return defaultState();s.secrets=s.secrets||[];s.schedules=s.schedules||[];s.testEnvs=s.testEnvs||[];s.audit=s.audit||[];s.settings=s.settings||{role:"admin"};return s;}catch(e){return defaultState();}}
+let ST=load();
+let vaultPass="";
+function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){$("appMsg").textContent="تعذر الحفظ المحلي؛ قد تكون مساحة التخزين ممتلئة.";}}
+function getApp(){return ST.apps.find(a=>a.id===ST.activeAppId)||null;}
+function can(action){const r=ST.settings.role;if(action==="adminOnly")return r==="admin";if(r==="admin")return true;if(r==="operator")return ["deploy","rollback","test","schedule","editVersion"].includes(action);return false;}
+function pushAudit(action,detail){ST.audit.unshift({id:uid(),at:nowISO(),action,detail,role:ST.settings.role});if(ST.audit.length>80)ST.audit.length=80;save();}
+
+function templateFor(rt){
+return {name:"my-app",image:rt==="kubernetes"?"app:1.0.0":rt==="podman"?"nginx:alpine":"nginx:1.27",replicas:2,port:8080,env:{APP_ENV:"production"},resources:rt==="kubernetes"?{cpu:"250m",memory:"256Mi"}:{cpu:"0.5",memory:"512m"},strategy:rt==="kubernetes"?"RollingUpdate":"recreate"};
+}
+
+function renderApps(){
+const sel=$("appSelect");sel.innerHTML="";
+const ph=document.createElement("option");ph.value="";ph.textContent="— اختر تطبيقًا —";sel.appendChild(ph);
+ST.apps.forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.name+" ("+a.runtime+")";sel.appendChild(o);});
+if(!getApp())ST.activeAppId=null;
+sel.value=ST.activeAppId||"";
+const app=getApp();
+$("runtimeBadge").textContent=app?app.runtime+" • "+app.versions.length+" إصدار":"لا تطبيق";
+$("verCount").textContent=fmtNum(app?app.versions.length:0);
+}
+
+function renderVersions(){
+const app=getApp();
+const vs=$("versionSelect"),sv=$("scheduleVersion");
+const pv=vs.value,psv=sv.value;
+vs.innerHTML="";sv.innerHTML="";
+if(!app||!app.versions.length){
+vs.innerHTML='<option value="">لا توجد إصدارات</option>';
+sv.innerHTML='<option value="">لا توجد إصدارات</option>';
+$("versionList").innerHTML='<li class="app-empty">'+(app?"احفظ أول إصدار من المحرر لتظهر النسخ هنا.":"أنشئ تطبيقًا أولًا، ثم احفظ إصدارًا.")+'</li>';
+return;
+}
+app.versions.slice().reverse().forEach(v=>{
+const o=document.createElement("option");o.value=v.id;o.textContent=v.tag+" — "+fmt(v.createdAt);vs.appendChild(o);
+const o2=document.createElement("option");o2.value=v.id;o2.textContent=v.tag;sv.appendChild(o2);
+});
+const newest=app.versions[app.versions.length-1].id;
+vs.value=app.versions.some(v=>v.id===pv)?pv:newest;
+sv.value=app.versions.some(v=>v.id===psv)?psv:newest;
+$("versionList").innerHTML=app.versions.slice().reverse().map(v=>{
+const c=v.config||{};
+return '<li class="app-item"><div><strong class="app-tag">'+esc(v.tag)+'</strong> <span class="app-meta">'+esc(c.image||"—")+' • نسخ: '+esc(c.replicas!=null?c.replicas:"—")+'</span><div class="app-meta">'+esc(v.notes||"")+'</div><div class="app-meta">'+esc(fmt(v.createdAt))+'</div></div><div class="row"><button class="sec" id="deployVer_'+v.id+'" data-act="deployVer" data-id="'+v.id+'">نشر '+esc(v.tag)+'</button></div></li>';
+}).join("");
+applyPerms();
+}
+
+function renderDeploy(){
+const app=getApp();
+const d=app&&app.currentDeploy;
+$("currentDeploy").textContent=!app?"لا يوجد تطبيق محدد.":!d?"لا يوجد نشر حالي. اختر إصدارًا ثم اضغط «نشر الإصدار المحدد».":"الإصدار النشط: "+d.tag+"\nالبيئة: "+d.env+"\nالوقت: "+fmt(d.at)+"\nالمحرّك: "+d.runtime;
+$("deployHistory").innerHTML=!app||!app.deployments.length?'<li class="app-empty">لا توجد عمليات نشر بعد.</li>':app.deployments.slice(0,10).map(x=>'<li class="app-item"><div><strong>'+esc(x.tag)+'</strong> <span class="app-meta">'+esc(x.env)+' • '+esc(fmt(x.at))+'</span></div><span class="badge">'+esc(x.kind==="rollback"?"تراجع":"نشر")+'</span></li>').join("");
+$("deployCount").textContent=fmtNum(app?app.deployments.length:0);
+}
+
+function remaining(t){const ms=t.expiresAt-Date.now();if(ms<=0)return "منتهية";const s=Math.floor(ms/1000);return Math.floor(s/60)+"د "+String(s%60).padStart(2,"0")+"ث";}
+function renderTests(){
+const el=$("testList");
+if(!ST.testEnvs.length){el.innerHTML='<li class="app-empty">لا توجد بيئات اختبار. أنشئ واحدة بمدة صلاحية قصيرة.</li>';return;}
+el.innerHTML=ST.testEnvs.slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).map(t=>{
+const st=t.status==="running"?"قيد التشغيل":t.status==="expired"?"منتهية":"—";
+return '<li class="app-item"><div><strong>'+esc(t.name)+'</strong> <span class="app-meta">'+esc(t.appName)+' • '+esc(t.tag)+' • '+st+'</span><div class="app-meta">المتبقي: <span id="exp_'+t.id+'">'+esc(t.status==="running"?remaining(t):"منتهية")+'</span></div></div><button class="sec" id="kill_'+t.id+'" data-act="killTest" data-id="'+t.id+'">حذف البيئة</button></li>';
+}).join("");
+}
+
+function renderSecrets(){
+$("vaultStatus").textContent=vaultPass?"الخزنة مفتوحة في هذه الجلسة؛ المفتاح في الذاكرة فقط.":"الخزنة مقفلة. أدخل كلمة المرور واضغط «فتح الخزنة».";
+const el=$("secretList");
+if(!ST.secrets.length){el.innerHTML='<li class="app-empty">لا أسرار محفوظة بعد. أضف اسمًا وقيمة لتشفيرها محليًا.</li>';return;}
+el.innerHTML=ST.secrets.map(s=>'<li class="app-item"><div><strong>'+esc(s.name)+'</strong><div class="app-meta">أُضيف '+esc(fmt(s.createdAt))+' • تشفير AES-GCM</div></div><div class="row"><button class="sec" id="show_'+s.id+'" data-act="showSecret" data-id="'+s.id+'">عرض القيمة</button><button class="sec" id="del_'+s.id+'" data-act="delSecret" data-id="'+s.id+'">حذف</button></div></li>').join("");
+}
+
+function renderSchedules(){
+const el=$("scheduleList");
+if(!ST.schedules.length){el.innerHTML='<li class="app-empty">لا عمليات مجدولة. اختر إصدارًا ووقتًا ثم اضغط «جدولة النشر».</li>';return;}
+el.innerHTML=ST.schedules.slice().sort((a,b)=>a.at.localeCompare(b.at)).map(s=>{
+const st=s.status==="pending"?"قيد الانتظار":s.status==="running"?"جارٍ التنفيذ":s.status==="done"?"منفّذ":s.status==="failed"?"فشل":"ملغى";
+const kill=s.status==="pending"?'<button class="sec" id="cancel_'+s.id+'" data-act="cancelSch" data-id="'+s.id+'">إلغاء</button>':"";
+return '<li class="app-item"><div><strong>'+esc(s.tag)+'</strong> <span class="app-meta">'+esc(s.env)+' • '+esc(fmt(s.at))+'</span><div class="app-meta">'+esc(st)+'</div></div>'+kill+'</li>';
+}).join("");
+}
+
+function renderAudit(){
+const el=$("auditList");
+if(!ST.audit.length){el.innerHTML='<li class="app-empty">سجل التدقيق فارغ. ستظهر العمليات هنا تلقائيًا.</li>';return;}
+el.innerHTML=ST.audit.slice(0,60).map(a=>'<li class="app-item"><div><strong>'+esc(a.action)+'</strong><div class="app-meta">'+esc(a.detail)+' • '+esc(a.role)+'</div></div><span class="app-meta">'+esc(fmt(a.at))+'</span></li>').join("");
+}
+
+function applyPerms(){
+const app=getApp();
+$("createAppBtn").disabled=!can("adminOnly");
+$("saveVersionBtn").disabled=!can("editVersion");
+$("genNotesBtn").disabled=!can("editVersion");
+$("deployBtn").disabled=!can("deploy")||!app||!app.versions.length;
+$("rollbackBtn").disabled=!can("rollback")||!app||app.deployments.length<2;
+$("createTestBtn").disabled=!can("test")||!app||!app.versions.length;
+$("scheduleBtn").disabled=!can("schedule")||!app||!app.versions.length;
+$("addSecretBtn").disabled=!can("adminOnly");
+$("unlockVaultBtn").disabled=!can("adminOnly");
+$("clearAuditBtn").disabled=!can("adminOnly");
+$("roleSelect").value=ST.settings.role;
+}
+
+function flatten(o,p,out){out=out||{};p=p||"";if(o&&typeof o==="object"&&!Array.isArray(o)){Object.keys(o).forEach(k=>flatten(o[k],p?p+"."+k:k,out));}else{out[p]=JSON.stringify(o);}return out;}
+function diffConfig(a,b){a=a||{};b=b||{};const fa=flatten(a),fb=flatten(b);const keys=Array.from(new Set(Object.keys(fa).concat(Object.keys(fb))));const res=[];keys.forEach(k=>{if(!(k in fa))res.push("إضافة "+k+": "+fb[k]);else if(!(k in fb))res.push("حذف "+k);else if(fa[k]!==fb[k])res.push("تعديل "+k+" من "+fa[k]+" إلى "+fb[k]);});return res;}
+function autoNotes(prev,cfg){
+if(!prev)return "الإصدار الأول • الصورة "+(cfg.image||"—")+" • "+(cfg.replicas!=null?cfg.replicas:1)+" نسخة.";
+const d=diffConfig(prev.config,cfg);
+if(!d.length)return "تحديث إصدار دون تغيير في القيم الرئيسية للإعدادات.";
+return d.slice(0,5).join(" • ")+(d.length>5?" • …":"");
+}
+
+function stepsFor(app,v){
+const c=v.config||{};const img=c.image||"app:latest";const port=c.port||8080;const rep=c.replicas!=null?c.replicas:1;
+if(app.runtime==="kubernetes")return ["kubectl config use-context local-sim","kubectl set image deployment/"+app.name+" app="+img+" --record","kubectl rollout status deployment/"+app.name,"النسخ الجاهزة: "+rep+"/"+rep+" — الحالة: ناجح"];
+if(app.runtime==="podman")return ["podman pull "+img,"podman rm -f "+app.name+" || true","podman run -d --name "+app.name+" -p "+port+":80 "+img,"podman ps --filter name="+app.name+" — الحالة: قيد التشغيل"];
+return ["docker pull "+img,"docker rm -f "+app.name+" || true","docker run -d --name "+app.name+" -p "+port+":80 "+img,"docker ps --filter name="+app.name+" — الحالة: Up"];
+}
+async function deployVersion(app,v,env,kind,quiet){
+if(!app||!v)return false;
+const log=$("deployLog");
+log.textContent="جاري تنفيذ "+app.runtime+"...\n";
+for(const s of stepsFor(app,v)){log.textContent+="$ "+s+"\n";await sleep(150);}
+app.currentDeploy={versionId:v.id,tag:v.tag,env,at:nowISO(),runtime:app.runtime};
+app.deployments.unshift({id:uid(),versionId:v.id,tag:v.tag,env,at:app.currentDeploy.at,kind:kind||"deploy"});
+if(app.deployments.length>50)app.deployments.length=50;
+log.textContent+="\nاكتمل "+(kind==="rollback"?"التراجع":"النشر")+" إلى "+v.tag+" في بيئة "+env+" بنجاح.";
+pushAudit(kind==="rollback"?"تراجع فوري":"نشر إصدار",app.name+" → "+v.tag+" ("+env+")");
+save();renderDeploy();renderApps();renderVersions();renderSchedules();
+if(!quiet)renderAudit();
+return true;
+}
+
+function b64(buf){const b=new Uint8Array(buf);let s="";for(let i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function unb64(str){const bin=atob(str);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+async function deriveKey(pass,salt){
+const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]);
+return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:120000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function encryptRec(pass,plain){
+const salt=crypto.getRandomValues(new Uint8Array(16));
+const iv=crypto.getRandomValues(new Uint8Array(12));
+const key=await deriveKey(pass,salt);
+const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv:iv},key,new TextEncoder().encode(plain));
+return {salt:b64(salt),iv:b64(iv),ct:b64(ct)};
+}
+async function decryptRec(pass,rec){
+const salt=unb64(rec.salt),iv=unb64(rec.iv),data=unb64(rec.ct);
+const key=await deriveKey(pass,salt);
+const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:iv},key,data);
+return new TextDecoder().decode(pt);
+}
+
+$("createAppBtn").addEventListener("click",function(){
+if(!can("adminOnly")){$("appMsg").textContent="إنشاء التطبيقات متاح لدور المدير فقط.";return;}
+const name=$("appNameInput").value.trim();
+const rt=$("runtimeSelect").value;
+if(name.length<2){$("appMsg").textContent="اكتب اسم تطبيق من حرفين على الأقل.";return;}
+if(ST.apps.some(a=>a.name===name)){$("appMsg").textContent="يوجد تطبيق بهذا الاسم بالفعل.";return;}
+const app={id:uid(),name:name,runtime:rt,versions:[],deployments:[],currentDeploy:null,seq:0,createdAt:nowISO()};
+ST.apps.push(app);ST.activeAppId=app.id;
+pushAudit("إنشاء تطبيق",name+" • "+rt);
+save();$("appNameInput").value="";
+$("configInput").value=JSON.stringify(templateFor(rt),null,2);
+$("notesInput").value="";
+$("configMsg").textContent="تم إنشاء التطبيق «"+name+"». عدّل JSON ثم احفظ أول إصدار.";
+renderAll();
+});
+
+$("appSelect").addEventListener("change",function(){
+ST.activeAppId=this.value||null;
+const app=getApp();
+if(app&&app.versions.length){
+const v=app.versions[app.versions.length-1];
+$("configInput").value=JSON.stringify(v.config,null,2);
+$("notesInput").value=v.notes||"";
+$("configMsg").textContent="تم تحميل أحدث إصدار "+v.tag+".";
+}else if(app){
+$("configInput").value=JSON.stringify(templateFor(app.runtime),null,2);
+$("notesInput").value="";
+$("configMsg").textContent="لا إصدارات بعد؛ احفظ أول إصدار.";
+}else{
+$("configInput").value="";$("notesInput").value="";$("configMsg").textContent="";
+}
+save();renderAll();
+});
+
+$("versionSelect").addEventListener("change",function(){
+const app=getApp();if(!app)return;
+const v=app.versions.find(x=>x.id===this.value);
+if(v){$("configInput").value=JSON.stringify(v.config,null,2);$("notesInput").value=v.notes||"";$("configMsg").textContent="تم تحميل "+v.tag+" في المحرر.";}
+});
+
+$("genNotesBtn").addEventListener("click",function(){
+if(!can("editVersion")){$("configMsg").textContent="تعديل الإعدادات متاح للمدير أو المشغّل.";return;}
+const app=getApp();if(!app){$("configMsg").textContent="أنشئ تطبيقًا أولًا.";return;}
+let cfg;try{cfg=JSON.parse($("configInput").value);}catch(e){$("configMsg").textContent="JSON غير صالح: "+e.message;return;}
+if(!cfg||typeof cfg!=="object"||Array.isArray(cfg)){$("configMsg").textContent="يجب أن يكون JSON كائنًا (Object) وليس مصفوفة.";return;}
+const prev=app.versions[app.versions.length-1]||null;
+$("notesInput").value=autoNotes(prev,cfg);
+$("configMsg").textContent="تم توليد ملاحظات التغيير تلقائيًا.";
+});
+
+$("saveVersionBtn").addEventListener("click",function(){
+if(!can("editVersion")){$("configMsg").textContent="حفظ الإصدارات متاح للمدير أو المشغّل.";return;}
+const app=getApp();if(!app){$("configMsg").textContent="أنشئ تطبيقًا أولًا.";return;}
+let cfg;try{cfg=JSON.parse($("configInput").value);}catch(e){$("configMsg").textContent="JSON غير صالح: "+e.message;return;}
+if(!cfg||typeof cfg!=="object"||Array.isArray(cfg)){$("configMsg").textContent="يجب أن يكون JSON كائنًا (Object) وليس مصفوفة.";return;}
+const prev=app.versions[app.versions.length-1]||null;
+const notes=$("notesInput").value.trim()||autoNotes(prev,cfg);
+app.seq+=1;const tag="v"+app.seq;
+const v={id:uid(),tag:tag,config:cfg,notes:notes,createdAt:nowISO()};
+app.versions.push(v);
+pushAudit("حفظ إصدار",app.name+" "+tag);
+save();renderVersions();renderApps();renderAudit();
+$("versionSelect").value=v.id;$("scheduleVersion").value=v.id;
+$("configMsg").textContent="تم حفظ "+tag+" — "+notes;
+});
+
+$("deployBtn").addEventListener("click",async function(){
+if(!can("deploy")){$("deployLog").textContent="لا تملك صلاحية النشر.";return;}
+const app=getApp();
+const v=app&&app.versions.find(x=>x.id===$("versionSelect").value);
+if(!app||!v){$("deployLog").textContent="اختر تطبيقًا وإصدارًا صالحين أولًا.";return;}
+await deployVersion(app,v,$("deployEnv").value,"deploy");
+});
+
+$("rollbackBtn").addEventListener("click",async function(){
+if(!can("rollback")){$("deployLog").textContent="صلاحية التراجع غير متاحة لدورك الحالي.";return;}
+const app=getApp();
+if(!app){$("deployLog").textContent="لا يوجد تطبيق محدد.";return;}
+const target=app.deployments[1];
+if(!target){$("deployLog").textContent="لا يوجد نشر سابق كافٍ للتراجع عنه.";return;}
+const v=app.versions.find(x=>x.id===target.versionId);
+if(!v){$("deployLog").textContent="إصدار التراجع غير موجود في السجل.";return;}
+await deployVersion(app,v,target.env,"rollback");
+});
+
+$("versionList").addEventListener("click",async function(e){
+const b=e.target.closest("button[data-act]");if(!b)return;
+if(b.dataset.act!=="deployVer")return;
+if(!can("deploy")){$("deployLog").textContent="لا تملك صلاحية النشر.";return;}
+const app=getApp();
+const v=app&&app.versions.find(x=>x.id===b.dataset.id);
+if(v)await deployVersion(app,v,$("deployEnv").value,"deploy");
+});
+
+$("createTestBtn").addEventListener("click",function(){
+if(!can("test")){$("testMsg").textContent="إنشاء بيئات الاختبار متاح للمدير أو المشغّل.";return;}
+const app=getApp();
+const v=app&&app.versions.find(x=>x.id===$("versionSelect").value);
+if(!app||!v){$("testMsg").textContent="اختر تطبيقًا وإصدارًا أولًا.";return;}
+const ttl=parseInt($("testTtl").value,10);
+if(!ttl||ttl<1||ttl>1440){$("testMsg").textContent="المدة بالدقائق يجب أن تكون بين 1 و1440.";return;}
+const name=$("testName").value.trim()||("test-"+v.tag+"-"+Math.floor(Math.random()*900+100));
+ST.testEnvs.push({id:uid(),appId:app.id,appName:app.name,tag:v.tag,versionId:v.id,name:name,createdAt:nowISO(),expiresAt:Date.now()+ttl*60000,status:"running"});
+pushAudit("إنشاء بيئة اختبار",name+" • "+app.name+" "+v.tag+" • "+ttl+" دقيقة");
+save();$("testName").value="";$("testMsg").textContent="تم إنشاء البيئة «"+name+"» وتنتهي تلقائيًا بعد "+ttl+" دقيقة.";
+renderTests();renderAudit();
+});
+
+$("testList").addEventListener("click",function(e){
+const b=e.target.closest("button[data-act]");if(!b)return;
+if(!can("test")){$("testMsg").textContent="إدارة بيئات الاختبار متاحة للمدير أو المشغّل.";return;}
+const t=ST.testEnvs.find(x=>x.id===b.dataset.id);if(!t)return;
+ST.testEnvs=ST.testEnvs.filter(x=>x.id!==t.id);
+pushAudit("حذف بيئة اختبار",t.name);
+save();renderTests();renderAudit();$("testMsg").textContent="تم حذف البيئة «"+t.name+"».";
+});
+
+$("unlockVaultBtn").addEventListener("click",async function(){
+if(!can("adminOnly")){$("vaultStatus").textContent="إدارة الأسرار متاحة للمدير فقط.";return;}
+const pass=$("vaultPass").value;
+if(pass.length<4){$("vaultStatus").textContent="كلمة مرور الخزنة يجب أن تكون 4 أحرف على الأقل.";return;}
+if(!(window.crypto&&window.crypto.subtle)){$("vaultStatus").textContent="التشفير غير مدعوم في هذا المتصفح.";return;}
+if(ST.secrets.length){
+try{await decryptRec(pass,ST.secrets[0]);}catch(e){$("vaultStatus").textContent="كلمة المرور غير صحيحة أو البيانات تالفة.";return;}
+}
+vaultPass=pass;$("vaultPass").value="";
+$("vaultStatus").textContent="تم فتح الخزنة. المفتاح في الذاكرة فقط ولن يُحفظ.";
+renderSecrets();
+});
+
+$("addSecretBtn").addEventListener("click",async function(){
+if(!can("adminOnly")){$("vaultStatus").textContent="إدارة الأسرار متاحة للمدير فقط.";return;}
+if(!vaultPass){$("vaultStatus").textContent="افتح الخزنة أولًا بكلمة المرور.";return;}
+const name=$("secretName").value.trim(),val=$("secretValue").value;
+if(!name||!val){$("vaultStatus").textContent="اكتب اسم السر وقيمته.";return;}
+if(ST.secrets.some(s=>s.name===name)){$("vaultStatus").textContent="يوجد سر بنفس الاسم بالفعل.";return;}
+try{
+const enc=await encryptRec(vaultPass,val);
+ST.secrets.push({id:uid(),name:name,salt:enc.salt,iv:enc.iv,ct:enc.ct,createdAt:nowISO()});
+pushAudit("إضافة سر مشفّر",name);
+save();$("secretName").value="";$("secretValue").value="";
+$("vaultStatus").textContent="تم تشفير السر وحفظه محليًا باستخدام AES-GCM.";
+renderSecrets();renderAudit();
+}catch(e){$("vaultStatus").textContent="تعذر تشفير السر في هذا المتصفح.";}
+});
+
+$("secretList").addEventListener("click",async function(e){
+const b=e.target.closest("button[data-act]");if(!b)return;
+if(!can("adminOnly")){$("secretOut").textContent="إدارة الأسرار متاحة للمدير فقط.";return;}
+const id=b.dataset.id;
+if(b.dataset.act==="showSecret"){
+if(!vaultPass){$("secretOut").textContent="الخزنة مقفلة؛ أدخل كلمة المرور واضغط «فتح الخزنة».";return;}
+const s=ST.secrets.find(x=>x.id===id);if(!s)return;
+try{$("secretOut").textContent="قيمة السر «"+s.name+"»:\n"+await decryptRec(vaultPass,s);}catch(err){$("secretOut").textContent="تعذر فك التشفير؛ تحقق من كلمة المرور.";}
+}else if(b.dataset.act==="delSecret"){
+const s=ST.secrets.find(x=>x.id===id);if(!s)return;
+ST.secrets=ST.secrets.filter(x=>x.id!==id);
+pushAudit("حذف سر",s.name);save();renderSecrets();renderAudit();
+$("secretOut").textContent="تم حذف السر «"+s.name+"».";
+}
+});
+
+$("scheduleBtn").addEventListener("click",function(){
+if(!can("schedule")){$("scheduleMsg").textContent="جدولة النشر متاحة للمدير أو المشغّل.";return;}
+const app=getApp();
+const v=app&&app.versions.find(x=>x.id===$("scheduleVersion").value);
+if(!app||!v){$("scheduleMsg").textContent="اختر تطبيقًا وإصدارًا صالحًا.";return;}
+const raw=$("scheduleAt").value;
+if(!raw){$("scheduleMsg").textContent="حدّد وقت التنفيذ.";return;}
+const at=new Date(raw);
+if(isNaN(at.getTime())||at.getTime()<=Date.now()){$("scheduleMsg").textContent="اختر وقتًا في المستقبل.";return;}
+const env=$("scheduleEnv").value;
+ST.schedules.push({id:uid(),appId:app.id,appName:app.name,versionId:v.id,tag:v.tag,env:env,at:at.toISOString(),status:"pending",createdAt:nowISO()});
+pushAudit("جدولة نشر",app.name+" "+v.tag+" → "+env+" • "+fmt(at.toISOString()));
+save();$("scheduleMsg").textContent="تمت الجدولة. ستنفّذ تلقائيًا ما دامت الصفحة مفتوحة.";
+renderSchedules();renderAudit();
+});
+
+$("scheduleList").addEventListener("click",function(e){
+const b=e.target.closest("button[data-act]");if(!b)return;
+if(b.dataset.act!=="cancelSch")return;
+if(!can("schedule")){$("scheduleMsg").textContent="إلغاء الجدولة متاح للمدير أو المشغّل.";return;}
+const s=ST.schedules.find(x=>x.id===b.dataset.id);if(!s)return;
+ST.schedules=ST.schedules.filter(x=>x.id!==s.id);
+pushAudit("إلغاء جدولة",s.appName+" "+s.tag);
+save();renderSchedules();renderAudit();$("scheduleMsg").textContent="تم إلغاء الجدولة.";
+});
+
+$("clearAuditBtn").addEventListener("click",function(){
+if(!can("adminOnly")){return;}
+ST.audit=[];save();renderAudit();
+});
+
+$("roleSelect").addEventListener("change",function(){
+const r=this.value;
+if(!["admin","operator","viewer"].includes(r))return;
+const old=ST.settings.role;
+ST.settings.role=r;
+pushAudit("تغيير صلاحية",old+" → "+r);
+save();applyPerms();renderAudit();
+});
+
+setInterval(function(){
+let changed=false;
+ST.testEnvs.forEach(function(t){
+if(t.status==="running"&&t.expiresAt<=Date.now()){t.status="expired";changed=true;pushAudit("انتهاء بيئة اختبار",t.name);}
+const el=document.getElementById("exp_"+t.id);
+if(el)el.textContent=t.status==="running"?remaining(t):"منتهية";
+});
+if(changed){save();renderTests();renderAudit();}
+},1000);
+
+let schBusy=false;
+async function tickSchedules(){
+if(schBusy)return;
+const due=ST.schedules.filter(s=>s.status==="pending"&&new Date(s.at).getTime()<=Date.now());
+if(!due.length)return;
+schBusy=true;
+for(const s of due){
+const app=ST.apps.find(a=>a.id===s.appId);
+const v=app&&app.versions.find(x=>x.id===s.versionId);
+if(!app||!v){s.status="failed";save();continue;}
+s.status="running";save();renderSchedules();
+await deployVersion(app,v,s.env,"deploy",true);
+s.status="done";save();
+}
+schBusy=false;
+renderSchedules();renderAudit();renderDeploy();renderApps();renderVersions();
+}
+setInterval(tickSchedules,5000);
+setTimeout(tickSchedules,1200);
+
+function renderAll(){renderApps();renderVersions();renderDeploy();renderTests();renderSecrets();renderSchedules();renderAudit();applyPerms();}
+(function(){
+const pad=n=>String(n).padStart(2,"0");
+const d=new Date(Date.now()+600000);
+$("scheduleAt").value=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
+})();
+const app0=getApp();
+if(app0&&app0.versions.length){
+const v=app0.versions[app0.versions.length-1];
+$("configInput").value=JSON.stringify(v.config,null,2);
+$("notesInput").value=v.notes||"";
+}else if(app0){
+$("configInput").value=JSON.stringify(templateFor(app0.runtime),null,2);
+}
+renderAll();
+if(!ST.apps.length)$("configMsg").textContent="ابدأ بإنشاء تطبيق من الأعلى، ثم عدّل JSON واحفظ أول إصدار.";
+})();
+</script>
+</body>
+</html>
