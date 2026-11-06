@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محوّل الجداول وGeoJSON إلى خرائط تفاعلية دون خادم | MDM1</title>
+<meta name="description" content="خرائط تفاعلية من الجداول وإحداثيات GPS وGeoJSON دون خادم أو حساب أو إنترنت، مع التلوين بالقيم والتجميع والتصدير كملف HTML أو صورة وحفظ المشاريع محليًا.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-map-studio.html">
+<meta property="og:title" content="محوّل الجداول وGeoJSON إلى خرائط تفاعلية دون خادم">
+<meta property="og:description" content="خرائط تفاعلية من الجداول وإحداثيات GPS وGeoJSON دون خادم أو حساب أو إنترنت، مع التلوين بالقيم والتجميع والتصدير كملف HTML أو صورة وحفظ المشاريع محليًا.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-map-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; }
+.app .mapWrap { position: relative; background: #101820; border: 1px solid var(--gold-dim); border-radius: 8px; overflow: hidden; }
+.app .worldSvg { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; }
+.app .popup { position: absolute; display: none; background: var(--dark); border: 1px solid var(--gold); color: var(--light); padding: 10px; border-radius: 8px; min-width: 180px; max-width: 260px; z-index: 5; }
+.app .popup.open { display: block; }
+.app .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.app .hint { color: var(--gold-bright); font-size: 14px; }
+.app .pointLbl { font-size: 11px; pointer-events: none; }
+.app .mapBar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.app .status { min-height: 24px; color: var(--gold-bright); }
+.app .listOut { max-height: 180px; overflow: auto; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محوّل البيانات إلى خرائط تفاعلية يعمل دون خادم", "url": "https://mdm1.org/apps/offline-map-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون إنترنت أو خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، الخريطة مبسطة ومدمجة داخل الصفحة، وكل المعالجة تتم في المتصفح، لذلك يعمل دون اتصال بعد تحميل الصفحة مرة واحدة."}}, {"@type": "Question", "name": "ما تنسيقات البيانات المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "جداول CSV وTSV بأعمدة الاسم وخط العرض وخط الطول والقيمة والمنطقة والفئة، وإحداثيات GPS في كل سطر، وملفات GeoJSON بأنواع النقاط والخطوط والمضلعات."}}, {"@type": "Question", "name": "كيف أضيف علامة جديدة بسرعة؟", "acceptedAnswer": {"@type": "Answer", "text": "انقر على أي فراغ في الخريطة لتعبئة خط العرض وخط الطول تلقائيا، ثم اكتب اسم العلامة واضغط زر إضافة العلامة المحددة إلى الخريطة."}}, {"@type": "Question", "name": "كيف ألوّن القارات حسب القيم وأجمع النقاط؟", "acceptedAnswer": {"@type": "Answer", "text": "فعّل خيار تلوين القارات واختر المتوسط أو المجموع أو الأقصى، وفعّل تجميع النقاط القريبة لعرض فقاعات مرقمة، ثم صفِّ النتائج بالاسم أو الفئة أو مدى القيم."}}, {"@type": "Question", "name": "كيف أصدّر الخريطة وأحفظ عملي؟", "acceptedAnswer": {"@type": "Answer", "text": "صدّر الخريطة كملف HTML مستقل يفتح دون إنترنت أو كصورة PNG، واحفظ المشروع باسمه في المتصفح لتحميله أو حذفه لاحقا من قائمة المشاريع المحفوظة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محوّل البيانات إلى خرائط تفاعلية يعمل دون خادم</h1>
+  <p class="page-sub">خرائط تفاعلية من الجداول وإحداثيات GPS وGeoJSON دون خادم أو حساب أو إنترنت، مع التلوين بالقيم والتجميع والتصدير كملف HTML أو صورة وحفظ المشاريع محليًا.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، يمكنك تحويل جداول البيانات وإحداثيات GPS وملفات GeoJSON إلى خريطة تفاعلية كاملة داخل المتصفح دون خادم أو حساب أو اتصال بالإنترنت، لأن هذا التطبيق يعتمد على خريطة عالم مبسطة مضمنة في الصفحة نفسها مع إسقاط خطي بسيط يحوّل خطوط الطول والعرض إلى مواضع على الشاشة. ما عليك سوى لصق جدول بصيغة CSV أو TSV أو تحميل ملف، أو لصق إحداثيات مثل خط العرض وخط الطول في كل سطر، أو لصق محتوى GeoJSON، وستظهر النقاط والخطوط والمناطق فورا على الخريطة. تستطيع النقر على أي نقطة لعرض نافذة منبثقة باسمها وقيمتها، والنقر على الخريطة لإضافة علامة جديدة، وتفعيل تجميع النقاط القريبة، وتصفية النتائج حسب الاسم أو الفئة أو القيمة، وتلوين القارات حسب متوسط قيم البيانات، وضبط لون النقاط وحجمها وشفافيتها. كما يمكنك حفظ مشروعك محليا في متصفحك لاستكماله لاحقا، وتصدير الخريطة كملف HTML مستقل يفتح دون إنترنت أو كصورة PNG لمشاركتها في العروض والتقارير.</p>
+<div class="app">
+<div class="card">
+<div class="row mapBar">
+<button type="button" id="zoomInBtn">تكبير الخريطة</button>
+<button type="button" id="zoomOutBtn" class="sec">تصغير الخريطة</button>
+<button type="button" id="resetViewBtn" class="sec">إعادة تعيين عرض الخريطة</button>
+<span class="hint">اسحب الخريطة للتحريك، وانقر على فراغ لتحديد إحداثيات علامة جديدة، وانقر على نقطة أو منطقة لعرض التفاصيل.</span>
+</div>
+<div class="mapWrap" id="mapWrap">
+<svg id="worldSvg" class="worldSvg" viewBox="0 0 1000 500" role="img" aria-label="خريطة العالم المبسطة"></svg>
+<div id="popup" class="popup"><strong id="popupTitle"></strong><div id="popupBody"></div><button type="button" id="popupCloseBtn" class="sec">إغلاق النافذة المنبثقة</button></div>
+</div>
+<div class="row">
+<div><span class="big" id="totalCount">0</span> إجمالي النقاط</div>
+<div><span class="big" id="visibleCount">0</span> النقاط الظاهرة بعد التصفية</div>
+<div><span class="big" id="avgValue">—</span> متوسط القيم الظاهرة</div>
+<div><span class="big" id="regionCount">0</span> عدد المناطق ذات البيانات</div>
+</div>
+<div id="status" class="out status" role="status"></div>
+</div>
+<div class="divider"></div>
+<div class="grid">
+<div class="card">
+<label for="csvText">لصق جدول البيانات بصيغة CSV أو TSV</label>
+<textarea id="csvText" rows="6" placeholder="name,lat,lon,value,region,category&#10;القاهرة,30.04,31.23,120,أفريقيا,مدينة"></textarea>
+<label for="csvFile">أو اختر ملف جدول من جهازك</label>
+<input type="file" id="csvFile" accept=".csv,.tsv,.txt">
+<button type="button" id="importCsvBtn">استيراد الجدول الملصق إلى الخريطة</button>
+<p class="hint">الأعمدة المدعومة: الاسم، خط العرض، خط الطول، القيمة، المنطقة، الفئة. إذا لم توجد ترويسة يفترض هذا الترتيب.</p>
+</div>
+<div class="card">
+<label for="gpsText">لصق إحداثيات GPS، كل سطر في جهة</label>
+<textarea id="gpsText" rows="6" placeholder="30.04,31.23,120&#10;51.5,-0.12,80"></textarea>
+<button type="button" id="importGpsBtn">استيراد إحداثيات GPS إلى الخريطة</button>
+<p class="hint">الصيغة: خط العرض، خط الطول، ثم اختياري القيمة. يمكن كتابة اسم قبل الأرقام، مثل: القاهرة 30.04 31.23 120</p>
+</div>
+<div class="card">
+<label for="geoText">لصق محتوى ملف GeoJSON</label>
+<textarea id="geoText" rows="6" placeholder='{"type":"FeatureCollection","features":[]}'></textarea>
+<label for="geoFile">أو اختر ملف GeoJSON من جهازك</label>
+<input type="file" id="geoFile" accept=".json,.geojson">
+<button type="button" id="importGeoBtn">استيراد GeoJSON إلى الخريطة</button>
+<p class="hint">يدعم النقاط والخطوط والمضلعات بأنواعها المفردة والمركبة، مع الاسم والقيمة من خصائص كل عنصر.</p>
+</div>
+<div class="card">
+<label for="addName">اسم العلامة الجديدة</label>
+<input type="text" id="addName" placeholder="مثال: موقع جديد">
+<label for="addLat">خط العرض للعلامة الجديدة</label>
+<input type="number" id="addLat" step="any" placeholder="30.04">
+<label for="addLon">خط الطول للعلامة الجديدة</label>
+<input type="number" id="addLon" step="any" placeholder="31.23">
+<label for="addValue">قيمة العلامة الجديدة</label>
+<input type="number" id="addValue" step="any" placeholder="100">
+<label for="addRegion">منطقة العلامة الجديدة</label>
+<select id="addRegion"><option value="">بدون منطقة</option><option>أفريقيا</option><option>أوروبا</option><option>آسيا</option><option>أمريكا الشمالية</option><option>أمريكا الجنوبية</option><option>أوقيانوسيا</option></select>
+<label for="addCategory">فئة العلامة الجديدة</label>
+<input type="text" id="addCategory" placeholder="مثال: مدينة">
+<button type="button" id="addPointBtn">إضافة العلامة المحددة إلى الخريطة</button>
+</div>
+<div class="card">
+<label for="searchText">بحث عن نقطة بالاسم أو المنطقة أو الفئة</label>
+<input type="search" id="searchText" placeholder="اكتب كلمة للبحث">
+<label for="filterCategory">تصفية النقاط حسب الفئة</label>
+<select id="filterCategory"><option value="الكل">الكل</option></select>
+<label for="minValue">أدنى قيمة للتصفية</label>
+<input type="number" id="minValue" step="any">
+<label for="maxValue">أقصى قيمة للتصفية</label>
+<input type="number" id="maxValue" step="any">
+<button type="button" id="resetFilterBtn" class="sec">إلغاء كل التصفية والبحث</button>
+<div class="divider"></div>
+<label><input type="checkbox" id="clusterToggle"> تجميع النقاط القريبة في فقاعات مرقمة</label>
+<label><input type="checkbox" id="choroplethToggle"> تلوين القارات حسب قيم البيانات</label>
+<label for="choroplethMode">طريقة حساب قيمة التلوين لكل قارة</label>
+<select id="choroplethMode"><option value="avg">متوسط القيم</option><option value="sum">مجموع القيم</option><option value="max">أقصى قيمة</option></select>
+<label for="styleColor">لون النقاط وأشكال GeoJSON</label>
+<input type="color" id="styleColor" value="#d4af37">
+<label for="styleSize">حجم النقاط <span id="sizeVal">6</span></label>
+<input type="range" id="styleSize" min="2" max="18" value="6">
+<label for="styleOpacity">شفافية النقاط والأشكال <span id="opacityVal">0.9</span></label>
+<input type="range" id="styleOpacity" min="0.1" max="1" step="0.05" value="0.9">
+<label for="styleWidth">سمك خطوط GeoJSON <span id="widthVal">2</span></label>
+<input type="range" id="styleWidth" min="0.5" max="8" step="0.5" value="2">
+</div>
+<div class="card">
+<button type="button" id="sampleBtn">تحميل بيانات تجريبية للتجربة الفورية</button>
+<button type="button" id="clearBtn" class="sec">حذف كل النقاط والأشكال من الخريطة</button>
+<div class="divider"></div>
+<button type="button" id="exportHtmlBtn">تصدير الخريطة كملف HTML مستقل</button>
+<button type="button" id="exportPngBtn">تصدير الخريطة كصورة PNG</button>
+<div class="divider"></div>
+<label for="projectName">اسم المشروع المراد حفظه محليا</label>
+<input type="text" id="projectName" placeholder="مثال: خريطة المدن">
+<button type="button" id="saveProjectBtn">حفظ المشروع الحالي في المتصفح</button>
+<label for="loadProjectSelect">المشاريع المحفوظة في هذا المتصفح</label>
+<select id="loadProjectSelect"><option value="">لا توجد مشاريع محفوظة</option></select>
+<button type="button" id="loadProjectBtn">تحميل المشروع المحدد من المتصفح</button>
+<button type="button" id="deleteProjectBtn" class="sec">حذف المشروع المحدد من المتصفح</button>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون إنترنت أو خادم؟</h3><p>نعم، الخريطة مبسطة ومدمجة داخل الصفحة، وكل المعالجة تتم في المتصفح، لذلك يعمل دون اتصال بعد تحميل الصفحة مرة واحدة.</p><h3>ما تنسيقات البيانات المدعومة؟</h3><p>جداول CSV وTSV بأعمدة الاسم وخط العرض وخط الطول والقيمة والمنطقة والفئة، وإحداثيات GPS في كل سطر، وملفات GeoJSON بأنواع النقاط والخطوط والمضلعات.</p><h3>كيف أضيف علامة جديدة بسرعة؟</h3><p>انقر على أي فراغ في الخريطة لتعبئة خط العرض وخط الطول تلقائيا، ثم اكتب اسم العلامة واضغط زر إضافة العلامة المحددة إلى الخريطة.</p><h3>كيف ألوّن القارات حسب القيم وأجمع النقاط؟</h3><p>فعّل خيار تلوين القارات واختر المتوسط أو المجموع أو الأقصى، وفعّل تجميع النقاط القريبة لعرض فقاعات مرقمة، ثم صفِّ النتائج بالاسم أو الفئة أو مدى القيم.</p><h3>كيف أصدّر الخريطة وأحفظ عملي؟</h3><p>صدّر الخريطة كملف HTML مستقل يفتح دون إنترنت أو كصورة PNG، واحفظ المشروع باسمه في المتصفح لتحميله أو حذفه لاحقا من قائمة المشاريع المحفوظة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="pocket-microfinance-ledger.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة صناديق الإقراض والادخار الجماعي دون خادم</a><span style="opacity:.75"> — أداة محلية لإدارة صناديق الإقراض والادخار الجماعي: تسجيل الأعضاء والودائع والقروض، حساب الفوائد والأقساط…</span></li><li style="margin:.5rem 0"><a href="offline-store-catalog.html" style="color:var(--gold-bright);font-weight:700">كتالوج المتجر والمخزون والطلبات دون إنترنت للتاجر الصغير</a><span style="opacity:.75"> — أنشئ كتالوج متجرك وأدر المنتجات والفئات والمخزون والطلبات دون إنترنت، وولّد فاتورة قابلة للطباعة وصدّر…</span></li><li style="margin:.5rem 0"><a href="offline-store-manager.html" style="color:var(--gold-bright);font-weight:700">إدارة المتجر الصغير دون إنترنت: مبيعات ومخزون وتقارير</a><span style="opacity:.75"> — تطبيق عربي دون إنترنت لإدارة متجرك الصغير: أضف المنتجات وتابع المخزون، وسجّل المبيعات عبر نقطة بيع تحسب…</span></li><li style="margin:.5rem 0"><a href="petri-evolution-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر تطوّر الكائنات الدقيقة: محاكاة تفاعلية للأحياء المجهرية</a><span style="opacity:.75"> — صمّم كائناً وحيد الخلية، واضبط الغذاء والضوء والحرارة والمفترسات، وراقب التنافس والتكاثر والتحوّر في طبق…</span></li><li style="margin:.5rem 0"><a href="project-lifecycle-board.html" style="color:var(--gold-bright);font-weight:700">منظّم دورة حياة المشاريع: من الفكرة إلى الإطلاق والصيانة</a><span style="opacity:.75"> — نظّم دورة حياة مشروعك من التخطيط والتطوير والاختبار إلى الإطلاق والصيانة عبر مسار بصري وبوابات جاهزية وقوائم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-06 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+function el(id){return document.getElementById(id);}
+var svg=el("worldSvg");
+var points=[],shapes=[],regionOnly=[],lastVisible=[],lastClusters={};
+var view={x:0,y:0,w:1000,h:500},suppressClick=false,drag=null;
+var LAND=[["أفريقيا",[[-17,15],[-16,22],[-10,28],[-6,35],[0,36],[10,37],[20,33],[30,31],[33,29],[38,22],[42,14],[46,11],[51,12],[50,10],[45,5],[42,-4],[40,-12],[39,-20],[36,-28],[30,-31],[20,-35],[17,-31],[14,-22],[13,-12],[12,-6],[9,1],[9,4],[5,5],[0,6],[-6,5],[-10,7],[-14,10]]],["أوروبا",[[-9,37],[-9,43],[-5,48],[0,50],[5,53],[8,57],[14,55],[18,56],[21,55],[24,58],[28,60],[30,68],[40,67],[45,65],[40,60],[38,55],[35,48],[30,45],[28,41],[23,36],[22,40],[19,40],[16,38],[15,40],[12,44],[8,44],[3,43],[3,39],[0,38]]],["آسيا",[[30,68],[50,68],[70,72],[90,75],[110,74],[130,72],[150,70],[170,65],[178,64],[162,60],[158,52],[142,50],[140,44],[135,39],[128,38],[122,37],[120,32],[121,28],[115,23],[110,20],[108,16],[106,10],[103,9],[100,7],[98,10],[95,16],[92,21],[88,22],[85,19],[82,16],[80,13],[77,8],[80,10],[80,14],[75,15],[72,20],[67,24],[61,25],[56,26],[53,29],[48,30],[44,29],[42,33],[39,36],[36,36],[33,39],[30,42],[30,50],[30,60]]],["أمريكا الشمالية",[[-168,66],[-150,70],[-130,70],[-115,73],[-100,78],[-88,76],[-82,72],[-88,70],[-92,66],[-90,62],[-85,60],[-80,58],[-76,62],[-68,58],[-64,50],[-70,45],[-75,40],[-77,34],[-81,26],[-85,30],[-90,29],[-95,29],[-97,24],[-95,19],[-91,19],[-87,15],[-83,9],[-79,9],[-84,12],[-89,14],[-94,17],[-99,18],[-104,20],[-109,23],[-113,28],[-117,33],[-122,38],[-124,44],[-124,49],[-130,55],[-140,60],[-155,59],[-165,60]]],["أمريكا الجنوبية",[[-77,7],[-72,12],[-64,10],[-58,8],[-52,5],[-50,0],[-44,-3],[-35,-6],[-38,-13],[-39,-19],[-41,-23],[-48,-27],[-53,-33],[-58,-35],[-62,-39],[-65,-42],[-67,-47],[-68,-51],[-69,-54],[-72,-54],[-74,-49],[-74,-43],[-73,-37],[-71,-29],[-70,-19],[-75,-15],[-78,-9],[-81,-4],[-80,3]]],["أوقيانوسيا",[[113,-22],[114,-29],[115,-34],[119,-35],[125,-33],[131,-32],[134,-33],[137,-35],[140,-38],[146,-39],[150,-37],[153,-32],[153,-27],[151,-24],[146,-19],[143,-15],[142,-11],[140,-17],[136,-15],[135,-12],[131,-12],[126,-14],[122,-17],[117,-20]]]];
+function X(lon){return (lon+180)/360*1000;}
+function Y(lat){var c=Math.max(-60,Math.min(85,lat));return (85-c)/145*500;}
+function ringPath(ring){var d="";for(var i=0;i<ring.length;i++){d+=(i?"L":"M")+X(ring[i][0]).toFixed(1)+","+Y(ring[i][1]).toFixed(1);}return d+"Z";}
+function ringOpen(coords){var d="";for(var i=0;i<coords.length;i++){d+=(i?"L":"M")+X(coords[i][0]).toFixed(1)+","+Y(coords[i][1]).toFixed(1);}return d;}
+function findFirst(a){if(!Array.isArray(a))return null;if(typeof a[0]==="number")return a;for(var i=0;i<a.length;i++){var r=findFirst(a[i]);if(r)return r;}return null;}
+function geomPath(g){if(!g||!g.coordinates)return "";var s="",i,j;if(g.type==="LineString")return ringOpen(g.coordinates);if(g.type==="MultiLineString"){for(i=0;i<g.coordinates.length;i++)s+=ringOpen(g.coordinates[i])+" ";return s;}if(g.type==="Polygon"){for(i=0;i<g.coordinates.length;i++)s+=ringPath(g.coordinates[i])+" ";return s;}if(g.type==="MultiPolygon"){for(i=0;i<g.coordinates.length;i++)for(j=0;j<g.coordinates[i].length;j++)s+=ringPath(g.coordinates[i][j])+" ";return s;}return "";}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normalizeRegion(r){if(!r)return "";r=String(r).trim();var low=r.toLowerCase();if(r.indexOf("أفريقيا")>=0||r.indexOf("افريقيا")>=0||low.indexOf("africa")>=0)return "أفريقيا";if(r.indexOf("أوروبا")>=0||r.indexOf("اوروبا")>=0||low.indexOf("europe")>=0)return "أوروبا";if(r.indexOf("آسيا")>=0||r.indexOf("اسيا")>=0||low.indexOf("asia")>=0)return "آسيا";if(low.indexOf("north")>=0||r.indexOf("الشمالية")>=0)return "أمريكا الشمالية";if(low.indexOf("south")>=0||r.indexOf("الجنوبية")>=0)return "أمريكا الجنوبية";if(low.indexOf("oceania")>=0||low.indexOf("australia")>=0||r.indexOf("أوقيانوسيا")>=0||r.indexOf("اوقيانوسيا")>=0)return "أوقيانوسيا";return r;}
+function setStatus(m,err){var s=el("status");s.textContent=m;s.style.color=err?"#ff9a9a":"var(--gold-bright)";}
+function clampView(){view.w=Math.max(80,Math.min(1000,view.w));view.h=view.w/2;view.x=Math.max(0,Math.min(1000-view.w,view.x));view.y=Math.max(0,Math.min(500-view.h,view.y));}
+function applyView(){svg.setAttribute("viewBox",view.x+" "+view.y+" "+view.w+" "+view.h);}
+function mixColor(t){t=Math.max(0,Math.min(1,t));return "rgb("+Math.round(46+(212-46)*t)+","+Math.round(42+(175-42)*t)+","+Math.round(34+(55-34)*t)+")";}
+function getVisible(){var q=el("searchText").value.trim().toLowerCase(),cat=el("filterCategory").value,mn=el("minValue").value,mx=el("maxValue").value;mn=mn===""?null:parseFloat(mn);mx=mx===""?null:parseFloat(mx);return points.filter(function(p){if(cat&&cat!=="الكل"&&p.category!==cat)return false;if(q&&(p.name+" "+p.region+" "+p.category).toLowerCase().indexOf(q)<0)return false;if(p.value===null||p.value===undefined){if(mn!==null||mx!==null)return false;}else{if(mn!==null&&p.value<mn)return false;if(mx!==null&&p.value>mx)return false;}return true;});}
+function aggregates(){var agg={};function add(reg,val){if(!reg||val===null||val===undefined||isNaN(val))return;if(!agg[reg])agg[reg]={sum:0,count:0,max:-Infinity};agg[reg].sum+=val;agg[reg].count++;if(val>agg[reg].max)agg[reg].max=val;}points.forEach(function(p){add(p.region,p.value);});regionOnly.forEach(function(p){add(p.region,p.value);});return agg;}
+function updateStats(visible,agg){el("totalCount").textContent=points.length;el("visibleCount").textContent=visible.length;var vals=visible.filter(function(p){return p.value!==null&&!isNaN(p.value);}).map(function(p){return p.value;});el("avgValue").textContent=vals.length?(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1):"—";var rc=0;for(var k in agg)rc++;el("regionCount").textContent=rc;}
+function updateCategoryOptions(){var sel=el("filterCategory"),cur=sel.value,cats={},h="<option value=\"الكل\">الكل</option>";points.forEach(function(p){if(p.category)cats[p.category]=1;});for(var c in cats)h+="<option value=\""+esc(c)+"\">"+esc(c)+"</option>";sel.innerHTML=h;if(cats[cur])sel.value=cur;}
+function updateStyleLabels(){el("sizeVal").textContent=el("styleSize").value;el("opacityVal").textContent=el("styleOpacity").value;el("widthVal").textContent=el("styleWidth").value;}
+function draw(){clampView();applyView();var visible=getVisible();lastVisible=visible;var agg=aggregates(),mode=el("choroplethMode").value,useChoro=el("choroplethToggle").checked,vals=[],k;for(k in agg)vals.push(mode==="sum"?agg[k].sum:mode==="max"?agg[k].max:agg[k].sum/agg[k].count);var vmin=vals.length?Math.min.apply(null,vals):0,vmax=vals.length?Math.max.apply(null,vals):1;var s='<rect x="0" y="0" width="1000" height="500" fill="#101820"/>',lon,lat;for(lon=-180;lon<=180;lon+=30)s+='<line x1="'+X(lon)+'" y1="0" x2="'+X(lon)+'" y2="500" stroke="#1e2a3a" stroke-width="0.6"/>';for(lat=-60;lat<=60;lat+=30)s+='<line x1="0" y1="'+Y(lat)+'" x2="1000" y2="'+Y(lat)+'" stroke="#1e2a3a" stroke-width="0.6"/>';LAND.forEach(function(land){var fill="#2e2a22";if(useChoro&&agg[land[0]]){var a=agg[land[0]],v=mode==="sum"?a.sum:mode==="max"?a.max:a.sum/a.count,t=vmax===vmin?0.5:(v-vmin)/(vmax-vmin);fill=mixColor(t);}s+='<path d="'+ringPath(land[1])+'" fill="'+fill+'" stroke="#6b5d33" stroke-width="0.8" data-region="'+esc(land[0])+'" style="cursor:pointer"/>';});var sw=parseFloat(el("styleWidth").value)||2,op=parseFloat(el("styleOpacity").value),size=parseFloat(el("styleSize").value)||6,color=el("styleColor").value;shapes.forEach(function(sh,i){var d=geomPath(sh.geom);if(d)s+='<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="'+sw+'" opacity="'+op+'" data-si="'+i+'" style="cursor:pointer"/>';});var maxAbs=0;visible.forEach(function(p){if(p.value!==null&&Math.abs(p.value)>maxAbs)maxAbs=Math.abs(p.value);});if(el("clusterToggle").checked){var buckets={},order=[];visible.forEach(function(p){var key=Math.floor(p.lon/6)+":"+Math.floor(p.lat/6);if(!buckets[key]){buckets[key]=[];order.push(key);}buckets[key].push(p);});lastClusters=buckets;order.forEach(function(key){var arr=buckets[key],lo=0,la=0;arr.forEach(function(p){lo+=p.lon;la+=p.lat;});lo/=arr.length;la/=arr.length;var r=Math.min(28,8+arr.length*2);s+='<circle cx="'+X(lo)+'" cy="'+Y(la)+'" r="'+r+'" fill="'+color+'" opacity="'+op+'" stroke="#111111" stroke-width="1" data-cluster="'+esc(key)+'" style="cursor:pointer"/><text x="'+X(lo)+'" y="'+(Y(la)+4)+'" text-anchor="middle" font-size="12" fill="#111111" pointer-events="none">'+arr.length+'</text>';});}else{visible.forEach(function(p,i){var norm=maxAbs?Math.abs(p.value||0)/maxAbs:0.5,r=size*(0.7+0.6*norm);s+='<circle cx="'+X(p.lon)+'" cy="'+Y(p.lat)+'" r="'+r.toFixed(1)+'" fill="'+color+'" opacity="'+op+'" stroke="#111111" stroke-width="1" data-pi="'+i+'" style="cursor:pointer"/>';if(i<80&&p.name)s+='<text class="pointLbl" fill="#eeeeee" x="'+(X(p.lon)+r+3)+'" y="'+(Y(p.lat)+4)+'">'+esc(p.name)+'</text>';});}svg.innerHTML=s;updateStats(visible,agg);if(points.length===0)setStatus("لا توجد بيانات بعد. استورد جدولا أو إحداثيات أو GeoJSON أو اضغط تحميل البيانات التجريبية.",false);else if(visible.length===0)setStatus("لا توجد نقاط مطابقة للتصفية الحالية. عدّل كلمات البحث أو القيم.",false);}
+function showPopup(title,bodyHTML,px,py){el("popupTitle").textContent=title;el("popupBody").innerHTML=bodyHTML;var pop=el("popup");pop.classList.add("open");var rect=el("mapWrap").getBoundingClientRect(),left=((px-view.x)/view.w)*rect.width,top=((py-view.y)/view.h)*rect.height;left=Math.max(4,Math.min(Math.max(4,rect.width-270),left+10));top=Math.max(4,Math.min(Math.max(4,rect.height-140),top+10));pop.style.left=left+"px";pop.style.top=top+"px";}
+function hidePopup(){el("popup").classList.remove("open");}
+function eventLonLat(e){var rect=svg.getBoundingClientRect();if(!rect.width)return null;var vx=view.x+(e.clientX-rect.left)/rect.width*view.w,vy=view.y+(e.clientY-rect.top)/rect.height*view.h;return {lon:vx/1000*360-180,lat:85-vy/500*145,vx:vx,vy:vy};}
+function zoomCenter(f){var cx=view.x+view.w/2,cy=view.y+view.h/2;view.w=view.w*f;clampView();view.x=cx-view.w/2;view.y=cy-view.h/2;clampView();draw();}
+svg.addEventListener("click",function(e){if(suppressClick){suppressClick=false;return;}var t=e.target;if(!t||!t.getAttribute)return;var pi=t.getAttribute("data-pi"),ck=t.getAttribute("data-cluster"),si=t.getAttribute("data-si"),reg=t.getAttribute("data-region");if(pi!==null&&pi!==""){var p=lastVisible[parseInt(pi,10)];if(p)showPopup(p.name||"نقطة","<div>خط العرض: "+p.lat.toFixed(4)+"</div><div>خط الطول: "+p.lon.toFixed(4)+"</div><div>القيمة: "+(p.value===null?"—":p.value)+"</div><div>المنطقة: "+esc(p.region||"—")+"</div><div>الفئة: "+esc(p.category||"—")+"</div>",X(p.lon),Y(p.lat));return;}if(ck){var arr=lastClusters[ck]||[];if(arr.length)showPopup("مجموعة من "+arr.length+" نقاط","<div>"+arr.slice(0,12).map(function(p){return esc(p.name||"نقطة");}).join("، ")+(arr.length>12?" …":"")+"</div><div>عطّل التجميع لعرض النقاط منفردة.</div>",X(arr[0].lon),Y(arr[0].lat));return;}if(si!==null&&si!==""){var sh=shapes[parseInt(si,10)];if(sh)showPopup(sh.name||"شكل GeoJSON","<div>النوع: "+esc(sh.geom.type)+"</div><div>القيمة: "+(sh.value===null?"—":esc(sh.value))+"</div>",X(sh.lon||0),Y(sh.lat||0));return;}if(reg){var agg=aggregates(),a=agg[reg];showPopup(reg,a?("<div>عدد القيم: "+a.count+"</div><div>المتوسط: "+(a.sum/a.count).toFixed(1)+"</div><div>المجموع: "+a.sum.toFixed(1)+"</div><div>الأقصى: "+a.max+"</div>"):"<div>لا توجد بيانات لهذه المنطقة بعد.</div>",X(0),Y(20));return;}var ll=eventLonLat(e);if(ll){el("addLat").value=ll.lat.toFixed(4);el("addLon").value=ll.lon.toFixed(4);setStatus("تم تحديد الإحداثيات "+ll.lat.toFixed(4)+"، "+ll.lon.toFixed(4)+". اكتب اسم العلامة ثم اضغط إضافة العلامة المحددة إلى الخريطة.",false);}});
+svg.addEventListener("pointerdown",function(e){drag={x:e.clientX,y:e.clientY,moved:false};try{svg.setPointerCapture(e.pointerId);}catch(err){}});
+svg.addEventListener("pointermove",function(e){if(!drag)return;var dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;if(drag.moved){var rect=svg.getBoundingClientRect();view.x-=dx*view.w/rect.width;view.y-=dy*view.h/rect.height;drag.x=e.clientX;drag.y=e.clientY;clampView();applyView();}});
+svg.addEventListener("pointerup",function(){if(drag&&drag.moved){suppressClick=true;draw();}drag=null;});
+svg.addEventListener("pointercancel",function(){drag=null;});
+svg.addEventListener("wheel",function(e){e.preventDefault();var ll=eventLonLat(e);if(!ll)return;var f=e.deltaY<0?0.8:1.25,fx=(ll.vx-view.x)/view.w,fy=(ll.vy-view.y)/view.h,mx=ll.vx,my=ll.vy;view.w=view.w*f;clampView();view.x=mx-fx*view.w;view.y=my-fy*view.h;clampView();draw();},{passive:false});
+el("zoomInBtn").addEventListener("click",function(){zoomCenter(0.7);});
+el("zoomOutBtn").addEventListener("click",function(){zoomCenter(1.4);});
+el("resetViewBtn").addEventListener("click",function(){view={x:0,y:0,w:1000,h:500};hidePopup();draw();});
+el("popupCloseBtn").addEventListener("click",hidePopup);
+function splitRow(line,delim){var row=[],cur="",q=false,i,ch;for(i=0;i<line.length;i++){ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}else{if(ch==='"')q=true;else if(ch===delim){row.push(cur);cur="";}else cur+=ch;}}row.push(cur);return row.map(function(s){return s.trim();});}
+function findCol(headers,keys){for(var i=0;i<headers.length;i++)for(var j=0;j<keys.length;j++)if(headers[i].indexOf(keys[j])>=0)return i;return -1;}
+function importCSV(text){var lines=text.split(/\r?\n/).filter(function(l){return l.trim()!=="";});if(!lines.length){setStatus("الجدول فارغ. الصق بيانات CSV غير فارغة ثم أعد المحاولة.",true);return;}var first=lines[0],delim=",",counts={",":0,";":0,"\t":0},d;for(d in counts){counts[d]=first.split(d).length-1;if(counts[d]>counts[delim])delim=d;}var rows=lines.map(function(l){return splitRow(l,delim);}),headers=rows[0].map(function(h){return h.toLowerCase();}),hasHeader=findCol(headers,["name","lat","lon","lng","value","region","category","اسم","خط","قيمة","منطقة","فئة","longitude","latitude"])>=0,idx={name:0,lat:1,lon:2,value:3,region:4,category:5},start=0;if(hasHeader){start=1;idx.name=findCol(headers,["name","اسم","الاسم"]);idx.lat=findCol(headers,["lat","latitude","خط العرض","العرض"]);idx.lon=findCol(headers,["lon","lng","longitude","خط الطول","الطول"]);idx.value=findCol(headers,["value","قيمة","القيمة","amount"]);idx.region=findCol(headers,["region","منطقة","المنطقة","continent","قارة"]);idx.category=findCol(headers,["category","فئة","الفئة","type","نوع"]);}var added=0,regAdded=0,errors=0,r,row;for(r=start;r<rows.length;r++){row=rows[r];(function(){function gv(k){return idx[k]>=0&&idx[k]<row.length?row[idx[k]]:"";}var lat=parseFloat(gv("lat")),lon=parseFloat(gv("lon")),val=gv("value")===""?null:parseFloat(gv("value")),reg=normalizeRegion(gv("region"));if(isNaN(lat)||isNaN(lon)||lat<-90||lat>90||lon<-180||lon>180){if(reg&&val!==null&&!isNaN(val)){regionOnly.push({region:reg,value:val});regAdded++;}else errors++;return;}points.push({name:gv("name")||("نقطة "+(points.length+1)),lat:lat,lon:lon,value:isNaN(val)?null:val,region:reg,category:gv("category")});added++;})();}updateCategoryOptions();draw();if(added+regAdded>0)setStatus("تم استيراد "+added+" نقطة و"+regAdded+" قيمة منطقة بنجاح."+(errors?" تم تجاهل "+errors+" صف غير صالح.":""),false);else setStatus("تعذر استيراد الجدول: لم توجد صفوف صالحة. تأكد من وجود أعمدة خط العرض وخط الطول أو المنطقة والقيمة.",true);}
+function importGPS(text){var lines=text.split(/\r?\n/).filter(function(l){return l.trim()!=="";});if(!lines.length){setStatus("لا توجد إحداثيات للاستيراد. الصق إحداثيات GPS ثم أعد المحاولة.",true);return;}var added=0,errors=0;lines.forEach(function(line){var parts=line.split(/[,;\t]+/),tokens=[];parts.forEach(function(part){part.split(/\s+/).forEach(function(tok){tok=tok.trim();if(tok)tokens.push(tok);});});var nums=[],texts=[];tokens.forEach(function(tok){var n=parseFloat(tok);if(!isNaN(n)&&String(n)===tok||!isNaN(n)&&/^-?\d/.test(tok))nums.push(n);else texts.push(tok);});if(nums.length<2){errors++;return;}var lat=nums[0],lon=nums[1];if(lat<-90||lat>90||lon<-180||lon>180){errors++;return;}points.push({name:texts[0]||("نقطة GPS "+(points.length+1)),lat:lat,lon:lon,value:nums.length>2?nums[2]:null,region:"",category:texts[1]||""});added++;});updateCategoryOptions();draw();if(added>0)setStatus("تم استيراد "+added+" إحداثي GPS بنجاح."+(errors?" تم تجاهل "+errors+" سطر غير صالح.":""),false);else setStatus("تعذر استيراد الإحداثيات: لم يوجد أي سطر صالح. الصيغة الصحيحة: خط العرض، خط الطول، القيمة.",true);}
+function importGeoJSON(text){var data;try{data=JSON.parse(text);}catch(err){setStatus("ملف GeoJSON غير صالح: تعذر تحليل محتوى JSON.",true);return;}var feats=[];if(data.type==="FeatureCollection"&&Array.isArray(data.features))feats=data.features;else if(data.type==="Feature")feats=[data];else if(data.type)feats=[{type:"Feature",geometry:data,properties:{}}];else{setStatus("ملف GeoJSON غير صالح: النوع غير مدعوم.",true);return;}var added=0,shapesAdded=0;feats.forEach(function(f){var g=f.geometry;if(!g)return;var props=f.properties||{},name=props.name||props.NAME||props.title||props["الاسم"]||"عنصر GeoJSON",val=props.value!==undefined?parseFloat(props.value):(props["القيمة"]!==undefined?parseFloat(props["القيمة"]):null);if(g.type==="Point"&&g.coordinates){points.push({name:String(name),lat:g.coordinates[1],lon:g.coordinates[0],value:isNaN(val)?null:val,region:normalizeRegion(props.region||props["المنطقة"]||""),category:String(props.category||props["الفئة"]||"")});added++;}else if(g.type==="MultiPoint"&&g.coordinates){g.coordinates.forEach(function(c){points.push({name:String(name),lat:c[1],lon:c[0],value:isNaN(val)?null:val,region:"",category:""});added++;});}else{var c0=findFirst(g.coordinates||[]);shapes.push({geom:g,name:String(name),value:isNaN(val)?null:val,lon:c0?c0[0]:0,lat:c0?c0[1]:0});shapesAdded++;}});updateCategoryOptions();draw();if(added+shapesAdded>0)setStatus("تم استيراد GeoJSON: "+added+" نقطة و"+shapesAdded+" شكل مرسوم.",false);else setStatus("لم يحتوي ملف GeoJSON على هندسيات صالحة للعرض.",true);}
+function readFile(file,cb){if(!file){setStatus("اختر ملفا أولا ثم أعد المحاولة.",true);return;}var r=new FileReader();r.onload=function(){cb(r.result||"");};r.onerror=function(){setStatus("تعذر قراءة الملف المحدد.",true);};r.readAsText(file);}
+el("importCsvBtn").addEventListener("click",function(){importCSV(el("csvText").value);});
+el("importGpsBtn").addEventListener("click",function(){importGPS(el("gpsText").value);});
+el("importGeoBtn").addEventListener("click",function(){importGeoJSON(el("geoText").value);});
+el("csvFile").addEventListener("change",function(){readFile(this.files&&this.files[0],function(t){importCSV(t);});this.value="";});
+el("geoFile").addEventListener("change",function(){readFile(this.files&&this.files[0],function(t){importGeoJSON(t);});this.value="";});
+el("addPointBtn").addEventListener("click",function(){var lat=parseFloat(el("addLat").value),lon=parseFloat(el("addLon").value);if(isNaN(lat)||isNaN(lon)||lat<-90||lat>90||lon<-180||lon>180){setStatus("أدخل خط عرض بين -90 و90 وخط طول بين -180 و180 لإضافة العلامة.",true);return;}var v=el("addValue").value;points.push({name:el("addName").value.trim()||"علامة جديدة",lat:lat,lon:lon,value:v===""?null:parseFloat(v),region:el("addRegion").value,category:el("addCategory").value.trim()});updateCategoryOptions();draw();setStatus("تمت إضافة العلامة بنجاح إلى الخريطة.",false);});
+el("sampleBtn").addEventListener("click",function(){var sample=[["القاهرة",30.04,31.23,120,"أفريقيا","مدينة"],["الرياض",24.7,46.7,95,"آسيا","مدينة"],["طوكيو",35.68,139.69,150,"آسيا","مدينة"],["لندن",51.5,-0.12,80,"أوروبا","مدينة"],["باريس",48.85,2.35,85,"أوروبا","مدينة"],["نيويورك",40.71,-74.0,200,"أمريكا الشمالية","مدينة"],["ساو باولو",-23.55,-46.63,140,"أمريكا الجنوبية","مدينة"],["سيدني",-33.86,151.209,70,"أوقيانوسيا","مدينة"],["دبي",25.2,55.27,110,"آسيا","مدينة"],["جوهانسبرغ",-26.2,28.04,60,"أفريقيا","مدينة"]];sample.forEach(function(r){points.push({name:r[0],lat:r[1],lon:r[2],value:r[3],region:r[4],category:r[5]});});updateCategoryOptions();draw();setStatus("تم تحميل "+sample.length+" نقطة تجريبية موزعة على القارات.",false);});
+el("clearBtn").addEventListener("click",function(){points=[];shapes=[];regionOnly=[];hidePopup();updateCategoryOptions();draw();setStatus("تم حذف كل النقاط والأشكال. الخريطة فارغة الآن وجاهزة لبيانات جديدة.",false);});
+["searchText","minValue","maxValue"].forEach(function(id){el(id).addEventListener("input",function(){draw();});el(id).addEventListener("change",function(){draw();});});
+el("filterCategory").addEventListener("change",function(){draw();});
+el("resetFilterBtn").addEventListener("click",function(){el("searchText").value="";el("minValue").value="";el("maxValue").value="";el("filterCategory").value="الكل";draw();setStatus("تم إلغاء التصفية والبحث. تظهر كل النقاط الآن.",false);});
+["clusterToggle","choroplethToggle","choroplethMode"].forEach(function(id){el(id).addEventListener("change",function(){draw();});});
+["styleColor","styleSize","styleOpacity","styleWidth"].forEach(function(id){el(id).addEventListener("input",function(){updateStyleLabels();draw();});el(id).addEventListener("change",function(){updateStyleLabels();draw();});});
+function downloadBlob(blob,filename){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},1500);}
+el("exportHtmlBtn").addEventListener("click",function(){if(points.length===0&&shapes.length===0){setStatus("لا توجد بيانات لتصديرها. استورد بيانات أولا ثم صدّر الخريطة.",true);return;}var rows="";points.forEach(function(p){rows+="<tr><td>"+esc(p.name)+"</td><td>"+p.lat.toFixed(4)+"</td><td>"+p.lon.toFixed(4)+"</td><td>"+(p.value===null?"—":p.value)+"</td><td>"+esc(p.region||"—")+"</td></tr>";});var html='<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>خريطتي</title><style>body{background:#111111;color:#eeeeee;font-family:sans-serif}table{border-collapse:collapse}td,th{border:1px solid #555555;padding:4px 8px}svg{width:100%;height:auto;background:#101820}</style></head><body><h1>خريطتي المصدرة</h1><svg viewBox="'+svg.getAttribute("viewBox")+'">'+svg.innerHTML+'</svg><table><tr><th>الاسم</th><th>خط العرض</th><th>خط الطول</th><th>القيمة</th><th>المنطقة</th></tr>'+rows+'</table></body></html>';downloadBlob(new Blob([html],{type:"text/html;charset=utf-8"}),"map.html");setStatus("تم تصدير الخريطة كملف HTML مستقل. افتحه في المتصفح دون إنترنت.",false);});
+el("exportPngBtn").addEventListener("click",function(){if(points.length===0&&shapes.length===0){setStatus("لا توجد بيانات لتصديرها. استورد بيانات أولا ثم صدّر الخريطة.",true);return;}var xml=new XMLSerializer().serializeToString(svg),blob=new Blob([xml],{type:"image/svg+xml;charset=utf-8"}),url=URL.createObjectURL(blob),img=new Image();img.onload=function(){var cv=document.createElement("canvas");cv.width=1600;cv.height=800;var ctx=cv.getContext("2d");ctx.fillStyle="#101820";ctx.fillRect(0,0,cv.width,cv.height);ctx.drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);if(cv.toBlob){cv.toBlob(function(b){if(b){downloadBlob(b,"map.png");setStatus("تم تصدير الخريطة كصورة PNG.",false);}else setStatus("تعذر إنشاء ملف الصورة.",true);},"image/png");}else setStatus("المتصفح لا يدعم تصدير الصورة من الخريطة.",true);};img.onerror=function(){URL.revokeObjectURL(url);setStatus("تعذر تصدير الصورة من الخريطة الحالية.",true);};img.src=url;});
+function getProjects(){try{var v=localStorage.getItem("geoProjects");return v?JSON.parse(v):[];}catch(e){return [];}}
+function setProjects(list){try{localStorage.setItem("geoProjects",JSON.stringify(list));return true;}catch(e){return false;}}
+function refreshProjects(){var list=getProjects(),sel=el("loadProjectSelect"),h="";list.forEach(function(p,i){h+='<option value="'+i+'">'+esc(p.name)+" ("+p.points.length+" نقطة)</option>";});sel.innerHTML=h||'<option value="">لا توجد مشاريع محفوظة</option>';}
+el("saveProjectBtn").addEventListener("click",function(){var name=el("projectName").value.trim()||("مشروع "+new Date().toLocaleDateString("ar")),list=getProjects(),existed=list.some(function(p){return p.name===name;});list=list.filter(function(p){return p.name!==name;});list.push({name:name,points:points,shapes:shapes,regionOnly:regionOnly,settings:{color:el("styleColor").value,size:el("styleSize").value,opacity:el("styleOpacity").value,width:el("styleWidth").value,cluster:el("clusterToggle").checked,choropleth:el("choroplethToggle").checked,mode:el("choroplethMode").value}});if(setProjects(list)){refreshProjects();setStatus(existed?"تم تحديث المشروع المحفوظ باسم "+name+" في المتصفح.":"تم حفظ المشروع محليا في المتصفح باسم "+name+".",false);}else setStatus("تعذر الحفظ محليا: مساحة تخزين المتصفح ممتلئة أو غير متاحة.",true);});
+el("loadProjectBtn").addEventListener("click",function(){var list=getProjects(),idx=parseInt(el("loadProjectSelect").value,10);if(isNaN(idx)||!list[idx]){setStatus("اختر مشروعا محفوظا أولا لتحميله إلى الخريطة.",true);return;}var d=list[idx],s=d.settings||{};points=d.points||[];shapes=d.shapes||[];regionOnly=d.regionOnly||[];if(s.color)el("styleColor").value=s.color;if(s.size)el("styleSize").value=s.size;if(s.opacity)el("styleOpacity").value=s.opacity;if(s.width)el("styleWidth").value=s.width;if(s.cluster!==undefined)el("clusterToggle").checked=!!s.cluster;if(s.choropleth!==undefined)el("choroplethToggle").checked=!!s.choropleth;if(s.mode)el("choroplethMode").value=s.mode;updateStyleLabels();updateCategoryOptions();draw();setStatus("تم تحميل المشروع "+d.name+" بنجاح من المتصفح.",false);});
+el("deleteProjectBtn").addEventListener("click",function(){var list=getProjects(),idx=parseInt(el("loadProjectSelect").value,10);if(isNaN(idx)||!list[idx]){setStatus("اختر مشروعا محفوظا أولا لحذفه من المتصفح.",true);return;}var name=list[idx].name;list.splice(idx,1);if(setProjects(list)){refreshProjects();setStatus("تم حذف المشروع "+name+" من المتصفح.",false);}else setStatus("تعذر حذف المشروع من تخزين المتصفح.",true);});
+refreshProjects();updateStyleLabels();updateCategoryOptions();draw();
+</script>
+</body>
+</html>
