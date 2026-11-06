@@ -19,6 +19,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CARD = "https://mdm1.org/images/og-card.jpg"
 HAS_MENU = re.compile(r'id=["\']mdm1m-btn["\']', re.I)
+HAS_MUSIC = re.compile(r'id=["\']bg-music["\']', re.I)
+HAS_GLOBAL_JS = re.compile(r'js/global\.js', re.I)
+PANEL_RE = re.compile(r'(<nav id="mdm1m-panel"[^>]*>)(.*?)(</nav>)', re.S | re.I)
+DEFAULT_TRACK = "/audio/index.mp3"
+MUSIC_CSS = ("<style>#music-btn{position:fixed;bottom:5rem;left:1.5rem;z-index:999;width:48px;height:48px;border-radius:50%;"
+             "border:1px solid rgba(201,168,76,.5);background:rgba(0,0,0,.75);backdrop-filter:blur(8px);color:#c9a84c;"
+             "font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center}"
+             "#music-btn.playing{border-color:rgba(201,168,76,.9);box-shadow:0 0 18px rgba(201,168,76,.35)}</style>")
+MUSIC_HTML = ('<audio id="bg-music" loop preload="none"><source src="' + DEFAULT_TRACK + '" type="audio/mpeg"></audio>\n'
+              '<button id="music-btn" title="تشغيل / إيقاف الموسيقى" style="display:none">🔇</button>\n')
 GENERIC_NAV_RULE = re.compile(r'(^|[};,\s>])nav\s*[{,]')
 
 
@@ -68,6 +78,9 @@ def transform(text: str, menu: dict[str, str]) -> str:
         text = re.sub(r"<nav>\s*(?=<nav\b)", "", text, count=1, flags=re.I)
     text, head_add = card_tags(text)
     add_menu = not HAS_MENU.search(text)
+    if not add_menu:   # صفحة لها قائمتها: نوحّد روابطها مع قائمة الرئيسية الحالية
+        canon = absolutize(menu["panel_inner"])
+        text = PANEL_RE.sub(lambda m: m.group(1) + canon + m.group(3), text, count=1)
     if add_menu:
         head_add.append(menu["style"])
     heads = list(re.finditer(r"</\s*head\s*>", text, re.I))
@@ -80,6 +93,12 @@ def transform(text: str, menu: dict[str, str]) -> str:
         role = ' role="navigation"' if tag == "div" else ""
         block = (menu["button"] + "\n" + f'<{tag} id="mdm1m-panel"{role}>' + absolutize(menu["panel_inner"]) + f"</{tag}>\n" + menu["script"] + "\n")
         text = text[:body_pos] + block + text[body_pos:]
+    add_music = not HAS_MUSIC.search(text)
+    if add_music:   # موسيقى الخلفية كباقي الموقع (global.js يتولى التشغيل والاختيار المحفوظ)
+        pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
+        extra = MUSIC_HTML + ('' if HAS_GLOBAL_JS.search(text) else '<script src="/js/global.js"></script>\n')
+        text = text[:pos] + extra + text[pos:]
+        head_add.append(MUSIC_CSS)
     if "js/lang.js" not in text and 'id="lang-select"' not in text:      # site-wide language button
         pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
         text = text[:pos] + '<script src="/js/lang.js" defer></script>\n' + text[pos:]
