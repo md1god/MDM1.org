@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستكشف عروض الرحلات: بحث ومقارنة وتصدير | MDM1</title>
+<meta name="description" content="تطبيق ويب دون اتصال لاستكشاف عروض الرحلات و vergleich... بحث حسب المطار والتواريخ والوقت والسعر وتصدير النتائج وحفظ المفضلات">
+<link rel="canonical" href="https://mdm1.org/apps/flight-compare-workbench.html">
+<meta property="og:title" content="مستكشف عروض الرحلات: بحث ومقارنة وتصدير">
+<meta property="og:description" content="تطبيق ويب دون اتصال لاستكشاف عروض الرحلات و vergleich... بحث حسب المطار والتواريخ والوقت والسعر وتصدير النتائج وحفظ المفضلات">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/flight-compare-workbench.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app-tablewrap{overflow-x:auto}
+.app-table{width:100%;border-collapse:collapse;font-size:13px}
+.app-table th,.app-table td{padding:6px;border-bottom:1px solid var(--gold-dim);text-align:right}
+.app-table th{color:var(--gold-bright);cursor:pointer}
+.app-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:11px;margin:1px;background:var(--gold-dim);color:var(--light)}
+.app-badge.ok{background:#2e6b3a}
+.app-badge.warn{background:#8a6a1a}
+.app-row-actions button{margin:0 2px}
+.app-compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.app-compare-col{padding:8px;border:1px solid var(--gold-dim);border-radius:6px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مستكشف عروض الرحلات والمقارنة", "url": "https://mdm1.org/apps/flight-compare-workbench.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، بعد تحميل الصفحة يعمل بالكامل دون إنترنت، والبيانات تُخزَّن في المتصفح."}}, {"@type": "Question", "name": "ما صيغ الاستيراد المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "JSON (مصفوفة رحلات أو {flights:[]}) وCSV مع ترويسة."}}, {"@type": "Question", "name": "هل يمكن تعديل أو حذف عروض؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل صف يحتوي أزرار تعديل وحذف، مع حفظ التغييرات محلياً."}}, {"@type": "Question", "name": "كم مساراً يمكن مقارنتها؟", "acceptedAnswer": {"@type": "Answer", "text": "حتى ثلاثة مسارات جنباً إلى جنب."}}, {"@type": "Question", "name": "أين تُحفظ المفضلة وعمليات البحث؟", "acceptedAnswer": {"@type": "Answer", "text": "في localStorage في المتصفح، ويمكن تصدير النتائج CSV."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مستكشف عروض الرحلات والمقارنة</h1>
+  <p class="page-sub">تطبيق ويب دون اتصال لاستكشاف عروض الرحلات و vergleich... بحث حسب المطار والتواريخ والوقت والسعر وتصدير النتائج وحفظ المفضلات</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذا التطبيق يبحث في جدول رحلات محلي (JSON أو CSV) أو بيانات تجريبية مدمجة، ويُرشّح النتائج حسب المطار أو المدينة والتواريخ والوقت المحلي ومدة الرحلة والتوقفات والشركة والسعر والعملة، ثم يعرضها في جدول قابل للفرز مع شارات للحقائب والتوقفات، مع حفظ عمليات البحث والمفضلة في المتصفح وتعديل العروض ومقارنة حتى ثلاثة مسارات جنباً إلى جنب وتصدير النتائج. لا يتطلب اتصالاً بالإنترنت بعد التحميل.</p>
+<div class="card">
+  <div class="row">
+    <label class="label" for="importFile">استيراد JSON/CSV</label>
+    <input id="importFile" type="file" accept=".json,.csv" class="input">
+    <button id="loadSampleBtn" class="button.sec" type="button">بيانات تجريبية</button>
+    <button id="exportBtn" class="button.sec" type="button">تصدير CSV</button>
+  </div>
+  <div class="row">
+    <label class="label" for="originInput">من (مطار/مدينة)</label>
+    <input id="originInput" class="input" type="text" placeholder="RUH / Riyadh">
+    <label class="label" for="destInput">إلى (مطار/مدينة)</label>
+    <input id="destInput" class="input" type="text" placeholder="DXB / Dubai">
+  </div>
+  <div class="row">
+    <label class="label" for="dateFrom">تاريخ من</label>
+    <input id="dateFrom" class="input" type="date">
+    <label class="label" for="dateTo">تاريخ إلى</label>
+    <input id="dateTo" class="input" type="date">
+    <label class="label" for="timeFrom">وقت من</label>
+    <input id="timeFrom" class="input" type="time">
+    <label class="label" for="timeTo">وقت إلى</label>
+    <input id="timeTo" class="input" type="time">
+  </div>
+  <div class="row">
+    <label class="label" for="maxDur">أقصى مدة (د)</label>
+    <input id="maxDur" class="input" type="number" min="0">
+    <label class="label" for="stopsSelect">التوقفات</label>
+    <select id="stopsSelect" class="select">
+      <option value="any">أي</option>
+      <option value="0">مباشر</option>
+      <option value="1">توقف واحد</option>
+      <option value="2">2+</option>
+    </select>
+    <label class="label" for="airlineInput">الشركة</label>
+    <input id="airlineInput" class="input" type="text" placeholder="Saudia">
+  </div>
+  <div class="row">
+    <label class="label" for="maxPrice">أقصى سعر</label>
+    <input id="maxPrice" class="input" type="number" min="0">
+    <label class="label" for="currencySelect">العملة</label>
+    <select id="currencySelect" class="select">
+      <option value="any">أي</option>
+      <option value="SAR">SAR</option>
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="AED">AED</option>
+    </select>
+    <button id="searchBtn" class="button" type="button">بحث</button>
+    <button id="resetBtn" class="button.sec" type="button">إعادة تعيين</button>
+  </div>
+  <div class="row">
+    <label class="label" for="savedSearchesSelect">عمليات البحث المحفوظة</label>
+    <select id="savedSearchesSelect" class="select"></select>
+    <button id="loadSavedBtn" class="button.sec" type="button">تحميل</button>
+    <button id="deleteSavedBtn" class="button.sec" type="button">حذف</button>
+    <button id="saveSearchBtn" class="button.sec" type="button">حفظ البحث</button>
+  </div>
+  <div class="row">
+    <label class="label" for="sortSelect">فرز</label>
+    <select id="sortSelect" class="select">
+      <option value="price">السعر</option>
+      <option value="duration">المدة</option>
+      <option value="depart">وقت المغادرة</option>
+      <option value="stops">التوقفات</option>
+    </select>
+    <button id="compareBtn" class="button.sec" type="button">مقارنة (0)</button>
+  </div>
+</div>
+<div class="card">
+  <div id="statusOut" class="out"></div>
+  <div class="app-tablewrap">
+    <table id="resultsTable" class="app-table">
+      <thead><tr>
+        <th>اختيار</th><th>المسار</th><th>الشركة</th><th>المغادرة</th><th>الوصول</th><th>المدة</th><th>توقفات</th><th>حقائب</th><th>السعر</th><th>إجراءات</th>
+      </tr></thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="editPanel" class="card" style="display:none">
+  <h3>تعديل عرض</h3>
+  <input type="hidden" id="editId">
+  <div class="row">
+    <label class="label" for="editOrigin">من</label><input id="editOrigin" class="input" type="text">
+    <label class="label" for="editDest">إلى</label><input id="editDest" class="input" type="text">
+  </div>
+  <div class="row">
+    <label class="label" for="editAirline">الشركة</label><input id="editAirline" class="input" type="text">
+    <label class="label" for="editPrice">السعر</label><input id="editPrice" class="input" type="number">
+    <label class="label" for="editCurrency">العملة</label><input id="editCurrency" class="input" type="text">
+  </div>
+  <div class="row">
+    <label class="label" for="editDepart">مغادرة</label><input id="editDepart" class="input" type="datetime-local">
+    <label class="label" for="editArrive">وصول</label><input id="editArrive" class="input" type="datetime-local">
+  </div>
+  <div class="row">
+    <label class="label" for="editStops">توقفات</label><input id="editStops" class="input" type="number" min="0">
+    <label class="label" for="editBaggage">حقائب (كغ)</label><input id="editBaggage" class="input" type="number" min="0">
+    <button id="saveEditBtn" class="button" type="button">حفظ</button>
+    <button id="cancelEditBtn" class="button.sec" type="button">إلغاء</button>
+  </div>
+</div>
+<div id="comparePanel" class="card" style="display:none">
+  <h3>مقارنة</h3>
+  <div id="compareOut" class="out"></div>
+</div>
+<div class="card">
+  <h3>المفضلة</h3>
+  <div id="favOut" class="out"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال؟</h3><p>نعم، بعد تحميل الصفحة يعمل بالكامل دون إنترنت، والبيانات تُخزَّن في المتصفح.</p><h3>ما صيغ الاستيراد المدعومة؟</h3><p>JSON (مصفوفة رحلات أو {flights:[]}) وCSV مع ترويسة.</p><h3>هل يمكن تعديل أو حذف عروض؟</h3><p>نعم، كل صف يحتوي أزرار تعديل وحذف، مع حفظ التغييرات محلياً.</p><h3>كم مساراً يمكن مقارنتها؟</h3><p>حتى ثلاثة مسارات جنباً إلى جنب.</p><h3>أين تُحفظ المفضلة وعمليات البحث؟</h3><p>في localStorage في المتصفح، ويمكن تصدير النتائج CSV.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-photo-library.html" style="color:var(--gold-bright);font-weight:700">مكتبة صور محلية: عرض، وسوم، بحث وتصدير داخل المتصفح</a><span style="opacity:.75"> — نظّم مكتبتك من الصور المحلية داخل المتصفح: سحب وإفلات، استخراج EXIF والتاريخ، وسوم مخصصة، بحث سريع، مصغرات…</span></li><li style="margin:.5rem 0"><a href="gridweaver-planner.html" style="color:var(--gold-bright);font-weight:700">أداة تصميم أنظمة الطاقة متعددة القطاعات ومقارنة التكلفة</a><span style="opacity:.75"> — صمم أنظمة طاقة متعددة القطاعات على خريطة عقد، وازن العرض والطلب، وقارن التكلفة والانبعاثات والموثوقية، واحفظ…</span></li><li style="margin:.5rem 0"><a href="local-knowledge-vault.html" style="color:var(--gold-bright);font-weight:700">مفكرة بحث محلية مع نسخ معزولة</a><span style="opacity:.75"> — أداة محلية لحفظ الملاحظات بفهرسة بحث كامل وعلامات مع نسخة معزولة واستيراد وتصدير آمن داخل المتصفح</span></li><li style="margin:.5rem 0"><a href="smart-shopping-list.html" style="color:var(--gold-bright);font-weight:700">قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار</a><span style="opacity:.75"> — أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم…</span></li><li style="margin:.5rem 0"><a href="timeline-video-editor.html" style="color:var(--gold-bright);font-weight:700">محرّر فيديو عربي داخل المتصفح: اقتطاع وترتيب وتصدير بدون رفع</a><span style="opacity:.75"> — استورد مقاطعك واقتطعها وقسّمها ورتّبها بالسحب على خط زمني مرئي، وأضف عناوين عربية وترجمات وفلاتر وانتقالات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-06 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const LS_KEY='flightexplorer_v1';
+  const SAMPLE=[
+    {id:'s1',origin:'RUH',dest:'DXB',airline:'Saudia',flightNo:'SV552',depart:'2026-06-01T08:10',arrive:'2026-06-01T10:30',stops:0,price:420,currency:'SAR',baggage:23},
+    {id:'s2',origin:'RUH',dest:'DXB',airline:'flydubai',flightNo:'FZ881',depart:'2026-06-01T14:20',arrive:'2026-06-01T16:45',stops:0,price:360,currency:'SAR',baggage:20},
+    {id:'s3',origin:'JED',dest:'CAI',airline:'Saudia',flightNo:'SV301',depart:'2026-06-02T09:00',arrive:'2026-06-02T12:10',stops:1,price:510,currency:'SAR',baggage:23},
+    {id:'s4',origin:'DMM',dest:'IST',airline:'Turkish',flightNo:'TK904',depart:'2026-06-03T02:15',arrive:'2026-06-03T09:40',stops:1,price:1200,currency:'SAR',baggage:30},
+    {id:'s5',origin:'RUH',dest:'LHR',airline:'BA',flightNo:'BA262',depart:'2026-06-05T01:30',arrive:'2026-06-05T09:50',stops:1,price:2100,currency:'SAR',baggage:23},
+    {id:'s6',origin:'AUH',dest:'BKK',airline:'Etihad',flightNo:'EY406',depart:'2026-06-06T22:00',arrive:'2026-06-07T09:10',stops:1,price:1800,currency:'AED',baggage:25},
+    {id:'s7',origin:'DXB',dest:'RUH',airline:'Emirates',flightNo:'EK817',depart:'2026-06-01T11:00',arrive:'2026-06-01T12:50',stops:0,price:480,currency:'AED',baggage:30},
+    {id:'s8',origin:'RUH',dest:'CAI',airline:'Flynas',flightNo:'XY201',depart:'2026-06-04T06:00',arrive:'2026-06-04T09:20',stops:0,price:390,currency:'SAR',baggage:20}
+  ];
+  let state={flights:[],filtered:[],sort:'price',compare:[],fav:[],saved:{}};
+  function load(){try{const r=localStorage.getItem(LS_KEY);if(r){const o=JSON.parse(r);state.flights=o.flights||[];state.fav=o.fav||[];state.saved=o.saved||{};}}catch(e){}}
+  function save(){try{localStorage.setItem(LS_KEY,JSON.stringify({flights:state.flights,fav:state.fav,saved:state.saved}));}catch(e){}}
+  function dur(m){if(!m||m<0)return'-';const h=Math.floor(m/60);return h+'س '+ (m%60)+'د';}
+  function minutes(a,b){return Math.round((new Date(b)-new Date(a))/60000);}
+  function match(f){
+    const o=document.getElementById('originInput').value.trim().toLowerCase();
+    const d=document.getElementById('destInput').value.trim().toLowerCase();
+    const df=document.getElementById('dateFrom').value;
+    const dt=document.getElementById('dateTo').value;
+    const tf=document.getElementById('timeFrom').value;
+    const tt=document.getElementById('timeTo').value;
+    const md=parseFloat(document.getElementById('maxDur').value);
+    const st=document.getElementById('stopsSelect').value;
+    const al=document.getElementById('airlineInput').value.trim().toLowerCase();
+    const mp=parseFloat(document.getElementById('maxPrice').value);
+    const cur=document.getElementById('currencySelect').value;
+    if(o && !(f.origin.toLowerCase().includes(o)|| (f.originCity||'').toLowerCase().includes(o))) return false;
+    if(d && !(f.dest.toLowerCase().includes(d)|| (f.destCity||'').toLowerCase().includes(d))) return false;
+    const dep=new Date(f.depart);
+    if(df && dep.toISOString().slice(0,10)<df) return false;
+    if(dt && dep.toISOString().slice(0,10)>dt) return false;
+    if(tf){const t=dep.toTimeString().slice(0,5);if(t<tf) return false;}
+    if(tt){const t=dep.toTimeString().slice(0,5);if(t>tt) return false;}
+    const m=minutes(f.depart,f.arrive);
+    if(!isNaN(md) && m>md) return false;
+    if(st==='0' && f.stops!==0) return false;
+    if(st==='1' && f.stops!==1) return false;
+    if(st==='2' && f.stops<2) return false;
+    if(al && !(f.airline||'').toLowerCase().includes(al)) return false;
+    if(!isNaN(mp) && f.price>mp) return false;
+    if(cur!=='any' && f.currency!==cur) return false;
+    return true;
+  }
+  function sortFn(a,b){
+    if(state.sort==='price') return a.price-b.price;
+    if(state.sort==='duration') return minutes(a.depart,a.arrive)-minutes(b.depart,b.arrive);
+    if(state.sort==='depart') return new Date(a.depart)-new Date(b.depart);
+    if(state.sort==='stops') return a.stops-b.stops;
+    return 0;
+  }
+  function search(){state.filtered=state.flights.filter(match).sort(sortFn);renderTable();updateStatus();}
+  function renderTable(){
+    const tb=document.getElementById('resultsBody');
+    tb.innerHTML='';
+    if(!state.filtered.length){tb.innerHTML='<tr><td colspan="10" class="out">لا توجد نتائج. عدّل الفلاتر أو استورد بيانات.</td></tr>';return;}
+    state.filtered.forEach(f=>{
+      const tr=document.createElement('tr');
+      const m=minutes(f.depart,f.arrive);
+      const bag=f.baggage? f.baggage+'كغ':'-';
+      const stopsBadge = f.stops===0?'<span class="app-badge ok">مباشر</span>':(f.stops===1?'<span class="app-badge warn">1 توقف</span>':'<span class="app-badge warn">'+f.stops+' توقف</span>');
+      const sel=state.compare.includes(f.id)?'checked':'';
+      tr.innerHTML=
+        '<td><input type="checkbox" class="cmpChk" data-id="'+f.id+'" '+sel+'></td>'+
+        '<td>'+f.origin+' → '+f.dest+'</td>'+
+        '<td>'+f.airline+' '+ (f.flightNo||'')+'</td>'+
+        '<td>'+new Date(f.depart).toLocaleString('ar-SA')+'</td>'+
+        '<td>'+new Date(f.arrive).toLocaleString('ar-SA')+'</td>'+
+        '<td>'+dur(m)+'</td>'+
+        '<td>'+stopsBadge+'</td>'+
+        '<td><span class="app-badge">'+bag+'</span></td>'+
+        '<td><span class="big">'+f.price+'</span> '+f.currency+'</td>'+
+        '<td class="app-row-actions">'+
+          '<button class="button.sec" data-act="fav" data-id="'+f.id+'" type="button">'+(state.fav.includes(f.id)?'★':'☆')+'</button>'+
+          '<button class="button.sec" data-act="edit" data-id="'+f.id+'" type="button">تعديل</button>'+
+          '<button class="button.sec" data-act="del" data-id="'+f.id+'" type="button">حذف</button>'+
+        '</td>';
+      tb.appendChild(tr);
+    });
+    document.getElementById('compareBtn').textContent='مقارنة ('+state.compare.length+')';
+  }
+  function updateStatus(){document.getElementById('statusOut').textContent='عدد النتائج: '+state.filtered.length+' من '+state.flights.length;}
+  function renderFav(){
+    const el=document.getElementById('favOut');
+    const items=state.flights.filter(f=>state.fav.includes(f.id));
+    if(!items.length){el.textContent='لا توجد مفضلة.';return;}
+    el.innerHTML=items.map(f=>'<div>'+f.origin+'→'+f.dest+' '+f.airline+' '+f.price+' '+f.currency+' <button class="button.sec" data-act="unfav" data-id="'+f.id+'" type="button">إزالة</button></div>').join('');
+  }
+  function renderSaved(){
+    const sel=document.getElementById('savedSearchesSelect');
+    sel.innerHTML='';
+    Object.keys(state.saved).forEach(k=>{
+      const o=document.createElement('option');o.value=k;o.textContent=k;sel.appendChild(o);
+    });
+  }
+  function importJSON(obj){
+    if(Array.isArray(obj)) state.flights=obj;
+    else if(obj && Array.isArray(obj.flights)) state.flights=obj.flights;
+    else throw new Error('JSON غير صالح');
+    state.flights.forEach((f,i)=>{if(!f.id) f.id='f'+Date.now()+'_'+i;});
+    save(); search(); renderFav();
+  }
+  function parseCSV(text){
+    const lines=text.trim().split(/\r?\n/);
+    if(!lines.length) return [];
+    const hdr=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+    const rows=[];
+    for(let i=1;i<lines.length;i++){
+      if(!lines[i].trim()) continue;
+      const cols=lines[i].match(/("([^"]*)"|[^,]+)/g)||[];
+      const vals=cols.map(c=>c.trim().replace(/^"|"$/g,''));
+      const o={};
+      hdr.forEach((h,j)=>{o[h]=vals[j];});
+      rows.push(o);
+    }
+    return rows.map((r,i)=>({
+      id:r.id||('c'+Date.now()+'_'+i),
+      origin:r.origin||r.from||'',
+      dest:r.dest||r.to||r.destination||'',
+      originCity:r.originCity||'',destCity:r.destCity||'',
+      airline:r.airline||'',flightNo:r.flightNo||r.flight||'',
+      depart:r.depart||r.departure||'',arrive:r.arrive||r.arrival||'',
+      stops:parseInt(r.stops||'0',10)||0,
+      price:parseFloat(r.price||'0')||0,
+      currency:r.currency||'SAR',
+      baggage:parseInt(r.baggage||'0',10)||0
+    }));
+  }
+  function exportCSV(){
+    const rows=state.filtered;
+    if(!rows.length){alert('لا نتائج للتصدير');return;}
+    const hdr=['id','origin','dest','airline','flightNo','depart','arrive','stops','price','currency','baggage'];
+    let csv=hdr.join(',')+'\n';
+    rows.forEach(f=>{csv+=[f.id,f.origin,f.dest,f.airline,f.flightNo,f.depart,f.arrive,f.stops,f.price,f.currency,f.baggage].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')+'\n';});
+    const blob=new Blob([csv],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='flights.csv';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  // events
+  document.getElementById('importFile').addEventListener('change',e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        if(file.name.toLowerCase().endsWith('.csv')) importJSON(parseCSV(ev.target.result));
+        else importJSON(JSON.parse(ev.target.result));
+      }catch(err){document.getElementById('statusOut').textContent='خطأ في الاستيراد: '+err.message;}
+    };
+    reader.readAsText(file);
+  });
+  document.getElementById('loadSampleBtn').addEventListener('click',()=>{state.flights=JSON.parse(JSON.stringify(SAMPLE));save();search();renderFav();});
+  document.getElementById('searchBtn').addEventListener('click',search);
+  document.getElementById('resetBtn').addEventListener('click',()=>{
+    ['originInput','destInput','dateFrom','dateTo','timeFrom','timeTo','maxDur','airlineInput','maxPrice'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('stopsSelect').value='any';
+    document.getElementById('currencySelect').value='any';
+    document.getElementById('sortSelect').value='price';
+    state.sort='price'; search();
+  });
+  document.getElementById('sortSelect').addEventListener('change',e=>{state.sort=e.target.value;search();});
+  document.getElementById('exportBtn').addEventListener('click',exportCSV);
+  document.getElementById('saveSearchBtn').addEventListener('click',()=>{
+    const name=prompt('اسم البحث:'); if(!name) return;
+    state.saved[name]={
+      origin:document.getElementById('originInput').value,dest:document.getElementById('destInput').value,
+      dateFrom:document.getElementById('dateFrom').value,dateTo:document.getElementById('dateTo').value,
+      timeFrom:document.getElementById('timeFrom').value,timeTo:document.getElementById('timeTo').value,
+      maxDur:document.getElementById('maxDur').value,stops:document.getElementById('stopsSelect').value,
+      airline:document.getElementById('airlineInput').value,maxPrice:document.getElementById('maxPrice').value,
+      currency:document.getElementById('currencySelect').value
+    };
+    save(); renderSaved();
+  });
+  document.getElementById('loadSavedBtn').addEventListener('click',()=>{
+    const k=document.getElementById('savedSearchesSelect').value; if(!k||!state.saved[k]) return;
+    const s=state.saved[k];
+    document.getElementById('originInput').value=s.origin||'';
+    document.getElementById('destInput').value=s.dest||'';
+    document.getElementById('dateFrom').value=s.dateFrom||'';
+    document.getElementById('dateTo').value=s.dateTo||'';
+    document.getElementById('timeFrom').value=s.timeFrom||'';
+    document.getElementById('timeTo').value=s.timeTo||'';
+    document.getElementById('maxDur').value=s.maxDur||'';
+    document.getElementById('stopsSelect').value=s.stops||'any';
+    document.getElementById('airlineInput').value=s.airline||'';
+    document.getElementById('maxPrice').value=s.maxPrice||'';
+    document.getElementById('currencySelect').value=s.currency||'any';
+    search();
+  });
+  document.getElementById('deleteSavedBtn').addEventListener('click',()=>{
+    const k=document.getElementById('savedSearchesSelect').value; if(!k) return;
+    delete state.saved[k]; save(); renderSaved();
+  });
+  document.getElementById('resultsBody').addEventListener('click',e=>{
+    const btn=e.target.closest('button'); if(!btn) return;
+    const id=btn.dataset.id; const act=btn.dataset.act;
+    if(act==='fav'){if(!state.fav.includes(id)) state.fav.push(id); else state.fav=state.fav.filter(x=>x!==id); save(); renderTable(); renderFav();}
+    if(act==='unfav'){state.fav=state.fav.filter(x=>x!==id); save(); renderTable(); renderFav();}
+    if(act==='del'){state.flights=state.flights.filter(f=>f.id!==id); state.fav=state.fav.filter(x=>x!==id); state.compare=state.compare.filter(x=>x!==id); save(); search(); renderFav();}
+    if(act==='edit'){
+      const f=state.flights.find(x=>x.id===id); if(!f) return;
+      document.getElementById('editId').value=f.id;
+      document.getElementById('editOrigin').value=f.origin;
+      document.getElementById('editDest').value=f.dest;
+      document.getElementById('editAirline').value=f.airline;
+      document.getElementById('editPrice').value=f.price;
+      document.getElementById('editCurrency').value=f.currency;
+      document.getElementById('editDepart').value=f.depart.slice(0,16);
+      document.getElementById('editArrive').value=f.arrive.slice(0,16);
+      document.getElementById('editStops').value=f.stops;
+      document.getElementById('editBaggage').value=f.baggage;
+      document.getElementById('editPanel').style.display='block';
+    }
+  });
+  document.getElementById('resultsBody').addEventListener('change',e=>{
+    if(e.target.classList.contains('cmpChk')){
+      const id=e.target.dataset.id;
+      if(e.target.checked){ if(state.compare.length>=3){e.target.checked=false;alert('الحد الأقصى 3');return;} if(!state.compare.includes(id)) state.compare.push(id);}
+      else state.compare=state.compare.filter(x=>x!==id);
+      document.getElementById('compareBtn').textContent='مقارنة ('+state.compare.length+')';
+    }
+  });
+  document.getElementById('saveEditBtn').addEventListener('click',()=>{
+    const id=document.getElementById('editId').value;
+    const f=state.flights.find(x=>x.id===id); if(!f) return;
+    f.origin=document.getElementById('editOrigin').value;
+    f.dest=document.getElementById('editDest').value;
+    f.airline=document.getElementById('editAirline').value;
+    f.price=parseFloat(document.getElementById('editPrice').value)||0;
+    f.currency=document.getElementById('editCurrency').value;
+    f.depart=document.getElementById('editDepart').value;
+    f.arrive=document.getElementById('editArrive').value;
+    f.stops=parseInt(document.getElementById('editStops').value,10)||0;
+    f.baggage=parseInt(document.getElementById('editBaggage').value,10)||0;
+    save(); document.getElementById('editPanel').style.display='none'; search(); renderFav();
+  });
+  document.getElementById('cancelEditBtn').addEventListener('click',()=>{document.getElementById('editPanel').style.display='none';});
+  document.getElementById('compareBtn').addEventListener('click',()=>{
+    const items=state.flights.filter(f=>state.compare.includes(f.id));
+    const panel=document.getElementById('comparePanel');
+    if(!items.length){panel.style.display='none';return;}
+    panel.style.display='block';
+    const out=document.getElementById('compareOut');
+    let html='<div class="app-compare-grid">';
+    items.forEach(f=>{
+      html+='<div class="app-compare-col"><b>'+f.origin+' → '+f.dest+'</b><br>'+f.airline+'<br>مغادرة: '+new Date(f.depart).toLocaleString('ar-SA')+'<br>وصول: '+new Date(f.arrive).toLocaleString('ar-SA')+'<br>مدة: '+dur(minutes(f.depart,f.arrive))+'<br>توقفات: '+f.stops+'<br>حقائب: '+f.baggage+'كغ<br><span class="big">'+f.price+'</span> '+f.currency+'</div>';
+    });
+    html+='</div>';
+    out.innerHTML=html;
+  });
+  document.getElementById('favOut').addEventListener('click',e=>{
+    const btn=e.target.closest('button'); if(!btn) return;
+    if(btn.dataset.act==='unfav'){
+      const id=btn.dataset.id; state.fav=state.fav.filter(x=>x!==id); save(); renderTable(); renderFav();
+    }
+  });
+  load(); renderSaved(); renderFav(); search();
+})();
+</script>
+</body>
+</html>
