@@ -17,6 +17,8 @@ jobs:
             test -s "$f" || { echo "Missing or empty: $f"; exit 1; }
           done
           test "$(find pages -maxdepth 1 -name '*.html' | wc -l)" -ge 10
+      - name: Page quality gate (no leaked reasoning, no empty titles/descriptions)
+        run: node scripts/check-page-quality.js
       - name: Check live pages
         run: |
           set -e

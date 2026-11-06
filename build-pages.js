@@ -2,6 +2,14 @@
 const fs = require('fs');
 const path = require('path');
 const { seoHead, writeSitemapPages, ensureRobotsSitemap } = require('./scripts/seo-meta');
+const { findProblems, findBodyProblems } = require('./scripts/page_quality');
+
+// صفحات معزولة عمدًا (انظر data/excluded-pages.json): تبقى خارج الفهرس والـ sitemap
+const excludedSlugs = new Set(
+  fs.existsSync('data/excluded-pages.json')
+    ? JSON.parse(fs.readFileSync('data/excluded-pages.json', 'utf8')).excluded.map(e => path.basename(e.path, '.html'))
+    : []
+);
 
 const dataFile = fs.readFileSync('pages-data.json', 'utf8');
 const data = JSON.parse(dataFile);
@@ -296,6 +304,14 @@ const title = customTitle || randomFrom(data.contentWords.titles);
 const description = customDescription || randomFrom(data.contentWords.descriptions);
 const quote = customBody ? 'خطة أصلية مبنية على احتياج حقيقي وتُراجع قبل التنفيذ.' : pickDailyQuote(pageNumber, data.wisdomQuotes);
 
+// بوابة الجودة: لا نشر لعنوان أو وصف فارغ أو فيه نص تفكير مسرّب أو نص بديل
+const qualityProblems = findProblems({ title, description });
+if (customBody) qualityProblems.push(...findBodyProblems(customBody));
+if (qualityProblems.length) {
+  console.error('⛔ رُفض نشر الصفحة بسبب مشاكل جودة:\n - ' + qualityProblems.join('\n - '));
+  process.exit(1);
+}
+
 const pageSlug = `${pageNumber}`;
 const pagePath = path.join('pages', `${pageSlug}.html`);
 const html = generatePageHTML(pageNumber, title, description, quote, customBody, translations);
@@ -316,6 +332,7 @@ fs.writeFileSync(registryFile, JSON.stringify(registry, null, 2), 'utf8');
 // إعادة بناء sitemap-pages.xml: كل صفحة موجودة وغير noindex
 const indexableEntries = registry.filter(e => {
   if (!/^\d+$/.test(String(e.slug))) return false; // أدوات الـ tools لها sitemap-tools.xml الخاص بها
+  if (excludedSlugs.has(String(e.slug))) return false;
   const f = path.join('pages', `${e.slug}.html`);
   return fs.existsSync(f) && !/name="robots"[^>]*noindex/.test(fs.readFileSync(f, 'utf8'));
 }).sort((a, b) => Number(a.slug) - Number(b.slug));
@@ -323,7 +340,7 @@ writeSitemapPages(indexableEntries);
 ensureRobotsSitemap();
 
 // إعادة بناء صفحة الفهرس كل مرة عشان تفضل محدثة بكل الصفحات
-const indexHtml = generateIndexHTML(registry);
+const indexHtml = generateIndexHTML(registry.filter(e => !excludedSlugs.has(String(e.slug))));
 fs.writeFileSync(path.join('pages', 'index.html'), indexHtml, 'utf8');
 
 // تحديث الحالة
