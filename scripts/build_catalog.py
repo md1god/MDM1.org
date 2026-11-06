@@ -99,7 +99,7 @@ def build() -> dict:
     records: list[dict] = []
     group_of = {a: g["id"] for g in OVR["groups"] for a in g["apps"]}
 
-    # ---- working apps (each passed scripts/smoke_app.js before it was added) ----
+    # ---- working apps (each is added through a flow that runs scripts/smoke_app.js; smoke-all.yml re-runs it on all) ----
     for a in rd("data/apps.json")["apps"]:
         slug = a["slug"]
         text = f'{a["h1"]} {a["title"]} {a["description"]}'
@@ -200,7 +200,7 @@ def build() -> dict:
     return {
         "generated": date.today().isoformat(),
         "meaning": {
-            "working_app": "تطبيق يعمل في المتصفح واجتاز اختبار التشغيل الآلي (scripts/smoke_app.js) قبل إضافته.",
+            "working_app": "تطبيق يعمل في المتصفح، أُضيف عبر مسار يتضمن اختبار تشغيل آلي (scripts/smoke_app.js).",
             "tool": "أداة أو حاسبة ثابتة تعمل في المتصفح.",
             "project_plan": "خطة مشروع قيد البناء. ليست منتجًا جاهزًا ولا تظهر كتطبيق.",
         },

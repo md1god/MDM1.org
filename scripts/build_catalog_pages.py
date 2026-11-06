@@ -223,7 +223,7 @@ def category_page(slug: str, cfg: dict) -> str:
               '<p>هذه <strong>ليست تطبيقات جاهزة</strong>. هي خطط مشاريع كاملة تحتاج مطورين ومراجعين وممولين. تصنيفها آلي وقيد المراجعة.</p>'
               + items(top_plans, review=True) +
               f'<p><a href="/projects/">كل المشاريع قيد البناء ({n_ar(len(PLANS))})</a></p></section>\n')
-    h += '<p class="note">الفرق بين الجاهز وقيد البناء: <strong>يعمل الآن</strong> يعني أن التطبيق اجتاز اختبار تشغيل آلي ويمكنك استخدامه فورًا. <strong>قيد البناء</strong> يعني خطة فقط.</p>\n</main>\n'
+    h += '<p class="note">الفرق بين الجاهز وقيد البناء: <strong>يعمل الآن</strong> يعني أن التطبيق يُضاف عبر مسار فيه اختبار تشغيل آلي ويمكنك استخدامه فورًا. <strong>قيد البناء</strong> يعني خطة فقط.</p>\n</main>\n'
     return h + foot()
 
 
@@ -241,7 +241,7 @@ def hub_page() -> str:
           f'<a class="stat" href="/projects/"><b>{n_ar(nplans)}</b><span>فكرة أو مشروع قيد البناء</span></a>'
           f'<a class="stat" href="/games.html"><b>{n_ar(CAT["games"]["records"])}</b><span>لعبة HTML5 في الفهرس (روابط ناشرين)</span></a>'
           '</div>\n')
-    h += ('<div class="legend"><span><span class="chip ok">يعمل الآن</span> اجتاز اختبار تشغيل آلي</span>'
+    h += ('<div class="legend"><span><span class="chip ok">يعمل الآن</span> أُضيف عبر اختبار تشغيل آلي</span>'
           '<span><span class="chip wip">قيد البناء</span> خطة فقط، ليست منتجًا</span>'
           '<span><span class="chip wip">يحتاج مساهمين</span> تبحث عن مطورين أو مراجعين</span>'
           '<span><span class="chip rv">تصنيف آلي قيد المراجعة</span> التصنيف غير نهائي</span></div>\n')

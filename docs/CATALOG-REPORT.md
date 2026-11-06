@@ -14,7 +14,7 @@
 - بوابة جودة (`scripts/check-page-quality.js` + `scripts/page_quality.js`) تعمل في deploy.yml وcontent-check.yml وداخل build-pages.js: فحصت 829 صفحة، 0 مخالفة، وكشفت الـ6 المعطوبة فقط قبل العزل (0 إنذار كاذب). مُختبر أن مدخلاً سيئاً (`Let me think…`) يُرفض بدون تعديل أي ملف.
 - `data/catalog.json`: 809 سجل = 214 تطبيق يعمل + 21 أداة + 574 خطة مشروع (+ 10000 سجل ألعاب كعدّاد). لكل سجل: status, primaryCategory, secondaryCategories, tags, classificationMethod, classificationConfidence, needsReview, indexable.
 - حالة المراجعة: 276 مراجَع يدوياً، 212 آلي بثقة عالية، 321 آلي يحتاج مراجعة.
-- 214/214 تطبيق نجح في اختبار smoke (متصفح بدون إنترنت، بلا أخطاء JS) — أساس حالة "يعمل".
+- الاختبار الشامل قابل لإعادة التشغيل: `scripts/smoke_all.js` + workflow `smoke-all.yml` (يدوي وعلى أي PR يمس apps/). نتيجة التشغيل المحلي: 214/214 نجح (متصفح بدون إنترنت، بلا أخطاء JS). صياغة الكتالوج: "أُضيف عبر مسار فيه اختبار تشغيل آلي".
 - 128 خطة بأسماء مكررة: كل واحدة لها displayTitle فريد (574/574) بدون تغيير الـ slug.
 - 21 مجموعة تطبيقات متشابهة (62 تطبيق) في `/catalog/groups/` بجداول مقارنة، مع إبقاء كل أداة بصفحتها.
 - صفحات تصنيف ثابتة بروابط HTML حقيقية، canonical لنفسها: `/categories/{ai,developer-tools,business,education,privacy-offline}/`، و`/catalog/` مدخل عام، و`/projects/` (noindex,follow) فيه الخطط.
@@ -28,7 +28,7 @@ archive/broken-pages/*, catalog/index.html, catalog/groups/index.html, categorie
 build-pages.js, .github/workflows/deploy.yml, .github/workflows/content-check.yml, robots.txt, sitemap-pages.xml, pages/index.html, data/games-meta.json, pages/{172,200,251,258,320,515}.html (noindex فقط)
 
 ## قرارات مفتوحة
-1. الـ568 صفحة خطة ما زالت في sitemap-pages.xml (القديم). أنصح بإزالتها منه حتى تُراجع.
-2. التطبيقات تُضاف يومياً بـ add-app، فيجب إعادة تشغيل `python3 scripts/build_catalog.py` ثم `python3 scripts/build_catalog_pages.py` (غير مؤتمت في هذا الـPR).
+1. (حُسم بعد مراجعة مانوس) أُزيل إعلان sitemap-pages.xml من robots.txt مؤقتاً (الملف والصفحات والروابط كلها باقية)، وسكربت build-pages لن يعيد إعلانه طالما بقي السطر `# sitemap-pages: withheld`.
+2. (حُسم) add-app.yml صار يعيد بناء الكتالوج وصفحاته ويشغّل بوابة الجودة ويضيفها للـcommit.
 3. تصنيف الخطط آلي (~85%) وبعضه يحتاج مراجعة بشرية (321 سجل).
 4. الـ6 صفحات المعطوبة تحتاج إعادة كتابة يدوية قبل إعادة فهرستها.
