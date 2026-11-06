@@ -68,6 +68,7 @@ function writeSitemapPages(entries, outFile = 'sitemap-pages.xml') {
 function ensureRobotsSitemap(robotsFile = 'robots.txt') {
   const line = `Sitemap: ${ORIGIN}/sitemap-pages.xml`;
   let txt = fs.existsSync(robotsFile) ? fs.readFileSync(robotsFile, 'utf8') : 'User-agent: *\nAllow: /\n';
+  if (/#\s*sitemap-pages:\s*withheld/.test(txt)) return; // قرار مقصود: الخطط خارج الإعلان حتى تُراجع
   if (!txt.includes(line)) {
     txt = txt.replace(/\s*$/, '\n') + line + '\n';
     fs.writeFileSync(robotsFile, txt, 'utf8');

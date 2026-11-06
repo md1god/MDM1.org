@@ -30,7 +30,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python3 scripts/related_links.py
-          git add apps data sitemap-apps.xml robots.txt
+          python3 scripts/build_catalog.py
+          python3 scripts/build_catalog_pages.py
+          node scripts/check-page-quality.js
+          git add apps data sitemap-apps.xml robots.txt sitemap-catalog.xml catalog categories projects
           if git diff --cached --quiet; then echo "nothing to publish"; exit 1; fi
           git config user.name "MD1 Bot"; git config user.email "action@github.com"
           git commit -m "App from Scout: $(date -u +%F)"
