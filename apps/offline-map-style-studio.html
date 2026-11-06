@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تصميم خرائط مخصصة من GeoJSON وOSM داخل المتصفح | MDM1</title>
+<meta name="description" content="صمم خرائط مخصصة داخل متصفحك من ملفات GeoJSON وOSM XML المحلية، مع سحب وتكبير وتخصيص ألوان الطرق والمياه والمباني والتسميات، وحفظ الأنماط وتصدير HTML دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-map-style-studio.html">
+<meta property="og:title" content="أداة تصميم خرائط مخصصة من GeoJSON وOSM داخل المتصفح">
+<meta property="og:description" content="صمم خرائط مخصصة داخل متصفحك من ملفات GeoJSON وOSM XML المحلية، مع سحب وتكبير وتخصيص ألوان الطرق والمياه والمباني والتسميات، وحفظ الأنماط وتصدير HTML دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-map-style-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:flex;flex-direction:column;gap:16px;margin-top:12px}
+.app .row{flex-wrap:wrap;align-items:center;gap:10px;margin:8px 0}
+.app input[type="file"]{max-width:100%}
+.app input[type="number"]{width:70px}
+.app input[type="color"]{width:56px;height:34px;padding:2px}
+.app input[type="text"]{min-width:200px}
+.app label{display:inline-flex;align-items:center;gap:6px}
+.app .app-mapWrap{width:100%;overflow:hidden;border:1px solid var(--gold-dim);border-radius:8px;background:var(--dark)}
+.app canvas{display:block;width:100%;height:auto;cursor:grab;touch-action:none}
+.app canvas:active{cursor:grabbing}
+.app textarea{width:100%;min-height:120px;box-sizing:border-box}
+.app .badge{white-space:nowrap}
+.app .divider{margin:14px 0}
+.app p{margin:6px 0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مصمم الخرائط المخصصة من الملفات المحلية", "url": "https://mdm1.org/apps/offline-map-style-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تعمل الأداة دون اتصال بالإنترنت تماماً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل المعالجة تتم داخل متصفحك باستخدام JavaScript وCanvas دون خادم أو حساب، وتبقى ملفاتك المحلية على جهازك ولا تُرسل إلى أي مكان."}}, {"@type": "Question", "name": "ما صيغ الملفات الجغرافية المدعومة وما طبقاتها؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم الأداة ملفات GeoJSON وJSON وOSM XML، وتصنف العناصر تلقائياً إلى طرق ومياه ومبانٍ ونقاط وطبقات أخرى حسب نوع الهندسة وخصائصها مثل highway وbuilding وwater."}}, {"@type": "Question", "name": "أين تُحفظ أنماطي المتعددة؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحفظ الأنماط في التخزين المحلي localStorage داخل متصفحك فقط، ويمكنك حفظ اسم النمط وتطبيقه أو حذفه في أي وقت دون الحاجة إلى حساب."}}, {"@type": "Question", "name": "كيف أستخدم صفحة HTML المصدرة على موقعي؟", "acceptedAnswer": {"@type": "Answer", "text": "انسخ النص الظاهر في مربع التصدير بعد الضغط على زر تصدير صفحة HTML، واحفظه كملف HTML أو الصقه في صفحة قائمة، فهو يتضمن بيانات الخريطة والنمط ويرسمها دون أي مكتبات خارجية."}}, {"@type": "Question", "name": "ماذا أفعل إذا ظهر خطأ عند رفع ملف؟", "acceptedAnswer": {"@type": "Answer", "text": "ستظهر رسالة واضحة في مربع الحالة تشرح وجود مشكلة في تنسيق الملف، وتبقى الخريطة السابقة معروضة، فيمكنك اختيار ملف GeoJSON أو OSM XML صالح آخر أو تجربة البيانات التجريبية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مصمم الخرائط المخصصة من الملفات المحلية</h1>
+  <p class="page-sub">صمم خرائط مخصصة داخل متصفحك من ملفات GeoJSON وOSM XML المحلية، مع سحب وتكبير وتخصيص ألوان الطرق والمياه والمباني والتسميات، وحفظ الأنماط وتصدير HTML دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>نعم، هذه الأداة تتيح لك تصميم خريطة مخصصة بالكامل داخل متصفحك دون خادم أو حساب أو اتصال بالشبكة، من خلال رفع ملف GeoJSON أو OSM XML محلي ومعاينته فوراً على لوحة رسم تفاعلية تدعم السحب للتحريك والتكبير بالعجلة أو بالأزرار. يمكنك بعدها تخصيص كل طبقة على حدة، مثل الطرق والمياه والمباني والنقاط، بتغيير لون التعبئة أو الحد وسمك الخط وإظهار التسميات ولونها وحجمها وخطها، كما يمكنك ضبط لون الخلفية وحدود المضلعات. تُحفظ أنماطك المتعددة في التخزين المحلي للمتصفح لتطبيقها لاحقاً، ويمكنك تصدير النمط كملف JSON أو صفحة HTML جاهزة للتضمين في أي موقع، مع عرض إحصاءات فورية لعدد العناصر في كل طبقة وتنبيهات واضحة عند غياب الملف أو وجود خطأ في تنسيقه.</p>
+<div class="app">
+<div class="card">
+<p><strong>رفع البيانات المحلية</strong></p>
+<div class="row">
+<label for="fileInput">اختر ملف GeoJSON أو OSM XML من جهازك</label>
+<input id="fileInput" type="file" accept=".geojson,.json,.osm,.xml">
+<button id="loadSampleBtn" type="button">تحميل بيانات تجريبية للمعاينة الفورية</button>
+<button id="clearBtn" type="button" class="sec">مسح البيانات الحالية من الخريطة</button>
+</div>
+<div class="row">
+<span class="badge">إجمالي العناصر</span><span class="big" id="totalCount">0</span>
+<span class="badge">الطرق</span><span class="big" id="roadCount">0</span>
+<span class="badge">المياه</span><span class="big" id="waterCount">0</span>
+<span class="badge">المباني</span><span class="big" id="buildingCount">0</span>
+<span class="badge">النقاط</span><span class="big" id="pointCount">0</span>
+</div>
+<div class="out" id="statusOut">لم يتم رفع أي ملف بعد. اختر ملفاً محلياً أو حمّل البيانات التجريبية لبدء المعاينة.</div>
+</div>
+<div class="card">
+<p><strong>معاينة الخريطة التفاعلية</strong></p>
+<div class="app-mapWrap"><canvas id="mapCanvas" width="960" height="520"></canvas></div>
+<div class="row">
+<button id="zoomInBtn" type="button">تكبير الخريطة</button>
+<button id="zoomOutBtn" type="button" class="sec">تصغير الخريطة</button>
+<button id="resetViewBtn" type="button" class="sec">إعادة ضبط العرض لملاءمة كل العناصر</button>
+<span class="badge" id="viewBadge">اسحب داخل الخريطة للتحريك، واستخدم عجلة الفأرة للتكبير والتصغير</span>
+</div>
+</div>
+<div class="card">
+<p><strong>تخصيص الطبقات والحدود والتسميات</strong></p>
+<div class="row">
+<label for="bgColor">لون خلفية الخريطة</label>
+<input id="bgColor" type="color" value="#0b1020">
+<label for="fontFamily">خط تسميات الخريطة</label>
+<select id="fontFamily"><option value="Tahoma">Tahoma</option><option value="Arial">Arial</option><option value="sans-serif">sans-serif</option><option value="serif">serif</option></select>
+</div>
+<div class="divider"></div>
+<p><strong>طبقة الطرق</strong></p>
+<div class="row">
+<label><input id="roadsVisible" type="checkbox" checked> إظهار طبقة الطرق</label>
+<label for="roadsColor">لون الطرق</label><input id="roadsColor" type="color" value="#f5c542">
+<label for="roadsBorderColor">لون حد الطرق</label><input id="roadsBorderColor" type="color" value="#111111">
+<label for="roadsWidth">سمك خط الطرق</label><input id="roadsWidth" type="number" min="1" max="30" value="4">
+</div>
+<div class="row">
+<label><input id="roadsLabelVisible" type="checkbox"> إظهار تسميات الطرق</label>
+<label for="roadsLabelColor">لون تسمية الطرق</label><input id="roadsLabelColor" type="color" value="#ffffff">
+<label for="roadsLabelSize">حجم تسمية الطرق</label><input id="roadsLabelSize" type="number" min="8" max="40" value="13">
+</div>
+<div class="divider"></div>
+<p><strong>طبقة المياه</strong></p>
+<div class="row">
+<label><input id="waterVisible" type="checkbox" checked> إظهار طبقة المياه</label>
+<label for="waterColor">لون المياه</label><input id="waterColor" type="color" value="#2e7cd6">
+<label for="waterBorderColor">لون حد المياه</label><input id="waterBorderColor" type="color" value="#0a2a4a">
+<label for="waterWidth">سمك حد المياه</label><input id="waterWidth" type="number" min="0" max="30" value="2">
+</div>
+<div class="row">
+<label><input id="waterLabelVisible" type="checkbox" checked> إظهار تسميات المياه</label>
+<label for="waterLabelColor">لون تسمية المياه</label><input id="waterLabelColor" type="color" value="#ffffff">
+<label for="waterLabelSize">حجم تسمية المياه</label><input id="waterLabelSize" type="number" min="8" max="40" value="14">
+</div>
+<div class="divider"></div>
+<p><strong>طبقة المباني</strong></p>
+<div class="row">
+<label><input id="buildingsVisible" type="checkbox" checked> إظهار طبقة المباني</label>
+<label for="buildingsColor">لون المباني</label><input id="buildingsColor" type="color" value="#c9a86a">
+<label for="buildingsBorderColor">لون حد المباني</label><input id="buildingsBorderColor" type="color" value="#5a4632">
+<label for="buildingsWidth">سمك حد المباني</label><input id="buildingsWidth" type="number" min="0" max="30" value="1">
+</div>
+<div class="row">
+<label><input id="buildingsLabelVisible" type="checkbox"> إظهار تسميات المباني</label>
+<label for="buildingsLabelColor">لون تسمية المباني</label><input id="buildingsLabelColor" type="color" value="#ffffff">
+<label for="buildingsLabelSize">حجم تسمية المباني</label><input id="buildingsLabelSize" type="number" min="8" max="40" value="12">
+</div>
+<div class="divider"></div>
+<p><strong>طبقة النقاط والطبقات الأخرى</strong></p>
+<div class="row">
+<label><input id="pointsVisible" type="checkbox" checked> إظهار طبقة النقاط</label>
+<label for="pointsColor">لون النقاط</label><input id="pointsColor" type="color" value="#e74c3c">
+<label for="pointsBorderColor">لون حد النقاط</label><input id="pointsBorderColor" type="color" value="#ffffff">
+<label for="pointsWidth">سمك حد النقاط</label><input id="pointsWidth" type="number" min="0" max="30" value="2">
+</div>
+<div class="row">
+<label><input id="pointsLabelVisible" type="checkbox" checked> إظهار تسميات النقاط</label>
+<label for="pointsLabelColor">لون تسمية النقاط</label><input id="pointsLabelColor" type="color" value="#ffffff">
+<label for="pointsLabelSize">حجم تسمية النقاط</label><input id="pointsLabelSize" type="number" min="8" max="40" value="13">
+</div>
+<div class="row">
+<label><input id="othersVisible" type="checkbox" checked> إظهار الطبقات الأخرى</label>
+<label for="othersColor">لون الطبقات الأخرى</label><input id="othersColor" type="color" value="#8a8fa3">
+<label for="othersBorderColor">لون حد الطبقات الأخرى</label><input id="othersBorderColor" type="color" value="#222222">
+<label for="othersWidth">سمك حد الطبقات الأخرى</label><input id="othersWidth" type="number" min="0" max="30" value="1">
+</div>
+<div class="row">
+<label><input id="othersLabelVisible" type="checkbox"> إظهار تسميات الطبقات الأخرى</label>
+<label for="othersLabelColor">لون تسمية الطبقات الأخرى</label><input id="othersLabelColor" type="color" value="#ffffff">
+<label for="othersLabelSize">حجم تسمية الطبقات الأخرى</label><input id="othersLabelSize" type="number" min="8" max="40" value="12">
+</div>
+</div>
+<div class="card">
+<p><strong>حفظ الأنماط في المتصفح</strong></p>
+<div class="row">
+<label for="styleName">اسم النمط الجديد</label>
+<input id="styleName" type="text" placeholder="مثال: نمط ليلي ذهبي">
+<button id="saveStyleBtn" type="button">حفظ النمط الحالي بهذا الاسم</button>
+</div>
+<div class="row">
+<label for="savedStyles">الأنماط المحفوظة</label>
+<select id="savedStyles"></select>
+<button id="loadStyleBtn" type="button">تطبيق النمط المحدد على الخريطة</button>
+<button id="deleteStyleBtn" type="button" class="sec">حذف النمط المحدد نهائياً</button>
+</div>
+<div class="out" id="stylesOut">لا توجد أنماط محفوظة بعد. احفظ نمطاً لتتمكن من تطبيقه لاحقاً.</div>
+</div>
+<div class="card">
+<p><strong>تصدير النمط والخريطة</strong></p>
+<div class="row">
+<button id="exportStyleBtn" type="button">تصدير النمط الحالي كنص JSON</button>
+<button id="exportHtmlBtn" type="button" class="sec">تصدير صفحة HTML جاهزة للتضمين</button>
+</div>
+<label for="exportOut">نص التصدير الجاهز للنسخ</label>
+<textarea id="exportOut" rows="10" readonly placeholder="ستظهر هنا بيانات النمط أو كود صفحة HTML بعد الضغط على أحد أزرار التصدير"></textarea>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تعمل الأداة دون اتصال بالإنترنت تماماً؟</h3><p>نعم، كل المعالجة تتم داخل متصفحك باستخدام JavaScript وCanvas دون خادم أو حساب، وتبقى ملفاتك المحلية على جهازك ولا تُرسل إلى أي مكان.</p><h3>ما صيغ الملفات الجغرافية المدعومة وما طبقاتها؟</h3><p>تدعم الأداة ملفات GeoJSON وJSON وOSM XML، وتصنف العناصر تلقائياً إلى طرق ومياه ومبانٍ ونقاط وطبقات أخرى حسب نوع الهندسة وخصائصها مثل highway وbuilding وwater.</p><h3>أين تُحفظ أنماطي المتعددة؟</h3><p>تُحفظ الأنماط في التخزين المحلي localStorage داخل متصفحك فقط، ويمكنك حفظ اسم النمط وتطبيقه أو حذفه في أي وقت دون الحاجة إلى حساب.</p><h3>كيف أستخدم صفحة HTML المصدرة على موقعي؟</h3><p>انسخ النص الظاهر في مربع التصدير بعد الضغط على زر تصدير صفحة HTML، واحفظه كملف HTML أو الصقه في صفحة قائمة، فهو يتضمن بيانات الخريطة والنمط ويرسمها دون أي مكتبات خارجية.</p><h3>ماذا أفعل إذا ظهر خطأ عند رفع ملف؟</h3><p>ستظهر رسالة واضحة في مربع الحالة تشرح وجود مشكلة في تنسيق الملف، وتبقى الخريطة السابقة معروضة، فيمكنك اختيار ملف GeoJSON أو OSM XML صالح آخر أو تجربة البيانات التجريبية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="offline-password-vault.html" style="color:var(--gold-bright);font-weight:700">خزنة كلمات مرور مشفّرة محلياً داخل المتصفح</a><span style="opacity:.75"> — خزنة كلمات مرور تعمل داخل متصفحك بتشفير AES-GCM ومفتاح رئيسي واحد، مع حفظ محلي آمن، بحث فوري، مولّد كلمات…</span></li><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li><li style="margin:.5rem 0"><a href="reversible-photo-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور بطبقات غير متلفة داخل المتصفح</a><span style="opacity:.75"> — حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد…</span></li><li style="margin:.5rem 0"><a href="seo-lab-local-workbench.html" style="color:var(--gold-bright);font-weight:700">مختبر SEO داخل المتصفح</a><span style="opacity:.75"> — يعمل المختبر بالكامل داخل المتصفح لتوليد الكلمات المفتاحية وتحليل نيتها وصعوبتها ومقارنتها نسبياً وتتبع…</span></li><li style="margin:.5rem 0"><a href="skyweave-drone-lab.html" style="color:var(--gold-bright);font-weight:700">محاكي طيران مسيّر تفاعلي داخل المتصفح</a><span style="opacity:.75"> — محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-06 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const canvas=document.getElementById("mapCanvas");const ctx=canvas.getContext("2d");const layerKeys=["roads","water","buildings","others","points"];let features=[];let view={clon:31.22,clat:30.04,scale:12000};let dragging=false;let lastX=0;let lastY=0;
+function el(id){return document.getElementById(id);}
+function setStatus(msg){el("statusOut").textContent=msg;}
+function getConfig(){const layers={};layerKeys.forEach(function(k){layers[k]={visible:el(k+"Visible").checked,color:el(k+"Color").value,borderColor:el(k+"BorderColor").value,width:parseFloat(el(k+"Width").value)||1,labelVisible:el(k+"LabelVisible").checked,labelColor:el(k+"LabelColor").value,labelSize:parseFloat(el(k+"LabelSize").value)||13};});return{bg:el("bgColor").value,fontFamily:el("fontFamily").value,layers:layers};}
+function applyConfig(cfg){if(!cfg||!cfg.layers)return;el("bgColor").value=cfg.bg||"#0b1020";el("fontFamily").value=cfg.fontFamily||"Tahoma";layerKeys.forEach(function(k){const L=cfg.layers[k];if(!L)return;el(k+"Visible").checked=!!L.visible;el(k+"Color").value=L.color||"#888888";el(k+"BorderColor").value=L.borderColor||"#000000";el(k+"Width").value=L.width;el(k+"LabelVisible").checked=!!L.labelVisible;el(k+"LabelColor").value=L.labelColor||"#ffffff";el(k+"LabelSize").value=L.labelSize;});}
+function classify(props,geomType){const s=JSON.stringify(props||{}).toLowerCase();if(s.indexOf("building")>-1)return"buildings";if(s.indexOf("water")>-1||s.indexOf("river")>-1||s.indexOf("lake")>-1||s.indexOf("sea")>-1||s.indexOf("waterway")>-1)return"water";if(geomType==="Point"||geomType==="MultiPoint")return"points";if(geomType==="LineString"||geomType==="MultiLineString")return"roads";return"others";}
+function featureName(props){if(!props)return"";return props.name||props["name:ar"]||props.title||props.label||"";}
+function makeFeature(props,geom){const f={layer:classify(props,geom&&geom.type),name:featureName(props),polys:[],lines:[],points:[]};if(!geom)return f;const c=geom.coordinates;if(geom.type==="Point"&&c){f.points=[c];f.layer="points";}else if(geom.type==="MultiPoint"&&c){f.points=c;}else if(geom.type==="LineString"&&c){f.lines=[c];}else if(geom.type==="MultiLineString"&&c){f.lines=c;}else if(geom.type==="Polygon"&&c){f.polys=c;}else if(geom.type==="MultiPolygon"&&c){c.forEach(function(p){p.forEach(function(r){f.polys.push(r);});});}if(geom.type==="Point"||geom.type==="MultiPoint")f.layer="points";else if(f.layer==="points"&&geom.type!=="Point"&&geom.type!=="MultiPoint")f.layer=classify(props,geom.type);return f;}
+function parseGeoJSON(obj){let list=[];if(!obj)throw new Error("empty");if(obj.type==="FeatureCollection"&&Array.isArray(obj.features))list=obj.features;else if(obj.type==="Feature")list=[obj];else if(obj.type&&obj.coordinates)list=[{type:"Feature",properties:{},geometry:obj}];else throw new Error("not geojson");return list.map(function(it){return makeFeature(it.properties||{},it.geometry);}).filter(function(f){return f.polys.length||f.lines.length||f.points.length;});}
+function parseOSM(text){const doc=new DOMParser().parseFromString(text,"text/xml");if(doc.querySelector("parsererror"))throw new Error("xml error");const nodes={};Array.prototype.forEach.call(doc.getElementsByTagName("node"),function(n){nodes[n.getAttribute("id")]={lat:parseFloat(n.getAttribute("lat")),lon:parseFloat(n.getAttribute("lon")),tags:{}};Array.prototype.forEach.call(n.getElementsByTagName("tag"),function(t){nodes[n.getAttribute("id")].tags[t.getAttribute("k")]=t.getAttribute("v");});});const out=[];Array.prototype.forEach.call(doc.getElementsByTagName("way"),function(w){const coords=[];Array.prototype.forEach.call(w.getElementsByTagName("nd"),function(nd){const node=nodes[nd.getAttribute("ref")];if(node)coords.push([node.lon,node.lat]);});const tags={};Array.prototype.forEach.call(w.getElementsByTagName("tag"),function(t){tags[t.getAttribute("k")]=t.getAttribute("v");});if(coords.length<2)return;let layer="others";const ts=JSON.stringify(tags).toLowerCase();if(tags.building)layer="buildings";else if(ts.indexOf("highway")>-1)layer="roads";else if(ts.indexOf("water")>-1||ts.indexOf("river")>-1)layer="water";const isArea=(tags.building||tags.natural==="water"||tags.water||tags.leisure==="park");const f={layer:layer,name:tags.name||tags["name:ar"]||"",polys:isArea?[coords]:[],lines:isArea?[]:[coords],points:[]};out.push(f);});Object.keys(nodes).forEach(function(id){const n=nodes[id];if(n.tags&&n.tags.name&&isFinite(n.lat)&&isFinite(n.lon))out.push({layer:"points",name:n.tags.name,polys:[],lines:[],points:[[n.lon,n.lat]]});});return out;}
+function allCoords(){const a=[];features.forEach(function(f){f.polys.forEach(function(r){r.forEach(function(p){a.push(p);});});f.lines.forEach(function(r){r.forEach(function(p){a.push(p);});});f.points.forEach(function(p){a.push(p);});});return a;}
+function fitView(){const a=allCoords();if(!a.length)return;let mnx=a[0][0],mxx=a[0][0],mny=a[0][1],mxy=a[0][1];a.forEach(function(p){if(p[0]<mnx)mnx=p[0];if(p[0]>mxx)mxx=p[0];if(p[1]<mny)mny=p[1];if(p[1]>mxy)mxy=p[1];});const w=canvas.width,h=canvas.height;const dx=Math.max(mxx-mnx,0.001),dy=Math.max(mxy-mny,0.001);view.scale=Math.min(w/dx,h/dy)*0.92;view.clon=(mnx+mxx)/2;view.clat=(mny+mxy)/2;}
+function updateStats(){const counts={roads:0,water:0,buildings:0,points:0,others:0};features.forEach(function(f){counts[f.layer]=(counts[f.layer]||0)+1;});el("totalCount").textContent=features.length;el("roadCount").textContent=counts.roads;el("waterCount").textContent=counts.water;el("buildingCount").textContent=counts.buildings;el("pointCount").textContent=counts.points;}
+function drawLabel(cfg,L,name,lon,lat){if(!L.labelVisible||!name)return;const x=(lon-view.clon)*view.scale+canvas.width/2;const y=(view.clat-lat)*view.scale+canvas.height/2;ctx.fillStyle=L.labelColor;ctx.font=L.labelSize+"px "+cfg.fontFamily;ctx.textAlign="center";ctx.fillText(name,x,y);}
+function render(){const cfg=getConfig();ctx.fillStyle=cfg.bg;ctx.fillRect(0,0,canvas.width,canvas.height);if(!features.length){ctx.fillStyle="#ffffff";ctx.font="18px "+cfg.fontFamily;ctx.textAlign="center";ctx.fillText("لا توجد بيانات لعرضها. ارفع ملفاً أو حمّل البيانات التجريبية.",canvas.width/2,canvas.height/2);updateStats();return;}const order=["water","others","buildings","roads","points"];order.forEach(function(k){const L=cfg.layers[k];if(!L.visible)return;features.forEach(function(f){if(f.layer!==k)return;f.polys.forEach(function(r){ctx.beginPath();r.forEach(function(p,i){const x=(p[0]-view.clon)*view.scale+canvas.width/2;const y=(view.clat-p[1])*view.scale+canvas.height/2;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.closePath();ctx.fillStyle=L.color;ctx.fill();ctx.lineWidth=L.width;ctx.strokeStyle=L.borderColor;ctx.stroke();if(r[0])drawLabel(cfg,L,f.name,r[0][0],r[0][1]);});f.lines.forEach(function(r){ctx.beginPath();r.forEach(function(p,i){const x=(p[0]-view.clon)*view.scale+canvas.width/2;const y=(view.clat-p[1])*view.scale+canvas.height/2;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.lineWidth=L.width;ctx.strokeStyle=L.color;ctx.stroke();if(r[0])drawLabel(cfg,L,f.name,r[0][0],r[0][1]);});f.points.forEach(function(p){const x=(p[0]-view.clon)*view.scale+canvas.width/2;const y=(view.clat-p[1])*view.scale+canvas.height/2;ctx.beginPath();ctx.arc(x,y,Math.max(3,L.width),0,6.283);ctx.fillStyle=L.color;ctx.fill();ctx.lineWidth=1;ctx.strokeStyle=L.borderColor;ctx.stroke();drawLabel(cfg,L,f.name,p[0],p[1]-8);});});});updateStats();}
+function loadFeatures(list,source){features=list;if(!features.length){setStatus("تم قراءة الملف من "+source+" لكن لم يتم العثور على عناصر جغرافية صالحة. تحقق من محتوى الملف.");render();return;}fitView();render();setStatus("تم تحميل "+features.length+" عنصر بنجاح من "+source+". يمكنك الآن تخصيص الطبقات أو حفظ النمط.");}
+function readStyles(){try{const raw=localStorage.getItem("mapStylesV1");if(!raw)return{};const obj=JSON.parse(raw);return obj&&typeof obj==="object"?obj:{};}catch(e){return{};}}
+function writeStyles(obj){try{localStorage.setItem("mapStylesV1",JSON.stringify(obj));return true;}catch(e){el("stylesOut").textContent="تعذر الحفظ في التخزين المحلي للمتصفح.";return false;}}
+function refreshStyles(){const obj=readStyles();const sel=el("savedStyles");sel.innerHTML="";const names=Object.keys(obj);if(!names.length){const o=document.createElement("option");o.value="";o.textContent="لا توجد أنماط محفوظة";sel.appendChild(o);el("stylesOut").textContent="لا توجد أنماط محفوظة بعد. احفظ نمطاً لتتمكن من تطبيقه لاحقاً.";return;}names.forEach(function(n){const o=document.createElement("option");o.value=n;o.textContent=n;sel.appendChild(o);});el("stylesOut").textContent="تم العثور على "+names.length+" نمط محفوظ. اختر نمطاً ثم اضغط تطبيق النمط المحدد.";}
+el("fileInput").addEventListener("change",function(){const file=el("fileInput").files[0];if(!file){setStatus("لم يتم اختيار أي ملف. اختر ملفاً محلياً أولاً.");return;}const reader=new FileReader();reader.onload=function(){try{const text=String(reader.result||"");const name=file.name.toLowerCase();let list;if(name.endsWith(".osm")||name.endsWith(".xml")||text.trim().indexOf("<")===0){list=parseOSM(text);}else{list=parseGeoJSON(JSON.parse(text));}loadFeatures(list,file.name);}catch(e){setStatus("حدث خطأ أثناء قراءة الملف: "+file.name+". تأكد أنه ملف GeoJSON أو OSM XML صالح.");render();}};reader.onerror=function(){setStatus("تعذر قراءة الملف المحدد. حاول مرة أخرى بملف آخر.");};reader.readAsText(file);});
+el("loadSampleBtn").addEventListener("click",function(){const sample=[{layer:"water",name:"بحيرة وسط المدينة",polys:[[[31.18,30.02],[31.27,30.02],[31.27,30.08],[31.18,30.08],[31.18,30.02]]],lines:[],points:[]},{layer:"roads",name:"الطريق الرئيسي",polys:[],lines:[[[31.15,30.05],[31.30,30.05]]],points:[]},{layer:"roads",name:"شارع الجمهورية",polys:[],lines:[[[31.22,29.98],[31.22,30.11]]],points:[]},{layer:"buildings",name:"مبنى البلدية",polys:[[[31.20,30.06],[31.215,30.06],[31.215,30.075],[31.20,30.075],[31.20,30.06]]],lines:[],points:[]},{layer:"buildings",name:"مكتبة عامة",polys:[[[31.235,30.03],[31.25,30.03],[31.25,30.045],[31.235,30.045],[31.235,30.03]]],lines:[],points:[]},{layer:"points",name:"الميدان الرئيسي",polys:[],lines:[],points:[[31.22,30.05]]},{layer:"points",name:"المحطة",polys:[],lines:[],points:[[31.26,30.05]]}];loadFeatures(sample,"البيانات التجريبية");});
+el("clearBtn").addEventListener("click",function(){features=[];el("fileInput").value="";render();setStatus("تم مسح البيانات الحالية. الخريطة الآن فارغة.");});
+el("zoomInBtn").addEventListener("click",function(){view.scale*=1.3;render();});
+el("zoomOutBtn").addEventListener("click",function(){view.scale/=1.3;render();});
+el("resetViewBtn").addEventListener("click",function(){if(!features.length){setStatus("لا توجد بيانات لإعادة ضبط العرض عليها.");return;}fitView();render();});
+canvas.addEventListener("pointerdown",function(e){dragging=true;lastX=e.clientX;lastY=e.clientY;try{canvas.setPointerCapture(e.pointerId);}catch(err){}});
+canvas.addEventListener("pointermove",function(e){if(!dragging)return;const dx=e.clientX-lastX;const dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;const rect=canvas.getBoundingClientRect();const sx=canvas.width/rect.width;view.clon-=dx*sx/view.scale;view.clat+=dy*sx/view.scale;render();});
+canvas.addEventListener("pointerup",function(){dragging=false;});
+canvas.addEventListener("pointercancel",function(){dragging=false;});
+canvas.addEventListener("wheel",function(e){e.preventDefault();view.scale*=(e.deltaY<0?1.12:0.89);render();},{passive:false});
+layerKeys.forEach(function(k){["Visible","Color","BorderColor","Width","LabelVisible","LabelColor","LabelSize"].forEach(function(s){const node=el(k+s);node.addEventListener("input",render);node.addEventListener("change",render);});});
+el("bgColor").addEventListener("input",render);el("bgColor").addEventListener("change",render);el("fontFamily").addEventListener("change",render);
+el("saveStyleBtn").addEventListener("click",function(){const name=el("styleName").value.trim();if(!name){el("stylesOut").textContent="اكتب اسماً للنمط قبل الحفظ.";return;}const obj=readStyles();obj[name]=getConfig();if(writeStyles(obj)){el("stylesOut").textContent="تم حفظ النمط بنجاح باسم: "+name;refreshStyles();el("savedStyles").value=name;}});
+el("loadStyleBtn").addEventListener("click",function(){const name=el("savedStyles").value;if(!name){el("stylesOut").textContent="لا يوجد نمط محدد للتطبيق. احفظ نمطاً أولاً.";return;}const cfg=readStyles()[name];if(!cfg){el("stylesOut").textContent="تعذر العثور على النمط المحدد.";return;}applyConfig(cfg);render();el("stylesOut").textContent="تم تطبيق النمط: "+name;});
+el("deleteStyleBtn").addEventListener("click",function(){const name=el("savedStyles").value;if(!name){el("stylesOut").textContent="لا يوجد نمط محدد للحذف.";return;}const obj=readStyles();delete obj[name];if(writeStyles(obj)){el("stylesOut").textContent="تم حذف النمط: "+name;refreshStyles();}});
+function buildHtml(){const cfg=getConfig();let html="<!DOCTYPE html><html lang=\"ar\" dir=\"rtl\"><head><meta charset=\"utf-8\"><title>My Map</title>"+"<"+"style>body{background:"+cfg.bg+";color:#fff;margin:10px}canvas{max-width:100%;height:auto}"+"<"+"/style></head><body><canvas id=\"c\" width=\"960\" height=\"520\"></canvas>"+"<"+"script>";html+="var F="+JSON.stringify(features)+";var C="+JSON.stringify(cfg)+";var cv=document.getElementById(\"c\");var x=cv.getContext(\"2d\");var mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;function upd(a){for(var i=0;i<a.length;i++){var p=a[i];if(p.length&&typeof p[0]===\"number\"){if(p[0]<mnx)mnx=p[0];if(p[0]>mxx)mxx=p[0];if(p[1]<mny)mny=p[1];if(p[1]>mxy)mxy=p[1];}else{upd(p);}}}F.forEach(function(f){upd(f.polys);upd(f.lines);upd(f.points);});var W=cv.width,H=cv.height;if(mxx<=mnx){mnx=0;mxx=1;mny=0;mxy=1;}var sc=Math.min(W/(mxx-mnx),H/(mxy-mny))*0.92;var cx=(mnx+mxx)/2,cy=(mny+mxy)/2;function X(lon){return (lon-cx)*sc+W/2;}function Y(lat){return (cy-lat)*sc+H/2;}x.fillStyle=C.bg;x.fillRect(0,0,W,H);var order=[\"water\",\"others\",\"buildings\",\"roads\",\"points\"];order.forEach(function(k){var L=C.layers[k];if(!L||!L.visible)return;F.forEach(function(f){if(f.layer!==k)return;f.polys.forEach(function(r){x.beginPath();r.forEach(function(p,i){if(i===0)x.moveTo(X(p[0]),Y(p[1]));else x.lineTo(X(p[0]),Y(p[1]));});x.closePath();x.fillStyle=L.color;x.fill();x.lineWidth=L.width;x.strokeStyle=L.borderColor;x.stroke();var lp=r[0];if(L.labelVisible&&f.name&&lp){x.fillStyle=L.labelColor;x.font=L.labelSize+\"px \"+C.fontFamily;x.textAlign=\"center\";x.fillText(f.name,X(lp[0]),Y(lp[1]));}});f.lines.forEach(function(r){x.beginPath();r.forEach(function(p,i){if(i===0)x.moveTo(X(p[0]),Y(p[1]));else x.lineTo(X(p[0]),Y(p[1]));});x.lineWidth=L.width;x.strokeStyle=L.color;x.stroke();var lp=r[0];if(L.labelVisible&&f.name&&lp){x.fillStyle=L.labelColor;x.font=L.labelSize+\"px \"+C.fontFamily;x.textAlign=\"center\";x.fillText(f.name,X(lp[0]),Y(lp[1]));}});f.points.forEach(function(p){x.beginPath();x.arc(X(p[0]),Y(p[1]),Math.max(3,L.width),0,6.283);x.fillStyle=L.color;x.fill();x.strokeStyle=L.borderColor;x.lineWidth=1;x.stroke();if(L.labelVisible&&f.name){x.fillStyle=L.labelColor;x.font=L.labelSize+\"px \"+C.fontFamily;x.textAlign=\"center\";x.fillText(f.name,X(p[0]),Y(p[1])-8);}});});});";html+="<"+"/script></body></html>";return html;}
+el("exportStyleBtn").addEventListener("click",function(){const cfg=getConfig();el("exportOut").value=JSON.stringify({style:cfg,featuresCount:features.length},null,2);setStatus("تم إنشاء نص JSON للنمط الحالي في مربع التصدير.");});
+el("exportHtmlBtn").addEventListener("click",function(){if(!features.length){el("exportOut").value="";setStatus("لا توجد بيانات لتصديرها. ارفع ملفاً أو حمّل البيانات التجريبية أولاً.");return;}el("exportOut").value=buildHtml();setStatus("تم إنشاء صفحة HTML جاهزة للتضمين في مربع التصدير. انسخ النص كاملاً واحفظه كملف.");});
+refreshStyles();render();
+</script>
+</body>
+</html>
