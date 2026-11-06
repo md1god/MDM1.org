@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق تتبع المصاريف والدخل دون اتصال | MDM1</title>
+<meta name="description" content="تطبيق عربي يعمل دون اتصال لتتبع المصاريف والدخل بحسابات وعملات متعددة، تصنيفات ووسوم وملاحظات، رسوم بيانية شهرية، وتصدير CSV ونسخ احتياطية JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/mizan-offline-ledger.html">
+<meta property="og:title" content="تطبيق تتبع المصاريف والدخل دون اتصال">
+<meta property="og:description" content="تطبيق عربي يعمل دون اتصال لتتبع المصاريف والدخل بحسابات وعملات متعددة، تصنيفات ووسوم وملاحظات، رسوم بيانية شهرية، وتصدير CSV ونسخ احتياطية JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/mizan-offline-ledger.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:grid;gap:1rem}
+.app .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem}
+.app .summary .out{text-align:center}
+.app canvas{width:100%;height:auto;max-height:320px;background:rgba(255,255,255,.04);border-radius:8px}
+.app .list{max-height:420px;overflow:auto}
+.app .item{display:flex;justify-content:space-between;gap:.75rem;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.app .item-main{flex:1;min-width:0}
+.app .item-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.app .muted{opacity:.75;font-size:.9rem}
+.app .hidden{display:none}
+.app .tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.25rem}
+.app .tag{font-size:.8rem;padding:.1rem .45rem;border:1px solid var(--gold-dim);border-radius:999px}
+.app .account-row{display:flex;justify-content:space-between;gap:.5rem;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.app .inline{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تتبع المصاريف والدخل محليًا", "url": "https://mdm1.org/apps/mizan-offline-ledger.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يعمل التطبيق دون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع البيانات تُحفظ في المتصفح ولا يحتاج إلى اتصال أو حساب."}}, {"@type": "Question", "name": "كيف أنسخ البيانات احتياطيًا؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم تصدير JSON لحفظ نسخة، ثم استيرادها لاحقًا للاستعادة."}}, {"@type": "Question", "name": "هل يمكن استخدام عدة عملات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل حساب имеет عملة خاصة، وتُعرض الأرصدة حسب الحساب."}}, {"@type": "Question", "name": "كيف أفلتر الحركات؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم الفلاتر حسب الشهر والحساب والتصنيف والوسم والبحث."}}, {"@type": "Question", "name": "هل يمكن تعديل أو حذف حركة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل حركة has buttons تعديل وحذف في قائمة الحركات."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تتبع المصاريف والدخل محليًا</h1>
+  <p class="page-sub">تطبيق عربي يعمل دون اتصال لتتبع المصاريف والدخل بحسابات وعملات متعددة، تصنيفات ووسوم وملاحظات، رسوم بيانية شهرية، وتصدير CSV ونسخ احتياطية JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>إجابة سريعة: هذا التطبيق يحفظ المصاريف والدخل في المتصفح فقط، ويعمل دون اتصال بالإنترنت، ويدعم عدة حسابات وعملات مختلفة، مع تصنيفات ووسوم وملاحظات تفصيلية، ورسوم بيانية شهرية لتلخيص الإنفاق، وتصدير CSV ونسخ احتياطية JSON قابلة للاستعادة والاستيراد. لا يحتاج إلى حساب أو اتصال، والبيانات تبقى على جهازك، ويمكن تصفية الحركات حسب الشهر والحساب والتصنيف والوسم والبحث النصي، مع إمكانية تعديل أو حذف أي حركة في أي وقت، كما يمكن إدارة الحسابات والتصنيفات، وحساب الأرصدة، ونسخ البيانات احتياطيًا.</p>
+<div class="app" dir="rtl">
+<section class="card">
+<h2>لوحة التحكم</h2>
+<div class="row">
+<label for="monthFilter">الشهر</label>
+<select id="monthFilter"></select>
+<label for="accountFilter">الحساب</label>
+<select id="accountFilter"></select>
+<label for="categoryFilter">التصنيف</label>
+<select id="categoryFilter"></select>
+<label for="tagFilter">الوسم</label>
+<select id="tagFilter"></select>
+</div>
+<div class="row">
+<input id="searchText" type="search" placeholder="بحث في الملاحظات والوسوم والتصنيفات">
+<button type="button" class="sec" id="resetFilters">إعادة تعيين الفلاتر</button>
+</div>
+<div class="summary">
+<div class="out">الدخل<br><span class="big" id="incomeTotal">0.00</span></div>
+<div class="out">المصروف<br><span class="big" id="expenseTotal">0.00</span></div>
+<div class="out">الصافي<br><span class="big" id="netTotal">0.00</span></div>
+</div>
+<canvas id="chart" width="640" height="320"></canvas>
+<div id="chartEmpty" class="out hidden">لا توجد بيانات إنفاق للعرض.</div>
+</section>
+
+<section class="card">
+<h2>إضافة أو تعديل حركة</h2>
+<form id="txForm">
+<div class="row">
+<label for="txType">النوع</label>
+<select id="txType" required>
+<option value="expense">مصروف</option>
+<option value="income">دخل</option>
+</select>
+<label for="txAmount">المبلغ</label>
+<input id="txAmount" type="number" min="0" step="0.01" required>
+<label for="txAccount">الحساب</label>
+<select id="txAccount" required></select>
+</div>
+<div class="row">
+<label for="txCategory">التصنيف</label>
+<select id="txCategory"></select>
+<label for="txTags">الوسوم</label>
+<input id="txTags" type="text" placeholder="مفصولة بفواصل">
+<label for="txDate">التاريخ</label>
+<input id="txDate" type="date" required>
+</div>
+<label for="txNote">ملاحظة</label>
+<textarea id="txNote" rows="3" placeholder="ملاحظة اختيارية"></textarea>
+<div class="row">
+<button type="submit" id="saveTx">حفظ الحركة</button>
+<button type="button" class="sec" id="cancelEdit">إلغاء التعديل</button>
+<button type="button" class="sec" id="clearAll">مسح جميع البيانات</button>
+</div>
+</form>
+<div id="formError" class="out hidden"></div>
+</section>
+
+<section class="card">
+<h2>الحسابات</h2>
+<div class="row">
+<label for="accountName">اسم الحساب</label>
+<input id="accountName" type="text" placeholder="مثال: الحساب الرئيسي">
+<label for="accountCurrency">العملة</label>
+<select id="accountCurrency"></select>
+<label for="accountBalance">الرصيد الابتدائي</label>
+<input id="accountBalance" type="number" step="0.01" value="0">
+<button type="button" id="addAccount">إضافة حساب</button>
+</div>
+<div id="accountsList" class="list"></div>
+</section>
+
+<section class="card">
+<h2>التصنيفات</h2>
+<div class="row">
+<input id="categoryName" type="text" placeholder="اسم تصنيف جديد">
+<button type="button" id="addCategory">إضافة تصنيف</button>
+</div>
+<div id="categoriesList" class="list"></div>
+</section>
+
+<section class="card">
+<h2>الحركات</h2>
+<div id="txList" class="list"></div>
+<div id="txEmpty" class="out hidden">لا توجد حركات مطابقة.</div>
+</section>
+
+<section class="card">
+<h2>البيانات والنسخ الاحتياطية</h2>
+<div class="row">
+<button type="button" id="exportCsv">تصدير CSV</button>
+<button type="button" id="exportJson">تصدير JSON</button>
+<input id="importFile" type="file" accept="application/json,.json">
+<button type="button" class="sec" id="importBtn">استيراد JSON</button>
+</div>
+<textarea id="exportArea" rows="5" readonly placeholder="محتوى التصدير يظهر هنا"></textarea>
+<div id="backupStatus" class="out">جاهز.</div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يعمل التطبيق دون اتصال؟</h3><p>نعم، جميع البيانات تُحفظ في المتصفح ولا يحتاج إلى اتصال أو حساب.</p><h3>كيف أنسخ البيانات احتياطيًا؟</h3><p>استخدم تصدير JSON لحفظ نسخة، ثم استيرادها لاحقًا للاستعادة.</p><h3>هل يمكن استخدام عدة عملات؟</h3><p>نعم، كل حساب имеет عملة خاصة، وتُعرض الأرصدة حسب الحساب.</p><h3>كيف أفلتر الحركات؟</h3><p>استخدم الفلاتر حسب الشهر والحساب والتصنيف والوسم والبحث.</p><h3>هل يمكن تعديل أو حذف حركة؟</h3><p>نعم، كل حركة has buttons تعديل وحذف في قائمة الحركات.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="pocket-microfinance-ledger.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة صناديق الإقراض والادخار الجماعي دون خادم</a><span style="opacity:.75"> — أداة محلية لإدارة صناديق الإقراض والادخار الجماعي: تسجيل الأعضاء والودائع والقروض، حساب الفوائد والأقساط…</span></li><li style="margin:.5rem 0"><a href="fit-log.html" style="color:var(--gold-bright);font-weight:700">تطبيق لياقة بدنية دون إنترنت</a><span style="opacity:.75"> — تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون…</span></li><li style="margin:.5rem 0"><a href="khatwa-study-desk.html" style="color:var(--gold-bright);font-weight:700">خطوة: حل المسائل وشرحها خطوة بخطوة دون اتصال</a><span style="opacity:.75"> — تطبيق عربي يعمل دون اتصال لتصوير المسائل وقصها وتحسينها وتدوينها برموز رياضية، مع حلول خطوة بخطوة وتمارين…</span></li><li style="margin:.5rem 0"><a href="molecular-canvas-lab.html" style="color:var(--gold-bright);font-weight:700">تطبيق رسم الجزيئات في المتصفح</a><span style="opacity:.75"> — تطبيق عربي كامل في المتصفح يرسم الجزيئات ويحولها إلى رموز SMILES ويحسب الخصائص الفيزيائية والكيميائية بدون…</span></li><li style="margin:.5rem 0"><a href="offline-bilingual-word-dictionary.html" style="color:var(--gold-bright);font-weight:700">قاموس عربي إنجليزي فوري دون إنترنت مع قارئ PDF</a><span style="opacity:.75"> — قاموس عربي إنجليزي محلي يعمل دون إنترنت: ابحث بالكتابة أو من نص محدد، واحفظ الكلمات في دفتر ملاحظات، وافتح…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-06 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const STORAGE_KEY='md-expense-tracker-v1';
+const CURRENCIES=['SAR','AED','USD','EUR','KWD','QAR','BHD','OMR','GBP','JPY'];
+const DEFAULT_CAT_NAMES=['طعام','مواصلات','سكن','فواتير','ترفيه','صحة','تعليم','أخرى','دخل'];
+
+let state=loadState();
+let editingId=null;
+const filters={month:'all',account:'all',category:'all',tag:'all',search:''};
+
+function uid(){if(window.crypto&&window.crypto.randomUUID)return window.crypto.randomUUID();return 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2);}
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function money(v){const n=Number(v)||0;try{return n.toLocaleString('ar-SA',{minimumFractionDigits:2,maximumFractionDigits:2});}catch(e){return n.toFixed(2);}}
+function formatDate(v){if(!v)return '';const p=v.split('-');if(p.length!==3)return v;return p[2]+'/'+p[1]+'/'+p[0];}
+function setStatus(msg){const el=document.getElementById('backupStatus');if(el)el.textContent=msg;}
+function showFormError(msg){const el=document.getElementById('formError');if(!el)return;el.textContent=msg;el.classList.remove('hidden');}
+function hideFormError(){const el=document.getElementById('formError');if(!el)return;el.textContent='';el.classList.add('hidden');}
+
+function defaultState(){return {accounts:[{id:uid(),name:'الحساب الرئيسي',currency:'SAR',initialBalance:0}],categories:DEFAULT_CAT_NAMES.map(function(n){return {id:uid(),name:n};}),transactions:[]};}
+function normalize(input){
+ if(!input||typeof input!=='object')return defaultState();
+ const base=defaultState();
+ const accounts=Array.isArray(input.accounts)?input.accounts.filter(function(a){return a&&a.id&&a.name;}).map(function(a){return {id:String(a.id),name:String(a.name),currency:CURRENCIES.indexOf(a.currency)>=0?a.currency:'SAR',initialBalance:Number(a.initialBalance)||0};}):base.accounts;
+ const safeAccounts=accounts.length?accounts:base.accounts;
+ const categories=Array.isArray(input.categories)?input.categories.filter(function(c){return c&&c.id&&c.name;}).map(function(c){return {id:String(c.id),name:String(c.name)};}):base.categories;
+ const safeCategories=categories.length?categories:base.categories;
+ const transactions=Array.isArray(input.transactions)?input.transactions.filter(function(t){return t&&t.id;}).map(function(t){
+  const tags=Array.isArray(t.tags)?t.tags.map(String).filter(Boolean):String(t.tags||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+  const date=/^\d{4}-\d{2}-\d{2}$/.test(t.date)?t.date:new Date().toISOString().slice(0,10);
+  const accountId=safeAccounts.some(function(a){return a.id===t.accountId;})?t.accountId:safeAccounts[0].id;
+  const categoryId=safeCategories.some(function(c){return c.id===t.categoryId;})?t.categoryId:safeCategories[0].id;
+  return {id:String(t.id),type:t.type==='income'?'income':'expense',amount:Math.max(0,Number(t.amount)||0),accountId:accountId,categoryId:categoryId,tags:tags,date:date,note:String(t.note||''),createdAt:Number(t.createdAt)||Date.now()};
+ }):[];
+ return {accounts:safeAccounts,categories:safeCategories,transactions:transactions};
+}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return defaultState();return normalize(JSON.parse(raw));}catch(e){return defaultState();}}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){setStatus('تعذر حفظ البيانات محليًا.');}}
+
+function accountName(id){const a=state.accounts.find(function(x){return x.id===id;});return a?a.name:'حساب محذوف';}
+function accountCurrency(id){const a=state.accounts.find(function(x){return x.id===id;});return a?a.currency:'SAR';}
+function categoryName(id){const c=state.categories.find(function(x){return x.id===id;});return c?c.name:'بدون تصنيف';}
+function accountBalance(id){const a=state.accounts.find(function(x){return x.id===id;});if(!a)return 0;let bal=a.initialBalance;state.transactions.forEach(function(t){if(t.accountId===id){bal+=t.type==='income'?t.amount:-t.amount;}});return bal;}
+function allTags(){return [...new Set(state.transactions.flatMap(function(t){return t.tags;}))].sort();}
+
+function fillSelect(id,options,selected){const el=document.getElementById(id);if(!el)return;el.innerHTML=options.map(function(o){return '<option value="'+esc(o.value)+'"'+(String(o.value)===String(selected)?' selected':'')+'>'+esc(o.label)+'</option>';}).join('');}
+
+function monthOptions(){const now=new Date();const out=[{value:'all',label:'كل الأشهر'}];for(let i=0;i<12;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const v=d.toISOString().slice(0,7);let label=v;try{label=d.toLocaleDateString('ar-SA',{month:'long',year:'numeric'});}catch(e){}out.push({value:v,label:label});}return out;}
+
+function filteredTransactions(){return state.transactions.filter(function(t){
+ if(filters.month!=='all'&&!t.date.startsWith(filters.month))return false;
+ if(filters.account!=='all'&&t.accountId!==filters.account)return false;
+ if(filters.category!=='all'&&t.categoryId!==filters.category)return false;
+ if(filters.tag!=='all'&&t.tags.indexOf(filters.tag)<0)return false;
+ const q=filters.search.trim().toLowerCase();
+ if(q){const text=(t.note+' '+t.tags.join(' ')+' '+categoryName(t.categoryId)+' '+accountName(t.accountId)).toLowerCase();if(text.indexOf(q)<0)return false;}
+ return true;
+});}
+
+function renderAccountSelects(){
+ const accOpts=state.accounts.map(function(a){return {value:a.id,label:a.name+' ('+a.currency+')'};});
+ fillSelect('txAccount',accOpts,state.accounts[0]?state.accounts[0].id:'');
+ fillSelect('accountFilter',[{value:'all',label:'كل الحسابات'}].concat(accOpts),filters.account);
+ fillSelect('accountCurrency',CURRENCIES.map(function(c){return {value:c,label:c};}),'SAR');
+}
+function renderCategorySelects(){
+ const catOpts=state.categories.map(function(c){return {value:c.id,label:c.name};});
+ fillSelect('txCategory',catOpts,state.categories[0]?state.categories[0].id:'');
+ fillSelect('categoryFilter',[{value:'all',label:'كل التصنيفات'}].concat(catOpts),filters.category);
+}
+function renderTagSelect(){fillSelect('tagFilter',[{value:'all',label:'كل الوسوم'}].concat(allTags().map(function(t){return {value:t,label:t};})),filters.tag);}
+
+function renderAccountsList(){const el=document.getElementById('accountsList');if(!el)return;el.innerHTML=state.accounts.map(function(a){return '<div class="account-row"><span>'+esc(a.name)+' ('+esc(a.currency)+')</span><span>'+esc(money(accountBalance(a.id)))+' '+esc(a.currency)+' <button type="button" class="sec" data-action="deleteAccount" data-id="'+esc(a.id)+'">حذف</button></span></div>';}).join('');}
+function renderCategoriesList(){const el=document.getElementById('categoriesList');if(!el)return;el.innerHTML=state.categories.map(function(c){return '<div class="account-row"><span>'+esc(c.name)+'</span><span><button type="button" class="sec" data-action="deleteCategory" data-id="'+esc(c.id)+'">حذف</button></span></div>';}).join('');}
+
+function renderDashboard(){const txs=filteredTransactions();let income=0,expense=0;txs.forEach(function(t){if(t.type==='income')income+=t.amount;else expense+=t.amount;});const incomeEl=document.getElementById('incomeTotal');const expenseEl=document.getElementById('expenseTotal');const netEl=document.getElementById('netTotal');if(incomeEl)incomeEl.textContent=money(income);if(expenseEl)expenseEl.textContent=money(expense);if(netEl)netEl.textContent=money(income-expense);}
+function renderChart(){const canvas=document.getElementById('chart');const empty=document.getElementById('chartEmpty');if(!canvas||!empty)return;const txs=filteredTransactions().filter(function(t){return t.type==='expense';});const map=new Map();txs.forEach(function(t){const key=t.categoryId||'none';map.set(key,(map.get(key)||0)+t.amount);});const entries=[...map.entries()].map(function(e){return {label:categoryName(e[0])||'غير مصنف',value:e[1]};}).sort(function(a,b){return b.value-a.value;}).slice(0,8);if(!entries.length){canvas.classList.add('hidden');empty.classList.remove('hidden');return;}canvas.classList.remove('hidden');empty.classList.add('hidden');const ctx=canvas.getContext('2d');const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);const max=Math.max.apply(null,entries.map(function(e){return e.value;}));const barW=Math.max(24,Math.floor((w-80)/entries.length)-10);entries.forEach(function(e,i){const x=40+i*(barW+10);const barH=Math.max(2,Math.round((e.value/max)*(h-90)));ctx.fillStyle='#c9a227';ctx.fillRect(x,h-60-barH,barW,barH);ctx.fillStyle='#f3f3f3';ctx.font='12px sans-serif';ctx.textAlign='center';let label=e.label;if(label.length>10)label=label.slice(0,10)+'…';ctx.fillText(label,x+barW/2,h-40);ctx.fillText(money(e.value),x+barW/2,h-60-barH-6);});}
+
+function renderTransactions(){const list=document.getElementById('txList');const empty=document.getElementById('txEmpty');if(!list||!empty)return;const txs=filteredTransactions().slice().sort(function(a,b){if(a.date!==b.date)return a.date<b.date?1:-1;return b.createdAt-a.createdAt;});if(!txs.length){list.innerHTML='';empty.classList.remove('hidden');return;}empty.classList.add('hidden');list.innerHTML=txs.map(function(t){return '<div class="item"><div class="item-main"><strong>'+esc(t.type==='income'?'دخل':'مصروف')+' '+esc(money(t.amount))+' '+esc(accountCurrency(t.accountId))+'</strong><div class="muted">'+esc(formatDate(t.date))+' · '+esc(accountName(t.accountId))+' · '+esc(categoryName(t.categoryId))+'</div>'+(t.tags.length?'<div class="tags">'+t.tags.map(function(tag){return '<span class="tag">'+esc(tag)+'</span>';}).join('')+'</div>':'')+(t.note?'<div class="muted">'+esc(t.note)+'</div>':'')+'</div><div class="item-actions"><button type="button" class="sec" data-action="edit" data-id="'+esc(t.id)+'">تعديل</button><button type="button" class="sec" data-action="delete" data-id="'+esc(t.id)+'">حذف</button></div></div>';}).join('');}
+
+function renderAll(){renderAccountSelects();renderCategorySelects();renderTagSelect();renderAccountsList();renderCategoriesList();renderTransactions();renderDashboard();renderChart();}
+
+function resetForm(){editingId=null;const form=document.getElementById('txForm');if(form)form.reset();const date=document.getElementById('txDate');if(date)date.value=new Date().toISOString().slice(0,10);const btn=document.getElementById('saveTx');if(btn)btn.textContent='حفظ الحركة';hideFormError();}
+function editTx(id){const t=state.transactions.find(function(x){return x.id===id;});if(!t)return;editingId=id;document.getElementById('txType').value=t.type;document.getElementById('txAmount').value=t.amount;document.getElementById('txAccount').value=t.accountId;document.getElementById('txCategory').value=t.categoryId;document.getElementById('txTags').value=t.tags.join(', ');document.getElementById('txDate').value=t.date;document.getElementById('txNote').value=t.note;document.getElementById('saveTx').textContent='تحديث الحركة';}
+function deleteTx(id){if(!confirm('حذف هذه الحركة؟'))return;state.transactions=state.transactions.filter(function(t){return t.id!==id;});saveState();renderAll();}
+function addAccount(){const name=(document.getElementById('accountName').value||'').trim();const currency=document.getElementById('accountCurrency').value;const balance=Number(document.getElementById('accountBalance').value)||0;if(!name){setStatus('أدخل اسم الحساب.');return;}state.accounts.push({id:uid(),name:name,currency:currency,initialBalance:balance});saveState();renderAll();document.getElementById('accountName').value='';document.getElementById('accountBalance').value='0';setStatus('تمت إضافة الحساب.');}
+function addCategory(){const name=(document.getElementById('categoryName').value||'').trim();if(!name){setStatus('أدخل اسم التصنيف.');return;}state.categories.push({id:uid(),name:name});saveState();renderAll();document.getElementById('categoryName').value='';setStatus('تمت إضافة التصنيف.');}
+function deleteAccount(id){if(state.accounts.length<=1){setStatus('لا يمكن حذف آخر حساب.');return;}if(!confirm('حذف الحساب ونقل حركاته؟'))return;const replacement=state.accounts.find(function(a){return a.id!==id;}).id;state.transactions.forEach(function(t){if(t.accountId===id)t.accountId=replacement;});state.accounts=state.accounts.filter(function(a){return a.id!==id;});saveState();renderAll();}
+function deleteCategory(id){if(state.categories.length<=1){setStatus('لا يمكن حذف آخر تصنيف.');return;}if(!confirm('حذف التصنيف ونقل حركاته؟'))return;const replacement=state.categories.find(function(c){return c.id!==id;}).id;state.transactions.forEach(function(t){if(t.categoryId===id)t.categoryId=replacement;});state.categories=state.categories.filter(function(c){return c.id!==id;});saveState();renderAll();}
+function clearAll(){if(!confirm('مسح جميع البيانات وإعادة الإعدادات الافتراضية؟'))return;state=defaultState();editingId=null;filters.month='all';filters.account='all';filters.category='all';filters.tag='all';filters.search='';saveState();resetForm();const mf=document.getElementById('monthFilter');if(mf)mf.value='all';const af=document.getElementById('accountFilter');if(af)af.value='all';const cf=document.getElementById('categoryFilter');if(cf)cf.value='all';const tf=document.getElementById('tagFilter');if(tf)tf.value='all';const st=document.getElementById('searchText');if(st)st.value='';renderAll();setStatus('تم مسح البيانات.');}
+
+function csvEscape(v){const s=String(v??'');if(/[",\n\r]/.test(s))return '"'+s.replace(/"/g,'""')+'"';return s;}
+function downloadText(filename,text,mime){const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}
+function exportCsv(){const rows=[['id','type','amount','currency','account','category','tags','date','note']];state.transactions.forEach(function(t){rows.push([t.id,t.type,t.amount,accountCurrency(t.accountId),accountName(t.accountId),categoryName(t.categoryId),t.tags.join(';'),t.date,t.note]);});const csv=rows.map(function(r){return r.map(csvEscape).join(',');}).join('\r\n');const area=document.getElementById('exportArea');if(area)area.value=csv;downloadText('expenses.csv',csv,'text/csv;charset=utf-8;');setStatus('تم تصدير CSV.');}
+function exportJson(){const json=JSON.stringify(state,null,2);const area=document.getElementById('exportArea');if(area)area.value=json;downloadText('backup.json',json,'application/json');setStatus('تم تصدير JSON.');}
+function importJson(file){if(!file)return;const reader=new FileReader();reader.onload=function(e){try{const parsed=JSON.parse(String(e.target.result||''));const normalized=normalize(parsed);if(!confirm('استبدال البيانات الحالية بالنسخة المستوردة؟'))return;state=normalized;saveState();renderAll();setStatus('تم استيراد النسخة الاحتياطية.');}catch(err){setStatus('ملف JSON غير صالح.');}};reader.readAsText(file);}
+function init(){
+ fillSelect('monthFilter',monthOptions(),'all');
+ renderAccountSelects();
+ renderCategorySelects();
+ renderTagSelect();
+ const date=document.getElementById('txDate');if(date)date.value=new Date().toISOString().slice(0,10);
+ const mf=document.getElementById('monthFilter');if(mf)mf.addEventListener('change',function(e){filters.month=e.target.value;renderAll();});
+ const af=document.getElementById('accountFilter');if(af)af.addEventListener('change',function(e){filters.account=e.target.value;renderAll();});
+ const cf=document.getElementById('categoryFilter');if(cf)cf.addEventListener('change',function(e){filters.category=e.target.value;renderAll();});
+ const tf=document.getElementById('tagFilter');if(tf)tf.addEventListener('change',function(e){filters.tag=e.target.value;renderAll();});
+ const st=document.getElementById('searchText');if(st)st.addEventListener('input',function(e){filters.search=e.target.value||'';renderAll();});
+ const rf=document.getElementById('resetFilters');if(rf)rf.addEventListener('click',function(){filters.month='all';filters.account='all';filters.category='all';filters.tag='all';filters.search='';if(mf)mf.value='all';if(af)af.value='all';if(cf)cf.value='all';if(tf)tf.value='all';if(st)st.value='';renderAll();});
+ const form=document.getElementById('txForm');if(form)form.addEventListener('submit',function(e){e.preventDefault();hideFormError();const type=document.getElementById('txType').value;const amount=Number(document.getElementById('txAmount').value);const accountId=document.getElementById('txAccount').value;const categoryId=document.getElementById('txCategory').value;const tags=(document.getElementById('txTags').value||'').split(',').map(function(s){return s.trim();}).filter(Boolean);const date=document.getElementById('txDate').value;const note=(document.getElementById('txNote').value||'').trim();if(!accountId){showFormError('اختر حسابًا.');return;}if(!date){showFormError('اختر تاريخًا.');return;}if(!(amount>0)){showFormError('أدخل مبلغًا أكبر من صفر.');return;}if(editingId){const t=state.transactions.find(function(x){return x.id===editingId;});if(t){t.type=type;t.amount=amount;t.accountId=accountId;t.categoryId=categoryId;t.tags=tags;t.date=date;t.note=note;}setStatus('تم تحديث الحركة.');}else{state.transactions.push({id:uid(),type:type,amount:amount,accountId:accountId,categoryId:categoryId,tags:tags,date:date,note:note,createdAt:Date.now()});setStatus('تم حفظ الحركة.');}saveState();resetForm();renderAll();});
+ const cancel=document.getElementById('cancelEdit');if(cancel)cancel.addEventListener('click',function(){resetForm();});
+ const clearBtn=document.getElementById('clearAll');if(clearBtn)clearBtn.addEventListener('click',clearAll);
+ const addAcc=document.getElementById('addAccount');if(addAcc)addAcc.addEventListener('click',addAccount);
+ const addCat=document.getElementById('addCategory');if(addCat)addCat.addEventListener('click',addCategory);
+ const accountsList=document.getElementById('accountsList');if(accountsList)accountsList.addEventListener('click',function(e){const btn=e.target.closest('button[data-action]');if(!btn)return;if(btn.dataset.action==='deleteAccount')deleteAccount(btn.dataset.id);});
+ const categoriesList=document.getElementById('categoriesList');if(categoriesList)categoriesList.addEventListener('click',function(e){const btn=e.target.closest('button[data-action]');if(!btn)return;if(btn.dataset.action==='deleteCategory')deleteCategory(btn.dataset.id);});
+ const txList=document.getElementById('txList');if(txList)txList.addEventListener('click',function(e){const btn=e.target.closest('button[data-action]');if(!btn)return;if(btn.dataset.action==='edit')editTx(btn.dataset.id);if(btn.dataset.action==='delete')deleteTx(btn.dataset.id);});
+ const exportCsvBtn=document.getElementById('exportCsv');if(exportCsvBtn)exportCsvBtn.addEventListener('click',exportCsv);
+ const exportJsonBtn=document.getElementById('exportJson');if(exportJsonBtn)exportJsonBtn.addEventListener('click',exportJson);
+ const importBtn=document.getElementById('importBtn');const importFile=document.getElementById('importFile');if(importBtn&&importFile)importBtn.addEventListener('click',function(){importFile.click();});if(importFile)importFile.addEventListener('change',function(e){const file=e.target.files&&e.target.files[0];importJson(file);e.target.value='';});
+ renderAccountsList();renderCategoriesList();renderTransactions();renderDashboard();renderChart();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+</script>
+</body>
+</html>
