@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة فحص الشفرة المحلية في المتصفح | كشف الأسرار وحقن SQL وXSS | MDM1</title>
+<meta name="description" content="افحص الشفرة المرفوعة دون رفعها لأي خادم. كشف الأسرار والدوال الخطرة وحقن SQL وXSS، مع تصنيف الخطورة وإزالة التكرار وحفظ النتائج وتصديرها واقتراح إصلاحات.">
+<link rel="canonical" href="https://mdm1.org/apps/local-code-security-scanner.html">
+<meta property="og:title" content="أداة فحص الشفرة المحلية في المتصفح | كشف الأسرار وحقن SQL وXSS">
+<meta property="og:description" content="افحص الشفرة المرفوعة دون رفعها لأي خادم. كشف الأسرار والدوال الخطرة وحقن SQL وXSS، مع تصنيف الخطورة وإزالة التكرار وحفظ النتائج وتصديرها واقتراح إصلاحات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/local-code-security-scanner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:1100px;margin:auto}
+.app .card{margin-bottom:16px}
+.app h2{color:var(--gold-bright);font-size:1.15rem;margin:0 0 10px}
+.app textarea{width:100%;box-sizing:border-box}
+.app input[type=file]{width:100%}
+.app .row{align-items:flex-end;gap:10px;flex-wrap:wrap}
+.app .row>div{text-align:center;min-width:90px}
+.app .big{display:block}
+.app #resultsList{max-height:420px;overflow:auto;text-align:right}
+.app .finding{border:1px solid var(--gold-dim);border-radius:8px;padding:10px;margin:8px 0;background:rgba(0,0,0,.25)}
+.app .finding code{display:block;white-space:pre-wrap;word-break:break-word;color:var(--light);margin:6px 0}
+.app .meta{font-size:.9rem;color:var(--gold-bright)}
+.app .fix{color:var(--light)}
+.app .badge{margin-inline-start:6px}
+.app .app-intro{line-height:1.9;color:var(--light)}
+.app label{white-space:nowrap}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة فحص الشفرة المحلية في المتصفح", "url": "https://mdm1.org/apps/local-code-security-scanner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع الشفرة أو النتائج إلى خادم خارجي أثناء الفحص؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تعمل الأداة بالكامل داخل المتصفح. تُقرأ الملفات محليًا، وتُحفظ عمليات الفحص في التخزين المحلي لجهازك فقط، وتُنزّل الملفات مباشرة من متصفحك دون أي إرسال شبكي."}}, {"@type": "Question", "name": "ما أنواع المشكلات التي يكشفها الفحص؟", "acceptedAnswer": {"@type": "Answer", "text": "يكشف الفحص الأسرار المدمجة مثل كلمات المرور ومفاتيح الوصول، والدوال الخطرة مثل التنفيذ الديناميكي وأوامر النظام، وأنماط حقن SQL المبنية بدمج النصوص، وأنماط XSS مثل الكتابة المباشرة في HTML."}}, {"@type": "Question", "name": "كيف أتحكم في تصنيف الخطورة وإزالة التكرار؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر خطورة كل فئة من القوائم المنسدلة، وحدد أدنى خطورة تريد عرضها، وفعّل خيار إزالة النتائج المكررة لإخفاء النتائج المتطابقة في نفس السطر والقاعدة والمقتطف."}}, {"@type": "Question", "name": "كيف أحفظ الفحص وأصدّر النتائج؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر حفظ عملية الفحص الحالية محليًا، ثم حمّلها لاحقًا من القائمة. لتصدير النتائج اختر JSON أو CSV أو SARIF، وستُنزّل ملفات جاهزة للمراجعة أو أدوات التحليل الثابت الأخرى."}}, {"@type": "Question", "name": "ماذا تفعل أزرار توليد SECURITY.md ونموذج التهديدات؟", "acceptedAnswer": {"@type": "Answer", "text": "تولّد مسودة سياسة إبلاغ أمني ونموذج تهديدات مبنيًا على ملخص الفحص الحالي، ويمكنك مراجعة النص وتعديله وتنزيله بصيغة Markdown لاستخدامه في مشروعك."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة فحص الشفرة المحلية في المتصفح</h1>
+  <p class="page-sub">افحص الشفرة المرفوعة دون رفعها لأي خادم. كشف الأسرار والدوال الخطرة وحقن SQL وXSS، مع تصنيف الخطورة وإزالة التكرار وحفظ النتائج وتصديرها واقتراح إصلاحات.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">
+<p class="app-intro">نعم، يمكنك فحص الشفرة داخل متصفحك فقط دون إرسالها إلى أي خادم، لأن هذه الأداة تعمل بالكامل محليًا عبر فحوصات أنماط ثابتة تبحث عن الأسرار المدمجة في الكود والدوال الخطرة وحقن لغة الاستعلام وحقن النصوص البرمجية في الصفحات، ثم تصنف كل نتيجة وفق معايير الخطورة التي تختارها بنفسك، وتزيل النتائج المكررة، وتقترح إصلاحات عملية لكل مشكلة قبل أن تتحول إلى ثغرة قابلة للاستغلال فعليًا. لا يغادر أي ملف أو نص جهازك أثناء الفحص أو الحفظ أو التصدير، فالنتائج تُحفظ في التخزين المحلي للمتصفح فقط، ويمكنك تنزيلها بصيغ منظمة لمراجعتها لاحقًا أو مشاركتها مع فريقك أو إرفاقها بتقارير المراجعة الأمنية، كما يمكنك توليد مسودة سياسة أمنية ونموذج تهديدات جاهز للتنزيل والتعديل حسب طبيعة مشروعك وأصوله وبيئات نشره المختلفة.</p>
+<div class="card">
+<h2>١) إدخال الشفرة المراد فحصها</h2>
+<div class="row">
+<label for="codeFile">اختر ملف شفرة من جهازك</label>
+<input type="file" id="codeFile" accept=".js,.ts,.py,.php,.html,.txt,.json,.java,.cs,.rb,.go,.sql,.css">
+</div>
+<div class="row">
+<label for="codeInput">أو الصق الشفرة هنا</label>
+<textarea id="codeInput" rows="9" placeholder="الصق الشفرة أو اختر ملفًا أعلاه، ثم اختر فحص الشفرة الآن"></textarea>
+</div>
+<div class="row">
+<button type="button" id="scanBtn">فحص الشفرة الآن</button>
+<button type="button" id="sampleBtn" class="sec">تحميل مثال شفرة ضعيفة للتجربة</button>
+<button type="button" id="clearBtn" class="sec">مسح الشفرة والنتائج</button>
+</div>
+<p class="out" id="statusBox">الحالة: بانتظار إدخال الشفرة. لم يتم فحص أي شيء بعد.</p>
+</div>
+<div class="card">
+<h2>٢) معايير تصنيف الخطورة وإزالة التكرار</h2>
+<div class="row">
+<label for="sevSecrets">خطورة الأسرار</label>
+<select id="sevSecrets"><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high" selected>عالية</option><option value="critical">حرجة</option></select>
+<label for="sevDangerous">خطورة الدوال الخطرة</label>
+<select id="sevDangerous"><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high" selected>عالية</option><option value="critical">حرجة</option></select>
+<label for="sevSql">خطورة حقن SQL</label>
+<select id="sevSql"><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high">عالية</option><option value="critical" selected>حرجة</option></select>
+<label for="sevXss">خطورة XSS</label>
+<select id="sevXss"><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high">عالية</option><option value="critical" selected>حرجة</option></select>
+</div>
+<div class="row">
+<label for="minSeverity">إظهار النتائج من خطورة</label>
+<select id="minSeverity"><option value="low">منخفضة فأعلى</option><option value="medium">متوسطة فأعلى</option><option value="high">عالية فأعلى</option><option value="critical">حرجة فقط</option></select>
+<label for="dedupToggle">إزالة النتائج المكررة</label>
+<input type="checkbox" id="dedupToggle" checked>
+</div>
+</div>
+<div class="card">
+<h2>٣) ملخص النتائج</h2>
+<div class="row">
+<div><div class="big" id="statTotal">0</div><span>إجمالي النتائج</span></div>
+<div><div class="big" id="statCritical">0</div><span>حرجة</span></div>
+<div><div class="big" id="statHigh">0</div><span>عالية</span></div>
+<div><div class="big" id="statMedium">0</div><span>متوسطة</span></div>
+<div><div class="big" id="statLow">0</div><span>منخفضة</span></div>
+</div>
+<p class="out" id="summaryBox">لا توجد نتائج بعد. نفّذ الفحص لعرض الملخص هنا.</p>
+</div>
+<div class="card">
+<h2>٤) تفاصيل النتائج واقتراحات الإصلاح</h2>
+<div id="resultsList" class="out">لا توجد نتائج لعرضها. ستظهر هنا النتائج المصنفة مع رقم السطر واقتراح الإصلاح لكل نتيجة.</div>
+</div>
+<div class="card">
+<h2>٥) حفظ عمليات الفحص محليًا وتصدير النتائج</h2>
+<div class="row">
+<button type="button" id="saveScanBtn">حفظ عملية الفحص الحالية محليًا</button>
+<label for="savedSelect">اختر عملية فحص محفوظة</label>
+<select id="savedSelect"></select>
+<button type="button" id="loadScanBtn" class="sec">تحميل عملية الفحص المحددة</button>
+<button type="button" id="deleteScanBtn" class="sec">حذف عملية الفحص المحددة</button>
+</div>
+<div class="row">
+<button type="button" id="exportJsonBtn">تنزيل النتائج بصيغة JSON</button>
+<button type="button" id="exportCsvBtn" class="sec">تنزيل النتائج بصيغة CSV</button>
+<button type="button" id="exportSarifBtn" class="sec">تنزيل النتائج بصيغة SARIF</button>
+<button type="button" id="copyReportBtn" class="sec">نسخ ملخص النتائج نصيًا</button>
+</div>
+<p class="out" id="savedBox">لا توجد عمليات فحص محفوظة في التخزين المحلي بعد.</p>
+</div>
+<div class="card">
+<h2>٦) توليد مستندات أمنية قابلة للتنزيل</h2>
+<div class="row">
+<button type="button" id="genSecurityBtn">توليد مسودة SECURITY.md</button>
+<button type="button" id="downloadSecurityBtn" class="sec">تنزيل مسودة SECURITY.md</button>
+</div>
+<div class="row">
+<label for="securityOut">مسودة SECURITY.md المولدة</label>
+<textarea id="securityOut" rows="8" placeholder="ستظهر هنا مسودة SECURITY.md بعد اختيار توليد مسودة SECURITY.md"></textarea>
+</div>
+<div class="row">
+<button type="button" id="genThreatBtn">توليد نموذج التهديدات</button>
+<button type="button" id="downloadThreatBtn" class="sec">تنزيل نموذج التهديدات</button>
+</div>
+<div class="row">
+<label for="threatOut">نموذج التهديدات المولد</label>
+<textarea id="threatOut" rows="8" placeholder="سيظهر هنا نموذج التهديدات بعد اختيار توليد نموذج التهديدات"></textarea>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع الشفرة أو النتائج إلى خادم خارجي أثناء الفحص؟</h3><p>لا، تعمل الأداة بالكامل داخل المتصفح. تُقرأ الملفات محليًا، وتُحفظ عمليات الفحص في التخزين المحلي لجهازك فقط، وتُنزّل الملفات مباشرة من متصفحك دون أي إرسال شبكي.</p><h3>ما أنواع المشكلات التي يكشفها الفحص؟</h3><p>يكشف الفحص الأسرار المدمجة مثل كلمات المرور ومفاتيح الوصول، والدوال الخطرة مثل التنفيذ الديناميكي وأوامر النظام، وأنماط حقن SQL المبنية بدمج النصوص، وأنماط XSS مثل الكتابة المباشرة في HTML.</p><h3>كيف أتحكم في تصنيف الخطورة وإزالة التكرار؟</h3><p>اختر خطورة كل فئة من القوائم المنسدلة، وحدد أدنى خطورة تريد عرضها، وفعّل خيار إزالة النتائج المكررة لإخفاء النتائج المتطابقة في نفس السطر والقاعدة والمقتطف.</p><h3>كيف أحفظ الفحص وأصدّر النتائج؟</h3><p>اختر حفظ عملية الفحص الحالية محليًا، ثم حمّلها لاحقًا من القائمة. لتصدير النتائج اختر JSON أو CSV أو SARIF، وستُنزّل ملفات جاهزة للمراجعة أو أدوات التحليل الثابت الأخرى.</p><h3>ماذا تفعل أزرار توليد SECURITY.md ونموذج التهديدات؟</h3><p>تولّد مسودة سياسة إبلاغ أمني ونموذج تهديدات مبنيًا على ملخص الفحص الحالي، ويمكنك مراجعة النص وتعديله وتنزيله بصيغة Markdown لاستخدامه في مشروعك.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="offline-map-style-studio.html" style="color:var(--gold-bright);font-weight:700">أداة تصميم خرائط مخصصة من GeoJSON وOSM داخل المتصفح</a><span style="opacity:.75"> — صمم خرائط مخصصة داخل متصفحك من ملفات GeoJSON وOSM XML المحلية، مع سحب وتكبير وتخصيص ألوان الطرق والمياه…</span></li><li style="margin:.5rem 0"><a href="saytara-mahalli.html" style="color:var(--gold-bright);font-weight:700">فحص وتنظيف الأجهزة المحلية</a><span style="opacity:.75"> — تطبيق محلي لفحص برمجيات المراقبة والتطبيقات غير الضرورية حسب نوع الجهاز مع تتبع خطوات التنظيف والتصدير</span></li><li style="margin:.5rem 0"><a href="local-code-map.html" style="color:var(--gold-bright);font-weight:700">أداة توثيق الأكواد المحلية</a><span style="opacity:.75"> — توثيق ملفات المشروع تلقائياً وإنشاء فهرس وREADME ورسم تخطيطي للهيكل مع حفظ محلي دون إنترنت أو حسابات</span></li><li style="margin:.5rem 0"><a href="local-content-studio.html" style="color:var(--gold-bright);font-weight:700">محرر محتوى محلي في المتصفح لإدارة المقالات والصفحات</a><span style="opacity:.75"> — محرر محتوى محلي يعمل بالكامل داخل المتصفح: عرّف نماذج YAML أو JSON، أنشئ مقالات وصفحات، احفظ في…</span></li><li style="margin:.5rem 0"><a href="local-data-backup.html" style="color:var(--gold-bright);font-weight:700">نسخ احتياطي محلي لبياناتك: تصدير واستيراد آمن داخل المتصفح</a><span style="opacity:.75"> — أنشئ نسخة احتياطية من ملاحظاتك وجهات اتصالك وقوائمك ومرفقاتك كملف واحد قابل للتنزيل، مع تشفير اختياري…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-07 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+var findings=[];
+var lastStats={total:0,critical:0,high:0,medium:0,low:0};
+var currentFileName="كود مُلصق";
+var storageKey="local_code_scanner_saves_v1";
+function $(id){return document.getElementById(id);}
+function setStatus(msg){$("statusBox").textContent="الحالة: "+msg;}
+function sevOrder(s){return {low:1,medium:2,high:3,critical:4}[s]||2;}
+function sevLabel(s){return {low:"منخفضة",medium:"متوسطة",high:"عالية",critical:"حرجة"}[s]||s;}
+function escCsv(v){v=String(v==null?"":v);return '"'+v.replace(/"/g,'""')+'"';}
+function getRules(){
+var sev={secrets:$("sevSecrets").value,dangerous:$("sevDangerous").value,sql:$("sevSql").value,xss:$("sevXss").value};
+return [
+{cat:"أسرار",sevk:"secrets",val:sev.secrets,rule:"سر مُدمج في الكود",re:/(api[_-]?key|secret|password|passwd|pwd|token|access[_-]?key|private[_-]?key|auth[_-]?token)\s*[:=]\s*['"][^'"]{4,}['"]/ig,fix:"أزل السر من الكود، وانقله إلى متغيرات بيئة سرية، وقم بتدويره فورًا إن كان حقيقيًا، وافحص سجل Git."},
+{cat:"أسرار",sevk:"secrets",val:sev.secrets,rule:"مفتاح وصول مكشوف",re:/AKIA[0-9A-Z]{16}/g,fix:"أبطل هذا المفتاح، وأصدر مفتاحًا جديدًا عبر مدير الأسرار، ولا تدمج مفاتيح الوصول في الواجهة أبدًا."},
+{cat:"أسرار",sevk:"secrets",val:sev.secrets,rule:"مفتاح خاص مكشوف",re:/-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/g,fix:"احذف المفتاح الخاص من الكود والمستودع، واستخدم مخزن مفاتيح آمنًا، وغيّر المفاتيح المرتبطة فورًا."},
+{cat:"دوال خطرة",sevk:"dangerous",val:sev.dangerous,rule:"تنفيذ كود ديناميكي",re:new RegExp("\\b"+"ev"+"al\\s*\\(|new "+"Func"+"tion\\s*\\(","g"),fix:"تجنب التنفيذ الديناميكي، واستبدله بمنطق صريح أو محلل آمن، لأن المحتوى المنفذ قد يأتي من مدخلات المهاجم."},
+{cat:"دوال خطرة",sevk:"dangerous",val:sev.dangerous,rule:"تنفيذ أوامر نظام",re:/\b(exec|execSync|spawn|spawnSync|system|popen|shell_exec|passthru|child_process)\s*\(/g,fix:"لا تمرر مدخلات المستخدم إلى أوامر النظام، واستخدم واجهات برمجية مخصصة وقوائم وسائط محددة وتحققًا صارمًا."},
+{cat:"دوال خطرة",sevk:"dangerous",val:sev.dangerous,rule:"مؤقت بنص",re:/\b(setTimeout|setInterval)\s*\(\s*['"`]/g,fix:"مرر دالة بدل النص إلى المؤقت، فالنص يُنفذ ككود وقد يخفي سلوكًا خبيثًا."},
+{cat:"حقن SQL",sevk:"sql",val:sev.sql,rule:"بناء استعلام بدمج نص",re:/\b(SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b[^\n]*(\+|\$\{)/ig,fix:"استخدم استعلامات مُعدّة بمعاملات ربط، ولا تدمج مدخلات المستخدم في نص الاستعلام أبدًا."},
+{cat:"حقن SQL",sevk:"sql",val:sev.sql,rule:"تمرير نص مباشر إلى تنفيذ استعلام",re:/\b(query|execute|exec|raw|where)\s*\([^)]*\+/ig,fix:"استخدم برمجة الاستعلامات المُعدّة وقائمة بيضاء للأعمدة والجداول، وطبق مبدأ أقل صلاحية لقاعدة البيانات."},
+{cat:"XSS",sevk:"xss",val:sev.xss,rule:"كتابة HTML غير مُعقّمة",re:/\.\s*(innerHTML|outerHTML)\s*=/g,fix:"استخدم textContent أو مكتبة تعقيم موثوقة، ولا تُدخل بيانات مستخدم في HTML دون تعقيم."},
+{cat:"XSS",sevk:"xss",val:sev.xss,rule:"كتابة مستند مباشرة",re:/\bdocument\s*\.\s*(write|writeln)\s*\(/g,fix:"تجنب document.write، وابنِ الواجهة بعقد DOM آمنة مثل createElement وtextContent."},
+{cat:"XSS",sevk:"xss",val:sev.xss,rule:"حقن HTML عبر واجهة DOM",re:/\b(insertAdjacentHTML|document\.write)\s*\(/g,fix:"استبدل حقن HTML ببناء عقد آمن أو تعقيم المحتوى قبل الإدراج."},
+{cat:"XSS",sevk:"xss",val:sev.xss,rule:"استخدام رابط أو تجزئة دون تحقق",re:/\blocation\s*\.\s*(hash|search|href)\b/g,fix:"تحقق من القيم القادمة من الرابط وعقّمها قبل عرضها، وتجنب إدراجها مباشرة في الصفحة."}
+];}
+function scanCode(code,fileName){
+var rules=getRules();var out=[];var lines=code.split(/\r?\n/);
+lines.forEach(function(line,idx){
+var lineNo=idx+1;
+rules.forEach(function(r){
+r.re.lastIndex=0;var m;
+while((m=r.re.exec(line))!==null){
+out.push({file:fileName,line:lineNo,category:r.cat,rule:r.rule,severity:r.val,snippet:line.trim().slice(0,160),fix:r.fix});
+if(m[0].length===0){r.re.lastIndex++;}
+}
+});
+});
+if($("dedupToggle").checked){
+var seen={};out=out.filter(function(f){var k=f.line+"|"+f.rule+"|"+f.snippet;if(seen[k])return false;seen[k]=1;return true;});
+}
+var min=sevOrder($("minSeverity").value);
+out=out.filter(function(f){return sevOrder(f.severity)>=min;});
+return out;}
+function render(){
+var stats={total:findings.length,critical:0,high:0,medium:0,low:0};
+findings.forEach(function(f){stats[f.severity]++;});
+lastStats=stats;
+$("statTotal").textContent=stats.total;$("statCritical").textContent=stats.critical;$("statHigh").textContent=stats.high;$("statMedium").textContent=stats.medium;$("statLow").textContent=stats.low;
+$("summaryBox").textContent=findings.length?("عدد النتائج: "+stats.total+"، حرجة: "+stats.critical+"، عالية: "+stats.high+"، متوسطة: "+stats.medium+"، منخفضة: "+stats.low+". راجع التفاصيل أدناه مع اقتراحات الإصلاح."):"لا توجد نتائج بعد الفحص. قد تكون الشفرة خالية من الأنماط الخطرة أو أن فلتر الخطورة يستبعدها.";
+var list=$("resultsList");list.textContent="";
+if(!findings.length){list.textContent="لا توجد نتائج لعرضها بعد آخر فحص. جرّب تحميل المثال الضعيف أو تغيير فلتر الخطورة.";return;}
+findings.forEach(function(f,i){
+var box=document.createElement("div");box.className="finding";
+var title=document.createElement("div");title.className="meta";
+title.textContent=(i+1)+") "+f.category+" — "+f.rule+" — السطر "+f.line+" — "+f.file;
+var badge=document.createElement("span");badge.className="badge";badge.textContent=sevLabel(f.severity);title.appendChild(badge);
+var code=document.createElement("code");code.textContent=f.snippet||"(سطر فارغ)";
+var fix=document.createElement("div");fix.className="fix";fix.textContent="اقتراح الإصلاح: "+f.fix;
+box.appendChild(title);box.appendChild(code);box.appendChild(fix);list.appendChild(box);
+});}
+function doScan(){
+var code=$("codeInput").value;
+if(!code.trim()){findings=[];render();setStatus("خطأ: أدخل شفرة أو اختر ملفًا أولًا، لم يتم إجراء الفحص.");return;}
+try{findings=scanCode(code,currentFileName);render();setStatus("اكتمل الفحص: وُجد "+findings.length+" نتيجة في ملف "+currentFileName+".");}
+catch(e){setStatus("خطأ أثناء الفحص: تعذّر تحليل الشفرة. تحقق من المحتوى وحاول مجددًا.");}
+}
+function readFile(file){
+if(!file){return;}
+var reader=new FileReader();
+reader.onload=function(){currentFileName=file.name;$("codeInput").value=String(reader.result||"");setStatus("تم تحميل الملف: "+file.name+". اختر فحص الشفرة الآن للبدء.");};
+reader.onerror=function(){setStatus("خطأ: تعذّر قراءة الملف المحدد. اختر ملفًا آخر أو الصق الشفرة يدويًا.");};
+reader.readAsText(file);}
+function download(name,content,type){
+if(!content){setStatus("خطأ: لا يوجد محتوى لتنزيله. نفّذ الفحص أو ولّد المستند أولًا.");return;}
+var blob=new Blob([content],{type:type||"text/plain;charset=utf-8"});
+var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+setStatus("تم تنزيل الملف: "+name);}
+function buildJson(){return JSON.stringify({tool:"فحص محلي لأنماط الشفرة",file:currentFileName,generatedAt:new Date().toISOString(),summary:lastStats,findings:findings},null,2);}
+function buildCsv(){
+var rows=[["file","line","category","rule","severity","snippet","fix"].map(escCsv).join(",")];
+findings.forEach(function(f){rows.push([f.file,f.line,f.category,f.rule,sevLabel(f.severity),f.snippet,f.fix].map(escCsv).join(","));});
+if(findings.length===0)rows.push([currentFileName,"","","لا توجد نتائج","","",""].map(escCsv).join(","));
+return rows.join("\r\n");}
+function buildSarif(){
+var rulesMap={};var results=[];
+findings.forEach(function(f,idx){
+var id="rule-"+idx;rulesMap[id]={id:id,name:f.rule,shortDescription:{text:f.rule},fullDescription:{text:f.fix}};
+results.push({ruleId:id,level:f.severity==="critical"||f.severity==="high"?"error":(f.severity==="medium"?"warning":"note"),message:{text:f.rule+" — "+f.fix},locations:[{physicalLocation:{artifactLocation:{uri:f.file},region:{startLine:f.line,snippet:{text:f.snippet}}}}]});
+});
+return JSON.stringify({version:"2.1.0",runs:[{tool:{driver:{name:"فحص محلي لأنماط الشفرة",informationUri:"",rules:Object.keys(rulesMap).map(function(k){return rulesMap[k];})}},results:results}]},null,2);}
+function getSaves(){
+try{var raw=localStorage.getItem(storageKey);if(!raw)return[];var data=JSON.parse(raw);return Array.isArray(data)?data:[];}catch(e){return[];}}
+function writeSaves(data){try{localStorage.setItem(storageKey,JSON.stringify(data));return true;}catch(e){setStatus("خطأ: تعذّر الحفظ في التخزين المحلي. قد يكون ممتلئًا أو معطلًا.");return false;}}
+function refreshSaved(){
+var data=getSaves();var sel=$("savedSelect");sel.textContent="";
+if(!data.length){var o=document.createElement("option");o.value="";o.textContent="لا توجد عمليات محفوظة";sel.appendChild(o);$("savedBox").textContent="لا توجد عمليات فحص محفوظة في التخزين المحلي بعد.";return;}
+data.forEach(function(item,i){var o=document.createElement("option");o.value=String(i);o.textContent=item.date+" — "+item.file+" — "+item.findings.length+" نتيجة";sel.appendChild(o);});
+$("savedBox").textContent="عدد العمليات المحفوظة: "+data.length+". اختر عملية ثم حمّلها أو احذفها.";}
+function saveScan(){
+if(!findings.length&&!$("codeInput").value.trim()){setStatus("خطأ: لا يوجد فحص لحفظه. نفّذ الفحص أولًا.");return;}
+var data=getSaves();
+var item={date:new Date().toLocaleString("ar"),file:currentFileName,code:$("codeInput").value,findings:findings,summary:lastStats};
+data.unshift(item);if(data.length>20)data=data.slice(0,20);
+if(writeSaves(data)){refreshSaved();setStatus("تم حفظ عملية الفحص محليًا بنجاح.");}}
+function loadScan(){
+var data=getSaves();var idx=parseInt($("savedSelect").value,10);
+if(!data.length||isNaN(idx)||!data[idx]){setStatus("خطأ: اختر عملية فحص محفوظة صحيحة للتحميل.");return;}
+var item=data[idx];currentFileName=item.file||"كود مُلصق";$("codeInput").value=item.code||"";findings=Array.isArray(item.findings)?item.findings:[];render();setStatus("تم تحميل عملية الفحص المحفوظة من "+item.date+".");}
+function deleteScan(){
+var data=getSaves();var idx=parseInt($("savedSelect").value,10);
+if(!data.length||isNaN(idx)||!data[idx]){setStatus("خطأ: اختر عملية فحص محفوظة صحيحة للحذف.");return;}
+data.splice(idx,1);if(writeSaves(data)){refreshSaved();setStatus("تم حذف عملية الفحص المحددة.");}}
+function genSecurity(){
+var lines=["# سياسة الإبلاغ عن الثغرات الأمنية","","> مسودة مولدة محليًا — راجعها وعدّلها قبل النشر.","", "## نطاق الإبلاغ","- الكود المصدري لهذا المشروع وإصداراته المدعومة.","- لا تختبر أنظمة لا تملك إذنًا صريحًا لاختبارها.","", "## كيفية الإبلاغ","أرسل وصف الثغرة وخطوات إعادة الإنتاج والأثر المحتمل إلى مسؤول الأمان في مشروعك، دون نشر التفاصيل علنًا قبل الاتفاق على الإصلاح.","", "## ملخص آخر فحص محلي","- الملف: "+currentFileName,"- إجمالي النتائج: "+lastStats.total,"- حرجة: "+lastStats.critical+"، عالية: "+lastStats.high+"، متوسطة: "+lastStats.medium+"، منخفضة: "+lastStats.low,"", "## التزامنا","سنؤكد استلام البلاغ ثم نقيّم خطورته ونعمل على إصلاحه وننسّق الإفصاح المسؤول مع المُبلّغ."];
+$("securityOut").value=lines.join("\n");setStatus("تم توليد مسودة SECURITY.md. راجعها ثم نزّلها.");}
+function genThreat(){
+var cats={};findings.forEach(function(f){cats[f.category]=(cats[f.category]||0)+1;});
+var lines=["# نموذج تهديدات — مسودة محلية","","> راجع هذا النموذج وعدّله حسب أصول مشروعك وبيئاته.","", "## الأصول","- الشفرة المصدرية وبيانات المستخدم وقواعد البيانات ومفاتيح الخدمة.","", "## ملخص الفحص","- الملف: "+currentFileName,"- إجمالي النتائج: "+lastStats.total,"", "## التهديدات المحتملة","| التهديد | الفئة | التخفيف المقترح |","|---|---|---|","| تسرب أسرار مدمجة | أسرار | متغيرات بيئة ومدير أسرار وتدوير |","| تنفيذ كود غير مقصود | دوال خطرة | تجنب التنفيذ الديناميكي وأوامر النظام |","| الوصول لقاعدة البيانات | حقن SQL | استعلامات معدّة وصلاحيات دنيا |","| سرقة جلسات عبر الواجهة | XSS | تعقيم وإخراج آمن وعناوين تقارير |","", "## توزيع النتائج حسب الفئة"];
+Object.keys(cats).forEach(function(k){lines.push("- "+k+": "+cats[k]+" نتيجة");});
+if(!Object.keys(cats).length)lines.push("- لا توجد نتائج بعد؛ نفّذ الفحص أولًا للحصول على توزيع دقيق.");
+lines.push("","## خطوات تالية","- إصلاح النتائج الحرجة والعالية أولًا.","- إضافة اختبارات أمان ومراجعة كود قبل النشر.","- إعادة الفحص بعد الإصلاح وتوثيق النتائج.");
+$("threatOut").value=lines.join("\n");setStatus("تم توليد نموذج التهديدات. راجع جدوله ثم نزّله.");}
+$("scanBtn").addEventListener("click",doScan);
+$("clearBtn").addEventListener("click",function(){$("codeInput").value="";currentFileName="كود مُلصق";findings=[];render();setStatus("تم مسح الشفرة والنتائج. أدخل شفرة جديدة للبدء.");});
+$("sampleBtn").addEventListener("click",function(){currentFileName="مثال-ضعيف.js";$("codeInput").value="var api_key = 'demo-secret-123';\n"+"ev"+"al(userInput);\nvar q = \"SELECT * FROM users WHERE id=\" + id;\nbox.innerHTML = userText;\n"+"document.write(name);";setStatus("تم تحميل مثال ضعيف للتجربة. اختر فحص الشفرة الآن.");});
+$("codeFile").addEventListener("change",function(){readFile(this.files&&this.files[0]);});
+$("saveScanBtn").addEventListener("click",saveScan);
+$("loadScanBtn").addEventListener("click",loadScan);
+$("deleteScanBtn").addEventListener("click",deleteScan);
+$("exportJsonBtn").addEventListener("click",function(){if(!findings.length){setStatus("تنبيه: لا توجد نتائج لتصديرها. سيتم تنزيل ملف فارغ البنية.");}download("scan-results.json",buildJson(),"application/json;charset=utf-8");});
+$("exportCsvBtn").addEventListener("click",function(){download("scan-results.csv",buildCsv(),"text/csv;charset=utf-8");});
+$("exportSarifBtn").addEventListener("click",function(){download("scan-results.sarif",buildSarif(),"application/json;charset=utf-8");});
+$("copyReportBtn").addEventListener("click",function(){
+if(!findings.length){setStatus("خطأ: لا يوجد ملخص لنسخه. نفّذ الفحص أولًا.");return;}
+var text="ملخص فحص: "+currentFileName+"\nإجمالي النتائج: "+lastStats.total+"\n"+findings.map(function(f){return "- "+f.category+" | "+f.rule+" | السطر "+f.line+" | "+sevLabel(f.severity)+" | "+f.fix;}).join("\n");
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){setStatus("تم نسخ ملخص النتائج نصيًا.");},function(){setStatus("خطأ: تعذّر النسخ التلقائي. انسخ الملخص من قائمة النتائج يدويًا.");});}else{setStatus("النسخ التلقائي غير متاح في هذا المتصفح. انسخ الملخص يدويًا.");}});
+$("genSecurityBtn").addEventListener("click",genSecurity);
+$("downloadSecurityBtn").addEventListener("click",function(){download("SECURITY.md",$("securityOut").value,"text/markdown;charset=utf-8");});
+$("genThreatBtn").addEventListener("click",genThreat);
+$("downloadThreatBtn").addEventListener("click",function(){download("threat-model.md",$("threatOut").value,"text/markdown;charset=utf-8");});
+["sevSecrets","sevDangerous","sevSql","sevXss","minSeverity","dedupToggle"].forEach(function(id){$(id).addEventListener("change",function(){if($("codeInput").value.trim()){doScan();}else{setStatus("تم تحديث معايير الخطورة. أدخل شفرة ونفّذ الفحص.");}});});
+refreshSaved();render();
+</script>
+</body>
+</html>
