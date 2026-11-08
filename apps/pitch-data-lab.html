@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحليل مباريات كرة القدم من JSON | خط زمني وخريطة تسديد وتمرير | MDM1</title>
+<meta name="description" content="حلل ملفات JSON لمباريات كرة القدم دون خادم أو حساب: خط زمني، خريطة تسديدات بالأهداف المتوقعة، شبكات تمرير، خرائط حرارية، وإحصاءات الفرق.">
+<link rel="canonical" href="https://mdm1.org/apps/pitch-data-lab.html">
+<meta property="og:title" content="تحليل مباريات كرة القدم من JSON | خط زمني وخريطة تسديد وتمرير">
+<meta property="og:description" content="حلل ملفات JSON لمباريات كرة القدم دون خادم أو حساب: خط زمني، خريطة تسديدات بالأهداف المتوقعة، شبكات تمرير، خرائط حرارية، وإحصاءات الفرق.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/pitch-data-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl}
+.app .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.app .stat{flex:1;min-width:110px;text-align:center;padding:8px}
+.app .full{width:100%}
+.app canvas{width:100%;max-width:640px;background:#0d2818;border:1px solid var(--gold-dim);border-radius:8px;display:block}
+.app table{width:100%;border-collapse:collapse;margin-top:8px}
+.app th{padding:6px;border-bottom:2px solid var(--gold-dim);text-align:right}
+.app td{padding:6px;border-bottom:1px solid var(--gold-dim);text-align:right}
+.app .timeline-item{padding:8px;border-bottom:1px solid var(--gold-dim)}
+.app .bar-wrap{height:16px;background:#333;border-radius:8px;overflow:hidden;margin-top:8px}
+.app .bar{height:16px;background:var(--gold);border-radius:8px}
+.app .muted{opacity:.8}
+.app .badge{margin-inline-end:6px}
+.app select,.app input,.app textarea{max-width:100%}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محلل مباريات كرة القدم من ملفات JSON داخل المتصفح", "url": "https://mdm1.org/apps/pitch-data-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع بياناتي إلى أي خادم عند التحليل؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل المعالجة تتم داخل المتصفح فقط، واستيراد الملفات وقراءة النص وحفظ المشاريع تتم محليًا دون إرسال البيانات إلى خادم."}}, {"@type": "Question", "name": "ما صيغة JSON المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم الأداة مصفوفة أحداث مباشرة أو كائنًا يحتوي على وسيط events، وتقبل حقولًا شائعة مثل minute وtype وteam وplayer وlocation وxg وoutcome مع أسماء بديلة كثيرة."}}, {"@type": "Question", "name": "كيف أقرأ خريطة التسديدات؟", "acceptedAnswer": {"@type": "Answer", "text": "الدوائر الذهبية أهداف، والدوائر الفاتحة محاولات غير مسجلة، وكلما كبرت الدائرة زادت قيمة الأهداف المتوقعة. النقر على أي نقطة يعرض دقيقتها ولاعبها وفريقها."}}, {"@type": "Question", "name": "كيف أحفظ مشروعًا وأشاركه مع غيري؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب اسم المشروع ثم اضغط حفظ المشروع محليًا، ويمكنك تحميله لاحقًا من القائمة أو تصديره كملف JSON، كما يمكنك تنزيل خرائط التسديدات والتمرير والحرارة كصور للمشاركة."}}, {"@type": "Question", "name": "ماذا يحدث إذا كان الملف غير صالح أو بلا أحداث؟", "acceptedAnswer": {"@type": "Answer", "text": "تظهر رسالة خطأ واضحة في مربع النتيجة، وتبقى الرسوم والجداول في حالة فارغة منظمة بدل الانهيار، ويمكنك تصحيح JSON أو تجربة البيانات النموذجية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محلل مباريات كرة القدم من ملفات JSON داخل المتصفح</h1>
+  <p class="page-sub">حلل ملفات JSON لمباريات كرة القدم دون خادم أو حساب: خط زمني، خريطة تسديدات بالأهداف المتوقعة، شبكات تمرير، خرائط حرارية، وإحصاءات الفرق.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl" lang="ar">
+<p>باختصار، هذا التطبيق يحوّل ملف JSON خام إلى تحليل كامل لمباراة كرة القدم دون إرسال أي بيانات إلى خادم أو إنشاء حساب، إذ تتم كل المعالجة محليًا داخل متصفحك، فتبقى بياناتك خاصة وتعمل الأداة حتى دون اتصال بالإنترنت. بعد رفع الملف أو لصق محتواه أو تجربة البيانات النموذجية ستظهر فورًا ملخصات الفرق واللاعبين وخط زمني مرتب للأحداث يوضح الدقيقة والفريق واللاعب ونوع الحدث لتتبع تطور المباراة لحظة بلحظة. وتعرض خريطة التسديدات مواقع المحاولات مع تمييز الأهداف وتكبير الدائرة بحسب قيمة الأهداف المتوقعة، بينما تربط شبكة التمرير اللاعبين بخطوط تمثل تمريراتهم، وتكشف الخريطة الحرارية المناطق الأكثر نشاطًا في الملعب. يمكنك التصفية حسب الفريق أو نوع الحدث، والنقر على أي تسديدة لعرض تفاصيلها، وحفظ المشروع محليًا ثم تحميله لاحقًا أو تصدير الرسوم والمخططات للمشاركة مع فريقك.</p>
+<section class="card">
+<h2>استيراد بيانات المباراة</h2>
+<div class="row">
+<label for="fileInput">اختر ملف JSON للمباراة</label>
+<input type="file" id="fileInput" accept=".json,application/json">
+<button type="button" id="sampleBtn">تحميل بيانات نموذجية للتجربة</button>
+<button type="button" class="sec" id="clearBtn">مسح البيانات الحالية</button>
+</div>
+<label for="jsonInput">أو الصق محتوى JSON هنا</label>
+<textarea id="jsonInput" rows="6" class="full" placeholder="الصق هنا محتوى JSON مثل مصفوفة أحداث أو كائن يحتوي على events"></textarea>
+<div class="row"><button type="button" id="parseBtn">تحليل النص الملصق</button></div>
+<div id="msgOut" class="out" role="status">لم يتم تحميل أي بيانات بعد. اختر ملفًا أو الصق JSON أو حمّل البيانات النموذجية.</div>
+<div id="matchTitle" class="out">لا توجد مباراة محملة</div>
+<div class="row">
+<div class="stat"><div class="big" id="totalEvents">0</div><div>إجمالي الأحداث</div></div>
+<div class="stat"><div class="big" id="totalShots">0</div><div>إجمالي التسديدات</div></div>
+<div class="stat"><div class="big" id="totalGoals">0</div><div>إجمالي الأهداف</div></div>
+<div class="stat"><div class="big" id="totalXg">0</div><div>مجموع الأهداف المتوقعة</div></div>
+</div>
+</section>
+<section class="card">
+<h2>الخط الزمني والتصفية</h2>
+<div class="row">
+<label for="teamFilter">تصفية حسب الفريق</label>
+<select id="teamFilter"><option value="all">كل الفرق</option></select>
+<label for="typeFilter">تصفية حسب نوع الحدث</label>
+<select id="typeFilter"><option value="all">كل الأحداث</option><option value="shot">التسديدات فقط</option><option value="pass">التمريرات فقط</option><option value="goal">الأهداف فقط</option></select>
+<button type="button" id="redrawBtn">تحديث العرض بعد التصفية</button>
+</div>
+<div id="timelineList" class="out">لا توجد أحداث لعرضها. حمّل بيانات أولًا.</div>
+</section>
+<div class="grid">
+<section class="card">
+<h2>خريطة التسديدات والأهداف المتوقعة</h2>
+<canvas id="shotCanvas" width="640" height="420" aria-label="خريطة التسديدات"></canvas>
+<div id="shotDetail" class="out">انقر على نقطة تسديدة لعرض تفاصيلها.</div>
+<div class="row"><button type="button" id="exportShotsBtn">تنزيل خريطة التسديدات كصورة</button></div>
+</section>
+<section class="card">
+<h2>شبكة التمرير والاستحواذ التقريبي</h2>
+<canvas id="passCanvas" width="640" height="420" aria-label="شبكة التمرير"></canvas>
+<div id="passDetail" class="out">انقر على لاعب في الشبكة لعرض تفاصيله.</div>
+<div class="bar-wrap"><div class="bar" id="possBar" style="width:50%"></div></div>
+<div id="possText" class="out">لا توجد تمريرات لحساب الاستحواذ.</div>
+<div class="row"><button type="button" id="exportPassBtn">تنزيل شبكة التمرير كصورة</button></div>
+</section>
+</div>
+<section class="card">
+<h2>خريطة حرارية لمواقع الأحداث</h2>
+<canvas id="heatCanvas" width="640" height="360" aria-label="الخريطة الحرارية"></canvas>
+<div id="heatDetail" class="out">كلما زاد اللون الدافئ زادت أحداث تلك المنطقة.</div>
+<div class="row"><button type="button" id="exportHeatBtn">تنزيل الخريطة الحرارية كصورة</button></div>
+</section>
+<section class="card">
+<h2>إحصاءات الفرق واللاعبين</h2>
+<table>
+<thead><tr><th>الفريق</th><th>التسديدات</th><th>الأهداف</th><th>الأهداف المتوقعة</th><th>التمريرات</th><th>الأحداث</th></tr></thead>
+<tbody id="teamBody"><tr><td colspan="6">لا توجد بيانات فرق بعد.</td></tr></tbody>
+</table>
+<table>
+<thead><tr><th>اللاعب</th><th>التسديدات</th><th>الأهداف</th><th>الأهداف المتوقعة</th><th>التمريرات</th><th>الأحداث</th></tr></thead>
+<tbody id="playerBody"><tr><td colspan="6">لا توجد بيانات لاعبين بعد.</td></tr></tbody>
+</table>
+</section>
+<section class="card">
+<h2>حفظ المشاريع محليًا وتصديرها</h2>
+<label for="projectName">اسم المشروع للحفظ محليًا</label>
+<input type="text" id="projectName" placeholder="مثال: مباراة الأسبوع العاشر">
+<label for="projectSelect">اختيار مشروع محفوظ</label>
+<select id="projectSelect"><option value="">لا توجد مشاريع محفوظة</option></select>
+<div class="row">
+<button type="button" id="saveBtn">حفظ المشروع محليًا</button>
+<button type="button" id="loadBtn">تحميل المشروع المحدد</button>
+<button type="button" class="sec" id="deleteBtn">حذف المشروع المحدد</button>
+<button type="button" class="sec" id="exportBtn">تصدير المشروع كملف JSON</button>
+</div>
+<div id="projectMsg" class="out">تُحفظ المشاريع في متصفحك فقط ولا تُرسل إلى أي خادم.</div>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع بياناتي إلى أي خادم عند التحليل؟</h3><p>لا. كل المعالجة تتم داخل المتصفح فقط، واستيراد الملفات وقراءة النص وحفظ المشاريع تتم محليًا دون إرسال البيانات إلى خادم.</p><h3>ما صيغة JSON المدعومة؟</h3><p>تدعم الأداة مصفوفة أحداث مباشرة أو كائنًا يحتوي على وسيط events، وتقبل حقولًا شائعة مثل minute وtype وteam وplayer وlocation وxg وoutcome مع أسماء بديلة كثيرة.</p><h3>كيف أقرأ خريطة التسديدات؟</h3><p>الدوائر الذهبية أهداف، والدوائر الفاتحة محاولات غير مسجلة، وكلما كبرت الدائرة زادت قيمة الأهداف المتوقعة. النقر على أي نقطة يعرض دقيقتها ولاعبها وفريقها.</p><h3>كيف أحفظ مشروعًا وأشاركه مع غيري؟</h3><p>اكتب اسم المشروع ثم اضغط حفظ المشروع محليًا، ويمكنك تحميله لاحقًا من القائمة أو تصديره كملف JSON، كما يمكنك تنزيل خرائط التسديدات والتمرير والحرارة كصور للمشاركة.</p><h3>ماذا يحدث إذا كان الملف غير صالح أو بلا أحداث؟</h3><p>تظهر رسالة خطأ واضحة في مربع النتيجة، وتبقى الرسوم والجداول في حالة فارغة منظمة بدل الانهيار، ويمكنك تصحيح JSON أو تجربة البيانات النموذجية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="shelf-momentum-lab.html" style="color:var(--gold-bright);font-weight:700">رادار صعود: تحليل نمو الطلب والمنافسة للمنتجات</a><span style="opacity:.75"> — استورد CSV وJSON وحلّل نمو الطلب والمنافسة لكل منتج في رادار صعود، مع استبعاد العلامات والأجهزة والفئات…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-answer-visibility-tracker.html" style="color:var(--gold-bright);font-weight:700">تحليل ظهور العلامات التجارية في إجابات محركات البحث بالذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل إجابات ChatGPT وPerplexity وGoogle AI Overviews فوراً: استخرج ذكر العلامة والمنافسين والروابط، احسب حصة…</span></li><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="ai-citation-radar.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل الذكاء الاصطناعي لاستخراج العلامات التجارية والاستشهادات</a><span style="opacity:.75"> — أداة عربية تعمل داخل المتصفح لتتبع ذكر العلامات التجارية في ردود ChatGPT وPerplexity وClaude وGemini وGoogle…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-08 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let state={title:'',events:[]};
+let drawnShots=[];
+let drawnNodes=[];
+const storeKey='crouton_projects_v1';
+function N(v){const n=parseFloat(v);return isNaN(n)?0:n;}
+function S(v){return v==null?'':String(v);}
+function esc(s){return S(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function setMsg(t){$('msgOut').textContent=t;}
+function nev(e){
+ if(!e||typeof e!=='object')return null;
+ const loc=Array.isArray(e.location)?e.location:(Array.isArray(e.position)?e.position:[e.x,e.y]);
+ let type=S((e.type&&e.type.name)||e.type||e.event_type||e.kind||'حدث');
+ let team=S((e.team&&e.team.name)||e.team||e.home_team||'');
+ let player=S((e.player&&e.player.name)||e.player||e.scorer||'لاعب غير معروف');
+ let minute=N(e.minute!=null?e.minute:e.min);
+ if(!minute&&e.timestamp){minute=N(S(e.timestamp).split(':')[0]);}
+ let outcome=S((e.outcome&&e.outcome.name)||e.result||'');
+ let xgRaw=e.statsbomb_xg!=null?e.statsbomb_xg:(e.xg!=null?e.xg:((e.shot&&e.shot.statsbomb_xg!=null)?e.shot.statsbomb_xg:e.expected_goals));
+ let x=N(loc[0]);let y=N(loc[1]);
+ if(x>0&&x<=1)x=x*100; if(y>0&&y<=1)y=y*68;
+ let recip=S(e.recipient||((e.pass&&e.pass.recipient&&e.pass.recipient.name)||''));
+ let endLoc=(e.pass&&e.pass.end_location)?e.pass.end_location:e.end_location;
+ let ex=Array.isArray(endLoc)?N(endLoc[0]):0; let ey=Array.isArray(endLoc)?N(endLoc[1]):0;
+ let isShot=/shot|تسديد|محاولة|تسديدة/i.test(type)||!!e.shot||N(xgRaw)>0||e.is_shot===true;
+ let isPass=/pass|تمريرة|تمرير/i.test(type)||!!e.pass||e.is_pass===true;
+ let isGoal=/goal|هدف/i.test(type+' '+outcome)||e.goal===true;
+ return {minute:minute,type:type,team:team,player:player,outcome:outcome,x:x,y:y,xg:N(xgRaw),recipient:recip,ex:ex,ey:ey,isShot:isShot,isPass:isPass,isGoal:isGoal};
+}
+function parseData(obj){
+ let evs=[];let title='';
+ if(Array.isArray(obj)){evs=obj;}
+ else if(obj&&typeof obj==='object'){
+  title=S((obj.competition&&obj.competition.name)||obj.competition||obj.title||obj.match||'');
+  if(Array.isArray(obj.events))evs=obj.events;
+  else if(Array.isArray(obj.data))evs=obj.data;
+  else if(Array.isArray(obj.matches)){obj.matches.forEach(m=>{if(m&&Array.isArray(m.events))evs=evs.concat(m.events);});}
+  else if(obj.event)evs=[obj.event];
+ }
+ state.title=title;
+ state.events=evs.map(nev).filter(Boolean);
+ renderAll();
+ if(!state.events.length){setMsg('تمت القراءة لكن لا توجد أحداث صالحة. جرّب ملفًا يحتوي على وسيط events أو مصفوفة أحداث.');}
+ else{setMsg('تم تحليل '+state.events.length+' حدثًا بنجاح.');}
+}
+function parseText(txt){
+ if(!S(txt).trim()){setMsg('خطأ: النص فارغ. الصق JSON صالحًا أو اختر ملفًا.');return;}
+ try{parseData(JSON.parse(txt));}catch(err){setMsg('خطأ: JSON غير صالح. تحقق من الفواصل والأقواس ثم حاول مرة أخرى.');}
+}
+function makeSample(){
+ const home=['أحمد','كريم','سامي','محمد','يوسف'];const away=['عمر','علي','حسن','خالد','إبراهيم'];const evs=[];let seed=7;
+ function rnd(){seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;}
+ for(let m=1;m<=90;m+=2){
+  const isHome=rnd()>0.5;const team=isHome?'الفريق أ':'الفريق ب';const players=isHome?home:away;const p=players[Math.floor(rnd()*players.length)];
+  evs.push({minute:m+Math.floor(rnd()*2),type:'تمرير',team:team,player:p,location:[Math.floor(10+rnd()*80),Math.floor(5+rnd()*55)],recipient:players[Math.floor(rnd()*players.length)],pass:{end_location:[Math.floor(20+rnd()*70),Math.floor(5+rnd()*55)]}});
+  if(rnd()>0.72){const goal=rnd()>0.65;evs.push({minute:m+1,type:'تسديدة',team:team,player:p,location:[Math.floor(75+rnd()*22),Math.floor(20+rnd()*28)],xg:Math.round((0.05+rnd()*0.6)*100)/100,outcome:goal?'هدف':'بدون هدف',goal:goal});}
+  if(rnd()>0.85){evs.push({minute:m,type:'استحواذ',team:team,player:p,location:[Math.floor(rnd()*100),Math.floor(rnd()*60)]});}
+ }
+ state.title='مباراة نموذجية: الفريق أ × الفريق ب';state.events=evs.map(nev).filter(Boolean);renderAll();setMsg('تم تحميل البيانات النموذجية: '+state.events.length+' حدثًا.');
+}
+function filtered(){
+ const t=$('teamFilter').value;const k=$('typeFilter').value;
+ return state.events.filter(e=>{
+  if(t&&t!=='all'&&e.team!==t)return false;
+  if(k==='shot')return e.isShot;
+  if(k==='pass')return e.isPass;
+  if(k==='goal')return e.isGoal;
+  return true;
+ });
+}
+function populateTeams(){
+ const sel=$('teamFilter');const cur=sel.value;const teams=[...new Set(state.events.map(e=>e.team).filter(Boolean))];
+ sel.innerHTML='<option value="all">كل الفرق</option>'+teams.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join('');
+ if(teams.indexOf(cur)>=0)sel.value=cur;
+}
+function pitchDraw(ctx,w,h){
+ ctx.fillStyle='#0d2818';ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle='#c9a227';ctx.lineWidth=2;ctx.strokeRect(20,20,w-40,h-40);
+ ctx.beginPath();ctx.moveTo(w/2,20);ctx.lineTo(w/2,h-20);ctx.stroke();
+ ctx.beginPath();ctx.arc(w/2,h/2,45,0,Math.PI*2);ctx.stroke();
+ ctx.strokeRect(20,h/2-70,70,140);ctx.strokeRect(w-90,h/2-70,70,140);
+}
+function xy(e,w,h){
+ const dense=state.events.some(ev=>ev.x>100);const maxX=dense?120:100;const maxY=dense?80:68;
+ return [20+(e.x/maxX)*(w-40),20+(e.y/maxY)*(h-40)];
+}
+function drawShots(){
+ const c=$('shotCanvas');const ctx=c.getContext('2d');const w=c.width;const h=c.height;pitchDraw(ctx,w,h);drawnShots=[];
+ const shots=filtered().filter(e=>e.isShot);
+ if(!shots.length){ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText('لا توجد تسديدات لعرضها',w/2-80,h/2);return;}
+ shots.forEach(e=>{const p=xy(e,w,h);const r=5+e.xg*18;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fillStyle=e.isGoal?'#ffd54a':'#e8e8e8';ctx.fill();ctx.strokeStyle=e.isGoal?'#c62828':'#555';ctx.stroke();drawnShots.push({px:p[0],py:p[1],e:e});});
+}
+function drawPass(){
+ const c=$('passCanvas');const ctx=c.getContext('2d');const w=c.width;const h=c.height;pitchDraw(ctx,w,h);drawnNodes=[];
+ const passes=filtered().filter(e=>e.isPass);
+ if(!passes.length){ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText('لا توجد تمريرات لعرضها',w/2-80,h/2);return;}
+ const nodes={};const edges={};
+ passes.forEach(e=>{if(!nodes[e.player])nodes[e.player]={name:e.player,n:0,sx:0,sy:0};nodes[e.player].n++;const p=xy(e,w,h);nodes[e.player].sx+=p[0];nodes[e.player].sy+=p[1];if(e.recipient&&e.recipient!==e.player){const k=e.player+'|'+e.recipient;edges[k]=(edges[k]||0)+1;}});
+ const list=Object.values(nodes);list.forEach(n=>{n.px=n.sx/n.n;n.py=n.sy/n.n;});
+ Object.keys(edges).forEach(k=>{const a=k.split('|')[0];const b=k.split('|')[1];if(nodes[a]&&nodes[b]){ctx.beginPath();ctx.moveTo(nodes[a].px,nodes[a].py);ctx.lineTo(nodes[b].px,nodes[b].py);ctx.strokeStyle='rgba(212,175,55,0.7)';ctx.lineWidth=Math.min(6,1+edges[k]);ctx.stroke();}});
+ list.forEach(n=>{const r=8+Math.min(14,n.n);ctx.beginPath();ctx.arc(n.px,n.py,r,0,Math.PI*2);ctx.fillStyle='#c9a227';ctx.fill();ctx.strokeStyle='#fff';ctx.stroke();ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.fillText(n.name,n.px+r+2,n.py+4);drawnNodes.push(n);});
+}
+function drawHeat(){
+ const c=$('heatCanvas');const ctx=c.getContext('2d');const w=c.width;const h=c.height;pitchDraw(ctx,w,h);
+ const evs=filtered().filter(e=>e.x>0||e.y>0);const cols=12;const rows=8;const grid={};let mx=0;const dense=state.events.some(ev=>ev.x>100);
+ evs.forEach(e=>{const cx=Math.min(cols-1,Math.floor((e.x/(dense?120:100))*cols));const cy=Math.min(rows-1,Math.floor((e.y/(dense?80:68))*rows));const k=cx+'_'+cy;grid[k]=(grid[k]||0)+1;if(grid[k]>mx)mx=grid[k];});
+ if(!mx){ctx.fillStyle='#fff';ctx.font='16px sans-serif';ctx.fillText('لا توجد مواقع لعرضها',w/2-80,h/2);return;}
+ Object.keys(grid).forEach(k=>{const parts=k.split('_');const cx=N(parts[0]);const cy=N(parts[1]);const v=grid[k]/mx;ctx.fillStyle='rgba(220,70,40,'+(0.15+0.8*v)+')';ctx.fillRect(20+cx*((w-40)/cols),20+cy*((h-40)/rows),(w-40)/cols-2,(h-40)/rows-2);});
+}
+function teamStats(){
+ const m={};
+ state.events.forEach(e=>{if(!e.team)return;if(!m[e.team])m[e.team]={team:e.team,shots:0,goals:0,xg:0,passes:0,events:0};m[e.team].events++;if(e.isShot){m[e.team].shots++;m[e.team].xg+=e.xg;if(e.isGoal)m[e.team].goals++;}if(e.isPass)m[e.team].passes++;});
+ return Object.values(m);
+}
+function playerStats(){
+ const m={};
+ state.events.forEach(e=>{if(!m[e.player])m[e.player]={player:e.player,shots:0,goals:0,xg:0,passes:0,events:0};m[e.player].events++;if(e.isShot){m[e.player].shots++;m[e.player].xg+=e.xg;if(e.isGoal)m[e.player].goals++;}if(e.isPass)m[e.player].passes++;});
+ return Object.values(m).sort((a,b)=>(b.goals-a.goals)||(b.xg-a.xg)||(b.passes-a.passes));
+}
+function renderAll(){
+ populateTeams();
+ $('matchTitle').textContent=state.title?('المباراة: '+state.title):'لا توجد مباراة محملة';
+ $('totalEvents').textContent=state.events.length;
+ $('totalShots').textContent=state.events.filter(e=>e.isShot).length;
+ $('totalGoals').textContent=state.events.filter(e=>e.isGoal).length;
+ $('totalXg').textContent=state.events.reduce((a,e)=>a+e.xg,0).toFixed(2);
+ const tl=filtered().slice().sort((a,b)=>a.minute-b.minute).slice(0,300);
+ $('timelineList').innerHTML=tl.length?tl.map(e=>'<div class="timeline-item"><span class="badge">دقيقة '+e.minute+'</span><strong>'+esc(e.team)+'</strong> | '+esc(e.type)+' | '+esc(e.player)+(e.isGoal?' | <span class="badge">هدف</span>':'')+(e.xg?' | أهداف متوقعة: '+e.xg:'')+'</div>').join(''):'لا توجد أحداث مطابقة للتصفية الحالية.';
+ const ts=teamStats();
+ $('teamBody').innerHTML=ts.length?ts.map(r=>'<tr><td>'+esc(r.team)+'</td><td>'+r.shots+'</td><td>'+r.goals+'</td><td>'+r.xg.toFixed(2)+'</td><td>'+r.passes+'</td><td>'+r.events+'</td></tr>').join(''):'<tr><td colspan="6">لا توجد بيانات فرق بعد.</td></tr>';
+ const ps=playerStats();
+ $('playerBody').innerHTML=ps.length?ps.slice(0,50).map(r=>'<tr><td>'+esc(r.player)+'</td><td>'+r.shots+'</td><td>'+r.goals+'</td><td>'+r.xg.toFixed(2)+'</td><td>'+r.passes+'</td><td>'+r.events+'</td></tr>').join(''):'<tr><td colspan="6">لا توجد بيانات لاعبين بعد.</td></tr>';
+ const tp=ts.filter(r=>r.passes>0).sort((a,b)=>b.passes-a.passes);const tot=tp.reduce((a,r)=>a+r.passes,0);
+ if(tot>0&&tp.length>=2){const pct=Math.round(tp[0].passes/tot*100);$('possBar').style.width=pct+'%';$('possText').textContent='استحواذ تقريبي بالتمريرات: '+tp[0].team+' '+pct+'% - '+tp[1].team+' '+(100-pct)+'%';}
+ else if(tot>0){$('possBar').style.width='100%';$('possText').textContent='استحواذ تقريبي بالتمريرات: '+tp[0].team+' 100%';}
+ else{$('possBar').style.width='50%';$('possText').textContent='لا توجد تمريرات لحساب الاستحواذ.';}
+ drawShots();drawPass();drawHeat();
+}
+function getProjects(){try{return JSON.parse(localStorage.getItem(storeKey)||'{}');}catch(e){return{};}}
+function setProjects(p){try{localStorage.setItem(storeKey,JSON.stringify(p));$('projectMsg').textContent='تم الحفظ محليًا بنجاح.';}catch(e){$('projectMsg').textContent='تعذر الحفظ محليًا في هذا المتصفح.';}}
+function refreshProjects(){
+ const p=getProjects();const keys=Object.keys(p);
+ $('projectSelect').innerHTML=keys.length?keys.map(k=>'<option value="'+esc(k)+'">'+esc(k)+'</option>').join(''):'<option value="">لا توجد مشاريع محفوظة</option>';
+}
+function dlCanvas(c,name){const a=document.createElement('a');a.download=name;a.href=c.toDataURL('image/png');document.body.appendChild(a);a.click();a.remove();}
+function dlJson(){
+ if(!state.events.length){$('projectMsg').textContent='لا يمكن التصدير لأنه لا توجد بيانات محملة.';return;}
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.download='match-project.json';a.href=URL.createObjectURL(blob);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+ $('projectMsg').textContent='تم تصدير المشروع كملف JSON.';
+}
+$('fileInput').addEventListener('change',()=>{const f=$('fileInput').files[0];if(!f)return;const r=new FileReader();r.onload=()=>parseText(String(r.result||''));r.onerror=()=>setMsg('خطأ: تعذر قراءة الملف.');r.readAsText(f);});
+$('parseBtn').addEventListener('click',()=>parseText($('jsonInput').value));
+$('sampleBtn').addEventListener('click',makeSample);
+$('clearBtn').addEventListener('click',()=>{state={title:'',events:[]};$('jsonInput').value='';renderAll();setMsg('تم مسح البيانات. يمكنك تحميل بيانات جديدة.');});
+$('teamFilter').addEventListener('change',renderAll);
+$('typeFilter').addEventListener('change',renderAll);
+$('redrawBtn').addEventListener('click',renderAll);
+$('shotCanvas').addEventListener('click',ev=>{const c=$('shotCanvas');const r=c.getBoundingClientRect();const mx=(ev.clientX-r.left)*(c.width/r.width);const my=(ev.clientY-r.top)*(c.height/r.height);let best=null;let bd=1e9;drawnShots.forEach(s=>{const d=Math.hypot(s.px-mx,s.py-my);if(d<bd){bd=d;best=s;}});if(best&&bd<30){const e=best.e;$('shotDetail').textContent='دقيقة '+e.minute+' | '+e.team+' | '+e.player+' | '+(e.isGoal?'هدف':'بدون هدف')+' | أهداف متوقعة: '+e.xg;}else{$('shotDetail').textContent='لم تختر نقطة قريبة. انقر أقرب إلى نقطة تسديدة.';}});
+$('passCanvas').addEventListener('click',ev=>{const c=$('passCanvas');const r=c.getBoundingClientRect();const mx=(ev.clientX-r.left)*(c.width/r.width);const my=(ev.clientY-r.top)*(c.height/r.height);let best=null;let bd=1e9;drawnNodes.forEach(n=>{const d=Math.hypot(n.px-mx,n.py-my);if(d<bd){bd=d;best=n;}});if(best&&bd<40){$('passDetail').textContent='اللاعب: '+best.name+' | التمريرات: '+best.n;}else{$('passDetail').textContent='لم تختر لاعبًا قريبًا. انقر أقرب إلى دائرة لاعب.';}});
+$('exportShotsBtn').addEventListener('click',()=>dlCanvas($('shotCanvas'),'shot-map.png'));
+$('exportPassBtn').addEventListener('click',()=>dlCanvas($('passCanvas'),'passing-network.png'));
+$('exportHeatBtn').addEventListener('click',()=>dlCanvas($('heatCanvas'),'heatmap.png'));
+$('saveBtn').addEventListener('click',()=>{const name=$('projectName').value.trim()||state.title||'مشروع بدون اسم';if(!state.events.length){$('projectMsg').textContent='لا يمكن الحفظ لأنه لا توجد بيانات محملة.';return;}const p=getProjects();p[name]=JSON.parse(JSON.stringify(state));setProjects(p);refreshProjects();$('projectSelect').value=name;$('projectMsg').textContent='تم حفظ المشروع: '+name;});
+$('loadBtn').addEventListener('click',()=>{const name=$('projectSelect').value;const p=getProjects();if(!name||!p[name]){$('projectMsg').textContent='اختر مشروعًا محفوظًا أولًا.';return;}state=JSON.parse(JSON.stringify(p[name]));renderAll();$('projectMsg').textContent='تم تحميل المشروع: '+name;setMsg('تم تحميل المشروع '+name+' بنجاح.');});
+$('deleteBtn').addEventListener('click',()=>{const name=$('projectSelect').value;const p=getProjects();if(!name||!p[name]){$('projectMsg').textContent='اختر مشروعًا محفوظًا لحذفه.';return;}delete p[name];setProjects(p);refreshProjects();$('projectMsg').textContent='تم حذف المشروع: '+name;});
+$('exportBtn').addEventListener('click',dlJson);
+refreshProjects();
+renderAll();
+</script>
+</body>
+</html>
