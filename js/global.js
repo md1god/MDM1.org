@@ -41,10 +41,36 @@
     });
   }
 
+  /* ---------------- PLAYLIST: الأغاني 1-12 (audio/1.opus ... audio/12.opus) ----------------
+     كل صفحة تبدأ بأغنية حسب رقمها، وتكمل الجلسة على نفس الأغنية عند التنقل، وبعد انتهاء الأغنية تنتقل للتالية (1 → 12 ثم تعود). */
+  const TRACK_COUNT = 12, TRACK_KEY = 'mdm1_track';
+  function setupPlaylist(audio){
+    if(audio.dataset.playlist) return;
+    audio.dataset.playlist = '1';
+    try {
+      let i = parseInt(sessionStorage.getItem(TRACK_KEY), 10);
+      if(!(i >= 1 && i <= TRACK_COUNT)){
+        const m = location.pathname.match(/(\d+)\.html$/);
+        let h = 0; const key = m ? m[1] : location.pathname;
+        if(m) h = parseInt(m[1], 10); else for(let k = 0; k < key.length; k++) h = (h * 31 + key.charCodeAt(k)) >>> 0;
+        i = (h % TRACK_COUNT) + 1;
+      }
+      const load = n => {
+        audio.querySelectorAll('source').forEach(x => x.remove());
+        audio.src = '/audio/' + n + '.opus';
+        try { sessionStorage.setItem(TRACK_KEY, String(n)); } catch(e){}
+      };
+      load(i);
+      audio.loop = false;
+      audio.addEventListener('ended', () => { i = (i % TRACK_COUNT) + 1; load(i); audio.play().catch(() => {}); });
+    } catch(e){ /* لو فشل نبقى على المصدر الأصلي للصفحة */ }
+  }
+
   /* ---------------- MUSIC SYSTEM (v2.3) ---------------- */
   function initMusic(){
     const audio = document.getElementById('bg-music');
     if(!audio) return; // الصفحة دي مفيهاش موسيقى، تجاهل بأمان
+    if(audio.tagName === 'AUDIO' && !/\.opus(\?|$)/.test(audio.getAttribute('src') || '')) setupPlaylist(audio);
 
     const btn = document.getElementById('music-btn');
     if(!btn) return;
@@ -275,11 +301,9 @@
       if(document.getElementById('bg-music') || document.getElementById('music-btn')) return;
       const m = window.location.pathname.match(/\/pages\/(\d+)\.html$/);
       if(!m) return;
-      const file = (m[1] === '18' || m[1] === '19') ? m[1] : 'index';
-
       const audio = document.createElement('audio');
-      audio.id = 'bg-music'; audio.loop = true; audio.preload = 'none';
-      audio.src = '../audio/' + file + '.mp3';
+      audio.id = 'bg-music'; audio.preload = 'none';
+      setupPlaylist(audio);
       const btn = document.createElement('button');
       btn.id = 'music-btn'; btn.type = 'button';
       btn.textContent = '🎧';

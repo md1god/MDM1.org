@@ -35,9 +35,6 @@ PROTECT = [
     re.compile(r"\bar\s*:\s*['\"]العربية['\"]"),
     re.compile(r'lang_name\s*:\s*"[^"]*"'),
     re.compile(r'<button id="(?:lang-ar|l-ar)"[^>]*>[^<]*</button>'),
-    # generated per-language pages (scripts/build-i18n.js): the Arabic entry of the language switcher / language list
-    re.compile(r'<option value="[^"]*"[^>]*>العربية</option>'),
-    re.compile(r'<a href="[^"]*" hreflang="ar" lang="ar">العربية</a>'),
     re.compile(r"'تم التطبيق: العربية'"),
 ]
 
