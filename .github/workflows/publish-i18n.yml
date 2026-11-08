@@ -1,0 +1,57 @@
+name: 🌍 Publish multilingual pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'i18n/**'
+      - 'scripts/build-i18n.js'
+
+concurrency:
+  group: i18n
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✅ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 🌍 Build real per-language pages + hreflang + sitemap-i18n.xml
+        run: node scripts/build-i18n.js
+
+      - name: 🚀 Commit generated files
+        id: commit
+        run: |
+          git config user.name "MD1 Bot"
+          git config user.email "action@github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes to publish"
+          else
+            git commit -m "🌍 Publish multilingual pages - $(date +%Y-%m-%d\ %H:%M:%S)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # الدفع بواسطة GITHUB_TOKEN لا يشغّل deploy.yml تلقائيًا، فنستدعيه صراحةً (workflow_dispatch مسموح)
+      - name: 🌐 Deploy the site via deploy.yml
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

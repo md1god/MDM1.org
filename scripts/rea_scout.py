@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""REA scout (additive). pick -> /tmp/target.json ; build -> /tmp/tool.json, validated with the repo's own gates.
+Targets any software, app or tool (prefers paid / freemium). Clean-room: stage 1 writes a BEHAVIOR SPEC only,
+stage 2 builds an original page from that spec alone. Never edits site files."""
+import contextlib, datetime as dt, io, json, os, re, sys, urllib.error, urllib.request
+sys.path.insert(0, os.path.dirname(__file__))
+import trend_pages as T
+
+# Source language of the generated pages. The site's own pipeline requires it: its validators reject pages with no Arabic text,
+# and js/lang.js then offers every visitor 18 languages through the site-wide language button. Change it in ONE place only if that changes.
+SRC = "Arabic"
+LIMIT = 55000   # GitHub caps workflow_dispatch inputs at ~65k characters in total
+
+def llm(msg):
+    if os.environ.get("REA_MOCK"):   # offline test hook
+        return json.load(open(os.environ["REA_MOCK"], encoding="utf-8")).get({"PICK": "pick", "SPEC": "spec"}.get(msg[:4], "tool"))
+    url = os.environ.get("REA_API_URL", "https://models.github.ai/inference/chat/completions")
+    for m in ["openai/gpt-4.1", "openai/gpt-4.1-mini"] + T.MODELS:
+        for fmt in (True, False):   # some models blank/reject response_format: retry without it
+            body = {"model": m, "temperature": 0.4, "max_tokens": 9000, "messages": [{"role": "user", "content": msg}]}
+            if fmt: body["response_format"] = {"type": "json_object"}
+            try:
+                r = urllib.request.Request(url, json.dumps(body).encode(), {"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
+                    "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
+                raw = urllib.request.urlopen(r, timeout=180).read().decode("utf-8", "replace")
+                try: txt = json.loads(raw)["choices"][0]["message"]["content"]
+                except Exception: print("::warning::", m, "bad body:", repr(raw[:300])); continue
+                txt = re.sub(r"^```(?:json)?|```$", "", (txt or "").strip()).strip()
+                try: return json.loads(txt)
+                except Exception: print("::warning::", m, "not JSON:", repr(txt[:200]))
+            except urllib.error.HTTPError as e: print("::warning::", m, "HTTP", e.code, e.read()[:300])
+            except Exception as e: print("::warning::", m, repr(e))
+    return None
+
+def app_slugs():
+    try: return {a["slug"] for a in json.load(open("data/apps.json", encoding="utf-8"))["apps"]}
+    except Exception: return set()
+
+def norm(x): return re.sub(r"[^a-z0-9]", "", str(x).lower())
+
+def pick():
+    have = sorted({t["slug"] for t in T.load()["tools"]} | app_slugs())
+    r = llm("PICK. Today is " + dt.date.today().isoformat() + ". Name ONE well-known software product, app or online tool of ANY kind and ANY domain "
+            "(web app, desktop program, mobile app, utility, creative, business, education, media, developer tools, productivity, games...). "
+            "Prefer well-known PAID or freemium products, but any is allowed. Do not pick the most obvious flagship: vary widely from day to day. "
+            "Choose its single most valued feature that can be rebuilt as a small free client-side page (vanilla JS, no server, no account, no libraries, works offline). "
+            "Avoid anything about passwords, payments, medical diagnosis or legal advice, and anything similar to these existing slugs: " + ", ".join(have) +
+            '. Return ONLY JSON {"name":"product","url":"https://its-public-page","feature":"the one feature","kind":"tool or app"}. '
+            "kind=tool for a calculator/converter/generator (form + result); kind=app for anything interactive (editor, planner, tracker, timer, canvas, mini game). "
+            'If nothing fits return {"name":null}.')
+    if not r or not r.get("name") or not str(r.get("url", "")).startswith("https://") or r.get("kind") not in ("tool", "app"):
+        return print("no target")
+    json.dump(r, open("/tmp/target.json", "w"), ensure_ascii=False)
+    print("target:", r["name"], "|", r["kind"], "|", r.get("feature"), "|", r["url"])
+
+def problem(r, kind, tg):
+    """None if the repo's own gates accept it, else the reason (fed back to the model)."""
+    if not isinstance(r, dict) or not isinstance(r.get("slug"), str): return "not a JSON object with a slug"
+    if kind == "app":
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                import add_app   # runs main() on import: prints "no APP_JSON" and returns
+                add_app.validate(dict(r), app_slugs())
+        except SystemExit: return buf.getvalue().strip().split("rejected:")[-1].strip() or "rejected"
+        r["css"] = r.get("css") if isinstance(r.get("css"), str) else ""
+    else:
+        r["pick"] = "evergreen:" + r["slug"]
+        if not T.validate(r, [{"id": r["pick"], "name": r["slug"], "desc": "", "url": None}], T.load()): return T.LAST_REASON or "rejected"
+        r.pop("pick", None)
+    blob = " ".join(str(r.get(k, "")) for k in ("slug", "title", "h1", "description")) + " " + re.sub(r"<[^>]+>", " ", str(r.get("body_html", "")))
+    words = {norm(w) for w in re.split(r"[^A-Za-z0-9]+", tg["name"])} | {norm(tg["name"])}
+    if any(len(w) >= 4 and w in norm(blob) for w in words): return "mentions the original product name"
+    if len(json.dumps(r, ensure_ascii=False)) > LIMIT: return "too large: keep the whole JSON under 50000 characters"
+    return None
+
+SHAPE = ('Return ONLY JSON {"slug":"ascii-kebab","title":"' + SRC + ' SEO title <=70 chars","h1":"' + SRC + ' heading","description":"' + SRC + ' meta description 110-160 chars",'
+         '"body_html":"","script_js":"","faq":[{"q":"","a":""}  3-5 items]')
+
+def build():
+    if not os.path.exists("/tmp/target.json"): return print("no target today")
+    tg = json.load(open("/tmp/target.json", encoding="utf-8")); kind = tg["kind"]
+    ev = open("/tmp/rea-evidence.txt", encoding="utf-8").read()[:12000] if os.path.exists("/tmp/rea-evidence.txt") else ""
+    spec = llm("SPEC. Write a BEHAVIOR SPEC ONLY for ONE feature ('%s') of the product '%s', from its observable public behavior "
+               "(the evidence below may be empty; then use general knowledge of what such a feature does). "
+               'Return ONLY JSON {"purpose":"","inputs":[],"outputs":[],"rules":[],"edge_cases":[],"formats":[]}. '
+               "No source code, no copied text, no brand names, no assets.\nEVIDENCE:\n%s" % (tg.get("feature", ""), tg["name"], ev))
+    if not spec: return print("no spec")
+    if kind == "app":
+        rules = ('Build ONE original free client-side APP written in ' + SRC + ' (all visible text) (editor/planner/tracker/timer/canvas...) in vanilla JS: body_html has the markup with ids '
+                 '(label/input/select/textarea/button/canvas, wrap results in <div class="out" id="out">), NO <script>/<style>/<link>/on* attributes/external URLs; '
+                 'script_js wires the ids, no network, no eval, no http(s) strings; optional "css" string (no @import/url()). Intro paragraph >=80 words starting with a quick answer. '
+                 'Whole JSON under 45000 characters. ' + SHAPE[:-1] + ',"css":""}.')
+    else:
+        rules = ('Build ONE original free client-side TOOL written in ' + SRC + ' (all visible text) in vanilla JS: no network, no <script> in body_html, wrap the result in <div class="out" id="out">, '
+                 'intro paragraph >=80 words starting with a quick answer. ' + SHAPE + '}.')
+    fb = ""
+    for _ in range(3):
+        r = llm("TOOL. Using ONLY this spec (never look at or mention the original product), new name, new code, new design.\nSPEC:\n" +
+                json.dumps(spec, ensure_ascii=False) + "\n" + rules + (("\nPrevious answer rejected because: " + fb) if fb else ""))
+        if not r: break
+        fb = problem(r, kind, tg)
+        if not fb:
+            json.dump(r, open("/tmp/tool.json", "w"), ensure_ascii=False); return print("ready:", kind, r["slug"])
+    print("no valid result today:", fb)
+
+if __name__ == "__main__": {"pick": pick, "build": build}[sys.argv[1]]()

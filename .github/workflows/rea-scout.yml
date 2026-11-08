@@ -1,0 +1,51 @@
+name: REA Scout (daily, additive)
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  models: read
+  actions: write
+concurrency:
+  group: rea-scout
+  cancel-in-progress: false
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 1) Pick a paid product and one core feature
+        run: python3 scripts/rea_scout.py pick
+
+      - name: 2) REA - observe the public page (best effort)
+        continue-on-error: true
+        run: |
+          test -s /tmp/target.json || exit 0
+          URL=$(python3 -c "import json;print(json.load(open('/tmp/target.json'))['url'])")
+          (google-chrome --headless=new --no-sandbox --remote-debugging-port=9222 "$URL" >/dev/null 2>&1 &)
+          sleep 8
+          npx --yes rea-agents@latest list-browser-targets http://127.0.0.1:9222 --format json > /tmp/targets.json
+          TID=$(python3 -c "import json;d=json.load(open('/tmp/targets.json'));t=d.get('targets',d) if isinstance(d,dict) else d;print(t[0].get('id') or t[0].get('targetId'))")
+          npx --yes rea-agents@latest analyze-web-bundle http://127.0.0.1:9222 "$TID" --detail complete --token-limit 6000 --format md > /tmp/rea-evidence.txt
+
+      - name: 3) Spec, then build from the spec only, with the repo's own gates
+        run: python3 scripts/rea_scout.py build
+
+      - name: 4) Hand over to the existing pipeline (tool or app)
+        run: |
+          test -s /tmp/tool.json || { echo "nothing to hand over today"; exit 0; }
+          KIND=$(python3 -c "import json;print(json.load(open('/tmp/target.json'))['kind'])")
+          if [ "$KIND" = "app" ]; then
+            gh workflow run add-app.yml -f app_json="$(cat /tmp/tool.json)"
+          else
+            gh workflow run trend-pages.yml -f tool_json="$(cat /tmp/tool.json)"
+          fi

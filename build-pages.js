@@ -285,7 +285,17 @@ const pageNumber = state.pageCount + 1;
 
 const customTitle = process.env.SCOUT_TITLE?.trim();
 const customDescription = process.env.SCOUT_DESCRIPTION?.trim();
-const customBody = process.env.SCOUT_BODY?.trim();
+const suppliedBody = process.env.SCOUT_BODY?.trim();
+// عند غياب Scout لا ننشئ صفحة عداد رقيقة؛ نكتب خطة أولية قابلة للتجربة والمراجعة.
+function dailyProjectBody(title, description, number) {
+  return [
+    `هذه الصفحة تفتح مسار بناء عملي للمشروع «${title}». الفكرة: ${description}`,
+    'نطاق النسخة الأولى: تحديد المستخدم المستهدف، تثبيت المشكلة الأساسية، إنشاء واجهة بسيطة قابلة للتجربة، ثم قياس الاستخدام قبل إضافة خصائص ثانوية. يجب أن تعمل النسخة الأولى على الهاتف والحاسوب وأن تحفظ أقل قدر ممكن من البيانات.',
+    'خطة التنفيذ: (1) جمع أمثلة واقعية ومراجعة البدائل الموجودة، (2) رسم تدفق المستخدم والصفحات الأساسية، (3) بناء نموذج يعمل داخل المتصفح، (4) إضافة اختبارات للمدخلات والحالات الفارغة، (5) نشر نسخة تجريبية وفتح باب الملاحظات والمساهمات.',
+    `معيار التقدم: لا تُعد الخطة مكتملة حتى توجد نسخة يمكن تشغيلها، رابط واضح للمصدر أو طريقة الاستخدام، وصف للقيود والخصوصية، وسجل تغييرات يبين ما أُنجز في الصفحة رقم ${number}. هذه الخطة مقترح بناء وليست إعلاناً بأن المنتج جاهز.`
+  ].join('\n');
+}
+const customBody = suppliedBody || dailyProjectBody(customTitle || 'مشروع رقمي جديد', customDescription || 'حل رقمي قابل للتجربة والتحسين', pageNumber);
 const scoutId = (process.env.SCOUT_ID || '').trim();
 const translations = parseTranslations(process.env.SCOUT_TRANSLATIONS);
 
@@ -302,7 +312,7 @@ if (scoutId) {
 }
 const title = customTitle || randomFrom(data.contentWords.titles);
 const description = customDescription || randomFrom(data.contentWords.descriptions);
-const quote = customBody ? 'خطة أصلية مبنية على احتياج حقيقي وتُراجع قبل التنفيذ.' : pickDailyQuote(pageNumber, data.wisdomQuotes);
+const quote = suppliedBody ? 'خطة أصلية مبنية على احتياج حقيقي وتُراجع قبل التنفيذ.' : 'خطة أولية قابلة للتجربة والمراجعة قبل التنفيذ الكامل.';
 
 // بوابة الجودة: لا نشر لعنوان أو وصف فارغ أو فيه نص تفكير مسرّب أو نص بديل
 const qualityProblems = findProblems({ title, description });
