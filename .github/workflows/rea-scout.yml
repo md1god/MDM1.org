@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: 1) Pick a target
+      - name: 1) Pick a paid product and one core feature
         run: python3 scripts/rea_scout.py pick
 
       - name: 2) REA - observe the public page (best effort)
@@ -40,7 +40,12 @@ jobs:
       - name: 3) Spec, then build from the spec only, with the repo's own gates
         run: python3 scripts/rea_scout.py build
 
-      - name: 4) Hand over to the existing daily pipeline
+      - name: 4) Hand over to the existing pipeline (tool or app)
         run: |
           test -s /tmp/tool.json || { echo "nothing to hand over today"; exit 0; }
-          gh workflow run trend-pages.yml -f tool_json="$(cat /tmp/tool.json)"
+          KIND=$(python3 -c "import json;print(json.load(open('/tmp/target.json'))['kind'])")
+          if [ "$KIND" = "app" ]; then
+            gh workflow run add-app.yml -f app_json="$(cat /tmp/tool.json)"
+          else
+            gh workflow run trend-pages.yml -f tool_json="$(cat /tmp/tool.json)"
+          fi
