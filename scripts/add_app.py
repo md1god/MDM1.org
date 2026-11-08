@@ -75,7 +75,7 @@ def main():
     os.makedirs("data", exist_ok=True)
     json.dump(data, open("data/apps.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     cards = "".join(f'<div class="card"><span class="card-icon">🧩</span><div class="card-title"><a href="{x["slug"]}.html" class="glow-gold">{E(x["h1"])}</a></div><div class="card-text">{E(x["description"])}</div></div>' for x in reversed(data["apps"]))
-    T.wr("apps/index.html", T.shell("تطبيقات مجانية تعمل في متصفحك", "تطبيقات ويب مجانية بالعربية تعمل داخل متصفحك بدون تسجيل: محررات ومنظمات وأدوات إنتاجية.",
+    T.wr("apps/index.html", T.shell("تطبيقات مجانية تعمل في متصفحك", "تطبيقات ويب مجانية تعمل داخل متصفحك بدون تسجيل: محررات ومنظمات وأدوات إنتاجية.",
          f"{SITE}/apps/", "تطبيقات مجانية", "MDM1 · التطبيقات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(data['apps'])} تطبيق", back=BACK))
     urls = [("/apps/", D)] + [(f"/apps/{x['slug']}.html", x["date"]) for x in data["apps"]]
     T.wr("sitemap-apps.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

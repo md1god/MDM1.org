@@ -100,7 +100,13 @@ def tool_page(t):
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": x["q"], "acceptedAnswer": {"@type": "Answer", "text": x["a"]}} for x in t["faq"]]}]}
     return shell(t["title"], t["description"], canon, t["h1"], "MDM1 · أدوات مجانية", main, f"<script>\n{t['script_js']}\n</script>", ld, f" · {t['date']}")
 
+try:
+    import descriptor_filter as _df   # keeps pages language-neutral (see scripts/descriptor_filter.py)
+except Exception:
+    _df = None
+
 def wr(path, s):
+    if _df and isinstance(s, str) and path.endswith((".html", ".json", ".xml", ".md", ".txt")): s = _df.clean(s)
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     if os.path.exists(path) and open(path, encoding="utf-8").read() == s: return False
     open(path, "w", encoding="utf-8").write(s); return True
@@ -114,7 +120,7 @@ def publish_files(d):
     for t in d["tools"]:
         if t["slug"] == "zakat-calculator": wr(f"tools/{t['slug']}.html", tool_page(ZAKAT))
     cards = "".join(f'<div class="card"><span class="card-icon">🧰</span><div class="card-title"><a href="{t["slug"]}.html" class="glow-gold">{E(t["h1"] if "h1" in t else t["title"])}</a></div><div class="card-text">{E(t["description"])}</div></div>' for t in reversed(d["tools"]))
-    wr("tools/index.html", shell("أدوات مجانية مفيدة", "أدوات عربية مجانية تعمل في متصفحك بدون تسجيل.", f"{SITE}/tools/", "أدوات مجانية", "MDM1 · الأدوات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(d['tools'])} أداة"))
+    wr("tools/index.html", shell("أدوات مجانية مفيدة", "أدوات مجانية تعمل في متصفحك بدون تسجيل.", f"{SITE}/tools/", "أدوات مجانية", "MDM1 · الأدوات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(d['tools'])} أداة"))
     urls = [("/tools/", D)] + [(f"/tools/{t['slug']}.html", t["date"]) for t in d["tools"]]
     wr("sitemap-tools.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{m}</lastmod></url>\n" for u, m in urls) + "</urlset>\n")
     wr(f"{KEY}.txt", KEY)
@@ -152,7 +158,7 @@ def candidates(seen):
 EVERGREEN = [
  ("hijri-gregorian-converter", "محول التاريخ الهجري والميلادي بدقة (يوم/شهر/سنة في الاتجاهين) باستخدام Intl.DateTimeFormat مع التقويم islamic-umalqura"),
  ("inheritance-calculator", "حاسبة المواريث الشرعية المبسطة: زوج/زوجة، أب، أم، أبناء، بنات، مع شرح كل نصيب وتنبيه بمراجعة جهة الفتوى"),
- ("bmi-calculator", "حاسبة مؤشر كتلة الجسم والوزن المثالي والسعرات اليومية التقريبية بالعربية"),
+ ("bmi-calculator", "حاسبة مؤشر كتلة الجسم والوزن المثالي والسعرات اليومية التقريبية"),
  ("end-of-service-calculator", "حاسبة مكافأة نهاية الخدمة حسب سنوات العمل والراتب الأخير (نظام عمل عام مبسّط مع تنبيه)"),
  ("loan-installment-calculator", "حاسبة القسط الشهري للقرض والفائدة الإجمالية وجدول السداد"),
  ("age-calculator", "حاسبة العمر بالسنوات والشهور والأيام والتاريخ الهجري المقابل واليوم القادم لعيد الميلاد"),
@@ -160,14 +166,14 @@ EVERGREEN = [
  ("percentage-calculator", "حاسبة النسبة المئوية بكل صورها: كم يساوي ٪ من رقم، نسبة التغيير، الرقم الأصلي"),
  ("pregnancy-due-date-calculator", "حاسبة موعد الولادة المتوقع وعمر الحمل بالأسابيع من أول يوم لآخر دورة"),
  ("prayer-fasting-days-planner", "حاسبة قضاء الصيام والصلوات الفائتة وخطة سداد يومية"),
- ("arabic-text-counter", "عداد كلمات وحروف النص العربي ووقت القراءة وإزالة التشكيل والمسافات الزائدة"),
+ ("arabic-text-counter", "عداد كلمات وحروف النص ووقت القراءة وإزالة التشكيل والمسافات الزائدة"),
  ("currency-profit-margin-calculator", "حاسبة هامش الربح وسعر البيع والتكلفة للتجار والمتاجر الإلكترونية"),
  ("gold-price-calculator", "حاسبة قيمة الذهب حسب الوزن والعيار (24/22/21/18) وسعر الجرام يدخله المستخدم مع المصنعية"),
  ("date-difference-calculator", "حاسبة الفرق بين تاريخين بالأيام والأسابيع والشهور وأيام العمل"),
  ("random-name-and-password-generator", "مولّد كلمات مرور قوية وأرقام سرية عشوائية مع مقياس القوة، كله داخل المتصفح"),
  ("qr-text-plan-split-bill", "حاسبة تقسيم الفاتورة بين الأصدقاء مع البقشيش والضريبة"),
  ("fuel-cost-calculator", "حاسبة تكلفة الرحلة والبنزين حسب المسافة واستهلاك السيارة وسعر اللتر"),
- ("unit-converter-arabic", "محول وحدات عربي: الطول والوزن والحرارة والمساحة والحجم بواجهة بسيطة"),
+ ("unit-converter-arabic", "محول وحدات: الطول والوزن والحرارة والمساحة والحجم بواجهة بسيطة"),
  ("salary-net-calculator", "حاسبة صافي الراتب بعد الخصومات والتأمينات والضريبة بنسب يدخلها المستخدم"),
  ("study-time-planner", "مخطط مذاكرة يوزّع المواد على الأيام المتبقية للامتحان حسب الصعوبة وساعات اليوم"),
 ]
@@ -175,7 +181,7 @@ LAST_REASON = ""
 
 PROMPT = """You are building ONE original, genuinely useful, single-page Arabic web tool for mdm1.org, inspired by the IDEA behind one trending project below.
 Pick the one candidate that can be built as a fully working CLIENT-SIDE tool (HTML form + vanilla JS, no server, no network, no external libs). If none fits, answer {"pick":null}.
-Rules: write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; the tool must really work.
+Rules: write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; never label the tool, page or site with the word "Arabic" (or its Arabic-script form) as a descriptor - no "Arabic tool/app" wording; the tool must really work.
 Return ONLY JSON: {"pick":"<candidate id>","slug":"ascii-kebab-3-40","title":"Arabic SEO title <=70 chars","h1":"Arabic heading","description":"Arabic meta description 110-160 chars",
 "body_html":"intro paragraph (>=80 words, starts with a quick answer) + form/inputs/button/output. Elements need ids; wrap result in <div class=\\"out\\" id=\\"out\\">; use <label>,<input>,<select>,<textarea>,<button>; NO <script>, NO external src/href",
 "script_js":"vanilla JS wiring the ids above","faq":[{"q":"..","a":".."}  (3-5 items)]}

@@ -99,7 +99,7 @@ def transform(text: str, menu: dict[str, str]) -> str:
         extra = MUSIC_HTML + ('' if HAS_GLOBAL_JS.search(text) else '<script src="/js/global.js"></script>\n')
         text = text[:pos] + extra + text[pos:]
         head_add.append(MUSIC_CSS)
-    if "js/lang.js" not in text and 'id="lang-select"' not in text:      # site-wide language button
+    if "js/lang.js" not in text:      # site-wide world-language picker (also extends pages that have their own #lang-select)
         pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
         text = text[:pos] + '<script src="/js/lang.js" defer></script>\n' + text[pos:]
     head_pos = list(re.finditer(r"</\s*head\s*>", text, re.I))[0].start()
