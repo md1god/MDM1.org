@@ -28,6 +28,8 @@ const digits = s => String(s || '').replace(/[\u0660-\u0669\u06F0-\u06F9]/g, d =
 const pagePath = (c, slug) => (c === 'ar' ? `/pages/${slug}.html` : `/${c}/pages/${slug}.html`);
 const homePath = c => (c === 'ar' ? '/' : `/${c}/`);
 const listPath = c => `/${c}/pages/`;
+const hl = c => (c === 'ar' ? 'ar' : (SITE.langs[c].hreflang || c));
+const UI = c => Object.assign({}, SITE.langs.en.ui, SITE.langs[c].ui);
 const langName = c => (c === 'ar' ? 'العربية' : SITE.langs[c].name);
 
 // ───────────── 1) تنظيف ما ولّدناه سابقًا (لا نلمس مجلدًا لم يُنشأ من هذا السكربت)
@@ -76,22 +78,34 @@ items.sort((a, b) => b.n - a.n);
 
 // ───────────── 3) أدوات القالب
 const isHeading = l => l.length <= 95 && /^([0-9\u0966-\u096F]{1,2})\)\s+\S/.test(l);
-const bodyHtml = body => body.split(/\n+/).map(l => l.trim()).filter(Boolean)
-  .map(l => (isHeading(l) ? `<h2>${esc(l)}</h2>` : `<p>${esc(l)}</p>`)).join('\n');
+const bodyHtml = body => {
+  const out = []; let ul = false;
+  const close = () => { if (ul) { out.push('</ul>'); ul = false; } };
+  for (const raw of body.split(/\n+/)) {
+    const l = raw.trim(); if (!l) continue;
+    if (l.startsWith('- ')) { if (!ul) { out.push('<ul>'); ul = true; } out.push(`<li>${esc(l.slice(2))}</li>`); continue; }
+    close();
+    if (l.startsWith('### ')) out.push(`<h3>${esc(l.slice(4))}</h3>`);
+    else if (l.startsWith('## ')) out.push(`<h2>${esc(l.slice(3))}</h2>`);
+    else out.push(isHeading(l) ? `<h2>${esc(l)}</h2>` : `<p>${esc(l)}</p>`);
+  }
+  close();
+  return out.join('\n');
+};
 
 const fmtDate = (iso, c) => {
   const d = new Date(iso);
   if (isNaN(d)) return '';
-  try { return d.toLocaleDateString(SITE.langs[c].locale.replace('_', '-'), { year: 'numeric', month: 'long', day: 'numeric' }); }
+  try { return d.toLocaleDateString(SITE.langs[c].locale.replace('_', '-'), { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }); }
   catch (e) { return iso.slice(0, 10); }
 };
 
-const altLinks = (alts, xdef) => alts.map(([c, p]) => `  <link rel="alternate" hreflang="${c}" href="${url(p)}">`).join('\n')
+const altLinks = (alts, xdef) => alts.map(([c, p]) => `  <link rel="alternate" hreflang="${hl(c)}" href="${url(p)}">`).join('\n')
   + `\n  <link rel="alternate" hreflang="x-default" href="${url(xdef)}">`;
 const switcher = (cur, alts) => `<label class="i18n-pick"><span aria-hidden="true">🌐</span><select id="lang-select" aria-label="Language">`
   + alts.map(([c, p]) => `<option value="${p}"${c === cur ? ' selected' : ''}>${esc(langName(c))}</option>`).join('') + `</select></label>`;
 const langNav = alts => `<nav class="i18n-langs" aria-label="Languages">`
-  + alts.map(([c, p]) => `<a href="${p}" hreflang="${c}" lang="${c}">${esc(langName(c))}</a>`).join('') + `</nav>`;
+  + alts.map(([c, p]) => `<a href="${p}" hreflang="${hl(c)}" lang="${hl(c)}">${esc(langName(c))}</a>`).join('') + `</nav>`;
 
 const CSS = `.i18n-pick{display:inline-flex;align-items:center;gap:.4rem}
     .i18n-pick select{background:rgba(0,0,0,.35);color:inherit;border:1px solid rgba(201,168,76,.45);border-radius:8px;padding:.3rem .5rem;font:inherit;cursor:pointer}
@@ -102,16 +116,18 @@ const CSS = `.i18n-pick{display:inline-flex;align-items:center;gap:.4rem}
     .i18n-langs{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;justify-content:center;padding:1.5rem 1rem;font-size:.9rem}
     .i18n-langs a{color:var(--gold);text-decoration:none;opacity:.85}
     .i18n-body p a{color:var(--gold)}
+    .i18n-body ul{margin:.6rem 0 1rem;padding-inline-start:1.4rem;list-style:disc}
+    .i18n-body li{margin:.35rem 0}
     .navbar{flex-wrap:wrap;gap:.6rem}
     .navbar .nav-back{white-space:nowrap}`;
 
 // o: { lang, title, description, path, alts, xdef, og, ld, hero, main, navLink:[href,label], footer }
 function shell(o) {
   const u = url(o.path), desc = clip(o.description, 155), L = SITE.langs[o.lang];
-  const ld = Object.assign({ '@context': 'https://schema.org', description: desc, inLanguage: o.lang, url: u, mainEntityOfPage: u, image: OG_IMAGE,
+  const ld = Object.assign({ '@context': 'https://schema.org', description: desc, inLanguage: hl(o.lang), url: u, mainEntityOfPage: u, image: OG_IMAGE,
     publisher: { '@type': 'Organization', name: 'MDM1', url: ORIGIN } }, o.ld);
   return `<!DOCTYPE html>
-<html lang="${o.lang}" dir="ltr">
+<html lang="${hl(o.lang)}" dir="${L.dir || 'ltr'}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -165,6 +181,20 @@ function write(rel, content) {
 const hero = (label, title, sub) => `<header class="page-hero"><div class="page-label">${esc(label)}</div>`
   + `<h1 class="page-title">${esc(title)}</h1><p class="page-sub">${esc(sub)}</p></header>`;
 
+// صفحات أساسية مترجمة يدويًا: i18n/pages/*.json  → { langs: { code: {title, description, body} } }
+const core = [];
+if (exists('i18n/pages')) {
+  for (const f of fs.readdirSync(path.join(ROOT, 'i18n/pages')).filter(f => f.endsWith('.json')).sort()) {
+    const d = JSON.parse(read('i18n/pages/' + f)), tr = {};
+    for (const c of LANGS) {
+      const L = d.langs && d.langs[c];
+      if (L && L.title && L.body) tr[c] = { title: L.title.trim(), description: (L.description || L.title).trim(), body: L.body.trim() };
+    }
+    if (Object.keys(tr).length) core.push({ slug: f.replace('.json', ''), tr });
+  }
+}
+const coreHas = (c, slug) => core.some(p => p.slug === slug && p.tr[c]);
+
 // ───────────── 4) صفحات الخطط: /{lang}/pages/{N}.html
 const countByLang = Object.fromEntries(LANGS.map(c => [c, 0]));
 for (const it of items) {
@@ -172,7 +202,7 @@ for (const it of items) {
   const alts = [['ar', pagePath('ar', it.slug)], ...have.map(c => [c, pagePath(c, it.slug)])];
   const xdef = it.tr.en ? pagePath('en', it.slug) : pagePath('ar', it.slug);
   for (const c of have) {
-    const t = it.tr[c], ui = SITE.langs[c].ui;
+    const t = it.tr[c], ui = UI(c);
     const iso = it.date || '';
     write(`${c}/pages/${it.slug}.html`, shell({
       lang: c, title: `${t.title} - MDM1`, description: t.description || t.title, path: pagePath(c, it.slug), alts, xdef, og: 'article',
@@ -187,16 +217,44 @@ for (const it of items) {
   }
 }
 
-// ───────────── 5) الصفحة الرئيسية + فهرس الخطط لكل لغة
+// ───────────── 4b) الصفحات الأساسية المترجمة: /{lang}/pages/{slug}.html (about, faq ...)
+const coreCount = {};
+for (const pg of core) {
+  const have = LANGS.filter(c => pg.tr[c]);
+  const alts = [['ar', pagePath('ar', pg.slug)], ...have.map(c => [c, pagePath(c, pg.slug)])];
+  const xdef = pg.tr.en ? pagePath('en', pg.slug) : pagePath('ar', pg.slug);
+  for (const c of have) {
+    const t = pg.tr[c], ui = UI(c);
+    write(`${c}/pages/${pg.slug}.html`, shell({
+      lang: c, title: `${t.title} - MDM1`, description: t.description || t.title, path: pagePath(c, pg.slug), alts, xdef, og: 'website',
+      ld: { '@type': 'WebPage', name: t.title, isPartOf: { '@type': 'WebSite', name: 'MDM1.org', url: ORIGIN + '/' } },
+      hero: hero('MDM1', t.title, t.description),
+      main: `<main class="page-content i18n-body">\n${bodyHtml(t.body)}\n<p class="i18n-orig"><a href="${pagePath('ar', pg.slug)}" hreflang="ar" lang="ar">${esc(ui.original)}</a></p>\n</main>`,
+      navLink: [homePath(c), ui.home],
+      footer: '✦ MDM1 ✦'
+    }));
+    coreCount[c] = (coreCount[c] || 0) + 1;
+  }
+}
+
+// ───────────── 5) الصفحة الرئيسية لكل لغة (+ فهرس الخطط للغات التي لها خطط مترجمة فقط)
+const hasPlans = c => items.some(it => it.tr[c]);
+const planLangs = LANGS.filter(hasPlans);
 const landingAlts = [['ar', homePath('ar')], ...LANGS.map(c => [c, homePath(c)])];
 const landingX = SITE.langs.en ? homePath('en') : homePath('ar');
-const core = { whitepaper: '/whitepaper.html', roadmap: '/pages/roadmap.html', community: '/pages/community.html', about: '/pages/about.html' };
+const arLinks = { whitepaper: '/whitepaper.html', roadmap: '/pages/roadmap.html', community: '/pages/community.html', about: '/pages/about.html', faq: '/pages/faq.html' };
 
 for (const c of LANGS) {
-  const S = SITE.langs[c], mine = items.filter(it => it.tr[c]);
+  const S = SITE.langs[c], ui = UI(c), mine = items.filter(it => it.tr[c]);
   const link = it => `<a href="${pagePath(c, it.slug)}">${esc(it.tr[c].title)}<small>#${it.slug}</small></a>`;
+  const official = Object.keys(S.links).filter(k => coreHas(c, k) || arLinks[k]).map(k => coreHas(c, k)
+    ? `<a href="${pagePath(c, k)}">${esc(S.links[k])}</a>`
+    : `<a href="${arLinks[k]}" hreflang="ar" lang="ar">${esc(S.links[k])}</a>`).join('');
+  const plansBlock = mine.length ? `
+<h2>${esc(S.plansTitle)}</h2>
+<p>${esc(S.plansText)}</p>
+<nav class="i18n-list">${mine.slice(0, 10).map(link).join('')}<a href="${listPath(c)}">${esc(ui.all)} →</a></nav>` : '';
 
-  // الرئيسية
   write(`${c}/index.html`, shell({
     lang: c, title: S.title, description: S.description, path: homePath(c), alts: landingAlts, xdef: landingX, og: 'website',
     ld: { '@type': 'WebPage', name: S.title, isPartOf: { '@type': 'WebSite', name: 'MDM1.org', url: ORIGIN + '/' } },
@@ -204,37 +262,37 @@ for (const c of LANGS) {
     main: `<main class="page-content i18n-body">
 <p>${esc(S.notice)}</p>
 <h2>${esc(S.linksTitle)}</h2>
-<nav class="i18n-list">${Object.keys(core).map(k => `<a href="${core[k]}" hreflang="ar" lang="ar">${esc(S.links[k])}</a>`).join('')}</nav>
-<p><a href="https://md1usd.com/" rel="noopener">MD1USD · md1usd.com</a></p>
-<h2>${esc(S.plansTitle)}</h2>
-<p>${esc(S.plansText)}</p>
-<nav class="i18n-list">${mine.slice(0, 10).map(link).join('')}<a href="${listPath(c)}">${esc(S.ui.all)} →</a></nav>
+<nav class="i18n-list">${official}</nav>
+<p><a href="https://md1usd.com/" rel="noopener">MD1USD · md1usd.com</a></p>${plansBlock}
 </main>`,
-    navLink: ['/', S.ui.arabicSite],
+    navLink: ['/', ui.arabicSite],
     footer: '✦ MDM1.org ✦'
   }));
 
-  // فهرس الخطط
-  write(`${c}/pages/index.html`, shell({
+  if (mine.length) write(`${c}/pages/index.html`, shell({
     lang: c, title: `${S.plansTitle} — MDM1`, description: S.plansText, path: listPath(c),
-    alts: [['ar', '/pages/index.html'], ...LANGS.map(x => [x, listPath(x)])], xdef: SITE.langs.en ? listPath('en') : '/pages/index.html', og: 'website',
+    alts: [['ar', '/pages/index.html'], ...planLangs.map(x => [x, listPath(x)])], xdef: hasPlans('en') ? listPath('en') : '/pages/index.html', og: 'website',
     ld: { '@type': 'CollectionPage', name: `${S.plansTitle} — MDM1`, isPartOf: { '@type': 'WebSite', name: 'MDM1.org', url: ORIGIN + '/' } },
     hero: hero('MDM1', S.plansTitle, S.plansText),
     main: `<main class="page-content i18n-body"><nav class="i18n-list">${mine.map(link).join('')}</nav></main>`,
-    navLink: [homePath(c), S.ui.home],
+    navLink: [homePath(c), ui.home],
     footer: `✦ MDM1 · ${mine.length} ✦`
   }));
   write(`${c}/${MARK}`, 'generated by scripts/build-i18n.js — safe to delete; regenerated on every run\n');
 }
 
 // ───────────── 6) sitemap-i18n.xml (hreflang داخل الـsitemap يغطي الصفحات العربية الأصلية دون تعديلها)
-const xl = alts => alts.map(([c, p]) => `    <xhtml:link rel="alternate" hreflang="${c}" href="${url(p)}"/>`).join('\n');
+const xl = alts => alts.map(([c, p]) => `    <xhtml:link rel="alternate" hreflang="${hl(c)}" href="${url(p)}"/>`).join('\n');
 const rows = [];
 const group = (alts, xdef, last) => {
   const all = `${xl(alts)}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${url(xdef)}"/>`;
   for (const [, p] of alts) rows.push(`  <url>\n    <loc>${url(p)}</loc>${last ? `\n    <lastmod>${last}</lastmod>` : ''}\n${all}\n  </url>`);
 };
 group(landingAlts, landingX, '');
+for (const pg of core) {                      // صفحات أساسية مترجمة يدويًا: تُعلَن دائمًا
+  const have = LANGS.filter(c => pg.tr[c]);
+  group([['ar', pagePath('ar', pg.slug)], ...have.map(c => [c, pagePath(c, pg.slug)])], pg.tr.en ? pagePath('en', pg.slug) : pagePath('ar', pg.slug), '');
+}
 if (!withheld) {      // نفس قرار الموقع: خطط الـ sitemap محجوبة حتى تُراجع (علامة robots.txt)
   for (const it of items) {
     const have = LANGS.filter(c => it.tr[c]);
@@ -246,7 +304,9 @@ write('sitemap-i18n.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns
 
 // ───────────── 7) ملخص
 const total = Object.values(countByLang).reduce((a, b) => a + b, 0);
-console.log(`✅ ${items.length} صفحة خطة لها ترجمات → ${total} صفحة لغوية حقيقية + ${LANGS.length} رئيسية + ${LANGS.length} فهرس`);
-console.log('   ' + LANGS.map(c => `${c}:${countByLang[c]}`).join('  '));
-console.log(`   تخطّيت ${skippedQuality} ترجمة (عنوان/وصف فشل بوابة الجودة)`);
-console.log(`   sitemap-i18n.xml: ${rows.length} رابط${withheld ? ' (الرئيسيات فقط — خطط الموقع محجوبة بعلامة robots.txt)' : ''}`);
+const coreTotal = Object.values(coreCount).reduce((a, b) => a + b, 0);
+console.log(`✅ ${LANGS.length} لغة: ${LANGS.length} صفحة رئيسية + ${planLangs.length} فهرس خطط + ${coreTotal} صفحة أساسية مترجمة + ${total} صفحة خطة (${items.length} خطة)`);
+console.log('   خطط: ' + planLangs.map(c => `${c}:${countByLang[c]}`).join('  '));
+console.log('   أساسية: ' + (Object.keys(coreCount).map(c => `${c}:${coreCount[c]}`).join('  ') || '—'));
+console.log(`   تخطّيت ${skippedQuality} ترجمة خطة (فشلت بوابة الجودة)`);
+console.log(`   sitemap-i18n.xml: ${rows.length} رابط${withheld ? ' (خطط الموقع محجوبة بعلامة robots.txt)' : ''}`);
