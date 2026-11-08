@@ -1,4 +1,4 @@
--- Migration 001 - ads v2 + subscribers (apply in Supabase SQL Editor, or via the Supabase MCP / CLI)
+-- Migration 001 - ads v2 + subscribers (already applied to the live project)
 -- 1) The live project currently has an OLD, empty `ads` table (title/details/location) with open policies.
 --    It is renamed to ads_legacy and locked (not dropped) so nothing is lost.
 do $$

@@ -1,9 +1,9 @@
 /* صفحة الإعلانات المجانية — pages/ads.html
-   ضع هنا رابط مشروع Supabase ومفتاح anon (العام) فقط.
+   رابط مشروع Supabase والمفتاح العام (publishable) فقط.
    مفتاح anon مصمم ليكون ظاهراً في الموقع، والأمان يأتي من سياسات RLS في supabase/ads.sql.
    لا تضع مفتاح service_role هنا أبداً. */
-const ADS_SUPABASE_URL = 'PASTE_SUPABASE_URL_HERE';
-const ADS_SUPABASE_ANON_KEY = 'PASTE_SUPABASE_ANON_KEY_HERE';
+const ADS_SUPABASE_URL = 'https://fksjltytevcmpjxzamhp.supabase.co';
+const ADS_SUPABASE_ANON_KEY = 'sb_publishable_fFnLwsu5bB3w-WRSsYoPWw_M3iLhDS-';
 
 const CAT = { services:'خدمات وصيانة', jobs:'وظائف', food:'أكل بيتي', goods:'سلع', education:'تعليم ودروس', other:'أخرى' };
 const TYPE = { offer:'أعرض', request:'أطلب' };

@@ -11,6 +11,12 @@
   window.supabaseLib = lib;
   window.supabase = client;                                        // pages call supabase.from(...) / supabase.auth.* directly
 
+  window.sendMagicLink = function (email) {                          // passwordless sign-in (used by pages/ideas.html)
+    return client.auth.signInWithOtp({ email: String(email || "").trim().toLowerCase(),
+      options: { emailRedirectTo: location.origin + location.pathname } });
+  };
+  window.signOutMember = function () { return client.auth.signOut(); };
+
   window.getSubscriberCount = async function () {
     try { var r = await client.rpc("subscriber_count"); return r.error ? null : Number(r.data); } catch (e) { return null; }
   };
