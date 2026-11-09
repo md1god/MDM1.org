@@ -1,0 +1,56 @@
+name: 🌍 Translate tools and apps (20 languages)
+on:
+  schedule:
+    - cron: '30 9 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  models: read
+  actions: write
+concurrency:
+  group: intl-tools
+  cancel-in-progress: false
+jobs:
+  intl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      INTL_MAX_CALLS: '80'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Translate new pages and build every language page
+        run: python3 scripts/intl_tools.py
+
+      - name: Guard - only our own folders may change
+        shell: bash
+        run: |
+          bad=0
+          while IFS=$'\t' read -r st path; do
+            case "$path" in
+              intl/*|i18n-tools/*|sitemap-intl.xml) ;;
+              robots.txt) [ "$(git diff --numstat robots.txt | cut -f1,2)" = "$(printf '1\t0')" ] || { echo "BLOCKED: robots.txt changed by more than one added line"; bad=1; } ;;
+              *) echo "BLOCKED: $path"; bad=1 ;;
+            esac
+          done < <(git status --porcelain --untracked-files=all | awk '{st=$1; $1=""; sub(/^ /,""); print st"\t"$0}')
+          exit $bad
+
+      - name: Commit and deploy
+        run: |
+          git config user.name "MD1 Bot"
+          git config user.email "action@github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "🌍 Translate tools/apps - $(date +%Y-%m-%d)"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run deploy.yml --ref main
