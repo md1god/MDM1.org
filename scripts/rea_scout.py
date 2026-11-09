@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """REA scout (additive). pick -> /tmp/target.json ; build -> /tmp/tool.json, validated with the repo's own gates.
 Targets any software, app or tool (prefers paid / freemium). Clean-room: stage 1 writes a BEHAVIOR SPEC only,
-stage 2 builds an original page from that spec alone. Never edits site files."""
+stage 2 builds an original page from that spec alone. The studied product is named NOWHERE except the private Telegram report."""
 import contextlib, datetime as dt, io, json, os, re, sys, urllib.error, urllib.request
 sys.path.insert(0, os.path.dirname(__file__))
 import trend_pages as T
 
 # Source language of the generated pages. The site's own pipeline requires it: its validators reject pages with no Arabic text,
-# and js/lang.js then offers every visitor 18 languages through the site-wide language button. Change it in ONE place only if that changes.
+# and the new multilingual publisher (scripts/intl_tools.py) then translates them. Change it in ONE place only if that changes.
 SRC = "Arabic"
 LIMIT = 55000   # GitHub caps workflow_dispatch inputs at ~65k characters in total
 
@@ -24,10 +24,10 @@ def llm(msg):
                     "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
                 raw = urllib.request.urlopen(r, timeout=180).read().decode("utf-8", "replace")
                 try: txt = json.loads(raw)["choices"][0]["message"]["content"]
-                except Exception: print("::warning::", m, "bad body:", repr(raw[:300])); continue
+                except Exception: print("::warning::", m, "bad body:", repr(raw[:120]) if raw.lstrip()[:1] in ("<", "") else "len=%d" % len(raw)); continue
                 txt = re.sub(r"^```(?:json)?|```$", "", (txt or "").strip()).strip()
                 try: return json.loads(txt)
-                except Exception: print("::warning::", m, "not JSON:", repr(txt[:200]))
+                except Exception: print("::warning::", m, "not JSON, len=%d" % len(txt))
             except urllib.error.HTTPError as e: print("::warning::", m, "HTTP", e.code, e.read()[:300])
             except Exception as e: print("::warning::", m, repr(e))
     return None
@@ -51,7 +51,8 @@ def pick():
     if not r or not r.get("name") or not str(r.get("url", "")).startswith("https://") or r.get("kind") not in ("tool", "app"):
         return print("no target")
     json.dump(r, open("/tmp/target.json", "w"), ensure_ascii=False)
-    print("target:", r["name"], "|", r["kind"], "|", r.get("feature"), "|", r["url"])
+    for secret in {str(r["name"]), re.sub(r"^https?://(www\.)?", "", r["url"]).split("/")[0]}: print("::add-mask::" + secret)   # public logs: never show the product
+    print("target selected, kind=" + r["kind"])
 
 def problem(r, kind, tg):
     """None if the repo's own gates accept it, else the reason (fed back to the model)."""
@@ -79,13 +80,14 @@ SHAPE = ('Return ONLY JSON {"slug":"ascii-kebab","title":"' + SRC + ' SEO title 
 
 def build():
     if not os.path.exists("/tmp/target.json"): return print("no target today")
+    note = lambda x: open("/tmp/outcome.txt", "w", encoding="utf-8").write(x)
     tg = json.load(open("/tmp/target.json", encoding="utf-8")); kind = tg["kind"]
     ev = open("/tmp/rea-evidence.txt", encoding="utf-8").read()[:12000] if os.path.exists("/tmp/rea-evidence.txt") else ""
     spec = llm("SPEC. Write a BEHAVIOR SPEC ONLY for ONE feature ('%s') of the product '%s', from its observable public behavior "
                "(the evidence below may be empty; then use general knowledge of what such a feature does). "
                'Return ONLY JSON {"purpose":"","inputs":[],"outputs":[],"rules":[],"edge_cases":[],"formats":[]}. '
                "No source code, no copied text, no brand names, no assets.\nEVIDENCE:\n%s" % (tg.get("feature", ""), tg["name"], ev))
-    if not spec: return print("no spec")
+    if not spec: note("failed|فشل كتابة وصف السلوك (نداء النموذج)"); return print("no spec")
     if kind == "app":
         rules = ('Build ONE original free client-side APP written in ' + SRC + ' (all visible text) (editor/planner/tracker/timer/canvas...) in vanilla JS: body_html has the markup with ids '
                  '(label/input/select/textarea/button/canvas, wrap results in <div class="out" id="out">), NO <script>/<style>/<link>/on* attributes/external URLs; '
@@ -101,7 +103,34 @@ def build():
         if not r: break
         fb = problem(r, kind, tg)
         if not fb:
-            json.dump(r, open("/tmp/tool.json", "w"), ensure_ascii=False); return print("ready:", kind, r["slug"])
-    print("no valid result today:", fb)
+            json.dump(r, open("/tmp/tool.json", "w"), ensure_ascii=False); note("built|%s|%s" % (kind, r["slug"])); return print("ready:", kind, r["slug"])
+    note("failed|لم تنجح 3 محاولات بناء: " + str(fb)[:150]); print("no valid result today:", fb)
 
-if __name__ == "__main__": {"pick": pick, "build": build}[sys.argv[1]]()
+
+def tg_send(text):
+    tok, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
+    if not (tok and chat): return print("telegram: secrets TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID missing, report skipped")
+    try:
+        body = json.dumps({"chat_id": chat, "text": text[:3900], "disable_web_page_preview": True}).encode()
+        urllib.request.urlopen(urllib.request.Request("https://api.telegram.org/bot%s/sendMessage" % tok, body, {"Content-Type": "application/json"}), timeout=30).read()
+        print("telegram: report sent")
+    except Exception as e: print("telegram failed:", type(e).__name__)
+
+def report():
+    rd = lambda f: open(f, encoding="utf-8").read().strip() if os.path.exists(f) else ""
+    lines = ["🔎 تقرير REA Scout — " + dt.date.today().isoformat()]
+    if os.path.exists("/tmp/target.json"):
+        tg = json.load(open("/tmp/target.json", encoding="utf-8"))
+        size = os.path.getsize("/tmp/rea-evidence.txt") if os.path.exists("/tmp/rea-evidence.txt") else 0
+        lines += ["المنتج المدروس: %s" % tg["name"], "الميزة المعاد بناؤها: %s" % tg.get("feature", ""),
+                  "النوع: " + ("تطبيق" if tg["kind"] == "app" else "أداة"), "الصفحة العامة: %s" % tg["url"],
+                  "REA: " + ("جمع أدلة من الصفحة (%d بايت)" % size if size > 200 else "لم يجمع أدلة، اعتمد الوصف على معرفة النموذج")]
+        o = rd("/tmp/outcome.txt").split("|")
+        if o[0] == "built":
+            lines.append(("✅ بُني «%s» وسُلّم إلى مسار " % o[2] + ("add-app" if o[1] == "app" else "trend-pages") + " للنشر") if rd("/tmp/dispatched.txt") else "⚠️ بُني «%s» لكن فشل تسليمه للنشر" % o[2])
+            lines.append("ملاحظة: النشر الفعلي يؤكده تشغيل المسار الثاني (فحص المتصفح قد يرفض الصفحة).")
+        else: lines.append("❌ لم يُبنَ شيء: " + (o[1] if len(o) > 1 else "غير معروف"))
+    else: lines.append("❌ لم يُختر منتج اليوم (فشل نداء النموذج، راجع لوج الخطوة 1).")
+    tg_send("\n".join(lines))
+
+if __name__ == "__main__": {"pick": pick, "build": build, "report": report}[sys.argv[1]]()
