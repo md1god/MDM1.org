@@ -1,0 +1,15 @@
+name: Models API probe (diagnostic, manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  models: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/models_probe.py
