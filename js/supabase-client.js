@@ -11,21 +11,17 @@
   window.supabaseLib = lib;
   window.supabase = client;                                        // pages call supabase.from(...) / supabase.auth.* directly
 
-  window.sendMagicLink = function (email) {                          // passwordless sign-in (used by pages/ideas.html)
+  window.sendMagicLink = function (email, meta) {                     // passwordless sign-up / sign-in (join + ideas pages)
+    meta = meta || {};
+    var data = {};
+    if (meta.name) data.name = String(meta.name).trim().slice(0, 80);
+    if (meta.country) data.country = String(meta.country).trim().slice(0, 60);
     return client.auth.signInWithOtp({ email: String(email || "").trim().toLowerCase(),
-      options: { emailRedirectTo: location.origin + location.pathname } });
+      options: { emailRedirectTo: location.origin + location.pathname, data: data } });
   };
   window.signOutMember = function () { return client.auth.signOut(); };
 
   window.getSubscriberCount = async function () {
     try { var r = await client.rpc("subscriber_count"); return r.error ? null : Number(r.data); } catch (e) { return null; }
-  };
-  window.subscribeEmail = async function (email, first, last) {
-    var row = { email: String(email || "").trim().toLowerCase() };
-    if (first) row.first_name = String(first).trim().slice(0, 80);
-    if (last) row.last_name = String(last).trim().slice(0, 80);
-    var r = await client.from("subscribers").insert(row);
-    if (r.error && r.error.code === "23505") return { ok: true, duplicate: true };   // already subscribed
-    return { ok: !r.error, error: r.error ? r.error.message : null };
   };
 })();
