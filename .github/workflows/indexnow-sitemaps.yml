@@ -1,0 +1,19 @@
+name: IndexNow — multilingual sitemap refresh
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'sitemap*.xml'
+      - 'robots.txt'
+      - 'mdm1-indexnow-2026.txt'
+      - 'scripts/indexnow_sitemaps.py'
+permissions:
+  contents: read
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Submit published URLs to IndexNow
+        run: python3 scripts/indexnow_sitemaps.py
