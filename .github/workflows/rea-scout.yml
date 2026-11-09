@@ -23,19 +23,19 @@ jobs:
         with:
           node-version: '22'
 
-      - name: 1) Pick a paid product and one core feature
+      - name: 1) Pick a product and one core feature
         run: python3 scripts/rea_scout.py pick
 
-      - name: 2) REA - observe the public page (best effort)
+      - name: 2) REA - observe the public page (best effort, output kept private)
         continue-on-error: true
         run: |
           test -s /tmp/target.json || exit 0
           URL=$(python3 -c "import json;print(json.load(open('/tmp/target.json'))['url'])")
           (google-chrome --headless=new --no-sandbox --remote-debugging-port=9222 "$URL" >/dev/null 2>&1 &)
           sleep 8
-          npx --yes rea-agents@latest list-browser-targets http://127.0.0.1:9222 --format json > /tmp/targets.json
+          npx --yes rea-agents@latest list-browser-targets http://127.0.0.1:9222 --format json > /tmp/targets.json 2>/tmp/rea.err
           TID=$(python3 -c "import json;d=json.load(open('/tmp/targets.json'));t=d.get('targets',d) if isinstance(d,dict) else d;print(t[0].get('id') or t[0].get('targetId'))")
-          npx --yes rea-agents@latest analyze-web-bundle http://127.0.0.1:9222 "$TID" --detail complete --token-limit 6000 --format md > /tmp/rea-evidence.txt
+          npx --yes rea-agents@latest analyze-web-bundle http://127.0.0.1:9222 "$TID" --detail complete --token-limit 6000 --format md > /tmp/rea-evidence.txt 2>>/tmp/rea.err
 
       - name: 3) Spec, then build from the spec only, with the repo's own gates
         run: python3 scripts/rea_scout.py build
@@ -49,3 +49,11 @@ jobs:
           else
             gh workflow run trend-pages.yml -f tool_json="$(cat /tmp/tool.json)"
           fi
+          echo ok > /tmp/dispatched.txt
+
+      - name: 5) Daily report to Telegram (the only place the studied product is named)
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/rea_scout.py report
