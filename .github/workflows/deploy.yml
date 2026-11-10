@@ -38,6 +38,7 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site
+          # Exclude legacy media kept in git for reference but not linked by any page or script.
           rsync -a --delete \
             --exclude='.git/' \
             --exclude='.github/' \
@@ -54,6 +55,19 @@ jobs:
             --exclude='/*.opus' \
             --exclude='__pycache__/' \
             --exclude='*.bak' \
+            --exclude='/audio/18.mp3' \
+            --exclude='/audio/19.mp3' \
+            --exclude='/images/bridge-civilization.png' \
+            --exclude='/images/icon_large.png' \
+            --exclude='/images/icon_medium.png' \
+            --exclude='/images/bearer.png' \
+            --exclude='/images/confrontation.png' \
+            --exclude='/images/hero-eye.jpg' \
+            --exclude='/images/android-chrome-192x192.png' \
+            --exclude='/images/android-chrome-512x512.png' \
+            --exclude='/images/icon_32.png' \
+            --exclude='/images/icon_48.png' \
+            --exclude='/images/md1usd-icon.svg' \
             ./ _site/
           # Pages' "syncing_files" step times out on very large artifacts, so report the size on every run.
           echo "Artifact size: $(du -sh _site | cut -f1) in $(find _site -type f | wc -l) files"
