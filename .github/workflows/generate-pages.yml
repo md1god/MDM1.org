@@ -27,7 +27,7 @@ on:
         type: string
 
 concurrency:
-  group: pages
+  group: generate-pages
   cancel-in-progress: false
 jobs:
   generate-pages:
@@ -35,8 +35,7 @@ jobs:
 
     permissions:
       contents: write
-      pages: write
-      id-token: write
+      actions: write   # lets the last step start deploy.yml (pushes made with GITHUB_TOKEN do not trigger it)
 
     steps:
       - name: ✅ Checkout Repository
@@ -68,6 +67,7 @@ jobs:
           fi
 
       - name: 🚀 Commit and Push
+        id: push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "MD1 Bot"
@@ -75,25 +75,21 @@ jobs:
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "🆕 إضافة صفحة جديدة - $(date +%Y-%m-%d\ %H:%M:%S)"
             git pull --rebase origin main
             git push origin HEAD:main
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # هنا السر: النشر بيحصل داخل نفس التشغيلة، بعد التأكد إن الـ push خلص فعليًا،
-      # فمفيش سباق بين توليد الصفحة والنشر — النشر دايمًا بياخد آخر نسخة فيها الصفحة الجديدة
-      - name: 🧭 Add menu button and share card (deployed copy only, same as deploy.yml)
-        run: python3 scripts/inject_menu_and_card.py --write
-
-      - name: 📦 Prepare Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: 🌐 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # النشر بيتم في deploy.yml فقط (artifact نظيف + فحص الجودة + صفحات الألعاب + طبقة 3D).
+      # كان هذا الـ workflow ينشر نسخة مختلفة بنفسه (المستودع كله) فيتعارض مع deploy.yml ويفشل بـ "Deployment cancelled".
+      - name: 🚀 Trigger site deploy
+        if: steps.push.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
 
       - name: 📢 Log Status
         run: |

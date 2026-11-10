@@ -54,7 +54,7 @@ The bundle (`js/mdm1-3d.js`, three.js included) is committed so CI stays a plain
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the catalog, assistant, translations and accessibility. For a launch-oriented overview, see [the global growth playbook](docs/GLOBAL-GROWTH-PLAYBOOK.md).
+See [docs/REPO-STRUCTURE.md](docs/REPO-STRUCTURE.md) for the folder layout and how publishing works, and [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the catalog, assistant, translations and accessibility. For a launch-oriented overview, see [the global growth playbook](docs/GLOBAL-GROWTH-PLAYBOOK.md).
 
 ## Main routes
 
