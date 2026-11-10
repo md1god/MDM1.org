@@ -1,0 +1,50 @@
+name: 🗂️ Reorganize language folders (one-time)
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: i18n
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: ✅ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 🗂️ Move the 50 folders into languages/ and patch build-i18n.js + deploy.yml
+        run: python3 scripts/reorganize_languages.py
+
+      - name: 🔍 Verify the generator works in the new place
+        run: |
+          git add -A
+          node scripts/build-i18n.js
+          test "$(ls -d languages/*/ | wc -l)" = "50"
+          for c in en fr zh-tw; do test ! -d "$c"; done
+          test -f sitemap-i18n.xml
+          git diff --stat -- languages sitemap-i18n.xml | tail -1 || true
+
+      - name: 🚀 Commit and deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "MD1 Bot"
+          git config user.email "action@github.com"
+          git add -A
+          git commit -m "🗂️ Move language folders into languages/ (public URLs unchanged)"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run deploy.yml --ref main
