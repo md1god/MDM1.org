@@ -17,10 +17,16 @@ except Exception as e: print("raw /models failed:", type(e).__name__, str(e)[:20
 free = L.free_models()
 print("free models now (%d): %s" % (len(free), free))
 ok = 0
+quota_exhausted = False
 for m in free:
-    if L._cache["zen_off"]: print("  skipped (free quota exhausted): " + m); continue
+    if L._cache["zen_off"]:
+        quota_exhausted = True
+        print("  skipped (free quota exhausted): " + m)
+        continue
     txt = L._call(L.ZEN + "/chat/completions", {"Authorization": "Bearer " + os.environ["OPENCODE_API_KEY"], "Content-Type": "application/json"},
                   m, 'Reply with exactly this JSON: {"ok": true}', 50, 0, False)
     print("  %-34s -> %s" % (m, "OK " + repr(txt[:60]) if txt else "FAILED (see warning above)")); ok += bool(txt)
 print("working free models: %d of %d" % (ok, len(free)))
-sys.exit(0 if ok else 1)
+if quota_exhausted:
+    print("OpenCode free quota is exhausted; this diagnostic is informational and does not fail the workflow.")
+sys.exit(0 if ok or quota_exhausted else 1)
