@@ -104,6 +104,8 @@ try:
     import descriptor_filter as _df   # keeps pages language-neutral (see scripts/descriptor_filter.py)
 except Exception:
     _df = None
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import llm as LLM
 
 def wr(path, s):
     if _df and isinstance(s, str) and path.endswith((".html", ".json", ".xml", ".md", ".txt")): s = _df.clean(s)
@@ -192,14 +194,7 @@ def ask(cands, must=False, feedback=""):
     msg = PROMPT + "\n".join(f"- {c['id']} | {c['name']} | {c['desc'][:260]}" for c in cands)
     if must: msg += "\nYou MUST pick the candidate above and build it (never return null)."
     if feedback: msg += "\nYour previous answer was rejected because: " + feedback + ". Fix exactly that and return the full JSON again."
-    for m in MODELS:
-        try:
-            body = json.dumps({"model": m, "temperature": 0.4, "max_tokens": 6500, "response_format": {"type": "json_object"}, "messages": [{"role": "user", "content": msg}]}).encode()
-            r = urllib.request.Request("https://models.github.ai/inference/chat/completions", body, {"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"], "Content-Type": "application/json"})
-            return json.loads(json.load(urllib.request.urlopen(r, timeout=180))["choices"][0]["message"]["content"])
-        except urllib.error.HTTPError as e: print(f"::warning::{m}: HTTP {e.code} {e.read()[:200]}")
-        except Exception as e: print(f"::warning::{m}: {e}")
-    return None
+    return LLM.chat_json(msg, max_tokens=6500, temperature=0.4)   # OpenCode Zen free models first, GitHub Models as fallback (scripts/llm.py)
 
 def validate(r, cands, d):
     c = next((x for x in cands if x["id"] == r.get("pick")), None)
