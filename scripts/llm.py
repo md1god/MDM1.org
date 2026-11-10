@@ -16,7 +16,7 @@ GH_MODELS = ["openai/gpt-4.1", "openai/gpt-4.1-mini", "openai/gpt-4o"]
 # Free ids on Zen end with -free; big-pickle is the one free model without the suffix. Anything else is never called (it may bill).
 FREE_PAT = re.compile(r"(-free$)|(^big-pickle$)")
 PREFER = ("deepseek", "minimax", "qwen", "nemotron", "mimo", "glm", "big-pickle")   # soft order only; unknown free ids still get tried
-_cache = {"free": None, "dead": set()}
+_cache = {"free": None, "dead": set(), "zen_off": False}   # zen_off: the free quota is exhausted, skip Zen for the rest of this run
 LAST = {"code": None}   # HTTP status of the most recent failed call; None after a success (lets callers detect 429 and stop early)
 
 
@@ -56,7 +56,9 @@ def _call(url, headers, model, prompt, max_tokens, temperature, json_mode):
         return txt
     except urllib.error.HTTPError as e:
         LAST["code"] = e.code
-        print("::warning::", model, "HTTP", e.code, e.read()[:200])
+        body = e.read()
+        print("::warning::", model, "HTTP", e.code, body[:200])
+        if e.code == 429 and b"FreeUsageLimit" in body and url.startswith(ZEN): _cache["zen_off"] = True   # account/network free quota gone: every free model will say the same
         if e.code in (401, 402, 403, 404): _cache["dead"].add(model)   # not free anymore / not allowed / gone: stop retrying it this run
         return None
     except Exception as e:
@@ -65,14 +67,15 @@ def _call(url, headers, model, prompt, max_tokens, temperature, json_mode):
 
 def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
     key = os.environ.get("OPENCODE_API_KEY", "").strip()
-    if key:
+    if key and not _cache["zen_off"]:
         h = {"Authorization": "Bearer " + key, "Content-Type": "application/json"}
         for m in free_models():
             if m in _cache["dead"]: continue
+            if _cache["zen_off"]: break
             for fmt in ((True, False) if json_mode else (False,)):   # some models reject response_format: retry without it
                 txt = _call(ZEN + "/chat/completions", h, m, prompt, max_tokens, temperature, fmt)
                 if txt and txt.strip(): return txt
-                if m in _cache["dead"]: break
+                if m in _cache["dead"] or _cache["zen_off"]: break
     tok = os.environ.get("GITHUB_TOKEN", "")
     if tok:
         h = {"Authorization": "Bearer " + tok, "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
