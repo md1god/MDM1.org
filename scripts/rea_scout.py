@@ -5,6 +5,7 @@ stage 2 builds an original page from that spec alone. The studied product is nam
 import contextlib, datetime as dt, io, json, os, re, sys, urllib.error, urllib.request
 sys.path.insert(0, os.path.dirname(__file__))
 import trend_pages as T
+import llm as LLM
 
 # Source language of the generated pages. The site's own pipeline requires it: its validators reject pages with no Arabic text,
 # and the new multilingual publisher (scripts/intl_tools.py) then translates them. Change it in ONE place only if that changes.
@@ -14,23 +15,7 @@ LIMIT = 55000   # GitHub caps workflow_dispatch inputs at ~65k characters in tot
 def llm(msg):
     if os.environ.get("REA_MOCK"):   # offline test hook
         return json.load(open(os.environ["REA_MOCK"], encoding="utf-8")).get({"PICK": "pick", "SPEC": "spec"}.get(msg[:4], "tool"))
-    url = os.environ.get("REA_API_URL", "https://models.github.ai/inference/chat/completions")
-    for m in ["openai/gpt-4.1", "openai/gpt-4.1-mini"] + T.MODELS:
-        for fmt in (True, False):   # some models blank/reject response_format: retry without it
-            body = {"model": m, "temperature": 0.4, "max_tokens": 9000, "messages": [{"role": "user", "content": msg}]}
-            if fmt: body["response_format"] = {"type": "json_object"}
-            try:
-                r = urllib.request.Request(url, json.dumps(body).encode(), {"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
-                    "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
-                raw = urllib.request.urlopen(r, timeout=180).read().decode("utf-8", "replace")
-                try: txt = json.loads(raw)["choices"][0]["message"]["content"]
-                except Exception: print("::warning::", m, "bad body:", repr(raw[:120]) if raw.lstrip()[:1] in ("<", "") else "len=%d" % len(raw)); continue
-                txt = re.sub(r"^```(?:json)?|```$", "", (txt or "").strip()).strip()
-                try: return json.loads(txt)
-                except Exception: print("::warning::", m, "not JSON, len=%d" % len(txt))
-            except urllib.error.HTTPError as e: print("::warning::", m, "HTTP", e.code, e.read()[:300])
-            except Exception as e: print("::warning::", m, repr(e))
-    return None
+    return LLM.chat_json(msg, max_tokens=9000, temperature=0.4)   # OpenCode Zen free models first, GitHub Models as fallback (scripts/llm.py)
 
 def app_slugs():
     try: return {a["slug"] for a in json.load(open("data/apps.json", encoding="utf-8"))["apps"]}

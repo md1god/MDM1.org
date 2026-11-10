@@ -5,6 +5,8 @@ Source pages stay Arabic (the site's source language); every page is translated 
 element ids and JavaScript logic are never rewritten - only visible text. Names of studied products never appear here."""
 import datetime as dt, hashlib, html, json, os, re, subprocess, sys, tempfile, urllib.error, urllib.request
 from pathlib import Path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import llm as LLM
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGIN = "https://mdm1.org"
@@ -19,29 +21,17 @@ MAX_CALLS = int(os.environ.get("INTL_MAX_CALLS", "80"))
 MODELS = ["openai/gpt-4.1-mini", "openai/gpt-4o-mini", "openai/gpt-4.1"]
 STATE = {"calls": 0, "stop": ""}
 
-# ---------------------------------------------------------------- model call (GitHub Models, same endpoint the repo already uses)
+# ---------------------------------------------------------------- model call (OpenCode Zen free models first, GitHub Models fallback: scripts/llm.py)
 def translate(segs, lang_name):
     if os.environ.get("INTL_MOCK"): return ["[%s] %s" % (lang_name[:2], re.sub(r"[\u0600-\u06FF]+", "x", s)) for s in segs]
     prompt = ("Translate these user-interface strings from Arabic to %s. Natural, concise wording for a free web tool. Keep numbers, emojis, punctuation, "
               "and any {placeholders} or %%s unchanged. Do not add brand names. Return ONLY JSON {\"t\": [...]} with exactly %d strings in the same order.\n"
               % (lang_name, len(segs))) + json.dumps(segs, ensure_ascii=False)
-    for m in MODELS:
-        for fmt in (True, False):
-            body = {"model": m, "temperature": 0.2, "max_tokens": 4000, "messages": [{"role": "user", "content": prompt}]}
-            if fmt: body["response_format"] = {"type": "json_object"}
-            try:
-                r = urllib.request.Request("https://models.github.ai/inference/chat/completions", json.dumps(body).encode(),
-                    {"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"], "Content-Type": "application/json",
-                     "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
-                raw = urllib.request.urlopen(r, timeout=180).read().decode("utf-8", "replace")
-                txt = json.loads(raw)["choices"][0]["message"]["content"]
-                txt = re.sub(r"^```(?:json)?|```$", "", (txt or "").strip()).strip()
-                out = json.loads(txt)["t"]
-                if isinstance(out, list) and len(out) == len(segs) and all(isinstance(x, str) and x.strip() for x in out): return out
-            except urllib.error.HTTPError as e:
-                print("::warning::", m, "HTTP", e.code)
-                if e.code == 429: STATE["stop"] = "حد استخدام النماذج (429)"; return None
-            except Exception as e: print("::warning::", m, type(e).__name__)
+    for _ in range(2):   # a reply with the wrong number of strings is retried once
+        r = LLM.chat_json(prompt, max_tokens=4000, temperature=0.2)
+        out = r.get("t") if isinstance(r, dict) else None
+        if isinstance(out, list) and len(out) == len(segs) and all(isinstance(x, str) and x.strip() for x in out): return out
+        if r is None and LLM.LAST["code"] == 429: STATE["stop"] = "حد استخدام النماذج (429)"; return None
     return None
 
 # ---------------------------------------------------------------- parse a source page into segments + template

@@ -1,0 +1,15 @@
+name: OpenCode probe (diagnostic, manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: List free models and send one test message to each
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+        run: python3 scripts/opencode_probe.py
