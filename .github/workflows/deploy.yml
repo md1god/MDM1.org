@@ -33,10 +33,23 @@ jobs:
       - name: 🧭 Add menu button and share card to every page (deployed copy only)
         run: python3 scripts/inject_menu_and_card.py --write
 
+      - name: 🧹 Build a clean static artifact
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='docs/' \
+            --exclude='README.md' \
+            --exclude='CONTRIBUTING.md' \
+            --exclude='_site/' \
+            ./ _site/
+
       - name: 📦 Prepare Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'   # رفع كامل ملفات المستودع للنشر المباشر
+          path: '_site'
 
       - name: 🌐 Deploy
         id: deployment
