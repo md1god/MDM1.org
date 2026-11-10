@@ -20,6 +20,7 @@ const SITE = JSON.parse(fs.readFileSync(path.join(ROOT, 'i18n/site.json'), 'utf8
 const LANGS = Object.keys(SITE.langs);
 const OG_IMAGE = ORIGIN + '/images/md111-token.png';
 const MARK = '.i18n-generated';
+const LANG_DIR = 'languages';   // all generated language folders live here; deploy.yml flattens them back to /{lang}/ so public URLs never change
 
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const exists = f => fs.existsSync(path.join(ROOT, f));
@@ -34,7 +35,7 @@ const langName = c => (c === 'ar' ? 'AR' : SITE.langs[c].name);   // الموق�
 
 // ───────────── 1) تنظيف ما ولّدناه سابقًا (لا نلمس مجلدًا لم يُنشأ من هذا السكربت)
 for (const c of LANGS) {
-  const dir = path.join(ROOT, c);
+  const dir = path.join(ROOT, LANG_DIR, c);
   if (!fs.existsSync(dir)) continue;
   if (!fs.existsSync(path.join(dir, MARK))) throw new Error(`المجلد /${c}/ موجود ولم يُنشأ بهذا السكربت — رفضت الكتابة فوقه`);
   fs.rmSync(dir, { recursive: true, force: true });
@@ -176,7 +177,7 @@ ${langNav(o.alts)}
 }
 
 function write(rel, content) {
-  const f = path.join(ROOT, rel);
+  const f = path.join(ROOT, rel.includes('/') ? path.join(LANG_DIR, rel) : rel);   // root files (sitemap-i18n.xml) stay at the root
   fs.mkdirSync(path.dirname(f), { recursive: true });
   fs.writeFileSync(f, content, 'utf8');
 }
