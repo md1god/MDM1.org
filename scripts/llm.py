@@ -21,7 +21,8 @@ LAST = {"code": None}   # HTTP status of the most recent failed call; None after
 
 
 def _http(url, body=None, headers=None, timeout=180):
-    req = urllib.request.Request(url, json.dumps(body).encode() if body is not None else None, headers or {}, method="POST" if body is not None else "GET")
+    h = {"User-Agent": "mdm1-pipeline/1.0 (+https://mdm1.org)", **(headers or {})}   # a bare Python-urllib agent is blocked by some CDNs (403)
+    req = urllib.request.Request(url, json.dumps(body).encode() if body is not None else None, h, method="POST" if body is not None else "GET")
     return urllib.request.urlopen(req, timeout=timeout).read().decode("utf-8", "replace")
 
 
@@ -35,6 +36,7 @@ def free_models():
             ids = [m.get("id", "") for m in data.get("data", data if isinstance(data, list) else [])]
             ids = [i for i in ids if FREE_PAT.search(i)]
             ids.sort(key=lambda i: next((n for n, p in enumerate(PREFER) if p in i), len(PREFER)))
+        except urllib.error.HTTPError as e: print("::warning::zen model list failed: HTTP", e.code, e.read()[:200])
         except Exception as e: print("::warning::zen model list failed:", type(e).__name__, str(e)[:120])
     _cache["free"] = ids
     return ids
