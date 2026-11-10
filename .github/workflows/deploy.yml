@@ -57,7 +57,14 @@ jobs:
             ./ _site/
           # Pages' "syncing_files" step times out on very large artifacts, so report the size on every run.
           echo "Artifact size: $(du -sh _site | cut -f1) in $(find _site -type f | wc -l) files"
-
+          
+      - name: 🗂️ Flatten languages/ back to /{lang}/ (public URLs never change)
+        run: |
+          if [ -d _site/languages ]; then
+            cp -a _site/languages/. _site/
+            rm -rf _site/languages
+          fi
+          
       - name: 📦 Prepare Pages
         uses: actions/upload-pages-artifact@v3
         with:
