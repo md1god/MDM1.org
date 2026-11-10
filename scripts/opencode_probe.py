@@ -5,6 +5,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import llm as L
 
 print("OPENCODE_API_KEY present:", bool(os.environ.get("OPENCODE_API_KEY")))
+try:   # raw view of what Zen returns, so a changed naming scheme for free models is visible
+    raw = json.loads(L._http(L.ZEN + "/models", headers={"Authorization": "Bearer " + os.environ.get("OPENCODE_API_KEY", "")}, timeout=60))
+    items = raw.get("data", raw) if isinstance(raw, dict) else raw
+    print("zen /models: %d items, first item keys: %s" % (len(items), sorted(items[0].keys()) if items and isinstance(items[0], dict) else items[:1]))
+    print("all ids:", [m.get("id") if isinstance(m, dict) else m for m in items])
+except Exception as e: print("raw /models failed:", type(e).__name__, str(e)[:200])
 free = L.free_models()
 print("free models now (%d): %s" % (len(free), free))
 ok = 0
