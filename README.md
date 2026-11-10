@@ -58,7 +58,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the cata
 | Platform | https://mdm1.org/hub.html |
 | White paper | https://mdm1.org/whitepaper.html |
 
-## العربية
+##
 
 MDM1.org بوابة عالمية لاكتشاف البرمجيات والتطبيقات والأدوات والألعاب والمشاريع. تحتوي على مساعد شخصي مجاني يعمل داخل المتصفح، ووضع ذكاء اصطناعي محلي اختياري عبر WebGPU، ومختبر لتوليد أكواد HTML وJavaScript وPython وSQL. نرحب بإضافات الأدوات، الترجمات، تحسينات سهولة الاستخدام، والإبلاغ عن الأخطاء.
 
