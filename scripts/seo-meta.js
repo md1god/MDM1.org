@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ORIGIN = 'https://mdm1.org';
-const OG_IMAGE = `${ORIGIN}/images/md111-token.png`;
+const OG_IMAGE = `${ORIGIN}/images/og-card.jpg`;
 
 function esc(v) {
   return String(v ?? '').replace(/[&<>"']/g, ch => ({
@@ -22,7 +22,16 @@ function clip(text, max) {
 // يبني كتلة <head> الخاصة بالسيو لصفحة واحدة
 function seoHead({ title, description, urlPath, isoDate, noindex }) {
   const url = `${ORIGIN}${urlPath}`;
-  if (noindex) return '  <meta name="robots" content="noindex,follow">\n';
+  if (noindex) return [
+    '  <meta name="robots" content="noindex,follow">',
+    `  <meta property="og:image" content="${OG_IMAGE}">`,
+    '  <meta property="og:image:type" content="image/jpeg">',
+    '  <meta property="og:image:width" content="1200">',
+    '  <meta property="og:image:height" content="630">',
+    `  <meta name="twitter:image" content="${OG_IMAGE}">`,
+    '  <meta name="twitter:card" content="summary_large_image">',
+    ''
+  ].join('\n');
   const desc = clip(description, 155);
   const date = isoDate || new Date().toISOString();
   const ld = {
@@ -48,6 +57,10 @@ function seoHead({ title, description, urlPath, isoDate, noindex }) {
     `  <meta property="og:description" content="${esc(desc)}">`,
     `  <meta property="og:url" content="${url}">`,
     `  <meta property="og:image" content="${OG_IMAGE}">`,
+    '  <meta property="og:image:type" content="image/jpeg">',
+    '  <meta property="og:image:width" content="1200">',
+    '  <meta property="og:image:height" content="630">',
+    `  <meta name="twitter:image" content="${OG_IMAGE}">`,
     `  <meta name="twitter:card" content="summary_large_image">`,
     `  <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`,
     ''

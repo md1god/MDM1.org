@@ -18,7 +18,7 @@ const { findProblems, findBodyProblems } = require('./page_quality');
 const ROOT = path.resolve(__dirname, '..');
 const SITE = JSON.parse(fs.readFileSync(path.join(ROOT, 'i18n/site.json'), 'utf8'));
 const LANGS = Object.keys(SITE.langs);
-const OG_IMAGE = ORIGIN + '/images/md111-token.png';
+const OG_IMAGE = ORIGIN + '/images/og-card.jpg';
 const MARK = '.i18n-generated';
 const LANG_DIR = 'languages';   // all generated language folders live here; deploy.yml flattens them back to /{lang}/ so public URLs never change
 

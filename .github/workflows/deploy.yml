@@ -34,6 +34,22 @@ jobs:
       - name: 🧭 Add menu button and share card to every page (deployed copy only)
         run: python3 scripts/inject_menu_and_card.py --write
 
+      - name: 🔎 Verify logo card coverage
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('.')
+          missing = []
+          for page in root.rglob('*.html'):
+              if '.git' in page.parts or 'archive' in page.parts or 'node_modules' in page.parts:
+                  continue
+              if 'https://mdm1.org/images/og-card.jpg' not in page.read_text(encoding='utf-8'):
+                  missing.append(str(page))
+          if missing:
+              raise SystemExit('logo card missing from: ' + ', '.join(missing[:20]))
+          print(f'Logo card verified on {len(list(root.rglob("*.html")))} HTML files')
+          PY
+
       - name: 🧹 Build a clean static artifact
         run: |
           rm -rf _site
@@ -57,11 +73,25 @@ jobs:
             --exclude='*.bak' \
             --exclude='/audio/18.mp3' \
             --exclude='/audio/19.mp3' \
+            --exclude='/images/dark-creature.png' \
+            --exclude='/images/gold-coin-mdm.png' \
+            --exclude='/images/hero-mountain.png' \
+            --exclude='/images/hero.png' \
+            --exclude='/images/img_global_team.png' \
+            --exclude='/images/img_heaven_hell.png' \
+            --exclude='/images/img_lone_walker.png' \
+            --exclude='/images/img_mdm1_gate.png' \
+            --exclude='/images/img_quran_egypt.png' \
+            --exclude='/images/magic-book-cave.png' \
+            --exclude='/images/md1$.png' \
+            --exclude='/images/md111-token.png' \
+            --exclude='/images/mdm1-assistant-orbit.png' \
+            --exclude='/images/white-owl.png' \
             --exclude='/images/bridge-civilization.png' \
-            --exclude='/images/icon_large.png' \
+            --exclude='/images/icon_large.webp' \
             --exclude='/images/icon_medium.png' \
-            --exclude='/images/bearer.png' \
-            --exclude='/images/confrontation.png' \
+            --exclude='/images/bearer.webp' \
+            --exclude='/images/confrontation.webp' \
             --exclude='/images/hero-eye.jpg' \
             --exclude='/images/android-chrome-192x192.png' \
             --exclude='/images/android-chrome-512x512.png' \
