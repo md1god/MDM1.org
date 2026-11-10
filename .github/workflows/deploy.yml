@@ -17,6 +17,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,8 +44,19 @@ jobs:
             --exclude='docs/' \
             --exclude='README.md' \
             --exclude='CONTRIBUTING.md' \
+            --exclude='SECURITY.md' \
             --exclude='_site/' \
+            --exclude='/scripts/' \
+            --exclude='/supabase/' \
+            --exclude='/archive/' \
+            --exclude='/build-pages.js' \
+            --exclude='/build-state.json' \
+            --exclude='/*.opus' \
+            --exclude='__pycache__/' \
+            --exclude='*.bak' \
             ./ _site/
+          # Pages' "syncing_files" step times out on very large artifacts, so report the size on every run.
+          echo "Artifact size: $(du -sh _site | cut -f1) in $(find _site -type f | wc -l) files"
 
       - name: 📦 Prepare Pages
         uses: actions/upload-pages-artifact@v3
@@ -54,3 +66,7 @@ jobs:
       - name: 🌐 Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000
+          error_count: 20
+          reporting_interval: 15000
