@@ -41,6 +41,17 @@ python3 -m http.server 4174
 
 The optional local model is loaded from the official WebLLM CDN only after the visitor clicks the model button. Do not add API keys or private credentials to this repository.
 
+## Interactive 3D layer
+
+Every page gets a WebGL layer at deploy time (`scripts/inject_menu_and_card.py` adds `/css/mdm1-3d.css` and `/js/mdm1-3d.js`; source files stay untouched):
+
+- **Ambient scene:** a 3D golden galaxy and a spinning MDM1 token that follow the pointer / device tilt and travel with the scroll.
+- **Gateways:** on the home page of every language, an orbit of planets built from the page's own links. Drag to rotate, click a planet to enter. A plain link list is always rendered below it.
+- **Cards and reveal:** 3D tilt on hover and 3D scroll reveal.
+- **Safety:** a `3D` toggle button (remembered), plus automatic fallbacks for reduced-motion, data-saver, low-memory devices, no WebGL, and the local-LLM assistant page.
+
+The bundle (`js/mdm1-3d.js`, three.js included) is committed so CI stays a plain static publish. To change it, edit `scripts/3d/mdm1-3d.src.js` and run `cd scripts/3d && npm install && npm run build`. To preview locally with the layer, copy the repo to a scratch folder, run `python3 scripts/inject_menu_and_card.py --root <copy> --write`, then serve that copy.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the catalog, assistant, translations and accessibility. For a launch-oriented overview, see [the global growth playbook](docs/GLOBAL-GROWTH-PLAYBOOK.md).

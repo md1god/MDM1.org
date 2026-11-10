@@ -11,6 +11,7 @@ Run in CI right before the Pages artifact is uploaded:  python3 scripts/inject_m
 from __future__ import annotations
 
 import argparse
+import hashlib
 import posixpath
 import re
 import sys
@@ -30,6 +31,13 @@ MUSIC_CSS = ("<style>#music-btn{position:fixed;bottom:5rem;left:1.5rem;z-index:9
 MUSIC_HTML = ('<audio id="bg-music" loop preload="none"><source src="' + DEFAULT_TRACK + '" type="audio/mpeg"></audio>\n'
               '<button id="music-btn" title="تشغيل / إيقاف الموسيقى" style="display:none">🔇</button>\n')
 GENERIC_NAV_RULE = re.compile(r'(^|[};,\s>])nav\s*[{,]')
+HAS_3D = re.compile(r'js/mdm1-3d\.js', re.I)
+
+
+def asset_version(root: Path, rel: str) -> str:
+    """Short content hash so browsers never keep a stale copy of the 3D layer."""
+    f = root / rel
+    return hashlib.sha1(f.read_bytes()).hexdigest()[:8] if f.is_file() else "0"
 
 
 def extract_homepage_menu(root: Path) -> dict[str, str]:
@@ -72,7 +80,7 @@ def card_tags(text: str) -> tuple[str, list[str]]:
     return text, tags
 
 
-def transform(text: str, menu: dict[str, str]) -> str:
+def transform(text: str, menu: dict[str, str], v3d: tuple[str, str] | None = None) -> str:
     # A bare, never-closed <nav> right before another <nav> swallows the whole page (and a fixed button with it).
     if len(re.findall(r"<nav\b", text, re.I)) > len(re.findall(r"</nav>", text, re.I)):
         text = re.sub(r"<nav>\s*(?=<nav\b)", "", text, count=1, flags=re.I)
@@ -102,6 +110,10 @@ def transform(text: str, menu: dict[str, str]) -> str:
     if "js/lang.js" not in text:      # site-wide world-language picker (also extends pages that have their own #lang-select)
         pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
         text = text[:pos] + '<script src="/js/lang.js" defer></script>\n' + text[pos:]
+    if v3d and not HAS_3D.search(text):   # interactive 3D layer: ambient galaxy, gateways, card tilt (see scripts/3d/)
+        pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
+        text = text[:pos] + f'<script type="module" src="/js/mdm1-3d.js?v={v3d[0]}"></script>\n' + text[pos:]
+        head_add.append(f'<link rel="stylesheet" href="/css/mdm1-3d.css?v={v3d[1]}">')
     head_pos = list(re.finditer(r"</\s*head\s*>", text, re.I))[0].start()
     return text[:head_pos] + "\n    " + "\n    ".join(head_add) + "\n" + text[head_pos:]
 
@@ -115,12 +127,15 @@ def main() -> int:
     if not (root / "images/og-card.jpg").is_file():
         raise SystemExit("images/og-card.jpg is missing")
     menu = extract_homepage_menu(root)
+    v3d = None
+    if (root / "js/mdm1-3d.js").is_file() and (root / "css/mdm1-3d.css").is_file():
+        v3d = (asset_version(root, "js/mdm1-3d.js"), asset_version(root, "css/mdm1-3d.css"))
     pages = sorted(p for p in root.rglob("*.html") if ".git" not in p.parts and "node_modules" not in p.parts)
     added = carded = 0
     for p in pages:
         original = p.read_text(encoding="utf-8")
         try:
-            new = transform(original, menu)
+            new = transform(original, menu, v3d)
         except ValueError as exc:
             print(f"skip {p.relative_to(root)}: {exc}", file=sys.stderr)
             continue
@@ -128,7 +143,7 @@ def main() -> int:
         carded += 1
         if args.write and new != original:
             p.write_text(new, encoding="utf-8")
-    print(f"{'written' if args.write else 'dry-run'}: {len(pages)} pages, menu added to {added}, share card on {carded}")
+    print(f"{'written' if args.write else 'dry-run'}: {len(pages)} pages, menu added to {added}, share card on {carded}, 3D layer {'on' if v3d else 'skipped (bundle missing)'}")
     return 0
 
 
