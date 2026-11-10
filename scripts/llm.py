@@ -29,7 +29,7 @@ def _http(url, body=None, headers=None, timeout=180):
 def free_models():
     """Live list of free Zen model ids (cached for the run). Empty list when there is no key or the endpoint is unreachable."""
     if _cache["free"] is not None: return _cache["free"]
-    key, ids = os.environ.get("OPENCODE_API_KEY", ""), []
+    key, ids = os.environ.get("OPENCODE_API_KEY", "").strip(), []
     if key:
         try:
             data = json.loads(_http(ZEN + "/models", headers={"Authorization": "Bearer " + key}, timeout=60))
@@ -64,7 +64,7 @@ def _call(url, headers, model, prompt, max_tokens, temperature, json_mode):
 
 
 def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
-    key = os.environ.get("OPENCODE_API_KEY", "")
+    key = os.environ.get("OPENCODE_API_KEY", "").strip()
     if key:
         h = {"Authorization": "Bearer " + key, "Content-Type": "application/json"}
         for m in free_models():
