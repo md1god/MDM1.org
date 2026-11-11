@@ -142,6 +142,9 @@
 
   .provider-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
   .provider-meta-row label { margin-bottom: 0; }
+  .provider-info { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: rgba(201,168,76,0.04); color: rgba(232,213,163,0.75); font-size: 11px; line-height: 1.7; }
+  .provider-info strong { color: var(--gold-bright); }
+  .provider-info a { color: var(--gold-bright); text-decoration: underline; margin-inline-start: 8px; }
   .get-key-btn {
     background: linear-gradient(135deg, var(--gold), #8b6914); color: #000; border: none;
     padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 900; cursor: pointer;
@@ -311,12 +314,13 @@
 
 <div id="settingsPanel">
   <div class="settings-inner">
-    <div class="security-warning">⚠ المفتاح يتخزن محليًا في متصفحك (localStorage) فقط.</div>
+    <div class="security-warning">⚠ المفتاح يتخزن محليًا في متصفحك (localStorage) فقط. لا تضع مفتاحاً داخل GitHub. النماذج المجانية لها حدود استخدام يحددها المزوّد.</div>
 
     <div class="field">
       <label>اختر الموفّر (Provider)</label>
       <input type="text" id="providerSearch" placeholder="🔍 ابحث عن موفّر..." style="margin-bottom:6px;">
       <select id="providerSelect"></select>
+      <div id="providerInfo" class="provider-info" aria-live="polite"></div>
     </div>
 
     <div class="two-col">
@@ -415,9 +419,9 @@ const PROVIDERS_DB = {
   opencode_zen: {
     paid: true,
     name: "OpenCode Zen",
-    keyUrl: "https://opencode.ai/auth",
+    keyUrl: "https://opencode.ai/console",
     keyPlaceholder: "oc_...",
-    apiBase: "https://opencode.ai/zen/v1",
+    apiBase: "https://opencode.ai/inference/openai/v1",
     authStyle: "bearer",
     models: [
       "claude-fable-5-1","claude-fable-5","claude-opus-5","claude-opus-4-8","claude-opus-4-7","claude-opus-4-6","claude-opus-4-5",
@@ -472,11 +476,11 @@ const PROVIDERS_DB = {
   google: {
     paid: true,
     name: "Google (Gemini)",
-    keyUrl: "https://aistudio.google.com/app/apikey",
+    keyUrl: "https://aistudio.google.com/apikey",
     keyPlaceholder: "AIza...",
     apiBase: "https://generativelanguage.googleapis.com/v1beta/openai",
     authStyle: "bearer",
-    models: ["gemini-3.1-pro","gemini-3-flash","gemini-3.5-flash","gemini-3.5-flash-lite","gemini-2.5-pro","gemini-2.5-flash","gemini-2.0-flash"]
+    models: ["gemini-3.8-flash","gemini-3.7-flash","gemini-3.6-flash","gemini-2.5-flash","gemini-2.5-pro"]
   },
 
   google_vertex: {
@@ -506,7 +510,18 @@ const PROVIDERS_DB = {
     keyPlaceholder: "gsk_...",
     apiBase: "https://api.groq.com/openai/v1",
     authStyle: "bearer",
-    models: ["groq/compound","groq/compound-mini","openai/gpt-oss-120b","openai/gpt-oss-20b","openai/gpt-oss-safeguard-20b","qwen/qwen3.8-27b","qwen/qwen3.6-27b","meta-llama/llama-prompt-guard-2-22m","meta-llama/llama-prompt-guard-2-86m","llama-3.3-70b-versatile","llama-3.1-8b-instant"]
+    models: ["openai/gpt-oss-120b","openai/gpt-oss-20b","llama-3.3-70b-versatile","llama-3.1-8b-instant","qwen/qwen3.8-27b"]
+  },
+
+  openrouter_free: {
+    paid: false,
+    freeTier: true,
+    name: "OpenRouter — نماذج مجانية",
+    keyUrl: "https://openrouter.ai/keys",
+    keyPlaceholder: "sk-or-...",
+    apiBase: "https://openrouter.ai/api/v1",
+    authStyle: "bearer",
+    models: ["openrouter/free", "meta-llama/llama-3.2-3b-instruct:free", "qwen/qwen3-4b:free", "deepseek/deepseek-r1-0528:free"]
   },
 
   openrouter: {
@@ -771,6 +786,19 @@ const PROVIDERS_DB = {
 };
 
 /* ========================= DOM refs ========================= */
+const PROVIDER_NOTES = {
+  openrouter_free: { label: 'مجاني عبر OpenRouter', text: 'نماذج مجانية تتغير تلقائياً. تحتاج مفتاح OpenRouter شخصياً، مع حدود معدل وتوفر حسب المزوّد.', docs: 'https://openrouter.ai/docs/guides/routing/routers/free-router' },
+  openrouter: { label: 'مجاني ومدفوع', text: 'يوحّد مئات النماذج في واجهة واحدة. استخدم نماذج :free أو نماذج مدفوعة حسب حسابك.', docs: 'https://openrouter.ai/docs/api-reference/overview' },
+  opencode_zen: { label: 'مجاني محدود ومدفوع', text: 'يضم نماذج مجانية مؤقتة ونماذج مدفوعة؛ يتطلب التسجيل ومفتاحاً من OpenCode Console.', docs: 'https://opencode.ai/docs/console/models/' },
+  groq: { label: 'خطة مطور بحدود مجانية', text: 'واجهة سريعة متوافقة مع OpenAI. تتغير حدود الاستخدام والنماذج حسب حساب Groq.', docs: 'https://console.groq.com/docs/openai' },
+  google: { label: 'مجاني محدود ومدفوع', text: 'Gemini Developer API يوفر بداية مجانية لبعض النماذج والمناطق، مع حدود استخدام وسياسات بيانات مختلفة.', docs: 'https://aistudio.google.com/docs/pricing' },
+  huggingface: { label: 'مجمّع نماذج — ليس مجانياً دائماً', text: 'يصل إلى نماذج كثيرة عبر Inference Providers. الحساب المجاني لا يضمن أرصدة شهرية؛ تحقق من التسعير قبل الاستخدام.', docs: 'https://huggingface.co/docs/inference-providers/en/pricing' },
+  ollama_local: { label: 'مجاني ومحلي', text: 'يشغّل النماذج على جهازك دون مفتاح أو رسوم؛ يجب تشغيل Ollama وتفعيل الوصول من المتصفح.', docs: 'https://ollama.com/' },
+  lmstudio_local: { label: 'مجاني ومحلي', text: 'خادم محلي متوافق مع OpenAI؛ لا يرسل الطلبات إلى MDM1.', docs: 'https://lmstudio.ai/docs/developer' },
+  llamacpp_local: { label: 'مجاني ومحلي', text: 'اتصال بخادم llama.cpp محلي متوافق مع OpenAI.', docs: 'https://github.com/ggml-org/llama.cpp' },
+  custom: { label: 'مخصص', text: 'أدخل Base URL ونموذج أي خادم OpenAI-compatible تملكه أو تثق به.', docs: 'https://platform.openai.com/docs/api-reference/chat' }
+};
+
 const chatWindow = document.getElementById('chatWindow');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
@@ -778,6 +806,7 @@ const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
 const saveSettingsBtn = document.getElementById('saveSettings');
 const statusLine = document.getElementById('statusLine');
+const providerInfo = document.getElementById('providerInfo');
 
 const providerSelect = document.getElementById('providerSelect');
 const providerSearch = document.getElementById('providerSearch');
@@ -798,14 +827,14 @@ const customModelsList = document.getElementById('customModelsList');
 const addCustomModelBtn = document.getElementById('addCustomModelBtn');
 
 /* ========================= State ========================= */
-let activeProviderId = localStorage.getItem('md1_active_provider') || 'opencode_zen';
+let activeProviderId = localStorage.getItem('md1_active_provider') || 'openrouter_free';
 let providerKeys = JSON.parse(localStorage.getItem('md1_provider_keys') || '{}');
 let providerModels = JSON.parse(localStorage.getItem('md1_provider_models') || '{}');
 let temperature = parseFloat(localStorage.getItem('md1_temperature') || '0.7');
 let customProviderData = JSON.parse(localStorage.getItem('md1_custom_provider') || '{"name":"","baseUrl":"","models":[]}');
 let chatHistory = [];
 
-if (!PROVIDERS_DB[activeProviderId]) activeProviderId = 'opencode_zen';
+if (!PROVIDERS_DB[activeProviderId]) activeProviderId = 'openrouter_free';
 
 /* ========================= Provider / model selects ========================= */
 function populateProviderSelect(filter) {
@@ -863,7 +892,7 @@ function isModelFree(providerId, model) {
   if (p.authStyle === 'none') return true; // سيرفرات محلية بالكامل مجانية
   if (!model) return !p.paid;
   const m = model.toLowerCase();
-  if (m.endsWith('-free') || m.endsWith(':free') || m === 'local-model') return true;
+  if (p.freeTier || m.endsWith('-free') || m.endsWith(':free') || m === 'openrouter/free' || m === 'local-model') return true;
   return !p.paid;
 }
 
@@ -872,9 +901,18 @@ function updatePaidBadge() {
   paidBadge.classList.toggle('hidden', isModelFree(activeProviderId, model));
 }
 
+function updateProviderInfo(providerId) {
+  if (!providerInfo) return;
+  const p = PROVIDERS_DB[providerId] || PROVIDERS_DB.custom;
+  const note = PROVIDER_NOTES[providerId] || { label: p.paid ? 'مدفوع أو حسب الحساب' : 'مجاني', text: 'يدعم طلبات Chat Completions المتوافقة مع OpenAI.', docs: p.keyUrl || '#' };
+  const safe = value => String(value || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  providerInfo.innerHTML = `<strong>${safe(note.label)}</strong> — ${safe(note.text)} <a href="${safe(note.docs)}" target="_blank" rel="noopener">التوثيق ↗</a>`;
+}
+
 function updateKeyFieldsForProvider(providerId) {
   const p = PROVIDERS_DB[providerId];
   if (!p) return;
+  updateProviderInfo(providerId);
   providerKeyInput.value = providerKeys[providerId] || '';
   providerKeyInput.type = 'password';
   keyToggleEye.textContent = '👁';
@@ -957,6 +995,7 @@ providerSelect.addEventListener('change', () => {
   activeProviderId = providerSelect.value;
   populateModelSelect(activeProviderId);
   updateKeyFieldsForProvider(activeProviderId);
+  refreshOpenRouterFreeModels();
 });
 
 providerModelSelect.addEventListener('change', () => {
@@ -997,6 +1036,24 @@ saveSettingsBtn.addEventListener('click', () => {
 
 let statusCheckToken = 0;
 
+async function refreshOpenRouterFreeModels() {
+  if (!['openrouter_free', 'openrouter'].includes(activeProviderId)) return;
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/models', { headers: { Accept: 'application/json' } });
+    if (!res.ok) return;
+    const data = await res.json();
+    const allModels = (data.data || []).filter(m => m.id).map(m => m.id);
+    const free = (data.data || []).filter(m => m.id && (m.id.endsWith(':free') || (m.pricing && String(m.pricing.prompt) === '0' && String(m.pricing.completion) === '0'))).map(m => m.id);
+    const models = activeProviderId === 'openrouter' ? allModels : free;
+    if (models.length) {
+      const base = activeProviderId === 'openrouter_free' ? ['openrouter/free'] : [];
+      PROVIDERS_DB[activeProviderId].models = [...new Set([...base, ...models])].slice(0, 120);
+      populateModelSelect(activeProviderId);
+      updateKeyFieldsForProvider(activeProviderId);
+    }
+  } catch (_) { /* القائمة الثابتة تبقى متاحة عند منع CORS أو انقطاع الشبكة */ }
+}
+
 async function updateStatusLine() {
   const myToken = ++statusCheckToken;
   const p = PROVIDERS_DB[activeProviderId];
@@ -1028,10 +1085,13 @@ async function updateStatusLine() {
 populateProviderSelect();
 populateModelSelect(activeProviderId);
 updateKeyFieldsForProvider(activeProviderId);
+refreshOpenRouterFreeModels();
 tempRange.value = temperature;
 tempVal.textContent = temperature;
 tempLabel.textContent = temperature;
 updateStatusLine();
+
+appendMsg('مرحباً بك في MD1 Chat. اختر مزوّداً من الإعدادات ثم اكتب سؤالك. الوضع الافتراضي هو OpenRouter للنماذج المجانية، ويحتاج مفتاحك الشخصي المخزن محلياً.', 'bot');
 
 /* ========================= Particles (نجوم متطايرة) ========================= */
 (function initParticles(){
@@ -1173,6 +1233,7 @@ async function callProvider(providerId, apiKey, model, messages, temp) {
   }
 
   const headers = { 'Content-Type': 'application/json' };
+  if (providerId === 'openrouter' || providerId === 'openrouter_free') { headers['HTTP-Referer'] = 'https://mdm1.org/chat.html'; headers['X-Title'] = 'MDM1 Chat'; }
 
   if (p.authStyle === 'anthropic') {
     headers['x-api-key'] = apiKey;
