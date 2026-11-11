@@ -1,21 +1,28 @@
-# Security Policy
+# Security Policy / سياسة الأمان
 
-## Supported Versions
+## Reporting a vulnerability / الإبلاغ عن ثغرة
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Please report security issues **privately** through GitHub's private vulnerability reporting:
+<https://github.com/md1god/MDM1.org/security/advisories/new>
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+من فضلك أبلغ عن أي ثغرة **بشكل خاص** عبر الرابط أعلاه، ولا تنشرها في Issues عامة.
 
-## Reporting a Vulnerability
+If private reporting is unavailable you can email info@md1usd.com instead.
 
-Use this section to tell people how to report a vulnerability.
+Include the affected URL or file, the steps to reproduce, and the impact you observed.
+Please do not run automated scans that degrade the service, do not access other people's data, and do not test social engineering.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+## What to expect / ما الذي تتوقعه
+
+- Acknowledgement of your report as soon as it is seen (target: within 7 days).
+- A fix or a mitigation plan for confirmed issues, and credit if you want it.
+- Please allow a reasonable period for a fix before any public disclosure.
+
+## Supported versions / الإصدارات المدعومة
+
+Only the current `main` branch (the version deployed at the live site) receives security fixes.
+
+## Scope / النطاق
+
+The site's source code, its GitHub Actions workflows, and the public pages served from this repository.
+Third-party services (GitHub Pages, Supabase, ad networks, wallets, blockchains) should be reported to their own vendors.
