@@ -141,6 +141,9 @@
 
   .provider-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
   .provider-meta-row label { margin-bottom: 0; }
+  .provider-info { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: rgba(201,168,76,0.04); color: rgba(232,213,163,0.75); font-size: 11px; line-height: 1.7; }
+  .provider-info strong { color: var(--gold-bright); }
+  .provider-info a { color: var(--gold-bright); text-decoration: underline; margin-inline-start: 8px; }
   .get-key-btn {
     background: linear-gradient(135deg, var(--gold), #8b6914); color: #000; border: none;
     padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 900; cursor: pointer;
@@ -316,6 +319,7 @@
       <label>اختر الموفّر (Provider)</label>
       <input type="text" id="providerSearch" placeholder="🔍 ابحث عن موفّر..." style="margin-bottom:6px;">
       <select id="providerSelect"></select>
+      <div id="providerInfo" class="provider-info" aria-live="polite"></div>
     </div>
 
     <div class="two-col">
@@ -414,9 +418,9 @@ const PROVIDERS_DB = {
   opencode_zen: {
     paid: true,
     name: "OpenCode Zen",
-    keyUrl: "https://opencode.ai/auth",
+    keyUrl: "https://opencode.ai/console",
     keyPlaceholder: "oc_...",
-    apiBase: "https://opencode.ai/zen/v1",
+    apiBase: "https://opencode.ai/inference/openai/v1",
     authStyle: "bearer",
     models: [
       "claude-fable-5-1","claude-fable-5","claude-opus-5","claude-opus-4-8","claude-opus-4-7","claude-opus-4-6","claude-opus-4-5",
@@ -471,11 +475,11 @@ const PROVIDERS_DB = {
   google: {
     paid: true,
     name: "Google (Gemini)",
-    keyUrl: "https://aistudio.google.com/app/apikey",
+    keyUrl: "https://aistudio.google.com/apikey",
     keyPlaceholder: "AIza...",
     apiBase: "https://generativelanguage.googleapis.com/v1beta/openai",
     authStyle: "bearer",
-    models: ["gemini-3.1-pro","gemini-3-flash","gemini-3.5-flash","gemini-3.5-flash-lite","gemini-2.5-pro","gemini-2.5-flash","gemini-2.0-flash"]
+    models: ["gemini-3.8-flash","gemini-3.7-flash","gemini-3.6-flash","gemini-2.5-flash","gemini-2.5-pro"]
   },
 
   google_vertex: {
@@ -781,6 +785,19 @@ const PROVIDERS_DB = {
 };
 
 /* ========================= DOM refs ========================= */
+const PROVIDER_NOTES = {
+  openrouter_free: { label: 'مجاني عبر OpenRouter', text: 'نماذج مجانية تتغير تلقائياً. تحتاج مفتاح OpenRouter شخصياً، مع حدود معدل وتوفر حسب المزوّد.', docs: 'https://openrouter.ai/docs/guides/routing/routers/free-router' },
+  openrouter: { label: 'مجاني ومدفوع', text: 'يوحّد مئات النماذج في واجهة واحدة. استخدم نماذج :free أو نماذج مدفوعة حسب حسابك.', docs: 'https://openrouter.ai/docs/api-reference/overview' },
+  opencode_zen: { label: 'مجاني محدود ومدفوع', text: 'يضم نماذج مجانية مؤقتة ونماذج مدفوعة؛ يتطلب التسجيل ومفتاحاً من OpenCode Console.', docs: 'https://opencode.ai/docs/console/models/' },
+  groq: { label: 'خطة مطور بحدود مجانية', text: 'واجهة سريعة متوافقة مع OpenAI. تتغير حدود الاستخدام والنماذج حسب حساب Groq.', docs: 'https://console.groq.com/docs/openai' },
+  google: { label: 'مجاني محدود ومدفوع', text: 'Gemini Developer API يوفر بداية مجانية لبعض النماذج والمناطق، مع حدود استخدام وسياسات بيانات مختلفة.', docs: 'https://aistudio.google.com/docs/pricing' },
+  huggingface: { label: 'مجمّع نماذج — ليس مجانياً دائماً', text: 'يصل إلى نماذج كثيرة عبر Inference Providers. الحساب المجاني لا يضمن أرصدة شهرية؛ تحقق من التسعير قبل الاستخدام.', docs: 'https://huggingface.co/docs/inference-providers/en/pricing' },
+  ollama_local: { label: 'مجاني ومحلي', text: 'يشغّل النماذج على جهازك دون مفتاح أو رسوم؛ يجب تشغيل Ollama وتفعيل الوصول من المتصفح.', docs: 'https://ollama.com/' },
+  lmstudio_local: { label: 'مجاني ومحلي', text: 'خادم محلي متوافق مع OpenAI؛ لا يرسل الطلبات إلى MDM1.', docs: 'https://lmstudio.ai/docs/developer' },
+  llamacpp_local: { label: 'مجاني ومحلي', text: 'اتصال بخادم llama.cpp محلي متوافق مع OpenAI.', docs: 'https://github.com/ggml-org/llama.cpp' },
+  custom: { label: 'مخصص', text: 'أدخل Base URL ونموذج أي خادم OpenAI-compatible تملكه أو تثق به.', docs: 'https://platform.openai.com/docs/api-reference/chat' }
+};
+
 const chatWindow = document.getElementById('chatWindow');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
@@ -788,6 +805,7 @@ const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
 const saveSettingsBtn = document.getElementById('saveSettings');
 const statusLine = document.getElementById('statusLine');
+const providerInfo = document.getElementById('providerInfo');
 
 const providerSelect = document.getElementById('providerSelect');
 const providerSearch = document.getElementById('providerSearch');
@@ -882,9 +900,18 @@ function updatePaidBadge() {
   paidBadge.classList.toggle('hidden', isModelFree(activeProviderId, model));
 }
 
+function updateProviderInfo(providerId) {
+  if (!providerInfo) return;
+  const p = PROVIDERS_DB[providerId] || PROVIDERS_DB.custom;
+  const note = PROVIDER_NOTES[providerId] || { label: p.paid ? 'مدفوع أو حسب الحساب' : 'مجاني', text: 'يدعم طلبات Chat Completions المتوافقة مع OpenAI.', docs: p.keyUrl || '#' };
+  const safe = value => String(value || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  providerInfo.innerHTML = `<strong>${safe(note.label)}</strong> — ${safe(note.text)} <a href="${safe(note.docs)}" target="_blank" rel="noopener">التوثيق ↗</a>`;
+}
+
 function updateKeyFieldsForProvider(providerId) {
   const p = PROVIDERS_DB[providerId];
   if (!p) return;
+  updateProviderInfo(providerId);
   providerKeyInput.value = providerKeys[providerId] || '';
   providerKeyInput.type = 'password';
   keyToggleEye.textContent = '👁';
