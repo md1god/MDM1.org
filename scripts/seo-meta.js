@@ -19,6 +19,40 @@ function clip(text, max) {
   return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[،,.:؛\s]+$/, '') + '…';
 }
 
+
+// حدود Bing الموصى بها: العنوان 30-60 حرفًا، والوصف 120-160 حرفًا
+const MIN_TITLE = 30;
+const MIN_DESC = 120;
+const PLAN_TAILS = [
+  ' خطة مشروع كاملة من MDM1 تشمل الفكرة والجمهور والمنتج ونموذج الربح وخطة الانتشار وإدارة المخاطر.',
+  ' خطة مشروع كاملة من MDM1 تشمل الفكرة والجمهور ونموذج الربح وخطة الانتشار.',
+  ' خطة مشروع كاملة تشمل الفكرة ونموذج الربح وخطة الانتشار.',
+  ' خطة مشروع كاملة من MDM1.'
+];
+const GENERIC_TAIL = ' صفحة من منصة MDM1 تقدّم معلومات ومحتوى عن المشروع والمجتمع والأدوات الرقمية المرتبطة به.';
+
+const len = v => [...String(v)].length;
+
+// عنوان <title>: "<العنوان> - MDM1" وإن كان أقصر من الحد الموصى به يُضاف وصف للمنصة
+function richTitle(title) {
+  const base = String(title || '').replace(/\s+/g, ' ').trim();
+  const t = `${base} - MDM1`;
+  return len(t) >= MIN_TITLE ? t : `${base} | MDM1 للمشاريع الرقمية`;
+}
+
+// وصف الميتا: يُستخدم الوصف كما هو إن كان كافيًا، وإلا يُكمَّل بجملة صادقة عن محتوى الصفحة
+function richDescription(title, description) {
+  const d = String(description || '').replace(/\s+/g, ' ').trim();
+  if (len(d) >= MIN_DESC) return clip(d, 155);
+  const isPlan = /خطة مشروع كاملة/.test(title || '');
+  const name = String(title || '').replace(/\s*[—-]\s*خطة مشروع كاملة\s*$/, '').replace(/\s*[-|]\s*MDM1\s*$/, '').trim();
+  const head = d ? `${name}: ${d}${/[.!؟?]$/.test(d) ? '' : '.'}` : `${name}.`;
+  const tails = isPlan ? PLAN_TAILS : [GENERIC_TAIL];
+  // أطول ذيل يبقي الوصف ضمن 155 حرفًا بلا اقتطاع
+  const fit = tails.find(t => len(head + t) <= 155) || tails[tails.length - 1];
+  return clip(head + fit, 155);
+}
+
 // يبني كتلة <head> الخاصة بالسيو لصفحة واحدة
 function seoHead({ title, description, urlPath, isoDate, noindex }) {
   const url = `${ORIGIN}${urlPath}`;
@@ -32,7 +66,7 @@ function seoHead({ title, description, urlPath, isoDate, noindex }) {
     '  <meta name="twitter:card" content="summary_large_image">',
     ''
   ].join('\n');
-  const desc = clip(description, 155);
+  const desc = richDescription(title, description);
   const date = isoDate || new Date().toISOString();
   const ld = {
     '@context': 'https://schema.org',
@@ -88,4 +122,4 @@ function ensureRobotsSitemap(robotsFile = 'robots.txt') {
   }
 }
 
-module.exports = { ORIGIN, esc, clip, seoHead, writeSitemapPages, ensureRobotsSitemap };
+module.exports = { ORIGIN, esc, clip, richTitle, richDescription, seoHead, writeSitemapPages, ensureRobotsSitemap };
