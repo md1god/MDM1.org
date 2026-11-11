@@ -310,7 +310,7 @@
 
 <div id="settingsPanel">
   <div class="settings-inner">
-    <div class="security-warning">⚠ المفتاح يتخزن محليًا في متصفحك (localStorage) فقط.</div>
+    <div class="security-warning">⚠ المفتاح يتخزن محليًا في متصفحك (localStorage) فقط. لا تضع مفتاحاً داخل GitHub. النماذج المجانية لها حدود استخدام يحددها المزوّد.</div>
 
     <div class="field">
       <label>اختر الموفّر (Provider)</label>
@@ -505,7 +505,18 @@ const PROVIDERS_DB = {
     keyPlaceholder: "gsk_...",
     apiBase: "https://api.groq.com/openai/v1",
     authStyle: "bearer",
-    models: ["groq/compound","groq/compound-mini","openai/gpt-oss-120b","openai/gpt-oss-20b","openai/gpt-oss-safeguard-20b","qwen/qwen3.8-27b","qwen/qwen3.6-27b","meta-llama/llama-prompt-guard-2-22m","meta-llama/llama-prompt-guard-2-86m","llama-3.3-70b-versatile","llama-3.1-8b-instant"]
+    models: ["openai/gpt-oss-120b","openai/gpt-oss-20b","llama-3.3-70b-versatile","llama-3.1-8b-instant","qwen/qwen3.8-27b"]
+  },
+
+  openrouter_free: {
+    paid: false,
+    freeTier: true,
+    name: "OpenRouter — نماذج مجانية",
+    keyUrl: "https://openrouter.ai/keys",
+    keyPlaceholder: "sk-or-...",
+    apiBase: "https://openrouter.ai/api/v1",
+    authStyle: "bearer",
+    models: ["openrouter/free", "meta-llama/llama-3.2-3b-instruct:free", "qwen/qwen3-4b:free", "deepseek/deepseek-r1-0528:free"]
   },
 
   openrouter: {
@@ -797,14 +808,14 @@ const customModelsList = document.getElementById('customModelsList');
 const addCustomModelBtn = document.getElementById('addCustomModelBtn');
 
 /* ========================= State ========================= */
-let activeProviderId = localStorage.getItem('md1_active_provider') || 'opencode_zen';
+let activeProviderId = localStorage.getItem('md1_active_provider') || 'openrouter_free';
 let providerKeys = JSON.parse(localStorage.getItem('md1_provider_keys') || '{}');
 let providerModels = JSON.parse(localStorage.getItem('md1_provider_models') || '{}');
 let temperature = parseFloat(localStorage.getItem('md1_temperature') || '0.7');
 let customProviderData = JSON.parse(localStorage.getItem('md1_custom_provider') || '{"name":"","baseUrl":"","models":[]}');
 let chatHistory = [];
 
-if (!PROVIDERS_DB[activeProviderId]) activeProviderId = 'opencode_zen';
+if (!PROVIDERS_DB[activeProviderId]) activeProviderId = 'openrouter_free';
 
 /* ========================= Provider / model selects ========================= */
 function populateProviderSelect(filter) {
@@ -862,7 +873,7 @@ function isModelFree(providerId, model) {
   if (p.authStyle === 'none') return true; // سيرفرات محلية بالكامل مجانية
   if (!model) return !p.paid;
   const m = model.toLowerCase();
-  if (m.endsWith('-free') || m.endsWith(':free') || m === 'local-model') return true;
+  if (p.freeTier || m.endsWith('-free') || m.endsWith(':free') || m === 'openrouter/free' || m === 'local-model') return true;
   return !p.paid;
 }
 
@@ -956,6 +967,7 @@ providerSelect.addEventListener('change', () => {
   activeProviderId = providerSelect.value;
   populateModelSelect(activeProviderId);
   updateKeyFieldsForProvider(activeProviderId);
+  refreshOpenRouterFreeModels();
 });
 
 providerModelSelect.addEventListener('change', () => {
@@ -996,6 +1008,22 @@ saveSettingsBtn.addEventListener('click', () => {
 
 let statusCheckToken = 0;
 
+async function refreshOpenRouterFreeModels() {
+  if (!['openrouter_free', 'openrouter'].includes(activeProviderId)) return;
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/models', { headers: { Accept: 'application/json' } });
+    if (!res.ok) return;
+    const data = await res.json();
+    const free = (data.data || []).filter(m => m.id && (m.id.endsWith(':free') || (m.pricing && String(m.pricing.prompt) === '0' && String(m.pricing.completion) === '0'))).map(m => m.id);
+    if (free.length) {
+      const base = activeProviderId === 'openrouter_free' ? ['openrouter/free'] : [];
+      PROVIDERS_DB[activeProviderId].models = [...new Set([...base, ...free])].slice(0, 80);
+      populateModelSelect(activeProviderId);
+      updateKeyFieldsForProvider(activeProviderId);
+    }
+  } catch (_) { /* القائمة الثابتة تبقى متاحة عند منع CORS أو انقطاع الشبكة */ }
+}
+
 async function updateStatusLine() {
   const myToken = ++statusCheckToken;
   const p = PROVIDERS_DB[activeProviderId];
@@ -1027,10 +1055,13 @@ async function updateStatusLine() {
 populateProviderSelect();
 populateModelSelect(activeProviderId);
 updateKeyFieldsForProvider(activeProviderId);
+refreshOpenRouterFreeModels();
 tempRange.value = temperature;
 tempVal.textContent = temperature;
 tempLabel.textContent = temperature;
 updateStatusLine();
+
+appendMsg('مرحباً بك في MD1 Chat. اختر مزوّداً من الإعدادات ثم اكتب سؤالك. الوضع الافتراضي هو OpenRouter للنماذج المجانية، ويحتاج مفتاحك الشخصي المخزن محلياً.', 'bot');
 
 /* ========================= Particles (نجوم متطايرة) ========================= */
 (function initParticles(){
