@@ -3,13 +3,32 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  models: read
 jobs:
   probe:
     runs-on: ubuntu-26.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-      - name: List free models and send one test message to each
+      - name: Catalogue, per-model test and end-to-end test
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 scripts/opencode_probe.py
+      - name: OpenCode CLI test (the official client; its own list of models, with and without the key)
+        continue-on-error: true
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+        run: |
+          set +e
+          npm install -g opencode-ai >/tmp/npm.log 2>&1 || { echo "npm install failed:"; tail -5 /tmp/npm.log; exit 0; }
+          echo "cli version: $(opencode --version 2>&1 | head -1)"
+          echo "--- models the CLI lists for provider opencode, WITH the key"
+          timeout 60 opencode models opencode 2>&1 | head -40
+          echo "--- models the CLI lists for provider opencode, WITHOUT the key"
+          env -u OPENCODE_API_KEY timeout 60 opencode models opencode 2>&1 | head -40
+          MODEL=$(python3 scripts/opencode_probe.py --first-free)
+          echo "--- opencode run with model opencode/$MODEL, WITH the key"
+          timeout 150 opencode run -m "opencode/$MODEL" "Reply with the single word: pong" 2>&1 | tail -15
+          echo "--- opencode run with model opencode/$MODEL, WITHOUT the key"
+          env -u OPENCODE_API_KEY timeout 150 opencode run -m "opencode/$MODEL" "Reply with the single word: pong" 2>&1 | tail -15
