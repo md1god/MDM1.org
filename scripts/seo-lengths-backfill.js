@@ -18,7 +18,7 @@ for (const f of fs.readdirSync('pages').filter(x => /^\d+\.html$/.test(x))) {
   const dm = h.match(/<meta name="description" content="([^"]*)">/);
   if (!tm) continue;
   if (!/خطة مشروع كاملة/.test(tm[1])) { console.log('SKIP (hand-written needed):', p); continue; }
-  const rawTitle = dec(tm[1]).replace(/\s*-\s*MDM1\s*$/, '');
+  const rawTitle = dec(tm[1]).replace(/\s*-\s*MDM1\s*$/, '').replace(/\s*\|\s*MDM1 للمشاريع الرقمية\s*$/, '');
   const rawDesc = dm ? dec(dm[1]) : '';
   if (JUNK.test(rawTitle) || JUNK.test(rawDesc)) {
     junk++;
