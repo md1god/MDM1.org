@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const { seoHead, writeSitemapPages, ensureRobotsSitemap } = require('./scripts/seo-meta');
+const { seoHead, richTitle, writeSitemapPages, ensureRobotsSitemap } = require('./scripts/seo-meta');
 const { findProblems, findBodyProblems } = require('./scripts/page_quality');
 
 // صفحات معزولة عمدًا (انظر data/excluded-pages.json): تبقى خارج الفهرس والـ sitemap
@@ -173,7 +173,7 @@ function generatePageHTML(pageNumber, title, description, quote, customBody = ''
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${safeTitle} - MDM1</title>
+  <title>${escapeHtml(richTitle(title))}</title>
   ${seoHtml}
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
@@ -241,8 +241,8 @@ function generateIndexHTML(pages) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>كل الصفحات - MDM1</title>
-  <meta name="description" content="فهرس صفحات MDM1: خطط مشاريع رقمية كاملة وصفحات المشروع والمجتمع، مرتبة من الأحدث.">
+  <title>كل صفحات MDM1 | خطط المشاريع الرقمية والمحتوى</title>
+  <meta name="description" content="فهرس كل صفحات MDM1: خطط مشاريع رقمية كاملة وصفحات المشروع والمجتمع، مرتبة من الأحدث إلى الأقدم لتصل بسرعة إلى ما تبحث عنه.">
   <link rel="canonical" href="https://mdm1.org/pages/index.html">
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/pages.css">
