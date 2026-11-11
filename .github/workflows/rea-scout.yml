@@ -3,45 +3,91 @@ on:
   schedule:
     - cron: '0 5 * * *'
   workflow_dispatch:
-permissions:
-  contents: read
-  models: read
-  actions: write
+permissions: {}
 concurrency:
   group: rea-scout
   cancel-in-progress: false
 jobs:
-  scout:
+  pick:
     runs-on: ubuntu-26.04
-    timeout-minutes: 30
+    timeout-minutes: 10
+    permissions: { contents: read, models: read }
     env:
       OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with: { persist-credentials: false }
       - name: 1) Pick a product and one core feature
         run: python3 scripts/rea_scout.py pick
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with: { name: rea-target, path: /tmp/target.json, if-no-files-found: ignore }
 
-      - name: 2) REA - observe the public page (best effort, output kept private)
+  observe:
+    needs: pick
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        continue-on-error: true
+        with: { name: rea-target, path: /tmp }
+      - name: 2) REA - observe the public page (untrusted content, secretless job)
         continue-on-error: true
         run: |
           test -s /tmp/target.json || exit 0
-          URL=$(python3 -c "import json;print(json.load(open('/tmp/target.json'))['url'])")
-          (google-chrome --headless=new --no-sandbox --remote-debugging-port=9222 "$URL" >/dev/null 2>&1 &)
+          URL=$(python3 - <<'PY'
+          import ipaddress, json, socket, sys
+          from urllib.parse import urlsplit
+          u = json.load(open('/tmp/target.json'))['url']
+          p = urlsplit(u)
+          host = (p.hostname or '').lower()
+          bad = (p.scheme != 'https' or not host or p.username or p.password or p.port not in (None, 443)
+                 or host == 'localhost' or host.endswith(('.local', '.internal', '.localhost')))
+          if not bad:
+              try: ipaddress.ip_address(host); bad = True
+              except ValueError: pass
+          if not bad:
+              try: bad = not all(ipaddress.ip_address(i[4][0]).is_global for i in socket.getaddrinfo(host, 443))
+              except Exception: bad = True
+          if bad: sys.exit('unsafe or unresolvable target url, skipped')
+          print(u)
+          PY
+          ) || exit 0
+          (google-chrome --headless=new --no-sandbox --user-data-dir=/tmp/chrome-profile --disable-extensions --no-first-run \
+             --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 "$URL" >/dev/null 2>&1 &)
           sleep 8
-          npx --yes rea-agents@latest list-browser-targets http://127.0.0.1:9222 --format json > /tmp/targets.json 2>/tmp/rea.err
+          npx --yes rea-agents@6.8.0 list-browser-targets http://127.0.0.1:9222 --format json > /tmp/targets.json 2>/tmp/rea.err
           TID=$(python3 -c "import json;d=json.load(open('/tmp/targets.json'));t=d.get('targets',d) if isinstance(d,dict) else d;print(t[0].get('id') or t[0].get('targetId'))")
-          npx --yes rea-agents@latest analyze-web-bundle http://127.0.0.1:9222 "$TID" --detail complete --token-limit 6000 --format md > /tmp/rea-evidence.txt 2>>/tmp/rea.err
+          npx --yes rea-agents@6.8.0 analyze-web-bundle http://127.0.0.1:9222 "$TID" --detail complete --token-limit 6000 --format md > /tmp/rea-evidence.txt 2>>/tmp/rea.err
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with: { name: rea-evidence, path: /tmp/rea-evidence.txt, if-no-files-found: ignore }
 
+  build:
+    needs: [pick, observe]
+    if: always()
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    permissions: { contents: read, models: read, actions: write }
+    env:
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        continue-on-error: true
+        with: { name: rea-target, path: /tmp }
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        continue-on-error: true
+        with: { name: rea-evidence, path: /tmp }
       - name: 3) Spec, then build from the spec only, with the repo's own gates
         run: python3 scripts/rea_scout.py build
-
       - name: 4) Hand over to the existing pipeline (tool or app)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           test -s /tmp/tool.json || { echo "nothing to hand over today"; exit 0; }
           KIND=$(python3 -c "import json;print(json.load(open('/tmp/target.json'))['kind'])")
@@ -51,7 +97,6 @@ jobs:
             gh workflow run trend-pages.yml -f tool_json="$(cat /tmp/tool.json)"
           fi
           echo ok > /tmp/dispatched.txt
-
       - name: 5) Daily report to Telegram (the only place the studied product is named)
         if: always()
         env:
