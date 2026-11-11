@@ -1014,10 +1014,12 @@ async function refreshOpenRouterFreeModels() {
     const res = await fetch('https://openrouter.ai/api/v1/models', { headers: { Accept: 'application/json' } });
     if (!res.ok) return;
     const data = await res.json();
+    const allModels = (data.data || []).filter(m => m.id).map(m => m.id);
     const free = (data.data || []).filter(m => m.id && (m.id.endsWith(':free') || (m.pricing && String(m.pricing.prompt) === '0' && String(m.pricing.completion) === '0'))).map(m => m.id);
-    if (free.length) {
+    const models = activeProviderId === 'openrouter' ? allModels : free;
+    if (models.length) {
       const base = activeProviderId === 'openrouter_free' ? ['openrouter/free'] : [];
-      PROVIDERS_DB[activeProviderId].models = [...new Set([...base, ...free])].slice(0, 80);
+      PROVIDERS_DB[activeProviderId].models = [...new Set([...base, ...models])].slice(0, 120);
       populateModelSelect(activeProviderId);
       updateKeyFieldsForProvider(activeProviderId);
     }
@@ -1203,6 +1205,7 @@ async function callProvider(providerId, apiKey, model, messages, temp) {
   }
 
   const headers = { 'Content-Type': 'application/json' };
+  if (providerId === 'openrouter' || providerId === 'openrouter_free') { headers['HTTP-Referer'] = 'https://mdm1.org/chat.html'; headers['X-Title'] = 'MDM1 Chat'; }
 
   if (p.authStyle === 'anthropic') {
     headers['x-api-key'] = apiKey;
