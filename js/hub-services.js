@@ -10,6 +10,7 @@
   let requestText = '';
 
   const deposits = {
+    'مراجعة مجانية للموقع (3 نقاط)': 'مجانية — لا يلزم دفع',
     'إعداد موقع أو صفحة هبوط': '49.50 USDT دفعة بدء من أصل 99 USDT',
     'أتمتة إجراء بسيط': '39.50 USDT دفعة بدء من أصل 79 USDT',
     'دعم وصيانة شهرية': '29 USDT للشهر، يدويًا دون تجديد آلي'
@@ -32,6 +33,7 @@
 
       const data = new FormData(form);
       const service = String(data.get('service') || '').trim();
+      const source = String(data.get('source') || '').trim();
       const lines = [
         'طلب خدمة من موقع MDM1',
         '',
@@ -40,6 +42,7 @@
         `بريد الرد: ${data.get('email')}`,
         `النشاط أو المشروع: ${data.get('business') || 'لم يذكر'}`,
         `رابط الموقع: ${data.get('url') || 'لم يذكر'}`,
+        `مصدر معرفة الموقع: ${source || 'لم يذكر'}`,
         '',
         'وصف الطلب:',
         String(data.get('brief') || '').trim(),
