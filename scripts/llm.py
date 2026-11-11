@@ -70,16 +70,19 @@ def free_models():
     return ids
 
 
-def _extract(raw):
+def _extract(raw, who=""):
     try: return json.loads(raw)["choices"][0]["message"]["content"]
-    except Exception: return None
+    except Exception:
+        # a 200 that carries no usable text used to fail silently: say what came back instead
+        print("::warning::%s no usable text in reply: %r" % (who or "reply", raw[:400]))
+        return None
 
 
 def _call(url, headers, model, prompt, max_tokens, temperature, json_mode):
     body = {"model": model, "temperature": temperature, "max_tokens": max_tokens, "messages": [{"role": "user", "content": prompt}]}
     if json_mode: body["response_format"] = {"type": "json_object"}
     try:
-        txt = _extract(_http(url, body, headers))
+        txt = _extract(_http(url, body, headers), model)
         if txt and txt.strip(): LAST["code"] = None
         return txt
     except urllib.error.HTTPError as e:
