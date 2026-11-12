@@ -382,9 +382,22 @@
       <label>النموذج<select id="mediaModel"></select></label>
       <label>مفتاح API<input id="mediaKey" type="password" autocomplete="off" placeholder="يُخزّن محلياً فقط"></label>
       <label class="wide">الوصف / النص<textarea id="mediaPrompt" rows="2" placeholder="اكتب وصف الصورة أو الفيديو، أو النص الذي تريد تحويله إلى صوت..."></textarea></label>
-      <label class="wide media-hidden" id="mediaEndpointWrap">Endpoint مخصص لنموذج MD1 المصري<input id="mediaEndpoint" dir="ltr" placeholder="https://.../v1 أو رابط Space/Endpoint"></label>
+      <label class="wide media-hidden" id="mediaEndpointWrap">Endpoint مخصص لنموذج MD1 المصري<input id="mediaEndpoint" dir="ltr" inputmode="url" placeholder="https://xxxxx.us-east-1.aws.endpoints.huggingface.cloud"></label>
     </div>
-    <div class="media-provider-info" id="mediaProviderInfo"></div><p class="media-note">تنبيه: نموذج اللهجة المصرية <a class="media-link" href="https://huggingface.co/Dido599999/MD1" target="_blank" rel="noopener">Dido599999/MD1</a> غير منشور حالياً عبر Hugging Face Inference Provider؛ يحتاج Endpoint أو Space مخصصاً.</p>
+    <div class="media-provider-info" id="mediaProviderInfo"></div>
+    <details class="media-guide media-hidden" id="md1Guide">
+      <summary>إعداد نموذج اللهجة المصرية خطوة بخطوة</summary>
+      <ol>
+        <li>أنشئ <a class="media-link" href="https://huggingface.co/inference-endpoints" target="_blank" rel="noopener">Inference Endpoint</a> خاصاً من مستودع <a class="media-link" href="https://huggingface.co/Dido599999/MD1" target="_blank" rel="noopener">Dido599999/MD1</a>، أو انشره داخل Space إذا لم يدعم المزود بنية النموذج.</li>
+        <li>أنشئ Token من Hugging Face بصلاحية القراءة/الاستدلال، ثم ألصقه في حقل مفتاح API. لا تضعه داخل GitHub أو داخل الكود.</li>
+        <li>الصق رابط Endpoint الأساسي في الحقل أعلاه، من دون إضافة مسار النموذج أو علامات اقتباس، ثم اضغط «تحقق من الرابط».</li>
+        <li>اكتب النص المصري في حقل الوصف واضغط «توليد الآن». الطلب المستخدم هو صيغة Hugging Face القياسية: <code>{"inputs":"النص"}</code>.</li>
+      </ol>
+      <p>إذا ظهر خطأ CORS، فهذا يعني أن Endpoint يمنع استدعاء المتصفح ولا يعني بالضرورة أنه متوقف. عندها استخدم Space بواجهة API عامة أو Proxy خادم خاص بك، ولا تستخدم مفتاحك في كود عام.</p>
+      <div class="media-guide-actions"><button id="md1TestEndpoint" type="button">تحقق من الرابط</button><button id="md1CopyCurl" type="button" class="media-secondary-btn">نسخ مثال cURL</button></div>
+      <div class="media-guide-status" id="md1GuideStatus" aria-live="polite"></div>
+    </details>
+    <p class="media-note">تنبيه: نموذج اللهجة المصرية <a class="media-link" href="https://huggingface.co/Dido599999/MD1" target="_blank" rel="noopener">Dido599999/MD1</a> غير منشور حالياً عبر Hugging Face Inference Provider؛ يحتاج Endpoint مخصصاً.</p>
     <div class="media-lab-actions"><button id="mediaGenerate" type="button">توليد الآن</button><span class="media-status" id="mediaStatus" aria-live="polite"></span></div>
     <div class="media-output" id="mediaOutput"></div>
   </div>
