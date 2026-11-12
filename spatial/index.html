@@ -27,5 +27,11 @@ const root=document.documentElement,btn=document.getElementById('liteToggle'),st
 const weak=matchMedia('(prefers-reduced-motion: reduce)').matches || navigator.connection?.saveData || (navigator.hardwareConcurrency||8)<=4;
 if(weak){root.classList.add('lite');status.textContent='الوضع الخفيف مفعّل لجهازك';btn.textContent='تشغيل المؤثرات';}
 btn.addEventListener('click',()=>{root.classList.toggle('lite');const lite=root.classList.contains('lite');status.textContent=lite?'الوضع الخفيف مفعّل':'الوضع المكاني مفعّل';btn.textContent=lite?'تشغيل المؤثرات':'الوضع الخفيف';});
+const world=document.querySelector('.world');
+let raf=0,tx=0,ty=0;
+function parallax(x,y){tx=((x/innerWidth)-.5)*2;ty=((y/innerHeight)-.5)*2;if(raf)return;raf=requestAnimationFrame(()=>{root.style.setProperty('--px',tx.toFixed(3));root.style.setProperty('--py',ty.toFixed(3));raf=0;});}
+addEventListener('pointermove',e=>parallax(e.clientX,e.clientY),{passive:true});
+addEventListener('touchmove',e=>{const t=e.touches[0];if(t)parallax(t.clientX,t.clientY);},{passive:true});
+world.addEventListener('pointerleave',()=>{root.style.setProperty('--px','0');root.style.setProperty('--py','0');});
 </script>
 </body></html>
