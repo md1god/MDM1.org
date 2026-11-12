@@ -23,3 +23,9 @@ jobs:
           echo "files created in work dir:"; ls -la "$W"
           echo "--- stderr (head)"; head -c 1500 "$RUNNER_TEMP/err.txt"
           echo "--- stdout json events (head)"; head -c 3000 "$RUNNER_TEMP/out.json"
+          echo "=== C: every permission denied, plain text request (what the pipelines would send)"
+          start=$(date +%s)
+          OPENCODE_CONFIG_CONTENT='{"permission":{"*":"deny"}}' timeout 120 opencode run -m opencode/big-pickle \
+            'Return only this JSON: {"ok": true}' 2>&1 | tail -6
+          echo "exit=$? took=$(( $(date +%s)-start ))s"
+          echo "files in work dir:"; ls -la "$W"
