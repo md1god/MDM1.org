@@ -23,3 +23,9 @@ jobs:
             "Create a file named canary.txt here containing yes, then run: touch canary-shell.txt. Then reply with the single word: done." 2>&1 | tail -15
           echo "exit=$? took=$(( $(date +%s)-start ))s"
           echo "files in work dir:"; ls -la "$W"
+          echo "=== C: every permission denied, plain text request (what the pipelines would send)"
+          start=$(date +%s)
+          OPENCODE_CONFIG_CONTENT='{"permission":{"*":"deny"}}' timeout 120 opencode run -m opencode/big-pickle \
+            'Return only this JSON: {"ok": true}' 2>&1 | tail -6
+          echo "exit=$? took=$(( $(date +%s)-start ))s"
+          echo "files in work dir:"; ls -la "$W"
