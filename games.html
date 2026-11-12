@@ -416,6 +416,10 @@ body {
 @media (min-width: 1200px) { .games-grid { grid-template-columns: repeat(7, 1fr); } }
 @media (min-width: 1500px) { .games-grid { grid-template-columns: repeat(8, 1fr); } }
 
+body.low-power .game-card:hover { transform:none; box-shadow:none; }
+body.low-power .play-badge, body.low-power .corner-badge { transition:none; }
+.game-card { content-visibility:auto; contain-intrinsic-size:190px 230px; }
+.game-thumb img { aspect-ratio:4/3; object-fit:cover; }
 .game-card {
   background: var(--bg-card);
   border-radius: 12px;
@@ -864,6 +868,8 @@ body.game-open {
   const pinnedRow = document.getElementById("pinnedRow");
   const pinnedScroll = document.getElementById("pinnedScroll");
 
+  const LOW_POWER_MODE = Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) || Boolean(navigator.connection && navigator.connection.saveData) || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+  if (LOW_POWER_MODE) document.body.classList.add("low-power");
   let ALL_GAMES = [];
   let visibleGames = [];
   let activeCategory = "all";
@@ -1301,7 +1307,7 @@ body.game-open {
     const title = escapeHTML(game.title || "Game");
     const cat = escapeHTML(categoryLabel(game._cat));
     const thumb = game.thumb
-      ? `<img src="${escapeHTML(game.thumb)}" alt="${title}" loading="lazy" onerror="this.style.display='none'">`
+      ? `<img src="${escapeHTML(game.thumb)}" alt="${title}" loading="lazy" decoding="async" width="512" height="384" onerror="this.style.display='none'">`
       : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:2rem;">🎮</div>`;
 
     let badge = "";
