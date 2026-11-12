@@ -87,7 +87,7 @@ def css_problem(css):
 
 JS_BLOCK = [
     r"\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon|importScripts|Worker|SharedWorker|BroadcastChannel|RTCPeerConnection|WebTransport|postMessage)\b",
-    r"\b(eval|Function|Reflect|Proxy|globalThis|__proto__|__defineGetter__|__defineSetter__)\b",
+    r"(?-i:\b(eval|Function|Reflect|Proxy|globalThis|__proto__|__defineGetter__|__defineSetter__)\b)",   # case-SENSITIVE: lowercase 'function' is plain JS
     r"\.\s*constructor\b",
     r"\b(localStorage|sessionStorage|indexedDB|openDatabase|cookieStore)\b|\bcaches\s*\.",
     r"\bdocument\s*\.\s*(cookie|domain|write|writeln|location)\b",

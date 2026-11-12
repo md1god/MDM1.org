@@ -25,7 +25,7 @@ function isFamousGame(title, tags, category) {
 }
 
 function normalizeItem(raw) {
-  if (!raw || !raw.url) return null;
+  if (!raw || typeof raw.url !== 'string' || !raw.url.startsWith('https://')) return null;
   const title = raw.title || raw.name || 'Game';
   const category = raw.category || '';
   const tags = raw.tags || '';
@@ -39,7 +39,7 @@ function normalizeItem(raw) {
     title: title,
     category: category,
     tags: tags,
-    thumb: raw.thumb || '',
+    thumb: (typeof raw.thumb === 'string' && raw.thumb.startsWith('https://')) ? raw.thumb : '',
     url: raw.url,
     width: raw.width || '800',
     height: raw.height || '600',
