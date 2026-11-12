@@ -17,6 +17,7 @@ import trend_pages as T
 REG, STATE = os.path.join(ROOT, "pages-registry.json"), os.path.join(ROOT, "data", "plan-queue.json")
 MARK = "خطة مشروع كاملة"
 PER_DAY = int(os.environ.get("PLAN_PER_DAY", "3"))
+MAX_FAILS = 3          # a plan that failed this many runs in a row is parked; a model outage never marks plans as finished
 LIMIT = 55000          # GitHub caps workflow_dispatch inputs at ~65k characters
 ATTEMPTS = 2           # model tries per plan before it is marked failed
 ARABIC = "Arabic"
@@ -129,14 +130,18 @@ def save(state):
 
 def main():
     state = load_state()
-    todo = [(n, t) for n, t in plans() if n not in state["done"]]
+    todo = [(n, t) for n, t in plans() if n not in state["done"] and state.get("failed", {}).get(n, 0) < MAX_FAILS]
     print("plans total %d, done %d, left %d, today %d" % (len(plans()), len(state["done"]), len(todo), PER_DAY))
     today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     used = set()
     for num, title in todo[:PER_DAY]:
         status, detail = build_one(num, title)
-        state["done"][num] = {"status": status, "detail": detail[:200] if status != "built" else "", "date": today, "title": title}
         print("::notice::plan %s -> %s" % (num, status))
+        if status == "failed":   # not finished: counted, retried on a later run, parked after MAX_FAILS
+            state.setdefault("failed", {})[num] = state.get("failed", {}).get(num, 0) + 1
+            print("::warning::plan %s failed (%d of %d): %s" % (num, state["failed"][num], MAX_FAILS, detail[:200]))
+            save(state); continue
+        state["done"][num] = {"status": status, "detail": detail[:200] if status != "built" else "", "date": today, "title": title}
         if status == "built":
             app = json.loads(detail)
             if not dispatch(app):
