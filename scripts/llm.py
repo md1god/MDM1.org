@@ -14,6 +14,7 @@ import json, os, re, urllib.error, urllib.request
 
 ZEN = os.environ.get("OPENCODE_BASE_URL", "https://opencode.ai/zen/v1")
 GH = "https://models.github.ai/inference/chat/completions"
+OR = "https://openrouter.ai/api/v1"   # OpenAI-compatible; used only with OPENROUTER_API_KEY, and only for models priced at zero
 GH_MODELS = ["openai/gpt-4.1", "openai/gpt-4.1-mini", "openai/gpt-4o"]
 _cache = {"free": None, "dead": set(), "zen_off": False}   # zen_off: Zen answered a free-usage-limit 429, skip Zen for the rest of this run
 LAST = {"code": None, "backend": None}   # code: HTTP status of the most recent failed call (None after a success); backend: who answered last
@@ -70,6 +71,22 @@ def free_models():
     return ids
 
 
+def or_free_models():
+    """OpenRouter models whose prompt AND completion price is exactly zero (cached for the run)."""
+    if "or" in _cache: return _cache["or"]
+    ids = []
+    if os.environ.get("OPENROUTER_API_KEY", "").strip():
+        try:
+            data = json.loads(_http(OR + "/models", headers={"Authorization": "Bearer " + os.environ["OPENROUTER_API_KEY"].strip()}, timeout=60))
+            for m in data.get("data", []):
+                p = m.get("pricing") or {}
+                if str(p.get("prompt")) == "0" and str(p.get("completion")) == "0" and m.get("id"): ids.append(m["id"])
+        except urllib.error.HTTPError as e: print("::warning::openrouter model list failed: HTTP", e.code)
+        except Exception as e: print("::warning::openrouter model list failed:", type(e).__name__)
+    _cache["or"] = ids
+    return ids
+
+
 def _extract(raw, who=""):
     try: return json.loads(raw)["choices"][0]["message"]["content"]
     except Exception:
@@ -108,6 +125,13 @@ def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
                 txt = _call(ZEN + "/chat/completions", h, m, prompt, max_tokens, temperature, fmt)
                 if txt and txt.strip(): LAST["backend"] = "zen:" + m; print("::notice::LLM answered via", LAST["backend"]); return txt
                 if m in _cache["dead"] or _cache["zen_off"]: break
+    orkey = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if orkey:
+        h = {"Authorization": "Bearer " + orkey, "Content-Type": "application/json"}
+        for m in or_free_models()[:8]:
+            for fmt in ((True, False) if json_mode else (False,)):
+                txt = _call(OR + "/chat/completions", h, m, prompt, max_tokens, temperature, fmt)
+                if txt and txt.strip(): LAST["backend"] = "openrouter:" + m; print("::notice::LLM answered via", LAST["backend"]); return txt
     tok = os.environ.get("GITHUB_TOKEN", "")
     if tok:
         h = {"Authorization": "Bearer " + tok, "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
