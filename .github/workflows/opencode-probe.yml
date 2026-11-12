@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Catalogue, per-model test and end-to-end test
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
@@ -21,7 +21,7 @@ jobs:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
         run: |
           set +e
-          npm install -g opencode-ai >/tmp/npm.log 2>&1 || { echo "npm install failed:"; tail -5 /tmp/npm.log; exit 0; }
+          npm install -g opencode-ai@1.19.4 >/tmp/npm.log 2>&1 || { echo "npm install failed:"; tail -5 /tmp/npm.log; exit 0; }
           echo "cli version: $(opencode --version 2>&1 | head -1)"
           echo "--- models the CLI lists for provider opencode, WITH the key"
           timeout 60 opencode models opencode 2>&1 | head -40
