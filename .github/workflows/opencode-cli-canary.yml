@@ -6,20 +6,20 @@ permissions:
 jobs:
   canary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Can the CLI write or run anything when every permission is denied?
+      - name: Plain run, then a run with every permission denied
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
         run: |
           set +e
           npm install -g opencode-ai@1.19.4 >/tmp/npm.log 2>&1 || { tail -5 /tmp/npm.log; exit 1; }
           W=$(mktemp -d); cd "$W"
-          export OPENCODE_CONFIG_CONTENT='{"permission":{"*":"deny"}}'
-          env -i PATH="$PATH" HOME="$HOME" OPENCODE_API_KEY="$OPENCODE_API_KEY" OPENCODE_CONFIG_CONTENT="$OPENCODE_CONFIG_CONTENT" \
-            timeout 180 opencode run --pure --format json -m opencode/big-pickle \
-            "Create a file named canary.txt in the current directory containing the word yes. Then run the shell command: touch canary-shell.txt. Then reply with the single word: done." > "$RUNNER_TEMP/out.json" 2>"$RUNNER_TEMP/err.txt"
-          echo "exit=$?"
-          echo "files created in work dir:"; ls -la "$W"
-          echo "--- stderr (head)"; head -c 1500 "$RUNNER_TEMP/err.txt"
-          echo "--- stdout json events (head)"; head -c 3000 "$RUNNER_TEMP/out.json"
+          echo "=== A: plain, no config change (reply test)"
+          start=$(date +%s); timeout 120 opencode run -m opencode/big-pickle "Reply with the single word: pong" 2>&1 | tail -4; echo "exit=$? took=$(( $(date +%s)-start ))s"
+          echo "=== B: every permission denied, file + shell request"
+          start=$(date +%s)
+          OPENCODE_CONFIG_CONTENT='{"permission":{"*":"deny"}}' timeout 120 opencode run -m opencode/big-pickle \
+            "Create a file named canary.txt here containing yes, then run: touch canary-shell.txt. Then reply with the single word: done." 2>&1 | tail -15
+          echo "exit=$? took=$(( $(date +%s)-start ))s"
+          echo "files in work dir:"; ls -la "$W"
