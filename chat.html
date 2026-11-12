@@ -13,7 +13,8 @@
 <meta name="description" content="MD1 Chat شات ذكي مدعوم بنماذج الذكاء الاصطناعي: اختر الموفّر والنموذج واستخدم مفتاح API الخاص بك، ويُخزَّن محليًا في متصفحك (localStorage) فقط.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/chat-media.css">
 <style>
   :root {
     --gold: #c9a84c;
@@ -371,6 +372,23 @@
     <button id="saveSettings">حفظ الإعدادات</button>
   </div>
 </div>
+
+<section class="media-lab" aria-labelledby="mediaLabTitle">
+  <div class="media-lab-inner">
+    <div class="media-lab-head"><div><h2 id="mediaLabTitle">مختبر الوسائط بالذكاء الاصطناعي</h2><small>صورة · فيديو · صوت — المفاتيح لا تغادر متصفحك</small></div><a class="media-link" id="mediaKeyLink" href="https://openrouter.ai/keys" target="_blank" rel="noopener">الحصول على المفتاح ↗</a></div>
+    <div class="media-lab-grid">
+      <label>نوع الإخراج<select id="mediaKind"><option value="image">🖼️ صورة</option><option value="video">🎬 فيديو</option><option value="audio">🔊 صوت</option></select></label>
+      <label>المزوّد<select id="mediaProvider"></select></label>
+      <label>النموذج<select id="mediaModel"></select></label>
+      <label>مفتاح API<input id="mediaKey" type="password" autocomplete="off" placeholder="يُخزّن محلياً فقط"></label>
+      <label class="wide">الوصف / النص<textarea id="mediaPrompt" rows="2" placeholder="اكتب وصف الصورة أو الفيديو، أو النص الذي تريد تحويله إلى صوت..."></textarea></label>
+      <label class="wide media-hidden" id="mediaEndpointWrap">Endpoint مخصص لنموذج MD1 المصري<input id="mediaEndpoint" dir="ltr" placeholder="https://.../v1 أو رابط Space/Endpoint"></label>
+    </div>
+    <div class="media-provider-info" id="mediaProviderInfo"></div><p class="media-note">تنبيه: نموذج اللهجة المصرية <a class="media-link" href="https://huggingface.co/Dido599999/MD1" target="_blank" rel="noopener">Dido599999/MD1</a> غير منشور حالياً عبر Hugging Face Inference Provider؛ يحتاج Endpoint أو Space مخصصاً.</p>
+    <div class="media-lab-actions"><button id="mediaGenerate" type="button">توليد الآن</button><span class="media-status" id="mediaStatus" aria-live="polite"></span></div>
+    <div class="media-output" id="mediaOutput"></div>
+  </div>
+</section>
 
 <div id="chatWindow"></div>
 
@@ -1339,6 +1357,7 @@ userInput.addEventListener('input', () => {
   userInput.style.height = Math.min(userInput.scrollHeight, 200) + 'px';
 });
 </script>
+<script src="js/chat-media.js"></script>
 <script src="/js/playlist.js"></script>
 </body>
 </html>
