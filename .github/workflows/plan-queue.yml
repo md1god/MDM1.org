@@ -1,0 +1,37 @@
+name: Plan queue (daily, a few project plans into apps)
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      per_day:
+        description: 'how many plans to build in this run'
+        required: false
+        default: '3'
+permissions:
+  contents: write
+  models: read
+  actions: write
+concurrency:
+  group: plan-queue
+  cancel-in-progress: false
+jobs:
+  queue:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Pick the next plans and hand them to add-app
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PLAN_PER_DAY: ${{ inputs.per_day || '3' }}
+        run: python3 scripts/plan_queue.py
+      - name: Save the queue position
+        run: |
+          git config user.name "MD1 Bot"; git config user.email "action@github.com"
+          git add data/plan-queue.json
+          if git diff --cached --quiet; then echo "queue unchanged"; exit 0; fi
+          git commit -m "Plan queue: $(date -u +%F)"
+          git pull --rebase origin main && git push
