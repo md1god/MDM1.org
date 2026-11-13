@@ -62,7 +62,7 @@ function adCard(a, mine) {
     rep.onclick = async () => {
       rep.disabled = true;
       const { error } = await sb.rpc('report_ad', { p_ad_id: a.id, p_reporter: clientId(), p_reason: null });
-      rep.textContent = error ? 'تعذر الإبلاغ' : 'شكراً، تم الإبلاغ';
+      rep.textContent = error ? 'تعذر الإبلاغ' : 'سُجل البلاغ للمراجعة';
     };
     row.append(rep);
   }
