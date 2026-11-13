@@ -82,7 +82,7 @@ def card(g, slug_of):
 def main() -> int:
     games = json.loads((ROOT / "data/games.json").read_text(encoding="utf-8"))
     famous = {str(g["id"]) for g in json.loads((ROOT / "data/famous_games.json").read_text(encoding="utf-8"))}
-    games = [g for g in games if g.get("id") and g.get("title") and g.get("url") and g.get("thumb")]
+    games = [g for g in games if g.get("id") and g.get("title") and str(g.get("url", "")).startswith("https://") and str(g.get("thumb", "")).startswith("https://")]
     for g in games:
         g["id"] = str(g["id"])
     slug_of = {g["id"]: f'{g["id"]}-{slugify(g["title"])}' for g in games}
@@ -110,7 +110,7 @@ def main() -> int:
 <div class="tags">{''.join(f'<a href="/games/category-{slugify(cat)}-1.html">{E(t)}</a>' for t in tags)}</div>
 <h2>More {E(cat)} games · ألعاب مشابهة</h2>
 <div class="grid">{''.join(card(x, slug_of) for x in related)}</div>
-<script>document.getElementById('pl').onclick=function(){{var f=document.createElement('iframe');f.src={json.dumps(g["url"])};f.allow='fullscreen; autoplay; gamepad';f.setAttribute('allowfullscreen','');f.title={json.dumps(title)};f.loading='lazy';document.getElementById('fr').replaceChildren(f);}};</script>'''
+<script>document.getElementById('pl').onclick=function(){{var f=document.createElement('iframe');f.src={json.dumps(g["url"]).replace("<", "\\u003c")};f.allow='fullscreen; autoplay; gamepad';f.setAttribute('allowfullscreen','');f.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock');f.title={json.dumps(title)};f.loading='lazy';document.getElementById('fr').replaceChildren(f);}};</script>'''
         ld = {"@context": "https://schema.org", "@type": "VideoGame", "name": title, "url": canon, "image": g["thumb"],
               "genre": cat, "playMode": "SinglePlayer", "gamePlatform": "Web browser", "inLanguage": "en",
               "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}
