@@ -1,0 +1,56 @@
+name: Weekly Supabase Security Verification
+
+on:
+  schedule:
+    # Monday 07:00 UTC / 09:00 Africa/Cairo during standard time.
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-security-weekly
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Apply migrations and verify RLS
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends postgresql-client
+
+      - name: Apply pending migrations and verify security
+        id: verification
+        continue-on-error: true
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set +e
+          python3 scripts/apply_supabase_migrations.py --apply > supabase-verification.json 2>&1
+          status=$?
+          cat supabase-verification.json >> "$GITHUB_STEP_SUMMARY"
+          echo "verification_exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: supabase-security-verification-${{ github.run_id }}
+          path: supabase-verification.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Fail if verification did not pass
+        if: steps.verification.outcome == 'failure'
+        run: |
+          echo 'Supabase migration/RLS verification failed. Inspect the uploaded JSON report.' >&2
+          exit 1
