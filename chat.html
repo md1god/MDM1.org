@@ -860,7 +860,8 @@ const addCustomModelBtn = document.getElementById('addCustomModelBtn');
 
 /* ========================= State ========================= */
 let activeProviderId = localStorage.getItem('md1_active_provider') || 'openrouter_free';
-let providerKeys = JSON.parse(localStorage.getItem('md1_provider_keys') || '{}');
+// مفاتيح API أسرار مؤقتة للجلسة: لا تحفظ في localStorage حتى لا يقرأها أي سكربت يعمل على الأصل.
+let providerKeys = {};
 let providerModels = JSON.parse(localStorage.getItem('md1_provider_models') || '{}');
 let temperature = parseFloat(localStorage.getItem('md1_temperature') || '0.7');
 let customProviderData = JSON.parse(localStorage.getItem('md1_custom_provider') || '{"name":"","baseUrl":"","models":[]}');
@@ -1058,7 +1059,6 @@ saveSettingsBtn.addEventListener('click', () => {
   }
 
   localStorage.setItem('md1_active_provider', activeProviderId);
-  localStorage.setItem('md1_provider_keys', JSON.stringify(providerKeys));
   localStorage.setItem('md1_provider_models', JSON.stringify(providerModels));
   localStorage.setItem('md1_temperature', String(temperature));
 
