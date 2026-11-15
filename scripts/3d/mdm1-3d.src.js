@@ -20,6 +20,7 @@ import {
   LineBasicMaterial, LineLoop, Color, ACESFilmicToneMapping,
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { initFx } from './fx.js';
 
 (function main() {
   'use strict';
@@ -750,7 +751,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
   onReady(() => {
     try {
       if (isHomePage()) buildHub();
-      if (!heavyPage) { initTilt(); initReveal(); }
+      if (!heavyPage) { initTilt(); initReveal(); initFx({ words: true }); }
       addToggle();
       initOrbs();
       if (effectsOn) startAmbient();
