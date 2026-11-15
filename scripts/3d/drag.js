@@ -129,10 +129,13 @@ export function initDrag(opts = {}) {
     });
     const end = (e) => {
       if (!g || e.pointerId !== g.pid) return;
-      const moved = g.moved;
+      const { moved, sx, sy, ox, oy } = g;
       g = null;
       el.classList.remove('m3d-dragging');
       if (!moved) return;
+      // Browsers coalesce pointermove events; on a fast flick the last move may never arrive, so use the release point.
+      const [fx, fy] = fit(el, ox + (e.clientX - sx), oy + (e.clientY - sy));
+      put(el, fx, fy); place(el);
       const w = el.offsetWidth || 48, h = el.offsetHeight || 48;
       saved[idOf(el)] = { fx: +((el.offsetLeft + w / 2) / innerWidth).toFixed(4), fy: +((el.offsetTop + h / 2) / innerHeight).toFixed(4) };
       persist();
