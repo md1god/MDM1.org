@@ -5,8 +5,7 @@ Order of attack:
   1. OpenCode Zen (OPENCODE_API_KEY, from the OPENCODE repository secret). Which models are FREE is decided live, every run, from the
      prices Zen itself publishes in GET /zen/v1/models (input and output cost both zero). No model name is hard-coded anywhere, so a
      model that is added, renamed or withdrawn needs no code change.
-  2. OpenRouter (OPENROUTER_API_KEY, optional), only for models whose price is exactly zero.
-  3. GitHub Models (GITHUB_TOKEN) as the last fallback, exactly as the repo did before.
+  2. GitHub Models (GITHUB_TOKEN) as the fallback, exactly as the repo did before.
 
 chat(prompt, max_tokens, temperature, json_mode) -> text or None. Never raises. Prints ::warning:: / ::notice:: lines for the Actions log;
 the ::notice:: line says which backend and model actually answered.
@@ -149,7 +148,6 @@ def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
                 if m in _cache["dead"] or _cache["zen_off"]: break
     if not key: _why("OPENCODE_API_KEY is empty (secret OPENCODE missing)")
     orkey = os.environ.get("OPENROUTER_API_KEY", "").strip()
-    if not orkey: _why("OPENROUTER_API_KEY not provided (add the secret to enable a third backend)")
     if orkey:
         h = {"Authorization": "Bearer " + orkey, "Content-Type": "application/json"}
         for m in or_free_models()[:8]:
