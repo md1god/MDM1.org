@@ -14,6 +14,7 @@ jobs:
     permissions: { contents: read, models: read }
     env:
       OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}   # optional 3rd backend (free models only); empty = ignored
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -21,7 +22,13 @@ jobs:
       - name: 1) Pick a product and one core feature
         run: python3 scripts/rea_scout.py pick
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with: { name: rea-target, path: /tmp/target.json, if-no-files-found: ignore }
+        if: always()   # also when the pick step failed: the build/report job reads pick-error.txt to say why nothing was built
+        with:
+          name: rea-target
+          path: |
+            /tmp/target.json
+            /tmp/pick-error.txt
+          if-no-files-found: ignore
 
   observe:
     needs: pick
@@ -71,6 +78,7 @@ jobs:
     permissions: { contents: read, models: read, actions: write }
     env:
       OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}   # optional 3rd backend (free models only); empty = ignored
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
