@@ -21,6 +21,7 @@ import {
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { initFx } from './fx.js';
+import { initDrag } from './drag.js';
 
 (function main() {
   'use strict';
@@ -753,6 +754,7 @@ import { initFx } from './fx.js';
       if (isHomePage()) buildHub();
       if (!heavyPage) { initTilt(); initReveal(); initFx({ words: true }); }
       addToggle();
+      initDrag({ sel: '#mdm1m-btn, #mdm1-lang-btn, #music-btn, #m3d-toggle', panels: { 'mdm1m-btn': '#mdm1m-panel', 'mdm1-lang-btn': '#mdm1-lang-panel' } });
       initOrbs();
       if (effectsOn) startAmbient();
     } catch (err) {
