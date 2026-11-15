@@ -1,12 +1,17 @@
 name: Models API probe (diagnostic, manual)
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'runner label to test (the pipelines use ubuntu-26.04; try ubuntu-24.04 to see if GitHub Models answers there)'
+        required: false
+        default: 'ubuntu-26.04'
 permissions:
   contents: read
   models: read
 jobs:
   probe:
-    runs-on: ubuntu-26.04
+    runs-on: ${{ inputs.runner || 'ubuntu-26.04' }}
     timeout-minutes: 5
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
