@@ -14,7 +14,7 @@
  */
 import {
   Scene, PerspectiveCamera, WebGLRenderer, Group, Mesh, Points, BufferGeometry, Float32BufferAttribute,
-  ShaderMaterial, AdditiveBlending, CylinderGeometry, TorusGeometry, SphereGeometry, IcosahedronGeometry,
+  ShaderMaterial, AdditiveBlending, CylinderGeometry, CircleGeometry, TorusGeometry, SphereGeometry, IcosahedronGeometry,
   MeshStandardMaterial, CanvasTexture, SRGBColorSpace, AmbientLight, DirectionalLight, PointLight,
   Raycaster, Vector2, Sprite, SpriteMaterial, MathUtils, PMREMGenerator, EdgesGeometry, LineSegments,
   LineBasicMaterial, LineLoop, Color, ACESFilmicToneMapping,
@@ -96,7 +96,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     const ring = (r, w, col) => { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.arc(s / 2, s / 2, r, 0, Math.PI * 2); g.stroke(); };
     ring(s / 2 - 22, 12, '#c9a84c'); ring(s / 2 - 48, 3, '#f0c060'); ring(s / 2 - 60, 2, '#6b4f1a');
     // Eye of Horus-like emblem
-    g.save(); g.translate(s / 2, s * 0.37);
+    g.save(); g.translate(s / 2, s * 0.335);
     g.strokeStyle = '#f0c060'; g.fillStyle = '#f0c060'; g.lineWidth = 8; g.lineCap = 'round';
     g.beginPath(); g.moveTo(-96, 0); g.quadraticCurveTo(0, -78, 96, 0); g.quadraticCurveTo(0, 62, -96, 0); g.stroke();
     g.beginPath(); g.arc(4, -2, 26, 0, Math.PI * 2); g.fill();
@@ -105,8 +105,9 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     g.beginPath(); g.moveTo(-18, 40); g.quadraticCurveTo(-30, 82, -6, 98); g.stroke();
     g.restore();
     g.fillStyle = '#f0c060'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.font = '900 112px Georgia, "Times New Roman", serif';
-    g.fillText('MDM1', s / 2, s * 0.74);
+    // Kept inside the inner ring (diameter ~392px at this height) with a safe margin on both sides.
+    g.font = '900 86px Georgia, "Times New Roman", serif';
+    g.fillText('MDM1', s / 2, s * 0.715, 250);
     const tex = new CanvasTexture(c);
     tex.colorSpace = SRGBColorSpace;
     tex.anisotropy = 4;
@@ -117,14 +118,19 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     const face = tokenFaceTexture();
     const side = new MeshStandardMaterial({ color: GOLD, metalness: 1, roughness: 0.26 });
     const cap = new MeshStandardMaterial({ map: face, emissive: 0x3a2506, emissiveMap: face, emissiveIntensity: 0.9, metalness: 0.85, roughness: 0.34 });
-    const body = new Mesh(new CylinderGeometry(1, 1, 0.17, 96, 1), [side, cap, cap]);
-    body.rotation.x = Math.PI / 2;                         // cap faces the camera
+    // Open cylinder for the edge only. The faces are flat discs: CylinderGeometry's own caps map the
+    // texture rotated 90deg (and mirrored on the back), which is what made the text run sideways.
+    const body = new Mesh(new CylinderGeometry(1, 1, 0.17, 96, 1, true), side);
+    body.rotation.x = Math.PI / 2;
+    const discGeo = new CircleGeometry(1, 96);
+    const front = new Mesh(discGeo, cap); front.position.z = 0.0855;
+    const back = new Mesh(discGeo, cap); back.position.z = -0.0855; back.rotation.y = Math.PI;   // reads correctly from behind
     const rimMat = new MeshStandardMaterial({ color: GOLD_B, metalness: 1, roughness: 0.2 });
     const rimA = new Mesh(new TorusGeometry(1, 0.055, 16, 96), rimMat); rimA.position.z = 0.085;
     const rimB = rimA.clone(); rimB.position.z = -0.085;
     const g = new Group();
-    g.add(body, rimA, rimB);
-    g.userData.dispose = () => { face.dispose(); side.dispose(); cap.dispose(); rimMat.dispose(); body.geometry.dispose(); rimA.geometry.dispose(); };
+    g.add(body, front, back, rimA, rimB);
+    g.userData.dispose = () => { face.dispose(); side.dispose(); cap.dispose(); rimMat.dispose(); body.geometry.dispose(); discGeo.dispose(); rimA.geometry.dispose(); };
     return g;
   }
 
@@ -270,8 +276,14 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
       renderer.setSize(w, h, false);
       camera.aspect = w / h; camera.updateProjectionMatrix();
       uni.uPx.value = renderer.getPixelRatio() * (h / 900);
-      // On narrow screens keep the token inside the frame.
-      token.position.x = side * clamp(3.9 * (w / h) / 1.6, 1.6, 3.9);
+      // Size and place the token from the real visible width at its depth, so it is never clipped
+      // by the screen edge (it used to be cut off on the left in portrait / RTL).
+      const aspect = w / h;
+      const tScale = clamp(aspect * 1.1, 0.6, 0.85);
+      token.scale.setScalar(tScale);
+      const halfW = Math.tan(MathUtils.degToRad(camera.fov / 2)) * (9 - token.position.z) * aspect;
+      const reach = tScale * 1.06 + 0.2;                 // coin radius incl. rim + margin
+      token.position.x = side * Math.min(3.9, Math.max(0, halfW - reach));
     }
     resize();
     addEventListener('resize', resize, { passive: true });
