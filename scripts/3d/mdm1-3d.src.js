@@ -268,6 +268,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 
     const state = { px: 0, py: 0, tx: 0, ty: 0, sp: 0, tsp: 0, vel: 0, lastScroll: scrollY, w: 0, h: 0 };
     const uni = galaxy.material.uniforms;
+    const fl = { yaw: 0, pitch: 0, spin: 0 };
 
     function resize() {
       const w = innerWidth, h = innerHeight;
@@ -281,7 +282,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
       const aspect = w / h;
       const tScale = clamp(aspect * 1.1, 0.6, 0.85);
       token.scale.setScalar(tScale);
-      const halfW = Math.tan(MathUtils.degToRad(camera.fov / 2)) * (9 - token.position.z) * aspect;
+      const halfW = Math.tan(MathUtils.degToRad(camera.fov / 2)) * 10 * aspect;                 // camera z 9 to token z -1
       const reach = tScale * 1.06 + 0.2;                 // coin radius incl. rim + margin
       token.position.x = side * Math.min(3.9, Math.max(0, halfW - reach));
     }
@@ -319,9 +320,21 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
       uni.uTime.value = t;
       const halfH = Math.tan(MathUtils.degToRad(camera.fov / 2)) * dist;
       uni.uPointer.value.set(state.px * halfH * camera.aspect, state.py * halfH);
-      token.rotation.y = t * 0.7 + state.vel * 6 + state.px * 0.6;
-      token.rotation.x = Math.sin(t * 0.5) * 0.18 + state.py * 0.3;
-      token.position.y = 0.4 + Math.sin(t * 0.8) * 0.15 - state.sp * 0.6;
+      // Floating coin: it mostly faces the viewer, sways and leans toward the pointer with inertia,
+      // takes a graceful full turn every ~10 s, and gets an extra spin from fast scrolling.
+      const cycle = t % 10, turn = clamp((cycle - 8.2) / 1.8, 0, 1);
+      const turnEase = turn * turn * (3 - 2 * turn);
+      const turns = Math.floor(t / 10) * Math.PI * 2 + turnEase * Math.PI * 2;
+      fl.spin = lerp(fl.spin, fl.spin + state.vel * 4, 1 - Math.exp(-dt * 4));
+      const yawT = turns + fl.spin + Math.sin(t * 0.45) * 0.42 + state.px * 0.55;
+      const pitchT = Math.sin(t * 0.62 + 0.8) * 0.12 - state.py * 0.28;
+      const k = 1 - Math.exp(-dt * 5);                       // critically damped follow
+      fl.yaw = lerp(fl.yaw, yawT, k); fl.pitch = lerp(fl.pitch, pitchT, k);
+      token.rotation.y = fl.yaw;
+      token.rotation.x = fl.pitch;
+      token.rotation.z = Math.sin(t * 0.55) * 0.05 - state.px * 0.04;
+      token.position.y = 0.4 + Math.sin(t * 0.8) * 0.16 + Math.sin(t * 1.7 + 1) * 0.04 - state.sp * 0.6;
+      token.position.z = -1 + Math.sin(t * 0.6 + 2) * 0.18;
       for (const s of shapes) {
         s.rotation.x += s.userData.spin.x * dt; s.rotation.y += s.userData.spin.y * dt;
         s.position.y = s.userData.baseY + Math.sin(t * 0.5 + s.position.x) * 0.25;
@@ -644,6 +657,72 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     setTimeout(() => targets.forEach((el) => el.classList.add('m3d-in')), 9000);   // safety net
   }
 
+  /* ------------------------------------------------------------------ floating orb buttons */
+  // The fixed round buttons (menu, language, music, 3D) become glossy gold orbs: they float on their
+  // own, lean toward the pointer with a magnetic pull, a specular highlight follows the pointer, and
+  // they sink when pressed. Some are injected late (language, music), so new ones are adopted as they appear.
+  function initOrbs() {
+    if (reduceMotion) return;
+    const SEL = '#mdm1m-btn, #mdm1-lang-btn, #music-btn, #m3d-toggle';
+    const orbs = new Map();
+    const ptr = { x: -9999, y: -9999 };
+    function adopt(el) {
+      if (orbs.has(el)) return;
+      el.classList.add('m3d-orb');
+      const o = { el, ph: rand() * 6.283, x: 0, y: 0, rx: 0, ry: 0, s: 1, hx: 38, hy: 28, down: false };
+      orbs.set(el, o);
+      el.addEventListener('pointerdown', () => { o.down = true; });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => el.addEventListener(ev, () => { o.down = false; }));
+    }
+    function scan() { doc.querySelectorAll(SEL).forEach(adopt); }
+    scan();
+    new MutationObserver(scan).observe(doc.body, { childList: true });
+    [600, 1800, 4000].forEach((ms) => setTimeout(scan, ms));
+
+    addEventListener('pointermove', (e) => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+    addEventListener('pointerdown', (e) => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+    addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') ptr.x = ptr.y = -9999; }, { passive: true });
+    doc.addEventListener('pointerleave', () => { ptr.x = ptr.y = -9999; });
+
+    const REACH = 120;
+    makeLoop((t, dt) => {
+      const on = effectsOn;
+      const k = 1 - Math.exp(-dt * 9);
+      orbs.forEach((o, el) => {
+        if (!el.isConnected) { orbs.delete(el); return; }
+        let tx = 0, ty = 0, trx = 0, try_ = 0, ts = 1, hx = 38, hy = 28;
+        if (on) {
+          const r = el.getBoundingClientRect();
+          const cx = r.left + r.width / 2 - o.x, cy = r.top + r.height / 2 - o.y;
+          const dx = ptr.x - cx, dy = ptr.y - cy, d = Math.hypot(dx, dy);
+          // idle float
+          tx = Math.sin(t * 0.7 + o.ph * 2) * 1.4;
+          ty = Math.sin(t * 1.1 + o.ph) * 2.8;
+          try_ = Math.sin(t * 0.9 + o.ph) * 7;
+          trx = Math.cos(t * 0.8 + o.ph) * 6;
+          if (d < REACH) {
+            const f = 1 - d / REACH;
+            tx += clamp(dx * 0.22 * f, -6, 6); ty += clamp(dy * 0.22 * f, -6, 6);
+            try_ = clamp(dx / (r.width / 2), -1.2, 1.2) * 22 * (0.35 + f * 0.65);
+            trx = -clamp(dy / (r.height / 2), -1.2, 1.2) * 22 * (0.35 + f * 0.65);
+            ts = 1 + 0.1 * f;
+            hx = clamp(50 + (dx / r.width) * 70, 15, 85); hy = clamp(50 + (dy / r.height) * 70, 12, 85);
+          }
+          if (o.down) ts = 0.88;
+        }
+        o.x = lerp(o.x, tx, k); o.y = lerp(o.y, ty, k);
+        o.rx = lerp(o.rx, trx, k); o.ry = lerp(o.ry, try_, k);
+        o.s = lerp(o.s, ts, o.down ? 1 - Math.exp(-dt * 22) : k);
+        o.hx = lerp(o.hx, hx, k); o.hy = lerp(o.hy, hy, k);
+        const st = el.style;
+        st.setProperty('--o-x', o.x.toFixed(2) + 'px'); st.setProperty('--o-y', o.y.toFixed(2) + 'px');
+        st.setProperty('--o-rx', o.rx.toFixed(2) + 'deg'); st.setProperty('--o-ry', o.ry.toFixed(2) + 'deg');
+        st.setProperty('--o-s', o.s.toFixed(3));
+        st.setProperty('--o-hx', o.hx.toFixed(1) + '%'); st.setProperty('--o-hy', o.hy.toFixed(1) + '%');
+      });
+    }, () => true).start();
+  }
+
   /* ------------------------------------------------------------------ toggle button */
   function addToggle() {
     const b = doc.createElement('button');
@@ -673,6 +752,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
       if (isHomePage()) buildHub();
       if (!heavyPage) { initTilt(); initReveal(); }
       addToggle();
+      initOrbs();
       if (effectsOn) startAmbient();
     } catch (err) {
       // The 3D layer must never break a page.
