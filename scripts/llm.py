@@ -156,14 +156,14 @@ def _cli_bin():
         return None
 
 
-def _cli(model, prompt, timeout=240):
+def _cli(model, prompt, timeout=600):
     """One question to `opencode run -m opencode/<model>` in an empty temp dir; returns the answer text or None."""
     b = _cli_bin()
     if not b: _cache["cli_off"] = True; return None
     ask = "Answer with text only. Do not use any tool, do not read or write files, do not run commands.\n\n" + prompt
     with tempfile.TemporaryDirectory() as d:
         proc = subprocess.Popen([b, "run", "-m", "opencode/" + model, ask], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                text=True, cwd=d, start_new_session=True, env={**os.environ, "OPENCODE_ENABLE_EXA": "0"})
+                                text=True, cwd=d, start_new_session=True, env={**{k: v for k, v in os.environ.items() if k != "OPENCODE_API_KEY"}, "OPENCODE_ENABLE_EXA": "0"})   # key-less like opencode-probe: the CLI's own free tier answered in ~3 s, while the shared key hit the Zen free quota
         try: out, _ = proc.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:
             try: os.killpg(proc.pid, signal.SIGKILL)
@@ -180,7 +180,7 @@ def _cli(model, prompt, timeout=240):
 def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
     key = os.environ.get("OPENCODE_API_KEY", "").strip()
     if not _cache["cli_off"] and not os.environ.get("REA_MOCK"):
-        for m in [x for x in CLI_MODELS + free_models()[:2] if x not in _cache["cli_dead"]][:3]:
+        for m in [x for x in CLI_MODELS + free_models()[:2] if x not in _cache["cli_dead"]][:2]:
             txt = _cli(m, prompt)
             if txt:
                 LAST["backend"] = "cli:" + m; LAST["code"] = None; print("::notice::LLM answered via", LAST["backend"]); return txt
