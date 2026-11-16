@@ -41,7 +41,9 @@ jobs:
           if git diff --cached --quiet; then echo "nothing to publish"; exit 0; fi
           git config user.name "MD1 Bot"; git config user.email "action@github.com"
           git commit -m "Trend tools: $(date -u +%F)"
-          git pull --rebase origin main && git push
+          git checkout -- .   # drop unstaged side effects of the quality filters: they are not part of this commit and block the rebase
+          git pull --rebase origin main
+          git push origin HEAD:main
           gh workflow run deploy.yml
           sleep 150
           python3 scripts/trend_pages.py --indexnow

@@ -35,4 +35,6 @@ jobs:
           git add data/plan-queue.json
           if git diff --cached --quiet; then echo "queue unchanged"; exit 0; fi
           git commit -m "Plan queue: $(date -u +%F)"
-          git pull --rebase origin main && git push
+          git checkout -- .   # drop unstaged side effects of the quality filters: they are not part of this commit and block the rebase
+          git pull --rebase origin main
+          git push origin HEAD:main

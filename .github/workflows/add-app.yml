@@ -44,5 +44,7 @@ jobs:
           if git diff --cached --quiet; then echo "nothing to publish"; exit 1; fi
           git config user.name "MD1 Bot"; git config user.email "action@github.com"
           git commit -m "App from Scout: $(date -u +%F)"
-          git pull --rebase origin main && git push
+          git checkout -- .   # drop unstaged side effects of the quality filters: they are not part of this commit and block the rebase
+          git pull --rebase origin main
+          git push origin HEAD:main
           gh workflow run deploy.yml
