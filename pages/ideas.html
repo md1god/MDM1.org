@@ -155,10 +155,10 @@ async function requestLogin() {
 
 async function getGuestNumber(id) {
   if (guestCache[id] !== undefined) return guestCache[id];
-  const { data, error } = await supabase.from('profiles').select('guest_number').eq('id', id).single();
+  const { data, error } = await supabase.rpc('my_guest_number');
   if (error) { console.error(error); return '؟'; }
-  guestCache[id] = data.guest_number;
-  return data.guest_number;
+  guestCache[id] = data;
+  return data;
 }
 
 function formatTime(iso) {
@@ -168,7 +168,7 @@ function formatTime(iso) {
 
 async function loadIdeas() {
   const { data: ideas, error } = await supabase
-    .from('ideas')
+    .from('ideas_public')
     .select('*')
     .order('created_at', { ascending: false });
   if (error) { console.error(error); return; }
@@ -191,7 +191,7 @@ async function renderIdeaCard(idea, atTop) {
   if (empty) empty.remove();
   if (document.getElementById('idea-' + idea.id)) return; // تجنّب التكرار
 
-  const guestNum = await getGuestNumber(idea.subscriber_id);
+  const guestNum = idea.guest_number;
 
   const card = document.createElement('div');
   card.id = 'idea-' + idea.id;
@@ -221,7 +221,7 @@ async function renderIdeaCard(idea, atTop) {
 
 async function loadRepliesForIdea(ideaId) {
   const { data: replies, error } = await supabase
-    .from('idea_replies')
+    .from('idea_replies_public')
     .select('*')
     .eq('idea_id', ideaId)
     .order('created_at', { ascending: true });
@@ -233,7 +233,7 @@ async function appendReplyBubble(r) {
   const box = document.getElementById('replies-' + r.idea_id);
   if (!box) return;
   if (document.getElementById('reply-' + r.id)) return; // تجنّب التكرار
-  const guestNum = await getGuestNumber(r.subscriber_id);
+  const guestNum = r.guest_number;
   const bubble = document.createElement('div');
   bubble.id = 'reply-' + r.id;
   bubble.className = 'reply-bubble';
@@ -269,13 +269,13 @@ async function sendReply(ideaId, inputEl) {
 function subscribeRealtime() {
   supabase.channel('ideas-feed')
     .on('postgres_changes', { event:'INSERT', schema:'public', table:'ideas' }, async (payload) => {
-      await renderIdeaCard(payload.new, true);
+      await loadIdeas();
     })
     .subscribe();
 
   supabase.channel('replies-feed')
-    .on('postgres_changes', { event:'INSERT', schema:'public', table:'idea_replies' }, (payload) => {
-      appendReplyBubble(payload.new);
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'idea_replies' }, () => {
+      loadIdeas();
     })
     .subscribe();
 }

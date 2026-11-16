@@ -42,16 +42,21 @@ drop policy if exists ads_insert on public.ads;
 create policy ads_insert on public.ads for insert
   with check (status = 'active');
 
--- إبلاغ: 3 بلاغات من أشخاص مختلفين يخفون الإعلان تلقائياً حتى تراجعه أنت
+-- إبلاغ: يسجل البلاغ للمراجعة فقط؛ لا يملك زائر مجهول صلاحية إخفاء إعلان عبر عداد قابل للتلاعب
+drop function if exists public.report_ad(uuid, text, text);
 create or replace function public.report_ad(p_ad_id uuid, p_reporter text, p_reason text default null)
-returns void language plpgsql security definer set search_path = public as $$
+returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  inserted_count integer;
+  normalized_reporter text := left(regexp_replace(lower(trim(coalesce(p_reporter, ''))), '[^a-z0-9_-]', '', 'g'), 64);
 begin
+  if p_ad_id is null or normalized_reporter is null or char_length(normalized_reporter) < 8 then return false; end if;
   insert into public.ad_reports(ad_id, reporter_id, reason)
-  values (p_ad_id, left(p_reporter, 64), left(p_reason, 200))
-  on conflict do nothing;
-  if (select count(*) from public.ad_reports where ad_id = p_ad_id) >= 3 then
-    update public.ads set status = 'hidden' where id = p_ad_id;
-  end if;
+  select p_ad_id, normalized_reporter, left(nullif(trim(p_reason), ''), 200)
+  where exists (select 1 from public.ads where id=p_ad_id and status='active' and expires_at > now())
+  on conflict (ad_id, reporter_id) do nothing;
+  get diagnostics inserted_count = row_count;
+  return inserted_count > 0;
 end $$;
 
 -- حذف إعلانك أنت: الكود السري يُحفظ في متصفحك فقط

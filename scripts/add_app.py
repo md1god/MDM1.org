@@ -23,6 +23,11 @@ BACK = (f"{SITE}/apps/", "كل التطبيقات")
 
 def reject(why):
     print("handed-over app rejected:", why)
+    # Rejections used to end as a green run that quietly published nothing (the 'function' bug went unnoticed for days).
+    # In Actions, make it a visible failure; callers that only validate (rea_scout / plan_queue) catch SystemExit either way.
+    if os.environ.get("GITHUB_ACTIONS") == "true" and os.environ.get("APP_JSON"):
+        print("::error::app rejected by the safety gate: " + str(why)[:200])
+        sys.exit(1)
     sys.exit(0)
 
 
@@ -87,8 +92,11 @@ def css_problem(css):
 
 JS_BLOCK = [
     r"\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon|importScripts|Worker|SharedWorker|BroadcastChannel|RTCPeerConnection|WebTransport|postMessage)\b",
-    r"(?-i:\b(eval|Function|Reflect|Proxy|globalThis|__proto__|__defineGetter__|__defineSetter__)\b)",   # case-SENSITIVE: lowercase 'function' is plain JS
-    r"\.\s*constructor\b",
+    # JS identifiers are case-sensitive: the globals Function / Reflect / Proxy are blocked as written, but the keyword `function`
+    # must stay legal. The whole list is compiled with re.I (HTML/URL parts need it), which made `Function` match every
+    # `function` in every app and rejected all of them from 2026-11-11 on ("unsafe js: 'function' is not allowed").
+    r"\b(eval|globalThis|__proto__|__defineGetter__|__defineSetter__|(?-i:Function|Reflect|Proxy))\b",
+    r"\.\s*constructor\b|[\"'`]\s*constructor\s*[\"'`]",
     r"\b(localStorage|sessionStorage|indexedDB|openDatabase|cookieStore)\b|\bcaches\s*\.",
     r"\bdocument\s*\.\s*(cookie|domain|write|writeln|location)\b",
     r"\b(window|self|document|this)\s*\[",

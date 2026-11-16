@@ -19,7 +19,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CARD = "https://mdm1.org/images/og-card.jpg"
-HAS_MENU = re.compile(r'id=["\']mdm1m-btn["\']', re.I)
+HAS_MENU = re.compile(r'<button\b[^>]*\bid=["\']mdm1m-btn["\']', re.I)   # a real button, not the hidden stub below
+# Translated pages (scripts/build-i18n.js) carry <span id="mdm1m-btn" hidden></span> so the injector used to skip them,
+# which left ~4,500 pages without the site menu. The stub is now dropped and the real menu injected like everywhere else.
+STUB_MENU = re.compile(r'<span\b[^>]*\bid=["\']mdm1m-btn["\'][^>]*>\s*</span>[ \t]*\n?', re.I)
+STYLE_RE = re.compile(r"<style>\s*#mdm1m-btn\{.*?</style>", re.S)
 HAS_MUSIC = re.compile(r'id=["\']bg-music["\']', re.I)
 HAS_GLOBAL_JS = re.compile(r'js/global\.js', re.I)
 PANEL_RE = re.compile(r'(<nav id="mdm1m-panel"[^>]*>)(.*?)(</nav>)', re.S | re.I)
@@ -86,9 +90,15 @@ def transform(text: str, menu: dict[str, str], v3d: tuple[str, str] | None = Non
         text = re.sub(r"<nav>\s*(?=<nav\b)", "", text, count=1, flags=re.I)
     text, head_add = card_tags(text)
     add_menu = not HAS_MENU.search(text)
-    if not add_menu:   # صفحة لها قائمتها: نوحّد روابطها مع قائمة الرئيسية الحالية
+    if add_menu:
+        text = STUB_MENU.sub("", text)
+    if not add_menu:   # صفحة لها قائمتها: نوحّد روابطها وشكلها مع قائمة الرئيسية الحالية
         canon = absolutize(menu["panel_inner"])
         text = PANEL_RE.sub(lambda m: m.group(1) + canon + m.group(3), text, count=1)
+        text = STYLE_RE.sub(lambda m: menu["style"], text, count=1)
+        if GENERIC_NAV_RULE.search(text):   # page-level `nav{height/display/..}` rules squash a <nav> panel (hub.html showed 72px of it)
+            text = re.sub(r'<nav id="mdm1m-panel"([^>]*)>(.*?)</nav>',
+                          lambda m: f'<div id="mdm1m-panel" role="navigation"{m.group(1)}>{m.group(2)}</div>', text, count=1, flags=re.S | re.I)
     if add_menu:
         head_add.append(menu["style"])
     heads = list(re.finditer(r"</\s*head\s*>", text, re.I))

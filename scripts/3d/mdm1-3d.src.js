@@ -14,12 +14,14 @@
  */
 import {
   Scene, PerspectiveCamera, WebGLRenderer, Group, Mesh, Points, BufferGeometry, Float32BufferAttribute,
-  ShaderMaterial, AdditiveBlending, CylinderGeometry, TorusGeometry, SphereGeometry, IcosahedronGeometry,
+  ShaderMaterial, AdditiveBlending, CylinderGeometry, CircleGeometry, TorusGeometry, SphereGeometry, IcosahedronGeometry,
   MeshStandardMaterial, CanvasTexture, SRGBColorSpace, AmbientLight, DirectionalLight, PointLight,
   Raycaster, Vector2, Sprite, SpriteMaterial, MathUtils, PMREMGenerator, EdgesGeometry, LineSegments,
   LineBasicMaterial, LineLoop, Color, ACESFilmicToneMapping,
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { initFx } from './fx.js';
+import { initDrag } from './drag.js';
 
 (function main() {
   'use strict';
@@ -96,7 +98,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     const ring = (r, w, col) => { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.arc(s / 2, s / 2, r, 0, Math.PI * 2); g.stroke(); };
     ring(s / 2 - 22, 12, '#c9a84c'); ring(s / 2 - 48, 3, '#f0c060'); ring(s / 2 - 60, 2, '#6b4f1a');
     // Eye of Horus-like emblem
-    g.save(); g.translate(s / 2, s * 0.37);
+    g.save(); g.translate(s / 2, s * 0.335);
     g.strokeStyle = '#f0c060'; g.fillStyle = '#f0c060'; g.lineWidth = 8; g.lineCap = 'round';
     g.beginPath(); g.moveTo(-96, 0); g.quadraticCurveTo(0, -78, 96, 0); g.quadraticCurveTo(0, 62, -96, 0); g.stroke();
     g.beginPath(); g.arc(4, -2, 26, 0, Math.PI * 2); g.fill();
@@ -105,8 +107,9 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     g.beginPath(); g.moveTo(-18, 40); g.quadraticCurveTo(-30, 82, -6, 98); g.stroke();
     g.restore();
     g.fillStyle = '#f0c060'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.font = '900 112px Georgia, "Times New Roman", serif';
-    g.fillText('MDM1', s / 2, s * 0.74);
+    // Kept inside the inner ring (diameter ~392px at this height) with a safe margin on both sides.
+    g.font = '900 86px Georgia, "Times New Roman", serif';
+    g.fillText('MDM1', s / 2, s * 0.715, 250);
     const tex = new CanvasTexture(c);
     tex.colorSpace = SRGBColorSpace;
     tex.anisotropy = 4;
@@ -117,14 +120,19 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     const face = tokenFaceTexture();
     const side = new MeshStandardMaterial({ color: GOLD, metalness: 1, roughness: 0.26 });
     const cap = new MeshStandardMaterial({ map: face, emissive: 0x3a2506, emissiveMap: face, emissiveIntensity: 0.9, metalness: 0.85, roughness: 0.34 });
-    const body = new Mesh(new CylinderGeometry(1, 1, 0.17, 96, 1), [side, cap, cap]);
-    body.rotation.x = Math.PI / 2;                         // cap faces the camera
+    // Open cylinder for the edge only. The faces are flat discs: CylinderGeometry's own caps map the
+    // texture rotated 90deg (and mirrored on the back), which is what made the text run sideways.
+    const body = new Mesh(new CylinderGeometry(1, 1, 0.17, 96, 1, true), side);
+    body.rotation.x = Math.PI / 2;
+    const discGeo = new CircleGeometry(1, 96);
+    const front = new Mesh(discGeo, cap); front.position.z = 0.0855;
+    const back = new Mesh(discGeo, cap); back.position.z = -0.0855; back.rotation.y = Math.PI;   // reads correctly from behind
     const rimMat = new MeshStandardMaterial({ color: GOLD_B, metalness: 1, roughness: 0.2 });
     const rimA = new Mesh(new TorusGeometry(1, 0.055, 16, 96), rimMat); rimA.position.z = 0.085;
     const rimB = rimA.clone(); rimB.position.z = -0.085;
     const g = new Group();
-    g.add(body, rimA, rimB);
-    g.userData.dispose = () => { face.dispose(); side.dispose(); cap.dispose(); rimMat.dispose(); body.geometry.dispose(); rimA.geometry.dispose(); };
+    g.add(body, front, back, rimA, rimB);
+    g.userData.dispose = () => { face.dispose(); side.dispose(); cap.dispose(); rimMat.dispose(); body.geometry.dispose(); discGeo.dispose(); rimA.geometry.dispose(); };
     return g;
   }
 
@@ -262,6 +270,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 
     const state = { px: 0, py: 0, tx: 0, ty: 0, sp: 0, tsp: 0, vel: 0, lastScroll: scrollY, w: 0, h: 0 };
     const uni = galaxy.material.uniforms;
+    const fl = { yaw: 0, pitch: 0, spin: 0 };
 
     function resize() {
       const w = innerWidth, h = innerHeight;
@@ -270,8 +279,14 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
       renderer.setSize(w, h, false);
       camera.aspect = w / h; camera.updateProjectionMatrix();
       uni.uPx.value = renderer.getPixelRatio() * (h / 900);
-      // On narrow screens keep the token inside the frame.
-      token.position.x = side * clamp(3.9 * (w / h) / 1.6, 1.6, 3.9);
+      // Size and place the token from the real visible width at its depth, so it is never clipped
+      // by the screen edge (it used to be cut off on the left in portrait / RTL).
+      const aspect = w / h;
+      const tScale = clamp(aspect * 1.1, 0.6, 0.85);
+      token.scale.setScalar(tScale);
+      const halfW = Math.tan(MathUtils.degToRad(camera.fov / 2)) * 10 * aspect;                 // camera z 9 to token z -1
+      const reach = tScale * 1.06 + 0.2;                 // coin radius incl. rim + margin
+      token.position.x = side * Math.min(3.9, Math.max(0, halfW - reach));
     }
     resize();
     addEventListener('resize', resize, { passive: true });
@@ -307,9 +322,21 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
       uni.uTime.value = t;
       const halfH = Math.tan(MathUtils.degToRad(camera.fov / 2)) * dist;
       uni.uPointer.value.set(state.px * halfH * camera.aspect, state.py * halfH);
-      token.rotation.y = t * 0.7 + state.vel * 6 + state.px * 0.6;
-      token.rotation.x = Math.sin(t * 0.5) * 0.18 + state.py * 0.3;
-      token.position.y = 0.4 + Math.sin(t * 0.8) * 0.15 - state.sp * 0.6;
+      // Floating coin: it mostly faces the viewer, sways and leans toward the pointer with inertia,
+      // takes a graceful full turn every ~10 s, and gets an extra spin from fast scrolling.
+      const cycle = t % 10, turn = clamp((cycle - 8.2) / 1.8, 0, 1);
+      const turnEase = turn * turn * (3 - 2 * turn);
+      const turns = Math.floor(t / 10) * Math.PI * 2 + turnEase * Math.PI * 2;
+      fl.spin = lerp(fl.spin, fl.spin + state.vel * 4, 1 - Math.exp(-dt * 4));
+      const yawT = turns + fl.spin + Math.sin(t * 0.45) * 0.42 + state.px * 0.55;
+      const pitchT = Math.sin(t * 0.62 + 0.8) * 0.12 - state.py * 0.28;
+      const k = 1 - Math.exp(-dt * 5);                       // critically damped follow
+      fl.yaw = lerp(fl.yaw, yawT, k); fl.pitch = lerp(fl.pitch, pitchT, k);
+      token.rotation.y = fl.yaw;
+      token.rotation.x = fl.pitch;
+      token.rotation.z = Math.sin(t * 0.55) * 0.05 - state.px * 0.04;
+      token.position.y = 0.4 + Math.sin(t * 0.8) * 0.16 + Math.sin(t * 1.7 + 1) * 0.04 - state.sp * 0.6;
+      token.position.z = -1 + Math.sin(t * 0.6 + 2) * 0.18;
       for (const s of shapes) {
         s.rotation.x += s.userData.spin.x * dt; s.rotation.y += s.userData.spin.y * dt;
         s.position.y = s.userData.baseY + Math.sin(t * 0.5 + s.position.x) * 0.25;
@@ -632,6 +659,72 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
     setTimeout(() => targets.forEach((el) => el.classList.add('m3d-in')), 9000);   // safety net
   }
 
+  /* ------------------------------------------------------------------ floating orb buttons */
+  // The fixed round buttons (menu, language, music, 3D) become glossy gold orbs: they float on their
+  // own, lean toward the pointer with a magnetic pull, a specular highlight follows the pointer, and
+  // they sink when pressed. Some are injected late (language, music), so new ones are adopted as they appear.
+  function initOrbs() {
+    if (reduceMotion) return;
+    const SEL = '#mdm1m-btn, #mdm1-lang-btn, #music-btn, #m3d-toggle';
+    const orbs = new Map();
+    const ptr = { x: -9999, y: -9999 };
+    function adopt(el) {
+      if (orbs.has(el)) return;
+      el.classList.add('m3d-orb');
+      const o = { el, ph: rand() * 6.283, x: 0, y: 0, rx: 0, ry: 0, s: 1, hx: 38, hy: 28, down: false };
+      orbs.set(el, o);
+      el.addEventListener('pointerdown', () => { o.down = true; });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => el.addEventListener(ev, () => { o.down = false; }));
+    }
+    function scan() { doc.querySelectorAll(SEL).forEach(adopt); }
+    scan();
+    new MutationObserver(scan).observe(doc.body, { childList: true });
+    [600, 1800, 4000].forEach((ms) => setTimeout(scan, ms));
+
+    addEventListener('pointermove', (e) => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+    addEventListener('pointerdown', (e) => { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+    addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') ptr.x = ptr.y = -9999; }, { passive: true });
+    doc.addEventListener('pointerleave', () => { ptr.x = ptr.y = -9999; });
+
+    const REACH = 120;
+    makeLoop((t, dt) => {
+      const on = effectsOn;
+      const k = 1 - Math.exp(-dt * 9);
+      orbs.forEach((o, el) => {
+        if (!el.isConnected) { orbs.delete(el); return; }
+        let tx = 0, ty = 0, trx = 0, try_ = 0, ts = 1, hx = 38, hy = 28;
+        if (on) {
+          const r = el.getBoundingClientRect();
+          const cx = r.left + r.width / 2 - o.x, cy = r.top + r.height / 2 - o.y;
+          const dx = ptr.x - cx, dy = ptr.y - cy, d = Math.hypot(dx, dy);
+          // idle float
+          tx = Math.sin(t * 0.7 + o.ph * 2) * 1.4;
+          ty = Math.sin(t * 1.1 + o.ph) * 2.8;
+          try_ = Math.sin(t * 0.9 + o.ph) * 7;
+          trx = Math.cos(t * 0.8 + o.ph) * 6;
+          if (d < REACH) {
+            const f = 1 - d / REACH;
+            tx += clamp(dx * 0.22 * f, -6, 6); ty += clamp(dy * 0.22 * f, -6, 6);
+            try_ = clamp(dx / (r.width / 2), -1.2, 1.2) * 22 * (0.35 + f * 0.65);
+            trx = -clamp(dy / (r.height / 2), -1.2, 1.2) * 22 * (0.35 + f * 0.65);
+            ts = 1 + 0.1 * f;
+            hx = clamp(50 + (dx / r.width) * 70, 15, 85); hy = clamp(50 + (dy / r.height) * 70, 12, 85);
+          }
+          if (o.down) ts = 0.88;
+        }
+        o.x = lerp(o.x, tx, k); o.y = lerp(o.y, ty, k);
+        o.rx = lerp(o.rx, trx, k); o.ry = lerp(o.ry, try_, k);
+        o.s = lerp(o.s, ts, o.down ? 1 - Math.exp(-dt * 22) : k);
+        o.hx = lerp(o.hx, hx, k); o.hy = lerp(o.hy, hy, k);
+        const st = el.style;
+        st.setProperty('--o-x', o.x.toFixed(2) + 'px'); st.setProperty('--o-y', o.y.toFixed(2) + 'px');
+        st.setProperty('--o-rx', o.rx.toFixed(2) + 'deg'); st.setProperty('--o-ry', o.ry.toFixed(2) + 'deg');
+        st.setProperty('--o-s', o.s.toFixed(3));
+        st.setProperty('--o-hx', o.hx.toFixed(1) + '%'); st.setProperty('--o-hy', o.hy.toFixed(1) + '%');
+      });
+    }, () => true).start();
+  }
+
   /* ------------------------------------------------------------------ toggle button */
   function addToggle() {
     const b = doc.createElement('button');
@@ -659,8 +752,10 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
   onReady(() => {
     try {
       if (isHomePage()) buildHub();
-      if (!heavyPage) { initTilt(); initReveal(); }
+      if (!heavyPage) { initTilt(); initReveal(); initFx({ words: true }); }
       addToggle();
+      initDrag({ sel: '#mdm1m-btn, #mdm1-lang-btn, #music-btn, #m3d-toggle', panels: { 'mdm1m-btn': '#mdm1m-panel', 'mdm1-lang-btn': '#mdm1-lang-panel' } });
+      initOrbs();
       if (effectsOn) startAmbient();
     } catch (err) {
       // The 3D layer must never break a page.

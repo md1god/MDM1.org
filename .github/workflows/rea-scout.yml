@@ -21,7 +21,13 @@ jobs:
       - name: 1) Pick a product and one core feature
         run: python3 scripts/rea_scout.py pick
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with: { name: rea-target, path: /tmp/target.json, if-no-files-found: ignore }
+        if: always()   # also when the pick step failed: the build/report job reads pick-error.txt to say why nothing was built
+        with:
+          name: rea-target
+          path: |
+            /tmp/target.json
+            /tmp/pick-error.txt
+          if-no-files-found: ignore
 
   observe:
     needs: pick
