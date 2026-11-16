@@ -809,7 +809,7 @@ body.game-open {
       <div class="spinner"></div>
       <span data-i18n="opening_game">جاري فتح اللعبة...</span>
     </div>
-    <iframe id="gameFrame" src="about:blank" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Canvas" allowfullscreen></iframe>
+    <iframe id="gameFrame" src="about:blank" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock" allow="fullscreen; autoplay; gamepad; pointer-lock" title="Game Canvas" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -1067,8 +1067,11 @@ body.game-open {
     return String(str || "").replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[m]));
   }
 
+  // Third-party feed data: only https URLs may reach the iframe / <img>.
+  const safeUrl = u => { try { const x = new URL(u); return x.protocol === 'https:' ? x.href : null } catch { return null } };
+
   function normalizeFeedItem(raw) {
-    if (!raw || !raw.url) return null;
+    if (!raw || !raw.url || !safeUrl(raw.url)) return null;
     const title = raw.title || raw.name || "Game";
     const category = raw.category || "";
     const tags = raw.tags || "";
@@ -1081,8 +1084,8 @@ body.game-open {
     return {
       id: raw.id || raw.url,
       title: title,
-      thumb: raw.thumb || raw.thumb_1 || raw.thumb_2 || "",
-      url: raw.url,
+      thumb: safeUrl(raw.thumb || raw.thumb_1 || raw.thumb_2 || "") || "",
+      url: safeUrl(raw.url) || "",
       category: category,
       tags: tags,
       _cat: cat,
@@ -1434,7 +1437,9 @@ body.game-open {
       bgMusic.pause();
     }
 
-    gameFrame.src = game.url;
+    const s = safeUrl(game.url);
+    if (!s) return;
+    gameFrame.src = s;
 
     if (window.matchMedia("(max-width: 700px)").matches) {
       setTimeout(() => {
@@ -1468,7 +1473,9 @@ body.game-open {
     if (!currentGame) return;
     stageLoader.classList.remove("hidden");
     gameFrame.src = "about:blank";
-    setTimeout(() => { gameFrame.src = currentGame.url; }, 60);
+    const s = safeUrl(currentGame.url);
+    if (!s) return;
+    setTimeout(() => { gameFrame.src = s; }, 60);
   });
   btnFullscreen.addEventListener("click", () => {
     if (playStage.requestFullscreen) playStage.requestFullscreen();

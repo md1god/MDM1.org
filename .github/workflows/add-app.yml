@@ -19,7 +19,13 @@ jobs:
       - name: Validate and write the app
         env:
           APP_JSON: ${{ inputs.app_json }}
-        run: python3 scripts/add_app.py
+        run: |
+          set -o pipefail
+          python3 scripts/add_app.py 2>&1 | tee /tmp/add_app.log
+          if grep -q 'handed-over app rejected' /tmp/add_app.log; then
+            echo "::error::$(grep 'handed-over app rejected' /tmp/add_app.log | head -1)"
+            exit 1
+          fi
       - name: Smoke test in a real browser (must load and click through without errors)
         run: |
           APP=$(ls -t apps/*.html | grep -v index.html | head -1)
