@@ -224,7 +224,7 @@ def validate(r, cands, d):
     if not re.search(r"[\u0600-\u06FF]", r["title"] + r["body_html"]): return bad("not Arabic")
     m = re.search(r"<script|<iframe|<link|<style|\son\w+\s*=|(src|href|action)\s*=\s*[\"']?(https?:)?//", r["body_html"], re.I)
     if m: return bad("unsafe html in body_html: found %r. Remove it: no <script>/<style>/<link>/<iframe>, no on*= attributes, no external src/href; wire events in script_js with addEventListener" % m.group(0).strip())
-    m = re.search(r"fetch\s*\(|XMLHttpRequest|WebSocket|import\s*\(|eval\s*\(|new Function|document\.cookie|https?://|</script", r["script_js"], re.I)
+    m = re.search(r"fetch\s*\(|XMLHttpRequest|WebSocket|import\s*\(|\beval\s*\(|new\s+Function|document\.cookie|https?://|</script", r["script_js"], re.I)
     if m: return bad("unsafe js: found %r in script_js. No network, no eval, no http(s):// text anywhere" % m.group(0))
     names = set() if c["id"].startswith("evergreen:") else {c["name"].split("/")[-1].lower()} - {""}
     if any(n in (r["title"] + r["slug"]).lower() for n in names if len(n) > 3): return bad("contains source name")
