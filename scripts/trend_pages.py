@@ -222,8 +222,10 @@ def validate(r, cands, d):
     if not 3 <= len(r.get("faq", [])) <= 6 or not all(x.get("q") and x.get("a") for x in r["faq"]): return bad("faq")
     if len(re.sub(r"<[^>]+>", " ", r["body_html"])) < 500 or 'id="out"' not in r["body_html"]: return bad("body too thin / no #out")
     if not re.search(r"[\u0600-\u06FF]", r["title"] + r["body_html"]): return bad("not Arabic")
-    if re.search(r"<script|<iframe|<link|<style|\son\w+\s*=|(src|href|action)\s*=\s*[\"']?(https?:)?//", r["body_html"], re.I): return bad("unsafe html")
-    if re.search(r"fetch\s*\(|XMLHttpRequest|WebSocket|import\s*\(|eval\s*\(|new Function|document\.cookie|https?://|</script", r["script_js"], re.I): return bad("unsafe js")
+    m = re.search(r"<script|<iframe|<link|<style|\son\w+\s*=|(src|href|action)\s*=\s*[\"']?(https?:)?//", r["body_html"], re.I)
+    if m: return bad("unsafe html in body_html: found %r. Remove it: no <script>/<style>/<link>/<iframe>, no on*= attributes, no external src/href; wire events in script_js with addEventListener" % m.group(0).strip())
+    m = re.search(r"fetch\s*\(|XMLHttpRequest|WebSocket|import\s*\(|eval\s*\(|new Function|document\.cookie|https?://|</script", r["script_js"], re.I)
+    if m: return bad("unsafe js: found %r in script_js. No network, no eval, no http(s):// text anywhere" % m.group(0))
     names = set() if c["id"].startswith("evergreen:") else {c["name"].split("/")[-1].lower()} - {""}
     if any(n in (r["title"] + r["slug"]).lower() for n in names if len(n) > 3): return bad("contains source name")
     with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as f: f.write(r["script_js"])
