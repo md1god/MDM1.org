@@ -123,12 +123,26 @@ def js_problem(js):
     return None
 
 
+
+_LANG_LABEL = re.compile(r"عربي|عربية|بالعربية|العربية|\bArabic\b", re.I)
+def lang_label_problem(spec):
+    """Reject pages that advertise themselves as 'Arabic': they are global products (the page is translated for every visitor)."""
+    if "arabic" in str(spec.get("slug", "")).lower(): return ""
+    parts = [spec.get("title", ""), spec.get("h1", ""), spec.get("description", ""), re.sub(r"<[^>]+>", " ", str(spec.get("body_html", "")))]
+    parts += [str(x.get("q", "")) + " " + str(x.get("a", "")) for x in (spec.get("faq") or []) if isinstance(x, dict)]
+    joined = re.sub(r"المملكة العربية السعودية|الإمارات العربية المتحدة|جمهورية مصر العربية|العربية السعودية|العربية المتحدة|مصر العربية|الجامعة العربية|الأرقام العربية", " ", " ".join(str(p) for p in parts))   # country / fixed names are fine
+    m = _LANG_LABEL.search(joined)
+    return ("do not label the product as Arabic ('%s'): it is a global product for every visitor, write it as a normal international page" % m.group(0)) if m else ""
+
+
 def validate(a, existing):
     if not isinstance(a, dict): reject("not an object")
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){0,5}", str(a.get("slug", ""))) or len(a["slug"]) > 40 or a["slug"] == "index": reject("slug")
     if a["slug"] in existing: reject("duplicate slug")
     for k in ("title", "h1", "description", "body_html", "script_js"):
         if not isinstance(a.get(k), str) or not a[k].strip(): reject("missing " + k)
+    why = lang_label_problem(a)
+    if why: reject(why)
     a["css"] = a.get("css") if isinstance(a.get("css"), str) else ""
     if len(a["body_html"]) > 40000 or len(a["script_js"]) > 40000 or len(a["css"]) > 9000: reject("size")
     faq = a.get("faq")

@@ -67,6 +67,8 @@ def gate(r):
 
 PROMPT = """You are turning ONE project plan (a written business/product plan in Arabic) into ONE small free web app.
 
+NEVER label the tool, app or page as Arabic: the words Arabic / عربي / عربية / بالعربية / العربية must not appear in the title, h1, description, FAQ, body text or slug (unless the product is truly about the Arabic language itself). It is a global product for every visitor in the world, and the page is auto-translated, so write it like a normal international product page. 
+
 FIRST decide feasibility. Answer feasible=false (and do not build) when the plan's core cannot run as a client-side page:
 it needs a server, accounts, payments, a blockchain/token, real investment or returns, medical or legal advice, or personal data about others.
 Never promise prices, returns or profits in the app.

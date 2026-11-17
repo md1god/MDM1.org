@@ -183,7 +183,7 @@ LAST_REASON = ""
 
 PROMPT = """You are building ONE original, genuinely useful, single-page Arabic web tool for mdm1.org, inspired by the IDEA behind one trending project below.
 Pick the one candidate that can be built as a fully working CLIENT-SIDE tool (HTML form + vanilla JS, no server, no network, no external libs). If none fits, answer {"pick":null}.
-Rules: write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; never label the tool, page or site with the word "Arabic" (or its Arabic-script form) as a descriptor - no "Arabic tool/app" wording; the tool must really work.
+Rules: NEVER label the tool, app or page as Arabic: the words Arabic / عربي / عربية / بالعربية / العربية must not appear in the title, h1, description, FAQ, body text or slug (unless the product is truly about the Arabic language itself). It is a global product for every visitor in the world, and the page is auto-translated, so write it like a normal international product page. Write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; never label the tool, page or site with the word "Arabic" (or its Arabic-script form) as a descriptor - no "Arabic tool/app" wording; the tool must really work.
 Return ONLY JSON: {"pick":"<candidate id>","slug":"ascii-kebab-3-40","title":"Arabic SEO title <=70 chars","h1":"Arabic heading","description":"Arabic meta description 110-160 chars",
 "body_html":"intro paragraph (>=80 words, starts with a quick answer) + form/inputs/button/output. Elements need ids; wrap result in <div class=\\"out\\" id=\\"out\\">; use <label>,<input>,<select>,<textarea>,<button>; NO <script>, NO external src/href",
 "script_js":"vanilla JS wiring the ids above","faq":[{"q":"..","a":".."}  (3-5 items)]}
@@ -196,6 +196,18 @@ def ask(cands, must=False, feedback=""):
     if feedback: msg += "\nYour previous answer was rejected because: " + feedback + ". Fix exactly that and return the full JSON again."
     return LLM.chat_json(msg, max_tokens=6500, temperature=0.4)   # OpenCode Zen free models first, GitHub Models as fallback (scripts/llm.py)
 
+
+_LANG_LABEL = re.compile(r"عربي|عربية|بالعربية|العربية|\bArabic\b", re.I)
+def lang_label_problem(spec):
+    """Reject pages that advertise themselves as 'Arabic': they are global products (the page is translated for every visitor)."""
+    if "arabic" in str(spec.get("slug", "")).lower(): return ""
+    parts = [spec.get("title", ""), spec.get("h1", ""), spec.get("description", ""), re.sub(r"<[^>]+>", " ", str(spec.get("body_html", "")))]
+    parts += [str(x.get("q", "")) + " " + str(x.get("a", "")) for x in (spec.get("faq") or []) if isinstance(x, dict)]
+    joined = re.sub(r"المملكة العربية السعودية|الإمارات العربية المتحدة|جمهورية مصر العربية|العربية السعودية|العربية المتحدة|مصر العربية|الجامعة العربية|الأرقام العربية", " ", " ".join(str(p) for p in parts))   # country / fixed names are fine
+    m = _LANG_LABEL.search(joined)
+    return ("do not label the product as Arabic ('%s'): it is a global product for every visitor, write it as a normal international page" % m.group(0)) if m else ""
+
+
 def validate(r, cands, d):
     c = next((x for x in cands if x["id"] == r.get("pick")), None)
     def bad(why):
@@ -205,6 +217,8 @@ def validate(r, cands, d):
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){0,5}", r.get("slug", "")) or len(r["slug"]) > 40 or any(t["slug"] == r["slug"] for t in d["tools"]) or r["slug"] in ("index",): return bad("slug")
     for k in ("title", "h1", "description", "body_html", "script_js"):
         if not isinstance(r.get(k), str) or not r[k].strip(): return bad("missing " + k)
+    why = lang_label_problem(r)
+    if why: return bad(why)
     if not 3 <= len(r.get("faq", [])) <= 6 or not all(x.get("q") and x.get("a") for x in r["faq"]): return bad("faq")
     if len(re.sub(r"<[^>]+>", " ", r["body_html"])) < 500 or 'id="out"' not in r["body_html"]: return bad("body too thin / no #out")
     if not re.search(r"[\u0600-\u06FF]", r["title"] + r["body_html"]): return bad("not Arabic")
