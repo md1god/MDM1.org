@@ -42,10 +42,13 @@ def summary(md):
 
 def pick():
     have = sorted({t["slug"] for t in T.load()["tools"]} | app_slugs())
-    r = llm("PICK. Today is " + dt.date.today().isoformat() + ". Name ONE well-known software product, app or online tool of ANY kind and ANY domain "
-            "(web app, desktop program, mobile app, utility, creative, business, education, media, developer tools, productivity, games...). "
-            "Prefer well-known PAID or freemium products, but any is allowed. Do not pick the most obvious flagship: vary widely from day to day. "
-            "Choose its single most valued feature that can be rebuilt as a small free client-side page (vanilla JS, no server, no account, no libraries, works offline). "
+    r = llm("PICK. Today is " + dt.date.today().isoformat() + ". Name ONE software product, app or online tool that has PROVEN, DURABLE DEMAND: "
+            "it has been used for years by millions of people and people search for it every single day all year round (evergreen need, not a fad, "
+            "not a launch of the last weeks, not a short trend). Typical: converters, calculators, editors, planners, trackers, generators, checkers, "
+            "formatters, PDF/image/video/audio utilities, writing and study tools, business and finance helpers, developer utilities, mini games with a huge audience. "
+            "Prefer products that people PAY for or that sell a freemium plan, because that proves the demand. Vary the domain from day to day. "
+            "Choose its single most used feature that can be rebuilt as a FULLY WORKING free client-side page (vanilla JS, no server, no account, no libraries, works offline) "
+            "that does the real job end to end, so a visitor gets the result and has no reason to go elsewhere. "
             "Avoid anything about passwords, payments, medical diagnosis or legal advice, and anything similar to these existing slugs: " + ", ".join(have) +
             '. Return ONLY JSON {"name":"product","url":"https://its-public-page","feature":"the one feature","kind":"tool or app"}. '
             "kind=tool for a calculator/converter/generator (form + result); kind=app for anything interactive (editor, planner, tracker, timer, canvas, mini game). "
