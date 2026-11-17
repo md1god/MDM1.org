@@ -128,9 +128,40 @@ def save(state):
     json.dump(state, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
+RANK_PROMPT = """Rate the REAL-WORLD DEMAND for the product need behind each project plan below, 0-100.
+High (70-100): an evergreen need that millions of people have all year round and search for every day (converters, calculators, editors, planners,
+trackers, generators, checkers, utilities, study/writing/business helpers), AND a client-side web page can do the whole job offline.
+Low (0-30): a fad or a short trend, a niche nobody searches for, something that needs a server, accounts, payments, a blockchain or real data feeds.
+Return ONLY JSON {"scores": {"<id>": <0-100>, ...}} with every id.
+PLANS:
+"""
+RANK_BATCH, RANK_MAX = 25, 100   # plans scored per prompt / per run (scores are cached in the state file)
+
+
+def rank(todo, state):
+    """Score the plans' demand once (cached in state['demand']) and return todo sorted highest demand first."""
+    dem = state.setdefault("demand", {})
+    need = [(n, t) for n, t in todo if n not in dem][:RANK_MAX]
+    for i in range(0, len(need), RANK_BATCH):
+        part = need[i:i + RANK_BATCH]
+        lines = "\n".join("%s: %s | %s" % (n, t.replace(MARK, "").strip(" —-"), plan_text(n)[:220]) for n, t in part)
+        if os.environ.get("PLAN_MOCK"): break
+        r = LLM.chat_json(RANK_PROMPT + lines, max_tokens=3000, temperature=0.1)
+        sc = r.get("scores") if isinstance(r, dict) else None
+        if not isinstance(sc, dict): print("::warning::demand ranking: no usable answer for a batch"); continue
+        for n, _t in part:
+            try: dem[n] = max(0, min(100, int(float(sc[n]))))
+            except (KeyError, TypeError, ValueError): pass
+    # Unscored plans go after the scored ones; ties keep the old (oldest first) order.
+    return sorted(todo, key=lambda x: -dem.get(x[0], -1))
+
+
 def main():
     state = load_state()
     todo = [(n, t) for n, t in plans() if n not in state["done"] and state.get("failed", {}).get(n, 0) < MAX_FAILS]
+    todo = rank(todo, state)
+    save(state)
+    print("top demand:", [(n, state["demand"].get(n)) for n, _ in todo[:PER_DAY]])
     print("plans total %d, done %d, left %d, today %d" % (len(plans()), len(state["done"]), len(todo), PER_DAY))
     today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     used = set()
