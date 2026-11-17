@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منتدى تفاعلي داخل المتصفح | مواضيع واستطلاعات وإشراف | MDM1</title>
+<meta name="description" content="منتدى تفاعلي داخل المتصفح دون خادم أو حسابات: تصنيفات ومواضيع وردود منسقة، استطلاعات، تتبع المقروء، أفضل إجابة، أدوات إشراف وصلاحيات، وتصدير واستيراد JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/session-forum-workspace.html">
+<meta property="og:title" content="منتدى تفاعلي داخل المتصفح | مواضيع واستطلاعات وإشراف">
+<meta property="og:description" content="منتدى تفاعلي داخل المتصفح دون خادم أو حسابات: تصنيفات ومواضيع وردود منسقة، استطلاعات، تتبع المقروء، أفضل إجابة، أدوات إشراف وصلاحيات، وتصدير واستيراد JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/session-forum-workspace.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; }
+.app .intro { line-height: 1.9; margin: 0 0 18px; }
+.app .card { margin: 16px 0; padding: 16px; }
+.app .row { flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; }
+.app label { color: var(--gold); font-size: .9rem; }
+.app input, .app select { max-width: 100%; }
+.app textarea { width: 100%; resize: vertical; }
+.app .out { min-height: 1.4em; }
+.app .out.ok { color: var(--gold-bright); }
+.app .big { display: block; font-size: 1.8rem; color: var(--gold-bright); }
+.app .stat { min-width: 90px; text-align: center; }
+.app .smalltext { opacity: .85; }
+.app .catlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.app .catgroup { border-right: 3px solid var(--gold-dim); padding-right: 10px; }
+.app .catrow { justify-content: space-between; }
+.app .subcat { padding-right: 16px; margin-top: 4px; }
+.app .topiclist { display: grid; gap: 8px; margin: 10px 0; }
+.app .topicrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-bottom: 1px solid var(--gold-dim); padding: 8px 0; }
+.app .topicbtn { text-align: right; flex: 1 1 240px; }
+.app .pollbox { border: 1px solid var(--gold-dim); padding: 10px; margin: 10px 0; }
+.app .pollrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0; }
+.app .pollrow progress { flex: 1 1 120px; accent-color: var(--gold); }
+.app .post { border-right: 3px solid var(--gold-dim); padding: 10px; margin: 10px 0; }
+.app .post.best { border-right-color: var(--gold-bright); }
+.app .post.hidden { opacity: .65; }
+.app .postbody { line-height: 1.8; margin: 8px 0; overflow-wrap: anywhere; }
+.app .q { border-right: 3px solid var(--gold); padding-right: 10px; opacity: .85; }
+.app .linkbtn { background: none; border: 0; color: var(--gold-bright); padding: 0; cursor: pointer; }
+.app table { width: 100%; border-collapse: collapse; }
+.app th, .app td { border: 1px solid var(--gold-dim); padding: 6px; }
+.app #editLogView { overflow-x: auto; margin-top: 10px; }
+.app #jsonArea { direction: ltr; text-align: left; font-family: monospace; }
+.app .divider { border-top: 1px solid var(--gold-dim); margin: 12px 0; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "منتدى النقاش التفاعلي داخل المتصفح", "url": "https://mdm1.org/apps/session-forum-workspace.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ بياناتي بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل التصنيفات والمواضيع والردود والأصوات تبقى في ذاكرة الجلسة فقط، وتختفي عند إغلاق الصفحة. يمكنك تصدير JSON يدويًا ثم استيراده لاحقًا عند الحاجة."}}, {"@type": "Question", "name": "كيف أستخدم التنسيق في المشاركات؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب **نصًا عريضًا** أو *مائلًا* أو `رمزًا`، واستخدم ثلاث شرطات خلفية لكتلة الكود، ووسوم [b] و[i] و[u] و[quote]. القوائم تبدأ بشرطة والاقتباس بعلامة أكبر من."}}, {"@type": "Question", "name": "من يستطيع تعليم أفضل إجابة؟", "acceptedAnswer": {"@type": "Answer", "text": "صاحب الموضوع أو أي مشرف أو مدير. تظهر العلامة بجانب الرد المختار، ويمكن تغييرها في أي وقت من أدوات الإشراف، مع تسجيل التعديل في السجل."}}, {"@type": "Question", "name": "ماذا يحدث عند حظر عضو؟", "acceptedAnswer": {"@type": "Answer", "text": "لا يستطيع العضو المحظور إنشاء المواضيع أو الردود أو التصويت، ويظهر اسمه مع وسم الحظر في قوائم المستخدمين. يمكن للمشرف إلغاء الحظر بضغطة واحدة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">منتدى النقاش التفاعلي داخل المتصفح</h1>
+  <p class="page-sub">منتدى تفاعلي داخل المتصفح دون خادم أو حسابات: تصنيفات ومواضيع وردود منسقة، استطلاعات، تتبع المقروء، أفضل إجابة، أدوات إشراف وصلاحيات، وتصدير واستيراد JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot">
+<p class="intro" id="introText">الإجابة السريعة: يمكنك تشغيل منتدى كامل داخل المتصفح فورًا، دون خادم أو تسجيل أو حفظ دائم. أنشئ تصنيفات وأقسامًا فرعية، ثم افتح مواضيع وأضف ردودًا منسقة، وصوّت في الاستطلاعات، وعلّم أفضل إجابة، وتابع المقروء منه تلقائيًا. تتيح لك أدوات الإشراف المحاكاة تعديل المشاركات وإخفاءها ونقل المواضيع وإغلاقها وحظر الأعضاء، مع أدوار وصلاحيات وملفات تعريف وسجل للتعديلات. كل بياناتك تبقى في ذاكرة الجلسة فقط، ويمكنك تصديرها أو استيرادها كملف JSON عند الحاجة، ثم تختفي عند إغلاق الصفحة. جرّب التبديل بين الأعضاء لترى كيف تتغير الصلاحيات أمامك مباشرة.</p>
+
+<section class="card" id="overviewCard">
+<h2 id="overviewHeading">نظرة عامة</h2>
+<div class="row" id="identityRow">
+<label for="userSelect" id="userLabel">المستخدم الحالي</label>
+<select id="userSelect"></select>
+<span class="badge" id="roleBadge"></span>
+</div>
+<p class="out" id="userMsg"></p>
+<p class="smalltext" id="permOut"></p>
+<div class="row" id="statRow">
+<div class="stat"><output id="statTopics" class="big">0</output><small id="statTopicsLabel">مواضيع</small></div>
+<div class="stat"><output id="statPosts" class="big">0</output><small id="statPostsLabel">مشاركات</small></div>
+<div class="stat"><output id="statUnread" class="big">0</output><small id="statUnreadLabel">غير مقروءة</small></div>
+<div class="stat"><output id="statUsers" class="big">0</output><small id="statUsersLabel">أعضاء</small></div>
+</div>
+</section>
+
+<section class="card" id="categoriesCard">
+<h2 id="categoriesHeading">التصنيفات والأقسام الفرعية</h2>
+<div id="categoryList" class="catlist"></div>
+<div class="divider" id="catDivider"></div>
+<div class="row" id="addCatRow">
+<label for="newCatName" id="newCatLabel">اسم التصنيف الجديد</label>
+<input id="newCatName" type="text" placeholder="مثال: نقاشات تقنية">
+<label for="newCatDesc" id="newCatDescLabel">الوصف</label>
+<input id="newCatDesc" type="text" placeholder="وصف مختصر">
+<label for="newCatParent" id="newCatParentLabel">التصنيف الأب</label>
+<select id="newCatParent"></select>
+<button id="addCatBtn" class="sec">إضافة تصنيف</button>
+</div>
+<p class="out" id="catMsg"></p>
+</section>
+
+<section class="card" id="topicsCard">
+<h2 id="topicsHeading">المواضيع</h2>
+<div class="row" id="topicToolsRow">
+<label for="categoryFilter" id="categoryFilterLabel">تصفية حسب التصنيف</label>
+<select id="categoryFilter"></select>
+<label for="topicSort" id="topicSortLabel">الترتيب</label>
+<select id="topicSort">
+<option id="sortNew" value="new">الأحدث</option>
+<option id="sortReplies" value="replies">الأكثر ردودًا</option>
+<option id="sortUnread" value="unread">غير المقروءة أولًا</option>
+</select>
+<button id="markAllReadBtn" class="sec">تعليم الكل كمقروء</button>
+</div>
+<div id="topicList" class="topiclist"></div>
+<p class="out" id="topicMsg"></p>
+<h3 id="newTopicHeading">إنشاء موضوع جديد</h3>
+<div class="row" id="newTopicRow1">
+<label for="newTopicTitle" id="newTopicTitleLabel">عنوان الموضوع</label>
+<input id="newTopicTitle" type="text" placeholder="اكتب عنوانًا واضحًا">
+<label for="newTopicCat" id="newTopicCatLabel">التصنيف</label>
+<select id="newTopicCat"></select>
+</div>
+<label for="newTopicBody" id="newTopicBodyLabel">محتوى الموضوع (يدعم التنسيق)</label>
+<textarea id="newTopicBody" rows="5" placeholder="اكتب هنا، ويمكنك استخدام **عريض** أو [b]نص[/b]"></textarea>
+<fieldset id="pollFieldset">
+<legend id="pollLegend">استطلاع اختياري</legend>
+<label for="pollQuestion" id="pollQuestionLabel">سؤال الاستطلاع</label>
+<input id="pollQuestion" type="text" placeholder="اتركه فارغًا إذا لم ترد استطلاعًا">
+<label for="pollOptions" id="pollOptionsLabel">الخيارات، خيار في كل سطر</label>
+<textarea id="pollOptions" rows="3" placeholder="الخيار الأول&#10;الخيار الثاني"></textarea>
+</fieldset>
+<div class="row" id="createRow">
+<button id="createTopicBtn">إنشاء الموضوع</button>
+</div>
+</section>
+
+<section class="card" id="threadCard">
+<h2 id="threadHeading">الموضوع المفتوح</h2>
+<div id="threadView"></div>
+<p class="out" id="threadMsg"></p>
+<label for="replyBody" id="replyBodyLabel">اكتب ردًا (يدعم التنسيق)</label>
+<textarea id="replyBody" rows="4" placeholder="شارك برأيك بوضوح"></textarea>
+<div class="row" id="replyRow">
+<button id="replyBtn">إضافة رد</button>
+</div>
+</section>
+
+<section class="card" id="profileCard">
+<h2 id="profileHeading">ملفات الأعضاء</h2>
+<div class="row" id="profileRow">
+<label for="profileSelect" id="profileSelectLabel">اختر عضوًا</label>
+<select id="profileSelect"></select>
+</div>
+<div id="profileView"></div>
+</section>
+
+<section class="card" id="moderationCard">
+<h2 id="moderationHeading">أدوات الإشراف المحاكاة</h2>
+<h3 id="postToolsHeading">إدارة المشاركات</h3>
+<div class="row" id="postToolsRow">
+<label for="modPostSelect" id="modPostLabel">المشاركة</label>
+<select id="modPostSelect"></select>
+<label for="editPostInput" id="editPostLabel">النص الجديد</label>
+<input id="editPostInput" type="text" placeholder="اكتب النص المعدّل">
+<button id="saveEditBtn" class="sec">حفظ التعديل وتسجيله</button>
+<button id="hidePostBtn" class="sec">إخفاء المشاركة أو إظهارها</button>
+<button id="bestAnswerBtn" class="sec">تعليم كأفضل إجابة</button>
+</div>
+<h3 id="topicToolsHeading">إدارة المواضيع</h3>
+<div class="row" id="modTopicRow">
+<label for="modTopicSelect" id="modTopicLabel">الموضوع</label>
+<select id="modTopicSelect"></select>
+<label for="moveCatSelect" id="moveCatLabel">نقل إلى</label>
+<select id="moveCatSelect"></select>
+<button id="moveTopicBtn" class="sec">نقل الموضوع</button>
+<button id="closeTopicBtn" class="sec">إغلاق الموضوع أو فتحه</button>
+</div>
+<h3 id="userToolsHeading">إدارة الأعضاء</h3>
+<div class="row" id="banRow">
+<label for="banUserSelect" id="banUserLabel">العضو</label>
+<select id="banUserSelect"></select>
+<button id="banUserBtn" class="sec">حظر العضو</button>
+<button id="unbanUserBtn" class="sec">إلغاء حظر العضو</button>
+</div>
+<p class="out" id="modMsg"></p>
+<h3 id="editLogHeading">سجل التعديلات</h3>
+<div id="editLogView"></div>
+</section>
+
+<section class="card" id="dataCard">
+<h2 id="dataHeading">نقل البيانات</h2>
+<div class="row" id="dataRow">
+<button id="exportBtn" class="sec">تصدير البيانات إلى JSON</button>
+<label for="importFile" id="importFileLabel">ملف JSON للاستيراد</label>
+<input id="importFile" type="file">
+<button id="importBtn" class="sec">استيراد الملف</button>
+<button id="resetBtn" class="sec">إعادة ضبط البيانات</button>
+</div>
+<label for="jsonArea" id="jsonAreaLabel">البيانات المصدّرة أو المستوردة</label>
+<textarea id="jsonArea" rows="8"></textarea>
+<p class="out" id="dataMsg"></p>
+</section>
+
+<details class="card" id="helpDetails">
+<summary id="helpSummary">دليل التنسيق والصلاحيات</summary>
+<p id="helpText">يدعم المحرر **عريض** و*مائل* و`رمز` وكتلة الكود بثلاث شرطات خلفية، ووسوم [b] و[i] و[u] و[code] و[quote]. القوائم تبدأ بشرطة والاقتباس بعلامة أكبر من. المدير والمشرف يملكان أدوات الإشراف كاملة، بينما يعدّل العضو مشاركاته فقط، وصاحب الموضوع يحدد أفضل إجابة.</p>
+</details>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ بياناتي بعد إغلاق الصفحة؟</h3><p>لا. كل التصنيفات والمواضيع والردود والأصوات تبقى في ذاكرة الجلسة فقط، وتختفي عند إغلاق الصفحة. يمكنك تصدير JSON يدويًا ثم استيراده لاحقًا عند الحاجة.</p><h3>كيف أستخدم التنسيق في المشاركات؟</h3><p>اكتب **نصًا عريضًا** أو *مائلًا* أو `رمزًا`، واستخدم ثلاث شرطات خلفية لكتلة الكود، ووسوم [b] و[i] و[u] و[quote]. القوائم تبدأ بشرطة والاقتباس بعلامة أكبر من.</p><h3>من يستطيع تعليم أفضل إجابة؟</h3><p>صاحب الموضوع أو أي مشرف أو مدير. تظهر العلامة بجانب الرد المختار، ويمكن تغييرها في أي وقت من أدوات الإشراف، مع تسجيل التعديل في السجل.</p><h3>ماذا يحدث عند حظر عضو؟</h3><p>لا يستطيع العضو المحظور إنشاء المواضيع أو الردود أو التصويت، ويظهر اسمه مع وسم الحظر في قوائم المستخدمين. يمكن للمشرف إلغاء الحظر بضغطة واحدة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="skyweave-drone-lab.html" style="color:var(--gold-bright);font-weight:700">محاكي طيران مسيّر تفاعلي داخل المتصفح</a><span style="opacity:.75"> — محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات…</span></li><li style="margin:.5rem 0"><a href="lesson-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق تعلم تفاعلي بالألعاب مجاناً داخل المتصفح بدون حساب</a><span style="opacity:.75"> — حوّل أي موضوع أو حوار إلى دروس مصغّرة وبطاقات واختيار متعدد وإكمال فراغ مع تكرار متباعد ونقاط وسلسلة أيام…</span></li><li style="margin:.5rem 0"><a href="smart-shopping-list.html" style="color:var(--gold-bright);font-weight:700">قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار</a><span style="opacity:.75"> — أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم…</span></li><li style="margin:.5rem 0"><a href="timeline-video-editor.html" style="color:var(--gold-bright);font-weight:700">محرّر فيديو داخل المتصفح: اقتطاع وترتيب وتصدير بدون رفع</a><span style="opacity:.75"> — استورد مقاطعك واقتطعها وقسّمها ورتّبها بالسحب على خط زمني مرئي، وأضف عناوين وترجمات وفلاتر وانتقالات، واضبط…</span></li><li style="margin:.5rem 0"><a href="wave-slice-mix.html" style="color:var(--gold-bright);font-weight:700">محرر مقاطع صوتية داخل المتصفح</a><span style="opacity:.75"> — محرر كامل لرفع المقاطع الصوتية وقصها وترتيبها ودمجها ومعاينتها وتصديرها محليًا دون خادم أو حساب، تطبيق مجاني…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const el = (id) => document.getElementById(id);
+  const node = (tag) => document.createElement(tag);
+  const clear = (n) => { n.textContent = ''; };
+  const stamp = () => {
+    const d = new Date();
+    const pad = (n) => (n < 10 ? '0' + n : '' + n);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  };
+  const roles = {
+    admin: { label: 'مدير', staff: true },
+    mod: { label: 'مشرف', staff: true },
+    member: { label: 'عضو', staff: false }
+  };
+  let seq = 1;
+  const uid = (p) => p + (seq++);
+  let state;
+
+  const seed = () => {
+    seq = 1;
+    const c1 = uid('c'), c2 = uid('c'), c3 = uid('c'), c4 = uid('c');
+    const u1 = uid('u'), u2 = uid('u'), u3 = uid('u'), u4 = uid('u');
+    const t1 = uid('t'), t2 = uid('t'), t3 = uid('t');
+    const p1 = uid('p'), p2 = uid('p'), p3 = uid('p'), p4 = uid('p'), p5 = uid('p');
+    state = {
+      cats: [
+        { id: c1, parent: '', name: 'الأخبار والإعلانات', desc: 'آخر المستجدات' },
+        { id: c2, parent: c1, name: 'إعلانات المنتدى', desc: 'تحديثات الإدارة' },
+        { id: c3, parent: '', name: 'النقاش العام', desc: 'كل المواضيع المفتوحة' },
+        { id: c4, parent: c3, name: 'الأسئلة والأجوبة', desc: 'اسأل واحصل على المساعدة' }
+      ],
+      users: [
+        { id: u1, name: 'مدير المنتدى', role: 'admin', at: stamp(), banned: false },
+        { id: u2, name: 'مشرف القسم', role: 'mod', at: stamp(), banned: false },
+        { id: u3, name: 'عضو نشط', role: 'member', at: stamp(), banned: false },
+        { id: u4, name: 'عضو جديد', role: 'member', at: stamp(), banned: false }
+      ],
+      topics: [
+        { id: t1, cat: c4, title: 'كيف أختار أفضل إجابة؟', author: u3, at: stamp(), closed: false, hidden: false, views: 12, poll: null },
+        { id: t2, cat: c2, title: 'قواعد المنتدى المختصرة', author: u1, at: stamp(), closed: true, hidden: false, views: 30, poll: { q: 'ما الأهم في الرد؟', options: [{ id: uid('o'), text: 'الوضوح', votes: 4 }, { id: uid('o'), text: 'السرعة', votes: 2 }], voters: [u3] } },
+        { id: t3, cat: c3, title: 'اقتراحات لتحسين التجربة', author: u4, at: stamp(), closed: false, hidden: false, views: 5, poll: null }
+      ],
+      posts: [
+        { id: p1, topic: t1, author: u3, body: 'أبحث عن طريقة **واضحة** لتعليم أفضل إجابة في موضوعي.\n\n- هل أختار أطول رد؟\n- أم الأكثر دقة؟', at: stamp(), hidden: false, best: false, edits: [] },
+        { id: p2, topic: t1, author: u2, body: '[b]القاعدة:[/b] اختر الرد الذي يحل السؤال مباشرة، وعلّمه بعلامة أفضل إجابة.', at: stamp(), hidden: false, best: true, edits: [] },
+        { id: p3, topic: t2, author: u1, body: 'احترام الآخرين أولًا، ثم استخدام التنسيق المناسب.', at: stamp(), hidden: false, best: false, edits: [] },
+        { id: p4, topic: t3, author: u4, body: 'أقترح إضافة مزيد من خيارات التنسيق.', at: stamp(), hidden: false, best: false, edits: [] },
+        { id: p5, topic: t3, author: u3, body: 'رد سريع: التنسيق يعمل فعلًا مع `code` و **عريض**.', at: stamp(), hidden: false, best: false, edits: [] }
+      ],
+      reads: [],
+      edits: [],
+      openTopic: t1,
+      profileUser: u1,
+      current: u1
+    };
+  };
+
+  const me = () => state.users.find((u) => u.id === state.current);
+  const staff = () => { const u = me(); return !!u && !u.banned && roles[u.role].staff; };
+  const userById = (id) => state.users.find((u) => u.id === id);
+  const catById = (id) => state.cats.find((c) => c.id === id);
+  const nameOf = (id) => { const u = userById(id); return u ? u.name : 'مجهول'; };
+  const childCats = (id) => state.cats.filter((c) => c.parent === id);
+  const descCats = (id) => { const out = [id]; childCats(id).forEach((c) => descCats(c.id).forEach((x) => out.push(x))); return out; };
+  const replyCount = (id) => state.posts.filter((p) => p.topic === id && !p.hidden).length;
+  const isRead = (id) => state.reads.indexOf(id) >= 0;
+  const topicOf = (postId) => { const p = state.posts.find((x) => x.id === postId); return p ? state.topics.find((t) => t.id === p.topic) : null; };
+  const postCount = (id) => state.posts.filter((p) => p.author === id && !p.hidden).length;
+  const topicCount = (id) => state.topics.filter((t) => t.author === id).length;
+  const msg = (id, text, ok) => { const n = el(id); n.textContent = text; n.className = ok ? 'out ok' : 'out'; };
+  const canReply = (t) => { const u = me(); return !!t && !!u && !u.banned && !t.closed && !t.hidden; };
+  const allowedPost = (p) => { const u = me(); return !!u && !u.banned && (staff() || p.author === u.id); };
+  const requireStaff = () => { if (!staff()) { msg('modMsg', 'صلاحية الإشراف مطلوبة لهذا الإجراء.', false); return false; } return true; };
+
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  const inline = (s) => {
+    let t = esc(s);
+    t = t.replace(/\[b\]([\s\S]*?)\[\/b\]/gi, '<strong>$1</strong>');
+    t = t.replace(/\[i\]([\s\S]*?)\[\/i\]/gi, '<em>$1</em>');
+    t = t.replace(/\[u\]([\s\S]*?)\[\/u\]/gi, '<u>$1</u>');
+    t = t.replace(/\[code\]([\s\S]*?)\[\/code\]/gi, '<code>$1</code>');
+    t = t.replace(/\[url=[^\]]*\]([\s\S]*?)\[\/url\]/gi, '<mark>$1</mark>');
+    t = t.replace(/\[url\]([\s\S]*?)\[\/url\]/gi, '<mark>$1</mark>');
+    t = t.replace(/\[quote\]([\s\S]*?)\[\/quote\]/gi, '<div class="q">$1</div>');
+    t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+    t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
+    return t;
+  };
+  const fmt = (raw) => {
+    const src = String(raw || '').replace(/\[\*\]\s?/gi, '- ').replace(/\[\/?list\]/gi, '');
+    const lines = src.split(/\r?\n/);
+    let out = '', inCode = false, listOpen = false;
+    lines.forEach((line) => {
+      if (/^\s*/.test(line)) {
+        if (listOpen) { out += '</ul>'; listOpen = false; }
+        out += inCode ? '</code></pre>' : '<pre><code>';
+        inCode = !inCode;
+        return;
+      }
+      if (inCode) { out += esc(line) + '\n'; return; }
+      if (/^\s*[-*]\s+/.test(line)) {
+        if (!listOpen) { out += '<ul>'; listOpen = true; }
+        out += '<li>' + inline(line.replace(/^\s*[-*]\s+/, '')) + '</li>';
+        return;
+      }
+      if (listOpen) { out += '</ul>'; listOpen = false; }
+      if (/^#{1,6}\s/.test(line)) { out += '<h4>' + inline(line.replace(/^#{1,6}\s/, '')) + '</h4>'; return; }
+      if (/^>\s?/.test(line)) { out += '<div class="q">' + inline(line.replace(/^>\s?/, '')) + '</div>'; return; }
+      out += inline(line) + '<br>';
+    });
+    if (listOpen) out += '</ul>';
+    if (inCode) out += '</code></pre>';
+    return out;
+  };
+
+  const fillSel = (sel, prefix, rows, keep) => {
+    const old = keep ? sel.value : '';
+    clear(sel);
+    rows.forEach((r) => { const o = node('option'); o.id = prefix + r.value; o.value = r.value; o.textContent = r.text; sel.appendChild(o); });
+    if (old && Array.from(sel.options).some((o) => o.value === old)) sel.value = old;
+  };
+  const catRows = (withAll) => {
+    const rows = withAll ? [{ value: '', text: 'كل التصنيفات' }] : [];
+    state.cats.forEach((c) => rows.push({ value: c.id, text: c.parent ? '↳ ' + c.name : c.name }));
+    return rows;
+  };
+
+  const renderUser = () => {
+    fillSel(el('userSelect'), 'userOpt_', state.users.map((u) => ({ value: u.id, text: u.name + (u.banned ? ' (محظور)' : '') })), true);
+    el('userSelect').value = state.current;
+    const u = me();
+    el('roleBadge').textContent = roles[u.role].label + (u.banned ? ' • محظور' : '');
+    el('permOut').textContent = u.banned ? 'حسابك محظور: لا يمكنك الكتابة أو التصويت.' : (roles[u.role].staff ? 'صلاحياتك: إضافة التصنيفات، التعديل، الإخفاء، النقل، الإغلاق، الحظر، وتعليم أفضل إجابة.' : 'صلاحياتك: إنشاء المواضيع، الرد، التصويت، وتعديل مشاركاتك فقط.');
+  };
+  const renderStats = () => {
+    el('statTopics').textContent = state.topics.length;
+    el('statPosts').textContent = state.posts.length;
+    el('statUnread').textContent = state.topics.filter((t) => !isRead(t.id)).length;
+    el('statUsers').textContent = state.users.length;
+  };
+  const renderCats = () => {
+    const host = el('categoryList');
+    clear(host);
+    const roots = state.cats.filter((c) => !c.parent);
+    if (!roots.length) host.textContent = 'لا توجد تصنيفات بعد. أضف تصنيفًا أولًا.';
+    roots.forEach((c) => {
+      const box = node('div'); box.className = 'catgroup'; box.id = 'catGroup_' + c.id;
+      const r = node('div'); r.className = 'row catrow'; r.id = 'catRow_' + c.id;
+      const b = node('button'); b.id = 'catBtn_' + c.id; b.className = 'sec';
+      b.textContent = c.name + ' (' + state.topics.filter((t) => descCats(c.id).indexOf(t.cat) >= 0).length + ')';
+      b.addEventListener('click', () => { el('categoryFilter').value = c.id; renderTopics(); });
+      r.appendChild(b);
+      const d = node('small'); d.id = 'catDesc_' + c.id; d.textContent = c.desc; r.appendChild(d);
+      box.appendChild(r);
+      childCats(c.id).forEach((k) => {
+        const sub = node('div'); sub.className = 'subcat'; sub.id = 'subCat_' + k.id;
+        const sb = node('button'); sb.id = 'subBtn_' + k.id; sb.className = 'sec';
+        sb.textContent = '↳ ' + k.name + ' (' + state.topics.filter((t) => t.cat === k.id).length + ')';
+        sb.addEventListener('click', () => { el('categoryFilter').value = k.id; renderTopics(); });
+        sub.appendChild(sb);
+        const sd = node('small'); sd.id = 'subDesc_' + k.id; sd.textContent = ' ' + k.desc; sub.appendChild(sd);
+        box.appendChild(sub);
+      });
+      host.appendChild(box);
+    });
+    fillSel(el('newCatParent'), 'catParentOpt_', [{ value: '', text: 'تصنيف رئيسي' }].concat(catRows(false)), true);
+    fillSel(el('categoryFilter'), 'filterOpt_', catRows(true), true);
+    fillSel(el('newTopicCat'), 'topicCatOpt_', catRows(false), true);
+  };
+  const renderTopics = () => {
+    const filter = el('categoryFilter').value;
+    const sort = el('topicSort').value;
+    let items = state.topics.slice();
+    if (filter) { const ids = descCats(filter); items = items.filter((t) => ids.indexOf(t.cat) >= 0); }
+    if (sort === 'replies') items.sort((a, b) => replyCount(b.id) - replyCount(a.id));
+    else if (sort === 'unread') items.sort((a, b) => (isRead(b.id) ? 0 : 1) - (isRead(a.id) ? 0 : 1));
+    else items.sort((a, b) => (a.id < b.id ? 1 : -1));
+    const host = el('topicList');
+    clear(host);
+    if (!items.length) { host.textContent = 'لا توجد مواضيع في هذا التصنيف. كن أول من ينشئ موضوعًا.'; return; }
+    items.forEach((t) => {
+      const r = node('div'); r.className = 'topicrow'; r.id = 'topicRow_' + t.id;
+      const b = node('button'); b.id = 'topicBtn_' + t.id; b.className = 'topicbtn'; b.textContent = t.title;
+      b.addEventListener('click', () => openTopic(t.id));
+      r.appendChild(b);
+      const m = node('small'); m.id = 'topicMeta_' + t.id; m.textContent = ' • ' + nameOf(t.author) + ' • ' + replyCount(t.id) + ' ردود • ' + t.views + ' مشاهدة'; r.appendChild(m);
+      if (!isRead(t.id)) { const bd = node('span'); bd.id = 'newBadge_' + t.id; bd.className = 'badge'; bd.textContent = 'جديد'; r.appendChild(bd); }
+      if (t.closed) { const bd = node('span'); bd.id = 'closedBadge_' + t.id; bd.className = 'badge'; bd.textContent = 'مغلق'; r.appendChild(bd); }
+      if (t.hidden) { const bd = node('span'); bd.id = 'hiddenBadge_' + t.id; bd.className = 'badge'; bd.textContent = 'مخفي'; r.appendChild(bd); }
+      if (t.poll) { const bd = node('span'); bd.id = 'pollBadge_' + t.id; bd.className = 'badge'; bd.textContent = 'استطلاع'; r.appendChild(bd); }
+      const pb = node('button'); pb.id = 'authorFromTopic_' + t.id; pb.className = 'sec'; pb.textContent = 'ملف الكاتب';
+      pb.addEventListener('click', () => { el('profileSelect').value = t.author; state.profileUser = t.author; renderProfile(); });
+      r.appendChild(pb);
+      host.appendChild(r);
+    });
+  };
+  const pollBox = (t) => {
+    const box = node('div'); box.className = 'pollbox'; box.id = 'pollBox_' + t.id;
+    const h = node('h4'); h.id = 'pollQuestionView_' + t.id; h.textContent = t.poll.q; box.appendChild(h);
+    const total = t.poll.options.reduce((s, o) => s + o.votes, 0);
+    const voted = t.poll.voters.indexOf(state.current) >= 0;
+    t.poll.options.forEach((o) => {
+      const r = node('div'); r.className = 'pollrow'; r.id = 'pollRow_' + o.id;
+      const lab = node('label'); lab.id = 'pollOptLabel_' + o.id; lab.textContent = o.text; r.appendChild(lab);
+      const pr = node('progress'); pr.id = 'pollMeter_' + o.id; pr.max = total || 1; pr.value = o.votes; r.appendChild(pr);
+      const c = node('small'); c.id = 'pollCount_' + o.id; c.textContent = ' ' + o.votes + ' صوت'; r.appendChild(c);
+      if (!voted && canReply(t)) {
+        const b = node('button'); b.id = 'voteBtn_' + o.id; b.className = 'sec'; b.textContent = 'صوّت لهذا الخيار';
+        b.addEventListener('click', () => {
+          o.votes += 1; t.poll.voters.push(state.current);
+          msg('threadMsg', 'تم تسجيل صوتك.', true);
+          renderThread(); renderStats();
+        });
+        r.appendChild(b);
+      }
+      box.appendChild(r);
+    });
+    const s = node('small'); s.id = 'pollTotal_' + t.id; s.textContent = 'إجمالي الأصوات: ' + total + ' • عدد المصوّتين: ' + t.poll.voters.length; box.appendChild(s);
+    return box;
+  };
+  const postBox = (p) => {
+    const box = node('article'); box.className = 'post' + (p.best ? ' best' : '') + (p.hidden ? ' hidden' : ''); box.id = 'postBox_' + p.id;
+    const head = node('div'); head.className = 'row'; head.id = 'postHead_' + p.id;
+    const ab = node('button'); ab.id = 'authorBtn_' + p.author; ab.className = 'linkbtn'; ab.textContent = nameOf(p.author);
+    ab.addEventListener('click', () => { el('profileSelect').value = p.author; state.profileUser = p.author; renderProfile(); });
+    head.appendChild(ab);
+    const tm = node('small'); tm.id = 'postTime_' + p.id; tm.textContent = ' • ' + p.at; head.appendChild(tm);
+    if (p.best) { const bd = node('span'); bd.id = 'bestBadge_' + p.id; bd.className = 'badge'; bd.textContent = 'أفضل إجابة'; head.appendChild(bd); }
+    if (p.edits.length) { const ed = node('small'); ed.id = 'editedNote_' + p.id; ed.textContent = ' • عُدّل ' + p.edits.length + ' مرة'; head.appendChild(ed); }
+    if (p.hidden) { const hd = node('span'); hd.id = 'hiddenNote_' + p.id; hd.className = 'badge'; hd.textContent = 'مخفي'; head.appendChild(hd); }
+    box.appendChild(head);
+    const body = node('div'); body.id = 'postBody_' + p.id; body.className = 'postbody';
+    if (p.hidden && !staff()) body.textContent = 'هذه المشاركة مخفية من قِبل الإشراف.';
+    else body.innerHTML = fmt(p.body);
+    box.appendChild(body);
+    if (allowedPost(p) && !p.hidden) {
+      const tools = node('div'); tools.className = 'row'; tools.id = 'postTools_' + p.id;
+      const eb = node('button'); eb.id = 'quickEditBtn_' + p.id; eb.className = 'sec'; eb.textContent = 'تعديل هذه المشاركة';
+      eb.addEventListener('click', () => { el('modPostSelect').value = p.id; el('editPostInput').value = p.body; msg('modMsg', 'تم تحميل المشاركة في محرر الإشراف.', true); });
+      tools.appendChild(eb);
+      box.appendChild(tools);
+    }
+    return box;
+  };
+  const renderThread = () => {
+    const host = el('threadView');
+    clear(host);
+    const t = state.topics.find((x) => x.id === state.openTopic);
+    if (!t) { host.textContent = 'اختر موضوعًا من القائمة لعرضه.'; el('replyBtn').disabled = true; el('replyBody').disabled = true; return; }
+    const h = node('h3'); h.id = 'threadTitle'; h.textContent = t.title; host.appendChild(h);
+    const meta = node('p'); meta.id = 'threadMeta';
+    meta.textContent = nameOf(t.author) + ' • ' + t.at + ' • ' + (catById(t.cat) ? catById(t.cat).name : 'بدون تصنيف') + (t.closed ? ' • مغلق' : '');
+    host.appendChild(meta);
+    if (t.poll) host.appendChild(pollBox(t));
+    const posts = state.posts.filter((p) => p.topic === t.id);
+    if (!posts.length) { const empty = node('p'); empty.id = 'noPostsNote'; empty.textContent = 'لا توجد مشاركات في هذا الموضوع بعد.'; host.appendChild(empty); }
+    posts.forEach((p) => host.appendChild(postBox(p)));
+    const ok = canReply(t);
+    el('replyBtn').disabled = !ok;
+    el('replyBody').disabled = !ok;
+  };
+  const renderProfile = () => {
+    fillSel(el('profileSelect'), 'profileOpt_', state.users.map((u) => ({ value: u.id, text: u.name })), false);
+    el('profileSelect').value = state.profileUser;
+    const host = el('profileView');
+    clear(host);
+    const u = userById(state.profileUser);
+    if (!u) { host.textContent = 'لا يوجد ملف لعرضه.'; return; }
+    const h = node('h3'); h.id = 'profileName'; h.textContent = u.name; host.appendChild(h);
+    const lines = ['الدور: ' + roles[u.role].label, 'تاريخ الانضمام: ' + u.at, 'عدد المشاركات: ' + postCount(u.id), 'عدد المواضيع: ' + topicCount(u.id), 'الحالة: ' + (u.banned ? 'محظور' : 'نشط')];
+    const ul = node('ul'); ul.id = 'profileList';
+    lines.forEach((s, i) => { const li = node('li'); li.id = 'profileLine_' + i; li.textContent = s; ul.appendChild(li); });
+    host.appendChild(ul);
+    const bd = node('span'); bd.id = 'profileBadge'; bd.className = 'badge'; bd.textContent = u.banned ? 'محظور' : 'عضو بصلاحيات ' + roles[u.role].label; host.appendChild(bd);
+  };
+  const renderModeration = () => {
+    fillSel(el('modPostSelect'), 'modPostOpt_', state.posts.map((p) => ({ value: p.id, text: '# ' + p.id + ' • ' + nameOf(p.author) + ' • ' + p.body.slice(0, 26) })), true);
+    fillSel(el('modTopicSelect'), 'modTopicOpt_', state.topics.map((t) => ({ value: t.id, text: t.title })), true);
+    fillSel(el('moveCatSelect'), 'moveCatOpt_', catRows(false), true);
+    fillSel(el('banUserSelect'), 'banUserOpt_', state.users.map((u) => ({ value: u.id, text: u.name + ' (' + roles[u.role].label + ')' })), true);
+  };
+  const renderEdits = () => {
+    const host = el('editLogView');
+    clear(host);
+    if (!state.edits.length) { host.textContent = 'لا توجد تعديلات مسجلة بعد.'; return; }
+    const table = node('table'); table.id = 'editLogTable';
+    const thead = node('thead'); const trh = node('tr'); trh.id = 'editHeadRow';
+    ['الوقت', 'المحرر', 'المشاركة', 'قبل', 'بعد'].forEach((s, i) => { const th = node('th'); th.id = 'editHead_' + i; th.textContent = s; trh.appendChild(th); });
+    thead.appendChild(trh); table.appendChild(thead);
+    const tb = node('tbody'); tb.id = 'editBody';
+    state.edits.slice().reverse().forEach((e, i) => {
+      const tr = node('tr'); tr.id = 'editRow_' + i;
+      [e.at, nameOf(e.by), e.post, e.from.slice(0, 24), e.to.slice(0, 24)].forEach((v, j) => { const td = node('td'); td.id = 'editCell_' + i + '_' + j; td.textContent = v; tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb); host.appendChild(table);
+  };
+  const renderAll = () => { renderUser(); renderStats(); renderCats(); renderTopics(); renderThread(); renderProfile(); renderModeration(); renderEdits(); };
+
+  const openTopic = (id) => {
+    const t = state.topics.find((x) => x.id === id);
+    if (!t) { msg('threadMsg', 'لم يتم العثور على الموضوع.', false); return; }
+    state.openTopic = id;
+    if (!isRead(id)) state.reads.push(id);
+    t.views += 1;
+    renderThread(); renderTopics(); renderStats();
+  };
+  const resync = () => {
+    let ids = state.cats.map((x) => x.id).concat(state.users.map((x) => x.id)).concat(state.topics.map((x) => x.id)).concat(state.posts.map((x) => x.id));
+    state.topics.forEach((t) => { if (t.poll) ids = ids.concat(t.poll.options.map((o) => o.id)); });
+    seq = 1;
+    ids.forEach((id) => { const num = parseInt(id.slice(1), 10); if (!isNaN(num) && num >= seq) seq = num + 1; });
+  };
+
+  el('userSelect').addEventListener('change', () => { state.current = el('userSelect').value; msg('userMsg', 'تم تبديل المستخدم، وتغيرت الصلاحيات.', true); renderAll(); });
+  el('profileSelect').addEventListener('change', () => { state.profileUser = el('profileSelect').value; renderProfile(); });
+  el('categoryFilter').addEventListener('change', () => renderTopics());
+  el('topicSort').addEventListener('change', () => renderTopics());
+
+  el('addCatBtn').addEventListener('click', () => {
+    if (!requireStaff()) return;
+    const name = el('newCatName').value.trim();
+    if (!name) { msg('catMsg', 'اكتب اسم التصنيف أولًا.', false); return; }
+    const c = { id: uid('c'), parent: el('newCatParent').value, name: name, desc: el('newCatDesc').value.trim() || 'لا يوجد وصف' };
+    state.cats.push(c);
+    el('newCatName').value = ''; el('newCatDesc').value = '';
+    msg('catMsg', 'تمت إضافة التصنيف: ' + name, true);
+    renderAll();
+  });
+
+  el('createTopicBtn').addEventListener('click', () => {
+    const u = me();
+    if (!u || u.banned) { msg('topicMsg', 'حسابك محظور، لا يمكنك إنشاء موضوع.', false); return; }
+    const title = el('newTopicTitle').value.trim();
+    const body = el('newTopicBody').value.trim();
+    const cat = el('newTopicCat').value;
+    if (!title || !body || !cat) { msg('topicMsg', 'املأ العنوان والمحتوى واختر التصنيف.', false); return; }
+    const q = el('pollQuestion').value.trim();
+    const opts = el('pollOptions').value.split(/\r?\n/).map((s) => s.trim()).filter((s) => !!s);
+    let poll = null;
+    if (q && opts.length >= 2) poll = { q: q, options: opts.map((s) => ({ id: uid('o'), text: s, votes: 0 })), voters: [] };
+    else if (q || opts.length) { msg('topicMsg', 'الاستطلاع يحتاج سؤالًا وخيارين على الأقل، أو اترك الحقلين فارغين.', false); return; }
+    const t = { id: uid('t'), cat: cat, title: title, author: u.id, at: stamp(), closed: false, hidden: false, views: 0, poll: poll };
+    state.topics.push(t);
+    state.posts.push({ id: uid('p'), topic: t.id, author: u.id, body: body, at: stamp(), hidden: false, best: false, edits: [] });
+    state.openTopic = t.id;
+    if (!isRead(t.id)) state.reads.push(t.id);
+    el('newTopicTitle').value = ''; el('newTopicBody').value = ''; el('pollQuestion').value = ''; el('pollOptions').value = '';
+    msg('topicMsg', 'تم إنشاء الموضوع بنجاح.', true);
+    renderAll();
+  });
+
+  el('markAllReadBtn').addEventListener('click', () => {
+    state.topics.forEach((t) => { if (!isRead(t.id)) state.reads.push(t.id); });
+    msg('topicMsg', 'تم تعليم جميع المواضيع كمقروءة.', true);
+    renderTopics(); renderStats();
+  });
+
+  el('replyBtn').addEventListener('click', () => {
+    const t = state.topics.find((x) => x.id === state.openTopic);
+    if (!t) { msg('threadMsg', 'اختر موضوعًا أولًا.', false); return; }
+    const u = me();
+    if (!u || u.banned) { msg('threadMsg', 'حسابك محظور، لا يمكنك الرد.', false); return; }
+    if (t.closed) { msg('threadMsg', 'الموضوع مغلق، لا يمكن إضافة ردود.', false); return; }
+    if (t.hidden) { msg('threadMsg', 'الموضوع مخفي، لا يمكن إضافة ردود.', false); return; }
+    const body = el('replyBody').value.trim();
+    if (!body) { msg('threadMsg', 'اكتب نص الرد أولًا.', false); return; }
+    state.posts.push({ id: uid('p'), topic: t.id, author: u.id, body: body, at: stamp(), hidden: false, best: false, edits: [] });
+    el('replyBody').value = '';
+    msg('threadMsg', 'تمت إضافة ردك.', true);
+    renderAll();
+  });
+
+  el('saveEditBtn').addEventListener('click', () => {
+    const p = state.posts.find((x) => x.id === el('modPostSelect').value);
+    if (!p) { msg('modMsg', 'اختر مشاركة صحيحة.', false); return; }
+    if (!allowedPost(p)) { msg('modMsg', 'يمكنك تعديل مشاركاتك فقط.', false); return; }
+    const next = el('editPostInput').value.trim();
+    if (!next) { msg('modMsg', 'اكتب النص الجديد.', false); return; }
+    if (next === p.body) { msg('modMsg', 'لم يتغير النص.', false); return; }
+    p.edits.push({ at: stamp(), by: state.current, post: p.id, from: p.body, to: next });
+    p.body = next;
+    msg('modMsg', 'تم حفظ التعديل وتسجيله.', true);
+    renderAll();
+  });
+
+  el('hidePostBtn').addEventListener('click', () => {
+    if (!requireStaff()) return;
+    const p = state.posts.find((x) => x.id === el('modPostSelect').value);
+    if (!p) { msg('modMsg', 'اختر مشاركة صحيحة.', false); return; }
+    p.hidden = !p.hidden;
+    msg('modMsg', p.hidden ? 'تم إخفاء المشاركة.' : 'تم إظهار المشاركة.', true);
+    renderAll();
+  });
+
+  el('bestAnswerBtn').addEventListener('click', () => {
+    const p = state.posts.find((x) => x.id === el('modPostSelect').value);
+    if (!p) { msg('modMsg', 'اختر مشاركة صحيحة.', false); return; }
+    const u = me();
+    const t = topicOf(p.id);
+    const ok = staff() || (!!u && !u.banned && !!t && t.author === u.id);
+    if (!ok) { msg('modMsg', 'فقط صاحب الموضوع أو المشرف يحدد أفضل إجابة.', false); return; }
+    state.posts.forEach((x) => { if (x.topic === p.topic) x.best = false; });
+    p.best = true;
+    msg('modMsg', 'تم تعليم أفضل إجابة.', true);
+    renderAll();
+  });
+
+  el('moveTopicBtn').addEventListener('click', () => {
+    if (!requireStaff()) return;
+    const t = state.topics.find((x) => x.id === el('modTopicSelect').value);
+    const cat = el('moveCatSelect').value;
+    if (!t) { msg('modMsg', 'اختر موضوعًا صحيحًا.', false); return; }
+    if (!cat) { msg('modMsg', 'اختر التصنيف الهدف.', false); return; }
+    if (t.cat === cat) { msg('modMsg', 'الموضوع موجود في هذا التصنيف أصلًا.', false); return; }
+    t.cat = cat;
+    msg('modMsg', 'تم نقل الموضوع إلى: ' + catById(cat).name, true);
+    renderAll();
+  });
+
+  el('closeTopicBtn').addEventListener('click', () => {
+    if (!requireStaff()) return;
+    const t = state.topics.find((x) => x.id === el('modTopicSelect').value);
+    if (!t) { msg('modMsg', 'اختر موضوعًا صحيحًا.', false); return; }
+    t.closed = !t.closed;
+    msg('modMsg', t.closed ? 'تم إغلاق الموضوع.' : 'تم فتح الموضوع.', true);
+    renderAll();
+  });
+
+  el('banUserBtn').addEventListener('click', () => {
+    if (!requireStaff()) return;
+    const target = userById(el('banUserSelect').value);
+    if (!target) { msg('modMsg', 'اختر عضوًا صحيحًا.', false); return; }
+    if (target.role === 'admin') { msg('modMsg', 'لا يمكن حظر مدير.', false); return; }
+    target.banned = true;
+    msg('modMsg', 'تم حظر العضو: ' + target.name, true);
+    renderAll();
+  });
+
+  el('unbanUserBtn').addEventListener('click', () => {
+    if (!requireStaff()) return;
+    const target = userById(el('banUserSelect').value);
+    if (!target) { msg('modMsg', 'اختر عضوًا صحيحًا.', false); return; }
+    target.banned = false;
+    msg('modMsg', 'تم إلغاء حظر العضو: ' + target.name, true);
+    renderAll();
+  });
+
+  el('exportBtn').addEventListener('click', () => {
+    el('jsonArea').value = JSON.stringify(state, null, 2);
+    msg('dataMsg', 'تم تجهيز البيانات في الحقل، انسخها واحتفظ بها.', true);
+  });
+  el('importBtn').addEventListener('click', () => {
+    const file = el('importFile').files[0];
+    if (!file) { msg('dataMsg', 'اختر ملف JSON أولًا.', false); return; }
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data || !Array.isArray(data.cats) || !Array.isArray(data.topics) || !Array.isArray(data.posts) || !Array.isArray(data.users)) throw new Error('bad');
+        state = data;
+        if (!Array.isArray(state.reads)) state.reads = [];
+        if (!Array.isArray(state.edits)) state.edits = [];
+        if (!state.current || !userById(state.current)) state.current = state.users[0].id;
+        if (!state.profileUser || !userById(state.profileUser)) state.profileUser = state.current;
+        if (!state.openTopic || !state.topics.some((t) => t.id === state.openTopic)) state.openTopic = state.topics.length ? state.topics[0].id : '';
+        resync();
+        el('jsonArea').value = JSON.stringify(state, null, 2);
+        msg('dataMsg', 'تم استيراد البيانات بنجاح.', true);
+        renderAll();
+      } catch (err) {
+        msg('dataMsg', 'الملف غير صالح، تأكد أنه مصدّر من هنا.', false);
+      }
+    });
+    reader.addEventListener('error', () => msg('dataMsg', 'تعذر قراءة الملف.', false));
+    reader.readAsText(file);
+  });
+  el('resetBtn').addEventListener('click', () => {
+    seed();
+    el('jsonArea').value = '';
+    msg('dataMsg', 'تمت إعادة الضبط إلى البيانات الأولية.', true);
+    renderAll();
+  });
+
+  seed();
+  renderAll();
+})();
+</script>
+</body>
+</html>
