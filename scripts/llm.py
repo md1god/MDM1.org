@@ -238,13 +238,26 @@ def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
     return None
 
 
-def chat_json(prompt, max_tokens=6000, temperature=0.4):
-    """chat() then strip code fences and parse. Returns the parsed object or None."""
-    txt = chat(prompt, max_tokens, temperature, True)
-    if not txt: return None
+def _parse(txt):
+    """Best-effort JSON parse of a model reply: strict=False accepts raw newlines/tabs inside strings, which models often emit."""
     txt = re.sub(r"^```(?:json)?|```$", "", txt.strip()).strip()
-    try: return json.loads(txt)
-    except Exception:
-        m = re.search(r"\{.*\}", txt, re.S)
-        try: return json.loads(m.group(0)) if m else None
-        except Exception: print("::warning::reply was not JSON, len=%d" % len(txt)); return None
+    for cand in (txt, (re.search(r"\{.*\}", txt, re.S) or [None])[0] if re.search(r"\{.*\}", txt, re.S) else None):
+        if not cand: continue
+        try: return json.loads(cand, strict=False)
+        except Exception: pass
+    return None
+
+
+def chat_json(prompt, max_tokens=6000, temperature=0.4):
+    """chat() then parse. When a model's reply is not valid JSON, that model is benched for the run and the next one is asked (up to 3 tries)."""
+    for _ in range(3):
+        txt = chat(prompt, max_tokens, temperature, True)
+        if not txt: return None
+        obj = _parse(txt)
+        if obj is not None: return obj
+        who = LAST.get("backend") or ""
+        print("::warning::reply was not JSON, len=%d (%s): trying another model" % (len(txt), who))
+        if who.startswith("cli:"): _cache["cli_dead"].add(who[4:])
+        elif who.startswith("zen:"): _cache["dead"].add(who[4:])
+        else: break
+    return None
