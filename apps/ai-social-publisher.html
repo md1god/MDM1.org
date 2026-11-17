@@ -113,13 +113,15 @@ var PROVIDERS={
 };
 var PLATS=[
  {id:'x',name:'X (تويتر)',limit:280,style:'تغريدة قصيرة قوية مع وسمين على الأكثر',share:function(t,l){return 'https://twitter.com/intent/tweet?text='+encodeURIComponent(t)+(l&&t.indexOf(l)<0?'&url='+encodeURIComponent(l):'');}},
- {id:'linkedin',name:'LinkedIn',limit:3000,style:'منشور مهني بفقرات قصيرة وخاتمة تفتح نقاشًا',share:function(t){return 'https://www.linkedin.com/feed/?shareActive=true&text='+encodeURIComponent(t);}},
+ {id:'linkedin',name:'LinkedIn',limit:3000,style:'منشور مهني بفقرات قصيرة وخاتمة تفتح نقاشًا',share:function(t){return 'https://www.linkedin.com/feed/?shareActive=true&text='+encodeURIComponent(t);},copyFirst:true},
  {id:'facebook',name:'Facebook',limit:2000,style:'منشور ودّي متوسط الطول مع سؤال للتفاعل',share:function(t,l){return l?'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(l):'https://www.facebook.com/';},copyFirst:true},
  {id:'instagram',name:'Instagram',limit:2200,style:'وصف جذاب لصورة أو فيديو مع وسوم مناسبة في النهاية',share:function(){return 'https://www.instagram.com/';},copyFirst:true},
  {id:'tiktok',name:'TikTok',limit:2200,style:'وصف قصير لفيديو مع جملة افتتاحية جاذبة ووسوم رائجة',share:function(){return 'https://www.tiktok.com/upload';},copyFirst:true},
  {id:'threads',name:'Threads',limit:500,style:'منشور حواري خفيف',share:function(t){return 'https://www.threads.net/intent/post?text='+encodeURIComponent(t);}},
  {id:'whatsapp',name:'WhatsApp',limit:1500,style:'رسالة قصيرة مباشرة صالحة للمشاركة في المجموعات',share:function(t){return 'https://wa.me/?text='+encodeURIComponent(t);}},
  {id:'reddit',name:'Reddit',limit:3000,style:'منشور صادق بلا لغة إعلانية، يبدأ بسطر عنوان',share:function(t){var p=t.split('\n');return 'https://www.reddit.com/submit?title='+encodeURIComponent(p[0].slice(0,300))+'&text='+encodeURIComponent(p.slice(1).join('\n').trim());}},
+ {id:'hackernews',name:'Hacker News',limit:80,lang:'English',style:'عنوان واحد فقط بالإنجليزية، واقعي وبلا مبالغة أو علامات تعجب، يبدأ بـ Show HN: إن كان مشروعًا جديدًا',share:function(t,l){var ti=t.split('\n')[0].slice(0,80);return l?'https://news.ycombinator.com/submitlink?u='+encodeURIComponent(l)+'&t='+encodeURIComponent(ti):'https://news.ycombinator.com/submit';},copyFirst:true},
+ {id:'youtube',name:'YouTube (عنوان ووصف)',limit:5000,style:'السطر الأول عنوان فيديو جذاب بحد أقصى 100 حرف، ثم وصف من فقرتين، ثم سطر أخير بوسوم مفصولة بمسافات',share:function(){return 'https://studio.youtube.com/';},copyFirst:true},
  {id:'bluesky',name:'Bluesky',limit:300,style:'منشور قصير',share:function(t){return 'https://bsky.app/intent/compose?text='+encodeURIComponent(t);},post:'bsky'},
  {id:'mastodon',name:'Mastodon',limit:500,style:'منشور متوسط مع وسوم',post:'masto'},
  {id:'telegram',name:'Telegram',limit:4000,style:'رسالة قناة منظمة بفقرات قصيرة',share:function(t,l){return 'https://t.me/share/url?url='+encodeURIComponent(l||'https://mdm1.org')+'&text='+encodeURIComponent(t);},post:'tg'},
@@ -184,7 +186,7 @@ function clean(t){return t.replace(/^```[a-z]*\n?|```$/gi,'').replace(/^["«“]
 function writePost(plat){
  var topic=val('pubTopic'),link=val('pubLink');
  var sys='أنت كاتب محتوى محترف لوسائل التواصل. أخرج نص المنشور فقط، بلا مقدمة ولا شرح ولا علامات اقتباس حول النص. لا تخترع حقائق أو أرقامًا غير موجودة في الفكرة.';
- var usr='الفكرة: '+topic+'\nالمنصة: '+plat.name+'\nنوع المحتوى المطلوب: '+plat.style+'\nالحد الأقصى للطول: '+plat.limit+' حرفًا (التزم به).\nالأسلوب: '+val('pubTone')+'\nاللغة: '+val('pubLang')+(link?'\nضمّن هذا الرابط في النص كما هو: '+link:'');
+ var usr='الفكرة: '+topic+'\nالمنصة: '+plat.name+'\nنوع المحتوى المطلوب: '+plat.style+'\nالحد الأقصى للطول: '+plat.limit+' حرفًا (التزم به).\nالأسلوب: '+val('pubTone')+'\nاللغة: '+(plat.lang||val('pubLang'))+(link?'\nضمّن هذا الرابط في النص كما هو: '+link:'');
  return chat([{role:'system',content:sys},{role:'user',content:usr}]).then(clean);
 }
 
