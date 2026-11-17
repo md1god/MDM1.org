@@ -78,7 +78,7 @@
       <input type="email" id="login-email" placeholder="بريدك الإلكتروني"
         style="padding:.85rem 1.2rem; background:rgba(201,168,76,0.04); border:1px solid rgba(201,168,76,0.2); border-radius:10px; color:var(--light); font-family:'Tajawal',sans-serif; font-size:1rem; direction:rtl; outline:none;">
       <button onclick="requestLogin()" class="cta-btn" style="width:100%;">إرسال رابط الدخول</button>
-      <div id="login-msg" style="text-align:center; font-size:.9rem; min-height:1.3rem;"></div>
+      <div id="login-msg" style="text-align:center; font-size:.9rem; min-height:1.3rem;"></div><div style="display:flex; flex-direction:column; gap:.6rem; margin-top:.9rem;"><button type="button" class="cta-btn" style="width:100%;" onclick="mdm1Provider('google', 'login-msg')">الدخول بحساب Google</button><button type="button" class="cta-btn" style="width:100%;" onclick="mdm1Provider('microsoft', 'login-msg')">الدخول بحساب Microsoft</button><div id="login-code-row" style="display:none; flex-direction:column; gap:.6rem;"><input id="login-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="كود الدخول من الإيميل (6 أرقام)" style="padding:.85rem 1.2rem; background:rgba(201,168,76,0.04); border:1px solid rgba(201,168,76,0.2); border-radius:10px; color:var(--light); font-family:'Tajawal',sans-serif; font-size:1rem; direction:rtl; outline:none;"><button type="button" class="cta-btn" style="width:100%;" onclick="mdm1VerifyCode('login-email', 'login-code', 'login-msg')">تأكيد الكود</button></div></div>
     </div>
     <p style="text-align:center; margin-top:1.5rem; font-size:.85rem; opacity:.6;">
       لم تسجّل بعد؟ <a href="join.html" style="color:var(--gold-bright);">انضم من هنا أولاً ←</a>
@@ -150,7 +150,29 @@ async function requestLogin() {
   }
   const { error } = await sendMagicLink(email);
   msg.style.color = error ? 'var(--blood-bright)' : 'var(--gold-bright)';
-  msg.textContent = error ? '⚠ حدث خطأ، حاول لاحقاً' : '✓ تحقق من بريدك واضغط الرابط للدخول هنا';
+  msg.textContent = error ? mdm1ErrText(error) : '✓ تحقق من بريدك: اضغط الرابط أو أدخل الكود أدناه';
+  if (!error) document.getElementById('login-code-row').style.display = 'flex';
+}
+
+
+function mdm1ErrText(error) {
+  const m = String((error && (error.message || error.code)) || '');
+  if (error && error.code === 'cooldown') return '⚠ ' + m;
+  if (/after \d+ seconds|rate limit|429/i.test(m)) return '⚠ طلبات كثيرة، انتظر دقيقة ثم حاول مجدداً';
+  return '⚠ حدث خطأ، حاول مرة أخرى لاحقاً';
+}
+async function mdm1Provider(provider, msgId) {
+  const msg = document.getElementById(msgId);
+  const { error } = await signInWithProvider(provider);
+  if (error) { msg.style.color = 'var(--blood-bright)'; msg.textContent = /not enabled|unsupported provider/i.test(error.message || '') ? '⚠ هذا المزوّد غير مفعّل بعد، استخدم البريد الإلكتروني' : '⚠ تعذر بدء تسجيل الدخول'; }
+}
+async function mdm1VerifyCode(emailId, codeId, msgId) {
+  const msg = document.getElementById(msgId);
+  const email = document.getElementById(emailId).value.trim();
+  const code = document.getElementById(codeId).value.trim();
+  const { error } = await verifyEmailCode(email, code);
+  if (error) { msg.style.color = 'var(--blood-bright)'; msg.textContent = '⚠ الكود غير صحيح أو منتهي، اطلب كوداً جديداً'; return; }
+  msg.style.color = 'var(--gold-bright)'; msg.textContent = '✓ تم تسجيل الدخول'; setTimeout(() => location.reload(), 600);
 }
 
 async function getGuestNumber(id) {

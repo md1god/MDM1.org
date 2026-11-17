@@ -132,7 +132,7 @@
         الانضمام الآن
       </button>
 
-      <div id="join-msg" style="text-align:center; font-size:.95rem; min-height:1.4rem; letter-spacing:1px;"></div>
+      <div id="join-msg" style="text-align:center; font-size:.95rem; min-height:1.4rem; letter-spacing:1px;"></div><div style="display:flex; flex-direction:column; gap:.6rem; margin-top:.9rem;"><button type="button" class="cta-btn" style="width:100%;" onclick="mdm1Provider('google', 'join-msg')">الدخول بحساب Google</button><button type="button" class="cta-btn" style="width:100%;" onclick="mdm1Provider('microsoft', 'join-msg')">الدخول بحساب Microsoft</button><div id="join-code-row" style="display:none; flex-direction:column; gap:.6rem;"><input id="join-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="كود الدخول من الإيميل (6 أرقام)" style="padding:.85rem 1.2rem; background:rgba(201,168,76,0.04); border:1px solid rgba(201,168,76,0.2); border-radius:10px; color:var(--light); font-family:'Tajawal',sans-serif; font-size:1rem; direction:rtl; outline:none;"><button type="button" class="cta-btn" style="width:100%;" onclick="mdm1VerifyCode('inp-email', 'join-code', 'join-msg')">تأكيد الكود</button></div></div>
     </div>
   </div>
 
@@ -277,18 +277,40 @@ async function handleJoin() {
 
   if (error) {
     msg.style.color = 'var(--blood-bright)';
-    msg.textContent = '⚠ حدث خطأ، حاول مرة أخرى لاحقاً';
+    msg.textContent = mdm1ErrText(error);
     console.error(error);
     return;
   }
 
   msg.style.color = 'var(--gold-bright)';
-  msg.textContent = '✓ تم الإرسال — افتح بريدك واضغط رابط التأكيد لإكمال التسجيل';
-  document.getElementById('inp-email').value = '';
+  msg.textContent = '✓ تم الإرسال — اضغط رابط التأكيد في بريدك أو أدخل الكود أدناه';
+  document.getElementById('join-code-row').style.display = 'flex';
+  /* email kept so the code can be verified */
   document.getElementById('inp-name').value  = '';
   document.getElementById('inp-country-search').value = '';
   selectedCountryCode = '';
   document.getElementById('inp-terms').checked = false;
+}
+
+
+function mdm1ErrText(error) {
+  const m = String((error && (error.message || error.code)) || '');
+  if (error && error.code === 'cooldown') return '⚠ ' + m;
+  if (/after \d+ seconds|rate limit|429/i.test(m)) return '⚠ طلبات كثيرة، انتظر دقيقة ثم حاول مجدداً';
+  return '⚠ حدث خطأ، حاول مرة أخرى لاحقاً';
+}
+async function mdm1Provider(provider, msgId) {
+  const msg = document.getElementById(msgId);
+  const { error } = await signInWithProvider(provider);
+  if (error) { msg.style.color = 'var(--blood-bright)'; msg.textContent = /not enabled|unsupported provider/i.test(error.message || '') ? '⚠ هذا المزوّد غير مفعّل بعد، استخدم البريد الإلكتروني' : '⚠ تعذر بدء تسجيل الدخول'; }
+}
+async function mdm1VerifyCode(emailId, codeId, msgId) {
+  const msg = document.getElementById(msgId);
+  const email = document.getElementById(emailId).value.trim();
+  const code = document.getElementById(codeId).value.trim();
+  const { error } = await verifyEmailCode(email, code);
+  if (error) { msg.style.color = 'var(--blood-bright)'; msg.textContent = '⚠ الكود غير صحيح أو منتهي، اطلب كوداً جديداً'; return; }
+  msg.style.color = 'var(--gold-bright)'; msg.textContent = '✓ تم تسجيل الدخول'; setTimeout(() => location.reload(), 600);
 }
 
 async function refreshCounter() {
