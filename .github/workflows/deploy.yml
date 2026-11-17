@@ -50,6 +50,21 @@ jobs:
           print(f'Logo card verified on {len(list(root.rglob("*.html")))} HTML files')
           PY
 
+      - name: 🔐 Verify sign-in button coverage
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          missing = []
+          for page in Path('.').rglob('*.html'):
+              if '.git' in page.parts or 'archive' in page.parts or 'node_modules' in page.parts:
+                  continue
+              if 'js/mdm1-auth-button.js' not in page.read_text(encoding='utf-8') and 'id="account-panel"' not in page.read_text(encoding='utf-8'):
+                  missing.append(str(page))
+          if missing:
+              raise SystemExit('sign-in button missing from: ' + ', '.join(missing[:20]))
+          print('Sign-in button verified on every page')
+          PY
+
       - name: 🧹 Build a clean static artifact
         run: |
           rm -rf _site
