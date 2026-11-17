@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حساب جودة الصفقة العقارية ومقارنة بالسوق في وقت لحظي | MDM1</title>
+<meta name="description" content="أدخل موقع العقار، السعر والمساحة لتحديد ما إذا كانت الصفقة أقل من متوسط السوق، واحصل على تنبيه فوري وتصدير البيانات بصيغة JSON دون اتصال أو تسجيل.">
+<link rel="canonical" href="https://mdm1.org/apps/prop-deal-analyzer.html">
+<meta property="og:title" content="حساب جودة الصفقة العقارية ومقارنة بالسوق في وقت لحظي">
+<meta property="og:description" content="أدخل موقع العقار، السعر والمساحة لتحديد ما إذا كانت الصفقة أقل من متوسط السوق، واحصل على تنبيه فوري وتصدير البيانات بصيغة JSON دون اتصال أو تسجيل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/prop-deal-analyzer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  direction: rtl;  
+  text-align: right;  
+  margin: 1rem;  
+}  
+.app .card {  
+  background: var(--dark);  
+  padding: 1rem;  
+  border-radius: 0.5rem;  
+}  
+.app .row {  
+  display: flex;  
+  flex-wrap: wrap;  
+  align-items: center;  
+  margin-bottom: 0.5rem;  
+}  
+.app .row label {  
+  flex: 1 0 30%;  
+  margin-left: 0.5rem;  
+}  
+.app .row input, .app .row select, .app .row textarea {  
+  flex: 1 0 65%;  
+}  
+.app .out {  
+  background: var(--light);  
+  color: var(--dark);  
+  padding: 0.8rem;  
+  border-radius: 0.4rem;  
+}  
+.app .big {  
+  font-size: 1.4rem;  
+  font-weight: bold;  
+}  
+.app .badge {  
+  display: inline-block;  
+  padding: 0.2rem 0.5rem;  
+  margin-top: 0.5rem;  
+  border-radius: 0.3rem;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة تقييم الصفقات العقارية الفورية", "url": "https://mdm1.org/apps/prop-deal-analyzer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يمكن استخدام الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع الحسابات تُجرى محلياً داخل المتصفح ولا تحتاج إلى أي اتصال."}}, {"@type": "Question", "name": "ما هي مصادر بيانات متوسط السوق؟", "acceptedAnswer": {"@type": "Answer", "text": "تم تضمين متوسط الأسعار لكل متر مربع لعدد من المدن في الشيفرة، ويمكن تعديلها يدوياً إذا دعت الحاجة."}}, {"@type": "Question", "name": "كيف أستورد بيانات سابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر \"استيراد JSON\"، اختر الملف المحفوظ مسبقاً، وستُملأ الحقول تلقائياً وتُعاد العملية."}}, {"@type": "Question", "name": "هل تظهر التنبيهات عندما تكون الصفقة أعلى من المتوسط؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، التنبيه يظهر فقط عندما يكون السعر لكل متر مربع أقل من متوسط السوق لتسليط الضوء على الصفقات الجيدة."}}, {"@type": "Question", "name": "هل يمكن تصدير النتائج لتقارير أخرى؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، زر \"تصدير JSON\" يحفظ المدخلات والنتيجة في ملف يمكن فتحه بأي محرّر نصوص أو استيراده مرة أخرى."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة تقييم الصفقات العقارية الفورية</h1>
+  <p class="page-sub">أدخل موقع العقار، السعر والمساحة لتحديد ما إذا كانت الصفقة أقل من متوسط السوق، واحصل على تنبيه فوري وتصدير البيانات بصيغة JSON دون اتصال أو تسجيل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">  
+  <p>تطبيق يتيح للمستثمرين حساب جودة الصفقات العقارية بسرعة ودقة. بمجرد إدخال موقع العقار، السعر الكلي والمساحة، يقوم النظام بمقارنة السعر لكل متر مربع بمتوسط السوق للمدينة المحددة، ثم ينتج درجة الصفقة ويظهر ما إذا كانت أقل من القيمة المتوسطة. بالإضافة إلى ذلك، يمكن تصدير البيانات كملف JSON أو استيرادها لإعادة الحساب دون الحاجة إلى تسجيل أو اتصال بالإنترنت.</p>  
+  
+  <div class="card">  
+    <div class="row">  
+      <label for="placeInput">الموقع</label>  
+      <input id="placeInput" class="input" type="text" placeholder="مثال: دبي">  
+    </div>  
+    <div class="row">  
+      <label for="priceInput">السعر (دولار)</label>  
+      <input id="priceInput" class="input" type="number" min="0" placeholder="مثال: 3000000">  
+    </div>  
+    <div class="row">  
+      <label for="areaInput">المساحة (م²)</label>  
+      <input id="areaInput" class="input" type="number" min="0" placeholder="مثال: 200">  
+    </div>  
+    <div class="row">  
+      <button id="calcBtn" class="button">احسب الدرجة</button>  
+      <button id="exportBtn" class="button sec">تصدير JSON</button>  
+      <button id="importBtn" class="button sec">استيراد JSON</button>  
+      <input id="importInput" type="file" accept=".json" style="display:none">  
+    </div>  
+    <hr class="divider">  
+    <div class="out">  
+      <h3>نتيجة التقييم</h3>  
+      <p>السعر لكل م²: <span id="pricePerSqm" class="big">-</span> دولار</p>  
+      <p>متوسط السوق: <span id="medianPrice" class="big">-</span> دولار</p>  
+      <p>درجة الصفقة: <span id="dealScore" class="big">-</span>٪</p>  
+      <span id="alertBadge" class="badge" style="display:none; background: var(--gold-bright); color: var(--dark);">صفقة تحت المتوسط</span>  
+    </div>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يمكن استخدام الأداة دون اتصال بالإنترنت؟</h3><p>نعم، جميع الحسابات تُجرى محلياً داخل المتصفح ولا تحتاج إلى أي اتصال.</p><h3>ما هي مصادر بيانات متوسط السوق؟</h3><p>تم تضمين متوسط الأسعار لكل متر مربع لعدد من المدن في الشيفرة، ويمكن تعديلها يدوياً إذا دعت الحاجة.</p><h3>كيف أستورد بيانات سابقة؟</h3><p>اضغط زر &quot;استيراد JSON&quot;، اختر الملف المحفوظ مسبقاً، وستُملأ الحقول تلقائياً وتُعاد العملية.</p><h3>هل تظهر التنبيهات عندما تكون الصفقة أعلى من المتوسط؟</h3><p>لا، التنبيه يظهر فقط عندما يكون السعر لكل متر مربع أقل من متوسط السوق لتسليط الضوء على الصفقات الجيدة.</p><h3>هل يمكن تصدير النتائج لتقارير أخرى؟</h3><p>نعم، زر &quot;تصدير JSON&quot; يحفظ المدخلات والنتيجة في ملف يمكن فتحه بأي محرّر نصوص أو استيراده مرة أخرى.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="smart-shopping-list.html" style="color:var(--gold-bright);font-weight:700">قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار</a><span style="opacity:.75"> — أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم…</span></li><li style="margin:.5rem 0"><a href="agent-pricing-lab.html" style="color:var(--gold-bright);font-weight:700">مصمم تسعير وكلاء الذكاء الاصطناعي: خطط وشرائح وعروض ومقارنة</a><span style="opacity:.75"> — تطبيق في المتصفح لتصميم ومقارنة تسعير وكلاء الذكاء الاصطناعي حسب الاستخدام أو الأرصدة أو النتائج، مع حاسبة…</span></li><li style="margin:.5rem 0"><a href="flight-compare-workbench.html" style="color:var(--gold-bright);font-weight:700">مستكشف عروض الرحلات: بحث ومقارنة وتصدير</a><span style="opacity:.75"> — تطبيق ويب دون اتصال لاستكشاف عروض الرحلات و vergleich... بحث حسب المطار والتواريخ والوقت والسعر وتصدير…</span></li><li style="margin:.5rem 0"><a href="gridweaver-planner.html" style="color:var(--gold-bright);font-weight:700">أداة تصميم أنظمة الطاقة متعددة القطاعات ومقارنة التكلفة</a><span style="opacity:.75"> — صمم أنظمة طاقة متعددة القطاعات على خريطة عقد، وازن العرض والطلب، وقارن التكلفة والانبعاثات والموثوقية، واحفظ…</span></li><li style="margin:.5rem 0"><a href="lesson-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق تعلم تفاعلي بالألعاب مجاناً داخل المتصفح بدون حساب</a><span style="opacity:.75"> — حوّل أي موضوع أو حوار إلى دروس مصغّرة وبطاقات واختيار متعدد وإكمال فراغ مع تكرار متباعد ونقاط وسلسلة أيام…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-17 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const marketData = {  
+  "دبي": 15000,  
+  "الرياض": 12000,  
+  "القاهرة": 10000,  
+  "اسطنبول": 14000,  
+  "باريس": 20000  
+};  
+  
+function toNumber(value) {  
+  const n = parseFloat(value);  
+  return isNaN(n) ? 0 : n;  
+}  
+  
+function calculate() {  
+  const place = document.getElementById("placeInput").value.trim();  
+  const price = toNumber(document.getElementById("priceInput").value);  
+  const area = toNumber(document.getElementById("areaInput").value);  
+  
+  const priceSqmElem = document.getElementById("pricePerSqm");  
+  const medianElem = document.getElementById("medianPrice");  
+  const scoreElem = document.getElementById("dealScore");  
+  const badge = document.getElementById("alertBadge");  
+  
+  if (!place || price <= 0 || area <= 0) {  
+    priceSqmElem.textContent = "-";  
+    medianElem.textContent = "-";  
+    scoreElem.textContent = "-";  
+    badge.style.display = "none";  
+    return;  
+  }  
+  
+  const pricePerSqm = price / area;  
+  const median = marketData[place] || 0;  
+  
+  priceSqmElem.textContent = pricePerSqm.toFixed(2);  
+  medianElem.textContent = median ? median.toFixed(2) : "غير متوفر";  
+  
+  if (median) {  
+    const score = (median / pricePerSqm) * 100;  
+    scoreElem.textContent = score.toFixed(1);  
+    if (pricePerSqm < median) {  
+      badge.style.display = "inline-block";  
+    } else {  
+      badge.style.display = "none";  
+    }  
+  } else {  
+    scoreElem.textContent = "-";  
+    badge.style.display = "none";  
+  }  
+}  
+  
+document.getElementById("calcBtn").addEventListener("click", calculate);  
+  
+// Export JSON  
+document.getElementById("exportBtn").addEventListener("click", function() {  
+  const data = {  
+    place: document.getElementById("placeInput").value,  
+    price: toNumber(document.getElementById("priceInput").value),  
+    area: toNumber(document.getElementById("areaInput").value)  
+  };  
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});  
+  const url = URL.createObjectURL(blob);  
+  const a = document.createElement("a");  
+  a.href = url;  
+  a.download = "property-data.json";  
+  a.click();  
+  URL.revokeObjectURL(url);  
+});  
+  
+// Import JSON  
+document.getElementById("importBtn").addEventListener("click", function() {  
+  document.getElementById("importInput").click();  
+});  
+  
+document.getElementById("importInput").addEventListener("change", function(event) {  
+  const file = event.target.files[0];  
+  if (!file) return;  
+  const reader = new FileReader();  
+  reader.onload = function(e) {  
+    try {  
+      const obj = JSON.parse(e.target.result);  
+      document.getElementById("placeInput").value = obj.place || "";  
+      document.getElementById("priceInput").value = obj.price || "";  
+      document.getElementById("areaInput").value = obj.area || "";  
+      calculate();  
+    } catch (err) {  
+      console.error("فشل قراءة الملف:", err);  
+    }  
+  };  
+  reader.readAsText(file);  
+});
+</script>
+</body>
+</html>
