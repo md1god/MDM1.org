@@ -156,6 +156,23 @@ def _cli_bin():
         return None
 
 
+def _cli_models():
+    """Free model ids the CLI itself lists (`opencode models opencode`): big-pickle first, then every '*-free'. Cached for the run."""
+    if "cli_list" in _cache: return _cache["cli_list"]
+    ids = []
+    b = _cli_bin()
+    if b:
+        try:
+            out = subprocess.run([b, "models", "opencode"], capture_output=True, text=True, timeout=90,
+                                 env={k: v for k, v in os.environ.items() if k != "OPENCODE_API_KEY"}).stdout
+            for line in _ANSI.sub("", out).splitlines():
+                m = re.fullmatch(r"\s*opencode/([\w.\-]+)\s*", line)
+                if m and (m.group(1) == "big-pickle" or m.group(1).endswith("-free")): ids.append(m.group(1))
+        except Exception as e: print("::warning::opencode models failed:", type(e).__name__)
+    _cache["cli_list"] = sorted(set(ids), key=lambda x: (x != "big-pickle", x))
+    return _cache["cli_list"]
+
+
 def _cli(model, prompt, timeout=600):
     """One question to `opencode run -m opencode/<model>` in an empty temp dir; returns the answer text or None."""
     b = _cli_bin()
@@ -173,14 +190,18 @@ def _cli(model, prompt, timeout=600):
     txt = _ANSI.sub("", out or "")
     txt = re.sub(r"^\s*>\s*build\s*·.*$", "", txt, count=1, flags=re.M).strip()
     if not txt:
-        print("::warning::opencode CLI", model, "returned no text (exit %s)" % proc.returncode); _cache["cli_dead"].add(model); return None
+        # Empty answer: a free model sometimes returns nothing under load. Count it; two empties in a row bench the model for the run.
+        n = _cache.setdefault("cli_empty", {}); n[model] = n.get(model, 0) + 1
+        print("::warning::opencode CLI", model, "returned no text (exit %s), try %d" % (proc.returncode, n[model]))
+        if n[model] >= 2: _cache["cli_dead"].add(model)
+        return None
     return txt
 
 
 def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
     key = os.environ.get("OPENCODE_API_KEY", "").strip()
     if not _cache["cli_off"] and not os.environ.get("REA_MOCK"):
-        for m in [x for x in CLI_MODELS + free_models()[:2] if x not in _cache["cli_dead"]][:2]:
+        for m in [x for x in dict.fromkeys(CLI_MODELS + _cli_models() + free_models()[:2]) if x not in _cache["cli_dead"]][:4]:
             txt = _cli(m, prompt)
             if txt:
                 LAST["backend"] = "cli:" + m; LAST["code"] = None; print("::notice::LLM answered via", LAST["backend"]); return txt
