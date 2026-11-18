@@ -18,7 +18,7 @@
   var ar = /^ar/i.test(document.documentElement.getAttribute("lang") || "ar");
   var T = ar ? {
     btn: "تسجيل الدخول", title: "تسجيل الدخول", sub: "ادخل إلى MDM1 لحفظ مفضلاتك ومشاركة أفكارك",
-    google: "المتابعة باستخدام Google", microsoft: "المتابعة باستخدام Microsoft", mail: "المتابعة بالبريد الإلكتروني",
+    google: "المتابعة باستخدام Google", microsoft: "المتابعة باستخدام Microsoft", apple: "المتابعة باستخدام Apple", or: "أو", mail: "المتابعة بالبريد الإلكتروني",
     email: "البريد الإلكتروني", next: "متابعة", back: "رجوع", close: "إغلاق",
     codeTitle: "أدخل الكود", codeSub: "أرسلنا رابطاً وكوداً من 6 أرقام إلى", code: "كود الدخول", verify: "تأكيد", resend: "إرسال كود جديد",
     asTitle: "أنت مسجّل الدخول", out: "تسجيل الخروج",
@@ -28,7 +28,7 @@
     expired: "انتهى الرابط أو استُخدم من قبل؛ اطلب رابطاً جديداً أو أدخل الكود من الإيميل", done: "تم تسجيل الدخول", unavailable: "تعذر الاتصال بالخدمة، تحقق من الإنترنت وحاول مرة أخرى", loading: "جارٍ التحميل…", sent: "تم الإرسال"
   } : {
     btn: "Sign in", title: "Sign in", sub: "Sign in to MDM1 to save favorites and share ideas",
-    google: "Continue with Google", microsoft: "Continue with Microsoft", mail: "Continue with email",
+    google: "Continue with Google", microsoft: "Continue with Microsoft", apple: "Continue with Apple", or: "or", mail: "Continue with email",
     email: "Email address", next: "Continue", back: "Back", close: "Close",
     codeTitle: "Enter the code", codeSub: "We sent a link and a 6-digit code to", code: "Sign-in code", verify: "Verify", resend: "Send a new code",
     asTitle: "You are signed in", out: "Sign out",
@@ -43,6 +43,7 @@
     user: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>',
     google: '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
     ms: '<svg viewBox="0 0 23 23" width="20" height="20" aria-hidden="true"><path fill="#f35325" d="M1 1h10v10H1z"/><path fill="#81bc06" d="M12 1h10v10H12z"/><path fill="#05a6f0" d="M1 12h10v10H1z"/><path fill="#ffba08" d="M12 12h10v10H12z"/></svg>',
+    apple: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#000" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>',
     mail: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
   };
 
@@ -68,6 +69,7 @@
     ".b{display:flex;align-items:center;justify-content:center;gap:.7rem;width:100%;min-height:48px;margin:.55rem 0;padding:.6rem 1rem;border-radius:999px;font:600 .98rem/1.2 inherit;font-family:inherit;cursor:pointer;border:1px solid #dadce0;background:#fff;color:#1f1f1f}" +
     ".b:hover{background:#f3f3f3}" +
     ".b svg{flex:none}" +
+    ".or{display:flex;align-items:center;gap:.8rem;margin:.7rem 0 .3rem;opacity:.6;font-size:.85rem}.or:before,.or:after{content:\"\";flex:1;height:1px;background:rgba(201,168,76,.35)}" +
     ".b.mail{background:transparent;color:#f3ead2;border-color:rgba(201,168,76,.55)}" +
     ".b.mail:hover{background:rgba(201,168,76,.12)}" +
     ".b.go{background:linear-gradient(135deg,#c9a84c,#8a6d1f);color:#1a1405;border:0}" +
@@ -106,6 +108,8 @@
       '<div class="view on" data-v="choose"><h2>' + T.title + '</h2><p class="sub">' + T.sub + '</p>' +
       '<button type="button" class="b" data-p="google">' + ICON.google + "<span>" + T.google + "</span></button>" +
       '<button type="button" class="b" data-p="microsoft">' + ICON.ms + "<span>" + T.microsoft + "</span></button>" +
+      '<button type="button" class="b" data-p="apple">' + ICON.apple + "<span>" + T.apple + "</span></button>" +
+      '<div class="or"><span>' + T.or + "</span></div>" +
       '<button type="button" class="b mail" data-go="email">' + ICON.mail + "<span>" + T.mail + "</span></button>" +
       '<p class="legal">' + T.terms + ' <a href="/terms.html">' + T.termsLink + "</a> " + T.and + ' <a href="/privacy.html">' + T.privacyLink + "</a></p></div>" +
       '<div class="view" data-v="email"><h2>' + T.mail + '</h2><p class="sub"></p>' +
