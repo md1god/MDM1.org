@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَرَام | تطبيق مراجعة البطاقات بالتكرار المتباعد | MDM1</title>
+<meta name="description" content="راجع بطاقاتك بذكاء: محرك تكرار متباعد يحسب موعد كل بطاقة من أدائك، جلسات تركيز قصيرة، وتوليد بطاقات من النص مع رسم بياني لما يستحق المراجعة قبل النسيان.">
+<link rel="canonical" href="https://mdm1.org/apps/maram-spaced-review.html">
+<meta property="og:title" content="مَرَام | تطبيق مراجعة البطاقات بالتكرار المتباعد">
+<meta property="og:description" content="راجع بطاقاتك بذكاء: محرك تكرار متباعد يحسب موعد كل بطاقة من أدائك، جلسات تركيز قصيرة، وتوليد بطاقات من النص مع رسم بياني لما يستحق المراجعة قبل النسيان.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/maram-spaced-review.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.wrap{max-width:860px;margin:0 auto;padding:20px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#e6eef0;background:#101a1d;line-height:1.8;border-radius:16px}
+.intro{background:#162528;border-right:4px solid #d98850;padding:14px 18px;border-radius:12px;font-size:15px;margin-bottom:18px}
+.panel{background:#152326;border:1px solid #274045;border-radius:14px;padding:14px 18px;margin-bottom:16px}
+h2{margin:0 0 10px;font-size:18px;color:#f2f7f7}
+label{display:block;margin-top:10px;font-weight:600;font-size:14px;color:#bcd0d2}
+input,textarea,select,button{font:inherit}
+input,textarea,select{width:100%;box-sizing:border-box;background:#0d1618;color:#eef5f5;border:1px solid #2c4548;border-radius:9px;padding:9px 11px;margin-top:4px}
+textarea{resize:vertical}
+button{margin-top:12px;margin-left:6px;background:#2c6e68;color:#fff;border:0;border-radius:9px;padding:9px 15px;cursor:pointer}
+button:hover{background:#3a8a82}
+.out{background:#152326;border:1px solid #274045;border-radius:14px;padding:16px 18px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:#bcd0d2;margin-bottom:14px}
+.stats b{color:#f2f7f7}
+.card{background:#0d1618;border:1px solid #2c4548;border-radius:12px;padding:14px 16px;min-height:110px}
+.card h3{margin:8px 0;font-size:20px;color:#fff}
+.small,.hint,.note{font-size:13px;color:#9db4b7}
+.big{font-size:17px;color:#f2f7f7}
+.answer{background:#1b3335;border-right:3px solid #4d8f88;padding:10px 12px;border-radius:8px;color:#e8f3f2}
+#gradeRow{display:flex;gap:10px;align-items:flex-end;margin-top:12px}
+#gradeRow select{width:auto;min-width:150px}
+#gradeRow button{margin:0}
+canvas{width:100%;height:auto;background:#0d1618;border-radius:10px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مَرَام — جلسة مراجعة تتكيّف مع أدائك", "url": "https://mdm1.org/apps/maram-spaced-review.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يحسب النظام الموعد التالي؟", "acceptedAnswer": {"@type": "Answer", "text": "يبدأ كل سؤال بفاصل قصير، ثم يتغير حسب تقييمك: النجاح يوسّع الفاصل، والصعوبة تُبقي البطاقة قريبة. المعامل يتغير تدريجيًا حتى يصل إلى مستوى يناسبك."}}, {"@type": "Question", "name": "هل تُحفظ بطاقاتي بين الزيارات؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل شيء يبقى في ذاكرة الصفحة أثناء الجلسة فقط، ويختفي عند إعادة التحميل. يمكنك نسخ بطاقاتك من مربع التصدير قبل المغادرة."}}, {"@type": "Question", "name": "ما الفرق بين التقييمات الأربعة؟", "acceptedAnswer": {"@type": "Answer", "text": "«مرة أخرى» تعيد البطاقة إلى نهاية الجلسة، و«صعب» يقرّب موعدها، و«جيد» يتبع الفاصل المعتاد، و«سهل» يوسّعه أكثر."}}, {"@type": "Question", "name": "كيف أحوّل ملاحظاتي إلى بطاقات؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب كل سطر بصيغة «سؤال: جواب» أو «سؤال؟» يليه الجواب في السطر التالي، ثم اضغط توليد البطاقات. لا حاجة إلى أي خدمة خارجية."}}, {"@type": "Question", "name": "ماذا يعني الرسم البياني؟", "acceptedAnswer": {"@type": "Answer", "text": "يعرض عدد البطاقات المستحقة اليوم وخلال الأيام الستة التالية، حتى تعرف ما الذي يستحق المراجعة قبل أن يتلاشى أثره."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مَرَام — جلسة مراجعة تتكيّف مع أدائك</h1>
+  <p class="page-sub">راجع بطاقاتك بذكاء: محرك تكرار متباعد يحسب موعد كل بطاقة من أدائك، جلسات تركيز قصيرة، وتوليد بطاقات من النص مع رسم بياني لما يستحق المراجعة قبل النسيان.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="wrap" dir="rtl">
+<p class="intro">ابدأ الآن: اكتب سؤالًا وجوابه في المربعين، ثم اضغط إضافة بطاقة، وستظهر بطاقتك فورًا في جلسة المراجعة. تعمل هذه الصفحة داخل متصفحك وحده: لا حساب، ولا اتصال، ولا أثر محفوظ في أي مكان آخر. بدل أن تعيد قراءة دفترك كاملًا كل يوم، يعرض النظام البطاقة في اللحظة التي يوشك أثرها أن يختفي، ثم يسألك إن كانت الإجابة سهلة أم متعثرة. من إجابتك وحدها يحسب موعدًا جديدًا: فإن نجحت تضاعف الفاصل، وإن تعثرت عادت البطاقة إلى نهاية الجلسة وفُحصت عن قرب. يمكنك أيضًا لصق ملاحظاتك في مربع التوليد ليحوّل الأسطر إلى بطاقات، ثم تشغيل جلسة قصيرة لا تتجاوز عشر بطاقات. الرسم البياني في الأسفل يخبرك بما يستحق الانتباه خلال الأسبوع القادم، حتى تخطط يومك بلا تخمين. جرّب الأمثلة الجاهزة إن أردت البداية السريعة.</p>
+<div class="panel">
+<h2>أضف بطاقة</h2>
+<label for="q">السؤال</label>
+<input id="q" type="text" placeholder="مثال: ما التكرار المتباعد؟" />
+<label for="a">الجواب</label>
+<textarea id="a" rows="2" placeholder="اكتب جوابًا مختصرًا يمكن التحقق منه بسرعة"></textarea>
+<button id="add" type="button">إضافة بطاقة</button>
+<label for="raw">ولّد بطاقات من نصك</label>
+<textarea id="raw" rows="4" placeholder="اكتب سطرًا بالشكل: سؤال: جواب"></textarea>
+<button id="gen" type="button">توليد البطاقات</button>
+<button id="demo" type="button">تجربة بأمثلة جاهزة</button>
+</div>
+<div class="panel">
+<h2>جلسة المراجعة</h2>
+<button id="start" type="button">ابدأ جلسة اليوم</button>
+<button id="show" type="button">إظهار الجواب</button>
+<label for="grade">تقييم الصعوبة</label>
+<select id="grade"><option value="0">مرة أخرى</option><option value="1">صعب</option><option value="2" selected>جيد</option><option value="3">سهل</option></select>
+<div id="gradeRow"><button id="gradeBtn" type="button">تحديث الموعد والانتقال</button></div>
+<p id="msg" class="note"></p>
+</div>
+<div class="out" id="out">
+<div class="stats"><span>البطاقات: <b id="statCards">0</b></span><span>المستحقة: <b id="statDue">0</b></span><span>أُنجز: <b id="statDone">0</b></span><span>متوسط السهولة: <b id="statEase">—</b></span></div>
+<div id="card" class="card"></div>
+<div class="chartWrap"><canvas id="chart" width="560" height="150"></canvas></div>
+<label for="exportOut">تصدير بطاقاتك</label>
+<textarea id="exportOut" rows="6" readonly></textarea>
+<button id="exp" type="button">جهّز نص التصدير</button>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يحسب النظام الموعد التالي؟</h3><p>يبدأ كل سؤال بفاصل قصير، ثم يتغير حسب تقييمك: النجاح يوسّع الفاصل، والصعوبة تُبقي البطاقة قريبة. المعامل يتغير تدريجيًا حتى يصل إلى مستوى يناسبك.</p><h3>هل تُحفظ بطاقاتي بين الزيارات؟</h3><p>لا. كل شيء يبقى في ذاكرة الصفحة أثناء الجلسة فقط، ويختفي عند إعادة التحميل. يمكنك نسخ بطاقاتك من مربع التصدير قبل المغادرة.</p><h3>ما الفرق بين التقييمات الأربعة؟</h3><p>«مرة أخرى» تعيد البطاقة إلى نهاية الجلسة، و«صعب» يقرّب موعدها، و«جيد» يتبع الفاصل المعتاد، و«سهل» يوسّعه أكثر.</p><h3>كيف أحوّل ملاحظاتي إلى بطاقات؟</h3><p>اكتب كل سطر بصيغة «سؤال: جواب» أو «سؤال؟» يليه الجواب في السطر التالي، ثم اضغط توليد البطاقات. لا حاجة إلى أي خدمة خارجية.</p><h3>ماذا يعني الرسم البياني؟</h3><p>يعرض عدد البطاقات المستحقة اليوم وخلال الأيام الستة التالية، حتى تعرف ما الذي يستحق المراجعة قبل أن يتلاشى أثره.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="mcp-discovery-souk.html" style="color:var(--gold-bright);font-weight:700">فهرس خوادم MCP</a><span style="opacity:.75"> — تطبيق يعمل محلياً لتصفح خوادم MCP، البحث الدلالي، فحص ملفات الإعداد للصلاحيات الخطرة، وتوليد تهيئة جاهزة لـ…</span></li><li style="margin:.5rem 0"><a href="meeting-actions-crm.html" style="color:var(--gold-bright);font-weight:700">أداة تحويل ملاحظات الاجتماعات إلى محاضر ومهام منظمة</a><span style="opacity:.75"> — أداة RTL تعمل بالكامل في المتصفح لتحويل ملاحظات الاجتماعات إلى محاضر منظومة مع استخراج المهام والقرارات…</span></li><li style="margin:.5rem 0"><a href="meeting-notes-organizer.html" style="color:var(--gold-bright);font-weight:700">محضر الاجتماع: تحويل ملاحظات الاجتماع إلى محضر منظّم فورياً</a><span style="opacity:.75"> — أداة في المتصفح لتدوين ملاحظات الاجتماع بموقّت زمني، واستخراج المهام والمواعيد والمسؤولين تلقائياً، مع بحث…</span></li><li style="margin:.5rem 0"><a href="minecraft-instance-manager.html" style="color:var(--gold-bright);font-weight:700">مدير إعدادات ماينكرافت</a><span style="opacity:.75"> — أداة متكاملة لإدارة تثبيتات ماينكرافت داخل المتصفح: أنشئ ملفات تعريف لكل تثبيت، اختر الإصدار والإضافات…</span></li><li style="margin:.5rem 0"><a href="minecraft-launcher-config-manager.html" style="color:var(--gold-bright);font-weight:700">مدير إعدادات مشغّل Minecraft</a><span style="opacity:.75"> — تطبيق يعمل في المتصفح لإدارة نسخ Minecraft: إنشاء ملفات نسخ، ربط إصدارات اللعبة ومسارات Java وحصص الذاكرة…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const DAY = 86400000;
+let cards = [];
+let session = [];
+let cur = null;
+let shown = false;
+let doneCount = 0;
+const now = () => Date.now();
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt = ts => new Date(ts).toLocaleDateString('ar', { day: 'numeric', month: 'short' });
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+const makeCard = (q, a) => ({ q: q, a: a, ease: 2.5, interval: 0, reps: 0, due: now(), lapses: 0 });
+const addCard = () => {
+  const q = $('q').value.trim();
+  const a = $('a').value.trim();
+  if (!q || !a) { $('msg').textContent = 'اكتب السؤال والجواب أولًا.'; return; }
+  cards.push(makeCard(q, a));
+  $('q').value = '';
+  $('a').value = '';
+  $('msg').textContent = 'أُضيفت بطاقة جديدة إلى الجلسة القادمة.';
+  render();
+};
+const generate = () => {
+  const lines = $('raw').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  let n = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const c = line.indexOf(':');
+    const e = line.indexOf(' = ');
+    let q = '', a = '';
+    if (c > 0) { q = line.slice(0, c); a = line.slice(c + 1); }
+    else if (e > 0) { q = line.slice(0, e); a = line.slice(e + 3); }
+    else if (line.indexOf('؟') > 0 && lines[i + 1]) { q = line; a = lines[i + 1]; i++; }
+    if (q.trim() && a.trim()) { cards.push(makeCard(q.trim(), a.trim())); n++; }
+  }
+  $('msg').textContent = n ? 'حوّلنا ' + n + ' سطرًا إلى بطاقات.' : 'لم نجد أسطرًا بصيغة سؤال: جواب.';
+  render();
+};
+const loadDemo = () => {
+  cards = [
+    makeCard('ما التكرار المتباعد؟', 'مراجعة المعلومة في مواعد متباعدة تتسع كلما نجحت في استدعائها.'),
+    makeCard('متى نراجع البطاقة مرة أخرى؟', 'عندما يوشك أثرها في الذاكرة على التلاشي، لا بعد جدول ثابت.'),
+    makeCard('ماذا يعني تقييم صعب؟', 'يعني أن الاستدعاء كان متعثرًا، فيُقصّر الموعد التالي ويزداد الاهتمام بها.'),
+    makeCard('لماذا جلسة قصيرة؟', 'لأن التركيز الموزّع على أيام متتالية أفضل من مراجعة طويلة واحدة.'),
+    makeCard('ما البطاقة الجيدة؟', 'سؤال واحد واضح وجواب مختصر يمكن تقييمه بسرعة.'),
+    makeCard('كيف نتعامل مع النسيان؟', 'نعيد البطاقة إلى نهاية الجلسة ونضبط معامل سهولتها إلى الأسفل.'),
+    makeCard('ما الفائدة من رسم المواعيد؟', 'يُظهر لك ما يستحق المراجعة اليوم أو خلال الأسبوع القادم.'),
+    makeCard('هل أحتاج اتصالًا بالإنترنت؟', 'لا؛ كل الحسابات تتم داخل الصفحة أثناء الجلسة فقط.')
+  ];
+  doneCount = 0;
+  $('msg').textContent = 'جهّزنا ثماني بطاقات تجريبية. ابدأ الجلسة الآن.';
+  render();
+  startSession();
+};
+const drawChart = () => {
+  const cv = $('chart');
+  const ctx = cv.getContext('2d');
+  const w = cv.width;
+  const h = cv.height;
+  ctx.clearRect(0, 0, w, h);
+  const days = [0, 0, 0, 0, 0, 0, 0];
+  const t0 = now();
+  cards.forEach(c => {
+    const d = Math.floor((c.due - t0) / DAY);
+    if (d >= 0 && d < 7) days[d]++;
+  });
+  const max = Math.max(1, ...days);
+  const names = ['اليوم', 'غدًا', 'يوم ٣', 'يوم ٤', 'يوم ٥', 'يوم ٦', 'يوم ٧'];
+  const bw = Math.floor((w - 16) / 7) - 6;
+  days.forEach((v, i) => {
+    const bh = Math.round((v / max) * (h - 40));
+    const x = 8 + i * (bw + 6);
+    ctx.fillStyle = i === 0 ? '#d98850' : '#4d8f88';
+    ctx.fillRect(x, h - 24 - bh, bw, bh);
+    ctx.fillStyle = '#dce6e8';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(v), x + bw / 2, h - 28 - bh);
+    ctx.fillText(names[i], x + bw / 2, h - 6);
+  });
+};
+const paintCard = () => {
+  const box = $('card');
+  box.innerHTML = '';
+  const row = $('gradeRow');
+  if (!cur) {
+    box.appendChild(el('p', 'big', session.length ? 'لا بطاقات مستحقة الآن. أضف بطاقات أو ابدأ جلسة لاحقًا.' : 'أنهيت جلسة اليوم. أحسنت!'));
+    row.style.display = 'none';
+    return;
+  }
+  row.style.display = 'flex';
+  box.appendChild(el('p', 'small', 'البطاقة ' + (doneCount + 1) + ' من ' + (doneCount + session.length)));
+  box.appendChild(el('h3', '', cur.q));
+  if (shown) box.appendChild(el('p', 'answer', cur.a));
+  else box.appendChild(el('p', 'hint', 'فكّر في الجواب قبل الإظهار.'));
+};
+const pick = () => {
+  cur = session[0] || null;
+  shown = false;
+  paintCard();
+};
+const startSession = () => {
+  const t = now();
+  session = cards.filter(c => c.due <= t).sort((a, b) => a.due - b.due).slice(0, 10);
+  doneCount = 0;
+  pick();
+  render();
+};
+const reveal = () => {
+  if (!cur) return;
+  shown = true;
+  paintCard();
+};
+const rate = () => {
+  if (!cur) return;
+  const g = Number($('grade').value);
+  const c = cur;
+  c.reps++;
+  if (g === 0) {
+    c.ease = clamp(c.ease - 0.5, 1.3, 3);
+    c.lapses++;
+    c.interval = 0;
+    c.due = now() + 60000;
+    session.shift();
+    session.push(c);
+  } else {
+    c.ease = clamp(c.ease + (g === 1 ? -0.2 : g === 3 ? 0.2 : 0), 1.3, 3);
+    c.interval = c.reps === 1 ? (g === 1 ? 1 : g === 2 ? 2 : 4) : Math.max(1, Math.round(c.interval * c.ease * (g === 1 ? 1.15 : g === 3 ? 1.3 : 1)));
+    c.due = now() + c.interval * DAY;
+    session.shift();
+  }
+  doneCount++;
+  pick();
+  render();
+};
+const render = () => {
+  $('statCards').textContent = String(cards.length);
+  $('statDue').textContent = String(cards.filter(c => c.due <= now()).length);
+  $('statDone').textContent = String(doneCount);
+  $('statEase').textContent = cards.length ? (cards.reduce((s, c) => s + c.ease, 0) / cards.length).toFixed(2) : '—';
+  drawChart();
+};
+const exportCards = () => {
+  $('exportOut').value = cards.map((c, i) => (i + 1) + '. س: ' + c.q + '\n   ج: ' + c.a + '\n   الموعد التالي: ' + fmt(c.due) + ' | الفاصل: ' + c.interval + ' يوم').join('\n');
+};
+$('add').addEventListener('click', addCard);
+$('gen').addEventListener('click', generate);
+$('demo').addEventListener('click', loadDemo);
+$('start').addEventListener('click', startSession);
+$('show').addEventListener('click', reveal);
+$('gradeBtn').addEventListener('click', rate);
+$('exp').addEventListener('click', exportCards);
+render();
+</script>
+</body>
+</html>
