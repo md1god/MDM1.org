@@ -10,6 +10,7 @@
   var client = lib.createClient(URL, KEY);
   window.supabaseLib = lib;
   window.supabase = client;                                        // pages call supabase.from(...) / supabase.auth.* directly
+  if (typeof client.createClient !== "function") client.createClient = lib.createClient;   // js/ads.js still calls supabase.createClient(...)
 
   window.sendMagicLink = function (email, meta) {                     // passwordless sign-up / sign-in (join + ideas pages)
     meta = meta || {};
