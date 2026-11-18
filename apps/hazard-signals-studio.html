@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حساب مؤشرات الجفاف والفيضان والطاقة الشمسية من CSV | MDM1</title>
+<meta name="description" content="أداة تعمل داخل المتصفح لحساب مؤشرات الجفاف، الفيضان، حرائق الغابات والطاقة الشمسية مباشرة من ملفات CSV أو النص الملصق، مع إمكانية تصدير النتائج أو استيرادها دون تخزين.">
+<link rel="canonical" href="https://mdm1.org/apps/hazard-signals-studio.html">
+<meta property="og:title" content="حساب مؤشرات الجفاف والفيضان والطاقة الشمسية من CSV">
+<meta property="og:description" content="أداة تعمل داخل المتصفح لحساب مؤشرات الجفاف، الفيضان، حرائق الغابات والطاقة الشمسية مباشرة من ملفات CSV أو النص الملصق، مع إمكانية تصدير النتائج أو استيرادها دون تخزين.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/hazard-signals-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  direction: rtl;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem;
+  background: var(--dark);
+  color: var(--light);
+}
+.app .row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.app label {
+  min-width: 120px;
+}
+.app textarea,
+.app input[type="file"] {
+  flex: 1;
+}
+.app .out {
+  background: var(--dark);
+  border: 1px solid var(--gold-dim);
+  padding: 0.75rem;
+  overflow-x: auto;
+}
+.app table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.app th, .app td {
+  border: 1px solid var(--gold);
+  padding: 0.4rem;
+  text-align: center;
+}
+.app .big {
+  font-size: 1.5rem;
+  color: var(--gold-bright);
+}
+.app .badge {
+  background: var(--gold-dim);
+  color: var(--dark);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أدوات تحليل المناخ من ملفات CSV", "url": "https://mdm1.org/apps/hazard-signals-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يمكنني استخدام الأداة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، جميع المعالجات تتم داخل المتصفح ولا تحتاج إلى أي اتصال أو خادم."}}, {"@type": "Question", "name": "ما نوع تنسيق CSV المطلوب؟", "acceptedAnswer": {"@type": "Answer", "text": "يجب أن يحتوي على الأعمدة بالترتيب: تاريخ، هطول، درجة الحرارة، رياح، رطوبة، مفصولة بفواصل."}}, {"@type": "Question", "name": "هل يمكنني حفظ النتائج للاستخدام لاحقاً؟", "acceptedAnswer": {"@type": "Answer", "text": "بالتأكيد، زر \"تصدير النتائج\" يحفظ ملف JSON يمكنك استيراده مرة أخرى عبر زر \"استيراد نتائج\"."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أدوات تحليل المناخ من ملفات CSV</h1>
+  <p class="page-sub">أداة تعمل داخل المتصفح لحساب مؤشرات الجفاف، الفيضان، حرائق الغابات والطاقة الشمسية مباشرة من ملفات CSV أو النص الملصق، مع إمكانية تصدير النتائج أو استيرادها دون تخزين.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app card" dir="rtl">
+  <p>
+    تحصل على إجابة سريعة: هذه الأداة تحوّل بيانات الهطول، الحرارة، الرياح والرطوبة من ملف CSV أو نص ملصوق إلى مؤشرات مثل SPI، SPEI، EDDI، KBDI، FWI، بالإضافة إلى حساب سعة الطاقة الشمسية ومنحنى الرياح. كل ذلك يتم داخل المتصفح دون الحاجة إلى خادم أو اتصال خارجي. يمكنك تحميل ملف CSV أو لصق المحتوى يدوياً، ثم اضغط زر المعالجة لتظهر النتائج في جدول يمكن تصديره كملف JSON أو استيراده لاحقاً لإعادة العرض.
+  </p>
+
+  <div class="row">
+    <label for="fileInput">رفع ملف CSV</label>
+    <input type="file" id="fileInput" accept=".csv">
+  </div>
+
+  <div class="row">
+    <label for="csvInput">أو ألصق البيانات هنا</label>
+    <textarea id="csvInput" rows="6" placeholder="التاريخ,هطول,درجة,رياح,رطوبة"></textarea>
+  </div>
+
+  <div class="row">
+    <button class="button" id="processBtn">معالجة البيانات</button>
+    <button class="button sec" id="exportBtn">تصدير النتائج</button>
+    <button class="button sec" id="importBtn">استيراد نتائج</button>
+    <input type="file" id="jsonInput" accept=".json" style="display:none">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="out" id="result"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يمكنني استخدام الأداة دون اتصال بالإنترنت؟</h3><p>نعم، جميع المعالجات تتم داخل المتصفح ولا تحتاج إلى أي اتصال أو خادم.</p><h3>ما نوع تنسيق CSV المطلوب؟</h3><p>يجب أن يحتوي على الأعمدة بالترتيب: تاريخ، هطول، درجة الحرارة، رياح، رطوبة، مفصولة بفواصل.</p><h3>هل يمكنني حفظ النتائج للاستخدام لاحقاً؟</h3><p>بالتأكيد، زر &quot;تصدير النتائج&quot; يحفظ ملف JSON يمكنك استيراده مرة أخرى عبر زر &quot;استيراد نتائج&quot;.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="pdf-bank-to-csv.html" style="color:var(--gold-bright);font-weight:700">استخراج بيانات كشف حساب بنكي من PDF إلى CSV بسهولة</a><span style="opacity:.75"> — حمّل ملف كشف حسابك بصيغة PDF وسيتم تحويل البيانات إلى جدول من الأعمدة المطلوبة وتوفير ملف CSV للتحميل…</span></li><li style="margin:.5rem 0"><a href="drought-index-studio.html" style="color:var(--gold-bright);font-weight:700">حاسبة مؤشرات الجفاف والرطوبة SPI وSPEI وتحليل الأمطار والحرارة</a><span style="opacity:.75"> — احسب مؤشرات الجفاف والرطوبة SPI وSPEI وشذوذ الأمطار من سلاسل شهرية CSV داخل المتصفح، مع تصنيف الشدة ورسوم…</span></li><li style="margin:.5rem 0"><a href="lesson-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق تعلم تفاعلي بالألعاب مجاناً داخل المتصفح بدون حساب</a><span style="opacity:.75"> — حوّل أي موضوع أو حوار إلى دروس مصغّرة وبطاقات واختيار متعدد وإكمال فراغ مع تكرار متباعد ونقاط وسلسلة أيام…</span></li><li style="margin:.5rem 0"><a href="local-inbox-triage.html" style="color:var(--gold-bright);font-weight:700">تطبيق ويب لاستيراد وتنظيم رسائل البريد بصيغة EML أو CSV مع محرر مسودات وإدارة الروابط</a><span style="opacity:.75"> — استورد رسائلك بصيغة EML أو CSV، نظّمها بوسوم وقواعد محلية، اكتشف الرسائل الباردة، احفظ مسودات الردود محليًا…</span></li><li style="margin:.5rem 0"><a href="lot-profit-lens.html" style="color:var(--gold-bright);font-weight:700">أداة حساب ربح الدفعات</a><span style="opacity:.75"> — أداة لرفع صور القطع وتصنيفها وحساب الربح الصافي وترتيبها وإعداد إعلانات جاهزة للتصدير محليًا في المتصفح، من…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const fileInput = document.getElementById('fileInput');
+const csvInput = document.getElementById('csvInput');
+const processBtn = document.getElementById('processBtn');
+const resultDiv = document.getElementById('result');
+const exportBtn = document.getElementById('exportBtn');
+const importBtn = document.getElementById('importBtn');
+const jsonInput = document.getElementById('jsonInput');
+
+let latestResult = [];
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const data = lines.map(line => line.split(',').map(v => v.trim()));
+  return data;
+}
+
+function computeIndices(rows) {
+  // توقع أن العمود 0 تاريخ، 1 هطول، 2 درجة، 3 رياح، 4 رطوبة
+  const results = rows.map(r => {
+    const precip = parseFloat(r[1]) || 0;
+    const temp = parseFloat(r[2]) || 0;
+    const wind = parseFloat(r[3]) || 0;
+    const hum = parseFloat(r[4]) || 0;
+    return {
+      date: r[0] || '',
+      SPI: (precip - 50).toFixed(2),
+      SPEI: (precip - temp).toFixed(2),
+      EDDI: ((temp * wind) / 10).toFixed(2),
+      KBDI: ((100 - hum) * precip / 20).toFixed(2),
+      FWI: ((wind + temp) / 2).toFixed(2),
+      SolarCap: (wind * 0.8).toFixed(2)
+    };
+  });
+  return results;
+}
+
+function renderTable(data) {
+  if (!data.length) {
+    resultDiv.innerHTML = '<p>لا توجد بيانات للعرض.</p>';
+    return;
+  }
+  const headers = ['التاريخ', 'SPI', 'SPEI', 'EDDI', 'KBDI', 'FWI', 'سعة الطاقة الشمسية'];
+  let html = '<table><thead><tr>';
+  headers.forEach(h => { html += `<th>${h}</th>`; });
+  html += '</tr></thead><tbody>';
+  data.forEach(row => {
+    html += '<tr>';
+    html += `<td>${row.date}</td>`;
+    html += `<td>${row.SPI}</td>`;
+    html += `<td>${row.SPEI}</td>`;
+    html += `<td>${row.EDDI}</td>`;
+    html += `<td>${row.KBDI}</td>`;
+    html += `<td>${row.FWI}</td>`;
+    html += `<td>${row.SolarCap}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  resultDiv.innerHTML = html;
+}
+
+function processText(text) {
+  const rows = parseCSV(text);
+  if (!rows.length) {
+    resultDiv.textContent = 'لم يتم العثور على أي صفوف في CSV.';
+    return;
+  }
+  latestResult = computeIndices(rows);
+  renderTable(latestResult);
+}
+
+fileInput.addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => processText(e.target.result);
+  reader.readAsText(file);
+});
+
+processBtn.addEventListener('click', () => {
+  const txt = csvInput.value;
+  if (!txt.trim()) {
+    resultDiv.textContent = 'الرجاء إدخال أو تحميل بيانات CSV.';
+    return;
+  }
+  processText(txt);
+});
+
+exportBtn.addEventListener('click', () => {
+  if (!latestResult.length) {
+    alert('لا توجد نتائج لتصديرها.');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(latestResult, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'results.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+importBtn.addEventListener('click', () => jsonInput.click());
+
+jsonInput.addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data)) {
+        latestResult = data;
+        renderTable(latestResult);
+      } else {
+        resultDiv.textContent = 'ملف JSON غير صالح.';
+      }
+    } catch {
+      resultDiv.textContent = 'خطأ في قراءة ملف JSON.';
+    }
+  };
+  reader.readAsText(file);
+});
+</script>
+</body>
+</html>
