@@ -25,7 +25,7 @@
     terms: "بالمتابعة فأنت توافق على", termsLink: "الشروط", and: "و", privacyLink: "الخصوصية",
     badEmail: "أدخل بريداً إلكترونياً صحيحاً", badCode: "الكود غير صحيح أو منتهي، اطلب كوداً جديداً",
     wait: "انتظر دقيقة ثم حاول مجدداً", fail: "تعذر إكمال الطلب، حاول لاحقاً", off: "هذا المزوّد غير مفعّل بعد، استخدم البريد الإلكتروني",
-    expired: "انتهى الرابط أو استُخدم من قبل؛ اطلب رابطاً جديداً أو أدخل الكود من الإيميل", done: "تم تسجيل الدخول", unavailable: "الخدمة غير متاحة الآن", sent: "تم الإرسال"
+    expired: "انتهى الرابط أو استُخدم من قبل؛ اطلب رابطاً جديداً أو أدخل الكود من الإيميل", done: "تم تسجيل الدخول", unavailable: "تعذر الاتصال بالخدمة، تحقق من الإنترنت وحاول مرة أخرى", loading: "جارٍ التحميل…", sent: "تم الإرسال"
   } : {
     btn: "Sign in", title: "Sign in", sub: "Sign in to MDM1 to save favorites and share ideas",
     google: "Continue with Google", microsoft: "Continue with Microsoft", mail: "Continue with email",
@@ -35,7 +35,7 @@
     terms: "By continuing you agree to the", termsLink: "Terms", and: "and", privacyLink: "Privacy",
     badEmail: "Enter a valid email address", badCode: "The code is wrong or expired, request a new one",
     wait: "Please wait a minute and try again", fail: "Could not complete the request, try again later", off: "This provider is not enabled yet, use email",
-    expired: "The link expired or was already used; request a new one or enter the code from the email", done: "Signed in", unavailable: "Service unavailable right now", sent: "Sent"
+    expired: "The link expired or was already used; request a new one or enter the code from the email", done: "Signed in", unavailable: "Could not reach the service, check your connection and try again", loading: "Loading…", sent: "Sent"
   };
   var dir = ar ? "rtl" : "ltr";
 
@@ -197,6 +197,10 @@
   }
 
   /* ---- backend ---- */
+  var CDNS = [
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
+    "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"
+  ];
   function loadScript(src) {
     return new Promise(function (res) {
       var s = document.createElement("script"); s.src = src; s.async = false;
@@ -204,11 +208,35 @@
       document.head.appendChild(s);
     });
   }
+  function libReady() { var l = window.supabase; return !!l && (typeof l.createClient === "function" || (l.auth && typeof l.auth.getSession === "function")); }
+  function loadLib() {
+    if (libReady()) return Promise.resolve(true);
+    var i = 0;
+    function next() {
+      if (i >= CDNS.length) return Promise.resolve(false);
+      return loadScript(CDNS[i++]).then(function () { return libReady() ? true : next(); });
+    }
+    return next();
+  }
+  // One shared load. Clicks that arrive before it finishes simply wait for it; a failed load can be retried.
+  var backendP = null;
   function ensureBackend() {
-    var p = Promise.resolve();
-    if (!sb() && !(window.supabase && typeof window.supabase.createClient === "function")) p = p.then(function () { return loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"); });
-    p = p.then(function () { if (!sb() || typeof window.signInWithProvider !== "function") return loadScript("/js/supabase-client.js"); });
-    return p.then(function () { return !!sb() && typeof window.signInWithProvider === "function"; });
+    if (backendP) return backendP;
+    backendP = loadLib().then(function (ok) {
+      if (!ok) return false;
+      if (!sb() || typeof window.signInWithProvider !== "function") return loadScript("/js/supabase-client.js");
+      return true;
+    }).then(function () { return !!sb() && typeof window.signInWithProvider === "function"; })
+      .catch(function () { return false; });
+    backendP.then(function (ok) { if (!ok) backendP = null; });
+    return backendP;
+  }
+  function withBackend(fn) {
+    msg(T.loading, "");
+    ensureBackend().then(function (ok) {
+      if (!ok) { msg(T.unavailable, "err"); return; }
+      msg("", ""); fn();
+    });
   }
   function refresh() {
     var c = sb(); if (!c) return;
@@ -219,8 +247,8 @@
     }).catch(function () {});
   }
 
-  function provider(name) {
-    if (typeof window.signInWithProvider !== "function") { msg(T.unavailable, "err"); return; }
+  function provider(name) { withBackend(function () { doProvider(name); }); }
+  function doProvider(name) {
     window.signInWithProvider(name).then(function (r) {
       if (r && r.error) msg(/not enabled|unsupported provider/i.test(r.error.message || "") ? T.off : T.fail, "err");
     }).catch(function () { msg(T.fail, "err"); });
@@ -229,7 +257,9 @@
   function sendLink(again) {
     var email = again ? pendingEmail : String(q('[data-f="email"] input').value || "").trim().toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) { msg(T.badEmail, "err"); return; }
-    if (typeof window.sendMagicLink !== "function") { msg(T.unavailable, "err"); return; }
+    withBackend(function () { doSend(email); });
+  }
+  function doSend(email) {
     window.sendMagicLink(email, {}).then(function (r) {
       if (!r || !r.error) {
         pendingEmail = email; q("[data-who]").textContent = email; view("code"); msg(T.sent, "ok");
@@ -243,6 +273,9 @@
   function verifyCode() {
     var code = String(q('[data-f="code"] input').value || "").replace(/\s+/g, "");
     if (!/^\d{6,8}$/.test(code)) { msg(T.badCode, "err"); return; }
+    withBackend(function () { doVerify(code); });
+  }
+  function doVerify(code) {
     window.verifyEmailCode(pendingEmail, code).then(function (r) {
       if (r && r.error) { msg(T.badCode, "err"); return; }
       msg(T.done, "ok"); refresh(); setTimeout(close, 700);
