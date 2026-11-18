@@ -36,27 +36,32 @@
 
   // One-tap sign-in with Google or Microsoft ("microsoft" is "azure" inside Supabase).
   // The providers must be enabled in Supabase Dashboard > Authentication > Providers.
+  // Which OAuth providers are switched on in Supabase (GET /auth/v1/settings -> { external: { google: true, ... } }).
+  // A disabled provider makes /authorize answer with a raw JSON 400 page that replaced the whole site; checking first lets
+  // the sign-in dialog say "not enabled" instead. If this lookup fails for any reason we simply continue as before.
+  var settingsP = null;
+  function providerEnabled(name) {
+    if (typeof fetch !== "function") return Promise.resolve(true);
+    if (!settingsP) {
+      var ctl = typeof AbortController === "function" ? new AbortController() : null;
+      var timer = ctl ? setTimeout(function () { ctl.abort(); }, 6000) : 0;
+      settingsP = fetch(URL + "/auth/v1/settings", { headers: { apikey: KEY }, cache: "no-store", signal: ctl ? ctl.signal : undefined })
+        .then(function (r) { clearTimeout(timer); return r.ok ? r.json() : null; })
+        .catch(function () { clearTimeout(timer); return null; })
+        .then(function (j) { if (!j) settingsP = null; return j; });   // do not cache a failed lookup
+    }
+    return settingsP.then(function (j) { return j && j.external && typeof j.external[name] === "boolean" ? j.external[name] : true; });
+  }
+
   window.signInWithProvider = function (provider) {
     var name = provider === "microsoft" ? "azure" : provider;
     var options = { redirectTo: location.origin + location.pathname };
     if (name === "azure") options.scopes = "email";
-    return client.auth.signInWithOAuth({ provider: name, options: options });
+    return providerEnabled(name).then(function (on) {
+      if (!on) return { data: null, error: { code: "provider_disabled", message: "provider is not enabled" } };
+      return client.auth.signInWithOAuth({ provider: name, options: options });
+    });
   };
-
-  // Sign in with the 6-digit code from the email. Unlike the link, a code cannot be burned by an email
-  // scanner (Gmail / Outlook pre-open links, which gives "Email link is invalid or has expired").
-  window.verifyEmailCode = function (email, code) {
-    return client.auth.verifyOtp({ email: String(email || "").trim().toLowerCase(), token: String(code || "").replace(/\s+/g, ""), type: "email" });
-  };
-
-  // Errors Supabase appends to the URL after a failed redirect (#error=access_denied&error_description=...).
-  try {
-    var q = new URLSearchParams((location.hash || "").replace(/^#/, "") || location.search.replace(/^\?/, ""));
-    if (q.get("error")) {
-      window.mdm1AuthError = { code: q.get("error_code") || q.get("error"), message: q.get("error_description") || q.get("error") };
-      history.replaceState(null, "", location.pathname);
-    }
-  } catch (e) { /* ignore */ }
 
   window.signOutMember = function () { return client.auth.signOut(); };
 
