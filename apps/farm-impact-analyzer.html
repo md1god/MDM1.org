@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقييم استدامة المزرعة: مؤشرات وربحية | MDM1</title>
+<meta name="description" content="احسب مؤشرات التربة والماء والتنوع الحيوي والانبعاثات والربحية والعدالة الاجتماعية لمزرعتك مع رسوم بيانية ومقارنة سيناريوهات وتقرير قابل للتنزيل.">
+<link rel="canonical" href="https://mdm1.org/apps/farm-impact-analyzer.html">
+<meta property="og:title" content="تقييم استدامة المزرعة: مؤشرات وربحية">
+<meta property="og:description" content="احسب مؤشرات التربة والماء والتنوع الحيوي والانبعاثات والربحية والعدالة الاجتماعية لمزرعتك مع رسوم بيانية ومقارنة سيناريوهات وتقرير قابل للتنزيل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/farm-impact-analyzer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{display:block}
+.app .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.app .panel{display:none}
+.app .panel.active{display:block}
+.app table{width:100%;border-collapse:collapse}
+.app th,.app td{padding:6px;border-bottom:1px solid rgba(255,255,255,.12)}
+.app .indicators{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.app .indicator{padding:10px;border-radius:8px;background:rgba(255,255,255,.05)}
+.app canvas{max-width:100%;height:auto}
+.app .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.app .row label{min-width:90px}
+.app .criteria-item{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.app .cert-item{display:flex;gap:8px;align-items:center;margin:4px 0}
+.app .report-table{width:100%;border-collapse:collapse;margin:8px 0}
+.app .report-table th,.app .report-table td{border:1px solid rgba(255,255,255,.2);padding:4px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تقييم استدامة المزرعة", "url": "https://mdm1.org/apps/farm-impact-analyzer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما هي المؤشرات المحسوبة؟", "acceptedAnswer": {"@type": "Answer", "text": "التربة والماء والتنوع الحيوي والانبعاثات والربحية والعدالة الاجتماعية مع إجمالي مركب."}}, {"@type": "Question", "name": "هل أحتاج إلى حساب أو اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع الحسابات تتم في المتصفح دون حساب أو اتصال أو حفظ بيانات."}}, {"@type": "Question", "name": "كيف أحفظ بياناتي؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم تنزيل JSON لحفظ نسخة، واستيراد JSON لاستعادتها لاحقا."}}, {"@type": "Question", "name": "ما هي جاهزية الشهادة؟", "acceptedAnswer": {"@type": "Answer", "text": "فحص قائمة شروط عضوية مع تقييم تلقائي حسب البيانات المدخلة."}}, {"@type": "Question", "name": "كيف تتم مقارنة السيناريوهات؟", "acceptedAnswer": {"@type": "Answer", "text": "يحسب مؤشرات أساسية وبديلة ويعرض الفروق في جدول ورسم."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تقييم استدامة المزرعة</h1>
+  <p class="page-sub">احسب مؤشرات التربة والماء والتنوع الحيوي والانبعاثات والربحية والعدالة الاجتماعية لمزرعتك مع رسوم بيانية ومقارنة سيناريوهات وتقرير قابل للتنزيل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا التطبيق يساعد المزارع على تقييم استدامة مزرعته من خلال إدخال بيانات الحقول والمحاصيل والثروة الحيوانية والري والمدخلات والغلة والأسعار وتكاليف العمل. يحسب مؤشرات التربة والماء والتنوع الحيوي والانبعاثات والربحية والعدالة الاجتماعية، ويعرض رسوما بيانية ومقارنة بين سيناريوهات، ويدعم إضافة معايير بحثية محلية، وفحص جاهزية شهادة عضوية، وتقدير الدخل من مدفوعات الخدمات البيئية، وتوليد تقرير قابل للطباعة أو التنزيل. لا يتطلب حسابا أو اتصالا أو حفظ بيانات، وجميع الحسابات تتم داخل المتصفح.</p>
+<div class="app" id="app">
+<div class="tabs">
+<button class="button sec" id="tabData">البيانات</button>
+<button class="button sec" id="tabIndicators">المؤشرات</button>
+<button class="button sec" id="tabScenarios">السيناريوهات</button>
+<button class="button sec" id="tabCriteria">المعايير</button>
+<button class="button sec" id="tabCert">الشهادة</button>
+<button class="button sec" id="tabEco">الخدمات البيئية</button>
+<button class="button sec" id="tabReport">التقرير</button>
+</div>
+
+<div class="panel active" id="panelData">
+<div class="card">
+<h2>معلومات المزرعة</h2>
+<div class="row">
+<label for="farmName">اسم المزرعة</label>
+<input class="input" id="farmName" type="text">
+<label for="region">المنطقة</label>
+<select class="select" id="region">
+<option value="dry">جافة</option>
+<option value="semi">شبه جافة</option>
+<option value="temperate">معتدلة</option>
+<option value="tropical">استوائية</option>
+</select>
+<label for="year">السنة</label>
+<input class="input" id="year" type="number" value="2026">
+<label for="totalArea">المساحة الإجمالية (هکتار)</label>
+<input class="input" id="totalArea" type="number" step="0.1" value="5">
+</div>
+</div>
+
+<div class="card">
+<h3>الحقول والمحاصيل</h3>
+<table>
+<thead><tr><th>الاسم</th><th>المساحة</th><th>المحصول</th><th>الري</th><th>الغلة كغ/هکتار</th><th>السعر/كغ</th><th></th></tr></thead>
+<tbody id="fieldsBody"></tbody>
+</table>
+<button class="button" id="addField">إضافة حقل</button>
+</div>
+
+<div class="card">
+<h3>الثروة الحيوانية</h3>
+<table>
+<thead><tr><th>النوع</th><th>العدد</th><th>التغذية/رأس</th><th>القيمة/رأس</th><th>إدارة الروث</th><th></th></tr></thead>
+<tbody id="livestockBody"></tbody>
+</table>
+<button class="button" id="addLivestock">إضافة</button>
+</div>
+
+<div class="card">
+<h3>المدخلات</h3>
+<div class="row">
+<label for="fertN">نيتروجين (كغ)</label><input class="input" id="fertN" type="number" value="100">
+<label for="fertNPrice">سعر N</label><input class="input" id="fertNPrice" type="number" step="0.01" value="1.2">
+<label for="fertP">فوسفور (كغ)</label><input class="input" id="fertP" type="number" value="40">
+<label for="fertPPrice">سعر P</label><input class="input" id="fertPPrice" type="number" step="0.01" value="1.5">
+<label for="fertK">بوتاسيوم (كغ)</label><input class="input" id="fertK" type="number" value="40">
+<label for="fertKPrice">سعر K</label><input class="input" id="fertKPrice" type="number" step="0.01" value="1.0">
+</div>
+<div class="row">
+<label for="pestL">مبيدات (لتر)</label><input class="input" id="pestL" type="number" value="5">
+<label for="pestPrice">سعر المبيد</label><input class="input" id="pestPrice" type="number" step="0.01" value="20">
+<label for="fuelL">وقود (لتر)</label><input class="input" id="fuelL" type="number" value="200">
+<label for="fuelPrice">سعر الوقود</label><input class="input" id="fuelPrice" type="number" step="0.01" value="1.0">
+<label for="waterM3">ماء (م3)</label><input class="input" id="waterM3" type="number" value="1000">
+<label for="waterPrice">سعر الماء</label><input class="input" id="waterPrice" type="number" step="0.01" value="0.5">
+<label for="elecKwh">كهرباء (كWh)</label><input class="input" id="elecKwh" type="number" value="300">
+<label for="elecPrice">سعر الكهرباء</label><input class="input" id="elecPrice" type="number" step="0.01" value="0.15">
+</div>
+</div>
+
+<div class="card">
+<h3>التربة</h3>
+<div class="row">
+<label for="soilPh">pH</label><input class="input" id="soilPh" type="number" step="0.1" value="6.8">
+<label for="soilOm">المادة العضوية %</label><input class="input" id="soilOm" type="number" step="0.1" value="2.5">
+<label for="soilN">N (ppm)</label><input class="input" id="soilN" type="number" value="40">
+<label for="soilP">P (ppm)</label><input class="input" id="soilP" type="number" value="25">
+<label for="soilK">K (ppm)</label><input class="input" id="soilK" type="number" value="180">
+<label for="soilEc">EC (dS/m)</label><input class="input" id="soilEc" type="number" step="0.1" value="1.2">
+</div>
+</div>
+
+<div class="card">
+<h3>الماء</h3>
+<div class="row">
+<label for="waterSource">المصدر</label>
+<select class="select" id="waterSource">
+<option value="well">بئر</option>
+<option value="river">نهر</option>
+<option value="rain">مطر</option>
+</select>
+<label for="waterEc">EC (dS/m)</label><input class="input" id="waterEc" type="number" step="0.1" value="0.8">
+<label for="waterSar">SAR</label><input class="input" id="waterSar" type="number" step="0.1" value="3">
+<label for="waterNitrate">نترات (ppm)</label><input class="input" id="waterNitrate" type="number" value="15">
+</div>
+</div>
+
+<div class="card">
+<h3>التنوع الحيوي</h3>
+<div class="row">
+<label for="bioSpecies">أنواع نباتية</label><input class="input" id="bioSpecies" type="number" value="12">
+<label for="bioTrees">أشجار</label><input class="input" id="bioTrees" type="number" value="50">
+<label for="bioHedge">أسوار (م)</label><input class="input" id="bioHedge" type="number" value="200">
+<label for="bioPoll">ملقحات (أنواع)</label><input class="input" id="bioPoll" type="number" value="5">
+<label for="bioCover">غطاء نباتي (0-1)</label><input class="input" id="bioCover" type="number" step="0.1" value="0.3">
+</div>
+</div>
+
+<div class="card">
+<h3>العمل</h3>
+<div class="row">
+<label for="familyHours">ساعات عائلية</label><input class="input" id="familyHours" type="number" value="300">
+<label for="hiredHours">ساعات مستأجرة</label><input class="input" id="hiredHours" type="number" value="120">
+<label for="wage">أجر/ساعة</label><input class="input" id="wage" type="number" step="0.01" value="8">
+<label for="machineryCost">تكلفة الآلات</label><input class="input" id="machineryCost" type="number" value="500">
+</div>
+</div>
+</div>
+
+<div class="panel" id="panelIndicators">
+<div class="card">
+<button class="button" id="calcIndicators">حساب المؤشرات</button>
+<div class="indicators">
+<div class="indicator"><div>التربة</div><div class="big" id="ind_soil">0</div></div>
+<div class="indicator"><div>الماء</div><div class="big" id="ind_water">0</div></div>
+<div class="indicator"><div>التنوع</div><div class="big" id="ind_bio">0</div></div>
+<div class="indicator"><div>الانبعاثات</div><div class="big" id="ind_emis">0</div></div>
+<div class="indicator"><div>الربحية</div><div class="big" id="ind_prof">0</div></div>
+<div class="indicator"><div>العدالة</div><div class="big" id="ind_social">0</div></div>
+<div class="indicator"><div>الإجمالي</div><div class="big" id="ind_overall">0</div></div>
+</div>
+<div class="row">
+<div>الإيرادات: <span id="ind_revenue">0</span></div>
+<div>التكاليف: <span id="ind_cost">0</span></div>
+<div>الربح: <span id="ind_profit">0</span></div>
+<div>الهامش %: <span id="ind_margin">0</span></div>
+<div>إنتاجية ماء: <span id="ind_wue">0</span></div>
+<div>انبعاثات/هکتار: <span id="ind_eha">0</span></div>
+</div>
+</div>
+<div class="card">
+<h3>رسم المؤشرات</h3>
+<canvas id="chartIndicators" width="500" height="260"></canvas>
+</div>
+<div class="card">
+<h3>توزيع التكاليف</h3>
+<canvas id="chartCosts" width="500" height="260"></canvas>
+</div>
+</div>
+
+<div class="panel" id="panelScenarios">
+<div class="card">
+<h3>سيناريو بديل</h3>
+<div class="row">
+<label for="scnFertRed">تقليل مدخلات %</label><input class="input" id="scnFertRed" type="number" value="20">
+<label for="scnWaterEff">تحسين الري %</label><input class="input" id="scnWaterEff" type="number" value="15">
+<label for="scnDiv">تنويع %</label><input class="input" id="scnDiv" type="number" value="10">
+<label for="scnRen">طاقة متجددة %</label><input class="input" id="scnRen" type="number" value="25">
+<label for="scnCover">غطاء إضافي</label><input class="input" id="scnCover" type="number" step="0.1" value="0.2">
+</div>
+<button class="button" id="calcScenario">حساب المقارنة</button>
+<div id="scenarioResults"></div>
+<canvas id="chartScenario" width="500" height="260"></canvas>
+</div>
+</div>
+
+<div class="panel" id="panelCriteria">
+<div class="card">
+<h3>معايير بحثية محلية</h3>
+<button class="button" id="addCriterion">إضافة معيار</button>
+<div id="criteriaList"></div>
+<button class="button" id="calcCriteria">حساب الدرجة</button>
+<div class="out" id="criteriaScore"></div>
+</div>
+</div>
+
+<div class="panel" id="panelCert">
+<div class="card">
+<h3>جاهزية شهادة عضوية</h3>
+<div id="certList"></div>
+<button class="button" id="evalCert">تقييم</button>
+<div class="out" id="certScore"></div>
+</div>
+</div>
+
+<div class="panel" id="panelEco">
+<div class="card">
+<h3>مدفوعات الخدمات البيئية</h3>
+<div class="row">
+<label for="carbonPrice">سعر الكربون</label><input class="input" id="carbonPrice" type="number" step="0.01" value="10">
+<label for="waterQualityPrice">سعر جودة الماء</label><input class="input" id="waterQualityPrice" type="number" step="0.01" value="5">
+<label for="bioPrice">سعر التنوع</label><input class="input" id="bioPrice" type="number" step="0.01" value="3">
+</div>
+<button class="button" id="calcEco">تقدير الدخل</button>
+<div class="row">
+<div>كربون: <span id="ecoCarbon">0</span></div>
+<div>ماء: <span id="ecoWater">0</span></div>
+<div>تنوع: <span id="ecoBio">0</span></div>
+<div>المجموع: <span id="ecoTotal">0</span></div>
+</div>
+</div>
+</div>
+
+<div class="panel" id="panelReport">
+<div class="card">
+<button class="button" id="generateReport">توليد التقرير</button>
+<button class="button sec" id="printReport">طباعة</button>
+<button class="button sec" id="downloadJson">تنزيل JSON</button>
+<label for="importFile">استيراد JSON</label>
+<input class="input" id="importFile" type="file" accept="application/json">
+<span id="importStatus"></span>
+<div id="reportPreview"></div>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما هي المؤشرات المحسوبة؟</h3><p>التربة والماء والتنوع الحيوي والانبعاثات والربحية والعدالة الاجتماعية مع إجمالي مركب.</p><h3>هل أحتاج إلى حساب أو اتصال؟</h3><p>لا، جميع الحسابات تتم في المتصفح دون حساب أو اتصال أو حفظ بيانات.</p><h3>كيف أحفظ بياناتي؟</h3><p>استخدم تنزيل JSON لحفظ نسخة، واستيراد JSON لاستعادتها لاحقا.</p><h3>ما هي جاهزية الشهادة؟</h3><p>فحص قائمة شروط عضوية مع تقييم تلقائي حسب البيانات المدخلة.</p><h3>كيف تتم مقارنة السيناريوهات؟</h3><p>يحسب مؤشرات أساسية وبديلة ويعرض الفروق في جدول ورسم.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="hazard-signals-studio.html" style="color:var(--gold-bright);font-weight:700">حساب مؤشرات الجفاف والفيضان والطاقة الشمسية من CSV</a><span style="opacity:.75"> — أداة تعمل داخل المتصفح لحساب مؤشرات الجفاف، الفيضان، حرائق الغابات والطاقة الشمسية مباشرة من ملفات CSV أو…</span></li><li style="margin:.5rem 0"><a href="drought-index-studio.html" style="color:var(--gold-bright);font-weight:700">حاسبة مؤشرات الجفاف والرطوبة SPI وSPEI وتحليل الأمطار والحرارة</a><span style="opacity:.75"> — احسب مؤشرات الجفاف والرطوبة SPI وSPEI وشذوذ الأمطار من سلاسل شهرية CSV داخل المتصفح، مع تصنيف الشدة ورسوم…</span></li><li style="margin:.5rem 0"><a href="fast-search-launcher.html" style="color:var(--gold-bright);font-weight:700">صفحة بداية: بحث فوري واختصارات روابطك اليومية</a><span style="opacity:.75"> — صفحة بداية تعمل دون إنترنت: شريط بحث فوري للروابط، شبكة اختصارات قابلة للتثبيت والتخصيص، تصنيفات، ترتيب…</span></li><li style="margin:.5rem 0"><a href="feedback-studio.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء استطلاعات مصغرة</a><span style="opacity:.75"> — صمم أسئلة استطلاع مصغرة ومعاينة النموذج وحفظ الردود محليًا وتصديرها بصيغ JSON وCSV بسهولة داخل المتصفح من…</span></li><li style="margin:.5rem 0"><a href="field-insight-planner.html" style="color:var(--gold-bright);font-weight:700">رسم حقول وحساب المساحة والري</a><span style="opacity:.75"> — يرسم المزارع حقوله على خريطة تفاعلية لحساب المساحة ووحدات النمو الحراري ومتطلبات الري وانبعاثات الكربون…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-18 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+let fields = [
+ {name:'حقل 1', area:2, crop:'wheat', irrig:'drip', yieldKgHa:4000, price:0.3},
+ {name:'حقل 2', area:3, crop:'vegetables', irrig:'sprinkler', yieldKgHa:6000, price:0.8}
+];
+let livestock = [
+ {type:'sheep', count:20, feedCost:50, valuePerHead:30, manure:'compost'}
+];
+let criteria = [];
+
+const cropOptions = [['wheat','قمح'],['barley','شعير'],['corn','ذرة'],['vegetables','خضروات'],['fruit','فواكه'],['legumes','بقوليات'],['other','أخرى']];
+const irrigOptions = [['drip','تنقيط'],['sprinkler','رش'],['flood','غمر'],['rainfed','مطرية']];
+const livestockTypes = [['cattle','أبقار'],['sheep','أغنام'],['goats','ماعز'],['poultry','دواجن']];
+
+function td(){return document.createElement('td');}
+function inputCell(type,id,val,onChange){
+ const c=td();
+ const inp=document.createElement('input');
+ inp.type=type; inp.id=id; inp.value=val; inp.className='input';
+ inp.addEventListener('input',(e)=>onChange(e.target.value));
+ c.appendChild(inp);
+ return c;
+}
+function selectCell(id,val,options,onChange){
+ const c=td();
+ const sel=document.createElement('select');
+ sel.id=id; sel.className='select';
+ options.forEach(o=>{
+  const opt=document.createElement('option');
+  opt.value=o[0]; opt.textContent=o[1];
+  if(o[0]===val) opt.selected=true;
+  sel.appendChild(opt);
+ });
+ sel.addEventListener('change',(e)=>onChange(e.target.value));
+ c.appendChild(sel);
+ return c;
+}
+function buttonCell(id,text,onClick){
+ const c=td();
+ const btn=document.createElement('button');
+ btn.id=id; btn.className='button sec'; btn.textContent=text;
+ btn.addEventListener('click',onClick);
+ c.appendChild(btn);
+ return c;
+}
+
+function renderFields(){
+ const tbody=$('fieldsBody');
+ tbody.innerHTML='';
+ fields.forEach((f,i)=>{
+  const tr=document.createElement('tr');
+  tr.appendChild(inputCell('text','fieldName'+i,f.name,(v)=>f.name=v));
+  tr.appendChild(inputCell('number','fieldArea'+i,f.area,(v)=>f.area=parseFloat(v)||0));
+  tr.appendChild(selectCell('fieldCrop'+i,f.crop,cropOptions,(v)=>f.crop=v));
+  tr.appendChild(selectCell('fieldIrrig'+i,f.irrig,irrigOptions,(v)=>f.irrig=v));
+  tr.appendChild(inputCell('number','fieldYield'+i,f.yieldKgHa,(v)=>f.yieldKgHa=parseFloat(v)||0));
+  tr.appendChild(inputCell('number','fieldPrice'+i,f.price,(v)=>f.price=parseFloat(v)||0));
+  tr.appendChild(buttonCell('fieldRemove'+i,'حذف',()=>{fields.splice(i,1);renderFields();}));
+  tbody.appendChild(tr);
+ });
+}
+
+function renderLivestock(){
+ const tbody=$('livestockBody');
+ tbody.innerHTML='';
+ livestock.forEach((l,i)=>{
+  const tr=document.createElement('tr');
+  tr.appendChild(selectCell('lsType'+i,l.type,livestockTypes,(v)=>l.type=v));
+  tr.appendChild(inputCell('number','lsCount'+i,l.count,(v)=>l.count=parseFloat(v)||0));
+  tr.appendChild(inputCell('number','lsFeed'+i,l.feedCost,(v)=>l.feedCost=parseFloat(v)||0));
+  tr.appendChild(inputCell('number','lsValue'+i,l.valuePerHead,(v)=>l.valuePerHead=parseFloat(v)||0));
+  tr.appendChild(selectCell('lsManure'+i,l.manure,[['compost','سماد'],['biogas','غاز'],['storage','تخزين']],(v)=>l.manure=v));
+  tr.appendChild(buttonCell('lsRemove'+i,'حذف',()=>{livestock.splice(i,1);renderLivestock();}));
+  tbody.appendChild(tr);
+ });
+}
+
+function renderCriteria(){
+ const box=$('criteriaList');
+ box.innerHTML='';
+ criteria.forEach((c,i)=>{
+  const div=document.createElement('div');
+  div.className='criteria-item';
+  const n=document.createElement('input'); n.id='critName'+i; n.className='input'; n.value=c.name; n.addEventListener('input',(e)=>c.name=e.target.value);
+  const w=document.createElement('input'); w.id='critWeight'+i; w.type='number'; w.className='input'; w.value=c.weight; w.addEventListener('input',(e)=>c.weight=parseFloat(e.target.value)||0);
+  const s=document.createElement('input'); s.id='critScore'+i; s.type='number'; s.className='input'; s.value=c.score; s.addEventListener('input',(e)=>c.score=parseFloat(e.target.value)||0);
+  const b=document.createElement('button'); b.id='critRemove'+i; b.className='button sec'; b.textContent='حذف'; b.addEventListener('click',()=>{criteria.splice(i,1);renderCriteria();});
+  div.appendChild(n); div.appendChild(w); div.appendChild(s); div.appendChild(b);
+  box.appendChild(div);
+ });
+}
+
+const certItems = [
+ {text:'مساحة 0.5 هکتار على الأقل', auto:(b)=>b.area>=0.5},
+ {text:'المادة العضوية >= 2%', auto:(b)=>b.soil.om>=2},
+ {text:'عدم استخدام مبيدات صناعية', auto:()=> (parseFloat($('pestL').value)||0)===0 },
+ {text:'تنويع محاصيل (>=3)', auto:()=> new Set(fields.map(f=>f.crop)).size>=3 },
+ {text:'وجود غطاء نباتي', auto:(b)=>b.bio.cover>=0.2 },
+ {text:'سجلات مدخلات', auto:()=> true },
+ {text:'حماية مصادر ماء', auto:()=> ($('waterSource').value)!=='well' || (parseFloat($('waterEc').value)||0)<=1.5 }
+];
+
+function renderCert(){
+ const box=$('certList');
+ box.innerHTML='';
+ certItems.forEach((c,i)=>{
+  const div=document.createElement('div');
+  div.className='cert-item';
+  const cb=document.createElement('input');
+  cb.type='checkbox'; cb.id='cert_'+i;
+  const lab=document.createElement('label');
+  lab.htmlFor='cert_'+i; lab.textContent=c.text;
+  div.appendChild(cb); div.appendChild(lab);
+  box.appendChild(div);
+ });
+}
+
+function collectBase(){
+ const area = fields.reduce((s,f)=>s+(f.area||0),0) || (parseFloat($('totalArea').value)||0) || 1;
+ let revenue = fields.reduce((s,f)=> s + (f.area||0)*(f.yieldKgHa||0)*(f.price||0),0);
+ livestock.forEach(l=>{ revenue += (l.count||0)*(l.valuePerHead||0); });
+ const fertN=parseFloat($('fertN').value)||0;
+ const fertP=parseFloat($('fertP').value)||0;
+ const fertK=parseFloat($('fertK').value)||0;
+ const pestL=parseFloat($('pestL').value)||0;
+ const fuelL=parseFloat($('fuelL').value)||0;
+ const waterM3=parseFloat($('waterM3').value)||0;
+ const elecKwh=parseFloat($('elecKwh').value)||0;
+ const fertCost = fertN*(parseFloat($('fertNPrice').value)||0)+fertP*(parseFloat($('fertPPrice').value)||0)+fertK*(parseFloat($('fertKPrice').value)||0);
+ const pestCost = pestL*(parseFloat($('pestPrice').value)||0);
+ const fuelCost = fuelL*(parseFloat($('fuelPrice').value)||0);
+ const waterCost = waterM3*(parseFloat($('waterPrice').value)||0);
+ const elecCost = elecKwh*(parseFloat($('elecPrice').value)||0);
+ const inputsCost = fertCost+pestCost+fuelCost+waterCost+elecCost;
+ const livestockCost = livestock.reduce((s,l)=> s + (l.count||0)*(l.feedCost||0),0);
+ const familyHours=parseFloat($('familyHours').value)||0;
+ const hiredHours=parseFloat($('hiredHours').value)||0;
+ const wage=parseFloat($('wage').value)||0;
+ const machineryCost=parseFloat($('machineryCost').value)||0;
+ const laborCost = hiredHours*wage + machineryCost;
+ const totalCost = inputsCost + livestockCost + laborCost;
+ let emissions = fuelL*2.68 + fertN*4.6 + fertP*1.0 + fertK*0.7 + pestL*5;
+ const factors = {cattle:2000, sheep:100, goats:120, poultry:10};
+ livestock.forEach(l=>{ emissions += (l.count||0)*(factors[l.type]||50); });
+ const yieldTotalKg = fields.reduce((s,f)=> s + (f.area||0)*(f.yieldKgHa||0),0);
+ const soil = {
+  ph:parseFloat($('soilPh').value)||0,
+  om:parseFloat($('soilOm').value)||0,
+  n:parseFloat($('soilN').value)||0,
+  p:parseFloat($('soilP').value)||0,
+  k:parseFloat($('soilK').value)||0,
+  ec:parseFloat($('soilEc').value)||0
+ };
+ const bio = {
+  species:parseFloat($('bioSpecies').value)||0,
+  trees:parseFloat($('bioTrees').value)||0,
+  hedgerow:parseFloat($('bioHedge').value)||0,
+  pollinators:parseFloat($('bioPoll').value)||0,
+  cover:parseFloat($('bioCover').value)||0
+ };
+ return {area,revenue,costs:{inputs:inputsCost,livestock:livestockCost,labor:laborCost,total:totalCost},emissions,yieldTotalKg,waterM3,soil,bio,labor:{familyHours,hiredHours,wage},machineryCost};
+}
+
+function computeIndicators(base){
+ const area = base.area||1;
+ let phScore = 0;
+ if(base.soil.ph>=6.5 && base.soil.ph<=7.5) phScore=100; else phScore=Math.max(0,100-Math.abs(base.soil.ph-7)*25);
+ const omScore = Math.min(100,(base.soil.om/5)*100);
+ const ecScore = Math.max(0,100-base.soil.ec*20);
+ const nutrientScore = Math.min(100, (base.soil.n/50+base.soil.p/20+base.soil.k/30)/3*100);
+ const soilIndex=(phScore+omScore+ecScore+nutrientScore)/4;
+ const wue = base.waterM3>0 ? base.yieldTotalKg/base.waterM3 : 0;
+ const waterIndex = Math.min(100,(wue/2)*100);
+ const speciesScore=Math.min(100,base.bio.species*2);
+ const treeScore=Math.min(100,base.bio.trees/area*2);
+ const hedgeScore=Math.min(100,base.bio.hedgerow/(area*10+1)*100/10?0:0);
+ const hedgeScore2=Math.min(100, base.bio.hedgerow/Math.max(1,area*5));
+ const coverScore=Math.min(100,base.bio.cover*100);
+ const pollScore=Math.min(100,base.bio.pollinators*10);
+ const bioIndex=(speciesScore+treeScore+hedgeScore2+coverScore+pollScore)/5;
+ const ePerHa=base.emissions/area;
+ const ePerKg=base.yieldTotalKg>0? base.emissions/base.yieldTotalKg :0;
+ const emissionsIndex=Math.max(0,100-ePerHa/50);
+ const profit=base.revenue-base.costs.total;
+ const margin=base.revenue>0? profit/base.revenue*100 :0;
+ const bcr=base.costs.total>0? base.revenue/base.costs.total :0;
+ const profitIndex=Math.min(100,Math.max(0,margin));
+ const totalHours=base.labor.familyHours+base.labor.hiredHours;
+ const familyShare=totalHours>0? base.labor.familyHours/totalHours*100 :0;
+ const laborCostShare=base.revenue>0? base.costs.labor/base.revenue*100 :0;
+ const socialIndex=Math.min(100,(familyShare*0.5+(100-laborCostShare)*0.5));
+ const overall=(soilIndex+waterIndex+bioIndex+emissionsIndex+profitIndex+socialIndex)/6;
+ return {soilIndex,waterIndex,bioIndex,emissionsIndex,profitIndex,socialIndex,overall,wue,ePerHa,ePerKg,profit,margin,bcr,revenue:base.revenue,costs:base.costs};
+}
+
+function drawBar(canvasId,values,labels){
+ const canvas=$(canvasId); if(!canvas) return;
+ const ctx=canvas.getContext('2d');
+ const w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);
+ const max=Math.max(1,...values);
+ const n=values.length;
+ const slot=w/n;
+ const bw=slot*0.6;
+ values.forEach((v,i)=>{
+  const x=i*slot+(slot-bw)/2;
+  const bh=(v/max)*(h-40);
+  ctx.fillStyle='#d4af37';
+  ctx.fillRect(x,h-25-bh,bw,bh);
+  ctx.fillStyle='#f5f0e1';
+  ctx.font='11px sans-serif';
+  ctx.fillText(labels[i],x,h-10);
+  ctx.fillText(v.toFixed(0),x,h-30-bh);
+ });
+}
+function drawPie(canvasId,values,labels){
+ const canvas=$(canvasId); if(!canvas) return;
+ const ctx=canvas.getContext('2d');
+ const w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);
+ const total=values.reduce((s,v)=>s+v,0)||1;
+ let start=0;
+ const colors=['#d4af37','#8b6914','#f5f0e1'];
+ values.forEach((v,i)=>{
+  const ang=(v/total)*Math.PI*2;
+  ctx.beginPath();
+  ctx.moveTo(w/2,h/2);
+  ctx.arc(w/2,h/2,Math.min(w,h)/2-20,start,start+ang);
+  ctx.closePath();
+  ctx.fillStyle=colors[i%colors.length];
+  ctx.fill();
+  start+=ang;
+ });
+ ctx.fillStyle='#f5f0e1';
+ ctx.font='11px sans-serif';
+ labels.forEach((lab,i)=>ctx.fillText(lab,10,20+i*14));
+}
+
+let lastScenario=null;
+function runScenario(){
+ const base=collectBase();
+ const alt=JSON.parse(JSON.stringify(base));
+ const fertRed=(parseFloat($('scnFertRed').value)||0)/100;
+ const waterEff=(parseFloat($('scnWaterEff').value)||0)/100;
+ const div=(parseFloat($('scnDiv').value)||0)/100;
+ const ren=(parseFloat($('scnRen').value)||0)/100;
+ const cover=parseFloat($('scnCover').value)||0;
+ alt.costs.inputs=alt.costs.inputs*(1-fertRed*0.5);
+ alt.emissions=alt.emissions*(1-fertRed*0.6)*(1-ren*0.4);
+ alt.waterM3=alt.waterM3*(1-waterEff*0.3);
+ alt.bio.cover=Math.min(1,alt.bio.cover+cover);
+ alt.bio.species=alt.bio.species*(1+div*0.3);
+ alt.revenue=alt.revenue*(1+div*0.1+cover*0.05);
+ alt.soil.om=alt.soil.om*(1+cover*0.1);
+ const bi=computeIndicators(base);
+ const ai=computeIndicators(alt);
+ lastScenario={bi,ai};
+ const names=['التربة','الماء','التنوع','الانبعاثات','الربحية','العدالة'];
+ const bvals=[bi.soilIndex,bi.waterIndex,bi.bioIndex,bi.emissionsIndex,bi.profitIndex,bi.socialIndex];
+ const avals=[ai.soilIndex,ai.waterIndex,ai.bioIndex,ai.emissionsIndex,ai.profitIndex,ai.socialIndex];
+ let html='<table class="report-table"><thead><tr><th>المؤشر</th><th>أساسي</th><th>بديل</th></tr></thead><tbody>';
+ names.forEach((n,i)=>{ html+='<tr><td>'+n+'</td><td>'+bvals[i].toFixed(1)+'</td><td>'+avals[i].toFixed(1)+'</td></tr>'; });
+ html+='</tbody></table>';
+ $('scenarioResults').innerHTML=html;
+ // grouped chart
+ const canvas=$('chartScenario'); const ctx=canvas.getContext('2d');
+ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h);
+ const n=names.length; const slot=w/n; const bw=slot*0.3;
+ const max=Math.max(1,...bvals,...avals);
+ bvals.forEach((v,i)=>{
+  const x=i*slot+(slot-bw*2.2)/2;
+  const bh=(v/max)*(h-40);
+  ctx.fillStyle='#d4af37'; ctx.fillRect(x,h-25-bh,bw,bh);
+  const bh2=(avals[i]/max)*(h-40);
+  ctx.fillStyle='#8b6914'; ctx.fillRect(x+bw+2,h-25-bh2,bw,bh2);
+  ctx.fillStyle='#f5f0e1'; ctx.font='10px sans-serif'; ctx.fillText(names[i],x,h-10);
+ });
+}
+
+function calcCriteria(){
+ let totalW=0; let weighted=0;
+ criteria.forEach(c=>{
+  const w=c.weight||0; const s=c.score||0;
+  totalW+=w; weighted+=w*s;
+ });
+ const score = totalW>0 ? weighted/totalW : 0;
+ $('criteriaScore').textContent='الدرجة: '+score.toFixed(1);
+}
+
+function evalCert(){
+ const base=collectBase();
+ certItems.forEach((c,i)=>{
+  const cb=$('cert_'+i);
+  if(cb) cb.checked = c.auto(base);
+ });
+ const score=certItems.filter((c,i)=>{const cb=$('cert_'+i); return cb && cb.checked;}).length;
+ $('certScore').textContent=score+' / '+certItems.length;
+}
+
+function calcEco(){
+ const base=collectBase();
+ const carbonPrice=parseFloat($('carbonPrice').value)||0;
+ const waterPrice=parseFloat($('waterQualityPrice').value)||0;
+ const bioPrice=parseFloat($('bioPrice').value)||0;
+ const carbonIncome=base.area*0.8*carbonPrice;
+ const waterIncome=base.area*waterPrice;
+ const bioIncome=base.area*bioPrice;
+ const total=carbonIncome+waterIncome+bioIncome;
+ $('ecoCarbon').textContent=carbonIncome.toFixed(0);
+ $('ecoWater').textContent=waterIncome.toFixed(0);
+ $('ecoBio').textContent=bioIncome.toFixed(0);
+ $('ecoTotal').textContent=total.toFixed(0);
+}
+
+function renderIndicators(){
+ const base=collectBase();
+ const ind=computeIndicators(base);
+ $('ind_soil').textContent=ind.soilIndex.toFixed(1);
+ $('ind_water').textContent=ind.waterIndex.toFixed(1);
+ $('ind_bio').textContent=ind.bioIndex.toFixed(1);
+ $('ind_emis').textContent=ind.emissionsIndex.toFixed(1);
+ $('ind_prof').textContent=ind.profitIndex.toFixed(1);
+ $('ind_social').textContent=ind.socialIndex.toFixed(1);
+ $('ind_overall').textContent=ind.overall.toFixed(1);
+ $('ind_revenue').textContent=ind.revenue.toFixed(0);
+ $('ind_cost').textContent=ind.costs.total.toFixed(0);
+ $('ind_profit').textContent=ind.profit.toFixed(0);
+ $('ind_margin').textContent=ind.margin.toFixed(1)+'%';
+ $('ind_wue').textContent=ind.wue.toFixed(2);
+ $('ind_eha').textContent=ind.ePerHa.toFixed(0);
+ drawBar('chartIndicators',[ind.soilIndex,ind.waterIndex,ind.bioIndex,ind.emissionsIndex,ind.profitIndex,ind.socialIndex],['تربة','ماء','تنوع','انبعاثات','ربحية','عدالة']);
+ drawPie('chartCosts',[ind.costs.inputs,ind.costs.livestock,ind.costs.labor],['مدخلات','حيوانات','عمل']);
+}
+
+function generateReport(){
+ const base=collectBase();
+ const ind=computeIndicators(base);
+ let html='<h2>تقرير المزرعة</h2>';
+ html+='<p>المساحة: '+base.area.toFixed(2)+' هکتار</p>';
+ html+='<p>الإيرادات: '+ind.revenue.toFixed(0)+' | التكاليف: '+ind.costs.total.toFixed(0)+' | الربح: '+ind.profit.toFixed(0)+'</p>';
+ html+='<table class="report-table"><thead><tr><th>المؤشر</th><th>القيمة</th></tr></thead><tbody>';
+ const rows=[['تربة',ind.soilIndex],['ماء',ind.waterIndex],['تنوع',ind.bioIndex],['انبعاثات',ind.emissionsIndex],['ربحية',ind.profitIndex],['عدالة',ind.socialIndex],['إجمالي',ind.overall]];
+ rows.forEach(r=>{html+='<tr><td>'+r[0]+'</td><td>'+Number(r[1]).toFixed(1)+'</td></tr>';});
+ html+='</tbody></table>';
+ $('reportPreview').innerHTML=html;
+}
+
+function getState(){
+ return {
+  farmName:$('farmName').value, region:$('region').value, year:$('year').value, totalArea:$('totalArea').value,
+  fields:fields, livestock:livestock, criteria:criteria,
+  inputs:{
+   fertN:$('fertN').value,fertNPrice:$('fertNPrice').value,fertP:$('fertP').value,fertPPrice:$('fertPPrice').value,
+   fertK:$('fertK').value,fertKPrice:$('fertKPrice').value,pestL:$('pestL').value,pestPrice:$('pestPrice').value,
+   fuelL:$('fuelL').value,fuelPrice:$('fuelPrice').value,waterM3:$('waterM3').value,waterPrice:$('waterPrice').value,
+   elecKwh:$('elecKwh').value,elecPrice:$('elecPrice').value
+  },
+  soil:{ph:$('soilPh').value,om:$('soilOm').value,n:$('soilN').value,p:$('soilP').value,k:$('soilK').value,ec:$('soilEc').value},
+  water:{source:$('waterSource').value,ec:$('waterEc').value,sar:$('waterSar').value,nitrate:$('waterNitrate').value},
+  bio:{species:$('bioSpecies').value,trees:$('bioTrees').value,hedge:$('bioHedge').value,poll:$('bioPoll').value,cover:$('bioCover').value},
+  labor:{familyHours:$('familyHours').value,hiredHours:$('hiredHours').value,wage:$('wage').value,machineryCost:$('machineryCost').value},
+  market:{carbon:$('carbonPrice').value,water:$('waterQualityPrice').value,bio:$('bioPrice').value}
+ };
+}
+
+function setState(data){
+ if(!data) return;
+ if(data.farmName!==undefined) $('farmName').value=data.farmName;
+ if(data.region!==undefined) $('region').value=data.region;
+ if(data.year!==undefined) $('year').value=data.year;
+ if(data.totalArea!==undefined) $('totalArea').value=data.totalArea;
+ if(Array.isArray(data.fields)) fields=data.fields;
+ if(Array.isArray(data.livestock)) livestock=data.livestock;
+ if(Array.isArray(data.criteria)) criteria=data.criteria;
+ if(data.inputs){
+  const i=data.inputs;
+  if(i.fertN!==undefined) $('fertN').value=i.fertN;
+  if(i.fertNPrice!==undefined) $('fertNPrice').value=i.fertNPrice;
+  if(i.fertP!==undefined) $('fertP').value=i.fertP;
+  if(i.fertPPrice!==undefined) $('fertPPrice').value=i.fertPPrice;
+  if(i.fertK!==undefined) $('fertK').value=i.fertK;
+  if(i.fertKPrice!==undefined) $('fertKPrice').value=i.fertKPrice;
+  if(i.pestL!==undefined) $('pestL').value=i.pestL;
+  if(i.pestPrice!==undefined) $('pestPrice').value=i.pestPrice;
+  if(i.fuelL!==undefined) $('fuelL').value=i.fuelL;
+  if(i.fuelPrice!==undefined) $('fuelPrice').value=i.fuelPrice;
+  if(i.waterM3!==undefined) $('waterM3').value=i.waterM3;
+  if(i.waterPrice!==undefined) $('waterPrice').value=i.waterPrice;
+  if(i.elecKwh!==undefined) $('elecKwh').value=i.elecKwh;
+  if(i.elecPrice!==undefined) $('elecPrice').value=i.elecPrice;
+ }
+ if(data.soil){
+  if(data.soil.ph!==undefined) $('soilPh').value=data.soil.ph;
+  if(data.soil.om!==undefined) $('soilOm').value=data.soil.om;
+  if(data.soil.n!==undefined) $('soilN').value=data.soil.n;
+  if(data.soil.p!==undefined) $('soilP').value=data.soil.p;
+  if(data.soil.k!==undefined) $('soilK').value=data.soil.k;
+  if(data.soil.ec!==undefined) $('soilEc').value=data.soil.ec;
+ }
+ if(data.water){
+  if(data.water.source!==undefined) $('waterSource').value=data.water.source;
+  if(data.water.ec!==undefined) $('waterEc').value=data.water.ec;
+  if(data.water.sar!==undefined) $('waterSar').value=data.water.sar;
+  if(data.water.nitrate!==undefined) $('waterNitrate').value=data.water.nitrate;
+ }
+ if(data.bio){
+  if(data.bio.species!==undefined) $('bioSpecies').value=data.bio.species;
+  if(data.bio.trees!==undefined) $('bioTrees').value=data.bio.trees;
+  if(data.bio.hedge!==undefined) $('bioHedge').value=data.bio.hedge;
+  if(data.bio.poll!==undefined) $('bioPoll').value=data.bio.poll;
+  if(data.bio.cover!==undefined) $('bioCover').value=data.bio.cover;
+ }
+ if(data.labor){
+  if(data.labor.familyHours!==undefined) $('familyHours').value=data.labor.familyHours;
+  if(data.labor.hiredHours!==undefined) $('hiredHours').value=data.labor.hiredHours;
+  if(data.labor.wage!==undefined) $('wage').value=data.labor.wage;
+  if(data.labor.machineryCost!==undefined) $('machineryCost').value=data.labor.machineryCost;
+ }
+ if(data.market){
+  if(data.market.carbon!==undefined) $('carbonPrice').value=data.market.carbon;
+  if(data.market.water!==undefined) $('waterQualityPrice').value=data.market.water;
+  if(data.market.bio!==undefined) $('bioPrice').value=data.market.bio;
+ }
+}
+
+function showPanel(name){
+ document.querySelectorAll('.app .panel').forEach(p=>p.classList.remove('active'));
+ const p=$('panel'+name); if(p) p.classList.add('active');
+}
+
+function renderAll(){
+ renderFields(); renderLivestock(); renderCriteria(); renderCert();
+}
+
+function init(){
+ renderAll();
+ $('addField').addEventListener('click',()=>{fields.push({name:'حقل',area:1,crop:'wheat',irrig:'drip',yieldKgHa:3000,price:0.4});renderFields();});
+ $('addLivestock').addEventListener('click',()=>{livestock.push({type:'sheep',count:10,feedCost:50,valuePerHead:30,manure:'compost'});renderLivestock();});
+ $('addCriterion').addEventListener('click',()=>{criteria.push({name:'معيار',weight:1,score:5});renderCriteria();});
+ $('calcCriteria').addEventListener('click',calcCriteria);
+ $('calcIndicators').addEventListener('click',renderIndicators);
+ $('calcScenario').addEventListener('click',runScenario);
+ $('evalCert').addEventListener('click',evalCert);
+ $('calcEco').addEventListener('click',calcEco);
+ $('generateReport').addEventListener('click',generateReport);
+ $('printReport').addEventListener('click',()=>window.print());
+ $('downloadJson').addEventListener('click',()=>{
+  const data=getState();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='farm-assessment.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+ });
+ $('importFile').addEventListener('change',(e)=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{
+   try{ setState(JSON.parse(ev.target.result)); renderAll(); $('importStatus').textContent='تم الاستيراد'; }
+   catch(err){ $('importStatus').textContent='خطأ في الملف'; }
+  };
+  reader.readAsText(file);
+ });
+ ['tabData','tabIndicators','tabScenarios','tabCriteria','tabCert','tabEco','tabReport'].forEach((id,i)=>{
+  const names=['Data','Indicators','Scenarios','Criteria','Cert','Eco','Report'];
+  $(id).addEventListener('click',()=>showPanel(names[i]));
+ });
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+</script>
+</body>
+</html>
