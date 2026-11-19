@@ -167,6 +167,17 @@
       }
     });
 
+    // بعد العودة من تسجيل الدخول (جوجل/مايكروسوفت) المتصفح قد يمنع الصوت بدون لمسة: أول لمسة تستأنف الموسيقى لو اختار المستخدم "نعم"
+    ['pointerdown', 'keydown', 'touchend'].forEach(ev => document.addEventListener(ev, () => {
+      if (sessionStorage.getItem(MUSIC_KEY) !== 'yes') return;
+      if (audio.paused || audio.muted) {
+        audio.muted = false;
+        const p = audio.play(); if (p && p.catch) p.catch(() => {});
+        fadeVolume(audio, 0, 0.45, 1200);
+        btn.textContent = '🔊'; btn.classList.add('playing');
+      }
+    }, { passive: true }));
+
     // استئناف الموسيقى عند الرجوع للصفحة (زر رجوع المتصفح / bfcache) أو العودة لتبويبها
     window.addEventListener('pageshow', () => {
       if(sessionStorage.getItem(MUSIC_KEY) === 'yes' && audio.paused) playMusic(1200);

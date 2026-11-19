@@ -50,7 +50,7 @@
   var css =
     ":host{all:initial}" +
     "*{box-sizing:border-box}" +
-    ".fab{position:fixed;left:1.5rem;bottom:9rem;width:48px;height:48px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;" +
+    ".fab{position:fixed;left:1.5rem;bottom:9.5rem;width:48px;height:48px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;" +
     "border:1px solid rgba(201,168,76,.55);background:radial-gradient(circle at 35% 30%,rgba(201,168,76,.35),rgba(0,0,0,.82) 70%);color:#e8c96a;cursor:grab;" +
     "backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(201,168,76,.25);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}" +
     ".fab:hover{border-color:#e8c96a;box-shadow:0 0 22px rgba(201,168,76,.45)}" +
