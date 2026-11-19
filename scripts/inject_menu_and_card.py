@@ -29,7 +29,7 @@ HAS_MUSIC = re.compile(r'id=["\']bg-music["\']', re.I)
 HAS_GLOBAL_JS = re.compile(r'js/global\.js', re.I)
 PANEL_RE = re.compile(r'(<nav id="mdm1m-panel"[^>]*>)(.*?)(</nav>)', re.S | re.I)
 DEFAULT_TRACK = "/audio/index.mp3"
-MUSIC_CSS = ("<style>#music-btn{position:fixed;bottom:5rem;left:1.5rem;z-index:999;width:48px;height:48px;border-radius:50%;"
+MUSIC_CSS = ("<style>#music-btn{position:fixed;bottom:5.5rem;left:1.5rem;z-index:999;width:48px;height:48px;border-radius:50%;"
              "border:1px solid rgba(201,168,76,.5);background:rgba(0,0,0,.75);backdrop-filter:blur(8px);color:#c9a84c;"
              "font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center}"
              "#music-btn.playing{border-color:rgba(201,168,76,.9);box-shadow:0 0 18px rgba(201,168,76,.35)}</style>")
