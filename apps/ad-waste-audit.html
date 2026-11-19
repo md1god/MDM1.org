@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحليل تقارير الإعلانات واكتشاف الهدر وتوفير الميزانية | MDM1</title>
+<meta name="description" content="أداة داخل المتصفح تستورد ملفات CSV لتقارير المنصات الإعلانية، تحلل الإنفاق وتحدد الكلمات والحملات غير الفعّالة، تصنّف مستوى الهدر، وتقدم إجراءات تحسين قابلة للتصدير لتطبيقها يدوياً.">
+<link rel="canonical" href="https://mdm1.org/apps/ad-waste-audit.html">
+<meta property="og:title" content="تحليل تقارير الإعلانات واكتشاف الهدر وتوفير الميزانية">
+<meta property="og:description" content="أداة داخل المتصفح تستورد ملفات CSV لتقارير المنصات الإعلانية، تحلل الإنفاق وتحدد الكلمات والحملات غير الفعّالة، تصنّف مستوى الهدر، وتقدم إجراءات تحسين قابلة للتصدير لتطبيقها يدوياً.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/ad-waste-audit.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  padding: 1rem;  
+  background-color: var(--dark);  
+  color: var(--light);  
+}  
+.app .row {  
+  align-items: center;  
+  gap: 0.5rem;  
+  margin-bottom: 0.75rem;  
+}  
+.app .label {  
+  font-weight: bold;  
+}  
+.app .input, .app select, .app textarea {  
+  background-color: var(--gold-dim);  
+  border: 1px solid var(--gold);  
+  color: var(--light);  
+  padding: 0.3rem 0.5rem;  
+}  
+.app .button {  
+  background-color: var(--gold);  
+  color: var(--dark);  
+  border: none;  
+  padding: 0.4rem 0.8rem;  
+  cursor: pointer;  
+}  
+.app .button.sec {  
+  background-color: var(--gold-bright);  
+  color: var(--dark);  
+}  
+.app .out {  
+  background-color: var(--gold-dim);  
+  padding: 0.8rem;  
+  border-radius: 4px;  
+}  
+.app .big {  
+  font-size: 1.5rem;  
+  font-weight: bold;  
+  color: var(--gold-bright);  
+}  
+.app table {  
+  width: 100%;  
+  border-collapse: collapse;  
+  margin-top: 0.5rem;  
+}  
+.app th, .app td {  
+  border: 1px solid var(--gold);  
+  padding: 0.4rem;  
+  text-align: center;  
+}  
+.app th {  
+  background-color: var(--gold);  
+  color: var(--dark);  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تحليل تقارير الإعلانات وتوفير الإنفاق", "url": "https://mdm1.org/apps/ad-waste-audit.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يتم استيراد ملف CSV؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر الملف من خلال زر “ملف CSV للتقارير” ثم اضغط “تحليل البيانات”. لا تُرسل البيانات إلى أي خادم."}}, {"@type": "Question", "name": "ما هي المعايير التي تُصنّف الهدر؟", "acceptedAnswer": {"@type": "Answer", "text": "تُصنّف وفقاً للإنفاق بدون تحويلات، مع مستويات منخفض، متوسط وعالي بناءً على قيمة الإنفاق."}}, {"@type": "Question", "name": "هل يمكن تعديل أو إلغاء أي توصية قبل التصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم مربعات الاختيار أمام كل صف لتحديد ما تريد تضمينه في ملف التعديلات."}}, {"@type": "Question", "name": "بأي صيغة يتم تصدير النتائج؟", "acceptedAnswer": {"@type": "Answer", "text": "يُصدّر الملف بصيغة JSON يمكن استيراده يدوياً إلى أي منصة إعلانية لتطبيق التعديلات."}}, {"@type": "Question", "name": "هل تعمل الأداة على جميع المتصفحات الحديثة؟", "acceptedAnswer": {"@type": "Answer", "text": "تعمل على المتصفحات التي تدعم HTML5 وFileReader بدون الحاجة لأي إضافات أو اتصال بالإنترنت."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تحليل تقارير الإعلانات وتوفير الإنفاق</h1>
+  <p class="page-sub">أداة داخل المتصفح تستورد ملفات CSV لتقارير المنصات الإعلانية، تحلل الإنفاق وتحدد الكلمات والحملات غير الفعّالة، تصنّف مستوى الهدر، وتقدم إجراءات تحسين قابلة للتصدير لتطبيقها يدوياً.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">  
+  <p>هذه الأداة توفر إجابة سريعة لتحديد أين يذهب ميزانيتك الإعلانية دون تحقيق أي تحويلات. من خلال استيراد ملف CSV لتقارير المنصات الإعلانية، تقوم الأداة بتحليل الإنفاق، وتحديد الكلمات والحملات التي تستهلك ميزانية دون إيرادات، ثم تصنّف مستوى الهدر وتقدّر المبلغ القابل لتوفيره. بعد ذلك، تُظهر إجراءات تحسين محددة مثل خفض المزايدة، إيقاف الكلمات غير المجدية، وإضافة كلمات سلبية، وتسمح لك بمراجعة كل إجراء والموافقة عليه قبل تصدير ملف تعديل جاهز للتنفيذ يدوياً على كل منصة.</p>  
+  
+  <div class="row">  
+    <label for="csvFile" class="label">ملف CSV للتقارير</label>  
+    <input type="file" id="csvFile" class="input" accept=".csv">  
+    <button id="analyzeBtn" class="button">تحليل البيانات</button>  
+  </div>  
+  
+  <div id="progress" class="out" style="display:none; margin-top:1rem;">جاري التحليل…</div>  
+  
+  <div id="resultsSection" style="display:none; margin-top:1rem;">  
+    <h2 class="badge">نتائج التحليل</h2>  
+    <p class="big" id="totalWaste"></p>  
+    <p id="estimatedSave"></p>  
+  
+    <table class="out">  
+      <thead>  
+        <tr>  
+          <th>اختيار</th>  
+          <th>الكلمة</th>  
+          <th>الحملة</th>  
+          <th>الإنفاق</th>  
+          <th>التصنيف</th>  
+          <th>الإجراء المقترح</th>  
+        </tr>  
+      </thead>  
+      <tbody id="recommendationsBody"></tbody>  
+    </table>  
+  
+    <div class="row" style="margin-top:1rem;">  
+      <button id="exportBtn" class="button sec">تصدير التعديلات</button>  
+    </div>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يتم استيراد ملف CSV؟</h3><p>اختر الملف من خلال زر “ملف CSV للتقارير” ثم اضغط “تحليل البيانات”. لا تُرسل البيانات إلى أي خادم.</p><h3>ما هي المعايير التي تُصنّف الهدر؟</h3><p>تُصنّف وفقاً للإنفاق بدون تحويلات، مع مستويات منخفض، متوسط وعالي بناءً على قيمة الإنفاق.</p><h3>هل يمكن تعديل أو إلغاء أي توصية قبل التصدير؟</h3><p>نعم، استخدم مربعات الاختيار أمام كل صف لتحديد ما تريد تضمينه في ملف التعديلات.</p><h3>بأي صيغة يتم تصدير النتائج؟</h3><p>يُصدّر الملف بصيغة JSON يمكن استيراده يدوياً إلى أي منصة إعلانية لتطبيق التعديلات.</p><h3>هل تعمل الأداة على جميع المتصفحات الحديثة؟</h3><p>تعمل على المتصفحات التي تدعم HTML5 وFileReader بدون الحاجة لأي إضافات أو اتصال بالإنترنت.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="traffic-integrity-scanner.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل بيانات الزوار واكتشاف البوتات وتحديد الإنفاق المهدور</a><span style="opacity:.75"> — اكتشف الزيارات المشبوهة، البوتات، العملاء المكررين، وحساب الإنفاق المهدور، واحصل على قائمة إصلاحات مرتبة…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-answer-visibility-tracker.html" style="color:var(--gold-bright);font-weight:700">تحليل ظهور العلامات التجارية في إجابات محركات البحث بالذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل إجابات ChatGPT وPerplexity وGoogle AI Overviews فوراً: استخرج ذكر العلامة والمنافسين والروابط، احسب حصة…</span></li><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="ai-citation-radar.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل الذكاء الاصطناعي لاستخراج العلامات التجارية والاستشهادات</a><span style="opacity:.75"> — أداة تعمل داخل المتصفح لتتبع ذكر العلامات التجارية في ردود ChatGPT وPerplexity وClaude وGemini وGoogle AI…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function() {  
+  const csvInput = document.getElementById('csvFile');  
+  const analyzeBtn = document.getElementById('analyzeBtn');  
+  const progressDiv = document.getElementById('progress');  
+  const resultsSection = document.getElementById('resultsSection');  
+  const totalWasteEl = document.getElementById('totalWaste');  
+  const estimatedSaveEl = document.getElementById('estimatedSave');  
+  const recommendationsBody = document.getElementById('recommendationsBody');  
+  const exportBtn = document.getElementById('exportBtn');  
+  
+  let recommendations = [];  
+  
+  function parseCSV(text) {  
+    const rows = text.trim().split(/\r?\n/);  
+    const header = rows.shift().split(',');  
+    return rows.map(line => {  
+      const values = [];  
+      let cur = '';  
+      let inQuotes = false;  
+      for (let i = 0; i < line.length; i++) {  
+        const ch = line[i];  
+        if (ch === '\"') {  
+          inQuotes = !inQuotes;  
+        } else if (ch === ',' && !inQuotes) {  
+          values.push(cur.trim());  
+          cur = '';  
+        } else {  
+          cur += ch;  
+        }  
+      }  
+      values.push(cur.trim());  
+      const obj = {};  
+      header.forEach((h, idx) => { obj[h.trim()] = values[idx] || ''; });  
+      return obj;  
+    });  
+  }  
+  
+  function analyzeData(data) {  
+    const wasteItems = [];  
+    data.forEach(row => {  
+      const spend = parseFloat(row['spend'] || row['Spend'] || row['إنفاق'] || 0);  
+      const conversions = parseInt(row['conversions'] || row['Conversions'] || row['تحويلات'] || 0, 10);  
+      if (spend > 0 && conversions === 0) {  
+        let severity = 'منخفض';  
+        if (spend >= 500) severity = 'عالي';  
+        else if (spend >= 100) severity = 'متوسط';  
+        wasteItems.push({  
+          keyword: row['keyword'] || row['Keyword'] || row['الكلمة'],  
+          campaign: row['campaign'] || row['Campaign'] || row['الحملة'],  
+          spend: spend,  
+          severity: severity,  
+          action: severity === 'عالي' ? 'إيقاف الكلمة' : (severity === 'متوسط' ? 'خفض المزايدة' : 'إضافة كلمة سلبية')  
+        });  
+      }  
+    });  
+    return wasteItems;  
+  }  
+  
+  function renderRecommendations(list) {  
+    recommendationsBody.innerHTML = '';  
+    list.forEach((item, index) => {  
+      const tr = document.createElement('tr');  
+      tr.innerHTML = `  
+        <td><input type="checkbox" id="chk${index}" class="input" checked></td>  
+        <td>${item.keyword}</td>  
+        <td>${item.campaign}</td>  
+        <td>${item.spend.toFixed(2)}</td>  
+        <td>${item.severity}</td>  
+        <td>${item.action}</td>`;  
+      recommendationsBody.appendChild(tr);  
+    });  
+  }  
+  
+  function calculateTotals(list) {  
+    const totalWaste = list.length;  
+    const totalSave = list.reduce((sum, i) => sum + i.spend, 0);  
+    totalWasteEl.textContent = `عدد العناصر غير المجدية: ${totalWaste}`;  
+    estimatedSaveEl.textContent = `المبلغ المتوقّع توفيره: ${totalSave.toFixed(2)}`;  
+  }  
+  
+  function exportSelected() {  
+    const selected = [];  
+    recommendations.forEach((item, idx) => {  
+      const chk = document.getElementById('chk' + idx);  
+      if (chk && chk.checked) {  
+        selected.push(item);  
+      }  
+    });  
+    const blob = new Blob([JSON.stringify(selected, null, 2)], {type: 'application/json'});  
+    const url = window.URL.createObjectURL(blob);  
+    const a = document.createElement('a');  
+    a.href = url;  
+    a.download = 'ad-modifications.json';  
+    a.click();  
+    window.URL.revokeObjectURL(url);  
+  }  
+  
+  analyzeBtn.addEventListener('click', function() {  
+    const file = csvInput.files[0];  
+    if (!file) { alert('يرجى اختيار ملف CSV أولاً'); return; }  
+    progressDiv.style.display = 'block';  
+    const reader = new FileReader();  
+    reader.onload = function(e) {  
+      progressDiv.style.display = 'none';  
+      const text = e.target.result;  
+      const data = parseCSV(text);  
+      recommendations = analyzeData(data);  
+      if (recommendations.length === 0) {  
+        resultsSection.style.display = 'block';  
+        recommendationsBody.innerHTML = '<tr><td colspan="6">لم يتم العثور على أي هدر.</td></tr>';  
+        totalWasteEl.textContent = '';  
+        estimatedSaveEl.textContent = '';  
+        return;  
+      }  
+      renderRecommendations(recommendations);  
+      calculateTotals(recommendations);  
+      resultsSection.style.display = 'block';  
+    };  
+    reader.readAsText(file);  
+  });  
+  
+  exportBtn.addEventListener('click', exportSelected);  
+})();
+</script>
+</body>
+</html>
