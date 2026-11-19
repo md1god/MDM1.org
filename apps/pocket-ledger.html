@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دفتر مالي لتسجيل الدخل والمصروفات داخل المتصفح – متعدد الحسابات والفئات | MDM1</title>
+<meta name="description" content="تطبيق دفتر مالي يعمل بالكامل داخل المتصفح لتسجيل الدخل والمصروفات يدويًا، مع حسابات متعددة، فئات، ميزانيات شهرية، واستيراد/تصدير CSV. لا يتطلب خادمًا أو تخزينًا دائمًا.">
+<link rel="canonical" href="https://mdm1.org/apps/pocket-ledger.html">
+<meta property="og:title" content="دفتر مالي لتسجيل الدخل والمصروفات داخل المتصفح – متعدد الحسابات والفئات">
+<meta property="og:description" content="تطبيق دفتر مالي يعمل بالكامل داخل المتصفح لتسجيل الدخل والمصروفات يدويًا، مع حسابات متعددة، فئات، ميزانيات شهرية، واستيراد/تصدير CSV. لا يتطلب خادمًا أو تخزينًا دائمًا.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/pocket-ledger.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  max-width: 960px;  
+  margin: 0 auto;  
+  padding: 1rem;  
+  color: var(--light);  
+}  
+.app .card {  
+  background: var(--dark);  
+  border: 1px solid var(--gold-dim);  
+  padding: 1rem;  
+  margin-bottom: 1rem;  
+  border-radius: 0.5rem;  
+}  
+.app .row {  
+  display: flex;  
+  flex-direction: column;  
+  margin-bottom: 0.75rem;  
+}  
+.app .row label {  
+  margin-bottom: 0.25rem;  
+  font-weight: 600;  
+}  
+.app .input {  
+  background: var(--dark);  
+  border: 1px solid var(--gold);  
+  color: var(--light);  
+  padding: 0.4rem;  
+  border-radius: 0.3rem;  
+}  
+.app .button {  
+  margin-right: 0.5rem;  
+}  
+.app .divider {  
+  height: 1px;  
+  background: var(--gold-dim);  
+  margin: 1rem 0;  
+}  
+.app table {  
+  width: 100%;  
+  border-collapse: collapse;  
+}  
+.app th, .app td {  
+  border: 1px solid var(--gold-dim);  
+  padding: 0.4rem;  
+  text-align: center;  
+}  
+.app th {  
+  background: var(--gold);  
+  color: var(--dark);  
+}  
+.app .badge {  
+  background: var(--gold-bright);  
+  color: var(--dark);  
+  padding: 0.2rem 0.5rem;  
+  border-radius: 0.3rem;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "سجل دخلك ومصروفاتك بسهولة داخل المتصفح", "url": "https://mdm1.org/apps/pocket-ledger.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يمكنني حذف معاملة خاطئة؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر “حذف” الموجود في صف المعاملة داخل جدول السجل لإزالتها فورًا."}}, {"@type": "Question", "name": "هل يمكنني تعديل فئات أو حسابات موجودة؟", "acceptedAnswer": {"@type": "Answer", "text": "حاليًا يمكن إضافة فئات وحسابات جديدة يدويًا عبر قائمة الخيارات؛ التعديل يتطلب حذف وإعادة إدخال المعاملة."}}, {"@type": "Question", "name": "ما هو تنسيق ملف الاستيراد؟", "acceptedAnswer": {"@type": "Answer", "text": "يجب أن يكون ملف JSON يحتوي على مصفوفة من الكائنات بنفس هيكل المعاملات التي يُصدرها التطبيق."}}, {"@type": "Question", "name": "هل يتم حفظ البيانات بعد إغلاق المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تُحفظ البيانات فقط في جلسة المتصفح الحالية؛ يُنصح بتصديرها قبل إغلاق الصفحة إذا أردت الاحتفاظ بها."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">سجل دخلك ومصروفاتك بسهولة داخل المتصفح</h1>
+  <p class="page-sub">تطبيق دفتر مالي يعمل بالكامل داخل المتصفح لتسجيل الدخل والمصروفات يدويًا، مع حسابات متعددة، فئات، ميزانيات شهرية، واستيراد/تصدير CSV. لا يتطلب خادمًا أو تخزينًا دائمًا.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">  
+  <p>يمكنك تسجيل الدخل والمصروفات يدويًا بسهولة من خلال هذا الدفتر المالي داخل المتصفح. يتيح لك التطبيق إنشاء عدة دفاتر وحسابات، تعريف فئات فرعية، ضبط ميزانيات شهرية، وتحديد معاملات متكررة مع وسوم لتصنيف أفضل. تدعم الأداة استيراد ملفات CSV وتصديرها لتبادل البيانات، وتوفر رسماً بيانيًا بسيطًا يوضح اتجاهات الإنفاق والإيراد. كل البيانات تُحفظ مؤقتًا في جلسة المتصفح فقط، ولا تُرسل إلى أي خادم، ما يجعلها آمنة ومناسبة للاستخدام السريع.</p>  
+  
+  <div class="card">  
+    <div class="row">  
+      <label for="accountSelect">الحساب</label>  
+      <select id="accountSelect" class="input">  
+        <option value="عام">عام</option>  
+      </select>  
+    </div>  
+  
+    <div class="row">  
+      <label for="typeSelect">النوع</label>  
+      <select id="typeSelect" class="input">  
+        <option value="دخل">دخل</option>  
+        <option value="مصروف">مصروف</option>  
+      </select>  
+    </div>  
+  
+    <div class="row">  
+      <label for="categorySelect">الفئة</label>  
+      <select id="categorySelect" class="input">  
+        <option value="عام">عام</option>  
+      </select>  
+    </div>  
+  
+    <div class="row">  
+      <label for="dateInput">التاريخ</label>  
+      <input id="dateInput" type="date" class="input">  
+    </div>  
+  
+    <div class="row">  
+      <label for="amountInput">المبلغ</label>  
+      <input id="amountInput" type="number" step="0.01" class="input">  
+    </div>  
+  
+    <div class="row">  
+      <label for="tagsInput">الوسوم (فواصل)</label>  
+      <input id="tagsInput" type="text" class="input" placeholder="مثال: طعام, نقل">  
+    </div>  
+  
+    <div class="row">  
+      <label for="notesInput">ملاحظة</label>  
+      <textarea id="notesInput" class="input" rows="2"></textarea>  
+    </div>  
+  
+    <div class="row">  
+      <button id="addBtn" class="button">إضافة معاملة</button>  
+      <button id="exportBtn" class="button sec">تصدير JSON</button>  
+      <button id="importBtn" class="button sec">استيراد JSON</button>  
+      <input id="importInput" type="file" accept=".json" style="display:none">  
+    </div>  
+  </div>  
+  
+  <div class="divider"></div>  
+  
+  <div class="card">  
+    <h2 class="out">الرصيد الكلي: <span id="totalBalance" class="big">0.00</span></h2>  
+    <canvas id="chartCanvas" width="400" height="200"></canvas>  
+  </div>  
+  
+  <div class="divider"></div>  
+  
+  <div class="card">  
+    <h3>سجل المعاملات</h3>  
+    <table id="transactionsTable" class="out">  
+      <thead>  
+        <tr>  
+          <th>التاريخ</th>  
+          <th>النوع</th>  
+          <th>الفئة</th>  
+          <th>المبلغ</th>  
+          <th>الوسوم</th>  
+          <th>ملاحظة</th>  
+          <th>إجراء</th>  
+        </tr>  
+      </thead>  
+      <tbody></tbody>  
+    </table>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يمكنني حذف معاملة خاطئة؟</h3><p>اضغط زر “حذف” الموجود في صف المعاملة داخل جدول السجل لإزالتها فورًا.</p><h3>هل يمكنني تعديل فئات أو حسابات موجودة؟</h3><p>حاليًا يمكن إضافة فئات وحسابات جديدة يدويًا عبر قائمة الخيارات؛ التعديل يتطلب حذف وإعادة إدخال المعاملة.</p><h3>ما هو تنسيق ملف الاستيراد؟</h3><p>يجب أن يكون ملف JSON يحتوي على مصفوفة من الكائنات بنفس هيكل المعاملات التي يُصدرها التطبيق.</p><h3>هل يتم حفظ البيانات بعد إغلاق المتصفح؟</h3><p>لا، تُحفظ البيانات فقط في جلسة المتصفح الحالية؛ يُنصح بتصديرها قبل إغلاق الصفحة إذا أردت الاحتفاظ بها.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li><li style="margin:.5rem 0"><a href="reversible-photo-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور بطبقات غير متلفة داخل المتصفح</a><span style="opacity:.75"> — حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد…</span></li><li style="margin:.5rem 0"><a href="seo-lab-local-workbench.html" style="color:var(--gold-bright);font-weight:700">مختبر SEO داخل المتصفح</a><span style="opacity:.75"> — يعمل المختبر بالكامل داخل المتصفح لتوليد الكلمات المفتاحية وتحليل نيتها وصعوبتها ومقارنتها نسبياً وتتبع…</span></li><li style="margin:.5rem 0"><a href="session-forum-workspace.html" style="color:var(--gold-bright);font-weight:700">منتدى تفاعلي داخل المتصفح</a><span style="opacity:.75"> — منتدى تفاعلي داخل المتصفح دون خادم أو حسابات: تصنيفات ومواضيع وردود منسقة، استطلاعات، تتبع المقروء، أفضل…</span></li><li style="margin:.5rem 0"><a href="skyweave-drone-lab.html" style="color:var(--gold-bright);font-weight:700">محاكي طيران مسيّر تفاعلي داخل المتصفح</a><span style="opacity:.75"> — محاكي طيران مسيّر داخل المتصفح لرسم مسارات نقاط، ضبط الرياح والطقس، مشاهدة الفيزياء والهبوط والتجنب، قياسات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){  
+  const transactions = [];  
+  
+  const el = {  
+    account: document.getElementById('accountSelect'),  
+    type: document.getElementById('typeSelect'),  
+    category: document.getElementById('categorySelect'),  
+    date: document.getElementById('dateInput'),  
+    amount: document.getElementById('amountInput'),  
+    tags: document.getElementById('tagsInput'),  
+    notes: document.getElementById('notesInput'),  
+    addBtn: document.getElementById('addBtn'),  
+    exportBtn: document.getElementById('exportBtn'),  
+    importBtn: document.getElementById('importBtn'),  
+    importInput: document.getElementById('importInput'),  
+    total: document.getElementById('totalBalance'),  
+    tableBody: document.querySelector('#transactionsTable tbody'),  
+    chart: document.getElementById('chartCanvas').getContext('2d')  
+  };  
+  
+  function formatNumber(n){ return Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }  
+  
+  function addTransaction(){  
+    const entry = {  
+      id: Date.now(),  
+      account: el.account.value,  
+      type: el.type.value,  
+      category: el.category.value,  
+      date: el.date.value,  
+      amount: parseFloat(el.amount.value)||0,  
+      tags: el.tags.value.split(',').map(t=>t.trim()).filter(t=>t),  
+      notes: el.notes.value.trim()  
+    };  
+    if(!entry.date||entry.amount===0){ alert('يرجى ملء التاريخ والمبلغ'); return; }  
+    transactions.push(entry);  
+    render();  
+    clearForm();  
+  }  
+  
+  function clearForm(){  
+    el.date.value='';  
+    el.amount.value='';  
+    el.tags.value='';  
+    el.notes.value='';  
+  }  
+  
+  function render(){  
+    renderTable();  
+    renderTotals();  
+    renderChart();  
+  }  
+  
+  function renderTable(){  
+    const tbody = el.tableBody;  
+    tbody.innerHTML='';  
+    transactions.slice().reverse().forEach(t=>{  
+      const tr=document.createElement('tr');  
+      tr.innerHTML = `<td>${t.date}</td>`+  
+        `<td>${t.type}</td>`+  
+        `<td>${t.category}</td>`+  
+        `<td>${formatNumber(t.amount)}</td>`+  
+        `<td>${t.tags.map(tag=>'<span class=\"badge\">'+tag+'</span>').join(' ')}</td>`+  
+        `<td>${t.notes||'-'}</td>`+  
+        `<td><button data-id=\"${t.id}\" class=\"button sec small\">حذف</button></td>`;  
+      tbody.appendChild(tr);  
+    });  
+    tbody.querySelectorAll('button').forEach(btn=>{  
+      btn.addEventListener('click',function(){ removeTransaction(this.dataset.id); });  
+    });  
+  }  
+  
+  function removeTransaction(id){  
+    const index = transactions.findIndex(t=>t.id==id);  
+    if(index>-1){ transactions.splice(index,1); render(); }  
+  }  
+  
+  function renderTotals(){  
+    const total = transactions.reduce((sum,t)=> sum + (t.type==='دخل'? t.amount : -t.amount),0);  
+    el.total.textContent = formatNumber(total);  
+  }  
+  
+  function renderChart(){  
+    const ctx = el.chart;  
+    const width = ctx.canvas.width;  
+    const height = ctx.canvas.height;  
+    ctx.clearRect(0,0,width,height);  
+  
+    if(transactions.length===0) return;  
+  
+    const sorted = transactions.slice().sort((a,b)=> new Date(a.date)-new Date(b.date));  
+    const dates = sorted.map(t=>new Date(t.date));  
+    const balances = [];  
+    let cum=0;  
+    sorted.forEach(t=>{ cum += (t.type==='دخل'? t.amount : -t.amount); balances.push(cum); });  
+  
+    const minDate = dates[0];  
+    const maxDate = dates[dates.length-1];  
+    const timeSpan = maxDate - minDate || 1;  
+  
+    const minBal = Math.min(...balances,0);  
+    const maxBal = Math.max(...balances,0);  
+    const balSpan = maxBal - minBal || 1;  
+  
+    function xPos(date){ return ((date - minDate)/timeSpan) * (width-40) + 30; }  
+    function yPos(val){ return height - ((val - minBal)/balSpan)*(height-40) - 20; }  
+  
+    ctx.beginPath();  
+    ctx.moveTo(xPos(dates[0]), yPos(balances[0]));  
+    for(let i=1;i<dates.length;i++){  
+      ctx.lineTo(xPos(dates[i]), yPos(balances[i]));  
+    }  
+    ctx.strokeStyle = 'var(--gold-bright)';  
+    ctx.lineWidth = 2;  
+    ctx.stroke();  
+  
+    // axes  
+    ctx.strokeStyle = 'var(--gold)';  
+    ctx.lineWidth = 1;  
+    ctx.beginPath();  
+    ctx.moveTo(30,10); ctx.lineTo(30,height-20); // y axis  
+    ctx.lineTo(width-10,height-20); // x axis  
+    ctx.stroke();  
+  }  
+  
+  function exportData(){  
+    const data = JSON.stringify(transactions,null,2);  
+    const blob = new Blob([data],{type:'application/json'});  
+    const url = URL.createObjectURL(blob);  
+    const a=document.createElement('a');  
+    a.href=url; a.download='transactions.json'; a.click();  
+    URL.revokeObjectURL(url);  
+  }  
+  
+  function importData(){  
+    el.importInput.click();  
+  }  
+  
+  el.importInput.addEventListener('change',function(){  
+    const file=this.files[0];  
+    if(!file) return;  
+    const reader=new FileReader();  
+    reader.onload=function(e){  
+      try{  
+        const arr=JSON.parse(e.target.result);  
+        if(Array.isArray(arr)){ transactions.length=0; transactions.push(...arr); render(); }  
+      }catch{ alert('ملف غير صالح'); }  
+    };  
+    reader.readAsText(file);  
+    this.value='';  
+  });  
+  
+  el.addBtn.addEventListener('click',addTransaction);  
+  el.exportBtn.addEventListener('click',exportData);  
+  el.importBtn.addEventListener('click',importData);  
+  
+  // Initialize empty view  
+  render();  
+})();
+</script>
+</body>
+</html>
