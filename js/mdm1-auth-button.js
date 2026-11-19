@@ -55,6 +55,9 @@
     "backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(201,168,76,.25);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}" +
     ".fab:hover{border-color:#e8c96a;box-shadow:0 0 22px rgba(201,168,76,.45)}" +
     ".fab.drag{cursor:grabbing;transform:scale(1.08)}" +
+    ".fab.orb{transform:translate3d(var(--o-x,0px),var(--o-y,0px),0) perspective(260px) rotateX(var(--o-rx,0deg)) rotateY(var(--o-ry,0deg)) scale(var(--o-s,1))!important;" +
+    "background:radial-gradient(circle at var(--o-hx,38%) var(--o-hy,28%),rgba(255,238,178,.42),rgba(255,238,178,0) 46%),radial-gradient(circle at 50% 62%,rgba(58,40,9,.96),rgba(8,5,0,.94) 78%)!important;" +
+    "border:1px solid rgba(240,192,96,.8)!important;box-shadow:0 12px 22px rgba(0,0,0,.62),0 2px 0 rgba(255,228,150,.38) inset,0 -7px 11px rgba(0,0,0,.55) inset,0 0 20px rgba(201,168,76,.26)!important;will-change:transform}" +
     ".fab .dot{position:absolute;top:6px;right:6px;width:9px;height:9px;border-radius:50%;background:#4ade80;border:1px solid #0b0905;display:none}" +
     ".fab.in .dot{display:block}" +
     ".ov{position:fixed;inset:0;background:rgba(0,0,0,.74);display:none;overflow:auto;padding:1rem;-webkit-overflow-scrolling:touch}" +
@@ -137,6 +140,47 @@
     q("[data-resend]").addEventListener("click", function () { sendLink(true); });
     q("[data-signout]").addEventListener("click", signOut);
     drag(fab);
+    orb(fab);
+  }
+
+  // Same floating-orb effect as the site's other round buttons (js/mdm1-3d.js can't reach into this shadow root):
+  // idle sway, tilt and highlight that follow the finger/cursor. Only while the page's 3D effects are on.
+  function orb(el) {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var rd = document.documentElement, ph = Math.random() * 6.283, S = { x: 0, y: 0, rx: 0, ry: 0, s: 1, hx: 38, hy: 28 };
+    var P = { x: -9999, y: -9999 }, down = false, t0 = performance.now(), last = t0, R = 120;
+    function cl(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function lp(a, b, k) { return a + (b - a) * k; }
+    addEventListener("pointermove", function (e) { P.x = e.clientX; P.y = e.clientY; }, { passive: true });
+    addEventListener("pointerdown", function (e) { P.x = e.clientX; P.y = e.clientY; }, { passive: true });
+    addEventListener("pointerup", function (e) { if (e.pointerType !== "mouse") P.x = P.y = -9999; down = false; }, { passive: true });
+    el.addEventListener("pointerdown", function () { down = true; });
+    el.addEventListener("pointercancel", function () { down = false; });
+    function frame(now) {
+      requestAnimationFrame(frame);
+      var on = !rd.classList.contains("m3d-off") && !!document.getElementById("m3d-toggle");
+      if (el.classList.contains("orb") !== on) el.classList.toggle("orb", on);
+      if (!on) return;
+      var t = (now - t0) / 1000, dt = Math.min(.1, (now - last) / 1000), k = 1 - Math.exp(-dt * 9);
+      last = now;
+      var r = el.getBoundingClientRect(), cx = r.left + r.width / 2 - S.x, cy = r.top + r.height / 2 - S.y;
+      var dx = P.x - cx, dy = P.y - cy, d = Math.hypot(dx, dy);
+      var tx = Math.sin(t * .7 + ph * 2) * 1.4, ty = Math.sin(t * 1.1 + ph) * 2.8, ry = Math.sin(t * .9 + ph) * 7, rx = Math.cos(t * .8 + ph) * 6, sc = 1, hx = 38, hy = 28;
+      if (d < R) {
+        var c = 1 - d / R;
+        tx += cl(dx * .22 * c, -6, 6); ty += cl(dy * .22 * c, -6, 6);
+        ry = cl(dx / (r.width / 2), -1.2, 1.2) * 22 * (.35 + c * .65); rx = -cl(dy / (r.height / 2), -1.2, 1.2) * 22 * (.35 + c * .65);
+        sc = 1 + .1 * c; hx = cl(50 + dx / r.width * 70, 15, 85); hy = cl(50 + dy / r.height * 70, 12, 85);
+      }
+      if (down) sc = .88;
+      S.x = lp(S.x, tx, k); S.y = lp(S.y, ty, k); S.rx = lp(S.rx, rx, k); S.ry = lp(S.ry, ry, k);
+      S.s = lp(S.s, sc, down ? 1 - Math.exp(-dt * 22) : k); S.hx = lp(S.hx, hx, k); S.hy = lp(S.hy, hy, k);
+      var st = el.style;
+      st.setProperty("--o-x", S.x.toFixed(2) + "px"); st.setProperty("--o-y", S.y.toFixed(2) + "px");
+      st.setProperty("--o-rx", S.rx.toFixed(2) + "deg"); st.setProperty("--o-ry", S.ry.toFixed(2) + "deg");
+      st.setProperty("--o-s", S.s.toFixed(3)); st.setProperty("--o-hx", S.hx.toFixed(1) + "%"); st.setProperty("--o-hy", S.hy.toFixed(1) + "%");
+    }
+    requestAnimationFrame(frame);
   }
 
   function open() { ov.classList.add("open"); view(signedEmail ? "signed" : "choose"); var b = q(".view.on .b, .view.on input"); if (b) { try { b.focus(); } catch (e) {} } }
@@ -171,7 +215,7 @@
     el.addEventListener("pointerdown", function (e) {
       if (e.pointerType === "mouse" && e.button !== 0) return;
       var r = el.getBoundingClientRect();
-      st = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: r.left, oy: r.top, drag: false };
+      st = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: el.offsetLeft || r.left, oy: el.offsetTop || r.top, drag: false };
       try { el.setPointerCapture(e.pointerId); } catch (x) {}
     });
     el.addEventListener("pointermove", function (e) {
