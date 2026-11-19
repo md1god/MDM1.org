@@ -24,6 +24,7 @@
     asTitle: "أنت مسجّل الدخول", out: "تسجيل الخروج",
     terms: "بالمتابعة فأنت توافق على", termsLink: "الشروط", and: "و", privacyLink: "الخصوصية",
     badEmail: "أدخل بريداً إلكترونياً صحيحاً", badCode: "الكود غير صحيح أو منتهي، اطلب كوداً جديداً",
+    popup: "أكمل تسجيل الدخول في النافذة التي فُتحت…",
     wait: "انتظر دقيقة ثم حاول مجدداً", fail: "تعذر إكمال الطلب، حاول لاحقاً", off: "هذا المزوّد غير مفعّل بعد، استخدم البريد الإلكتروني",
     expired: "انتهى الرابط أو استُخدم من قبل؛ اطلب رابطاً جديداً أو أدخل الكود من الإيميل", done: "تم تسجيل الدخول", unavailable: "تعذر الاتصال بالخدمة، تحقق من الإنترنت وحاول مرة أخرى", loading: "جارٍ التحميل…", sent: "تم الإرسال"
   } : {
@@ -34,6 +35,7 @@
     asTitle: "You are signed in", out: "Sign out",
     terms: "By continuing you agree to the", termsLink: "Terms", and: "and", privacyLink: "Privacy",
     badEmail: "Enter a valid email address", badCode: "The code is wrong or expired, request a new one",
+    popup: "Finish signing in in the window that just opened…",
     wait: "Please wait a minute and try again", fail: "Could not complete the request, try again later", off: "This provider is not enabled yet, use email",
     expired: "The link expired or was already used; request a new one or enter the code from the email", done: "Signed in", unavailable: "Could not reach the service, check your connection and try again", loading: "Loading…", sent: "Sent"
   };
@@ -201,7 +203,8 @@
     }
     function put(x, y) {
       var p = fit(x, y);
-      el.style.left = p[0] + "px"; el.style.top = p[1] + "px"; el.style.right = "auto"; el.style.bottom = "auto";
+      // anchored by its bottom edge like the other round buttons, so all of them move together when the mobile URL bar hides/shows
+      el.style.left = p[0] + "px"; el.style.bottom = Math.round(innerHeight - p[1] - (el.offsetHeight || 48)) + "px"; el.style.right = "auto"; el.style.top = "auto";
     }
     function restore() {
       try {
@@ -240,7 +243,8 @@
     }
     el.addEventListener("pointerup", end);
     el.addEventListener("pointercancel", end);
-    addEventListener("resize", restore);
+    var lastW = innerWidth;   // a height-only resize (mobile URL bar hiding) must not move it: it stays put like the other buttons
+    addEventListener("resize", function () { if (innerWidth !== lastW) { lastW = innerWidth; restore(); } });
     restore();
   }
 
@@ -299,6 +303,7 @@
   function doProvider(name) {
     window.signInWithProvider(name).then(function (r) {
       if (r && r.error) msg(/not enabled|unsupported provider/i.test(r.error.message || "") ? T.off : T.fail, "err");
+      else msg(T.popup, "ok");
     }).catch(function () { msg(T.fail, "err"); });
   }
 

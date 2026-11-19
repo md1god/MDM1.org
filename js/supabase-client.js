@@ -53,15 +53,43 @@
     return settingsP.then(function (j) { return j && j.external && typeof j.external[name] === "boolean" ? j.external[name] : true; });
   }
 
+  // OAuth runs in a small popup (a new tab on phones) so the page the visitor is on is never reloaded: the background
+  // music keeps playing and nothing is lost. If the browser blocks the popup we fall back to the normal redirect.
+  var POP_KEY = "mdm1_oauth_popup";
   window.signInWithProvider = function (provider) {
     var name = provider === "microsoft" ? "azure" : provider;
-    var options = { redirectTo: location.origin + location.pathname };
+    var options = { redirectTo: location.origin + location.pathname, skipBrowserRedirect: true };
     if (name === "azure") options.scopes = "email";
     return providerEnabled(name).then(function (on) {
       if (!on) return { data: null, error: { code: "provider_disabled", message: "provider is not enabled" } };
-      return client.auth.signInWithOAuth({ provider: name, options: options });
+      return client.auth.signInWithOAuth({ provider: name, options: options }).then(function (r) {
+        if (!r || r.error || !r.data || !r.data.url) return r;
+        var w = null;
+        try { w = window.open(r.data.url, "mdm1auth", "popup=yes,width=480,height=700"); } catch (e) { w = null; }
+        if (!w || w.closed) { location.assign(r.data.url); return r; }
+        try { localStorage.setItem(POP_KEY, String(Date.now())); } catch (e) {}
+        return r;
+      });
     });
   };
+  // The popup lands back on this site: once the session is stored (the page that opened it picks it up on its own),
+  // the popup closes itself. Only for a return that this browser started a moment ago.
+  (function () {
+    var back = false;
+    try {
+      var t = Number(localStorage.getItem(POP_KEY)) || 0, tail = String(location.hash) + String(location.search);
+      if (t && Date.now() - t < 300000) {
+        if (/[#?&](access_token|code)=/.test(tail)) back = true;
+        else if (/[#?&]error=/.test(tail)) localStorage.removeItem(POP_KEY);
+      }
+    } catch (e) {}
+    if (!back) return;
+    client.auth.onAuthStateChange(function (ev, session) {
+      if (!session || (ev !== "SIGNED_IN" && ev !== "INITIAL_SESSION")) return;
+      try { localStorage.removeItem(POP_KEY); } catch (e) {}
+      setTimeout(function () { try { window.close(); } catch (e) {} }, 400);
+    });
+  })();
 
   window.signOutMember = function () { return client.auth.signOut(); };
 
