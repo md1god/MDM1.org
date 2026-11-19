@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر ترجمات الفيديو والدبلجة في المتصفح | MDM1</title>
+<meta name="description" content="استورد فيديو وترجمة SRT أو VTT، عدل الأسطر جنباً إلى جنب، اعرض ترجمة ثنائية فوق Canvas، عاين الدبلجة بمحرك النطق، وصدّر فيديو محروقاً مع سكربت.">
+<link rel="canonical" href="https://mdm1.org/apps/dual-voice-canvas.html">
+<meta property="og:title" content="محرر ترجمات الفيديو والدبلجة في المتصفح">
+<meta property="og:description" content="استورد فيديو وترجمة SRT أو VTT، عدل الأسطر جنباً إلى جنب، اعرض ترجمة ثنائية فوق Canvas، عاين الدبلجة بمحرك النطق، وصدّر فيديو محروقاً مع سكربت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/dual-voice-canvas.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: grid; gap: 12px; }
+.app .row { flex-wrap: wrap; gap: 8px; align-items: center; }
+.app canvas { max-width: 100%; height: auto; background: #000; border: 1px solid var(--gold-dim); border-radius: 6px; }
+.app #editorContainer { max-height: 420px; overflow: auto; }
+.app .cueRow { display: grid; grid-template-columns: 36px 80px 80px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: start; }
+.app .cueRow textarea { min-height: 44px; width: 100%; }
+.app .cueRow input { width: 100%; }
+.app progress { width: 100%; }
+.app input[type="color"] { width: 44px; }
+.app #videoHost video { max-width: 100%; display: none; }
+.app .badge { font-size: 0.9em; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر ترجمات الفيديو والدبلجة", "url": "https://mdm1.org/apps/dual-voice-canvas.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما الملفات المدعومة للاستيراد؟", "acceptedAnswer": {"@type": "Answer", "text": "ملفات فيديو محلية وترجمات SRT أو VTT أو نص موقوت، إضافة إلى JSON."}}, {"@type": "Question", "name": "هل تعمل الأداة بلا اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل المعالجة والمعاينة والتصدير تتم داخل المتصفح."}}, {"@type": "Question", "name": "كيف أضيف ترجمة ثانية؟", "acceptedAnswer": {"@type": "Answer", "text": "املأ عمود الترجمة بجانب كل سطر مصدر ثم فعّل الوضع ثنائي اللغة."}}, {"@type": "Question", "name": "هل يمكن معاينة الدبلجة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، عبر محرك النطق المدمج مع اختيار لغة وصوت وسرعة."}}, {"@type": "Question", "name": "ماذا يُصدَّر؟", "acceptedAnswer": {"@type": "Answer", "text": "فيديو بالترجمة المحروقة والصوت الأصلي وسكربت دبلجة وملف SRT."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر ترجمات الفيديو والدبلجة</h1>
+  <p class="page-sub">استورد فيديو وترجمة SRT أو VTT، عدل الأسطر جنباً إلى جنب، اعرض ترجمة ثنائية فوق Canvas، عاين الدبلجة بمحرك النطق، وصدّر فيديو محروقاً مع سكربت.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>أداة ويب متكاملة لتحرير ترجمات الفيديو محلياً: استورد ملف فيديو وملف SRT أو VTT أو نصاً موقوتاً، عدل أسطر المصدر والترجمة جنباً إلى جنب، اعرض ترجمة ثنائية اللغة فوق Canvas مع تحكم كامل بالخط والموضع والألوان، وعاين الدبلجة فوراً بمحرك النطق المدمج مع اختيار لغة من 42 لغة وضبط الأصوات والسرعة وتوقيت كل جملة، ثم صدّر فيديو بالترجمة المحروقة والصوت الأصلي مع ملف سكربت للدبلجة. تعمل كاملة داخل المتصفح بلا اتصال أو حساب أو تخزين، مع حالات فارغة ورسائل خطأ واضحة.</p>
+<div class="app" id="appRoot">
+  <section class="card">
+    <h2>استيراد الوسائط والنصوص</h2>
+    <div class="row">
+      <label for="videoInput">ملف الفيديو</label>
+      <input id="videoInput" type="file" accept="video/*">
+      <span id="videoInfo" class="badge">لم يتم تحميل فيديو</span>
+    </div>
+    <div class="row">
+      <label for="subInput">ملف ترجمة SRT/VTT</label>
+      <input id="subInput" type="file" accept=".srt,.vtt,.txt">
+    </div>
+    <div class="row">
+      <label for="subText">أو الصق نصاً موقوتاً</label>
+      <textarea id="subText" rows="6" placeholder="WEBVTT..."></textarea>
+    </div>
+    <div class="row">
+      <button id="parseSubsBtn">تحليل الترجمة</button>
+      <button id="clearSubsBtn" class="sec">مسح</button>
+    </div>
+    <div id="videoHost"></div>
+  </section>
+  <section class="card">
+    <h2>تحرير الأسطر</h2>
+    <div class="row">
+      <button id="addRowBtn">إضافة سطر</button>
+      <button id="exportJsonBtn" class="sec">تصدير JSON</button>
+      <input id="importJsonInput" type="file" accept="application/json">
+    </div>
+    <div id="editorContainer"></div>
+  </section>
+  <section class="card">
+    <h2>معاينة الترجمة</h2>
+    <canvas id="previewCanvas" width="640" height="360"></canvas>
+    <div class="row">
+      <label for="fontFamily">الخط</label>
+      <select id="fontFamily">
+        <option value="Arial">Arial</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier New">Courier New</option>
+      </select>
+      <label for="fontSize">الحجم</label>
+      <input id="fontSize" type="number" value="24" min="10" max="60">
+      <label for="lineGap">تباعد</label>
+      <input id="lineGap" type="number" value="8" min="0" max="40">
+    </div>
+    <div class="row">
+      <label for="srcColor">لون المصدر</label>
+      <input id="srcColor" type="color" value="#ffffff">
+      <label for="transColor">لون الترجمة</label>
+      <input id="transColor" type="color" value="#ffd700">
+    </div>
+    <div class="row">
+      <label for="positionSelect">الموضع</label>
+      <select id="positionSelect">
+        <option value="bottom">أسفل</option>
+        <option value="center">وسط</option>
+        <option value="top">أعلى</option>
+      </select>
+      <label for="alignSelect">المحاذاة</label>
+      <select id="alignSelect">
+        <option value="center">وسط</option>
+        <option value="right">يمين</option>
+        <option value="left">يسار</option>
+      </select>
+      <label><input id="bilingualToggle" type="checkbox" checked> ثنائي اللغة</label>
+    </div>
+    <div class="row">
+      <button id="playPreviewBtn">تشغيل</button>
+      <button id="pausePreviewBtn" class="sec">إيقاف مؤقت</button>
+      <input id="seekBar" type="range" min="0" max="100" value="0">
+    </div>
+  </section>
+  <section class="card">
+    <h2>معاينة الدبلجة</h2>
+    <div class="row">
+      <label for="ttsLang">اللغة</label>
+      <select id="ttsLang"></select>
+      <label for="ttsVoice">الصوت</label>
+      <select id="ttsVoice"></select>
+    </div>
+    <div class="row">
+      <label for="ttsRate">السرعة</label>
+      <input id="ttsRate" type="range" min="0.5" max="2" step="0.1" value="1">
+      <label for="ttsPitch">النبرة</label>
+      <input id="ttsPitch" type="range" min="0.5" max="2" step="0.1" value="1">
+      <label for="ttsGap">الفجوة (ms)</label>
+      <input id="ttsGap" type="number" value="300" min="0" max="2000">
+    </div>
+    <div class="row">
+      <button id="playDubBtn">تشغيل الدبلجة</button>
+      <button id="stopDubBtn" class="sec">إيقاف</button>
+      <button id="previewSentenceBtn" class="sec">جملة حالية</button>
+    </div>
+    <progress id="dubProgress" value="0" max="100"></progress>
+  </section>
+  <section class="card">
+    <h2>تصدير</h2>
+    <div class="row">
+      <button id="exportVideoBtn">تصدير فيديو محروق</button>
+      <button id="exportScriptBtn" class="sec">تصدير سكربت دبلجة</button>
+      <button id="exportSubsBtn" class="sec">تصدير ترجمة SRT</button>
+    </div>
+    <progress id="exportProgress" value="0" max="100"></progress>
+    <div id="statusOut" class="out"></div>
+  </section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما الملفات المدعومة للاستيراد؟</h3><p>ملفات فيديو محلية وترجمات SRT أو VTT أو نص موقوت، إضافة إلى JSON.</p><h3>هل تعمل الأداة بلا اتصال؟</h3><p>نعم، كل المعالجة والمعاينة والتصدير تتم داخل المتصفح.</p><h3>كيف أضيف ترجمة ثانية؟</h3><p>املأ عمود الترجمة بجانب كل سطر مصدر ثم فعّل الوضع ثنائي اللغة.</p><h3>هل يمكن معاينة الدبلجة؟</h3><p>نعم، عبر محرك النطق المدمج مع اختيار لغة وصوت وسرعة.</p><h3>ماذا يُصدَّر؟</h3><p>فيديو بالترجمة المحروقة والصوت الأصلي وسكربت دبلجة وملف SRT.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="dynamic-form-studio.html" style="color:var(--gold-bright);font-weight:700">محرر واستوديو نماذج في المتصفح مع JSON وتحقق وحسابات</a><span style="opacity:.75"> — أنشئ استبيانات واختبارات ونماذج متعددة الخطوات عبر تعريف JSON في متصفحك، مع تحقق ومنطق شرطي وحسابات وحفظ…</span></li><li style="margin:.5rem 0"><a href="local-content-studio.html" style="color:var(--gold-bright);font-weight:700">محرر محتوى محلي في المتصفح لإدارة المقالات والصفحات</a><span style="opacity:.75"> — محرر محتوى محلي يعمل بالكامل داخل المتصفح: عرّف نماذج YAML أو JSON، أنشئ مقالات وصفحات، احفظ في…</span></li><li style="margin:.5rem 0"><a href="photo-forge-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور في المتصفح</a><span style="opacity:.75"> — محرر صور يعمل في المتصفح: قص وتدوير ومرشحات وضبط ألوان وفرشاة تمويه، مع تراجع وإعادة وتصدير وحفظ المشروع…</span></li><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li><li style="margin:.5rem 0"><a href="reversible-photo-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور بطبقات غير متلفة داخل المتصفح</a><span style="opacity:.75"> — حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const cues = [];
+let video = null;
+let canvas = document.getElementById('previewCanvas');
+let ctx = canvas.getContext('2d');
+let playingPreview = false;
+let dubTimers = [];
+let mediaRecorder = null;
+
+video = document.createElement('video');
+video.crossOrigin = 'anonymous';
+video.preload = 'metadata';
+const host = document.getElementById('videoHost');
+host.appendChild(video);
+
+function toSec(t){
+  t = t.trim().replace(',', '.');
+  const parts = t.split(':');
+  let sec = 0;
+  if (parts.length === 3) {
+    sec = (+parts[0])*3600 + (+parts[1])*60 + parseFloat(parts[2]);
+  } else if (parts.length === 2) {
+    sec = (+parts[0])*60 + parseFloat(parts[1]);
+  }
+  return sec;
+}
+
+function parseCues(text){
+  text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  try {
+    const j = JSON.parse(text);
+    if (Array.isArray(j)) {
+      return j.map(x=>({start:+x.start||0,end:+x.end||0,text:String(x.text||x.source||''),translation:String(x.translation||'')})).filter(x=>x.end>x.start);
+    }
+  } catch(e){}
+  const blocks = text.split(/\n\s*\n/);
+  const out = [];
+  for (const b of blocks) {
+    const bl = b.trim();
+    if (!bl) continue;
+    if (bl.startsWith('WEBVTT')) continue;
+    if (bl.startsWith('NOTE')) continue;
+    if (bl.startsWith('STYLE')) continue;
+    const blines = bl.split('\n');
+    let timeLineIndex = blines.findIndex(l=>l.indexOf('-->')!==-1);
+    if (timeLineIndex === -1) continue;
+    const m = blines[timeLineIndex].match(/(\d{1,2}:\d{2}:\d{2}[.,]\d{3}|\d{1,2}:\d{2}[.,]\d{3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[.,]\d{3}|\d{1,2}:\d{2}[.,]\d{3})/);
+    if (!m) continue;
+    const start = toSec(m[1]);
+    const end = toSec(m[2]);
+    const txt = blines.slice(timeLineIndex+1).join('\n').trim();
+    const clean = txt.replace(/<[^>]+>/g,'');
+    out.push({start,end,text:clean,translation:''});
+  }
+  return out;
+}
+
+function renderEditor(){
+  const container = document.getElementById('editorContainer');
+  container.innerHTML = '';
+  cues.forEach((c,i)=>{
+    const row = document.createElement('div');
+    row.className = 'cueRow';
+    row.dataset.index = String(i);
+    const idx = document.createElement('span');
+    idx.textContent = String(i+1);
+    row.appendChild(idx);
+    const sIn = document.createElement('input');
+    sIn.type='number'; sIn.step='0.001'; sIn.value=String(c.start);
+    sIn.addEventListener('input', function(e){ cues[i].start = parseFloat(e.target.value)||0; });
+    row.appendChild(sIn);
+    const eIn = document.createElement('input');
+    eIn.type='number'; eIn.step='0.001'; eIn.value=String(c.end);
+    eIn.addEventListener('input', function(e){ cues[i].end = parseFloat(e.target.value)||0; });
+    row.appendChild(eIn);
+    const srcTa = document.createElement('textarea');
+    srcTa.value = c.text;
+    srcTa.addEventListener('input', function(e){ cues[i].text = e.target.value; });
+    row.appendChild(srcTa);
+    const trTa = document.createElement('textarea');
+    trTa.value = c.translation;
+    trTa.addEventListener('input', function(e){ cues[i].translation = e.target.value; });
+    row.appendChild(trTa);
+    container.appendChild(row);
+  });
+}
+
+document.getElementById('addRowBtn').addEventListener('click', function(){
+  const last = cues.length ? cues[cues.length-1].end : 0;
+  cues.push({start:last,end:last+2,text:'',translation:''});
+  renderEditor();
+});
+
+document.getElementById('clearSubsBtn').addEventListener('click', function(){
+  cues.length = 0;
+  renderEditor();
+  setStatus('تم المسح');
+});
+
+document.getElementById('parseSubsBtn').addEventListener('click', function(){
+  const fileInput = document.getElementById('subInput');
+  const text = document.getElementById('subText').value;
+  if (fileInput.files && fileInput.files.length) {
+    const f = fileInput.files.item(0);
+    const reader = new FileReader();
+    reader.onload = function(e){ 
+      const parsed = parseCues(String(e.target.result));
+      cues.length = 0; parsed.forEach(c=>cues.push(c));
+      renderEditor();
+      setStatus('تم تحليل ' + cues.length + ' سطر');
+    };
+    reader.readAsText(f);
+  } else if (text.trim()) {
+    const parsed = parseCues(text);
+    cues.length=0; parsed.forEach(c=>cues.push(c));
+    renderEditor();
+    setStatus('تم تحليل ' + cues.length + ' سطر');
+  } else {
+    setStatus('لا يوجد نص');
+  }
+});
+
+document.getElementById('videoInput').addEventListener('change', function(e){
+  const f = e.target.files && e.target.files.item(0);
+  if (!f) return;
+  if (video.src) URL.revokeObjectURL(video.src);
+  const url = URL.createObjectURL(f);
+  video.src = url;
+  video.load();
+  video.addEventListener('loadedmetadata', function(){
+    document.getElementById('videoInfo').textContent = f.name + ' ' + video.videoWidth + 'x' + video.videoHeight;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 360;
+    drawFrame();
+  }, {once:true});
+});
+
+function wrapText(text, maxWidth) {
+  const words = text.split(/\s+/);
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    const test = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && cur) {
+      lines.push(cur);
+      cur = w;
+    } else {
+      cur = test;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function drawSubtitle(cue){
+  const bilingual = document.getElementById('bilingualToggle').checked;
+  const fontFamily = document.getElementById('fontFamily').value;
+  const fontSize = parseInt(document.getElementById('fontSize').value,10)||24;
+  const srcColor = document.getElementById('srcColor').value;
+  const transColor = document.getElementById('transColor').value;
+  const pos = document.getElementById('positionSelect').value;
+  const align = document.getElementById('alignSelect').value;
+  const gap = parseInt(document.getElementById('lineGap').value,10)||8;
+  ctx.font = fontSize + 'px ' + fontFamily;
+  ctx.textAlign = align === 'right' ? 'right' : align === 'left' ? 'left' : 'center';
+  const x = align==='right' ? canvas.width-20 : align==='left' ? 20 : canvas.width/2;
+  const allLines = [];
+  if (cue.text) wrapText(cue.text, canvas.width-40).forEach(l=>allLines.push({text:l,color:srcColor}));
+  if (bilingual && cue.translation) wrapText(cue.translation, canvas.width-40).forEach(l=>allLines.push({text:l,color:transColor}));
+  const lineH = fontSize + gap;
+  let baseY;
+  if (pos==='top') baseY = fontSize + 20;
+  else if (pos==='center') baseY = (canvas.height - allLines.length*lineH)/2 + fontSize;
+  else baseY = canvas.height - 20 - (allLines.length-1)*lineH;
+  allLines.forEach((ln,idx)=>{
+    const yy = baseY + idx*lineH;
+    ctx.fillStyle='rgba(0,0,0,0.7)';
+    ctx.fillText(ln.text, x+2, yy+2);
+    ctx.fillStyle=ln.color;
+    ctx.fillText(ln.text, x, yy);
+  });
+}
+
+function drawFrame(){
+  if (video.readyState >= 2) {
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  } else {
+    ctx.fillStyle = '#111'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+  const t = video.currentTime || 0;
+  const cue = cues.find(c=> t>=c.start && t<c.end);
+  if (cue) drawSubtitle(cue);
+  if (playingPreview) requestAnimationFrame(drawFrame);
+}
+
+document.getElementById('playPreviewBtn').addEventListener('click', function(){
+  if (!video.src) { setStatus('حمّل فيديو أولاً'); return; }
+  playingPreview = true;
+  video.play();
+  requestAnimationFrame(drawFrame);
+});
+document.getElementById('pausePreviewBtn').addEventListener('click', function(){
+  playingPreview = false;
+  video.pause();
+  drawFrame();
+});
+
+const seekBar = document.getElementById('seekBar');
+video.addEventListener('timeupdate', function(){
+  if (video.duration) seekBar.value = String((video.currentTime/video.duration)*100);
+});
+seekBar.addEventListener('input', function(e){
+  if (video.duration) video.currentTime = (parseFloat(e.target.value)/100)*video.duration;
+  drawFrame();
+});
+
+const LANGS = ['af','am','ar','az','bg','bn','ca','cs','da','de','el','en','es','et','fa','fi','fr','gu','he','hi','hr','hu','id','is','it','ja','ka','km','kn','ko','lt','lv','mk','ml','mr','ms','mt','ne','nl','no','pa','pl'];
+
+const langSel = document.getElementById('ttsLang');
+LANGS.forEach(code=>{
+  const o = document.createElement('option');
+  o.value = code; o.textContent = code;
+  langSel.appendChild(o);
+});
+
+function refreshVoices(){
+  const voices = speechSynthesis.getVoices();
+  const sel = document.getElementById('ttsVoice');
+  sel.innerHTML = '';
+  const lang = document.getElementById('ttsLang').value;
+  const filtered = voices.filter(v=> v.lang.toLowerCase().startsWith(lang));
+  const list = filtered.length ? filtered : voices;
+  list.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v.name;
+    o.textContent = v.name + ' (' + v.lang + ')';
+    sel.appendChild(o);
+  });
+}
+speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+document.getElementById('ttsLang').addEventListener('change', refreshVoices);
+refreshVoices();
+
+function getSelectedVoice(){
+  const name = document.getElementById('ttsVoice').value;
+  return speechSynthesis.getVoices().find(v=>v.name===name) || null;
+}
+function speakText(text, onEnd){
+  if (!text || !text.trim()) { if(onEnd) onEnd(); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  const v = getSelectedVoice();
+  if (v) u.voice = v;
+  u.lang = document.getElementById('ttsLang').value;
+  u.rate = parseFloat(document.getElementById('ttsRate').value)||1;
+  u.pitch = parseFloat(document.getElementById('ttsPitch').value)||1;
+  if (onEnd) u.onend = onEnd;
+  u.onerror = function(){ if(onEnd) onEnd(); };
+  speechSynthesis.speak(u);
+}
+
+function stopDub(){
+  dubTimers.forEach(t=>clearTimeout(t));
+  dubTimers = [];
+  speechSynthesis.cancel();
+}
+document.getElementById('stopDubBtn').addEventListener('click', stopDub);
+
+document.getElementById('playDubBtn').addEventListener('click', function(){
+  if (!cues.length) { setStatus('لا توجد أسطر'); return; }
+  stopDub();
+  if (video.src) { video.play(); playingPreview = true; requestAnimationFrame(drawFrame); }
+  const gap = parseInt(document.getElementById('ttsGap').value,10)||0;
+  const queue = cues.filter(c=> c.end > (video.currentTime||0)).sort((a,b)=>a.start-b.start);
+  let i = 0;
+  const progress = document.getElementById('dubProgress');
+  function runNext(){
+    if (i >= queue.length) { progress.value = 100; return; }
+    const c = queue[i];
+    const text = (c.translation && c.translation.trim()) ? c.translation : c.text;
+    const delay = Math.max(0, (c.start - (video.currentTime||0))*1000);
+    const t = setTimeout(function(){
+      speakText(text, function(){
+        i++;
+        progress.value = Math.round((i/queue.length)*100);
+        const g = setTimeout(runNext, gap);
+        dubTimers.push(g);
+      });
+    }, delay);
+    dubTimers.push(t);
+  }
+  runNext();
+});
+
+document.getElementById('previewSentenceBtn').addEventListener('click', function(){
+  const t = video.currentTime || 0;
+  const cue = cues.find(c=> t>=c.start && t<c.end) || cues[0];
+  if (!cue) { setStatus('لا توجد جملة'); return; }
+  const text = (cue.translation && cue.translation.trim()) ? cue.translation : cue.text;
+  speakText(text, null);
+});
+
+document.getElementById('exportScriptBtn').addEventListener('click', function(){
+  if (!cues.length) { setStatus('لا توجد بيانات'); return; }
+  const data = {
+    language: document.getElementById('ttsLang').value,
+    voice: document.getElementById('ttsVoice').value,
+    rate: document.getElementById('ttsRate').value,
+    pitch: document.getElementById('ttsPitch').value,
+    cues: cues.map(c=>({start:c.start,end:c.end,source:c.text,translation:c.translation}))
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  downloadBlob(blob, 'dub-script.json');
+  setStatus('تم تصدير السكربت');
+});
+
+function formatTime(s){
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = Math.floor(s%60);
+  const ms = Math.round((s%1)*1000);
+  return pad2(h)+':'+pad2(m)+':'+pad2(sec)+','+pad3(ms);
+}
+function pad2(n){ return n<10 ? '0'+n : ''+n; }
+function pad3(n){ return n<10 ? '00'+n : n<100 ? '0'+n : ''+n; }
+
+document.getElementById('exportSubsBtn').addEventListener('click', function(){
+  if (!cues.length) { setStatus('لا توجد بيانات'); return; }
+  const srt = cues.map((c,i)=> (i+1)+'\n'+formatTime(c.start)+ ' --> ' + formatTime(c.end)+'\n'+ (c.translation||c.text) +'\n').join('\n');
+  const blob = new Blob([srt], {type:'text/plain'});
+  downloadBlob(blob, 'subtitles.srt');
+});
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+document.getElementById('exportVideoBtn').addEventListener('click', function(){
+  if (!video.src) { setStatus('حمّل فيديو أولاً'); return; }
+  if (!cues.length) { setStatus('حمّل ترجمة أولاً'); return; }
+  const progress = document.getElementById('exportProgress');
+  progress.value = 0;
+  playingPreview = true;
+  video.currentTime = 0;
+  video.play();
+  const stream = canvas.captureStream(30);
+  if (video.captureStream) {
+    try {
+      const vs = video.captureStream();
+      const audioTracks = vs.getAudioTracks();
+      audioTracks.forEach(t=>stream.addTrack(t));
+    } catch(e){}
+  }
+  let mimeType = 'video/webm';
+  if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) mimeType='video/webm;codecs=vp9,opus';
+  else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) mimeType='video/webm;codecs=vp8,opus';
+  mediaRecorder = new MediaRecorder(stream, {mimeType:mimeType});
+  const chunks = [];
+  mediaRecorder.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+  mediaRecorder.onstop = function(){
+    const blob = new Blob(chunks, {type:mimeType});
+    downloadBlob(blob, 'burned-video.webm');
+    setStatus('تم تصدير الفيديو');
+    playingPreview = false;
+    video.pause();
+  };
+  mediaRecorder.start(200);
+  requestAnimationFrame(drawFrame);
+  const iv = setInterval(function(){
+    if (video.duration) {
+      progress.value = Math.round((video.currentTime/video.duration)*100);
+    }
+    if (video.ended) {
+      clearInterval(iv);
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    }
+  }, 200);
+});
+
+document.getElementById('importJsonInput').addEventListener('change', function(e){
+  const f = e.target.files && e.target.files.item(0);
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = function(ev){
+    try {
+      const data = JSON.parse(String(ev.target.result));
+      if (Array.isArray(data)) {
+        cues.length=0; data.forEach(c=>cues.push({start:+c.start||0,end:+c.end||0,text:c.text||c.source||'',translation:c.translation||''}));
+      } else if (data.cues) {
+        cues.length=0; data.cues.forEach(c=>cues.push({start:+c.start||0,end:+c.end||0,text:c.text||c.source||'',translation:c.translation||''}));
+      }
+      renderEditor();
+      setStatus('تم الاستيراد');
+    } catch(err){ setStatus('خطأ في JSON'); }
+  };
+  r.readAsText(f);
+});
+
+document.getElementById('exportJsonBtn').addEventListener('click', function(){
+  const blob = new Blob([JSON.stringify(cues,null,2)], {type:'application/json'});
+  downloadBlob(blob, 'subtitles.json');
+});
+
+function setStatus(msg){ document.getElementById('statusOut').textContent = msg; }
+
+['fontFamily','fontSize','srcColor','transColor','positionSelect','alignSelect','bilingualToggle','lineGap'].forEach(id=>{
+  const el = document.getElementById(id);
+  if (el) { el.addEventListener('change', function(){ if(!playingPreview) drawFrame(); }); el.addEventListener('input', function(){ if(!playingPreview) drawFrame(); }); }
+});
+</script>
+</body>
+</html>
