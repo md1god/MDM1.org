@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق فواتير سهل داخل المتصفح – إنشاء، حساب، وطباعة | MDM1</title>
+<meta name="description" content="حل متكامل لإنشاء عملاء، عناصر، فواتير، حساب الضرائب والخصومات، اختيار العملة وتاريخ الاستحقاق، ومعاينة الطباعة أو تصدير PDF دون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/bill-ledger-studio.html">
+<meta property="og:title" content="تطبيق فواتير سهل داخل المتصفح – إنشاء، حساب، وطباعة">
+<meta property="og:description" content="حل متكامل لإنشاء عملاء، عناصر، فواتير، حساب الضرائب والخصومات، اختيار العملة وتاريخ الاستحقاق، ومعاينة الطباعة أو تصدير PDF دون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/bill-ledger-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{max-width:960px;margin:auto;padding:1rem}  
+.app .card{background:var(--dark);color:var(--light);margin-bottom:1rem;padding:1rem;border-radius:0.5rem}  
+.app .row{display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-bottom:0.5rem}  
+.app .row label{min-width:6rem}  
+.app .input,.app .select{background:var(--light);color:var(--dark);border:none;padding:0.3rem;border-radius:0.3rem}  
+.app .button{background:var(--gold);color:var(--dark);border:none;padding:0.4rem 0.8rem;border-radius:0.3rem;cursor:pointer}  
+.app .button.sec{background:var(--gold-dim)}  
+.app .badge{background:var(--gold-bright);color:var(--dark);padding:0.2rem 0.5rem;border-radius:0.3rem;margin-right:0.5rem}  
+.app table{width:100%;border-collapse:collapse;margin-top:0.5rem}  
+.app th, .app td{border:1px solid var(--gold-dim);padding:0.3rem;text-align:center}  
+.app .out{background:var(--light);color:var(--dark);padding:1rem;border-radius:0.3rem;min-height:8rem;overflow:auto}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة إدارة الفواتير في صفحة واحدة", "url": "https://mdm1.org/apps/bill-ledger-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يمكنني حذف عنصر من القائمة؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط زر “حذف” الموجود بجانب كل عنصر في جدول العناصر أو بجانب اسم العميل في قائمة العملاء."}}, {"@type": "Question", "name": "هل يمكنني حفظ البيانات للعودة إليها لاحقاً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم زر “تصدير كـ JSON” لحفظ جميع البيانات، ثم استوردها لاحقاً باستخدام زر “استيراد JSON”."}}, {"@type": "Question", "name": "كيف يتم حساب الضريبة والخصم؟", "acceptedAnswer": {"@type": "Answer", "text": "يتم حساب الضريبة كنسبة مئوية من المجموع الفرعي، ثم يخصم الخصم من المجموع بعد إضافة الضريبة. القيم تُحدّث تلقائياً في المعاينة."}}, {"@type": "Question", "name": "هل يمكنني طباعة الفاتورة مباشرةً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم"}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة إدارة الفواتير في صفحة واحدة</h1>
+  <p class="page-sub">حل متكامل لإنشاء عملاء، عناصر، فواتير، حساب الضرائب والخصومات، اختيار العملة وتاريخ الاستحقاق، ومعاينة الطباعة أو تصدير PDF دون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">  
+  <p>هذا التطبيق يتيح لك إنشاء وإدارة الفواتير بسهولة داخل المتصفح دون الحاجة إلى خادم أو حفظ دائم. يمكنك إضافة عملاء وعناصر، تحديد الضرائب والخصومات، اختيار العملة وتاريخ الاستحقاق، ثم معاينة الفاتورة للطباعة أو تصديرها كملف PDF. كل البيانات تبقى في الجلسة الحالية ويمكنك تعديلها في أي وقت أو تصديرها كملف JSON لاسترجاعها لاحقاً.</p>  
+  
+  <div class="card">  
+    <h2>قائمة العملاء</h2>  
+    <div class="row">  
+      <label for="clientNameInput">اسم العميل</label>  
+      <input id="clientNameInput" class="input" type="text" placeholder="مثال: شركة النور">  
+      <button id="clientAddBtn" class="button">إضافة</button>  
+    </div>  
+    <ul id="clientList"></ul>  
+  </div>  
+  
+  <div class="card">  
+    <h2>قائمة العناصر</h2>  
+    <div class="row">  
+      <label for="itemDescInput">الوصف</label>  
+      <input id="itemDescInput" class="input" type="text" placeholder="مثال: خدمة تصميم">  
+    </div>  
+    <div class="row">  
+      <label for="itemQtyInput">الكمية</label>  
+      <input id="itemQtyInput" class="input" type="number" min="1" value="1">  
+      <label for="itemPriceInput">السعر</label>  
+      <input id="itemPriceInput" class="input" type="number" min="0" step="0.01" value="0">  
+      <button id="itemAddBtn" class="button">إضافة</button>  
+    </div>  
+    <table id="itemList">  
+      <thead>  
+        <tr><th>الوصف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>إجراء</th></tr>  
+      </thead>  
+      <tbody></tbody>  
+    </table>  
+  </div>  
+  
+  <div class="card">  
+    <h2>إنشاء فاتورة</h2>  
+    <div class="row">  
+      <label for="invoiceClientSelect">العميل</label>  
+      <select id="invoiceClientSelect" class="select"></select>  
+    </div>  
+    <div class="row">  
+      <label for="invoiceCurrencySelect">العملة</label>  
+      <select id="invoiceCurrencySelect" class="select">  
+        <option value="USD">$ – دولار</option>  
+        <option value="EUR">€ – يورو</option>  
+        <option value="SAR">﷼ – ريال</option>  
+      </select>  
+    </div>  
+    <div class="row">  
+      <label for="invoiceTaxInput">الضريبة %</label>  
+      <input id="invoiceTaxInput" class="input" type="number" min="0" max="100" value="0">  
+      <label for="invoiceDiscountInput">الخصم %</label>  
+      <input id="invoiceDiscountInput" class="input" type="number" min="0" max="100" value="0">  
+    </div>  
+    <div class="row">  
+      <label for="invoiceDueDateInput">تاريخ الاستحقاق</label>  
+      <input id="invoiceDueDateInput" class="input" type="date">  
+    </div>  
+    <button id="invoiceCreateBtn" class="button">إنشاء الفاتورة</button>  
+  </div>  
+  
+  <div class="card">  
+    <h2>معاينة الفاتورة</h2>  
+    <div id="invoicePreviewDiv" class="out"></div>  
+    <button id="exportBtn" class="button">تصدير كـ JSON</button>  
+    <input id="importInput" class="input" type="file" accept=".json">  
+    <button id="importBtn" class="button sec">استيراد JSON</button>  
+  </div>  
+  
+  <div class="card">  
+    <h2>ملخص الفواتير</h2>  
+    <div class="row">  
+      <span class="badge" id="summaryDraftBadge">المسودة: 0</span>  
+      <span class="badge" id="summaryPaidBadge">المدفوعة: 0</span>  
+      <span class="badge" id="summaryOverdueBadge">المتأخرة: 0</span>  
+    </div>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يمكنني حذف عنصر من القائمة؟</h3><p>اضغط زر “حذف” الموجود بجانب كل عنصر في جدول العناصر أو بجانب اسم العميل في قائمة العملاء.</p><h3>هل يمكنني حفظ البيانات للعودة إليها لاحقاً؟</h3><p>نعم، استخدم زر “تصدير كـ JSON” لحفظ جميع البيانات، ثم استوردها لاحقاً باستخدام زر “استيراد JSON”.</p><h3>كيف يتم حساب الضريبة والخصم؟</h3><p>يتم حساب الضريبة كنسبة مئوية من المجموع الفرعي، ثم يخصم الخصم من المجموع بعد إضافة الضريبة. القيم تُحدّث تلقائياً في المعاينة.</p><h3>هل يمكنني طباعة الفاتورة مباشرةً؟</h3><p>نعم</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="lesson-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق تعلم تفاعلي بالألعاب مجاناً داخل المتصفح بدون حساب</a><span style="opacity:.75"> — حوّل أي موضوع أو حوار إلى دروس مصغّرة وبطاقات واختيار متعدد وإكمال فراغ مع تكرار متباعد ونقاط وسلسلة أيام…</span></li><li style="margin:.5rem 0"><a href="offline-courseware-quiz-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح</a><span style="opacity:.75"> — تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات…</span></li><li style="margin:.5rem 0"><a href="browser-image-codec-lab.html" style="color:var(--gold-bright);font-weight:700">مختبر ضغط الصور: تحويل وضغط PNG وJPEG وGIF وWebP داخل المتصفح</a><span style="opacity:.75"> — حوّل واضغط صور PNG وJPEG وGIF وWebP داخل المتصفح مع شريط جودة ومستويات جهد، واعرض نسبة التوفير وحجم الملف…</span></li><li style="margin:.5rem 0"><a href="cachelens-graphql-inspector.html" style="color:var(--gold-bright);font-weight:700">مفتش GraphQL داخل المتصفح</a><span style="opacity:.75"> — أداة محلية لعرض وتحليل استعلامات GraphQL مع كشف الحقول المكررة ومشكلة N+1 ومحاكاة التخزين المؤقت دون أي طلب…</span></li><li style="margin:.5rem 0"><a href="local-data-backup.html" style="color:var(--gold-bright);font-weight:700">نسخ احتياطي محلي لبياناتك: تصدير واستيراد آمن داخل المتصفح</a><span style="opacity:.75"> — أنشئ نسخة احتياطية من ملاحظاتك وجهات اتصالك وقوائمك ومرفقاتك كملف واحد قابل للتنزيل، مع تشفير اختياري…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+/* إعلانات المتغيّرات العامة */  
+const clients=[];  
+const items=[];  
+const invoices=[];  
+  
+/* وظائف مساعدة */  
+function fmtNum(n){return Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}  
+  
+function updateClientSelect(){  
+  const sel=document.getElementById('invoiceClientSelect');  
+  sel.innerHTML='';  
+  clients.forEach((c,i)=>{  
+    const opt=document.createElement('option');  
+    opt.value=i;  
+    opt.textContent=c;  
+    sel.appendChild(opt);  
+  });  
+}  
+  
+function renderClientList(){  
+  const ul=document.getElementById('clientList');  
+  ul.innerHTML='';  
+  clients.forEach((c,i)=>{  
+    const li=document.createElement('li');  
+    li.textContent=c+' ';  
+    const btn=document.createElement('button');  
+    btn.className='button sec';  
+    btn.textContent='حذف';  
+    btn.onclick=()=>{clients.splice(i,1);renderClientList();updateClientSelect();};  
+    li.appendChild(btn);  
+    ul.appendChild(li);  
+  });  
+}  
+  
+function renderItemTable(){  
+  const tbody=document.querySelector('#itemList tbody');  
+  tbody.innerHTML='';  
+  items.forEach((it,i)=>{  
+    const tr=document.createElement('tr');  
+    tr.innerHTML=`<td>${it.desc}</td><td>${it.qty}</td><td>${fmtNum(it.price)}</td><td>${fmtNum(it.qty*it.price)}</td>`;  
+    const td=document.createElement('td');  
+    const btn=document.createElement('button');  
+    btn.className='button sec';  
+    btn.textContent='حذف';  
+    btn.onclick=()=>{items.splice(i,1);renderItemTable();};  
+    td.appendChild(btn);  
+    tr.appendChild(td);  
+    tbody.appendChild(tr);  
+  });  
+}  
+  
+function calculateTotals(){  
+  const sub=items.reduce((s,it)=>s+it.qty*it.price,0);  
+  const taxRate=parseFloat(document.getElementById('invoiceTaxInput').value)||0;  
+  const discRate=parseFloat(document.getElementById('invoiceDiscountInput').value)||0;  
+  const tax=sub*taxRate/100;  
+  const disc=sub*discRate/100;  
+  const total=sub+tax-disc;  
+  return {sub, tax, disc, total};  
+}  
+  
+function previewInvoice(){  
+  const clientIdx=document.getElementById('invoiceClientSelect').value;  
+  const client=clients[clientIdx]||'—';  
+  const currency=document.getElementById('invoiceCurrencySelect').value;  
+  const due=document.getElementById('invoiceDueDateInput').value||'—';  
+  const {sub, tax, disc, total}=calculateTotals();  
+  const div=document.getElementById('invoicePreviewDiv');  
+  div.innerHTML=`<strong>العميل:</strong> ${client}<br>`+  
+    `<strong>العملة:</strong> ${currency}<br>`+  
+    `<strong>تاريخ الاستحقاق:</strong> ${due}<br>`+  
+    `<strong>المجموع الفرعي:</strong> ${fmtNum(sub)}<br>`+  
+    `<strong>الضريبة:</strong> ${fmtNum(tax)}<br>`+  
+    `<strong>الخصم:</strong> ${fmtNum(disc)}<br>`+  
+    `<strong>الإجمالي:</strong> ${fmtNum(total)}`;  
+}  
+  
+function addInvoice(){  
+  if(clients.length===0||items.length===0)return;  
+  const clientIdx=document.getElementById('invoiceClientSelect').value;  
+  const client=clients[clientIdx];  
+  const currency=document.getElementById('invoiceCurrencySelect').value;  
+  const due=document.getElementById('invoiceDueDateInput').value;  
+  const totals=calculateTotals();  
+  const inv={id:Date.now(),client,currency,due,items:[...items],...totals,status:'draft'};  
+  invoices.push(inv);  
+  // إعادة تعيين القوائم للفاتورة الجديدة  
+  items.length=0;  
+  renderItemTable();  
+  previewInvoice();  
+  updateSummary();  
+}  
+  
+function updateSummary(){  
+  const draft=invoices.filter(i=>i.status==='draft').length;  
+  const paid=invoices.filter(i=>i.status==='paid').length;  
+  const overdue=invoices.filter(i=>i.status==='overdue').length;  
+  document.getElementById('summaryDraftBadge').textContent=`المسودة: ${draft}`;  
+  document.getElementById('summaryPaidBadge').textContent=`المدفوعة: ${paid}`;  
+  document.getElementById('summaryOverdueBadge').textContent=`المتأخرة: ${overdue}`;  
+}  
+  
+function exportJSON(){  
+  const data=JSON.stringify({clients,items,invoices},null,2);  
+  const blob=new Blob([data],{type:'application/json'});  
+  const url=URL.createObjectURL(blob);  
+  const a=document.createElement('a');  
+  a.href=url;  
+  a.download='invoice-data.json';  
+  a.click();  
+  URL.revokeObjectURL(url);  
+}  
+  
+function importJSON(){  
+  const file=document.getElementById('importInput').files[0];  
+  if(!file)return;  
+  const reader=new FileReader();  
+  reader.onload=function(e){  
+    try{  
+      const obj=JSON.parse(e.target.result);  
+      if(Array.isArray(obj.clients)) clients.splice(0,clients.length,...obj.clients);  
+      if(Array.isArray(obj.items)) items.splice(0,items.length,...obj.items);  
+      if(Array.isArray(obj.invoices)) invoices.splice(0,invoices.length,...obj.invoices);  
+      renderClientList();  
+      updateClientSelect();  
+      renderItemTable();  
+      previewInvoice();  
+      updateSummary();  
+    }catch(err){alert('ملف غير صالح');}  
+  };  
+  reader.readAsText(file);  
+}  
+  
+/* ربط الأحداث */  
+document.getElementById('clientAddBtn').onclick=function(){  
+  const name=document.getElementById('clientNameInput').value.trim();  
+  if(name){clients.push(name);renderClientList();updateClientSelect();document.getElementById('clientNameInput').value='';}  
+};  
+  
+document.getElementById('itemAddBtn').onclick=function(){  
+  const desc=document.getElementById('itemDescInput').value.trim();  
+  const qty=parseInt(document.getElementById('itemQtyInput').value,10)||1;  
+  const price=parseFloat(document.getElementById('itemPriceInput').value)||0;  
+  if(desc){items.push({desc,qty,price});renderItemTable();document.getElementById('itemDescInput').value='';}  
+};  
+  
+document.getElementById('invoiceCreateBtn').onclick=function(){addInvoice();};  
+  
+document.getElementById('exportBtn').onclick=exportJSON;  
+  
+document.getElementById('importBtn').onclick=importJSON;  
+  
+/* تحديث المعاينة عند تغيير الضرائب أو الخصومات */  
+document.getElementById('invoiceTaxInput').oninput=previewInvoice;  
+document.getElementById('invoiceDiscountInput').oninput=previewInvoice;  
+document.getElementById('invoiceClientSelect').onchange=previewInvoice;  
+document.getElementById('invoiceCurrencySelect').onchange=previewInvoice;  
+document.getElementById('invoiceDueDateInput').onchange=previewInvoice;
+</script>
+</body>
+</html>
