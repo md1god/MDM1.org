@@ -10,36 +10,6 @@ TODAY = dt.datetime.now(dt.timezone.utc)
 D = TODAY.strftime("%Y-%m-%d")
 E = html.escape
 
-ZAKAT = dict(slug="zakat-calculator", date="2026-10-07", source=None, source_url=None,
- title="حاسبة زكاة المال والذهب والفضة — مجانية ودقيقة",
- h1="حاسبة زكاة المال",
- description="احسب زكاة مالك وذهبك وفضتك وعروض التجارة في ثوانٍ: النصاب والديون ومقدار الزكاة 2.5%. مجانية وتعمل في متصفحك بدون تسجيل.",
- faq=[{"q": "ما هو نصاب الزكاة؟", "a": "نصاب الذهب 85 جرامًا ونصاب الفضة 595 جرامًا، وتجب الزكاة بمقدار 2.5% إذا بلغ صافي المال النصاب وحال عليه الحول الهجري."},
-      {"q": "هل تُخصم الديون قبل حساب الزكاة؟", "a": "يرى كثير من أهل العلم خصم الديون الحالّة المستحقة، وفي التفاصيل خلاف. الأداة تعين على الحساب ولا تغني عن سؤال جهة الفتوى المعتمدة عندك."},
-      {"q": "هل تُرسل بياناتي لأي خادم؟", "a": "لا، كل الحساب يتم داخل متصفحك ولا يُخزَّن شيء."}],
- body_html=r'''<p><b>الجواب السريع:</b> تجب الزكاة بنسبة <b>2.5%</b> من صافي المال إذا بلغ النصاب (85 جرام ذهب أو 595 جرام فضة) ومرّ عليه سنة هجرية. أدخل أرقامك بعملتك، وكل الحساب داخل متصفحك.</p>
-<label>سعر جرام الذهب (عيار 24) بعملتك</label><input id="gp" type="number" min="0" step="any" inputmode="decimal">
-<label>سعر جرام الفضة بعملتك</label><input id="sp" type="number" min="0" step="any" inputmode="decimal">
-<label>النصاب المعتمد</label><select id="nis"><option value="gold">نصاب الذهب (85 جرام) — الأشهر حاليًا</option><option value="silver">نصاب الفضة (595 جرام) — الأحوط للفقراء</option></select>
-<label>النقد والأرصدة البنكية</label><input id="cash" type="number" min="0" step="any" inputmode="decimal" value="0">
-<label>وزن الذهب المدّخر (جرام عيار 24 أو ما يعادله)</label><input id="gg" type="number" min="0" step="any" inputmode="decimal" value="0">
-<label>وزن الفضة المدّخرة (جرام)</label><input id="sg" type="number" min="0" step="any" inputmode="decimal" value="0">
-<label>قيمة عروض التجارة والبضائع</label><input id="trade" type="number" min="0" step="any" inputmode="decimal" value="0">
-<label>ديون مرجوّة السداد لك</label><input id="rec" type="number" min="0" step="any" inputmode="decimal" value="0">
-<label>ديون حالّة عليك</label><input id="debt" type="number" min="0" step="any" inputmode="decimal" value="0">
-<button id="go" type="button">احسب الزكاة</button>
-<div class="out" id="out" style="display:none" aria-live="polite"></div>''',
- script_js=r'''function zakat(v){const n=k=>Math.max(0,parseFloat(v[k])||0);
-const net=n('cash')+n('gg')*n('gp')+n('sg')*n('sp')+n('trade')+n('rec')-n('debt');
-const nisab=v.nis==='gold'?85*n('gp'):595*n('sp');
-return {net,nisab,due:nisab>0&&net>=nisab?net*0.025:0,ok:nisab>0};}
-document.getElementById('go').onclick=()=>{const v={};
-['gp','sp','nis','cash','gg','sg','trade','rec','debt'].forEach(i=>v[i]=document.getElementById(i).value);
-const r=zakat(v),o=document.getElementById('out'),f=x=>x.toLocaleString('ar-EG',{maximumFractionDigits:2});
-o.style.display='block';
-o.innerHTML=!r.ok?'أدخل سعر الجرام للمعدن الذي اخترته نصابًا.':'صافي المال: <b>'+f(r.net)+'</b><br>النصاب: <b>'+f(r.nisab)+'</b><br>'+
-(r.due>0?'الزكاة الواجبة (2.5%):<div class="big">'+f(r.due)+'</div><small>بشرط مرور الحول الهجري.</small>':'<b>لم يبلغ مالك النصاب، فلا زكاة عليك الآن.</b>');};''')
-
 CSS = """.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
 .tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
 .tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
@@ -119,8 +89,6 @@ def load():
     return d
 
 def publish_files(d):
-    for t in d["tools"]:
-        if t["slug"] == "zakat-calculator": wr(f"tools/{t['slug']}.html", tool_page(ZAKAT))
     cards = "".join(f'<div class="card"><span class="card-icon">🧰</span><div class="card-title"><a href="{t["slug"]}.html" class="glow-gold">{E(t["h1"] if "h1" in t else t["title"])}</a></div><div class="card-text">{E(t["description"])}</div></div>' for t in reversed(d["tools"]))
     wr("tools/index.html", shell("أدوات مجانية مفيدة", "أدوات مجانية تعمل في متصفحك بدون تسجيل.", f"{SITE}/tools/", "أدوات مجانية", "MDM1 · الأدوات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(d['tools'])} أداة"))
     urls = [("/tools/", D)] + [(f"/tools/{t['slug']}.html", t["date"]) for t in d["tools"]]
@@ -183,7 +151,7 @@ LAST_REASON = ""
 
 PROMPT = """You are building ONE original, genuinely useful, single-page Arabic web tool for mdm1.org, inspired by the IDEA behind one trending project below.
 Pick the one candidate that can be built as a fully working CLIENT-SIDE tool (HTML form + vanilla JS, no server, no network, no external libs). If none fits, answer {"pick":null}.
-Rules: NEVER label the tool, app or page as Arabic: the words Arabic / عربي / عربية / بالعربية / العربية must not appear in the title, h1, description, FAQ, body text or slug (unless the product is truly about the Arabic language itself). It is a global product for every visitor in the world, and the page is auto-translated, so write it like a normal international product page. Write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; never label the tool, page or site with the word "Arabic" (or its Arabic-script form) as a descriptor - no "Arabic tool/app" wording; the tool must really work.
+Rules: the site serves a GLOBAL audience of every background: NEVER build religion-specific tools (zakat, inheritance, prayer, fasting, Hijri, Ramadan, Qibla and similar); prefer universally useful tools. NEVER label the tool, app or page as Arabic: the words Arabic / عربي / عربية / بالعربية / العربية must not appear in the title, h1, description, FAQ, body text or slug (unless the product is truly about the Arabic language itself). It is a global product for every visitor in the world, and the page is auto-translated, so write it like a normal international product page. Write everything from scratch; never copy code, names, branding or text of the source; do not put the source name in title/slug; Arabic UI text; never label the tool, page or site with the word "Arabic" (or its Arabic-script form) as a descriptor - no "Arabic tool/app" wording; the tool must really work.
 Return ONLY JSON: {"pick":"<candidate id>","slug":"ascii-kebab-3-40","title":"Arabic SEO title <=70 chars","h1":"Arabic heading","description":"Arabic meta description 110-160 chars",
 "body_html":"intro paragraph (>=80 words, starts with a quick answer) + form/inputs/button/output. Elements need ids; wrap result in <div class=\\"out\\" id=\\"out\\">; use <label>,<input>,<select>,<textarea>,<button>; NO <script>, NO external src/href",
 "script_js":"vanilla JS wiring the ids above","faq":[{"q":"..","a":".."}  (3-5 items)]}
@@ -242,8 +210,6 @@ def indexnow(d):
 
 def main():
     d = load()
-    if not any(t["slug"] == "zakat-calculator" for t in d["tools"]):
-        d["tools"].append({k: ZAKAT[k] for k in ("slug", "title", "h1", "description", "date", "source", "source_url")})
     if "--indexnow" in sys.argv: return indexnow(d)
     if d["enabled"] and os.environ.get("TOOL_JSON", "").strip():
         # Tool generated elsewhere (Scout) and handed over as data: validate with the same gates, then publish.
