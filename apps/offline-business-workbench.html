@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة العمليات التجارية: مبيعات ومخزون وأرباح | MDM1</title>
+<meta name="description" content="أدخل المبيعات والمشتريات والمصروفات واحسب الأرباح والتدفق النقدي ومتابعة الطلبات والمخزون وإدارة الأصول والمهام وسجلات الوقت. Together with multi-currency and instant reports, all with no server or pe">
+<link rel="canonical" href="https://mdm1.org/apps/offline-business-workbench.html">
+<meta property="og:title" content="لوحة العمليات التجارية: مبيعات ومخزون وأرباح">
+<meta property="og:description" content="أدخل المبيعات والمشتريات والمصروفات واحسب الأرباح والتدفق النقدي ومتابعة الطلبات والمخزون وإدارة الأصول والمهام وسجلات الوقت. Together with multi-currency and instant reports, all with no server or pe">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-business-workbench.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{direction:rtl;text-align:right;display:flex;flex-direction:column;gap:1rem;}
+.app .row{flex-wrap:wrap;align-items:center;gap:.6rem;}
+.app .row>label{min-width:max-content;}
+.app .row>input,.app .row>select{min-width:9rem;flex:1 1 9rem;}
+.app table{width:100%;border-collapse:collapse;margin-block:.75rem;}
+.app th,.app td{border:1px solid var(--gold-dim);padding:.45rem .6rem;text-align:right;}
+.app th{color:var(--gold-bright);background:var(--gold-dim);}
+.app .app-stat{flex:1 1 8rem;border:1px solid var(--gold-dim);padding:.75rem;border-radius:8px;}
+.app .app-stat p{margin:0 0 .35rem;color:var(--light);opacity:.8;font-size:.85rem;}
+.app .app-stat .big{display:block;font-size:1.6rem;color:var(--gold-bright);}
+.app .app-danger{color:#ff8a80;}
+.app .app-ok{color:#9ce6a0;}
+.app ul{margin:.6rem 0;padding-inline-start:1.2rem;}
+.app li{margin:.3rem 0;}
+.app .app-hidden{display:none;}
+.app #timer-display{font-variant-numeric:tabular-nums;direction:ltr;}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة عمليات تجارية شاملة داخل المتصفح", "url": "https://mdm1.org/apps/offline-business-workbench.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "أين تُحفظ بياناتي بعد إدخالها؟", "acceptedAnswer": {"@type": "Answer", "text": "تبقى البيانات داخل الجلسة الحالية في المتصفح فقط، ولا يتم حفظها بشكل دائم ولا إرسالها إلى أي خادم. يمكنك تصديرها إلى ملف JSON ثم استيرادها متى أردت."}}, {"@type": "Question", "name": "كيف أحسب الإجمالي عند استخدام عملة غير الأساس؟", "acceptedAnswer": {"@type": "Answer", "text": "حدد العملة وأدخل سعر صرفها مقابل العملة الأساسية في أعلى اللوحة. سيتم تحويل كل إجمالي تلقائياً إلى العملة الأساسية في التقارير الملخصة."}}, {"@type": "Question", "name": "هل يمكنني تعديل حالة الطلب بعد إنشائه؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر الحالة الجديدة من القائمة بجانب الطلب في جدول الطلبات، وسيتغير عدد الطلبات النشطة في التقارير فوراً."}}, {"@type": "Question", "name": "ماذا يحدث للمخزون عند تسجيل عملية بيع أو شراء؟", "acceptedAnswer": {"@type": "Answer", "text": "عملية الشراء تزيد الكمية وتحدث تكلفة الوحدة، وعملية البيع تنقص الكمية. يمكنك أيضاً إضافة أو حذف أصناف يدوياً من قسم المخزون."}}, {"@type": "Question", "name": "هل تعمل اللوحة دون اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الحسابات والجداول والتقارير والطباعة تعمل محلياً داخل الصفحة، ولا تحتاج إلى حساب أو اتصال أو خدمات خارجية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة عمليات تجارية شاملة داخل المتصفح</h1>
+  <p class="page-sub">أدخل المبيعات والمشتريات والمصروفات واحسب الأرباح والتدفق النقدي ومتابعة الطلبات والمخزون وإدارة الأصول والمهام وسجلات الوقت. Together with multi-currency and instant reports, all with no server or pe</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>لوحة العمليات هذه تعمل فوراً داخل الصفحة: أضف عمليات البيع والشراء والمصروفات، وانتظر تحديث الأرباح والتدفق النقدي والطلبات والمخزون في نفس اللحظة. ابدأ بإدخال سعر الصرف个工作ة، ثم سجّل العملية الأولى؛ ستظهر النتيجة مباشرة في الجداول والتقارير الملخصة أدناه. يمكنك تعديل الكميات والخصومات والضرائب بلا خطوات إضافية، وتصدير كل الجلسة إلى ملف JSON ثم استيرادها لاحقاً عند الحاجة. لا يوجد حساب، ولا اتصال بالإنترنت، ولا حفظ دائم؛ كل البيانات تبقى داخل هذه الجلسة فقط حتى تغلق الصفحة أو تصدر ملفك.</p>
+<section class="app" id="app-root" lang="rtl" dir="rtl">
+  <div class="card" id="settings-card">
+    <h2 id="settings-heading">إعدادات الجلسة والعملات</h2>
+    <div class="row" id="currency-row">
+      <label for="base-currency">العملة الأساسية</label>
+      <select id="base-currency" aria-label="العملة الأساسية">
+        <option value="USD">دولار أمريكي (USD)</option>
+        <option value="EUR">يورو (EUR)</option>
+        <option value="GBP">جنيه إسترليني (GBP)</option>
+        <option value="AED">درهم إماراتي (AED)</option>
+        <option value="SAR">ريال سعودي (SAR)</option>
+        <option value="EGP">جنيه مصري (EGP)</option>
+        <option value="TRY">ليرة تركية (TRY)</option>
+        <option value="INR">روبية هندية (INR)</option>
+        <option value="JPY">ين ياباني (JPY)</option>
+        <option value="CNY">يوان صيني (CNY)</option>
+      </select>
+      <label for="rate-input">سعر الصرف مقابل الأساس</label>
+      <input id="rate-input" type="number" min="0" step="0.0001" value="1" aria-label="سعر الصرف مقابل العملة الأساسية">
+      <button id="add-currency-btn" type="button">إضافة عملة</button>
+    </div>
+    <p id="settings-status" class="out" aria-live="polite">العملة الأساسية مضبوطة. أضف عملة أخرى بتحديدها وإدخال سعر صرفها.</p>
+    <ul id="currency-list" aria-label="قائمة العملات المضافة"></ul>
+  </div>
+
+  <div class="card" id="entry-card">
+    <h2 id="entry-heading">إدخال العمليات</h2>
+    <div class="row" id="entry-row-1">
+      <label for="entry-type">نوع العملية</label>
+      <select id="entry-type" aria-label="نوع العملية">
+        <option value="sale">مبيعات</option>
+        <option value="purchase">مشتريات</option>
+        <option value="expense">مصروفات</option>
+      </select>
+      <label for="entry-item">الصنف أوDescription البند</label>
+      <input id="entry-item" type="text" placeholder="اسم الصنف أو البند" aria-label="اسم الصنف أو البند">
+      <label for="entry-qty">الكمية</label>
+      <input id="entry-qty" type="number" min="0" step="1" value="1" aria-label="الكمية">
+    </div>
+    <div class="row" id="entry-row-2">
+      <label for="entry-price">سعر الوحدة</label>
+      <input id="entry-price" type="number" min="0" step="0.01" value="0" aria-label="سعر الوحدة">
+      <label for="entry-discount">الخصم (%)</label>
+      <input id="entry-discount" type="number" min="0" max="100" step="0.01" value="0" aria-label="نسبة الخصم">
+      <label for="entry-tax">الضريبة (%)</label>
+      <input id="entry-tax" type="number" min="0" step="0.01" value="0" aria-label="نسبة الضريبة">
+      <label for="entry-currency">العملة</label>
+      <select id="entry-currency" aria-label="عملة العملية"></select>
+    </div>
+    <div class="row" id="entry-row-3">
+      <button id="add-entry-btn" type="button">إضافة العملية</button>
+      <output id="entry-preview" class="out" aria-live="polite">الإجمالي المتوقع: 0.00</output>
+    </div>
+  </div>
+
+  <div class="card" id="summary-card">
+    <h2 id="summary-heading">التقارير الملخصة</h2>
+    <div class="row" id="summary-row">
+      <div class="app-stat"><p id="lbl-revenue">إجمالي المبيعات</p><strong id="stat-revenue" class="big">0.00</strong></div>
+      <div class="app-stat"><p id="lbl-cost">إجمالي المشتريات والمصروفات</p><strong id="stat-cost" class="big">0.00</strong></div>
+      <div class="app-stat"><p id="lbl-profit">صافي الربح</p><strong id="stat-profit" class="big">0.00</strong></div>
+      <div class="app-stat"><p id="lbl-cash">التدفق النقدي</p><strong id="stat-cash" class="big">0.00</strong></div>
+      <div class="app-stat"><p id="lbl-orders">الطلبات النشطة</p><strong id="stat-orders" class="big">0</strong></div>
+      <div class="app-stat"><p id="lbl-stock">قيمة المخزون</p><strong id="stat-stock" class="big">0.00</strong></div>
+    </div>
+    <p id="summary-status" class="out" aria-live="polite">لا توجد عمليات بعد. أضف أول عملية لتظهر الأرقام.</p>
+  </div>
+
+  <div class="card" id="orders-card">
+    <h2 id="orders-heading">متابعة الطلبات</h2>
+    <div class="row" id="orders-add-row">
+      <label for="order-customer">العميل</label>
+      <input id="order-customer" type="text" placeholder="اسم العميل" aria-label="اسم العميل">
+      <label for="order-item">الصنف المطلوب</label>
+      <input id="order-item" type="text" placeholder="اسم الصنف" aria-label="اسم الصنف المطلوب">
+      <label for="order-amount">المبلغ</label>
+      <input id="order-amount" type="number" min="0" step="0.01" value="0" aria-label="مبلغ الطلب">
+      <label for="order-status-select">حالة الطلب</label>
+      <select id="order-status-select" aria-label="حالة الطلب">
+        <option value="new">جديد</option>
+        <option value="processing">قيد التنفيذ</option>
+        <option value="done">مكتمل</option>
+        <option value="cancelled">ملغي</option>
+      </select>
+      <button id="add-order-btn" type="button">إضافة طلب</button>
+    </div>
+    <table id="orders-table">
+      <caption id="orders-caption">قائمة الطلبات في الجلسة الحالية</caption>
+      <thead><tr><th scope="col">العميل</th><th scope="col">الصنف</th><th scope="col">المبلغ</th><th scope="col">الحالة</th><th scope="col">إجراء</th></tr></thead>
+      <tbody id="orders-body"></tbody>
+    </table>
+    <p id="orders-empty" class="out">لا توجد طلبات بعد.</p>
+  </div>
+
+  <div class="card" id="inventory-card">
+    <h2 id="inventory-heading">المخزون</h2>
+    <div class="row" id="inventory-add-row">
+      <label for="stock-item">اسم الصنف</label>
+      <input id="stock-item" type="text" placeholder="اسم الصنف" aria-label="اسم صنف المخزون">
+      <label for="stock-qty">الكمية المتاحة</label>
+      <input id="stock-qty" type="number" min="0" step="1" value="0" aria-label="الكمية المتاحة">
+      <label for="stock-cost">تكلفة الوحدة</label>
+      <input id="stock-cost" type="number" min="0" step="0.01" value="0" aria-label="تكلفة وحدة المخزون">
+      <button id="add-stock-btn" type="button">إضافة صنف للمخزون</button>
+    </div>
+    <table id="stock-table">
+      <caption id="stock-caption">أصناف المخزون المسجلة</caption>
+      <thead><tr><th scope="col">الصنف</th><th scope="col">الكمية</th><th scope="col">تكلفة الوحدة</th><th scope="col">القيمة</th><th scope="col">إجراء</th></tr></thead>
+      <tbody id="stock-body"></tbody>
+      <tfoot><tr><th scope="row" id="stock-total-label">الإجمالي</th><td id="stock-total-qty">0</td><td></td><td id="stock-total-value">0.00</td><td></td></tr></tfoot>
+    </table>
+    <p id="stock-empty" class="out">المخزون فارغ. أضف صنفاً أو سجّل عملية بيع أو شراء لتحديثه تلقائياً.</p>
+  </div>
+
+  <div class="card" id="assets-card">
+    <h2 id="assets-heading">إدارة الأصول</h2>
+    <div class="row" id="assets-add-row">
+      <label for="asset-name">اسم الأصل</label>
+      <input id="asset-name" type="text" placeholder="مثال: حاسوب" aria-label="اسم الأصل">
+      <label for="asset-value">القيمة</label>
+      <input id="asset-value" type="number" min="0" step="0.01" value="0" aria-label="قيمة الأصل">
+      <label for="asset-depreciation">الاستهلاك السنوي (%)</label>
+      <input id="asset-depreciation" type="number" min="0" max="100" step="0.01" value="0" aria-label="نسبة الاستهلاك السنوي">
+      <button id="add-asset-btn" type="button">إضافة أصل</button>
+    </div>
+    <table id="assets-table">
+      <caption id="assets-caption">الأصول المسجلة وقيمتها الحالية</caption>
+      <thead><tr><th scope="col">الأصل</th><th scope="col">القيمة الأصلية</th><th scope="col">الاستهلاك</th><th scope="col">القيمة الحالية</th><th scope="col">إجراء</th></tr></thead>
+      <tbody id="assets-body"></tbody>
+    </table>
+    <p id="assets-empty" class="out">لا توجد أصول مسجلة.</p>
+  </div>
+
+  <div class="card" id="tasks-card">
+    <h2 id="tasks-heading">المهام</h2>
+    <div class="row" id="tasks-add-row">
+      <label for="task-title">عنوان المهمة</label>
+      <input id="task-title" type="text" placeholder="عنوان المهمة" aria-label="عنوان المهمة">
+      <label for="task-due">تاريخ الاستحقاق</label>
+      <input id="task-due" type="date" aria-label="تاريخ الاستحقاق">
+      <button id="add-task-btn" type="button">إضافة مهمة</button>
+    </div>
+    <ul id="task-list" aria-label="قائمة المهام"></ul>
+    <p id="tasks-empty" class="out">لا توجد مهام حالياً.</p>
+  </div>
+
+  <div class="card" id="time-card">
+    <h2 id="time-heading">سجلات الوقت</h2>
+    <div class="row" id="time-controls-row">
+      <label for="timer-task">المهمة المرتبطة</label>
+      <select id="timer-task" aria-label="المهمة المرتبطة بمؤقت الوقت"></select>
+      <button id="timer-start-btn" type="button">بدء المؤقت</button>
+      <button id="timer-stop-btn" type="button">إيقاف وحفظ</button>
+      <output id="timer-display" class="out" aria-live="off">00:00:00</output>
+    </div>
+    <table id="time-table">
+      <caption id="time-caption">سجلات الوقت المحفوظة في الجلسة</caption>
+      <thead><tr><th scope="col">المهمة</th><th scope="col">المدة</th><th scope="col">إجراء</th></tr></thead>
+      <tbody id="time-body"></tbody>
+    </table>
+    <p id="time-empty" class="out">لا توجد سجلات وقت بعد.</p>
+  </div>
+
+  <div class="card" id="ledger-card">
+    <h2 id="ledger-heading">سجل العمليات</h2>
+    <div class="row" id="ledger-tools-row">
+      <label for="ledger-filter-select">تصفية حسب النوع</label>
+      <select id="ledger-filter-select" aria-label="تصفية السجل حسب النوع">
+        <option value="all">الكل</option>
+        <option value="sale">مبيعات</option>
+        <option value="purchase">مشتريات</option>
+        <option value="expense">مصروفات</option>
+      </select>
+      <button id="clear-entries-btn" type="button" class="sec">مسح كل العمليات</button>
+    </div>
+    <table id="ledger-table">
+      <caption id="ledger-caption">جميع العمليات المسجلة</caption>
+      <thead><tr><th scope="col">النوع</th><th scope="col">البند</th><th scope="col">الكمية</th><th scope="col">الخصم</th><th scope="col">الضريبة</th><th scope="col">العملة</th><th scope="col">الإجمالي</th><th scope="col">إجراء</th></tr></thead>
+      <tbody id="ledger-body"></tbody>
+    </table>
+    <p id="ledger-empty" class="out">السجل فارغ. أضف عملية من قسم إدخال العمليات.</p>
+  </div>
+
+  <div class="card" id="data-card">
+    <h2 id="data-heading">تصدير واستيراد الجلسة</h2>
+    <div class="row" id="data-row">
+      <button id="export-btn" type="button">تصدير JSON</button>
+      <label for="import-input">استيراد ملف JSON</label>
+      <input id="import-input" type="file" accept=".json,application/json" aria-label="استيراد ملف JSON">
+      <button id="print-btn" type="button" class="sec">طباعة التقرير</button>
+      <button id="reset-btn" type="button" class="sec">إعادة ضبط الجلسة</button>
+    </div>
+    <p id="data-status" class="out" aria-live="polite">يمكنك تصدير بيانات الجلسة إلى ملف JSON واستيرادها لاحقاً. لا يتم حفظ أي بيانات بشكل دائم.</p>
+    <details id="help-details">
+      <summary id="help-summary">كيفية الاستخدام والقيود</summary>
+      <p id="help-text">كل الحسابات تتم محلياً داخل هذه الصفحة. معدلات الصرف التي تدخلها يدوياً هي المرجع لتحويل العملات. التصدير ينشئ ملفاً你 يستطيع حفظه، والاستيراد يقرأ نفس الصيغة. لا يوجد اتصال بأي خادم ولا تخزين دائم في المتصفح.</p>
+    </details>
+  </div>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>أين تُحفظ بياناتي بعد إدخالها؟</h3><p>تبقى البيانات داخل الجلسة الحالية في المتصفح فقط، ولا يتم حفظها بشكل دائم ولا إرسالها إلى أي خادم. يمكنك تصديرها إلى ملف JSON ثم استيرادها متى أردت.</p><h3>كيف أحسب الإجمالي عند استخدام عملة غير الأساس؟</h3><p>حدد العملة وأدخل سعر صرفها مقابل العملة الأساسية في أعلى اللوحة. سيتم تحويل كل إجمالي تلقائياً إلى العملة الأساسية في التقارير الملخصة.</p><h3>هل يمكنني تعديل حالة الطلب بعد إنشائه؟</h3><p>نعم، اختر الحالة الجديدة من القائمة بجانب الطلب في جدول الطلبات، وسيتغير عدد الطلبات النشطة في التقارير فوراً.</p><h3>ماذا يحدث للمخزون عند تسجيل عملية بيع أو شراء؟</h3><p>عملية الشراء تزيد الكمية وتحدث تكلفة الوحدة، وعملية البيع تنقص الكمية. يمكنك أيضاً إضافة أو حذف أصناف يدوياً من قسم المخزون.</p><h3>هل تعمل اللوحة دون اتصال بالإنترنت؟</h3><p>نعم، كل الحسابات والجداول والتقارير والطباعة تعمل محلياً داخل الصفحة، ولا تحتاج إلى حساب أو اتصال أو خدمات خارجية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="offline-store-manager.html" style="color:var(--gold-bright);font-weight:700">إدارة المتجر الصغير دون إنترنت: مبيعات ومخزون وتقارير</a><span style="opacity:.75"> — تطبيق دون إنترنت لإدارة متجرك الصغير: أضف المنتجات وتابع المخزون، وسجّل المبيعات عبر نقطة بيع تحسب الضريبة…</span></li><li style="margin:.5rem 0"><a href="personal-news-desk.html" style="color:var(--gold-bright);font-weight:700">لوحة أخبارك الشخصية: مصادر ووسوم وقراءة بلا تشتيت</a><span style="opacity:.75"> — ابنِ لوحة أخبارك الشخصية داخل المتصفح: أضف المصادر والعناوين يدويًا أو استوردها من ملف، صنّفها بالوسوم، ابحث…</span></li><li style="margin:.5rem 0"><a href="play-session-studio.html" style="color:var(--gold-bright);font-weight:700">لوحة إعدادات لعبة محلية: ملفات شخصية وتعديلات</a><span style="opacity:.75"> — لوحة محلية لإنشاء ملفات تشغيل مخصصة للعبة: ضبط الرسومات والواجهة والأصوات والمؤشر، معاينة فورية، حفظ ملفات…</span></li><li style="margin:.5rem 0"><a href="pulse-home-iot-console.html" style="color:var(--gold-bright);font-weight:700">لوحة تحكم أشياء إنترنت منزلية: أصول وقراءات وأتمتة وتقارير</a><span style="opacity:.75"> — لوحة تحكم أشياء إنترنت: سجّل الأجهزة أصولاً، حاكي الطاقة والحرارة والرطوبة، ابنِ قواعد عندما-ثم، وتابع…</span></li><li style="margin:.5rem 0"><a href="swift-key-command-desk.html" style="color:var(--gold-bright);font-weight:700">لوحة أوامر وبحث سريع</a><span style="opacity:.75"> — لوحة أوامر وبحث سريع في المتصفح: بحث ضبابي في اختصارات محفوظة، حساب تعبيرات رياضية فوراً، تصنيف حسب الفئات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-19 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  "use strict";
+  var base="USD";
+  var rates={USD:1};
+  var entries=[];
+  var orders=[];
+  var stock=[];
+  var assets=[];
+  var tasks=[];
+  var timeLogs=[];
+  var timerStarted=0;
+  var timerTask="";
+  var timerHandle=null;
+
+  function byId(id){return document.getElementById(id);}
+  function num(id){var v=parseFloat(byId(id).value);return isFinite(v)&&v>=0?v:0;}
+  function text(id){return byId(id).value.trim();}
+  function fmt(n){return (Math.round(n*100)/100).toFixed(2);}
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+  function codeOf(name){var m=String(name).match(/\(([A-Z]{3})\)/);return m?m[1]:"";}
+  function rateOf(c){return rates[c]||1;}
+  function toBase(amount,c){return amount*rateOf(c);}
+
+  function currencyOptions(sel,includeAll){
+    var html=includeAll?"<option value=\"all\">الكل</option>":"";
+    var names={USD:"دولار أمريكي",EUR:"يورو",GBP:"جنيه إسترليني",AED:"درهم إماراتي",SAR:"ريال سعودي",EGP:"جنيه مصري",TRY:"ليرة تركية",INR:"روبية هندية",JPY:"ين ياباني",CNY:"يوان صيني"};
+    Object.keys(rates).forEach(function(c){html+="<option value=\""+esc(c)+"\">"+esc(names[c]||c)+" ("+esc(c)+")</option>";});
+    sel.innerHTML=html;
+  }
+
+  function refreshCurrencyUI(){
+    var list=byId("currency-list");
+    var html="";
+    Object.keys(rates).forEach(function(c){
+      html+="<li>"+esc(c)+" — "+fmt(rates[c])+" مقابل "+esc(base)+"</li>";
+    });
+    list.innerHTML=html;
+    currencyOptions(byId("entry-currency"),false);
+    var prev=byId("entry-currency").value;
+    if(prev&&rates[prev])byId("entry-currency").value=prev;
+    byId("settings-status").textContent="العملة الأساسية: "+base+" — عدد العملات: "+Object.keys(rates).length;
+  }
+
+  byId("add-currency-btn").addEventListener("click",function(){
+    var sel=byId("base-currency");
+    var c=sel.value;
+    var r=parseFloat(byId("rate-input").value);
+    if(!isFinite(r)||r<=0){byId("settings-status").textContent="أدخل سعر صرف صحيحاً أكبر من صفر.";return;}
+    rates[c]=r;
+    base=byId("base-currency").value;
+    if(!rates[base])rates[base]=1;
+    refreshCurrencyUI();
+    byId("settings-status").textContent="تمت إضافة أو تحديث العملة "+c+" بسعر "+fmt(r)+".";
+  });
+  byId("base-currency").addEventListener("change",function(){
+    var c=byId("base-currency").value;
+    byId("rate-input").value=rates[c]||1;
+  });
+
+  function computeEntry(qty,price,discount,tax){
+    var sub=qty*price;
+    var after=sub*(1-discount/100);
+    return after*(1+tax/100);
+  }
+  function refreshPreview(){
+    var total=computeEntry(num("entry-qty"),num("entry-price"),num("entry-discount"),num("entry-tax"));
+    var c=byId("entry-currency").value||base;
+    byId("entry-preview").textContent="الإجمالي المتوقع: "+fmt(total)+" "+c+" (= "+fmt(toBase(total,c))+" "+base+")";
+  }
+  ["entry-qty","entry-price","entry-discount","entry-tax","entry-currency"].forEach(function(id){
+    byId(id).addEventListener("input",refreshPreview);
+    byId(id).addEventListener("change",refreshPreview);
+  });
+
+  function findStock(name){
+    for(var i=0;i<stock.length;i++){if(stock[i].name===name)return stock[i];}
+    return null;
+  }
+  function adjustStock(name,delta){
+    var s=findStock(name);
+    if(s){s.qty+=delta;if(s.qty<0)s.qty=0;}
+    else{stock.push({name:name,qty:delta>0?delta:0,cost:0});}
+  }
+
+  function entryLabel(type){
+    if(type==="sale")return "مبيعات";
+    if(type==="purchase")return "مشتريات";
+    return "مصروفات";
+  }
+  byId("add-entry-btn").addEventListener("click",function(){
+    var item=text("entry-item");
+    var qty=num("entry-qty");
+    var price=num("entry-price");
+    var disc=num("entry-discount");
+    var tax=num("entry-tax");
+    var c=byId("entry-currency").value||base;
+    var type=byId("entry-type").value;
+    if(!item){byId("entry-preview").textContent="أدخل اسم الصنف أو البند أولاً.";return;}
+    if(disc>100){byId("entry-preview").textContent="الخصم لا يمكن أن يتجاوز 100%.";return;}
+    if(qty<=0||price<=0){byId("entry-preview").textContent="أدخل كمية وسعراً صحيحين.";return;}
+    var total=computeEntry(qty,price,disc,tax);
+    entries.push({type:type,item:item,qty:qty,price:price,disc:disc,tax:tax,currency:c,total:total});
+    if(type==="sale")adjustStock(item,-qty);
+    if(type==="purchase"){
+      var s=findStock(item);
+      if(s){s.qty+=qty;s.cost=price;}
+      else{stock.push({name:item,qty:qty,cost:price});}
+    }
+    byId("entry-item").value="";
+    refreshPreview();
+    renderAll();
+  });
+
+  function renderLedger(){
+    var filter=byId("ledger-filter-select").value;
+    var html="";
+    var count=0;
+    entries.forEach(function(e,i){
+      if(filter!=="all"&&e.type!==filter)return;
+      count++;
+      html+="<tr><td>"+entryLabel(e.type)+"</td><td>"+esc(e.item)+"</td><td>"+fmt(e.qty)+"</td><td>"+fmt(e.disc)+"%</td><td>"+fmt(e.tax)+"%</td><td>"+esc(e.currency)+"</td><td>"+fmt(e.total)+"</td><td><button type=\"button\" class=\"sec\" data-del-entry=\""+i+"\">حذف</button></td></tr>";
+    });
+    byId("ledger-body").innerHTML=html;
+    byId("ledger-empty").className=count?"out app-hidden":"out";
+  }
+
+  function renderSummary(){
+    var rev=0,cost=0,ordersActive=0;
+    entries.forEach(function(e){
+      var v=toBase(e.total,e.currency);
+      if(e.type==="sale")rev+=v;else cost+=v;
+    });
+    orders.forEach(function(o){if(o.status==="new"||o.status==="processing")ordersActive++;});
+    var stockVal=0;
+    stock.forEach(function(s){stockVal+=s.qty*s.cost;});
+    byId("stat-revenue").textContent=fmt(rev)+" "+base;
+    byId("stat-cost").textContent=fmt(cost)+" "+base;
+    byId("stat-profit").textContent=fmt(rev-cost)+" "+base;
+    byId("stat-profit").className=rev-cost>=0?"big app-ok":"big app-danger";
+    byId("stat-cash").textContent=fmt(rev-cost)+" "+base;
+    byId("stat-orders").textContent=String(ordersActive);
+    byId("stat-stock").textContent=fmt(stockVal)+" "+base;
+    if(entries.length===0&&orders.length===0&&stock.length===0){
+      byId("summary-status").textContent="لا توجد عمليات بعد. أضف أول عملية لتظهر الأرقام.";
+    }else{
+      byId("summary-status").textContent="آخر تحديث: "+entries.length+" عملية، "+orders.length+" طلب، "+stock.length+" صنف مخزون.";
+    }
+  }
+
+  function statusLabel(s){
+    return s==="new"?"جديد":s==="processing"?"قيد التنفيذ":s==="done"?"مكتمل":"ملغي";
+  }
+  byId("add-order-btn").addEventListener("click",function(){
+    var customer=text("order-customer");
+    var item=text("order-item");
+    var amount=num("order-amount");
+    var status=byId("order-status-select").value;
+    if(!customer||!item||amount<=0){byId("orders-empty").textContent="أدخل العميل والصنف ومبلغاً صحيحاً.";byId("orders-empty").className="out";return;}
+    orders.push({customer:customer,item:item,amount:amount,status:status});
+    byId("order-customer").value="";
+    byId("order-item").value="";
+    byId("order-amount").value="0";
+    renderOrders();renderSummary();
+  });
+  function renderOrders(){
+    var html="";
+    orders.forEach(function(o,i){
+      html+="<tr><td>"+esc(o.customer)+"</td><td>"+esc(o.item)+"</td><td>"+fmt(o.amount)+"</td><td><select data-order-status=\""+i+"\" aria-label=\"تعديل حالة الطلب\">";
+      ["new","processing","done","cancelled"].forEach(function(s){
+        html+="<option value=\""+s+"\""+(o.status===s?" selected":"")+">"+statusLabel(s)+"</option>";
+      });
+      html+="</select></td><td><button type=\"button\" class=\"sec\" data-del-order=\""+i+"\">حذف</button></td></tr>";
+    });
+    byId("orders-body").innerHTML=html;
+    byId("orders-empty").className=orders.length?"out app-hidden":"out";
+    if(!orders.length)byId("orders-empty").textContent="لا توجد طلبات بعد.";
+  }
+
+  byId("add-stock-btn").addEventListener("click",function(){
+    var name=text("stock-item");
+    var qty=num("stock-qty");
+    var cost=num("stock-cost");
+    if(!name){byId("stock-empty").textContent="أدخل اسم الصنف.";byId("stock-empty").className="out";return;}
+    var s=findStock(name);
+    if(s){s.qty+=qty;s.cost=cost||s.cost;}
+    else{stock.push({name:name,qty:qty,cost:cost});}
+    byId("stock-item").value="";
+    byId("stock-qty").value="0";
+    byId("stock-cost").value="0";
+    renderStock();renderSummary();
+  });
+  function renderStock(){
+    var html="",tq=0,tv=0;
+    stock.forEach(function(s,i){
+      var val=s.qty*s.cost;tq+=s.qty;tv+=val;
+      html+="<tr><td>"+esc(s.name)+"</td><td>"+fmt(s.qty)+"</td><td>"+fmt(s.cost)+"</td><td>"+fmt(val)+"</td><td><button type=\"button\" class=\"sec\" data-del-stock=\""+i+"\">حذف</button></td></tr>";
+    });
+    byId("stock-body").innerHTML=html;
+    byId("stock-total-qty").textContent=fmt(tq);
+    byId("stock-total-value").textContent=fmt(tv)+" "+base;
+    byId("stock-empty").className=stock.length?"out app-hidden":"out";
+  }
+
+  byId("add-asset-btn").addEventListener("click",function(){
+    var name=text("asset-name");
+    var value=num("asset-value");
+    var dep=num("asset-depreciation");
+    if(!name||value<=0){byId("assets-empty").textContent="أدخل اسم الأصل وقيمة صحيحة.";byId("assets-empty").className="out";return;}
+    if(dep>100){byId("assets-empty").textContent="الاستهلاك لا يتجاوز 100%.";byId("assets-empty").className="out";return;}
+    assets.push({name:name,value:value,dep:dep});
+    byId("asset-name").value="";byId("asset-value").value="0";byId("asset-depreciation").value="0";
+    renderAssets();
+  });
+  function renderAssets(){
+    var html="";
+    assets.forEach(function(a,i){
+      var cur=a.value*(1-a.dep/100);
+      html+="<tr><td>"+esc(a.name)+"</td><td>"+fmt(a.value)+"</td><td>"+fmt(a.dep)+"%</td><td>"+fmt(cur)+"</td><td><button type=\"button\" class=\"sec\" data-del-asset=\""+i+"\">حذف</button></td></tr>";
+    });
+    byId("assets-body").innerHTML=html;
+    byId("assets-empty").className=assets.length?"out app-hidden":"out";
+  }
+
+  function renderTaskOptions(){
+    var html="<option value=\"\">بدون مهمة</option>";
+    tasks.forEach(function(t,i){html+="<option value=\""+i+"\">"+esc(t.title)+"</option>";});
+    byId("timer-task").innerHTML=html;
+  }
+  byId("add-task-btn").addEventListener("click",function(){
+    var title=text("task-title");
+    if(!title){byId("tasks-empty").textContent="أدخل عنوان المهمة.";byId("tasks-empty").className="out";return;}
+    tasks.push({title:title,due:byId("task-due").value,done:false});
+    byId("task-title").value="";byId("task-due").value="";
+    renderTasks();renderTaskOptions();
+  });
+  function renderTasks(){
+    var html="";
+    tasks.forEach(function(t,i){
+      html+="<li><label><input type=\"checkbox\" data-task-done=\""+i+"\""+(t.done?" checked":"")+"> "+(t.done?"<s>":"")+esc(t.title)+(t.done?"</s>":"")+"</label>";
+      if(t.due)html+=" <small>الاستحقاق: "+esc(t.due)+"</small>";
+      html+=" <button type=\"button\" class=\"sec\" data-del-task=\""+i+"\">حذف</button></li>";
+    });
+    byId("task-list").innerHTML=html;
+    byId("tasks-empty").className=tasks.length?"out app-hidden":"out";
+  }
+
+  function dur(ms){
+    var s=Math.floor(ms/1000);
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    return (h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(sec<10?"0":"")+sec;
+  }
+  function refreshTimer(){
+    if(timerStarted)byId("timer-display").textContent=dur(Date.now()-timerStarted);
+  }
+  byId("timer-start-btn").addEventListener("click",function(){
+    if(timerStarted){byId("timer-display").textContent="المؤقت يعمل بالفعل.";return;}
+    timerTask=byId("timer-task").value;
+    timerStarted=Date.now();
+    timerHandle=setInterval(refreshTimer,500);
+    byId("timer-display").textContent="00:00:00";
+  });
+  byId("timer-stop-btn").addEventListener("click",function(){
+    if(!timerStarted){byId("timer-display").textContent="لا يوجد مؤقت قيد التشغيل.";return;}
+    var ms=Date.now()-timerStarted;
+    clearInterval(timerHandle);timerHandle=null;timerStarted=0;
+    if(ms<1000){byId("timer-display").textContent="00:00:00";return;}
+    var idx=parseInt(timerTask,10);
+    var title=isFinite(idx)&&tasks[idx]?tasks[idx].title:"عمل غير مرتبط";
+    timeLogs.push({task:title,ms:ms});
+    byId("timer-display").textContent="00:00:00";
+    renderTime();
+  });
+  function renderTime(){
+    var html="";
+    timeLogs.forEach(function(l,i){
+      html+="<tr><td>"+esc(l.task)+"</td><td>"+dur(l.ms)+"</td><td><button type=\"button\" class=\"sec\" data-del-time=\""+i+"\">حذف</button></td></tr>";
+    });
+    byId("time-body").innerHTML=html;
+    byId("time-empty").className=timeLogs.length?"out app-hidden":"out";
+  }
+
+  byId("ledger-filter-select").addEventListener("change",renderLedger);
+  byId("clear-entries-btn").addEventListener("click",function(){
+    if(!entries.length){byId("ledger-empty").textContent="السجل فارغ بالفعل.";byId("ledger-empty").className="out";return;}
+    entries=[];renderAll();
+  });
+
+  document.addEventListener("click",function(ev){
+    var t=ev.target;
+    if(!t||!t.getAttribute)return;
+    var a=t.getAttribute("data-del-entry");
+    if(a!==null){entries.splice(parseInt(a,10),1);renderAll();return;}
+    a=t.getAttribute("data-del-order");
+    if(a!==null){orders.splice(parseInt(a,10),1);renderOrders();renderSummary();return;}
+    a=t.getAttribute("data-del-stock");
+    if(a!==null){stock.splice(parseInt(a,10),1);renderStock();renderSummary();return;}
+    a=t.getAttribute("data-del-asset");
+    if(a!==null){assets.splice(parseInt(a,10),1);renderAssets();return;}
+    a=t.getAttribute("data-del-task");
+    if(a!==null){tasks.splice(parseInt(a,10),1);renderTasks();renderTaskOptions();return;}
+    a=t.getAttribute("data-del-time");
+    if(a!==null){timeLogs.splice(parseInt(a,10),1);renderTime();return;}
+  });
+  document.addEventListener("change",function(ev){
+    var t=ev.target;
+    if(!t||!t.getAttribute)return;
+    var s=t.getAttribute("data-order-status");
+    if(s!==null){orders[parseInt(s,10)].status=t.value;renderOrders();renderSummary();return;}
+    var d=t.getAttribute("data-task-done");
+    if(d!==null){tasks[parseInt(d,10)].done=!!t.checked;renderTasks();return;}
+  });
+
+  function snapshot(){
+    return {version:1,base:base,rates:rates,entries:entries,orders:orders,stock:stock,assets:assets,tasks:tasks,timeLogs:timeLogs};
+  }
+  byId("export-btn").addEventListener("click",function(){
+    var data=JSON.stringify(snapshot(),null,2);
+    var blob=new Blob([data],{type:"application/json"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url;a.download="session.json";a.click();
+    URL.revokeObjectURL(url);
+    byId("data-status").textContent="تم تصدير ملف الجلسة بنجاح.";
+  });
+  byId("import-input").addEventListener("change",function(){
+    var f=byId("import-input").files&&byId("import-input").files[0];
+    if(!f){byId("data-status").textContent="لم يتم اختيار ملف.";return;}
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{
+        var d=JSON.parse(String(reader.result));
+        if(!d||typeof d!=="object")throw new Error("bad");
+        base=typeof d.base==="string"?d.base:"USD";
+        rates=(d.rates&&typeof d.rates==="object")?d.rates:{USD:1};
+        if(!rates[base])rates[base]=1;
+        entries=Array.isArray(d.entries)?d.entries:[];
+        orders=Array.isArray(d.orders)?d.orders:[];
+        stock=Array.isArray(d.stock)?d.stock:[];
+        assets=Array.isArray(d.assets)?d.assets:[];
+        tasks=Array.isArray(d.tasks)?d.tasks:[];
+        timeLogs=Array.isArray(d.timeLogs)?d.timeLogs:[];
+        byId("base-currency").value=rates[base]?base:"USD";
+        byId("rate-input").value=fmt(rates[byId("base-currency").value]||1);
+        refreshCurrencyUI();renderAll();renderTaskOptions();
+        byId("data-status").textContent="تم استيراد الجلسة بنجاح.";
+      }catch(e){
+        byId("data-status").textContent="الملف غير صالح. تأكد أنه ملف JSON مصدّر من هذه اللوحة.";
+      }
+    };
+    reader.onerror=function(){byId("data-status").textContent="تعذر قراءة الملف.";};
+    reader.readAsText(f);
+  });
+  byId("print-btn").addEventListener("click",function(){window.print();});
+  byId("reset-btn").addEventListener("click",function(){
+    entries=[];orders=[];stock=[];assets=[];tasks=[];timeLogs=[];
+    if(timerHandle){clearInterval(timerHandle);timerHandle=null;}
+    timerStarted=0;byId("timer-display").textContent="00:00:00";
+    rates={USD:1};base="USD";
+    byId("base-currency").value="USD";byId("rate-input").value="1";
+    byId("import-input").value="";
+    refreshCurrencyUI();renderAll();renderTaskOptions();
+    byId("data-status").textContent="تمت إعادة ضبط الجلسة.";
+  });
+
+  function renderAll(){
+    renderLedger();renderOrders();renderStock();renderAssets();renderTasks();renderTime();renderSummary();
+  }
+  refreshCurrencyUI();
+  renderAll();
+  renderTaskOptions();
+  refreshPreview();
+})();
+</script>
+</body>
+</html>
