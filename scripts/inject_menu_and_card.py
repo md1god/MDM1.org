@@ -122,6 +122,9 @@ def transform(text: str, menu: dict[str, str], v3d: tuple[str, str] | None = Non
     if "js/lang.js" not in text:      # site-wide world-language picker (also extends pages that have their own #lang-select)
         pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
         text = text[:pos] + '<script src="/js/lang.js" defer></script>\n' + text[pos:]
+    if "js/music-resume.js" not in text:      # same song + position when moving between pages
+        pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
+        text = text[:pos] + '<script src="/js/music-resume.js"></script>\n' + text[pos:]
     if auth_v and not HAS_AUTH.search(text):   # site-wide sign-in button (Google / Microsoft / email code); skips pages with their own account panel at runtime
         pos = list(re.finditer(r"</\s*body\s*>", text, re.I))[-1].start()
         text = text[:pos] + f'<script src="/js/mdm1-auth-button.js?v={auth_v}" defer></script>\n' + text[pos:]
