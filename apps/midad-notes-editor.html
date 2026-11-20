@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مداد — محرر ملاحظات بمعاينة فورية | MDM1</title>
+<meta name="description" content="محرر ملاحظات خفيف يعمل داخل المتصفح بمعاينة فورية، وإدراج العناوين والقوائم والمهام والجداول، ونسخ النص أو تنزيله بصيغة محمولة للفرق والكتاب والباحثين.">
+<link rel="canonical" href="https://mdm1.org/apps/midad-notes-editor.html">
+<meta property="og:title" content="مداد — محرر ملاحظات بمعاينة فورية">
+<meta property="og:description" content="محرر ملاحظات خفيف يعمل داخل المتصفح بمعاينة فورية، وإدراج العناوين والقوائم والمهام والجداول، ونسخ النص أو تنزيله بصيغة محمولة للفرق والكتاب والباحثين.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/midad-notes-editor.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.md-app{max-width:1100px;margin:0 auto;padding:24px;color:#172033;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.8}
+.md-app .intro{background:#f5f8fc;border-right:4px solid #2563eb;padding:14px 18px;border-radius:12px;margin:0 0 20px}
+.md-app .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.md-app .panel{background:#fff;border:1px solid #dce4ef;border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(20,40,80,.06)}
+.md-app label{display:block;font-weight:700;margin:10px 0 6px}
+.md-app input,.md-app select,.md-app textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:10px;padding:10px 12px;font:inherit}
+.md-app textarea{min-height:280px;resize:vertical;font-family:inherit}
+.md-app .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.md-app button{border:0;border-radius:9px;background:#2563eb;color:#fff;padding:8px 12px;font:inherit;cursor:pointer}
+.md-app button:hover{background:#1d4ed8}
+.md-app .out{min-height:280px}
+.md-app .sectionTitle{font-weight:800;font-size:1.15rem;margin-bottom:10px}
+.md-app #preview{border:1px dashed #cbd5e1;border-radius:10px;padding:12px;min-height:180px;overflow:auto}
+.md-app #preview h1,.md-app #preview h2,.md-app #preview h3{margin:.6em 0 .3em;line-height:1.35}
+.md-app #preview ul,.md-app #preview ol{padding-inline-start:22px}
+.md-app #preview code{background:#eef2ff;padding:2px 5px;border-radius:5px}
+.md-app #preview pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;overflow:auto;direction:ltr}
+.md-app #preview .tasks{list-style:none;padding-inline-start:0}
+.md-app #preview .box{display:inline-block;width:1.1em;color:#16a34a;font-weight:800}
+.md-app #preview .table-row{display:flex;gap:8px;border-bottom:1px solid #e2e8f0;padding:4px 0}
+.md-app #preview .table-row span{flex:1}
+.md-app #preview .linkish{color:#2563eb;text-decoration:underline}
+.md-app .muted{color:#64748b}
+.md-app #stats{margin-top:10px;font-size:.92rem;color:#475569}
+.md-app #meter{display:block;width:100%;max-width:240px;height:18px;border-radius:9px;margin-top:10px}
+.md-app .small{font-size:.85rem;color:#64748b}
+@media(max-width:800px){.md-app .grid{grid-template-columns:1fr}}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مساحة ملاحظات تعمل دون إعدادات", "url": "https://mdm1.org/apps/midad-notes-editor.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج إلى حساب لاستخدام هذه الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. يمكنك الكتابة والمعاينة والنسخ والتنزيل مباشرة، وكل شيء يبقى داخل الصفحة ما دمت لم تغلقها."}}, {"@type": "Question", "name": "كيف أحفظ عملي؟", "acceptedAnswer": {"@type": "Answer", "text": "انقر على تنزيل للحصول على ملف نصي محمول، أو انسخ المحتوى إلى أي مساحة تستخدمها. لا يوجد حفظ تلقائي بعد إغلاق الصفحة."}}, {"@type": "Question", "name": "هل تدعم الصفحة اتجاه السطور من اليمين إلى اليسار؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر الاتجاه من القائمة، وسيتغير اتجاه المحرر والمعاينة فورًا."}}, {"@type": "Question", "name": "ما الذي يمكن إدراجه بسرعة؟", "acceptedAnswer": {"@type": "Answer", "text": "عناوين، قوائم، مهام، جداول، وكتل برمجية، مع معاينة مباشرة وعدّ للكلمات والحروف."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مساحة ملاحظات تعمل دون إعدادات</h1>
+  <p class="page-sub">محرر ملاحظات خفيف يعمل داخل المتصفح بمعاينة فورية، وإدراج العناوين والقوائم والمهام والجداول، ونسخ النص أو تنزيله بصيغة محمولة للفرق والكتاب والباحثين.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="md-app">
+<p class="intro">ابدأ فورًا: هذه مساحة تحرير خفيفة تجمع الملاحظات والمواصفات وقرارات الفريق في مكان واحد، وتعرض المعاينة أثناء الكتابة دون حاجة إلى حساب أو خادم أو اتصال. اكتب عنوان الصفحة، واختر اتجاه السطور، ثم استخدم أزرار الإدراج لإضافة عناوين وقوائم ومهام وجداول وكتل برمجية. كل تعديل يظهر في المعاينة مباشرة، ويمكنك نسخ النص النهائي أو تنزيله بصيغة ملف محمول لتعيد استخدامه في أي أداة تفضلها. لا تُرسل بياناتك إلى أي جهة، ولا يُحفظ شيء بعد إغلاق الصفحة، لذا احتفظ بنسخة عند الحاجة. صُممت التجربة للفرق الصغيرة والكتاب والمختبرات التي تريد مسودة منظمة سريعة قبل نقلها إلى نظامها الخاص.</p>
+<div class="grid">
+<div class="panel">
+<label id="docTitleLabel" for="docTitle">عنوان الصفحة</label>
+<input id="docTitle" type="text" value="ملاحظات الفريق" dir="rtl" />
+<label id="docLangLabel" for="docLang">اتجاه العرض</label>
+<select id="docLang">
+<option value="rtl">من اليمين إلى اليسار</option>
+<option value="ltr">من اليسار إلى اليمين</option>
+</select>
+<label id="editorLabel" for="editor">المحتوى</label>
+<textarea id="editor" dir="rtl" rows="16">## ملخص قصير
+هذه مسودة لصفحة معرفة داخل فريق صغير.
+
+- [ ] مراجعة القرار
+- [x] تحديد المالك
+
+### تفاصيل
+استخدم **عبارات واضحة** و `اسماً مختصراً` حتى تبقى الصفحة قابلة للنقل.
+
+| البند | الحالة |
+| --- | --- |
+| المسودة | جاهزة |
+| المراجعة | مطلوبة |</textarea>
+<div class="tools">
+<button id="addHeading" type="button">إدراج عنوان</button>
+<button id="addList" type="button">إدراج قائمة</button>
+<button id="addTask" type="button">إدراج مهمة</button>
+<button id="addCode" type="button">إدراج كود</button>
+<button id="addTable" type="button">إدراج جدول</button>
+<button id="copyBtn" type="button">نسخ النص</button>
+<button id="downloadBtn" type="button">تنزيل ملف</button>
+<button id="clearBtn" type="button">إفراغ</button>
+</div>
+<div class="small" id="copyState"></div>
+</div>
+<div class="out" id="out" dir="rtl">
+<div class="sectionTitle">المعاينة المباشرة</div>
+<div class="small" id="titleEcho">ملاحظات الفريق</div>
+<div id="preview" dir="rtl"></div>
+<div id="stats">الكلمات: 0 · الحروف: 0</div>
+<canvas id="meter" width="240" height="18"></canvas>
+</div>
+</div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل أحتاج إلى حساب لاستخدام هذه الصفحة؟</h3><p>لا. يمكنك الكتابة والمعاينة والنسخ والتنزيل مباشرة، وكل شيء يبقى داخل الصفحة ما دمت لم تغلقها.</p><h3>كيف أحفظ عملي؟</h3><p>انقر على تنزيل للحصول على ملف نصي محمول، أو انسخ المحتوى إلى أي مساحة تستخدمها. لا يوجد حفظ تلقائي بعد إغلاق الصفحة.</p><h3>هل تدعم الصفحة اتجاه السطور من اليمين إلى اليسار؟</h3><p>نعم، اختر الاتجاه من القائمة، وسيتغير اتجاه المحرر والمعاينة فورًا.</p><h3>ما الذي يمكن إدراجه بسرعة؟</h3><p>عناوين، قوائم، مهام، جداول، وكتل برمجية، مع معاينة مباشرة وعدّ للكلمات والحروف.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="minecraft-instance-manager.html" style="color:var(--gold-bright);font-weight:700">مدير إعدادات ماينكرافت</a><span style="opacity:.75"> — أداة متكاملة لإدارة تثبيتات ماينكرافت داخل المتصفح: أنشئ ملفات تعريف لكل تثبيت، اختر الإصدار والإضافات…</span></li><li style="margin:.5rem 0"><a href="minecraft-launcher-config-manager.html" style="color:var(--gold-bright);font-weight:700">مدير إعدادات مشغّل Minecraft</a><span style="opacity:.75"> — تطبيق يعمل في المتصفح لإدارة نسخ Minecraft: إنشاء ملفات نسخ، ربط إصدارات اللعبة ومسارات Java وحصص الذاكرة…</span></li><li style="margin:.5rem 0"><a href="mini-factory-erp.html" style="color:var(--gold-bright);font-weight:700">نظام إدارة التصنيع: أصناف ومخزون وBOM وMRP وأوامر عمل وجودة وتتبّع</a><span style="opacity:.75"> — أدِر التصنيع داخل متصفحك: أصناف ومخزون، قوائم مواد متعددة المستويات بإصدارات، تخطيط MRP، نواقص وتكاليف…</span></li><li style="margin:.5rem 0"><a href="miqass-local-clipper.html" style="color:var(--gold-bright);font-weight:700">مِقصّ</a><span style="opacity:.75"> — استوديو محلي في المتصفح يحلل الصوت والمشاهد، يقترح مقاطع رأسية، يضيف كابشنات قابلة للتحرير، ويصدّر MP4 ويحفظ…</span></li><li style="margin:.5rem 0"><a href="misdaq-candidate-check.html" style="color:var(--gold-bright);font-weight:700">مِصداق</a><span style="opacity:.75"> — أداة مجانية تعمل داخل المتصفح لتحليل نص السيرة الذاتية أو ملاحظات المقابلة وكشف مؤشرات التزييف والتناقضات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const get = (id) => document.getElementById(id);
+const escapeHtml = (text) => text
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+const inline = (text) => escapeHtml(text)
+  .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  .replace(/`([^`]+)`/g, '<code>$1</code>')
+  .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<span class="linkish">$1</span>');
+const parse = (src) => {
+  const lines = src.split(/\r?\n/);
+  const parts = [];
+  let para = [];
+  let listType = '';
+  let inCode = false;
+  let codeBuf = [];
+  const closePara = () => {
+    if (para.length) {
+      parts.push('<p>' + inline(para.join(' ')) + '</p>');
+      para = [];
+    }
+  };
+  const closeList = () => {
+    if (listType) {
+      parts.push('</' + listType + '>');
+      listType = '';
+    }
+  };
+  lines.forEach((raw) => {
+    const line = raw.trimEnd();
+    if (line.startsWith('```')) {
+      if (inCode) {
+        parts.push('<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>');
+        codeBuf = [];
+        inCode = false;
+      } else {
+        closePara();
+        closeList();
+        inCode = true;
+      }
+      return;
+    }
+    if (inCode) {
+      codeBuf.push(raw);
+      return;
+    }
+    if (!line.trim()) {
+      closePara();
+      closeList();
+      return;
+    }
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) {
+      closePara();
+      closeList();
+      const level = heading[1].length;
+      parts.push('<h' + level + '>' + inline(heading[2]) + '</h' + level + '>');
+      return;
+    }
+    const task = line.match(/^[-*]\s+\[([ xX])\]\s+(.*)$/);
+    if (task) {
+      closePara();
+      if (listType !== 'ul') {
+        closeList();
+        parts.push('<ul class="tasks">');
+        listType = 'ul';
+      }
+      const mark = task[1].toLowerCase() === 'x' ? '✓' : '';
+      parts.push('<li><span class="box">' + mark + '</span> ' + inline(task[2]) + '</li>');
+      return;
+    }
+    const bullet = line.match(/^[-*+]\s+(.*)$/);
+    if (bullet) {
+      closePara();
+      if (listType !== 'ul') {
+        closeList();
+        parts.push('<ul>');
+        listType = 'ul';
+      }
+      parts.push('<li>' + inline(bullet[1]) + '</li>');
+      return;
+    }
+    const numbered = line.match(/^\d+\.\s+(.*)$/);
+    if (numbered) {
+      closePara();
+      if (listType !== 'ol') {
+        closeList();
+        parts.push('<ol>');
+        listType = 'ol';
+      }
+      parts.push('<li>' + inline(numbered[1]) + '</li>');
+      return;
+    }
+    if (line.startsWith('|') && line.endsWith('|')) {
+      closePara();
+      closeList();
+      const cells = line.slice(1, -1).split('|').map((cell) => cell.trim());
+      if (cells.every((cell) => /^:?-{2,}:?$/.test(cell))) {
+        return;
+      }
+      parts.push('<div class="table-row">' + cells.map((cell) => '<span>' + inline(cell) + '</span>').join('') + '</div>');
+      return;
+    }
+    para.push(line);
+  });
+  if (inCode) {
+    parts.push('<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>');
+  }
+  closePara();
+  closeList();
+  return parts.join('');
+};
+const drawMeter = (words) => {
+  const canvas = get('meter');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#e8eef7';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const fill = Math.min(100, words * 2);
+  ctx.fillStyle = '#2563eb';
+  ctx.fillRect(0, 0, (canvas.width * fill) / 100, canvas.height);
+};
+const render = () => {
+  const src = get('editor').value;
+  get('preview').innerHTML = parse(src) || '<span class="muted">لا توجد معاينة بعد.</span>';
+  const clean = src.trim();
+  const words = clean ? clean.split(/\s+/).length : 0;
+  get('stats').textContent = 'الكلمات: ' + words + ' · الحروف: ' + src.length;
+  get('titleEcho').textContent = get('docTitle').value.trim() || 'ملاحظات بدون عنوان';
+  drawMeter(words);
+};
+const addBlock = (prefix, placeholder, suffix) => {
+  const editor = get('editor');
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const chosen = editor.value.slice(start, end) || placeholder;
+  const block = '\n' + prefix + chosen + suffix + '\n';
+  editor.value = editor.value.slice(0, start) + block + editor.value.slice(end);
+  const caret = start + prefix.length + 1 + chosen.length;
+  editor.setSelectionRange(caret, caret);
+  render();
+  editor.focus();
+};
+get('editor').addEventListener('input', render);
+get('docTitle').addEventListener('input', render);
+get('docLang').addEventListener('change', () => {
+  const value = get('docLang').value;
+  get('editor').dir = value;
+  get('preview').dir = value;
+  get('out').dir = value;
+  render();
+});
+get('addHeading').addEventListener('click', () => addBlock('## ', 'عنوان جديد', ''));
+get('addList').addEventListener('click', () => addBlock('- ', 'عنصر قائمة', ''));
+get('addTask').addEventListener('click', () => addBlock('- [ ] ', 'مهمة جديدة', ''));
+get('addCode').addEventListener('click', () => addBlock('```\n', 'الكود هنا', '\n```'));
+get('addTable').addEventListener('click', () => addBlock('| عمود | عمود |\n| --- | --- |\n| ', 'قيمة', ' | قيمة |\n'));
+get('copyBtn').addEventListener('click', () => {
+  const holder = document.createElement('textarea');
+  holder.value = get('editor').value;
+  holder.setAttribute('readonly', '');
+  holder.style.position = 'fixed';
+  holder.style.opacity = '0';
+  document.body.appendChild(holder);
+  holder.select();
+  document.execCommand('copy');
+  holder.remove();
+  get('copyState').textContent = 'تم النسخ';
+});
+get('downloadBtn').addEventListener('click', () => {
+  const name = get('docTitle').value.trim() || 'ملاحظات';
+  const blob = new Blob([get('editor').value], { type: 'text/plain;charset=utf-8' });
+  const anchor = document.createElement('a');
+  anchor.href = URL.createObjectURL(blob);
+  anchor.download = name + '.md';
+  anchor.click();
+  URL.revokeObjectURL(anchor.href);
+});
+get('clearBtn').addEventListener('click', () => {
+  get('editor').value = '';
+  get('copyState').textContent = '';
+  render();
+  get('editor').focus();
+});
+render();
+</script>
+</body>
+</html>
