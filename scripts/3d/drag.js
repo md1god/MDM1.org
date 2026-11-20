@@ -47,9 +47,10 @@ export function initDrag(opts = {}) {
   function put(el, x, y) {
     const s = el.style;
     s.setProperty('left', `${Math.round(x)}px`, 'important');
-    s.setProperty('top', `${Math.round(y)}px`, 'important');
+    // anchored by the bottom edge like the default spot, so every button moves together when the mobile URL bar hides/shows
+    s.setProperty('bottom', `${Math.round(innerHeight - y - (el.offsetHeight || 48))}px`, 'important');
     s.setProperty('right', 'auto', 'important');
-    s.setProperty('bottom', 'auto', 'important');
+    s.setProperty('top', 'auto', 'important');
   }
 
   function fit(el, x, y) {
@@ -155,6 +156,7 @@ export function initDrag(opts = {}) {
   scan();
   new MutationObserver(scan).observe(doc.body, { childList: true });
   [500, 1500, 4000].forEach((ms) => setTimeout(scan, ms));      // buttons injected late by other scripts
-  addEventListener('resize', () => items.forEach((_, el) => { restore(el); place(el); }), { passive: true });
+  let lastW = innerWidth;      // a height-only resize (URL bar) must not re-place dragged buttons from saved fractions
+  addEventListener('resize', () => { const w = innerWidth !== lastW; lastW = innerWidth; items.forEach((_, el) => { if (w) restore(el); place(el); }); }, { passive: true });
   addEventListener('orientationchange', () => setTimeout(() => items.forEach((_, el) => { restore(el); place(el); }), 250));
 }
