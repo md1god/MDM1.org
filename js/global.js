@@ -82,12 +82,13 @@
     const MUSIC_KEY = 'mdm1_music_choice'; // مشترك بين كل الصفحات طوال الجلسة (التبويب)
 
     function fadeVolume(el, from, to, duration, onDone){
+  clearInterval(el._ft);
       const steps = 30;
       const interval = duration / steps;
       const delta = (to - from) / steps;
       let current = from;
       el.volume = Math.max(0, Math.min(1, from));
-      const timer = setInterval(() => {
+      const timer = el._ft = setInterval(() => {
         current += delta;
         el.volume = Math.max(0, Math.min(1, current));
         if((delta > 0 && current >= to) || (delta < 0 && current <= to)){
@@ -115,6 +116,8 @@
       if(audio.readyState >= 3){
         start();
       } else {
+        if(audio._pendingStart) audio.removeEventListener('canplaythrough', audio._pendingStart);
+        audio._pendingStart = start;
         audio.addEventListener('canplaythrough', start, { once: true });
         audio.load();
       }
@@ -152,7 +155,8 @@
     });
 
     btn.addEventListener('click', () => {
-      if(audio.paused){
+      if(audio._pendingStart){ audio.removeEventListener('canplaythrough', audio._pendingStart); audio._pendingStart = null; }
+      if(audio.paused || audio.muted){
         sessionStorage.setItem(MUSIC_KEY, 'yes');
         audio.muted = false;
         audio.play();
@@ -168,7 +172,8 @@
     });
 
     // بعد العودة من تسجيل الدخول (جوجل/مايكروسوفت) المتصفح قد يمنع الصوت بدون لمسة: أول لمسة تستأنف الموسيقى لو اختار المستخدم "نعم"
-    ['pointerdown', 'keydown', 'touchend'].forEach(ev => document.addEventListener(ev, () => {
+    ['pointerdown', 'keydown', 'touchend'].forEach(ev => document.addEventListener(ev, (e) => {
+      if (e.target && e.target.closest && e.target.closest('#music-btn')) return;
       if (sessionStorage.getItem(MUSIC_KEY) !== 'yes') return;
       if (audio.paused || audio.muted) {
         audio.muted = false;
