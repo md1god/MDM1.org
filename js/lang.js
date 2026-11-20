@@ -113,7 +113,11 @@
       if (own[v]) { if (translating()) { cookie(""); location.reload(); } return; }   // page script renders its own copy
       set(v); cookie(v); location.reload();
     });
-    if (cur && !own[cur] && find(cur)) {
+    var urlSel = Object.keys(own).some(function (k) { return /[\/.]/.test(k); });   // select whose values are page URLs (static translated copies)
+    if (cur && !own[cur] && find(cur) && urlSel) {
+      // static translated copy: never dispatch "change" (its inline handler would navigate to an empty URL = reload loop)
+      set(cur); cookie(cur); load();
+    } else if (cur && !own[cur] && find(cur)) {
       // render the source-language copy first so the widget translates from the right text
       forcing = true; sel.value = SOURCE; sel.dispatchEvent(new Event("change")); forcing = false;
       set(cur); cookie(cur); sel.value = cur; load();
