@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استوديو تخطيط منشورات وتجهيزها لعدة قنوات | MDM1</title>
+<meta name="description" content="خطط وأدر منشوراتك على عدة قنوات في جلسة واحدة: محرر مسودات، عدّادات أحرف، قوالب، معاينة، جدول زمني، وتصدير ICS.">
+<link rel="canonical" href="https://mdm1.org/apps/cross-channel-composer.html">
+<meta property="og:title" content="استوديو تخطيط منشورات وتجهيزها لعدة قنوات">
+<meta property="og:description" content="خطط وأدر منشوراتك على عدة قنوات في جلسة واحدة: محرر مسودات، عدّادات أحرف، قوالب، معاينة، جدول زمني، وتصدير ICS.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/cross-channel-composer.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; }
+.app .card { margin: 1rem 0; padding: 1rem; }
+.app .row { flex-wrap: wrap; gap: .5rem; align-items: center; }
+.app canvas { max-width: 100%; border: 1px solid var(--gold-dim); border-radius: 8px; background: var(--dark); }
+.app .schedule-list { list-style: none; padding: 0; margin: .75rem 0; display: grid; gap: .5rem; }
+.app .schedule-item { border: 1px solid var(--gold-dim); border-radius: 8px; padding: .75rem; cursor: move; }
+.app .schedule-item.dragging { opacity: .5; }
+.app .item-meta { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.app .item-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+.app .status { font-size: .9rem; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استوديو تخطيط المنشورات", "url": "https://mdm1.org/apps/cross-channel-composer.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أنسخ مسودة منصة واحدة؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر المنصة، راجع النص في صندوق النسخة الجاهزة، ثم اضغط نسخ مسودة المنصة."}}, {"@type": "Question", "name": "هل يمكن تعديل التوقيت بحسب المنطقة الزمنية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر المنطقة الزمنية من القائمة وسيُحدَّث عرض الأوقات والتصدير."}}, {"@type": "Question", "name": "كيف أعيد ترتيب المنشورات؟", "acceptedAnswer": {"@type": "Answer", "text": "اسحب عنصرًا في الجدول أو استخدم أزرار أعلى وأسفل."}}, {"@type": "Question", "name": "كيف أحفظ الجلسة دون تخزين في المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "صدّر حزمة JSON، ثم استوردها لاحقًا من ملف."}}, {"@type": "Question", "name": "ماذا يحتوي ملف ICS؟", "acceptedAnswer": {"@type": "Answer", "text": "يحتوي أحداث النشر مع الأوقات والعنوان والوصف."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استوديو تخطيط المنشورات</h1>
+  <p class="page-sub">خطط وأدر منشوراتك على عدة قنوات في جلسة واحدة: محرر مسودات، عدّادات أحرف، قوالب، معاينة، جدول زمني، وتصدير ICS.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl" id="appRoot">
+<p id="introText">إجابة سريعة: اكتب مسودة واحدة، ثم ولّد نسخًا جاهزة لكل منصة مع عدّاد أحرف وقوالب وهاشتاغات، ومعاينة بصرية، ورتّب النشر على جدول زمني محلي، وعدّل التوقيت بحسب المنطقة الزمنية، وصدّر حزمة JSON أو ملف ICS دون أي اتصال أو حفظ دائم. كل شيء يعمل في المتصفح، ويمكن حفظ الجلسة كملف JSON واستيرادها لاحقًا. الأزرار واضحة، والحالات الفارغة معالجة، ولا يُحفظ أي شيء بشكل دائم: صدّر واستورد ملفاتك متى شئت، وراجع العدّادات قبل النشر، واستخدم السحب لإعادة الترتيب والتصدير بنقرة بسرعة.</p>
+<section class="card" id="composerSection">
+<h2 id="composerHeading">محرر المسودة</h2>
+<div class="row" id="titleRow">
+<label for="postTitle">عنوان المنشور</label>
+<input id="postTitle" type="text" maxlength="120" placeholder="عنوان جذاب">
+<label for="titleTemplate">قالب عنوان</label>
+<select id="titleTemplate">
+<option value="howto">كيف ... في ... خطوات</option>
+<option value="list">... أسباب لـ ...</option>
+<option value="question">هل ...؟ إليك ...</option>
+</select>
+<button id="applyTitleTemplate" type="button" class="sec">تطبيق القالب</button>
+</div>
+<label for="postBody">نص المسودة</label>
+<textarea id="postBody" rows="6" placeholder="اكتب المنشور هنا"></textarea>
+<div class="row" id="mediaRow">
+<label for="mediaDescription">وصف الوسائط</label>
+<input id="mediaDescription" type="text" placeholder="صورة، فيديو، بطاقة">
+<button id="drawPreview" type="button" class="sec">تحديث المعاينة</button>
+</div>
+<canvas id="previewCanvas" width="360" height="220"></canvas>
+<div class="row" id="hashtagRow">
+<label for="hashtagBank">هاشتاغات</label>
+<textarea id="hashtagBank" rows="2" placeholder="#نصيحة #دليل"></textarea>
+<label for="hashtagSet">قالب هاشتاغات</label>
+<select id="hashtagSet">
+<option value="general">#tips #guide #productivity</option>
+<option value="launch">#launch #update #news</option>
+<option value="edu">#learn #tutorial #howto</option>
+</select>
+<button id="applyHashtagSet" type="button" class="sec">إدراج</button>
+</div>
+<div class="row" id="platformRow">
+<label for="targetPlatform">المنصة</label>
+<select id="targetPlatform">
+<option value="x">X</option>
+<option value="instagram">Instagram</option>
+<option value="linkedin">LinkedIn</option>
+<option value="facebook">Facebook</option>
+<option value="threads">Threads</option>
+<option value="tiktok">TikTok</option>
+</select>
+<button id="copyPlatformDraft" type="button" class="sec">نسخ مسودة المنصة</button>
+<button id="addPostToSchedule" type="button">إضافة إلى الجدول</button>
+</div>
+<label for="platformDraft">نسخة منصة جاهزة</label>
+<textarea id="platformDraft" rows="8" readonly></textarea>
+<p id="charStatus" class="out">0 / 280</p>
+</section>
+<section class="card" id="scheduleSection">
+<h2 id="scheduleHeading">الجدول الزمني</h2>
+<div class="row" id="scheduleControls">
+<label for="scheduleTime">وقت النشر</label>
+<input id="scheduleTime" type="datetime-local">
+<label for="schedulePlatform">منصة الجدولة</label>
+<select id="schedulePlatform">
+<option value="x">X</option>
+<option value="instagram">Instagram</option>
+<option value="linkedin">LinkedIn</option>
+<option value="facebook">Facebook</option>
+<option value="threads">Threads</option>
+<option value="tiktok">TikTok</option>
+</select>
+<label for="displayTimezone">المنطقة الزمنية</label>
+<select id="displayTimezone"></select>
+<button id="addScheduledPost" type="button">جدولة</button>
+</div>
+<ul class="schedule-list" id="scheduleList"></ul>
+<div class="row" id="scheduleActions">
+<button id="clearSchedule" type="button" class="sec">مسح الجدول</button>
+</div>
+</section>
+<section class="card" id="exportSection">
+<h2 id="exportHeading">تصدير واستيراد</h2>
+<div class="row" id="exportControls">
+<button id="refreshExport" type="button" class="sec">تحديث</button>
+<button id="copyJson" type="button" class="sec">نسخ JSON</button>
+<button id="downloadJson" type="button">تنزيل JSON</button>
+<label for="importFile">استيراد JSON</label>
+<input id="importFile" type="file" accept="application/json">
+<button id="importJson" type="button" class="sec">استيراد</button>
+</div>
+<label for="exportJson">حزمة النشر</label>
+<textarea id="exportJson" rows="10" readonly></textarea>
+<div class="row" id="icsControls">
+<button id="refreshIcs" type="button" class="sec">تحديث ICS</button>
+<button id="copyIcs" type="button" class="sec">نسخ ICS</button>
+<button id="downloadIcs" type="button">تنزيل ICS</button>
+</div>
+<label for="exportIcs">ملف التقويم</label>
+<textarea id="exportIcs" rows="10" readonly></textarea>
+<p id="statusMessage" class="out" role="status"></p>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أنسخ مسودة منصة واحدة؟</h3><p>اختر المنصة، راجع النص في صندوق النسخة الجاهزة، ثم اضغط نسخ مسودة المنصة.</p><h3>هل يمكن تعديل التوقيت بحسب المنطقة الزمنية؟</h3><p>نعم، اختر المنطقة الزمنية من القائمة وسيُحدَّث عرض الأوقات والتصدير.</p><h3>كيف أعيد ترتيب المنشورات؟</h3><p>اسحب عنصرًا في الجدول أو استخدم أزرار أعلى وأسفل.</p><h3>كيف أحفظ الجلسة دون تخزين في المتصفح؟</h3><p>صدّر حزمة JSON، ثم استوردها لاحقًا من ملف.</p><h3>ماذا يحتوي ملف ICS؟</h3><p>يحتوي أحداث النشر مع الأوقات والعنوان والوصف.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-campaign-planner.html" style="color:var(--gold-bright);font-weight:700">أداة منشورات موحدة لعدة منصات</a><span style="opacity:.75"> — أداة شاملة لتأليف منشورات متعددة المنصات مع معاينة وأحصائيات وجدول حملات محليًا في المتصفح دون خوادم أو…</span></li><li style="margin:.5rem 0"><a href="hook-blueprint-kit.html" style="color:var(--gold-bright);font-weight:700">منشئ منشورات لينكدإن محليًا</a><span style="opacity:.75"> — أداة تعمل بالكامل داخل المتصفح لإنشاء منشورات لينكدإن مع قوالب وخطاف ومحتوى ودعوة للإجراء ومحفظة وسوم ومخطط…</span></li><li style="margin:.5rem 0"><a href="layerloom-paint-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو «ليرلوم»: بكسل‑آرت في المتصفح</a><span style="opacity:.75"> — محرر رسوم نقطية يعمل كليًا في المتصفح: فرشاة وطبقات وتحديد وقص وتحويل، تراجع وإعادة بلا حدود، حفظ تلقائي…</span></li><li style="margin:.5rem 0"><a href="local-dataset-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو معالجة بيانات داخل المتصفح</a><span style="opacity:.75"> — يقوم بمعالجة ملفات CSV وJSON وJSONL بالكامل داخل المتصفح مع معاينة وبحث وتصفية ونظافة وتقسيم وتصدير وحفظ…</span></li><li style="margin:.5rem 0"><a href="local-faceless-video-planner.html" style="color:var(--gold-bright);font-weight:700">أداة تخطيط الفيديوهات الطويلة بدون وجه</a><span style="opacity:.75"> — أداة تعمل داخل المتصفح بلا خادم: قوالب سيناريو محسّنة للسيو للفيديوهات الطويلة بدون وجه، مخطط زمني على…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-20 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const platforms = [
+  { id: "x", name: "X", limit: 280 },
+  { id: "instagram", name: "Instagram", limit: 2200 },
+  { id: "linkedin", name: "LinkedIn", limit: 3000 },
+  { id: "facebook", name: "Facebook", limit: 63206 },
+  { id: "threads", name: "Threads", limit: 500 },
+  { id: "tiktok", name: "TikTok", limit: 2200 }
+];
+
+const titleTemplates = {
+  howto: "كيف ت... في 5 خطوات",
+  list: "7 أسباب لـ ...",
+  question: "هل ...؟ إليك ..."
+};
+
+const hashtagTemplates = {
+  general: "#tips #guide #productivity",
+  launch: "#launch #update #news",
+  edu: "#learn #tutorial #howto"
+};
+
+const commonZones = ["UTC", "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "Europe/London", "Europe/Paris", "Europe/Berlin", "Asia/Dubai", "Asia/Riyadh", "Asia/Tokyo", "Asia/Singapore", "Australia/Sydney"];
+
+let state = {
+  timezone: (typeof Intl !== "undefined" && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : "UTC",
+  schedule: []
+};
+
+function $(id) { return document.getElementById(id); }
+
+function platformById(id) {
+  for (let i = 0; i < platforms.length; i++) {
+    if (platforms[i].id === id) return platforms[i];
+  }
+  return platforms[0];
+}
+
+function toUtc(wall, tz) {
+  const d = new Date(wall + "Z");
+  const inv = new Date(d.toLocaleString("en-US", { timeZone: tz }));
+  return new Date(d.getTime() + (d.getTime() - inv.getTime()));
+}
+
+function formatInZone(ms, tz) {
+  return new Date(ms).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: tz });
+}
+
+function buildDraft() {
+  const title = $("postTitle").value.trim();
+  const body = $("postBody").value.trim();
+  const tags = $("hashtagBank").value.trim();
+  const parts = [];
+  if (title) parts.push(title);
+  if (body) parts.push(body);
+  if (tags) parts.push(tags);
+  return parts.join("\n\n");
+}
+
+function updateCharStatus() {
+  const p = platformById($("targetPlatform").value);
+  const text = buildDraft();
+  $("platformDraft").value = text;
+  $("charStatus").textContent = text.length + " / " + p.limit + " - " + p.name;
+}
+
+function drawPreview() {
+  const canvas = $("previewCanvas");
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#111827";
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#f5d76e";
+  ctx.font = "bold 16px sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "top";
+  const x = w - 14;
+  let y = 14;
+  const platform = platformById($("targetPlatform").value);
+  ctx.fillText(platform.name, x, y);
+  y += 24;
+  ctx.fillStyle = "#f9fafb";
+  ctx.font = "bold 18px sans-serif";
+  const title = $("postTitle").value.trim() || "عنوان المنشور";
+  y = wrapText(ctx, title, x, y, w - 28, 22);
+  y += 6;
+  ctx.fillStyle = "#e5e7eb";
+  ctx.font = "14px sans-serif";
+  const body = $("postBody").value.trim() || "نص المسودة سيظهر هنا.";
+  y = wrapText(ctx, body, x, y, w - 28, 18);
+  y += 6;
+  ctx.fillStyle = "#9ca3af";
+  ctx.font = "12px sans-serif";
+  const media = $("mediaDescription").value.trim();
+  if (media) {
+    y = wrapText(ctx, "وسائط: " + media, x, y, w - 28, 16);
+    y += 4;
+  }
+  const tags = $("hashtagBank").value.trim();
+  if (tags) {
+    ctx.fillStyle = "#fbbf24";
+    y = wrapText(ctx, tags, x, y, w - 28, 16);
+  }
+  if (!$("postTitle").value.trim() && !$("postBody").value.trim()) {
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "13px sans-serif";
+    ctx.fillText("ابدأ بكتابة مسودة لمعاينة النتيجة.", x, h - 24);
+  }
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(/\s+/).filter(function (word) { return word.length > 0; });
+  let line = "";
+  let currentY = y;
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    const test = line ? line + " " + word : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, currentY);
+      line = word;
+      currentY += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  if (line) {
+    ctx.fillText(line, x, currentY);
+    currentY += lineHeight;
+  }
+  return currentY;
+}
+
+function renderSchedule() {
+  const list = $("scheduleList");
+  list.innerHTML = "";
+  if (state.schedule.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "لا توجد منشورات مجدولة.";
+    list.appendChild(li);
+    updateExport();
+    return;
+  }
+  for (let i = 0; i < state.schedule.length; i++) {
+    const post = state.schedule[i];
+    const li = document.createElement("li");
+    li.className = "schedule-item";
+    li.draggable = true;
+    li.id = "schedule-item-" + post.id;
+    li.dataset.id = post.id;
+
+    const meta = document.createElement("div");
+    meta.className = "item-meta";
+    const left = document.createElement("div");
+    left.textContent = post.title + " - " + platformById(post.platform).name + " - " + formatInZone(post.scheduledUtc, state.timezone);
+    const right = document.createElement("div");
+    right.textContent = "#" + (i + 1);
+    meta.appendChild(left);
+    meta.appendChild(right);
+
+    const actions = document.createElement("div");
+    actions.className = "item-actions";
+
+    const up = document.createElement("button");
+    up.id = "move-up-" + post.id;
+    up.type = "button";
+    up.className = "sec";
+    up.textContent = "أعلى";
+    up.addEventListener("click", function () { movePost(post.id, -1); });
+
+    const down = document.createElement("button");
+    down.id = "move-down-" + post.id;
+    down.type = "button";
+    down.className = "sec";
+    down.textContent = "أسفل";
+    down.addEventListener("click", function () { movePost(post.id, 1); });
+
+    const del = document.createElement("button");
+    del.id = "delete-" + post.id;
+    del.type = "button";
+    del.className = "sec";
+    del.textContent = "حذف";
+    del.addEventListener("click", function () { deletePost(post.id); });
+
+    actions.appendChild(up);
+    actions.appendChild(down);
+    actions.appendChild(del);
+    li.appendChild(meta);
+    li.appendChild(actions);
+
+    li.addEventListener("dragstart", function (e) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", post.id);
+      li.classList.add("dragging");
+    });
+    li.addEventListener("dragend", function () {
+      li.classList.remove("dragging");
+    });
+    li.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    });
+    li.addEventListener("drop", function (e) {
+      e.preventDefault();
+      const draggedId = e.dataTransfer.getData("text/plain");
+      if (draggedId && draggedId !== post.id) {
+        reorderPosts(draggedId, post.id);
+      }
+    });
+
+    list.appendChild(li);
+  }
+  updateExport();
+}
+
+function movePost(id, direction) {
+  const idx = indexOfPost(id);
+  if (idx < 0) return;
+  const next = idx + direction;
+  if (next < 0 || next >= state.schedule.length) return;
+  const tmp = state.schedule[idx];
+  state.schedule[idx] = state.schedule[next];
+  state.schedule[next] = tmp;
+  renderSchedule();
+}
+
+function indexOfPost(id) {
+  for (let i = 0; i < state.schedule.length; i++) {
+    if (state.schedule[i].id === id) return i;
+  }
+  return -1;
+}
+
+function deletePost(id) {
+  const idx = indexOfPost(id);
+  if (idx >= 0) state.schedule.splice(idx, 1);
+  renderSchedule();
+  setStatus("تم حذف المنشور.");
+}
+
+function reorderPosts(draggedId, targetId) {
+  const from = indexOfPost(draggedId);
+  const to = indexOfPost(targetId);
+  if (from < 0 || to < 0 || from === to) return;
+  const item = state.schedule.splice(from, 1)[0];
+  state.schedule.splice(to, 0, item);
+  renderSchedule();
+}
+
+function addScheduledPost() {
+  const timeValue = $("scheduleTime").value;
+  if (!timeValue) {
+    setStatus("اختر وقت النشر أولاً.");
+    return;
+  }
+  const post = {
+    id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    title: $("postTitle").value.trim() || "منشور بدون عنوان",
+    body: $("postBody").value.trim(),
+    hashtags: $("hashtagBank").value.trim(),
+    media: $("mediaDescription").value.trim(),
+    platform: $("schedulePlatform").value,
+    scheduledUtc: toUtc(timeValue, state.timezone).getTime()
+  };
+  state.schedule.push(post);
+  renderSchedule();
+  setStatus("تمت جدولة المنشور.");
+}
+
+function normalizePost(post) {
+  if (!post || typeof post !== "object") return null;
+  const platform = platformById(post.platform && typeof post.platform === "string" ? post.platform : "x").id;
+  const utc = Number(post.scheduledUtc);
+  if (!Number.isFinite(utc)) return null;
+  return {
+    id: (typeof post.id === "string" && post.id) ? post.id : ("p" + Date.now().toString(36)),
+    title: typeof post.title === "string" ? post.title : "",
+    body: typeof post.body === "string" ? post.body : "",
+    hashtags: typeof post.hashtags === "string" ? post.hashtags : "",
+    media: typeof post.media === "string" ? post.media : "",
+    platform: platform,
+    scheduledUtc: utc
+  };
+}
+
+function buildExportObject() {
+  return {
+    version: 1,
+    timezone: state.timezone,
+    draft: {
+      title: $("postTitle").value,
+      body: $("postBody").value,
+      hashtags: $("hashtagBank").value,
+      media: $("mediaDescription").value,
+      platform: $("targetPlatform").value
+    },
+    schedule: state.schedule
+  };
+}
+
+function updateExport() {
+  $("exportJson").value = JSON.stringify(buildExportObject(), null, 2);
+  $("exportIcs").value = buildIcs();
+}
+
+function buildIcs() {
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//MDM1//Post Planner//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+  const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, "Z").replace(/[-:]/g, "");
+  for (let i = 0; i < state.schedule.length; i++) {
+    const post = state.schedule[i];
+    const start = new Date(post.scheduledUtc).toISOString().replace(/\.\d{3}Z$/, "Z").replace(/[-:]/g, "");
+    lines.push("BEGIN:VEVENT");
+    lines.push("UID:" + post.id + "@postplanner");
+    lines.push("DTSTAMP:" + stamp);
+    lines.push("DTSTART:" + start);
+    lines.push("SUMMARY:" + icsEscape(post.title + " - " + platformById(post.platform).name));
+    lines.push("DESCRIPTION:" + icsEscape((post.body || "") + "\\n" + (post.hashtags || "")));
+    lines.push("END:VEVENT");
+  }
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
+function icsEscape(value) {
+  return String(value).replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/;/g, "\\;").replace(/,/g, "\\,");
+}
+
+function setStatus(message) {
+  $("statusMessage").textContent = message;
+}
+
+function copyText(text) {
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  area.remove();
+  setStatus(ok ? "تم النسخ." : "تعذر النسخ تلقائيًا؛ حدّد النص وانسخه يدويًا.");
+}
+
+function downloadText(filename, text, type) {
+  const blob = new Blob([text], { type: type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function importJsonFile() {
+  const input = $("importFile");
+  const file = input.files && input.files[0];
+  if (!file) {
+    setStatus("اختر ملف JSON أولاً.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function () {
+    try {
+      const data = JSON.parse(String(reader.result));
+      if (!data || typeof data !== "object") throw new Error("bad");
+      if (!Array.isArray(data.schedule)) throw new Error("schedule");
+      const normalized = [];
+      for (let i = 0; i < data.schedule.length; i++) {
+        const item = normalizePost(data.schedule[i]);
+        if (item) normalized.push(item);
+      }
+      state.schedule = normalized;
+      if (typeof data.timezone === "string" && data.timezone) {
+        state.timezone = data.timezone;
+        const sel = $("displayTimezone");
+        let found = false;
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === state.timezone) { found = true; break; }
+        }
+        if (!found) {
+          const opt = document.createElement("option");
+          opt.value = state.timezone;
+          opt.textContent = state.timezone;
+          sel.appendChild(opt);
+        }
+        sel.value = state.timezone;
+      }
+      if (data.draft && typeof data.draft === "object") {
+        if (typeof data.draft.title === "string") $("postTitle").value = data.draft.title;
+        if (typeof data.draft.body === "string") $("postBody").value = data.draft.body;
+        if (typeof data.draft.hashtags === "string") $("hashtagBank").value = data.draft.hashtags;
+        if (typeof data.draft.media === "string") $("mediaDescription").value = data.draft.media;
+        if (typeof data.draft.platform === "string") $("targetPlatform").value = data.draft.platform;
+      }
+      renderSchedule();
+      drawPreview();
+      updateCharStatus();
+      setStatus("تم استيراد " + normalized.length + " منشور.");
+    } catch (e) {
+      setStatus("ملف JSON غير صالح.");
+    }
+  };
+  reader.onerror = function () {
+    setStatus("تعذر قراءة الملف.");
+  };
+  reader.readAsText(file);
+}
+
+function populateZones() {
+  const sel = $("displayTimezone");
+  const zones = commonZones.slice();
+  if (zones.indexOf(state.timezone) === -1) zones.unshift(state.timezone);
+  sel.innerHTML = "";
+  for (let i = 0; i < zones.length; i++) {
+    const opt = document.createElement("option");
+    opt.value = zones[i];
+    opt.textContent = zones[i];
+    if (zones[i] === state.timezone) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  sel.addEventListener("change", function () {
+    state.timezone = sel.value;
+    renderSchedule();
+    updateExport();
+    setStatus("تم تغيير المنطقة الزمنية.");
+  });
+}
+
+function init() {
+  populateZones();
+  $("titleTemplate").addEventListener("change", function () {});
+  $("applyTitleTemplate").addEventListener("click", function () {
+    const t = titleTemplates[$("titleTemplate").value];
+    if (t) $("postTitle").value = t;
+    updateCharStatus();
+    drawPreview();
+  });
+  $("applyHashtagSet").addEventListener("click", function () {
+    const t = hashtagTemplates[$("hashtagSet").value];
+    if (t) $("hashtagBank").value = t;
+    updateCharStatus();
+    drawPreview();
+  });
+  $("targetPlatform").addEventListener("change", function () {
+    updateCharStatus();
+    drawPreview();
+  });
+  $("schedulePlatform").value = $("targetPlatform").value;
+  $("postTitle").addEventListener("input", function () { updateCharStatus(); drawPreview(); });
+  $("postBody").addEventListener("input", function () { updateCharStatus(); drawPreview(); });
+  $("hashtagBank").addEventListener("input", function () { updateCharStatus(); drawPreview(); });
+  $("mediaDescription").addEventListener("input", function () { drawPreview(); });
+  $("drawPreview").addEventListener("click", drawPreview);
+  $("copyPlatformDraft").addEventListener("click", function () { copyText($("platformDraft").value); });
+  $("addPostToSchedule").addEventListener("click", function () {
+    if (!$("scheduleTime").value) {
+      const soon = new Date(Date.now() + 3600000);
+      const pad = function (n) { return String(n).padStart(2, "0"); };
+      $("scheduleTime").value = soon.getFullYear() + "-" + pad(soon.getMonth() + 1) + "-" + pad(soon.getDate()) + "T" + pad(soon.getHours()) + ":" + pad(soon.getMinutes());
+    }
+    $("schedulePlatform").value = $("targetPlatform").value;
+    addScheduledPost();
+  });
+  $("addScheduledPost").addEventListener("click", addScheduledPost);
+  $("clearSchedule").addEventListener("click", function () {
+    state.schedule = [];
+    renderSchedule();
+    setStatus("تم مسح الجدول.");
+  });
+  $("refreshExport").addEventListener("click", updateExport);
+  $("copyJson").addEventListener("click", function () { copyText($("exportJson").value); });
+  $("downloadJson").addEventListener("click", function () { downloadText("publishing-bundle.json", $("exportJson").value, "application/json"); });
+  $("importJson").addEventListener("click", importJsonFile);
+  $("refreshIcs").addEventListener("click", updateExport);
+  $("copyIcs").addEventListener("click", function () { copyText($("exportIcs").value); });
+  $("downloadIcs").addEventListener("click", function () { downloadText("calendar.ics", $("exportIcs").value, "text/calendar"); });
+
+  updateCharStatus();
+  drawPreview();
+  renderSchedule();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
