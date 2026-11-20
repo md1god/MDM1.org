@@ -97,15 +97,10 @@ import { initDrag } from './drag.js';
     g.fillStyle = bg; g.fillRect(0, 0, s, s);
     const ring = (r, w, col) => { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.arc(s / 2, s / 2, r, 0, Math.PI * 2); g.stroke(); };
     ring(s / 2 - 22, 12, '#c9a84c'); ring(s / 2 - 48, 3, '#f0c060'); ring(s / 2 - 60, 2, '#6b4f1a');
-    // Eye of Horus-like emblem
-    g.save(); g.translate(s / 2, s * 0.335);
-    g.strokeStyle = '#f0c060'; g.fillStyle = '#f0c060'; g.lineWidth = 8; g.lineCap = 'round';
-    g.beginPath(); g.moveTo(-96, 0); g.quadraticCurveTo(0, -78, 96, 0); g.quadraticCurveTo(0, 62, -96, 0); g.stroke();
-    g.beginPath(); g.arc(4, -2, 26, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#0b0700'; g.beginPath(); g.arc(4, -2, 11, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = '#c9a84c'; g.lineWidth = 6;
-    g.beginPath(); g.moveTo(-18, 40); g.quadraticCurveTo(-30, 82, -6, 98); g.stroke();
-    g.restore();
+    // The same 👁️ emoji the site uses in its logo (instead of a hand-drawn eye)
+    g.fillStyle = '#f0c060'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '150px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif';
+    g.fillText('\u{1F441}\uFE0F', s / 2, s * 0.335);
     g.fillStyle = '#f0c060'; g.textAlign = 'center'; g.textBaseline = 'middle';
     // Kept inside the inner ring (diameter ~392px at this height) with a safe margin on both sides.
     g.font = '900 86px Georgia, "Times New Roman", serif';
