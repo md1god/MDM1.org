@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدار الصفقات | إدارة العملاء والصفقات داخل المتصفح | MDM1</title>
+<meta name="description" content="نظّم عملاءك وصفقاتك داخل المتصفح: لوحة كانبان بالسحب والإفلات، سجل موحّد للأنشطة والملاحظات والمهام، وطرق عرض قابلة للتخصيص، وتصدير واستيراد ملف محلي بلا خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/deal-orbit-board.html">
+<meta property="og:title" content="مدار الصفقات | إدارة العملاء والصفقات داخل المتصفح">
+<meta property="og:description" content="نظّم عملاءك وصفقاتك داخل المتصفح: لوحة كانبان بالسحب والإفلات، سجل موحّد للأنشطة والملاحظات والمهام، وطرق عرض قابلة للتخصيص، وتصدير واستيراد ملف محلي بلا خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/deal-orbit-board.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { max-width: 1100px; margin: 0 auto; padding: 12px; }
+.app .app-intro { line-height: 1.9; font-size: 15px; margin: 0 0 16px; }
+.app .app-board { display: flex; gap: 10px; overflow-x: auto; align-items: flex-start; padding: 6px 2px 12px; }
+.app .app-col { flex: 1 0 195px; min-width: 195px; background: rgba(0,0,0,.18); border: 1px solid var(--gold-dim); border-radius: 10px; padding: 8px; }
+.app .app-col-title { font-size: 15px; color: var(--gold-bright); margin: 2px 0 8px; text-align: center; }
+.app .app-col-list { min-height: 100px; display: flex; flex-direction: column; gap: 8px; }
+.app .app-deal { background: rgba(0,0,0,.25); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 8px; cursor: grab; }
+.app .app-deal strong { color: var(--light); }
+.app .app-muted { font-size: 12px; opacity: .75; margin: 4px 0; }
+.app .app-card-tools { display: flex; gap: 4px; flex-wrap: wrap; }
+.app .app-card-tools button { font-size: 11px; padding: 3px 7px; }
+.app .app-row-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.app .app-full { flex: 1 1 240px; }
+.app .app-log-item { border-bottom: 1px solid var(--gold-dim); padding: 8px 2px; display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
+.app .app-log-meta { font-size: 12px; opacity: .7; }
+.app .app-done { text-decoration: line-through; opacity: .6; }
+.app .app-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.app .app-table th, .app .app-table td { border: 1px solid var(--gold-dim); padding: 6px 8px; text-align: right; }
+.app .app-table th { color: var(--gold-bright); background: rgba(0,0,0,.2); }
+.app .app-empty { opacity: .7; padding: 14px 4px; font-size: 13px; }
+.app .app-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.app .app-stat { flex: 1 1 120px; text-align: center; }
+.app .app-stat .big { display: block; }
+.app .app-checks { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0; }
+@media (max-width: 700px){ .app .app-board{ flex-direction: column; } .app .app-col{ min-width: 0; } }
+.app .app-off { display: none; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "مدار الصفقات — لوحة كانبان وسجل موحّد لإدارة الصفقات", "url": "https://mdm1.org/apps/deal-orbit-board.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج إلى إنشاء حساب أو اتصال بالإنترنت لاستخدام مدار الصفقات؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. يعمل التطبيق بالكامل داخل المتصفح، وتبقى بياناتك في الذاكرة أثناء الجلسة فقط، ويمكنك تصديرها واستيرادها كملف محلي متى أردت."}}, {"@type": "Question", "name": "كيف أنقل صفقة بين مراحل لوحة كانبان؟", "acceptedAnswer": {"@type": "Answer", "text": "اسحب بطاقة الصفقة وأفلتها داخل العمود المطلوب، وسيُسجّل النقل تلقائيًا في السجل الموحّد مع اسم المرحلة الجديدة."}}, {"@type": "Question", "name": "ما الفرق بين السجل الموحّد وطرق العرض المخصّصة؟", "acceptedAnswer": {"@type": "Answer", "text": "السجل الموحّد يجمع الأنشطة والتعليقات والملاحظات والمهام لكل الصفقات، أما طرق العرض المخصّصة فتتيح تصفية الصفقات وترتيبها واختيار الأعمدة الظاهرة."}}, {"@type": "Question", "name": "هل تُحفظ بياناتي بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا تُحفظ تلقائيًا؛ انقر «تصدير ملف JSON» قبل الإغلاق، ثم استخدم «استيراد ملف» لاستعادتها في جلسة لاحقة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">مدار الصفقات — لوحة كانبان وسجل موحّد لإدارة الصفقات</h1>
+  <p class="page-sub">نظّم عملاءك وصفقاتك داخل المتصفح: لوحة كانبان بالسحب والإفلات، سجل موحّد للأنشطة والملاحظات والمهام، وطرق عرض قابلة للتخصيص، وتصدير واستيراد ملف محلي بلا خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+<p class="app-intro">الإجابة السريعة: يمكنك إدارة كل عملائك المحتملين وصفقاتك من هذه الصفحة وحدها، مباشرة داخل المتصفح، بلا خادم ولا حساب ولا اتصال شبكي، لأن البيانات تبقى في الذاكرة أثناء جلستك ويمكن تصديرها واستيرادها كملف محلي في أي وقت. ابدأ بإضافة أول صفقة عبر زر «إضافة صفقة»، ثم حرّك بطاقتها بين مراحل لوحة كانبان بالسحب والإفلات لتتابع تقدّمها خطوة بخطوة. دوّن كل مكالمة ورسالة وملاحظة ومهمة في السجل الموحّد، وعلّم المهام المنجزة، واستخدم طرق العرض المخصّصة لتصفية الصفقات وترتيبها واختيار الأعمدة التي تهمّك. كل شيء يعمل فورًا دون إعدادات أو خطوات إضافية.</p>
+
+<section class="card">
+<div class="row">
+<button id="navKanban" class="button" type="button">لوحة كانبان</button>
+<button id="navLog" class="button sec" type="button">السجل الموحّد</button>
+<button id="navView" class="button sec" type="button">طرق العرض</button>
+</div>
+</section>
+
+<section class="card">
+<div class="app-stats">
+<div class="app-stat"><label id="lblStatDeals" for="statDeals" class="label">عدد الصفقات</label><output id="statDeals" class="big">0</output></div>
+<div class="app-stat"><label id="lblStatValue" for="statValue" class="label">إجمالي القيم</label><output id="statValue" class="big">0</output></div>
+<div class="app-stat"><label id="lblStatLogs" for="statLogs" class="label">عدد السجلات</label><output id="statLogs" class="big">0</output></div>
+<div class="app-stat"><label id="lblStatTasks" for="statTasks" class="label">مهام مفتوحة</label><output id="statTasks" class="big">0</output></div>
+</div>
+</section>
+
+<section class="card">
+<div class="row">
+<button id="btnNewDeal" class="button" type="button">إضافة صفقة</button>
+<button id="btnExport" class="button sec" type="button">تصدير ملف JSON</button>
+<label id="lblImport" for="importFile" class="label">استيراد ملف</label>
+<input id="importFile" type="file" accept="application/json,.json">
+<button id="btnClearAll" class="button sec" type="button">مسح كل البيانات</button>
+</div>
+</section>
+
+<section id="editorPanel" class="card app-off">
+<h2 id="editorTitle">إضافة صفقة جديدة</h2>
+<input id="dealId" type="hidden" value="">
+<div class="row">
+<label id="lblDealCompany" for="dealCompany" class="label">اسم الشركة</label>
+<input id="dealCompany" class="input" type="text" placeholder="مثال: شركة النور">
+</div>
+<div class="row">
+<label id="lblDealContact" for="dealContact" class="label">اسم العميل</label>
+<input id="dealContact" class="input" type="text" placeholder="اسم جهة الاتصال">
+<label id="lblDealPhone" for="dealPhone" class="label">رقم الهاتف</label>
+<input id="dealPhone" class="input" type="tel" placeholder="اختياري">
+</div>
+<div class="row">
+<label id="lblDealValue" for="dealValue" class="label">قيمة الصفقة</label>
+<input id="dealValue" class="input" type="number" min="0" value="0">
+<label id="lblDealStage" for="dealStage" class="label">المرحلة</label>
+<select id="dealStage" class="select"></select>
+</div>
+<div class="row">
+<label id="lblDealNote" for="dealNote" class="label">ملاحظات</label>
+<textarea id="dealNote" class="textarea" rows="2" placeholder="تفاصيل إضافية"></textarea>
+</div>
+<div class="row">
+<button id="btnSaveDeal" class="button" type="button">حفظ الصفقة</button>
+<button id="btnCancelDeal" class="button sec" type="button">إلغاء</button>
+</div>
+</section>
+
+<section id="kanbanView" class="app-board"></section>
+
+<section id="logView" class="card app-off">
+<h2>السجل الموحّد</h2>
+<div class="row">
+<label id="lblLogType" for="logType" class="label">نوع السجل</label>
+<select id="logType" class="select">
+<option id="optLogActivity" value="activity">نشاط</option>
+<option id="optLogComment" value="comment">تعليق</option>
+<option id="optLogNote" value="note">ملاحظة</option>
+<option id="optLogTask" value="task">مهمة</option>
+</select>
+<label id="lblLogDeal" for="logDeal" class="label">الصفقة</label>
+<select id="logDeal" class="select"></select>
+</div>
+<div class="row">
+<label id="lblLogText" for="logText" class="label">نص السجل</label>
+<textarea id="logText" class="textarea" rows="2" placeholder="اكتب النص هنا"></textarea>
+<button id="btnAddLog" class="button" type="button">إضافة سجل</button>
+</div>
+<hr class="divider">
+<div id="logList"></div>
+</section>
+
+<section id="customView" class="card app-off">
+<h2>طرق عرض مخصّصة</h2>
+<div class="row">
+<label id="lblFilterStage" for="filterStage" class="label">المرحلة</label>
+<select id="filterStage" class="select"></select>
+<label id="lblFilterSearch" for="filterSearch" class="label">بحث</label>
+<input id="filterSearch" class="input" type="text" placeholder="اسم الشركة أو العميل">
+<label id="lblFilterMin" for="filterMin" class="label">أدنى قيمة</label>
+<input id="filterMin" class="input" type="number" min="0" placeholder="0">
+</div>
+<div class="row">
+<label id="lblSortKey" for="sortKey" class="label">ترتيب حسب</label>
+<select id="sortKey" class="select">
+<option id="optSortCreated" value="created">تاريخ الإضافة</option>
+<option id="optSortCompany" value="company">اسم الشركة</option>
+<option id="optSortValue" value="value">القيمة</option>
+<option id="optSortStage" value="stage">المرحلة</option>
+</select>
+<label id="lblSortDir" for="sortDir" class="label">الاتجاه</label>
+<select id="sortDir" class="select">
+<option id="optDirDesc" value="desc">تنازلي</option>
+<option id="optDirAsc" value="asc">تصاعدي</option>
+</select>
+</div>
+<div class="app-checks">
+<label id="lblColCompany" for="colCompany" class="label">إظهار الشركة <input id="colCompany" type="checkbox" checked></label>
+<label id="lblColContact" for="colContact" class="label">إظهار العميل <input id="colContact" type="checkbox" checked></label>
+<label id="lblColValue" for="colValue" class="label">إظهار القيمة <input id="colValue" type="checkbox" checked></label>
+<label id="lblColStage" for="colStage" class="label">إظهار المرحلة <input id="colStage" type="checkbox" checked></label>
+<label id="lblColCreated" for="colCreated" class="label">إظهار التاريخ <input id="colCreated" type="checkbox" checked></label>
+</div>
+<div id="customTableWrap"></div>
+</section>
+
+<div id="status" class="out" aria-live="polite"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل أحتاج إلى إنشاء حساب أو اتصال بالإنترنت لاستخدام مدار الصفقات؟</h3><p>لا. يعمل التطبيق بالكامل داخل المتصفح، وتبقى بياناتك في الذاكرة أثناء الجلسة فقط، ويمكنك تصديرها واستيرادها كملف محلي متى أردت.</p><h3>كيف أنقل صفقة بين مراحل لوحة كانبان؟</h3><p>اسحب بطاقة الصفقة وأفلتها داخل العمود المطلوب، وسيُسجّل النقل تلقائيًا في السجل الموحّد مع اسم المرحلة الجديدة.</p><h3>ما الفرق بين السجل الموحّد وطرق العرض المخصّصة؟</h3><p>السجل الموحّد يجمع الأنشطة والتعليقات والملاحظات والمهام لكل الصفقات، أما طرق العرض المخصّصة فتتيح تصفية الصفقات وترتيبها واختيار الأعمدة الظاهرة.</p><h3>هل تُحفظ بياناتي بعد إغلاق الصفحة؟</h3><p>لا تُحفظ تلقائيًا؛ انقر «تصدير ملف JSON» قبل الإغلاق، ثم استخدم «استيراد ملف» لاستعادتها في جلسة لاحقة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="deploy-sandbox.html" style="color:var(--gold-bright);font-weight:700">لوحة محلية لإدارة نشر الحاويات ومحاكاة Docker وKubernetes</a><span style="opacity:.75"> — لوحة محلية لإدارة نشر تطبيقات الحاويات ومحاكاة Docker وKubernetes وPodman، تشمل إصدارات وتراجعًا فوريًا…</span></li><li style="margin:.5rem 0"><a href="diff-risk-compass.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل الفروقات وتقييم المخاطر للطلبات البرمجية</a><span style="opacity:.75"> — أداة داخل المتصفح تحلل الفروقات المُلصقة أو وصف طلب سحب يدوي، وتُعطي درجة مخاطر من 0 إلى 100 وتُظهر الملفات…</span></li><li style="margin:.5rem 0"><a href="dish-blurb-maker.html" style="color:var(--gold-bright);font-weight:700">مولد أوصاف أطباق القائمة الذكي</a><span style="opacity:.75"> — أنشئ أوصاف جذابة لأطباقك من اسم الطبق ومكوناته باستخدام قوالب جاهزة وبنك كلمات، مع إمكانية النسخ والحفظ…</span></li><li style="margin:.5rem 0"><a href="drag-form-studio.html" style="color:var(--gold-bright);font-weight:700">بناء نماذج ويب بصريًا</a><span style="opacity:.75"> — أنشئ نماذج ويب قابلة للسحب والإفلات، احفظ القوالب محليًا، وقم بتصديرها كملف HTML مستقل جاهز للتشغيل مباشرةً…</span></li><li style="margin:.5rem 0"><a href="drought-index-studio.html" style="color:var(--gold-bright);font-weight:700">حاسبة مؤشرات الجفاف والرطوبة SPI وSPEI وتحليل الأمطار والحرارة</a><span style="opacity:.75"> — احسب مؤشرات الجفاف والرطوبة SPI وSPEI وشذوذ الأمطار من سلاسل شهرية CSV داخل المتصفح، مع تصنيف الشدة ورسوم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+function $(id){ return document.getElementById(id); }
+var STAGES = [
+{ id:'new', name:'جديد' },
+{ id:'contact', name:'تم التواصل' },
+{ id:'proposal', name:'عرض سعر' },
+{ id:'negotiation', name:'تفاوض' },
+{ id:'closed', name:'مغلقة' }
+];
+var state = { deals:[], logs:[], activeView:'kanban', sortKey:'created', sortDir:'desc', columns:{ company:true, contact:true, value:true, stage:true, created:true } };
+var seq = 1;
+function uid(p){ return p + '-' + Date.now() + '-' + seq++; }
+function make(tag, cls, text){
+var e = document.createElement(tag);
+if(cls){ e.className = cls; }
+if(text !== null && text !== undefined){ e.textContent = text; }
+return e;
+}
+function fmt(n){ return (Number(n) || 0).toLocaleString(); }
+function stageName(id){
+for(var i=0;i<STAGES.length;i++){ if(STAGES[i].id === id){ return STAGES[i].name; } }
+return '—';
+}
+function findDeal(id){
+for(var i=0;i<state.deals.length;i++){ if(state.deals[i].id === id){ return state.deals[i]; } }
+return null;
+}
+function notify(msg){ $('status').textContent = msg; }
+function show(id, on){
+if(on){ $(id).classList.remove('app-off'); } else { $(id).classList.add('app-off'); }
+}
+function addLog(type, dealId, text){
+state.logs.unshift({ id:uid('log'), type:type, dealId:dealId || '', text:text, done:false, created:new Date().toISOString() });
+}
+function renderStats(){
+var total = 0, openTasks = 0;
+for(var i=0;i<state.deals.length;i++){ total += Number(state.deals[i].value) || 0; }
+for(var j=0;j<state.logs.length;j++){ if(state.logs[j].type === 'task' && !state.logs[j].done){ openTasks++; } }
+$('statDeals').textContent = state.deals.length;
+$('statValue').textContent = fmt(total);
+$('statLogs').textContent = state.logs.length;
+$('statTasks').textContent = openTasks;
+}
+var dragId = null;
+function renderKanban(){
+var board = $('kanbanView');
+board.textContent = '';
+for(var s=0;s<STAGES.length;s++){
+(function(stage){
+var col = make('div','app-col');
+col.appendChild(make('h3','app-col-title', stage.name));
+var list = make('div','app-col-list');
+list.id = 'stageList-' + stage.id;
+var items = state.deals.filter(function(d){ return d.stage === stage.id; });
+if(items.length === 0){ list.appendChild(make('p','app-empty','اسحب صفقة إلى هنا')); }
+for(var i=0;i<items.length;i++){ list.appendChild(dealCard(items[i])); }
+list.addEventListener('dragover', function(e){ e.preventDefault(); });
+list.addEventListener('drop', function(e){
+e.preventDefault();
+if(dragId){ setDealStage(dragId, stage.id); dragId = null; }
+});
+col.appendChild(list);
+board.appendChild(col);
+})(STAGES[s]);
+}
+}
+function dealCard(d){
+var card = make('div','app-deal');
+card.id = 'dealCard-' + d.id;
+card.draggable = true;
+card.addEventListener('dragstart', function(){ dragId = d.id; });
+card.appendChild(make('strong','', d.company || 'صفقة بلا اسم'));
+card.appendChild(make('p','app-muted', (d.contact || 'لا يوجد عميل') + ' · ' + fmt(d.value)));
+if(d.phone){ card.appendChild(make('p','app-muted', d.phone)); }
+if(d.note){ card.appendChild(make('p','app-muted', d.note)); }
+var tools = make('div','app-card-tools');
+var bEdit = make('button','button sec','تعديل'); bEdit.id = 'btnEdit-' + d.id;
+bEdit.addEventListener('click', function(){ openEditor(d.id); });
+var bLog = make('button','button sec','سجل'); bLog.id = 'btnLog-' + d.id;
+bLog.addEventListener('click', function(){ logForDeal(d.id); });
+var bDel = make('button','button sec','حذف'); bDel.id = 'btnDel-' + d.id;
+bDel.addEventListener('click', function(){ deleteDeal(d.id); });
+tools.appendChild(bEdit); tools.appendChild(bLog); tools.appendChild(bDel);
+card.appendChild(tools);
+return card;
+}
+function setDealStage(id, stageId){
+var d = findDeal(id);
+if(!d || d.stage === stageId){ return; }
+var old = stageName(d.stage);
+d.stage = stageId;
+addLog('activity', d.id, 'نُقلت الصفقة من «' + old + '» إلى «' + stageName(stageId) + '»');
+render();
+notify('تم نقل الصفقة إلى: ' + stageName(stageId));
+}
+function openEditor(id){
+$('editorTitle').textContent = id ? 'تعديل الصفقة' : 'إضافة صفقة جديدة';
+$('dealId').value = id || '';
+var d = id ? findDeal(id) : null;
+$('dealCompany').value = d ? d.company || '' : '';
+$('dealContact').value = d ? d.contact || '' : '';
+$('dealPhone').value = d ? d.phone || '' : '';
+$('dealValue').value = d ? d.value || 0 : 0;
+$('dealStage').value = d ? d.stage || 'new' : 'new';
+$('dealNote').value = d ? d.note || '' : '';
+show('editorPanel', true);
+$('dealCompany').focus();
+}
+function closeEditor(){ show('editorPanel', false); }
+function saveDeal(){
+var company = $('dealCompany').value.trim();
+if(!company){ notify('يرجى إدخال اسم الشركة'); return; }
+var id = $('dealId').value;
+if(id){
+var d = findDeal(id);
+if(d){
+d.company = company;
+d.contact = $('dealContact').value.trim();
+d.phone = $('dealPhone').value.trim();
+d.value = $('dealValue').value;
+d.stage = $('dealStage').value;
+d.note = $('dealNote').value.trim();
+}
+addLog('activity', id, 'تم تعديل بيانات الصفقة: ' + company);
+notify('تم حفظ التعديلات');
+} else {
+var data = { company:company, contact:$('dealContact').value.trim(), phone:$('dealPhone').value.trim(), value:$('dealValue').value, stage:$('dealStage').value, note:$('dealNote').value.trim() };
+data.id = uid('deal');
+data.created = new Date().toISOString();
+state.deals.push(data);
+addLog('activity', data.id, 'تم إنشاء صفقة جديدة: ' + company);
+notify('تمت إضافة الصفقة');
+}
+closeEditor();
+render();
+}
+function deleteDeal(id){
+var d = findDeal(id);
+if(!d){ return; }
+if(!confirm('حذف الصفقة «' + d.company + '» وكل سجلاتها؟')){ return; }
+state.deals = state.deals.filter(function(x){ return x.id !== id; });
+state.logs = state.logs.filter(function(x){ return x.dealId !== id; });
+render();
+notify('تم حذف الصفقة');
+}
+function fillDealSelect(sel, withAll){
+sel.textContent = '';
+if(withAll){
+var all = make('option','','كل الصفقات'); all.id = 'optAllDeals'; all.value = '';
+sel.appendChild(all);
+}
+for(var i=0;i<state.deals.length;i++){
+var o = make('option','', state.deals[i].company);
+o.id = 'optDeal-' + state.deals[i].id;
+o.value = state.deals[i].id;
+sel.appendChild(o);
+}
+}
+function switchView(v){ state.activeView = v; render(); }
+function logForDeal(id){
+fillDealSelect($('logDeal'), true);
+$('logDeal').value = id;
+switchView('log');
+notify('عرض سجل صفقة واحدة');
+}
+function logLabel(t){
+if(t === 'activity'){ return 'نشاط'; }
+if(t === 'comment'){ return 'تعليق'; }
+if(t === 'note'){ return 'ملاحظة'; }
+if(t === 'task'){ return 'مهمة'; }
+return 'سجل';
+}
+function addLogFromForm(){
+var text = $('logText').value.trim();
+if(!text){ notify('اكتب نص السجل أولًا'); return; }
+addLog($('logType').value, $('logDeal').value, text);
+$('logText').value = '';
+render();
+notify('تمت إضافة السجل');
+}
+function renderLog(){
+fillDealSelect($('logDeal'), true);
+var list = $('logList');
+list.textContent = '';
+if(state.logs.length === 0){
+list.appendChild(make('p','app-empty','لا توجد سجلات بعد. أضف نشاطًا أو تعليقًا أو ملاحظة أو مهمة.'));
+return;
+}
+for(var i=0;i<state.logs.length;i++){ list.appendChild(logRow(state.logs[i])); }
+}
+function logRow(entry){
+var related = findDeal(entry.dealId);
+var row = make('div','app-log-item');
+row.id = 'logRow-' + entry.id;
+var main = make('div','app-full');
+var line = make('p','', logLabel(entry.type) + ': ' + entry.text);
+if(entry.type === 'task' && entry.done){ line.className = 'app-done'; }
+main.appendChild(line);
+main.appendChild(make('p','app-log-meta', (related ? related.company : 'بدون صفقة') + ' · ' + entry.created.slice(0,10)));
+row.appendChild(main);
+var acts = make('div','app-card-tools');
+if(entry.type === 'task'){
+var bDone = make('button','button sec', entry.done ? 'إعادة فتح' : 'تم الإنجاز');
+bDone.id = 'btnToggle-' + entry.id;
+bDone.addEventListener('click', function(){ toggleTask(entry.id); });
+acts.appendChild(bDone);
+}
+var bDel = make('button','button sec','حذف');
+bDel.id = 'btnDelLog-' + entry.id;
+bDel.addEventListener('click', function(){ deleteLog(entry.id); });
+acts.appendChild(bDel);
+row.appendChild(acts);
+return row;
+}
+function toggleTask(id){
+for(var i=0;i<state.logs.length;i++){
+if(state.logs[i].id === id){ state.logs[i].done = !state.logs[i].done; break; }
+}
+render();
+}
+function deleteLog(id){
+state.logs = state.logs.filter(function(x){ return x.id !== id; });
+render();
+notify('تم حذف السجل');
+}
+function fieldVal(d, key){
+if(key === 'company'){ return String(d.company || ''); }
+if(key === 'contact'){ return String(d.contact || ''); }
+if(key === 'value'){ return Number(d.value) || 0; }
+if(key === 'stage'){ return stageName(d.stage); }
+if(key === 'created'){ return String(d.created || ''); }
+return '';
+}
+function filteredDeals(){
+var st = $('filterStage').value;
+var q = $('filterSearch').value.trim();
+var min = $('filterMin').value;
+var arr = state.deals.filter(function(d){
+if(st && st !== 'all' && d.stage !== st){ return false; }
+if(q){
+var hay = (d.company || '') + ' ' + (d.contact || '') + ' ' + (d.phone || '');
+if(hay.indexOf(q) === -1){ return false; }
+}
+if(min && (Number(d.value) || 0) < Number(min)){ return false; }
+return true;
+});
+arr.sort(function(a,b){
+var av = fieldVal(a, state.sortKey), bv = fieldVal(b, state.sortKey);
+var r = av < bv ? -1 : (av > bv ? 1 : 0);
+return state.sortDir === 'asc' ? r : -r;
+});
+return arr;
+}
+var COLS = [
+{ key:'company', label:'الشركة' },
+{ key:'contact', label:'العميل' },
+{ key:'value', label:'القيمة' },
+{ key:'stage', label:'المرحلة' },
+{ key:'created', label:'تاريخ الإضافة' }
+];
+function renderCustom(){
+var arr = filteredDeals();
+var wrap = $('customTableWrap');
+wrap.textContent = '';
+if(arr.length === 0){
+wrap.appendChild(make('p','app-empty','لا توجد نتائج مطابقة. عدّل عوامل التصفية أو أضف صفقات.'));
+return;
+}
+var table = make('table','app-table');
+var head = make('thead');
+var hr = make('tr');
+COLS.forEach(function(col){
+if(state.columns[col.key]){ hr.appendChild(make('th','', col.label)); }
+});
+hr.appendChild(make('th','','إجراءات'));
+head.appendChild(hr);
+table.appendChild(head);
+var body = make('tbody');
+for(var i=0;i<arr.length;i++){ body.appendChild(dealRow(arr[i])); }
+table.appendChild(body);
+wrap.appendChild(table);
+}
+function dealRow(d){
+var tr = make('tr');
+tr.id = 'dealRow-' + d.id;
+if(state.columns.company){ tr.appendChild(make('td','', d.company || '—')); }
+if(state.columns.contact){ tr.appendChild(make('td','', d.contact || '—')); }
+if(state.columns.value){ tr.appendChild(make('td','', fmt(d.value))); }
+if(state.columns.stage){ tr.appendChild(make('td','', stageName(d.stage))); }
+if(state.columns.created){ tr.appendChild(make('td','', (d.created || '').slice(0,10))); }
+var td = make('td','app-card-tools');
+var bEdit = make('button','button sec','تعديل'); bEdit.id = 'btnRowEdit-' + d.id;
+bEdit.addEventListener('click', function(){ openEditor(d.id); });
+var bLog = make('button','button sec','سجل'); bLog.id = 'btnRowLog-' + d.id;
+bLog.addEventListener('click', function(){ logForDeal(d.id); });
+td.appendChild(bEdit); td.appendChild(bLog);
+tr.appendChild(td);
+return tr;
+}
+function render(){
+renderStats();
+show('kanbanView', state.activeView === 'kanban');
+show('logView', state.activeView === 'log');
+show('customView', state.activeView === 'custom');
+if(state.activeView === 'kanban'){ renderKanban(); }
+else if(state.activeView === 'log'){ renderLog(); }
+else { renderCustom(); }
+}
+function exportJSON(){
+var payload = { version:1, deals:state.deals, logs:state.logs };
+var text = JSON.stringify(payload, null, 2);
+var blob = new Blob([text], { type:'application/json' });
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.id = 'downloadAnchor';
+a.href = url;
+a.download = 'madar-deals.json';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+notify('تم تصدير الملف بنجاح');
+}
+function importJSON(file){
+if(!file){ return; }
+var reader = new FileReader();
+reader.onload = function(e){
+try{
+var data = JSON.parse(e.target.result);
+if(!data.deals || !Array.isArray(data.deals)){ notify('ملف غير صالح'); return; }
+state.deals = data.deals;
+state.logs = Array.isArray(data.logs) ? data.logs : [];
+render();
+notify('تم استيراد ' + state.deals.length + ' صفقة');
+} catch(err){
+notify('تعذّر قراءة الملف');
+}
+};
+reader.onerror = function(){ notify('تعذّر قراءة الملف'); };
+reader.readAsText(file);
+}
+function clearAll(){
+if(!confirm('مسح جميع الصفقات والسجلات؟')){ return; }
+state.deals = []; state.logs = [];
+render();
+notify('تم مسح كل البيانات');
+}
+function init(){
+var ds = $('dealStage'), fs = $('filterStage');
+var all = make('option','','كل المراحل'); all.id = 'optAllStages'; all.value = 'all';
+fs.appendChild(all);
+for(var i=0;i<STAGES.length;i++){
+var o1 = make('option','',STAGES[i].name); o1.id = 'dsOpt-' + STAGES[i].id; o1.value = STAGES[i].id; ds.appendChild(o1);
+var o2 = make('option','',STAGES[i].name); o2.id = 'fsOpt-' + STAGES[i].id; o2.value = STAGES[i].id; fs.appendChild(o2);
+}
+$('navKanban').addEventListener('click', function(){ switchView('kanban'); });
+$('navLog').addEventListener('click', function(){ switchView('log'); });
+$('navView').addEventListener('click', function(){ switchView('custom'); });
+$('btnNewDeal').addEventListener('click', function(){ openEditor(null); });
+$('btnSaveDeal').addEventListener('click', saveDeal);
+$('btnCancelDeal').addEventListener('click', closeEditor);
+$('btnExport').addEventListener('click', exportJSON);
+$('btnClearAll').addEventListener('click', clearAll);
+$('importFile').addEventListener('change', function(e){ importJSON(e.target.files.item(0)); });
+$('btnAddLog').addEventListener('click', addLogFromForm);
+$('filterStage').addEventListener('change', renderCustom);
+$('filterSearch').addEventListener('input', renderCustom);
+$('filterMin').addEventListener('input', renderCustom);
+$('sortKey').addEventListener('change', function(){ state.sortKey = $('sortKey').value; renderCustom(); });
+$('sortDir').addEventListener('change', function(){ state.sortDir = $('sortDir').value; renderCustom(); });
+var boxIds = [ ['colCompany','company'], ['colContact','contact'], ['colValue','value'], ['colStage','stage'], ['colCreated','created'] ];
+for(var c=0;c<boxIds.length;c++){
+(function(pair){
+$(pair[0]).addEventListener('change', function(){ state.columns[pair[1]] = $(pair[0]).checked; renderCustom(); });
+})(boxIds[c]);
+}
+render();
+}
+init();
+})();
+</script>
+</body>
+</html>
