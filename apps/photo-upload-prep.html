@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة قص وتدوير الصور وتحسين حجمها وإضافة البيانات الوصفية | MDM1</title>
+<meta name="description" content="قايس صورك وحسّنها داخل المتصفح دون رفع. قصّ، دوّر، وقلّل الحجم، ثم أضف العنوان والوصف والتصنيفات والترخيص وحقوق المؤلف قبل تنزيل النتيجة.">
+<link rel="canonical" href="https://mdm1.org/apps/photo-upload-prep.html">
+<meta property="og:title" content="أداة قص وتدوير الصور وتحسين حجمها وإضافة البيانات الوصفية">
+<meta property="og:description" content="قايس صورك وحسّنها داخل المتصفح دون رفع. قصّ، دوّر، وقلّل الحجم، ثم أضف العنوان والوصف والتصنيفات والترخيص وحقوق المؤلف قبل تنزيل النتيجة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/photo-upload-prep.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display:block; }
+.app .app-intro { line-height:1.9; margin:0 0 20px; }
+.app .card { margin:0 0 18px; }
+.app .app-hint { color:var(--gold-dim); font-size:.9rem; margin:6px 0; }
+.app .app-ok { color:var(--gold-bright); }
+.app .row { flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0; }
+.app .row > label { min-width:180px; }
+.app .row > input[type=text], .app .row > input[type=number], .app .row > select, .app .row > textarea { flex:1 1 220px; }
+.app .app-preview-wrap { position:relative; display:inline-block; max-width:100%; }
+.app #previewCanvas { display:block; max-width:100%; height:auto; background:var(--dark); border:1px solid var(--gold-dim); cursor:crosshair; }
+.app .app-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; margin:0; pointer-events:none; color:var(--gold-dim); }
+.app .app-empty[hidden] { display:none; }
+.app .badge { margin-inline-start:6px; }
+.app progress { width:100%; accent-color:var(--gold); }
+.app #checkList { line-height:1.8; }
+.app .out { display:block; margin-top:12px; }
+.app #metaOutput { width:100%; box-sizing:border-box; margin-top:8px; }
+.app .big { color:var(--gold-bright); font-size:1.6rem; }
+.app .app-foot { text-align:center; margin-top:16px; }
+.app ol { line-height:1.9; padding-inline-start:20px; }
+.app #resultPlaceholder[hidden] { display:none; }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "حضّر صورك للنشر: قصّ وتدوير وتحسين حجم وبيانات وصفية كاملة", "url": "https://mdm1.org/apps/photo-upload-prep.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُرفع صوري إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تبقى الصور والبيانات داخل متصفحك، ولا يخرج أي ملف من جهازك. القص والتدوير وتحسين الحجم ونسخ البيانات كلها تحدث محلياً."}}, {"@type": "Question", "name": "ماذا يعني تحقق الاكتمال؟", "acceptedAnswer": {"@type": "Answer", "text": "يتحول شريط التحقق إلى مكتمل عند اختيار صورة، وكتابة عنوان ووصف كافٍ وتصنيف واحد وتحديد حقوق المؤلف، ولا يمكن إنشاء النتيجة قبله."}}, {"@type": "Question", "name": "هل أستطيع استرجاع إعداداتي لاحقاً؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم تصدير الإعدادات لحفظ الحقول في ملف، ثم استيراده لاحقاً لملء الحقول من جديد دون إعادة كتابتها."}}, {"@type": "Question", "name": "بأي صيغ أستطيع تنزيل الصورة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك الاختيار بين JPEG وPNG وWebP، وتحديد أقصى عرض وجودة الضغط قبل إنشاء الملف النهائي."}}, {"@type": "Question", "name": "كيف أنسخ البيانات الوصفية؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط نسخ نص البيانات بعد الإنشاء، أو اختر النص من مربع النتيجة ونسخه يدوياً، كما يمكنك تنزيله في ملف منفصل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">حضّر صورك للنشر: قصّ وتدوير وتحسين حجم وبيانات وصفية كاملة</h1>
+  <p class="page-sub">قايس صورك وحسّنها داخل المتصفح دون رفع. قصّ، دوّر، وقلّل الحجم، ثم أضف العنوان والوصف والتصنيفات والترخيص وحقوق المؤلف قبل تنزيل النتيجة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="app-top">
+<p class="app-intro">نعم، يمكنك اختيار صورة من جهازك، ومعاينتها فوراً، ثم قصّها وتدويرها وتقليل حجمها، وإضافة العنوان والوصف والتصنيفات والترخيص وحقوق المؤلف، ثم إنشاء ملف صورة جاهز ونص بيانات وصفية للنسخ أو التنزيل، وكل ذلك يحدث داخل متصفحك دون رفع أي ملف إلى خادم. يعمل الحل بالكامل داخل المتصفح، فتبقى صورك ومعلوماتك على جهازك ولا تنتقل إلى أي جهة أخرى. ابدأ باختيار صورة، ثم حدد منطقة القص بالسحب فوق المعاينة، واستخدم أزرار التدوير، واضبط أبعاد الإخراج ونوع الملف وجودته. بعد ذلك املأ حقول البيانات الوصفية، وسيُظهر لك شريط التحقق ما تبقّى لإكماله. وعند اكتمال البيانات يمكنك تنزيل الصورة النهائية، ونسخ نص البيانات الوصفية أو حفظه في ملف مستقل، كما يمكنك تصدير إعداداتك إلى ملف واستيرادها لاحقاً للعمل بسرعة.</p>
+
+<section class="card" id="card-source">
+<h2>اختر الصورة ومعاينتها</h2>
+<div class="row">
+<label for="fileImage">ملف الصورة من جهازك</label>
+<input type="file" id="fileImage" accept="image/*">
+</div>
+<p class="app-hint" id="imageInfo">لم يتم اختيار أي صورة بعد.</p>
+<div class="app-preview-wrap">
+<canvas id="previewCanvas" width="560" height="420">المعاينة غير مدعومة في هذا المتصفح.</canvas>
+<p class="app-empty" id="previewEmpty">ستظهر معاينة الصورة هنا بعد اختيارها.</p>
+</div>
+</section>
+
+<hr class="divider">
+
+<section class="card" id="card-edit">
+<h2>القص والتدوير وتحسين الحجم</h2>
+<div class="row">
+<button type="button" class="sec" id="btnRotateLeft">تدوير يسار ٩٠ درجة</button>
+<button type="button" class="sec" id="btnRotateRight">تدوير يمين ٩٠ درجة</button>
+<button type="button" class="sec" id="btnResetCrop">إلغاء منطقة القص</button>
+</div>
+<p class="app-hint" id="cropHint">اسحب فوق المعاينة لتحديد منطقة القص، ثم راجعها قبل الإنشاء.</p>
+<div class="row">
+<label for="maxWidth">أقصى عرض للإخراج (بكسل)</label>
+<input type="number" id="maxWidth" min="16" max="8000" value="1600">
+</div>
+<div class="row">
+<label for="formatSelect">نوع الملف الناتج</label>
+<select id="formatSelect">
+<option value="image/jpeg">JPEG</option>
+<option value="image/png">PNG</option>
+<option value="image/webp">WebP</option>
+</select>
+</div>
+<div class="row">
+<label for="qualityRange">جودة الضغط (<span id="qualityValue">82</span> بالمئة)</label>
+<input type="range" id="qualityRange" min="10" max="100" value="82">
+</div>
+</section>
+
+<section class="card" id="card-meta">
+<h2>البيانات الوصفية للصورة</h2>
+<div class="row">
+<label for="metaTitle">العنوان</label>
+<input type="text" id="metaTitle" placeholder="عنوان واضح ومختصر للصورة">
+</div>
+<div class="row">
+<label for="metaDesc">الوصف</label>
+<textarea id="metaDesc" rows="3" placeholder="اشرح ما تحتويه الصورة بوضوح، عشرون حرفاً على الأقل"></textarea>
+</div>
+<div class="row">
+<label for="metaCats">التصنيفات (افصل بينها بفاصلة)</label>
+<input type="text" id="metaCats" placeholder="طبيعة، مدينة، حدث">
+</div>
+<div class="row">
+<label for="metaLicense">الترخيص</label>
+<select id="metaLicense">
+<option value="all-rights">جميع الحقوق محفوظة</option>
+<option value="cc-by">CC BY - نسب العمل إلى المؤلف</option>
+<option value="cc-by-sa">CC BY-SA - المشاركة بالمثل</option>
+<option value="cc-by-nd">CC BY-ND - بلا أعمال مشتقة</option>
+<option value="cc-by-nc">CC BY-NC - استخدام غير تجاري</option>
+<option value="cc-by-nc-sa">CC BY-NC-SA - غير تجاري بالمشاركة بالمثل</option>
+<option value="cc-by-nc-nd">CC BY-NC-ND - غير تجاري بلا مشتقات</option>
+<option value="public-domain">الملكية العامة</option>
+</select>
+</div>
+<div class="row">
+<label for="metaAuthor">حقوق المؤلف أو الجهة المالكة</label>
+<input type="text" id="metaAuthor" placeholder="اسم المؤلف أو الجهة المالكة">
+</div>
+</section>
+
+<section class="card" id="card-check">
+<h2>التحقق من اكتمال البيانات</h2>
+<progress id="completionBar" max="5" value="0"></progress>
+<p class="app-hint" id="checkStatus">أكمل العناصر المطلوبة أولاً. <span class="badge" id="statusBadge">غير مكتمل</span></p>
+<ul id="checkList"></ul>
+</section>
+
+<section class="card" id="card-result">
+<h2>إنشاء النتيجة وتنزيلها</h2>
+<div class="row">
+<button type="button" id="btnGenerate">إنشاء الصورة ونص البيانات</button>
+<button type="button" class="sec" id="btnDownloadImage">تنزيل الصورة النهائية</button>
+<button type="button" class="sec" id="btnCopyMeta">نسخ نص البيانات</button>
+<button type="button" class="sec" id="btnDownloadMeta">تنزيل نص البيانات</button>
+</div>
+<div class="out" id="resultBox">
+<p id="resultPlaceholder">لم يتم إنشاء أي نتيجة بعد. أكمل البيانات ثم اضغط إنشاء.</p>
+<p>حجم الملف الناتج: <strong class="big" id="resultSize">—</strong></p>
+<p class="app-hint" id="resultDims"></p>
+<textarea id="metaOutput" rows="8" readonly placeholder="سيظهر نص البيانات الوصفية هنا بعد الإنشاء"></textarea>
+</div>
+</section>
+
+<section class="card" id="card-settings">
+<h2>حفظ الإعدادات واستيرادها</h2>
+<div class="row">
+<button type="button" class="sec" id="btnExportSettings">تصدير الإعدادات إلى ملف</button>
+<label for="fileSettings">استيراد الإعدادات من ملف</label>
+<input type="file" id="fileSettings" accept="application/json,.json">
+</div>
+<p class="app-hint" id="settingsStatus">يمكنك نقل إعداداتك بين الزيارات عبر ملف بدلاً من تخزينها في المتصفح.</p>
+</section>
+
+<section class="card" id="card-how">
+<h2>كيف يعمل هذا الحل</h2>
+<ol>
+<li>اختر صورة من جهازك، وستظهر المعاينة فوراً دون رفع.</li>
+<li>حدد منطقة القص بالسحب، أو ألغِ القص، ودوّر الصورة كما تحتاج.</li>
+<li>اضبط أقصى عرض ونوع الملف وجودة الضغط لتحسين الحجم.</li>
+<li>املأ العنوان والوصف والتصنيفات والترخيص وحقوق المؤلف.</li>
+<li>تأكد من اكتمال شريط التحقق، ثم أنشئ النتيجة ونزّلها أو انسخ بياناتها.</li>
+</ol>
+</section>
+
+<p class="app-foot"><a href="#app-top" id="backTop">العودة إلى أعلى الصفحة</a></p>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُرفع صوري إلى أي خادم؟</h3><p>لا، تبقى الصور والبيانات داخل متصفحك، ولا يخرج أي ملف من جهازك. القص والتدوير وتحسين الحجم ونسخ البيانات كلها تحدث محلياً.</p><h3>ماذا يعني تحقق الاكتمال؟</h3><p>يتحول شريط التحقق إلى مكتمل عند اختيار صورة، وكتابة عنوان ووصف كافٍ وتصنيف واحد وتحديد حقوق المؤلف، ولا يمكن إنشاء النتيجة قبله.</p><h3>هل أستطيع استرجاع إعداداتي لاحقاً؟</h3><p>نعم، استخدم تصدير الإعدادات لحفظ الحقول في ملف، ثم استيراده لاحقاً لملء الحقول من جديد دون إعادة كتابتها.</p><h3>بأي صيغ أستطيع تنزيل الصورة؟</h3><p>يمكنك الاختيار بين JPEG وPNG وWebP، وتحديد أقصى عرض وجودة الضغط قبل إنشاء الملف النهائي.</p><h3>كيف أنسخ البيانات الوصفية؟</h3><p>اضغط نسخ نص البيانات بعد الإنشاء، أو اختر النص من مربع النتيجة ونسخه يدوياً، كما يمكنك تنزيله في ملف منفصل.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="photo-editor-pro.html" style="color:var(--gold-bright);font-weight:700">محرر الصور: قص وتدوير وفلاتر ورسم ونص وتنزيل</a><span style="opacity:.75"> — محرر صور داخل المتصفح: رفع صورة، قص بنسب جاهزة، تدوير وقلب، سطوع وتباين وتشبع وفلاتر، رسم بفرشاة، إضافة نص…</span></li><li style="margin:.5rem 0"><a href="polished-dictation-desk.html" style="color:var(--gold-bright);font-weight:700">أداة إملاء صوتي تنظّف النص وتعلم تصحيحاتك محليًا</a><span style="opacity:.75"> — أداة إملاء صوتي تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم، تتعلم…</span></li><li style="margin:.5rem 0"><a href="private-newsletter-vault.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء وتشفير الرسائل الإخبارية محليًا بكلمة مرور</a><span style="opacity:.75"> — أنشئ رسائل إخبارية وشفّرها محليًا بكلمة مرور عبر AES-GCM، مع إدارة المشتركين والقوالب ودمج الأسماء وروابط…</span></li><li style="margin:.5rem 0"><a href="tariff-origin-compass.html" style="color:var(--gold-bright);font-weight:700">أداة تصنيف HS وحساب الرسوم الجمركية للتجار العرب</a><span style="opacity:.75"> — تطبيق ويب يساعد التجار على تحديد رمز HS للمنتج، حساب الرسوم والضرائب، حفظ قوائم SKU ومقارنة سيناريوهات…</span></li><li style="margin:.5rem 0"><a href="tech-clue-archive.html" style="color:var(--gold-bright);font-weight:700">أداة كشف تقنيات المواقع</a><span style="opacity:.75"> — أداة لحفظ وفهرسة بصمات التقنيات المستخدمة في المواقع وتحليلها محليًا دون اتصال بالإنترنت، تطبيق مجاني من…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  var el = function(id){ return document.getElementById(id); };
+  var fileImage = el('fileImage');
+  var previewCanvas = el('previewCanvas');
+  var previewEmpty = el('previewEmpty');
+  var imageInfo = el('imageInfo');
+  var btnRotateLeft = el('btnRotateLeft');
+  var btnRotateRight = el('btnRotateRight');
+  var btnResetCrop = el('btnResetCrop');
+  var maxWidth = el('maxWidth');
+  var formatSelect = el('formatSelect');
+  var qualityRange = el('qualityRange');
+  var qualityValue = el('qualityValue');
+  var metaTitle = el('metaTitle');
+  var metaDesc = el('metaDesc');
+  var metaCats = el('metaCats');
+  var metaLicense = el('metaLicense');
+  var metaAuthor = el('metaAuthor');
+  var completionBar = el('completionBar');
+  var checkStatus = el('checkStatus');
+  var statusBadge = el('statusBadge');
+  var checkList = el('checkList');
+  var btnGenerate = el('btnGenerate');
+  var btnDownloadImage = el('btnDownloadImage');
+  var btnCopyMeta = el('btnCopyMeta');
+  var btnDownloadMeta = el('btnDownloadMeta');
+  var resultPlaceholder = el('resultPlaceholder');
+  var resultSize = el('resultSize');
+  var resultDims = el('resultDims');
+  var metaOutput = el('metaOutput');
+  var btnExportSettings = el('btnExportSettings');
+  var fileSettings = el('fileSettings');
+  var settingsStatus = el('settingsStatus');
+
+  var state = { image:null, rotation:0, crop:null, fileName:'', resultUrl:'', resultBytes:0, metaText:'' };
+  var displayScale = 1;
+  var dragging = false;
+  var sx = 0;
+  var sy = 0;
+
+  function bytesText(n){
+    if(n < 1024) return n + ' بايت';
+    if(n < 1048576) return (n/1024).toFixed(1) + ' كيلوبايت';
+    return (n/1048576).toFixed(2) + ' ميجابايت';
+  }
+  function rotatedSize(img, rot){
+    if(rot === 90 || rot === 270) return { w:img.naturalHeight, h:img.naturalWidth };
+    return { w:img.naturalWidth, h:img.naturalHeight };
+  }
+  function paintRotated(ctx, img, rot, scale){
+    var cw = ctx.canvas.width;
+    var ch = ctx.canvas.height;
+    ctx.clearRect(0,0,cw,ch);
+    ctx.save();
+    ctx.translate(cw/2, ch/2);
+    ctx.rotate(rot*Math.PI/180);
+    var iw = img.naturalWidth*scale;
+    var ih = img.naturalHeight*scale;
+    ctx.drawImage(img, -iw/2, -ih/2, iw, ih);
+    ctx.restore();
+  }
+  function drawPreview(){
+    var ctx = previewCanvas.getContext('2d');
+    if(!state.image){
+      previewCanvas.width = 560;
+      previewCanvas.height = 420;
+      ctx.clearRect(0,0,560,420);
+      previewEmpty.hidden = false;
+      imageInfo.textContent = 'لم يتم اختيار أي صورة بعد.';
+      return;
+    }
+    previewEmpty.hidden = true;
+    var base = rotatedSize(state.image, state.rotation);
+    var scale = Math.min(560/base.w, 420/base.h, 1);
+    displayScale = scale;
+    var dw = Math.max(1, Math.round(base.w*scale));
+    var dh = Math.max(1, Math.round(base.h*scale));
+    previewCanvas.width = dw;
+    previewCanvas.height = dh;
+    paintRotated(ctx, state.image, state.rotation, scale);
+    if(state.crop && state.crop.w > 2 && state.crop.h > 2){
+      var c = state.crop;
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(0,0,dw,c.y);
+      ctx.fillRect(0,c.y+c.h,dw,dh-c.y-c.h);
+      ctx.fillRect(0,c.y,c.x,c.h);
+      ctx.fillRect(c.x+c.w,c.y,dw-c.x-c.w,c.h);
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(c.x,c.y,c.w,c.h);
+    }
+    imageInfo.textContent = state.fileName + ' — ' + state.image.naturalWidth + ' × ' + state.image.naturalHeight + ' بكسل';
+  }
+  function pointFromEvent(e){
+    var r = previewCanvas.getBoundingClientRect();
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: Math.max(0, Math.min(previewCanvas.width, (clientX - r.left) * (previewCanvas.width / r.width))),
+      y: Math.max(0, Math.min(previewCanvas.height, (clientY - r.top) * (previewCanvas.height / r.height)))
+    };
+  }
+  function startDrag(e){
+    if(!state.image) return;
+    var p = pointFromEvent(e);
+    sx = p.x;
+    sy = p.y;
+    dragging = true;
+    state.crop = { x:p.x, y:p.y, w:0, h:0 };
+    drawPreview();
+    if(e.touches) e.preventDefault();
+  }
+  function moveDrag(e){
+    if(!dragging) return;
+    var p = pointFromEvent(e);
+    state.crop = { x:Math.min(sx,p.x), y:Math.min(sy,p.y), w:Math.abs(p.x-sx), h:Math.abs(p.y-sy) };
+    drawPreview();
+    if(e.touches) e.preventDefault();
+  }
+  function endDrag(){ dragging = false; }
+  previewCanvas.addEventListener('mousedown', startDrag);
+  previewCanvas.addEventListener('mousemove', moveDrag);
+  previewCanvas.addEventListener('mouseup', endDrag);
+  previewCanvas.addEventListener('mouseleave', endDrag);
+  previewCanvas.addEventListener('touchstart', startDrag, {passive:false});
+  previewCanvas.addEventListener('touchmove', moveDrag, {passive:false});
+  previewCanvas.addEventListener('touchend', endDrag);
+
+  fileImage.addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    if(file.type.indexOf('image/') !== 0){
+      imageInfo.textContent = 'الملف المختار ليس صورة. اختر ملف صورة صالحاً.';
+      return;
+    }
+    state.fileName = file.name;
+    imageInfo.textContent = 'جارٍ قراءة الصورة...';
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var img = new Image();
+      img.onload = function(){
+        state.image = img;
+        state.rotation = 0;
+        state.crop = null;
+        clearResult();
+        drawPreview();
+        updateChecks();
+      };
+      img.onerror = function(){
+        imageInfo.textContent = 'تعذّر قراءة الصورة. جرّب ملفاً آخر.';
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function(){
+      imageInfo.textContent = 'تعذّر قراءة الملف. جرّب ملفاً آخر.';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  btnRotateLeft.addEventListener('click', function(){
+    if(!state.image) return;
+    state.rotation = (state.rotation + 270) % 360;
+    state.crop = null;
+    drawPreview();
+  });
+  btnRotateRight.addEventListener('click', function(){
+    if(!state.image) return;
+    state.rotation = (state.rotation + 90) % 360;
+    state.crop = null;
+    drawPreview();
+  });
+  btnResetCrop.addEventListener('click', function(){
+    state.crop = null;
+    drawPreview();
+  });
+  qualityRange.addEventListener('input', function(){
+    qualityValue.textContent = qualityRange.value;
+  });
+
+  function missingItems(){
+    var out = [];
+    if(!state.image) out.push('اختيار صورة');
+    if(!metaTitle.value.trim()) out.push('كتابة العنوان');
+    if(metaDesc.value.trim().length < 20) out.push('كتابة وصف من عشرين حرفاً على الأقل');
+    if(!metaCats.value.trim()) out.push('إدخال تصنيف واحد على الأقل');
+    if(!metaAuthor.value.trim()) out.push('تحديد حقوق المؤلف');
+    return out;
+  }
+  function updateChecks(){
+    var missing = missingItems();
+    var done = 5 - missing.length;
+    completionBar.value = done;
+    statusBadge.textContent = missing.length ? 'غير مكتمل' : 'مكتمل';
+    if(missing.length === 0){
+      checkStatus.textContent = 'اكتملت البيانات، يمكنك إنشاء النتيجة الآن.';
+      checkStatus.className = 'app-hint app-ok';
+    } else {
+      checkStatus.textContent = 'تبقّى ' + missing.length + ' عنصراً لإكماله:';
+      checkStatus.className = 'app-hint';
+    }
+    while(checkList.firstChild){ checkList.removeChild(checkList.firstChild); }
+    for(var i=0;i<missing.length;i++){
+      var li = document.createElement('li');
+      li.textContent = missing[i];
+      checkList.appendChild(li);
+    }
+  }
+  var metaInputs = [metaTitle, metaDesc, metaCats, metaAuthor];
+  for(var i=0;i<metaInputs.length;i++){
+    metaInputs[i].addEventListener('input', updateChecks);
+  }
+  metaLicense.addEventListener('change', updateChecks);
+
+  function buildOutput(){
+    if(!state.image) return null;
+    var rot = state.rotation;
+    var full = rotatedSize(state.image, rot);
+    var work = document.createElement('canvas');
+    work.width = full.w;
+    work.height = full.h;
+    paintRotated(work.getContext('2d'), state.image, rot, 1);
+    var x0 = 0;
+    var y0 = 0;
+    var sw = full.w;
+    var sh = full.h;
+    if(state.crop && state.crop.w > 2 && state.crop.h > 2){
+      x0 = Math.max(0, Math.round(state.crop.x / displayScale));
+      y0 = Math.max(0, Math.round(state.crop.y / displayScale));
+      sw = Math.min(full.w - x0, Math.round(state.crop.w / displayScale));
+      sh = Math.min(full.h - y0, Math.round(state.crop.h / displayScale));
+      if(sw < 1 || sh < 1){ x0 = 0; y0 = 0; sw = full.w; sh = full.h; }
+    }
+    var maxW = parseInt(maxWidth.value, 10);
+    if(!maxW || maxW < 16) maxW = 1600;
+    var outScale = Math.min(1, maxW / sw);
+    var ow = Math.max(1, Math.round(sw*outScale));
+    var oh = Math.max(1, Math.round(sh*outScale));
+    var out = document.createElement('canvas');
+    out.width = ow;
+    out.height = oh;
+    out.getContext('2d').drawImage(work, x0, y0, sw, sh, 0, 0, ow, oh);
+    var mime = formatSelect.value;
+    var q = parseInt(qualityRange.value, 10)/100;
+    var url = out.toDataURL(mime, q);
+    var bytes = Math.round((url.length - url.indexOf(',') - 1) * 0.75);
+    return { url:url, bytes:bytes, w:ow, h:oh };
+  }
+  function licenseLabel(){
+    var licenseMap = {
+      'all-rights':'جميع الحقوق محفوظة',
+      'cc-by':'CC BY - نسب العمل إلى المؤلف',
+      'cc-by-sa':'CC BY-SA - المشاركة بالمثل',
+      'cc-by-nd':'CC BY-ND - بلا أعمال مشتقة',
+      'cc-by-nc':'CC BY-NC - استخدام غير تجاري',
+      'cc-by-nc-sa':'CC BY-NC-SA - غير تجاري بالمشاركة بالمثل',
+      'cc-by-nc-nd':'CC BY-NC-ND - غير تجاري بلا مشتقات',
+      'public-domain':'الملكية العامة'
+    };
+    return licenseMap[metaLicense.value] || metaLicense.value;
+  }
+  function buildMetaText(result){
+    var lines = [];
+    lines.push('العنوان: ' + metaTitle.value.trim());
+    lines.push('الوصف: ' + metaDesc.value.trim());
+    lines.push('التصنيفات: ' + metaCats.value.trim());
+    lines.push('الترخيص: ' + licenseLabel());
+    lines.push('حقوق المؤلف: ' + metaAuthor.value.trim());
+    lines.push('الصورة الأصلية: ' + (state.fileName || 'صورة'));
+    lines.push('أبعاد الإخراج: ' + result.w + ' × ' + result.h + ' بكسل');
+    lines.push('حجم الملف: ' + bytesText(result.bytes));
+    lines.push('تاريخ الإنشاء: ' + new Date().toISOString());
+    return lines.join('\n');
+  }
+  function clearResult(){
+    state.resultUrl = '';
+    state.resultBytes = 0;
+    state.metaText = '';
+    resultPlaceholder.hidden = false;
+    resultSize.textContent = '—';
+    resultDims.textContent = '';
+    metaOutput.value = '';
+    btnDownloadImage.disabled = true;
+    btnCopyMeta.disabled = true;
+    btnDownloadMeta.disabled = true;
+  }
+  btnGenerate.addEventListener('click', function(){
+    var missing = missingItems();
+    if(missing.length > 0){
+      updateChecks();
+      checkStatus.textContent = 'لا يمكن الإنشاء قبل إكمال: ' + missing.join('، ');
+      return;
+    }
+    var result = buildOutput();
+    if(!result){
+      checkStatus.textContent = 'اختر صورة أولاً.';
+      return;
+    }
+    state.resultUrl = result.url;
+    state.resultBytes = result.bytes;
+    state.metaText = buildMetaText(result);
+    resultPlaceholder.hidden = true;
+    resultSize.textContent = bytesText(result.bytes);
+    resultDims.textContent = 'الأبعاد النهائية: ' + result.w + ' × ' + result.h + ' بكسل';
+    metaOutput.value = state.metaText;
+    btnDownloadImage.disabled = false;
+    btnCopyMeta.disabled = false;
+    btnDownloadMeta.disabled = false;
+    checkStatus.textContent = 'تم إنشاء النتيجة بنجاح.';
+    checkStatus.className = 'app-hint app-ok';
+  });
+
+  function triggerDownload(url, name){
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  function safeName(){
+    var base = state.fileName.replace(/\.[^.]+$/, '') || 'image';
+    return base.replace(/[^a-zA-Z0-9\u0600-\u06FF_-]+/g, '-');
+  }
+  btnDownloadImage.addEventListener('click', function(){
+    if(!state.resultUrl) return;
+    var ext = 'jpg';
+    if(formatSelect.value === 'image/png') ext = 'png';
+    if(formatSelect.value === 'image/webp') ext = 'webp';
+    triggerDownload(state.resultUrl, safeName() + '-edited.' + ext);
+  });
+  btnCopyMeta.addEventListener('click', function(){
+    if(!state.metaText) return;
+    metaOutput.focus();
+    metaOutput.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(err){ ok = false; }
+    checkStatus.textContent = ok ? 'تم نسخ نص البيانات.' : 'تعذّر النسخ تلقائياً، اختر النص من المربع وانسخه يدوياً.';
+  });
+  btnDownloadMeta.addEventListener('click', function(){
+    if(!state.metaText) return;
+    var blob = new Blob([state.metaText], {type:'text/plain;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    triggerDownload(url, safeName() + '-metadata.txt');
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  });
+
+  btnExportSettings.addEventListener('click', function(){
+    var data = {
+      title:metaTitle.value,
+      desc:metaDesc.value,
+      cats:metaCats.value,
+      license:metaLicense.value,
+      author:metaAuthor.value,
+      maxWidth:maxWidth.value,
+      format:formatSelect.value,
+      quality:qualityRange.value
+    };
+    var text = JSON.stringify(data, null, 2);
+    var blob = new Blob([text], {type:'application/json;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    triggerDownload(url, 'image-tool-settings.json');
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    settingsStatus.textContent = 'تم تصدير الإعدادات إلى ملف.';
+  });
+  fileSettings.addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    settingsStatus.textContent = 'جارٍ قراءة ملف الإعدادات...';
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        var data = JSON.parse(ev.target.result);
+        if(data.title !== undefined) metaTitle.value = data.title;
+        if(data.desc !== undefined) metaDesc.value = data.desc;
+        if(data.cats !== undefined) metaCats.value = data.cats;
+        if(data.license !== undefined) metaLicense.value = data.license;
+        if(data.author !== undefined) metaAuthor.value = data.author;
+        if(data.maxWidth !== undefined) maxWidth.value = data.maxWidth;
+        if(data.format !== undefined) formatSelect.value = data.format;
+        if(data.quality !== undefined) qualityRange.value = data.quality;
+        qualityValue.textContent = qualityRange.value;
+        updateChecks();
+        settingsStatus.textContent = 'تم استيراد الإعدادات بنجاح.';
+      } catch(err){
+        settingsStatus.textContent = 'ملف الإعدادات غير صالح. تأكد من اختيار ملف إعدادات صادر من هنا.';
+      }
+    };
+    reader.onerror = function(){
+      settingsStatus.textContent = 'تعذّر قراءة الملف. جرّب ملفاً آخر.';
+    };
+    reader.readAsText(file);
+  });
+
+  clearResult();
+  updateChecks();
+  drawPreview();
+})();
+</script>
+</body>
+</html>
