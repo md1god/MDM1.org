@@ -137,6 +137,8 @@
 <footer class="page-footer">✦ MDM1 · 2026-11-01 ✦</footer>
 <script src="../js/global.js"></script>
 <script>
+function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+
 (() => {
   const fileInput = document.getElementById('fileInput');
   const importBtn = document.getElementById('importBtn');
@@ -177,7 +179,7 @@
     rules.forEach((r, i) => {
       const div = document.createElement('div');
       div.className = 'rule-item';
-      div.innerHTML = `${r.type === 'sender' ? 'المرسل' : r.type === 'domain' ? 'النطاق' : 'الكلمة'}: <span class="badge">${r.value}</span> → <span class="badge">${r.tag}</span>`;
+      div.innerHTML = `${r.type === 'sender' ? 'المرسل' : r.type === 'domain' ? 'النطاق' : 'الكلمة'}: <span class="badge">${mdm1Esc(r.value)}</span> → <span class="badge">${mdm1Esc(r.tag)}</span>`;
       const del = document.createElement('button');
       del.textContent = '✕';
       del.title = 'حذف القاعدة';

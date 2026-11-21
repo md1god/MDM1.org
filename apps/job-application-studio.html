@@ -199,6 +199,8 @@
 <footer class="page-footer">✦ MDM1 · 2026-10-24 ✦</footer>
 <script src="../js/global.js"></script>
 <script>
+function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+
 (function(){
   var STORAGE_KEY='job_cmd_center_v1';
   function loadAll(){
@@ -250,13 +252,13 @@
     }
     var tlist=document.getElementById('tplList'); tlist.innerHTML='';
     var tpls=data.templates||[];
-    for(var k=0;k<tpls.length;k++){ var tp=tpls[k]; var td=document.createElement('div'); td.className='card'; td.innerHTML='<div><strong>'+tp.name+'</strong></div><div class="out">'+tp.text+'</div><div class="row"><button data-tact="copy" data-id="'+tp.id+'" class="sec">نسخ</button><button data-tact="del" data-id="'+tp.id+'" class="sec">حذف</button></div>'; tlist.appendChild(td); }
+    for(var k=0;k<tpls.length;k++){ var tp=tpls[k]; var td=document.createElement('div'); td.className='card'; td.innerHTML='<div><strong>'+mdm1Esc(tp.name)+'</strong></div><div class="out">'+mdm1Esc(tp.text)+'</div><div class="row"><button data-tact="copy" data-id="'+mdm1Esc(tp.id)+'" class="sec">نسخ</button><button data-tact="del" data-id="'+mdm1Esc(tp.id)+'" class="sec">حذف</button></div>'; tlist.appendChild(td); }
     var sl=document.getElementById('sheetJobSelect'); var tlSel=document.getElementById('trackJobSelect'); sl.innerHTML='<option value="">اختر إعلاناً</option>'; tlSel.innerHTML='<option value="">اختر إعلاناً</option>';
     for(var m=0;m<jobs.length;m++){ var jj=jobs[m]; var o1=document.createElement('option'); o1.value=jj.id; o1.textContent=jj.title+' - '+jj.company; sl.appendChild(o1); var o2=o1.cloneNode(true); tlSel.appendChild(o2); }
     var rlist=document.getElementById('reminderList'); rlist.innerHTML='';
     var rems=data.reminders||[];
     if(rems.length===0) rlist.innerHTML='<div>لا توجد تذكيرات</div>';
-    else for(var n=0;n<rems.length;n++){ var rr=rems[n]; var rd=document.createElement('div'); rd.className='card'; rd.innerHTML='<div>'+rr.text+'</div><div class="row"><button data-ract="done" data-id="'+rr.id+'" class="sec">تم</button></div>'; rlist.appendChild(rd); }
+    else for(var n=0;n<rems.length;n++){ var rr=rems[n]; var rd=document.createElement('div'); rd.className='card'; rd.innerHTML='<div>'+mdm1Esc(rr.text)+'</div><div class="row"><button data-ract="done" data-id="'+mdm1Esc(rr.id)+'" class="sec">تم</button></div>'; rlist.appendChild(rd); }
   }
   document.getElementById('saveProfile').addEventListener('click',function(){
     var data=loadAll(); data.profile={name:document.getElementById('profileName').value,email:document.getElementById('profileEmail').value,skills:document.getElementById('profileSkills').value,cv:document.getElementById('profileCv').value};
