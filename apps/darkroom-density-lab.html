@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معالج مسحات الأفلام: إزالة القناع والكثافة ومنحنى H&amp;D | MDM1</title>
+<meta name="description" content="عالج مسحات الأفلام السلبية والشرائح محلياً في متصفحك دون رفع أو حفظ، أزل القناع البرتقالي لكل قناة، واحسب الكثافة ومنحنى H&amp;D بدرجات ISO-R، وصدّر PNG أو JPEG.">
+<link rel="canonical" href="https://mdm1.org/apps/darkroom-density-lab.html">
+<meta property="og:title" content="معالج مسحات الأفلام: إزالة القناع والكثافة ومنحنى H&amp;D">
+<meta property="og:description" content="عالج مسحات الأفلام السلبية والشرائح محلياً في متصفحك دون رفع أو حفظ، أزل القناع البرتقالي لكل قناة، واحسب الكثافة ومنحنى H&amp;D بدرجات ISO-R، وصدّر PNG أو JPEG.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/darkroom-density-lab.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { margin: 1.2rem 0; }
+.app.card { padding: 1rem; }
+.app h2, .app h3 { margin: 0 0 .6rem; color: var(--gold-bright); }
+.app h2 { font-size: 1.15rem; }
+.app .row { flex-wrap: wrap; align-items: center; gap: .5rem; margin: .5rem 0; }
+.app label { margin-inline-end: .15rem; }
+.app input[type="range"] { min-width: 140px; }
+.app output { display: inline-block; min-width: 3.2rem; color: var(--gold-bright); }
+.app .app-stage { display: grid; place-items: center; min-height: 240px; overflow: hidden; border: 1px solid var(--gold-dim); border-radius: 8px; background: rgba(0,0,0,.28); }
+.app canvas { display: block; max-width: 100%; height: auto; }
+.app #preview { touch-action: none; }
+.app #curve-canvas { width: 320px; border: 1px solid var(--gold-dim); border-radius: 6px; }
+.app .app-status, .app .app-note { color: var(--gold); margin: .4rem 0; }
+.app .app-note { opacity: .82; }
+.app .app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .5rem; }
+.app hr.divider { border-color: var(--gold-dim); }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "معالج مسحات الأفلام والشرائح داخل المتصفح", "url": "https://mdm1.org/apps/darkroom-density-lab.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تبقى الصور داخل الجهاز أثناء المعالجة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُقرأ الملفات محلياً داخل المتصفح ولا تُرسل إلى أي خادم، ويمكنك تصدير النتيجة أو الإعدادات يدوياً عند الانتهاء."}}, {"@type": "Question", "name": "ما الفرق بين أوضاع الفيلم الثلاثة؟", "acceptedAnswer": {"@type": "Answer", "text": "يعالج وضع الفيلم السلبي الملون القناع البرتقالي لكل قناة ثم يعكس القيم، ويعكس وضع أبيض وأسود الصورة أحادية اللون، بينما يحتفظ وضع الشريحة بالقيم الإيجابية كما هي."}}, {"@type": "Question", "name": "كيف يتم اختيار درجة الورق تلقائياً؟", "acceptedAnswer": {"@type": "Answer", "text": "يقيس البرنامج مدى الكثافة بين أخف وأغمق المناطق، ثم يحوّل هذا المدى إلى درجة تقريبية على سلم ISO-R يمكن تعديلها يدوياً بعد ذلك."}}, {"@type": "Question", "name": "هل أستطيع مقارنة إطارين قبل التصدير؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اختر إطاراً من قائمة المقارنة لعرض الفرق، أو استخدم زر عرض الأصل للتبديل بين النتيجة والمسح الخام، ثم صدّر الإطار الحالي."}}, {"@type": "Question", "name": "ما الذي يشمله ملف الإعدادات؟", "acceptedAnswer": {"@type": "Answer", "text": "يحمل ملف JSON قيم القص والتدوير والتقسيم ومكاسب القناع والكثافة والدرجة والفرشاة المحلية، ويمكن استيراده لاحقاً لتطبيق الإعدادات نفسها على مسحات أخرى."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">معالج مسحات الأفلام والشرائح داخل المتصفح</h1>
+  <p class="page-sub">عالج مسحات الأفلام السلبية والشرائح محلياً في متصفحك دون رفع أو حفظ، أزل القناع البرتقالي لكل قناة، واحسب الكثافة ومنحنى H&amp;D بدرجات ISO-R، وصدّر PNG أو JPEG.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app-intro" id="intro">نعم، يمكنك معالجة مسحات الأفلام السلبية والشرائح بالكامل داخل المتصفح دون رفع أي ملف إلى خادم أو حفظه على الجهاز. يبدأ الحل بقراءة الصور محلياً، ثم يزيل القناع البرتقالي لكل قناة لونية على حدة، ويحوّل القيم إلى كثافة بصرية ومنحنى H&D مع درجات ورق ISO-R. يمكنك ضبط الكثافة والدرجة تلقائياً أو يدوياً، وتدوير الإطار وقصّه وتقسيمه إلى نصفين، وإزالة الغبار والخدوش، وتعتيم أو إشراق مناطق صغيرة بفرشاة محلية. كما تتيح المقارنة بين إطارين، ومعاينة التغيرات قبل التصدير إلى PNG أو JPEG، مع إمكانية تصدير الإعدادات واستيرادها كملف JSON.</p>
+
+<section class="app card" id="panel-load">
+<h2 id="h-load">١. تحميل المسحات واختيار النوع</h2>
+<div class="row">
+<label id="lbl-files" for="file-input">اختر ملفات المسح (PNG أو JPEG أو WebP)</label>
+<input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" multiple>
+</div>
+<div class="row">
+<label id="lbl-mode" for="mode-select">نوع الفيلم</label>
+<select id="mode-select">
+<option id="opt-color" value="color">فيلم سلبي ملون</option>
+<option id="opt-bw" value="bw">أبيض وأسود</option>
+<option id="opt-slide" value="slide">شريحة إيجابية</option>
+</select>
+<button id="btn-clear" class="sec">مسح القائمة</button>
+</div>
+<p id="load-status" class="app-status">لم يتم تحميل أي ملف.</p>
+<div class="row">
+<button id="btn-prev">الإطار السابق</button>
+<button id="btn-next">الإطار التالي</button>
+<span id="frame-count" class="badge">٠ / ٠</span>
+</div>
+</section>
+
+<section class="app card" id="panel-geometry">
+<h2 id="h-geo">٢. التدوير والقص وتقسيم الإطار</h2>
+<div class="row">
+<label id="lbl-rot" for="rot-select">زاوية التدوير</label>
+<select id="rot-select">
+<option id="rot-0" value="0">٠ درجة</option>
+<option id="rot-90" value="90">٩٠ درجة</option>
+<option id="rot-180" value="180">١٨٠ درجة</option>
+<option id="rot-270" value="270">٢٧٠ درجة</option>
+</select>
+<button id="btn-rot-left" class="sec">تدوير يسار ٩٠°</button>
+<button id="btn-rot-right" class="sec">تدوير يمين ٩٠°</button>
+</div>
+<div class="row">
+<label id="lbl-crop-x" for="crop-x">إزاحة أفقية ٪</label><input type="number" id="crop-x" min="0" max="45" value="0">
+<label id="lbl-crop-y" for="crop-y">إزاحة رأسية ٪</label><input type="number" id="crop-y" min="0" max="45" value="0">
+<label id="lbl-crop-w" for="crop-w">العرض ٪</label><input type="number" id="crop-w" min="5" max="100" value="100">
+<label id="lbl-crop-h" for="crop-h">الارتفاع ٪</label><input type="number" id="crop-h" min="5" max="100" value="100">
+<button id="btn-apply-crop">تطبيق القص</button>
+<button id="btn-reset-crop" class="sec">إلغاء القص</button>
+</div>
+<div class="row">
+<label id="lbl-half" for="half-select">تقسيم الإطار</label>
+<select id="half-select">
+<option id="half-none" value="none">إطار كامل</option>
+<option id="half-left" value="left">النصف الأيسر</option>
+<option id="half-right" value="right">النصف الأيمن</option>
+<option id="half-top" value="top">النصف العلوي</option>
+<option id="half-bottom" value="bottom">النصف السفلي</option>
+</select>
+<button id="btn-split">تطبيق التقسيم</button>
+</div>
+</section>
+
+<section class="app card" id="panel-density">
+<h2 id="h-dens">٣. إزالة القناع البرتقالي وضبط الكثافة</h2>
+<div class="row">
+<label id="lbl-mask" for="mask-range">قوة إزالة القناع</label>
+<input type="range" id="mask-range" min="0" max="100" value="85">
+<output id="mask-out" for="mask-range">85٪</output>
+<button id="btn-auto-mask" class="sec">معايرة القناع تلقائياً</button>
+</div>
+<div class="row">
+<label id="lbl-r" for="gain-r">مكسب الأحمر</label><input type="number" id="gain-r" step="0.01" min="0.2" max="3" value="1">
+<label id="lbl-g" for="gain-g">مكسب الأخضر</label><input type="number" id="gain-g" step="0.01" min="0.2" max="3" value="1">
+<label id="lbl-b" for="gain-b">مكسب الأزرق</label><input type="number" id="gain-b" step="0.01" min="0.2" max="3" value="1">
+</div>
+<div class="row">
+<label id="lbl-gamma" for="gamma-range">غاما الكثافة</label><input type="range" id="gamma-range" min="40" max="220" value="100"><output id="gamma-out" for="gamma-range">1.00</output>
+<label id="lbl-exposure" for="exposure-range">التعريض</label><input type="range" id="exposure-range" min="-200" max="200" value="0"><output id="exposure-out" for="exposure-range">0</output>
+<button id="btn-auto-density">ضبط الكثافة تلقائياً</button>
+</div>
+<div class="out" id="density-stats">لا توجد بيانات كثافة بعد.</div>
+</section>
+
+<section class="app card" id="panel-grade">
+<h2 id="h-grade">٤. منحنى H&D ودرجات الورق ISO-R</h2>
+<div class="row">
+<label id="lbl-grade" for="grade-select">درجة الورق</label>
+<select id="grade-select">
+<option id="grade-auto" value="auto">تلقائي</option>
+<option id="grade-0" value="0">٠</option>
+<option id="grade-1" value="1">١</option>
+<option id="grade-2" value="2">٢</option>
+<option id="grade-3" value="3">٣</option>
+<option id="grade-4" value="4">٤</option>
+<option id="grade-5" value="5">٥</option>
+</select>
+<button id="btn-auto-grade">اختيار الدرجة تلقائياً</button>
+</div>
+<div class="row">
+<label id="lbl-contrast" for="contrast-range">التباين</label><input type="range" id="contrast-range" min="0" max="200" value="100"><output id="contrast-out" for="contrast-range">1.00</output>
+<label id="lbl-shadows" for="shadow-range">رفع الظلال</label><input type="range" id="shadow-range" min="0" max="100" value="0"><output id="shadow-out" for="shadow-range">0</output>
+<label id="lbl-highlights" for="highlight-range">كبح الإضاءة</label><input type="range" id="highlight-range" min="0" max="100" value="0"><output id="highlight-out" for="highlight-range">0</output>
+</div>
+<div class="app-grid">
+<canvas id="curve-canvas" width="320" height="200"></canvas>
+<div class="out" id="grade-info">الدرجة المختارة: تلقائي — التباين 1.00</div>
+</div>
+<p><small id="grade-note" class="app-note">يقارن المنحنى بين لوغاريتم التعريض والكثافة، وتمثل الدرجات الأعلى تبايناً أشد وفق سلم ISO-R.</small></p>
+</section>
+
+<section class="app card" id="panel-repair">
+<h2 id="h-repair">٥. إزالة الغبار والخدش والتعديل المحلي</h2>
+<div class="row">
+<label id="lbl-dust" for="dust-range">إزالة الغبار</label><input type="range" id="dust-range" min="0" max="100" value="0"><output id="dust-out" for="dust-range">0٪</output>
+<label id="lbl-scratch" for="scratch-range">إزالة الخدوش</label><input type="range" id="scratch-range" min="0" max="100" value="0"><output id="scratch-out" for="scratch-range">0٪</output>
+<button id="btn-repair">تطبيق التنظيف</button>
+</div>
+<div class="row">
+<label id="lbl-tool" for="tool-select">الأداة المحلية</label>
+<select id="tool-select">
+<option id="tool-none" value="none">لا شيء</option>
+<option id="tool-burn" value="burn">تعتيم موضعي</option>
+<option id="tool-dodge" value="dodge">إشراق موضعي</option>
+</select>
+<label id="lbl-brush" for="brush-range">حجم الفرشاة</label><input type="range" id="brush-range" min="5" max="150" value="40"><output id="brush-out" for="brush-range">40</output>
+<label id="lbl-local" for="local-strength">شدة الفرشاة</label><input type="range" id="local-strength" min="1" max="100" value="35"><output id="local-out" for="local-strength">35</output>
+<button id="btn-clear-local" class="sec">مسح التعديلات المحلية</button>
+</div>
+<p><small id="repair-hint" class="app-note">اختر أداة تعتيم أو إشراق ثم ارسم مباشرة على الصورة في المعاينة.</small></p>
+</section>
+
+<section class="app card" id="panel-preview">
+<h2 id="h-preview">٦. المعاينة والمقارنة</h2>
+<div class="row">
+<button id="btn-render">تحديث المعاينة</button>
+<button id="btn-compare" class="sec">اعرض الأصل للمقارنة</button>
+<button id="btn-auto-all">تطبيق الضبط التلقائي الكامل</button>
+</div>
+<div class="app-stage" id="stage">
+<canvas id="preview" width="640" height="420"></canvas>
+</div>
+<p id="preview-status" class="app-status">لا توجد صورة للمعاينة.</p>
+<div class="row">
+<label id="lbl-compare" for="compare-select">مقارنة مع إطار</label>
+<select id="compare-select"><option id="compare-none" value="none">لا شيء</option></select>
+<button id="btn-show-diff" class="sec">إظهار الفرق</button>
+</div>
+<div class="out" id="metrics">لا توجد قياسات بعد.</div>
+</section>
+
+<section class="app card" id="panel-export">
+<h2 id="h-export">٧. التصدير والاستيراد</h2>
+<div class="row">
+<label id="lbl-format" for="format-select">صيغة التصدير</label>
+<select id="format-select">
+<option id="fmt-png" value="png">PNG</option>
+<option id="fmt-jpeg" value="jpeg">JPEG</option>
+</select>
+<label id="lbl-quality" for="quality-range">جودة JPEG</label><input type="range" id="quality-range" min="50" max="100" value="92"><output id="quality-out" for="quality-range">92</output>
+<button id="btn-export">تنزيل الصورة</button>
+<button id="btn-export-json" class="sec">تصدير الإعدادات JSON</button>
+</div>
+<div class="row">
+<label id="lbl-import" for="json-input">استيراد الإعدادات من ملف JSON</label>
+<input type="file" id="json-input" accept="application/json,.json">
+</div>
+<p><small id="export-note" class="app-note">لا تُحفظ الملفات أو الإعدادات في المتصفح؛ يمكنك نقلها يدوياً عبر ملف JSON.</small></p>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تبقى الصور داخل الجهاز أثناء المعالجة؟</h3><p>نعم، تُقرأ الملفات محلياً داخل المتصفح ولا تُرسل إلى أي خادم، ويمكنك تصدير النتيجة أو الإعدادات يدوياً عند الانتهاء.</p><h3>ما الفرق بين أوضاع الفيلم الثلاثة؟</h3><p>يعالج وضع الفيلم السلبي الملون القناع البرتقالي لكل قناة ثم يعكس القيم، ويعكس وضع أبيض وأسود الصورة أحادية اللون، بينما يحتفظ وضع الشريحة بالقيم الإيجابية كما هي.</p><h3>كيف يتم اختيار درجة الورق تلقائياً؟</h3><p>يقيس البرنامج مدى الكثافة بين أخف وأغمق المناطق، ثم يحوّل هذا المدى إلى درجة تقريبية على سلم ISO-R يمكن تعديلها يدوياً بعد ذلك.</p><h3>هل أستطيع مقارنة إطارين قبل التصدير؟</h3><p>نعم، اختر إطاراً من قائمة المقارنة لعرض الفرق، أو استخدم زر عرض الأصل للتبديل بين النتيجة والمسح الخام، ثم صدّر الإطار الحالي.</p><h3>ما الذي يشمله ملف الإعدادات؟</h3><p>يحمل ملف JSON قيم القص والتدوير والتقسيم ومكاسب القناع والكثافة والدرجة والفرشاة المحلية، ويمكن استيراده لاحقاً لتطبيق الإعدادات نفسها على مسحات أخرى.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="e-ink-comic-optimizer.html" style="color:var(--gold-bright);font-weight:700">معالج صور المانجا للشاشات الإلكترونية</a><span style="opacity:.75"> — أداة متصفح لمعالجة صور المانجا: تصغير الدقة، إصلاح السواد، تقسيم الصفحات، تنقية 4-بت. سحب مجلدات، معاينة…</span></li><li style="margin:.5rem 0"><a href="safi-search-sieve.html" style="color:var(--gold-bright);font-weight:700">منظّف نتائج البحث: إزالة الإعلانات والموجزات وعرض الروابط العضوية</a><span style="opacity:.75"> — ألصق صفحة نتائج بحث محفوظة لحذف موجزات الذكاء الاصطناعي والإعلانات والنتائج المموّلة و«أسئلة ذات صلة»، ثم…</span></li><li style="margin:.5rem 0"><a href="vocal-free-studio.html" style="color:var(--gold-bright);font-weight:700">أداة إزالة الصوت الغنائي من ملفات الموسيقى</a><span style="opacity:.75"> — ترفع ملفًا موسيقيًا وتستخلص نسخة خالية تقريبًا من الغناء بالاعتماد على إزالة القناة الوسطى عبر WebAudio، مع…</span></li><li style="margin:.5rem 0"><a href="data-exposure-pricing-lab.html" style="color:var(--gold-bright);font-weight:700">كتالوج بيانات مؤسسي وبوابات وهمية للوكلاء</a><span style="opacity:.75"> — تطبيق متصفح لبناء كتالوج لمصادر بيانات مؤسسة وتحديد ما يُكشف للوكلاء عبر واجهات وهمية، مع سياسات وصول…</span></li><li style="margin:.5rem 0"><a href="daylight-rhythm-tuner.html" style="color:var(--gold-bright);font-weight:700">أداة موقع الشمس وحرارة لون ضوء النهار بالعرض والوقت</a><span style="opacity:.75"> — احسب ارتفاع الشمس وحرارة لون ضوء النهار (CCT) والسطوع (lx) لحظة بلحظة حسب خط العرض والوقت المحلي مع رسوم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  var byId = function (id) { return document.getElementById(id); };
+  var state = {
+    frames: [], index: 0, mode: 'color', rot: 0,
+    crop: { x: 0, y: 0, w: 100, h: 100 }, half: 'none',
+    mask: 85, gains: { r: 1, g: 1, b: 1 }, gamma: 1, exposure: 0,
+    grade: 'auto', contrast: 1, shadows: 0, highlights: 0,
+    dust: 0, scratch: 0, strokes: [], compareIndex: -1,
+    showDiff: false, showOriginal: false, tool: 'none', brush: 40, localStrength: 35
+  };
+  var lastStats = { dmin: 0, dmax: 0, dmean: 0, range: 0 };
+  var working = null;
+  var painting = false;
+  var pendingFrame = false;
+
+  function txt(id, value) { var el = byId(id); if (el) { el.textContent = value; } }
+  function num(id) { var el = byId(id); return el ? (parseFloat(el.value) || 0) : 0; }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function bind(id, ev, fn) { var el = byId(id); if (el) { el.addEventListener(ev, fn); } }
+
+  function makeCanvas(w, h) {
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(w));
+    c.height = Math.max(1, Math.round(h));
+    return { canvas: c, ctx: c.getContext('2d', { willReadFrequently: true }) };
+  }
+
+  function decode(file) {
+    if (typeof createImageBitmap === 'function') { return createImageBitmap(file); }
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  function addFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList).filter(function (f) {
+      return f.type.indexOf('image/') === 0;
+    });
+    if (!files.length) { txt('load-status', 'لم يتم العثور على صور صالحة.'); return; }
+    Promise.all(files.map(function (f) {
+      return decode(f).then(function (bmp) {
+        return { bitmap: bmp, name: f.name, width: bmp.width, height: bmp.height };
+      });
+    })).then(function (loaded) {
+      state.frames = state.frames.concat(loaded);
+      state.index = state.frames.length - loaded.length;
+      readControls(); autoMask(); autoDensity(); autoGrade(); readControls();
+      render();
+      txt('load-status', 'تم تحميل ' + state.frames.length + ' إطار بنجاح.');
+    }).catch(function () {
+      txt('load-status', 'تعذرت قراءة بعض الملفات. جرّب PNG أو JPEG أو WebP.');
+    });
+  }
+
+  function syncFrameControls() {
+    var n = state.frames.length;
+    txt('frame-count', (n ? state.index + 1 : 0) + ' / ' + n);
+    var sel = byId('compare-select');
+    while (sel.options.length > 1) { sel.removeChild(sel.options[1]); }
+    for (var i = 0; i < n; i += 1) {
+      var o = document.createElement('option');
+      o.id = 'cmp-' + i;
+      o.value = String(i);
+      o.textContent = 'الإطار ' + (i + 1) + ' — ' + state.frames[i].name;
+      sel.appendChild(o);
+    }
+    if (state.compareIndex >= n) { state.compareIndex = -1; }
+    sel.value = state.compareIndex >= 0 ? String(state.compareIndex) : 'none';
+  }
+
+  function geometry() {
+    var frame = state.frames[state.index];
+    if (!frame) { return null; }
+    var w = frame.width, h = frame.height;
+    var first = makeCanvas(w, h);
+    first.ctx.drawImage(frame.bitmap, 0, 0);
+    var cur = first;
+    var r = state.rot;
+    if (r) {
+      var swap = (r === 90 || r === 270);
+      var rot = makeCanvas(swap ? h : w, swap ? w : h);
+      rot.ctx.translate(rot.canvas.width / 2, rot.canvas.height / 2);
+      rot.ctx.rotate(r * Math.PI / 180);
+      rot.ctx.drawImage(cur.canvas, -w / 2, -h / 2);
+      cur = rot;
+    }
+    var cw = cur.canvas.width, ch = cur.canvas.height;
+    var x = clamp(state.crop.x, 0, 99) * cw / 100;
+    var y = clamp(state.crop.y, 0, 99) * ch / 100;
+    var ww = clamp(state.crop.w, 5, 100) * cw / 100;
+    var hh = clamp(state.crop.h, 5, 100) * ch / 100;
+    ww = Math.min(ww, cw - x); hh = Math.min(hh, ch - y);
+    var cropped = makeCanvas(ww, hh);
+    cropped.ctx.drawImage(cur.canvas, x, y, ww, hh, 0, 0, cropped.canvas.width, cropped.canvas.height);
+    cur = cropped;
+    if (state.half !== 'none') {
+      var hw = cur.canvas.width, ht = cur.canvas.height;
+      var sx = 0, sy = 0, dw = hw, dh = ht;
+      if (state.half === 'left') { dw = Math.floor(hw / 2); }
+      if (state.half === 'right') { sx = Math.floor(hw / 2); dw = hw - sx; }
+      if (state.half === 'top') { dh = Math.floor(ht / 2); }
+      if (state.half === 'bottom') { sy = Math.floor(ht / 2); dh = ht - sy; }
+      var half = makeCanvas(dw, dh);
+      half.ctx.drawImage(cur.canvas, sx, sy, dw, dh, 0, 0, dw, dh);
+      cur = half;
+    }
+    var scale = Math.min(1, 1600 / Math.max(cur.canvas.width, cur.canvas.height));
+    if (scale < 1) {
+      var small = makeCanvas(cur.canvas.width * scale, cur.canvas.height * scale);
+      small.ctx.drawImage(cur.canvas, 0, 0, small.canvas.width, small.canvas.height);
+      cur = small;
+    }
+    return cur.canvas;
+  }
+
+  function sampledPixels(canvas) {
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+    var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var r = [], g = [], b = [], s = [];
+    var step = Math.max(1, Math.floor((canvas.width * canvas.height) / 6000));
+    for (var i = 0; i < data.length; i += 4 * step) {
+      r.push(data[i]); g.push(data[i + 1]); b.push(data[i + 2]);
+      s.push(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+    }
+    return { r: r, g: g, b: b, s: s };
+  }
+
+  function percentile(values, p) {
+    if (!values.length) { return 128; }
+    var copy = values.slice();
+    copy.sort(function (a, b) { return a - b; });
+    return copy[Math.floor((copy.length - 1) * p)];
+  }
+
+  function autoMask() {
+    var base = geometry();
+    if (!base) { return; }
+    var px = sampledPixels(base);
+    var pr = percentile(px.r, 0.9), pg = percentile(px.g, 0.9), pb = percentile(px.b, 0.9);
+    var ref = (pr + pg + pb) / 3;
+    state.gains.r = clamp(ref / Math.max(pr, 1), 0.4, 2.5);
+    state.gains.g = clamp(ref / Math.max(pg, 1), 0.4, 2.5);
+    state.gains.b = clamp(ref / Math.max(pb, 1), 0.4, 2.5);
+    byId('gain-r').value = state.gains.r.toFixed(2);
+    byId('gain-g').value = state.gains.g.toFixed(2);
+    byId('gain-b').value = state.gains.b.toFixed(2);
+  }
+
+  function autoDensity() {
+    var base = geometry();
+    if (!base) { return; }
+    var px = sampledPixels(base);
+    var mix = state.mask / 100;
+    var mr = 1 + (state.gains.r - 1) * mix;
+    var mg = 1 + (state.gains.g - 1) * mix;
+    var mb = 1 + (state.gains.b - 1) * mix;
+    var total = 0;
+    for (var i = 0; i < px.r.length; i += 1) {
+      var rr = clamp(px.r[i] * mr, 0, 255);
+      var gg = clamp(px.g[i] * mg, 0, 255);
+      var bb = clamp(px.b[i] * mb, 0, 255);
+      var lum = 0.299 * rr + 0.587 * gg + 0.114 * bb;
+      total += (state.mode === 'slide' ? lum : 255 - lum);
+    }
+    var mean = total / Math.max(1, px.r.length);
+    var stops = Math.log(128 / Math.max(mean, 1)) / Math.LN2;
+    state.exposure = Math.round(clamp(stops * 100, -200, 200));
+    byId('exposure-range').value = String(state.exposure);
+  }
+
+  function autoGrade() {
+    var base = geometry();
+    if (!base) { return; }
+    var px = sampledPixels(base);
+    var hi = percentile(px.s, 0.95), lo = percentile(px.s, 0.05);
+    var dMin = Math.log(255 / Math.max(hi, 1)) / Math.LN10;
+    var dMax = Math.log(255 / Math.max(lo, 1)) / Math.LN10;
+    var range = Math.max(0, dMax - dMin);
+    state.grade = String(Math.round(clamp((range - 0.45) / 0.18, 0, 5)));
+    byId('grade-select').value = state.grade;
+  }
+
+  function tone(v) {
+    var x = clamp(v / 255, 0, 1);
+    var g = clamp(state.gamma, 0.4, 2.2);
+    var y = Math.pow(x, 1 / g);
+    y = (y - 0.5) * state.contrast + 0.5;
+    y = y + (state.shadows / 100) * (1 - y) * 0.5 - (state.highlights / 100) * y * 0.5;
+    y = y * Math.pow(2, state.exposure / 100);
+    return clamp(y * 255, 0, 255);
+  }
+
+  function repair(canvas) {
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+    var w = canvas.width, h = canvas.height;
+    var img = ctx.getImageData(0, 0, w, h);
+    var src = img.data;
+    var out = new Uint8ClampedArray(src);
+    var wgt = state.dust / 100;
+    var sgt = state.scratch / 100;
+    if (wgt > 0) {
+      for (var y = 1; y < h - 1; y += 1) {
+        for (var x = 1; x < w - 1; x += 1) {
+          var idx = (y * w + x) * 4;
+          var med = [0, 0, 0];
+          for (var c = 0; c < 3; c += 1) {
+            var vals = [];
+            for (var dy = -1; dy <= 1; dy += 1) {
+              for (var dx = -1; dx <= 1; dx += 1) {
+                vals.push(src[((y + dy) * w + x + dx) * 4 + c]);
+              }
+            }
+            vals.sort(function (a, b) { return a - b; });
+            med[c] = vals[4];
+          }
+          var dist = Math.abs(src[idx] - med[0]) + Math.abs(src[idx + 1] - med[1]) + Math.abs(src[idx + 2] - med[2]);
+          if (dist > 70 - 55 * wgt) {
+            out[idx] = src[idx] + (med[0] - src[idx]) * wgt;
+            out[idx + 1] = src[idx + 1] + (med[1] - src[idx + 1]) * wgt;
+            out[idx + 2] = src[idx + 2] + (med[2] - src[idx + 2]) * wgt;
+          }
+        }
+      }
+    }
+    if (sgt > 0) {
+      var col = new Float32Array(w);
+      for (var yy = 0; yy < h; yy += 1) {
+        for (var xx = 0; xx < w; xx += 1) {
+          var ii = (yy * w + xx) * 4;
+          col[xx] = 0.299 * out[ii] + 0.587 * out[ii + 1] + 0.114 * out[ii + 2];
+        }
+        for (var x2 = 2; x2 < w - 2; x2 += 1) {
+          var expected = (col[x2 - 2] + col[x2 + 2]) / 2;
+          if (Math.abs(col[x2] - expected) > 40 - 30 * sgt) {
+            var jj = (yy * w + x2) * 4;
+            var shift = (expected - col[x2]) * sgt;
+            out[jj] += shift; out[jj + 1] += shift; out[jj + 2] += shift;
+          }
+        }
+      }
+    }
+    img.data.set(out);
+    ctx.putImageData(img, 0, 0);
+  }
+
+  function paintLocal(canvas) {
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+    var w = canvas.width, h = canvas.height;
+    var img = ctx.getImageData(0, 0, w, h);
+    var d = img.data;
+    var m = Math.min(w, h);
+    for (var s = 0; s < state.strokes.length; s += 1) {
+      var st = state.strokes[s];
+      var cx = st.x * w, cy = st.y * h, rad = Math.max(2, st.r * m);
+      var x0 = Math.max(0, Math.floor(cx - rad)), x1 = Math.min(w - 1, Math.ceil(cx + rad));
+      var y0 = Math.max(0, Math.floor(cy - rad)), y1 = Math.min(h - 1, Math.ceil(cy + rad));
+      for (var y = y0; y <= y1; y += 1) {
+        for (var x = x0; x <= x1; x += 1) {
+          var dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+          if (dist > rad) { continue; }
+          var fall = (1 - dist / rad) * st.s;
+          var k = st.mode === 'dodge' ? 1 + fall : 1 - fall;
+          var idx = (y * w + x) * 4;
+          d[idx] = clamp(d[idx] * k, 0, 255);
+          d[idx + 1] = clamp(d[idx + 1] * k, 0, 255);
+          d[idx + 2] = clamp(d[idx + 2] * k, 0, 255);
+        }
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  function processFrame() {
+    var base = geometry();
+    if (!base) { return null; }
+    var ctx = base.getContext('2d', { willReadFrequently: true });
+    var img = ctx.getImageData(0, 0, base.width, base.height);
+    var d = img.data;
+    var mix = state.mask / 100;
+    var mr = 1 + (state.gains.r - 1) * mix;
+    var mg = 1 + (state.gains.g - 1) * mix;
+    var mb = 1 + (state.gains.b - 1) * mix;
+    var invert = state.mode !== 'slide';
+    var sumD = 0, minD = 9, maxD = 0, count = 0;
+    for (var i = 0; i < d.length; i += 4) {
+      var sr = d[i], sg = d[i + 1], sb = d[i + 2];
+      var rr = clamp(sr * mr, 0, 255);
+      var gg = clamp(sg * mg, 0, 255);
+      var bb = clamp(sb * mb, 0, 255);
+      if (state.mode === 'bw') {
+        var lum = 0.299 * rr + 0.587 * gg + 0.114 * bb;
+        rr = gg = bb = lum;
+      }
+      if (invert) { rr = 255 - rr; gg = 255 - gg; bb = 255 - bb; }
+      d[i] = tone(rr); d[i + 1] = tone(gg); d[i + 2] = tone(bb);
+      var lum0 = 0.299 * sr + 0.587 * sg + 0.114 * sb;
+      var dens = Math.log(255 / Math.max(lum0, 1)) / Math.LN10;
+      sumD += dens; minD = Math.min(minD, dens); maxD = Math.max(maxD, dens); count += 1;
+    }
+    var avg = sumD / Math.max(1, count);
+    lastStats = { dmin: minD, dmax: maxD, dmean: avg, range: maxD - minD };
+    ctx.putImageData(img, 0, 0);
+    if (state.dust > 0 || state.scratch > 0) { repair(base); }
+    if (state.strokes.length) { paintLocal(base); }
+    return base;
+  }
+
+  function drawCurve() {
+    var c = byId('curve-canvas');
+    var ctx = c.getContext('2d');
+    var w = c.width, h = c.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(201,162,39,0.25)'; ctx.lineWidth = 1;
+    for (var i = 1; i < 4; i += 1) {
+      ctx.beginPath(); ctx.moveTo(i * w / 4, 0); ctx.lineTo(i * w / 4, h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i * h / 4); ctx.lineTo(w, i * h / 4); ctx.stroke();
+    }
+    var grade = state.grade === 'auto' ? 2.5 : (parseFloat(state.grade) || 0);
+    var k = (0.55 + grade * 0.2) * state.contrast;
+    ctx.strokeStyle = '#e8c15a'; ctx.lineWidth = 2; ctx.beginPath();
+    for (var px = 0; px <= w; px += 2) {
+      var logH = -2 + 4 * px / w;
+      var y = 1 / (1 + Math.exp(-k * (logH - 0.2) * 1.8));
+      var py = h - 12 - y * (h - 24);
+      if (px === 0) { ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#f4ead0'; ctx.font = '12px sans-serif';
+    ctx.fillText('H&D', 8, 16);
+    ctx.fillText('log H', w - 48, h - 6);
+    ctx.fillText('D', 6, h - 6);
+  }
+
+  function modeName() {
+    if (state.mode === 'bw') { return 'أبيض وأسود'; }
+    if (state.mode === 'slide') { return 'شريحة إيجابية'; }
+    return 'فيلم سلبي ملون';
+  }
+  function gradeName() { return state.grade === 'auto' ? 'تلقائي' : 'ISO-R ' + state.grade; }
+
+  function render() {
+    var out = processFrame();
+    var pv = byId('preview');
+    if (!out) {
+      pv.width = 640; pv.height = 420;
+      var ec = pv.getContext('2d');
+      ec.clearRect(0, 0, pv.width, pv.height);
+      ec.fillStyle = '#1a1712'; ec.fillRect(0, 0, pv.width, pv.height);
+      ec.fillStyle = '#e8c15a'; ec.font = '16px sans-serif';
+      ec.fillText('لا توجد صورة للمعاينة', 24, 40);
+      txt('preview-status', 'حمّل صورة أو أكثر لبدء المعالجة.');
+      txt('metrics', 'لا توجد قياسات بعد.');
+      txt('density-stats', 'لا توجد بيانات كثافة بعد.');
+      drawCurve(); syncFrameControls();
+      return;
+    }
+    working = out;
+    pv.width = out.width; pv.height = out.height;
+    var pctx = pv.getContext('2d');
+    if (state.showOriginal) {
+      var orig = geometry();
+      pctx.drawImage(orig, 0, 0, pv.width, pv.height);
+    } else if (state.showDiff && state.compareIndex >= 0 && state.compareIndex < state.frames.length) {
+      pctx.drawImage(out, 0, 0);
+      var otherFrame = state.frames[state.compareIndex];
+      var other = makeCanvas(out.width, out.height);
+      other.ctx.drawImage(otherFrame.bitmap, 0, 0, out.width, out.height);
+      var od = other.ctx.getImageData(0, 0, out.width, out.height);
+      var cd = pctx.getImageData(0, 0, out.width, out.height);
+      for (var i = 0; i < od.data.length; i += 4) {
+        od.data[i] = Math.abs(od.data[i] - cd.data[i]);
+        od.data[i + 1] = Math.abs(od.data[i + 1] - cd.data[i + 1]);
+        od.data[i + 2] = Math.abs(od.data[i + 2] - cd.data[i + 2]);
+      }
+      other.ctx.putImageData(od, 0, 0);
+      pctx.clearRect(0, 0, pv.width, pv.height);
+      pctx.drawImage(other.canvas, 0, 0);
+    } else {
+      pctx.drawImage(out, 0, 0);
+    }
+    txt('preview-status', 'الحجم: ' + out.width + ' × ' + out.height + ' بكسل — الوضع: ' + modeName());
+    txt('metrics', 'متوسط الكثافة ' + lastStats.dmean.toFixed(2) + ' | المدى ' + lastStats.range.toFixed(2) + ' | الدرجة ' + gradeName());
+    txt('density-stats', 'Dmin ' + lastStats.dmin.toFixed(2) + ' | Dmax ' + lastStats.dmax.toFixed(2) + ' | Dmean ' + lastStats.dmean.toFixed(2));
+    txt('grade-info', 'الدرجة المختارة: ' + gradeName() + ' — التباين ' + state.contrast.toFixed(2));
+    drawCurve(); syncFrameControls();
+  }
+
+  function scheduleRender() {
+    if (pendingFrame) { return; }
+    pendingFrame = true;
+    requestAnimationFrame(function () { pendingFrame = false; render(); });
+  }
+
+  function updateOutputs() {
+    txt('mask-out', state.mask + '٪');
+    txt('gamma-out', state.gamma.toFixed(2));
+    txt('exposure-out', state.exposure > 0 ? '+' + state.exposure : String(state.exposure));
+    txt('contrast-out', state.contrast.toFixed(2));
+    txt('dust-out', state.dust + '٪');
+    txt('scratch-out', state.scratch + '٪');
+    txt('brush-out', String(state.brush));
+    txt('local-out', String(state.localStrength));
+    txt('quality-out', String(num('quality-range')));
+    txt('shadow-out', String(state.shadows));
+    txt('highlight-out', String(state.highlights));
+  }
+
+  function readControls() {
+    state.mode = byId('mode-select').value;
+    state.rot = parseInt(byId('rot-select').value, 10) || 0;
+    state.crop.x = num('crop-x'); state.crop.y = num('crop-y');
+    state.crop.w = num('crop-w'); state.crop.h = num('crop-h');
+    state.half = byId('half-select').value;
+    state.mask = num('mask-range');
+    state.gains.r = num('gain-r') || 1;
+    state.gains.g = num('gain-g') || 1;
+    state.gains.b = num('gain-b') || 1;
+    state.gamma = num('gamma-range') / 100;
+    state.exposure = num('exposure-range');
+    state.grade = byId('grade-select').value;
+    state.contrast = num('contrast-range') / 100;
+    state.shadows = num('shadow-range');
+    state.highlights = num('highlight-range');
+    state.dust = num('dust-range');
+    state.scratch = num('scratch-range');
+    state.tool = byId('tool-select').value;
+    state.brush = num('brush-range');
+    state.localStrength = num('local-strength');
+    updateOutputs();
+  }
+
+  function download(blob, name) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  }
+
+  function exportImage() {
+    if (!working) { txt('preview-status', 'لا توجد صورة للتصدير.'); return; }
+    var format = byId('format-select').value;
+    var mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+    var ext = format === 'jpeg' ? 'jpg' : 'png';
+    working.toBlob(function (blob) {
+      if (!blob) { txt('preview-status', 'تعذر إنشاء ملف الصورة.'); return; }
+      download(blob, 'scan-' + (state.index + 1) + '.' + ext);
+    }, mime, num('quality-range') / 100);
+  }
+
+  function exportJson() {
+    var data = {
+      mode: state.mode, rot: state.rot, crop: state.crop, half: state.half,
+      mask: state.mask, gains: state.gains, gamma: state.gamma, exposure: state.exposure,
+      grade: state.grade, contrast: state.contrast, shadows: state.shadows,
+      highlights: state.highlights, dust: state.dust, scratch: state.scratch,
+      strokes: state.strokes, tool: state.tool, brush: state.brush,
+      localStrength: state.localStrength
+    };
+    download(new Blob([JSON.stringify(data)], { type: 'application/json' }), 'scan-settings.json');
+  }
+
+  function importJson(file) {
+    if (!file) { return; }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        if (data.mode) { state.mode = data.mode; byId('mode-select').value = state.mode; }
+        if (data.rot !== undefined) { state.rot = data.rot; byId('rot-select').value = String(state.rot); }
+        if (data.crop) {
+          state.crop = data.crop;
+          byId('crop-x').value = data.crop.x; byId('crop-y').value = data.crop.y;
+          byId('crop-w').value = data.crop.w; byId('crop-h').value = data.crop.h;
+        }
+        if (data.half) { state.half = data.half; byId('half-select').value = state.half; }
+        if (data.mask !== undefined) { byId('mask-range').value = data.mask; }
+        if (data.gains) {
+          byId('gain-r').value = data.gains.r; byId('gain-g').value = data.gains.g;
+          byId('gain-b').value = data.gains.b;
+        }
+        if (data.gamma !== undefined) { byId('gamma-range').value = Math.round(data.gamma * 100); }
+        if (data.exposure !== undefined) { byId('exposure-range').value = data.exposure; }
+        if (data.grade !== undefined) { byId('grade-select').value = String(data.grade); }
+        if (data.contrast !== undefined) { byId('contrast-range').value = Math.round(data.contrast * 100); }
+        if (data.shadows !== undefined) { byId('shadow-range').value = data.shadows; }
+        if (data.highlights !== undefined) { byId('highlight-range').value = data.highlights; }
+        if (data.dust !== undefined) { byId('dust-range').value = data.dust; }
+        if (data.scratch !== undefined) { byId('scratch-range').value = data.scratch; }
+        if (data.strokes) { state.strokes = data.strokes; }
+        if (data.tool) { byId('tool-select').value = data.tool; }
+        if (data.brush !== undefined) { byId('brush-range').value = data.brush; }
+        if (data.localStrength !== undefined) { byId('local-strength').value = data.localStrength; }
+        readControls(); render();
+        txt('load-status', 'تم استيراد الإعدادات.');
+      } catch (err) {
+        txt('load-status', 'ملف الإعدادات غير صالح.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function step(delta) {
+    var n = state.frames.length;
+    if (!n) { return; }
+    state.index = (state.index + delta + n) % n;
+    state.strokes = [];
+    render();
+  }
+
+  bind('file-input', 'change', function (e) { addFiles(e.target.files); });
+  bind('json-input', 'change', function (e) { importJson(e.target.files[0]); });
+  bind('btn-clear', 'click', function () {
+    state.frames = []; state.index = 0; state.strokes = []; state.compareIndex = -1;
+    working = null; syncFrameControls(); render();
+    txt('load-status', 'تم مسح القائمة.');
+  });
+  bind('btn-prev', 'click', function () { step(-1); });
+  bind('btn-next', 'click', function () { step(1); });
+  bind('btn-rot-left', 'click', function () {
+    state.rot = (state.rot + 270) % 360; byId('rot-select').value = String(state.rot);
+    readControls(); scheduleRender();
+  });
+  bind('btn-rot-right', 'click', function () {
+    state.rot = (state.rot + 90) % 360; byId('rot-select').value = String(state.rot);
+    readControls(); scheduleRender();
+  });
+  bind('btn-apply-crop', 'click', function () { readControls(); scheduleRender(); });
+  bind('btn-reset-crop', 'click', function () {
+    byId('crop-x').value = 0; byId('crop-y').value = 0;
+    byId('crop-w').value = 100; byId('crop-h').value = 100;
+    readControls(); scheduleRender();
+  });
+  bind('btn-split', 'click', function () { readControls(); scheduleRender(); });
+  bind('btn-auto-mask', 'click', function () { readControls(); autoMask(); readControls(); scheduleRender(); });
+  bind('btn-auto-density', 'click', function () { readControls(); autoDensity(); readControls(); scheduleRender(); });
+  bind('btn-auto-grade', 'click', function () { readControls(); autoGrade(); readControls(); scheduleRender(); });
+  bind('btn-repair', 'click', function () { readControls(); scheduleRender(); });
+  bind('btn-clear-local', 'click', function () { state.strokes = []; scheduleRender(); });
+  bind('btn-render', 'click', function () { readControls(); render(); });
+  bind('btn-compare', 'click', function () {
+    state.showOriginal = !state.showOriginal;
+    byId('btn-compare').textContent = state.showOriginal ? 'اعرض النتيجة' : 'اعرض الأصل للمقارنة';
+    scheduleRender();
+  });
+  bind('btn-auto-all', 'click', function () {
+    readControls(); autoMask(); autoDensity(); autoGrade(); readControls(); render();
+  });
+  bind('btn-show-diff', 'click', function () {
+    state.showDiff = !state.showDiff;
+    byId('btn-show-diff').textContent = state.showDiff ? 'إخفاء الفرق' : 'إظهار الفرق';
+    scheduleRender();
+  });
+  bind('btn-export', 'click', exportImage);
+  bind('btn-export-json', 'click', exportJson);
+  bind('compare-select', 'change', function (e) {
+    state.compareIndex = e.target.value === 'none' ? -1 : (parseInt(e.target.value, 10) || -1);
+    scheduleRender();
+  });
+
+  var liveIds = [
+    'mode-select', 'rot-select', 'crop-x', 'crop-y', 'crop-w', 'crop-h',
+    'half-select', 'mask-range', 'gain-r', 'gain-g', 'gain-b', 'gamma-range',
+    'exposure-range', 'grade-select', 'contrast-range', 'shadow-range',
+    'highlight-range', 'dust-range', 'scratch-range', 'tool-select',
+    'brush-range', 'local-strength', 'quality-range', 'format-select'
+  ];
+  liveIds.forEach(function (id) {
+    bind(id, 'input', function () { readControls(); scheduleRender(); });
+    bind(id, 'change', function () { readControls(); scheduleRender(); });
+  });
+
+  var pv = byId('preview');
+  function addStroke(e) {
+    var rect = pv.getBoundingClientRect();
+    var x = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    var y = clamp((e.clientY - rect.top) / rect.height, 0, 1);
+    var last = state.strokes[state.strokes.length - 1];
+    if (last) {
+      var dx = (last.x - x) * rect.width, dy = (last.y - y) * rect.height;
+      if (dx * dx + dy * dy < 36) { return; }
+    }
+    state.strokes.push({ x: x, y: y, r: state.brush / 900, s: state.localStrength / 100, mode: state.tool });
+    scheduleRender();
+  }
+  pv.addEventListener('pointerdown', function (e) {
+    if (state.tool === 'none' || !working) { return; }
+    painting = true; addStroke(e);
+  });
+  pv.addEventListener('pointermove', function (e) { if (painting) { addStroke(e); } });
+  pv.addEventListener('pointerup', function () { painting = false; render(); });
+  pv.addEventListener('pointerleave', function () { painting = false; render(); });
+
+  readControls();
+  render();
+}());
+</script>
+</body>
+</html>
