@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مخطط وجبات أسبوعي وقائمة تسوق ذكية | MDM1</title>
+<meta name="description" content="أنشئ أطباقك المفضلة بمكوناتها، اسحبها إلى جدول سبعة أيام، واترك التطبيق يجمع الكميات المتشابهة في قائمة تسوق مرتبة حسب قسم المتجر، مع نسخها وطباعتها.">
+<link rel="canonical" href="https://mdm1.org/apps/meal-grid-market.html">
+<meta property="og:title" content="مخطط وجبات أسبوعي وقائمة تسوق ذكية">
+<meta property="og:description" content="أنشئ أطباقك المفضلة بمكوناتها، اسحبها إلى جدول سبعة أيام، واترك التطبيق يجمع الكميات المتشابهة في قائمة تسوق مرتبة حسب قسم المتجر، مع نسخها وطباعتها.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/meal-grid-market.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; }
+.app.appIntro { line-height: 1.9; margin: 0 0 18px; }
+.app .appCard { margin: 0 0 18px; }
+.app .appHint { opacity: .82; line-height: 1.7; }
+.app .appList { list-style: none; margin: 10px 0; padding: 0; }
+.app .appListItem { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--gold-dim); }
+.app .appMiniBtn { padding: 4px 10px; font-size: .9em; }
+.app .appDishTools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.app .appWeek { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 14px; }
+.app .appDay { min-height: 150px; padding: 12px; border: 1px dashed var(--gold-dim); border-radius: 10px; background: rgba(0,0,0,.15); }
+.app .appDay h3 { margin: 0 0 8px; color: var(--gold-bright); font-size: 1.05rem; }
+.app .appDayList { list-style: none; margin: 8px 0 0; padding: 0; }
+.app .appDayList li { padding: 6px 0; border-top: 1px solid var(--gold-dim); font-size: .94rem; }
+.app .appShop { display: grid; gap: 14px; margin-top: 12px; }
+.app .appShopSection { padding: 12px; border: 1px solid var(--gold-dim); border-radius: 10px; }
+.app .appShopSection h3 { margin: 0 0 8px; color: var(--gold); }
+.app .appShopList { margin: 0; padding-inline-start: 20px; line-height: 1.9; }
+.app .appRowWrap { flex-wrap: wrap; gap: 10px; align-items: center; }
+.app .appHidden { display: none; }
+.app .appOk { border-color: var(--gold); color: var(--gold-bright); }
+.app .appErr { border-color: var(--gold-dim); color: var(--light); }
+.app .appBadge { color: var(--gold-bright); font-size: .85em; }
+.app #copyArea { width: 100%; margin-top: 12px; min-height: 150px; direction: rtl; }
+.app #importFile { max-width: 260px; }
+@media (max-width: 620px) {
+.app .appListItem { align-items: flex-start; flex-direction: column; }
+.app .appWeek { grid-template-columns: 1fr; }
+}
+@media print {
+.app .appNoPrint { display: none; }
+.app .appCard { break-inside: avoid; }
+.app .appShopSection { border-color: #000; }
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "خطط وجباتك الأسبوعية واحسب مشترياتك تلقائيًا", "url": "https://mdm1.org/apps/meal-grid-market.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أضيف طبقًا جديدًا؟", "acceptedAnswer": {"@type": "Answer", "text": "اكتب اسم الطبق، ثم أضف كل مكوّن بكميته ووحدته وقسمه من المتجر، وبعد اكتمال المكونات اضغط حفظ الطبق."}}, {"@type": "Question", "name": "هل يمكنني تعديل جدول الأسبوع؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم؛ اسحب الطبق إلى اليوم المطلوب، أو اختر الطبق واليوم والوجبة من أدوات الجدول. يمكنك إزالة أي وجبة من داخل الخانة."}}, {"@type": "Question", "name": "كيف تُحسب الكميات في قائمة التسوق؟", "acceptedAnswer": {"@type": "Answer", "text": "تُضرب كمية كل مكوّن في عدد مرات تكرار الطبق، ثم تُجمع العناصر المتطابقة، وتحوّل الكيلوغرامات إلى غرامات واللترات إلى ملليلترات."}}, {"@type": "Question", "name": "ماذا يحدث لبياناتي عند إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا تُحفظ البيانات داخل المتصفح. صدّر ملف JSON قبل المغادرة إذا أردت الاحتفاظ بالأطباق والجدول، ثم استورد الملف لاحقًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">خطط وجباتك الأسبوعية واحسب مشترياتك تلقائيًا</h1>
+  <p class="page-sub">أنشئ أطباقك المفضلة بمكوناتها، اسحبها إلى جدول سبعة أيام، واترك التطبيق يجمع الكميات المتشابهة في قائمة تسوق مرتبة حسب قسم المتجر، مع نسخها وطباعتها.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p id="intro" class="app appIntro">نعم، يمكنك تجهيز أسبوعك كاملًا في دقائق: أنشئ كل طبق من مكوناته وكمياته، ثم اسحبه إلى اليوم المناسب في شبكة التخطيط، وسيقوم الحساب التلقائي بجمع ما يتكرر من مكونات في وجبات مختلفة، ثم ترتيب النتيجة في قائمة تسوق واحدة حسب أقسام المتجر. لا يحتاج هذا الأسلوب إلى اتصال بالإنترنت أو خادم أو حساب أو تخزين داخل المتصفح؛ فكل شيء يبقى أمامك داخل الصفحة ما دمت تستخدمها، ويمكنك تصدير بياناتك إلى ملف JSON ثم استيرادها لاحقًا عند الحاجة. خذ نسخة مطبوعة أو انسخ النص إلى أي تطبيق، واستعد للتسوق بلا نسيان ولا تكرار.</p>
+
+<section class="app" id="app">
+<section class="card appCard" id="dishCard">
+<h2 id="dishCardTitle">أنشئ طبقًا جديدًا</h2>
+<p id="dishHelp" class="appHint">اكتب اسم الطبق، ثم أضف مكوناته واحدًا تلو الآخر. يمكنك حفظ الطبق بعد إدخال مكوّن واحد على الأقل.</p>
+<div class="row appRowWrap" id="dishMainRow">
+<label class="label" for="dishName" id="dishNameLabel">اسم الطبق</label>
+<input id="dishName" class="input" type="text" placeholder="مثال: شوربة عدس" />
+<label class="label" for="dishYield" id="dishYieldLabel">تكفي عددًا من الأشخاص</label>
+<input id="dishYield" class="input" type="number" min="1" max="99" step="1" value="1" />
+</div>
+<hr id="dishDivider" class="divider" />
+<div class="row appRowWrap" id="ingredientRow">
+<label class="label" for="ingName" id="ingNameLabel">المكوّن</label>
+<input id="ingName" class="input" type="text" placeholder="مثال: عدس" />
+<label class="label" for="ingQty" id="ingQtyLabel">الكمية</label>
+<input id="ingQty" class="input" type="number" min="0.01" step="0.01" value="1" />
+<label class="label" for="ingUnit" id="ingUnitLabel">الوحدة</label>
+<select id="ingUnit" class="select">
+<option id="unitG" value="غ">غ</option>
+<option id="unitKg" value="كغ">كغ</option>
+<option id="unitMl" value="مل">مل</option>
+<option id="unitL" value="ل">ل</option>
+<option id="unitPiece" value="حبة">حبة</option>
+<option id="unitTsp" value="ملعقة صغيرة">ملعقة صغيرة</option>
+<option id="unitTbsp" value="ملعقة كبيرة">ملعقة كبيرة</option>
+<option id="unitCup" value="كوب">كوب</option>
+</select>
+<label class="label" for="ingSection" id="ingSectionLabel">قسم المتجر</label>
+<select id="ingSection" class="select">
+<option id="secProduce" value="الخضار والفواكه">الخضار والفواكه</option>
+<option id="secProtein" value="اللحوم والبروتينات">اللحوم والبروتينات</option>
+<option id="secDairy" value="الألبان والبيض">الألبان والبيض</option>
+<option id="secGrains" value="الحبوب والأرز">الحبوب والأرز</option>
+<option id="secPantry" value="المواد الغذائية الأساسية">المواد الغذائية الأساسية</option>
+<option id="secFrozen" value="المجمدات">المجمدات</option>
+<option id="secOther" value="أخرى">أخرى</option>
+</select>
+<button id="addIngBtn" class="button sec" type="button">أضف المكوّن</button>
+</div>
+<p id="ingEmpty" class="out">لم تُضف مكونات بعد.</p>
+<ul id="draftList" class="appList"></ul>
+<div class="row appRowWrap" id="dishActions">
+<button id="saveDishBtn" class="button" type="button">احفظ الطبق</button>
+<button id="clearDraftBtn" class="button sec" type="button">تفريغ الحقول والمكونات</button>
+</div>
+</section>
+
+<section class="card appCard" id="libraryCard">
+<h2 id="libraryTitle">الأطباق المحفوظة</h2>
+<p id="libEmpty" class="out">لا توجد أطباق محفوظة بعد. أضف طبقًا من القسم السابق ليظهر هنا.</p>
+<ul id="dishList" class="appList"></ul>
+</section>
+
+<section class="card appCard" id="plannerCard">
+<h2 id="plannerTitle">جدول الأسبوع</h2>
+<p id="plannerHelp" class="appHint">اسحب الطبق من القائمة إلى اليوم المطلوب، أو اختر الطبق واليوم والوجبة من الأدوات أدناه. عدد التكرارات يضاعف كميات المكونات في قائمة التسوق.</p>
+<div class="row appRowWrap" id="plannerControls">
+<label class="label" for="plannerDish" id="plannerDishLabel">الطبق</label>
+<select id="plannerDish" class="select"><option id="plannerDishEmpty" value="">اختر طبقًا محفوظًا</option></select>
+<label class="label" for="plannerDay" id="plannerDayLabel">اليوم</label>
+<select id="plannerDay" class="select">
+<option id="dayOpt0" value="0">الأحد</option>
+<option id="dayOpt1" value="1">الإثنين</option>
+<option id="dayOpt2" value="2">الثلاثاء</option>
+<option id="dayOpt3" value="3">الأربعاء</option>
+<option id="dayOpt4" value="4">الخميس</option>
+<option id="dayOpt5" value="5">الجمعة</option>
+<option id="dayOpt6" value="6">السبت</option>
+</select>
+<label class="label" for="plannerMeal" id="plannerMealLabel">الوجبة</label>
+<select id="plannerMeal" class="select">
+<option id="mealOpt0" value="إفطار">إفطار</option>
+<option id="mealOpt1" value="غداء">غداء</option>
+<option id="mealOpt2" value="عشاء">عشاء</option>
+<option id="mealOpt3" value="وجبة خفيفة">وجبة خفيفة</option>
+</select>
+<label class="label" for="planTimes" id="planTimesLabel">عدد التكرارات</label>
+<input id="planTimes" class="input" type="number" min="0.25" max="20" step="0.25" value="1" />
+<button id="addToPlanBtn" class="button" type="button">أضف إلى الجدول</button>
+</div>
+<p id="planEmpty" class="out">الجدول فارغ. أضف أول وجبة لتظهر هنا ولتبدأ قائمة التسوق بالتحديث.</p>
+<div id="weekGrid" class="appWeek"></div>
+</section>
+
+<section class="card appCard" id="shoppingCard">
+<h2 id="shoppingTitle">قائمة التسوق</h2>
+<p id="shopHint" class="appHint">تُجمع العناصر المتطابقة تلقائيًا، وتحوّل الوحدات الكبيرة إلى وحدات أصغر ليسهل حساب الكميات عند الشراء.</p>
+<div id="shopSummary" class="out"><span id="shopCount" class="big">0</span> <span id="shopCountLabel">مكوّن مطلوب شراؤه</span></div>
+<div class="row appRowWrap appNoPrint" id="shopActions">
+<button id="copyBtn" class="button" type="button">نسخ القائمة</button>
+<button id="printBtn" class="button sec" type="button">طباعة القائمة</button>
+<button id="exportBtn" class="button sec" type="button">تصدير ملف JSON</button>
+<label class="label" for="importFile" id="importLabel">استيراد ملف JSON</label>
+<input id="importFile" class="input" type="file" accept="application/json,.json" />
+</div>
+<p id="shopEmpty" class="out">لم تُخطط أي وجبة بعد، لذا لا توجد مشتريات لعرضها.</p>
+<div id="shoppingList" class="appShop"></div>
+<textarea id="copyArea" class="textarea appHidden" rows="8" readonly></textarea>
+<p id="status" class="out">جاهز.</p>
+</section>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أضيف طبقًا جديدًا؟</h3><p>اكتب اسم الطبق، ثم أضف كل مكوّن بكميته ووحدته وقسمه من المتجر، وبعد اكتمال المكونات اضغط حفظ الطبق.</p><h3>هل يمكنني تعديل جدول الأسبوع؟</h3><p>نعم؛ اسحب الطبق إلى اليوم المطلوب، أو اختر الطبق واليوم والوجبة من أدوات الجدول. يمكنك إزالة أي وجبة من داخل الخانة.</p><h3>كيف تُحسب الكميات في قائمة التسوق؟</h3><p>تُضرب كمية كل مكوّن في عدد مرات تكرار الطبق، ثم تُجمع العناصر المتطابقة، وتحوّل الكيلوغرامات إلى غرامات واللترات إلى ملليلترات.</p><h3>ماذا يحدث لبياناتي عند إغلاق الصفحة؟</h3><p>لا تُحفظ البيانات داخل المتصفح. صدّر ملف JSON قبل المغادرة إذا أردت الاحتفاظ بالأطباق والجدول، ثم استورد الملف لاحقًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="cart-compass.html" style="color:var(--gold-bright);font-weight:700">مساعد تسوق محلي: مقارنة أسعار وسلة ذكية</a><span style="opacity:.75"> — أداة تسوق تعمل في المتصفح: أدخل طلبك وميزانيتك وشروطك، فيقارن محرك قرار كتالوج منتجات ومتاجر وهمية، ويختار…</span></li><li style="margin:.5rem 0"><a href="model-route-sandbox.html" style="color:var(--gold-bright);font-weight:700">محاكي بوابة نماذج ذكية لإدارة التكاليف والتوجيه</a><span style="opacity:.75"> — تطبيق ويب يعمل في المتصفح لمحاكاة بوابة نماذج ذكية: تعريف المزوّدين والنماذج والأسعار والمفاتيح محليًا…</span></li><li style="margin:.5rem 0"><a href="noise-focus-mixer.html" style="color:var(--gold-bright);font-weight:700">أصوات مهدئة للتركيز ومؤقت بومودورو وقائمة مهام داخل المتصفح</a><span style="opacity:.75"> — أنشئ أصواتاً مهدئة للتركيز مثل المطر والأمواج والرعد دون إنترنت، مع مؤقت بومودورو وخلاط أصوات وقائمة مهام…</span></li><li style="margin:.5rem 0"><a href="smart-heating-planner.html" style="color:var(--gold-bright);font-weight:700">تدفئة منزل ذكية</a><span style="opacity:.75"> — تطبيق ويب محلي لإدارة تدفئة المنزل، حساب وقت فتح الصمامات، عرض الرسوم البيانية، وحفظ الإعدادات محليًا من…</span></li><li style="margin:.5rem 0"><a href="smart-shopping-list.html" style="color:var(--gold-bright);font-weight:700">قائمة تسوق تعمل داخل المتصفح: إجمالي تلقائي وميزانية ومقارنة أسعار</a><span style="opacity:.75"> — أضف منتجاتك وأسعارها واحسب الإجمالي تلقائيًا، راقب ميزانيتك، قارن سعر الوحدة لاختيار العرض الأوفر، ونظّم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+var $ = function (id) { return document.getElementById(id); };
+var dishes = [];
+var draftIngredients = [];
+var plan = [];
+var usedIds = [];
+var idSeed = 0;
+var dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+var sections = ["الخضار والفواكه", "اللحوم والبروتينات", "الألبان والبيض", "الحبوب والأرز", "المواد الغذائية الأساسية", "المجمدات", "أخرى"];
+
+function setStatus(text, ok) {
+var box = $("status");
+box.textContent = text;
+box.className = ok ? "out appOk" : "out appErr";
+}
+
+function cleanText(value) {
+return String(value).replace(/^\s+|\s+$/g, "");
+}
+
+function positiveNumber(value) {
+var number = parseFloat(value);
+if (isNaN(number) || number <= 0) { return null; }
+return number;
+}
+
+function formatQty(value) {
+return String(Math.round(value * 100) / 100);
+}
+
+function makeId(prefix) {
+var candidate;
+do {
+idSeed += 1;
+candidate = prefix + idSeed;
+} while (usedIds.indexOf(candidate) >= 0);
+usedIds.push(candidate);
+return candidate;
+}
+
+function pickId(prefix, rawId) {
+var candidate = cleanText(rawId).replace(/[^A-Za-z0-9_-]/g, "");
+if (candidate && usedIds.indexOf(candidate) < 0) {
+usedIds.push(candidate);
+return candidate;
+}
+return makeId(prefix);
+}
+
+function findDish(id) {
+for (var i = 0; i < dishes.length; i += 1) {
+if (dishes[i].id === id) { return dishes[i]; }
+}
+return null;
+}
+
+function normalizeUnit(unit, qty) {
+if (unit === "كغ") { return { qty: qty * 1000, unit: "غ" }; }
+if (unit === "ل") { return { qty: qty * 1000, unit: "مل" }; }
+return { qty: qty, unit: unit };
+}
+
+function renderDraft() {
+var list = $("draftList");
+var empty = $("ingEmpty");
+list.textContent = "";
+if (draftIngredients.length === 0) {
+empty.className = "out";
+empty.textContent = "لم تُضف مكونات بعد.";
+return;
+}
+empty.className = "appHidden";
+draftIngredients.forEach(function (item) {
+var line = document.createElement("li");
+var text = document.createElement("span");
+var button = document.createElement("button");
+line.id = "draft-" + item.id;
+line.className = "appListItem";
+text.textContent = item.name + " — " + formatQty(item.qty) + " " + item.unit + " · " + item.section;
+button.id = "removeIng-" + item.id;
+button.className = "button sec appMiniBtn";
+button.type = "button";
+button.textContent = "إزالة";
+button.addEventListener("click", function () {
+draftIngredients = draftIngredients.filter(function (entry) { return entry.id !== item.id; });
+renderDraft();
+setStatus("تمت إزالة المكوّن من الطبق.", true);
+});
+line.appendChild(text);
+line.appendChild(button);
+list.appendChild(line);
+});
+}
+
+function renderDishes() {
+var list = $("dishList");
+var empty = $("libEmpty");
+list.textContent = "";
+if (dishes.length === 0) {
+empty.className = "out";
+empty.textContent = "لا توجد أطباق محفوظة بعد. أضف طبقًا من القسم السابق ليظهر هنا.";
+return;
+}
+empty.className = "appHidden";
+dishes.forEach(function (dish) {
+var line = document.createElement("li");
+var title = document.createElement("strong");
+var meta = document.createElement("small");
+var tools = document.createElement("div");
+var badge = document.createElement("span");
+var quick = document.createElement("button");
+var remove = document.createElement("button");
+line.id = "dishItem-" + dish.id;
+line.className = "appListItem";
+line.draggable = true;
+title.textContent = dish.name;
+meta.textContent = "تكفي " + formatQty(dish.yield) + " أشخاص · " + dish.ingredients.length + " مكوّن";
+badge.id = "dishBadge-" + dish.id;
+badge.className = "badge appBadge";
+badge.textContent = "اسحبني إلى الجدول";
+tools.id = "dishTools-" + dish.id;
+tools.className = "appDishTools";
+quick.id = "quickPlan-" + dish.id;
+quick.className = "button sec appMiniBtn";
+quick.type = "button";
+quick.textContent = "اختيار للجدول";
+remove.id = "deleteDish-" + dish.id;
+remove.className = "button sec appMiniBtn";
+remove.type = "button";
+remove.textContent = "حذف الطبق";
+quick.addEventListener("click", function () {
+$("plannerDish").value = dish.id;
+setStatus("تم اختيار الطبق للجدول.", true);
+});
+remove.addEventListener("click", function () {
+dishes = dishes.filter(function (entry) { return entry.id !== dish.id; });
+plan = plan.filter(function (entry) { return entry.dishId !== dish.id; });
+renderAll();
+setStatus("تم حذف الطبق وكل ما ارتبط به من الجدول.", true);
+});
+line.addEventListener("dragstart", function (event) {
+event.dataTransfer.setData("text/plain", dish.id);
+event.dataTransfer.effectAllowed = "copy";
+});
+tools.appendChild(badge);
+tools.appendChild(quick);
+tools.appendChild(remove);
+line.appendChild(title);
+line.appendChild(meta);
+line.appendChild(tools);
+list.appendChild(line);
+});
+}
+
+function renderPlannerOptions() {
+var select = $("plannerDish");
+var current = select.value;
+var first = document.createElement("option");
+select.textContent = "";
+first.id = "plannerDishEmpty";
+first.value = "";
+first.textContent = dishes.length ? "اختر طبقًا محفوظًا" : "لا توجد أطباق بعد";
+select.appendChild(first);
+dishes.forEach(function (dish) {
+var option = document.createElement("option");
+option.id = "plannerOpt-" + dish.id;
+option.value = dish.id;
+option.textContent = dish.name;
+select.appendChild(option);
+});
+select.value = findDish(current) ? current : "";
+}
+
+function renderWeek() {
+var grid = $("weekGrid");
+var empty = $("planEmpty");
+grid.textContent = "";
+if (plan.length === 0) {
+empty.className = "out";
+empty.textContent = "الجدول فارغ. أضف أول وجبة لتظهر هنا ولتبدأ قائمة التسوق بالتحديث.";
+} else {
+empty.className = "appHidden";
+}
+dayNames.forEach(function (dayName, index) {
+var cell = document.createElement("div");
+var head = document.createElement("h3");
+var addButton = document.createElement("button");
+var list = document.createElement("ul");
+cell.id = "dayCell-" + index;
+cell.className = "appDay";
+head.id = "dayHead-" + index;
+head.textContent = dayName;
+addButton.id = "dayAdd-" + index;
+addButton.className = "button sec appMiniBtn";
+addButton.type = "button";
+addButton.textContent = "أضف وجبة هنا";
+addButton.addEventListener("click", function () { addPlanFromControls(index); });
+list.id = "dayList-" + index;
+list.className = "appDayList";
+plan.forEach(function (item) {
+var dish = findDish(item.dishId);
+if (!dish || item.day !== index) { return; }
+var entry = document.createElement("li");
+var remove = document.createElement("button");
+entry.id = "planItem-" + item.id;
+entry.textContent = item.meal + " · " + dish.name + " × " + formatQty(item.times);
+remove.id = "removePlan-" + item.id;
+remove.className = "button sec appMiniBtn";
+remove.type = "button";
+remove.textContent = "إزالة";
+remove.addEventListener("click", function () {
+plan = plan.filter(function (candidate) { return candidate.id !== item.id; });
+renderWeek();
+renderShopping();
+setStatus("تمت إزالة الوجبة من الجدول.", true);
+});
+entry.appendChild(remove);
+list.appendChild(entry);
+});
+cell.addEventListener("dragover", function (event) {
+event.preventDefault();
+event.dataTransfer.dropEffect = "copy";
+});
+cell.addEventListener("drop", function (event) {
+event.preventDefault();
+var dishId = event.dataTransfer.getData("text/plain");
+addToPlan(dishId, index, $("plannerMeal").value, $("planTimes").value);
+});
+cell.appendChild(head);
+cell.appendChild(addButton);
+cell.appendChild(list);
+grid.appendChild(cell);
+});
+}
+
+function aggregate() {
+var groups = [];
+plan.forEach(function (item) {
+var dish = findDish(item.dishId);
+if (!dish) { return; }
+dish.ingredients.forEach(function (ingredient) {
+var name = cleanText(ingredient.name);
+if (!name) { return; }
+var normalized = normalizeUnit(ingredient.unit, ingredient.qty * item.times);
+var key = name.toLowerCase() + "|" + normalized.unit + "|" + ingredient.section;
+var found = null;
+groups.forEach(function (group) { if (group.key === key) { found = group; } });
+if (found) {
+found.qty += normalized.qty;
+} else {
+groups.push({ key: key, name: name, qty: normalized.qty, unit: normalized.unit, section: ingredient.section });
+}
+});
+});
+groups.sort(function (a, b) {
+var first = sections.indexOf(a.section);
+var second = sections.indexOf(b.section);
+if (first !== second) { return first - second; }
+if (a.name < b.name) { return -1; }
+if (a.name > b.name) { return 1; }
+return 0;
+});
+return groups;
+}
+
+function buildCopyText(groups) {
+var lines = ["قائمة التسوق", "============"];
+var currentSection = "";
+groups.forEach(function (group) {
+if (group.section !== currentSection) {
+currentSection = group.section;
+lines.push("");
+lines.push("[" + group.section + "]");
+}
+lines.push("• " + group.name + ": " + formatQty(group.qty) + " " + group.unit);
+});
+return lines.join("\n");
+}
+
+function renderShopping() {
+var groups = aggregate();
+var list = $("shoppingList");
+var empty = $("shopEmpty");
+list.textContent = "";
+$("shopCount").textContent = String(groups.length);
+if (groups.length === 0) {
+empty.className = "out";
+empty.textContent = "لم تُخطط أي وجبة بعد، لذا لا توجد مشتريات لعرضها.";
+$("copyArea").value = "";
+return;
+}
+empty.className = "appHidden";
+var currentSection = "";
+var currentList = null;
+groups.forEach(function (group, index) {
+if (group.section !== currentSection) {
+var block = document.createElement("div");
+var head = document.createElement("h3");
+var items = document.createElement("ul");
+currentSection = group.section;
+block.id = "shopBlock-" + index;
+block.className = "appShopSection";
+head.id = "shopHead-" + index;
+head.textContent = group.section;
+items.id = "shopItems-" + index;
+items.className = "appShopList";
+block.appendChild(head);
+block.appendChild(items);
+list.appendChild(block);
+currentList = items;
+}
+var line = document.createElement("li");
+var name = document.createElement("strong");
+var amount = document.createElement("span");
+line.id = "shopItem-" + index;
+name.textContent = group.name;
+amount.textContent = " — " + formatQty(group.qty) + " " + group.unit;
+line.appendChild(name);
+line.appendChild(amount);
+currentList.appendChild(line);
+});
+$("copyArea").value = buildCopyText(groups);
+}
+
+function renderAll() {
+renderDraft();
+renderDishes();
+renderPlannerOptions();
+renderWeek();
+renderShopping();
+}
+
+function addPlanFromControls(dayIndex) {
+addToPlan($("plannerDish").value, dayIndex, $("plannerMeal").value, $("planTimes").value);
+}
+
+function addToPlan(dishId, dayIndex, meal, timesValue) {
+if (!findDish(dishId)) {
+setStatus("اختر طبقًا محفوظًا قبل الإضافة إلى الجدول.", false);
+return;
+}
+var times = positiveNumber(timesValue);
+if (!times) {
+setStatus("اكتب عدد تكرارات صحيحًا أكبر من صفر.", false);
+return;
+}
+plan.push({ id: makeId("p"), dishId: dishId, day: dayIndex, meal: meal, times: times });
+renderWeek();
+renderShopping();
+setStatus("تمت إضافة الطبق إلى الجدول وتحديث قائمة التسوق.", true);
+}
+
+$("addIngBtn").addEventListener("click", function () {
+var name = cleanText($("ingName").value);
+var qty = positiveNumber($("ingQty").value);
+var unit = $("ingUnit").value;
+var section = $("ingSection").value;
+if (!name) {
+setStatus("اكتب اسم المكوّن قبل إضافته.", false);
+return;
+}
+if (!qty) {
+setStatus("اكتب كمية صحيحة أكبر من صفر.", false);
+return;
+}
+if (!unit || !section) {
+setStatus("اختر وحدة القياس وقسم المتجر.", false);
+return;
+}
+draftIngredients.push({ id: makeId("i"), name: name, qty: qty, unit: unit, section: section });
+$("ingName").value = "";
+$("ingQty").value = "1";
+renderDraft();
+setStatus("تمت إضافة المكوّن إلى الطبق.", true);
+});
+
+$("saveDishBtn").addEventListener("click", function () {
+var name = cleanText($("dishName").value);
+var yieldValue = positiveNumber($("dishYield").value);
+if (!name) {
+setStatus("اكتب اسم الطبق قبل حفظه.", false);
+return;
+}
+if (!yieldValue) {
+setStatus("اكتب عددًا صحيحًا لعدد الأشخاص.", false);
+return;
+}
+if (draftIngredients.length === 0) {
+setStatus("أضف مكوّنًا واحدًا على الأقل قبل حفظ الطبق.", false);
+return;
+}
+dishes.push({ id: makeId("d"), name: name, yield: Math.round(yieldValue), ingredients: draftIngredients.slice(0) });
+$("dishName").value = "";
+$("dishYield").value = "1";
+draftIngredients = [];
+renderAll();
+setStatus("تم حفظ الطبق وهو جاهز للسحب إلى الجدول.", true);
+});
+
+$("clearDraftBtn").addEventListener("click", function () {
+$("dishName").value = "";
+$("dishYield").value = "1";
+$("ingName").value = "";
+$("ingQty").value = "1";
+draftIngredients = [];
+renderDraft();
+setStatus("تم تفريغ الحقول والمكونات.", true);
+});
+
+$("addToPlanBtn").addEventListener("click", function () {
+addPlanFromControls(parseInt($("plannerDay").value, 10));
+});
+
+$("copyBtn").addEventListener("click", function () {
+var area = $("copyArea");
+area.value = buildCopyText(aggregate());
+area.className = "textarea";
+area.focus();
+area.select();
+var copied = false;
+try {
+copied = document.execCommand("copy");
+} catch (error) {
+copied = false;
+}
+if (copied) {
+setStatus("تم نسخ قائمة التسوق.", true);
+} else {
+setStatus("لم يتم النسخ تلقائيًا؛ النص محدد الآن ويمكنك نسخه يدويًا.", false);
+}
+});
+
+$("printBtn").addEventListener("click", function () {
+renderShopping();
+print();
+});
+
+$("exportBtn").addEventListener("click", function () {
+var payload = { version: 1, dishes: dishes, plan: plan };
+var text = JSON.stringify(payload, null, 2);
+var blob = new Blob([text], { type: "application/json" });
+var url = URL.createObjectURL(blob);
+var link = document.createElement("a");
+link.id = "downloadLink";
+link.href = url;
+link.download = "meal-plan.json";
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+URL.revokeObjectURL(url);
+setStatus("تم تصدير الأطباق والجدول إلى ملف JSON.", true);
+});
+
+$("importFile").addEventListener("change", function (event) {
+var file = event.target.files[0];
+if (!file) { return; }
+var reader = new FileReader();
+reader.addEventListener("load", function (loadEvent) {
+try {
+var data = JSON.parse(loadEvent.target.result);
+if (!data || !Array.isArray(data.dishes) || !Array.isArray(data.plan)) {
+throw new Error("bad");
+}
+usedIds = [];
+idSeed = 0;
+dishes = [];
+plan = [];
+data.dishes.forEach(function (rawDish) {
+if (!rawDish || typeof rawDish.name !== "string") { return; }
+var dishName = cleanText(rawDish.name);
+if (!dishName) { return; }
+var ingredients = [];
+if (Array.isArray(rawDish.ingredients)) {
+rawDish.ingredients.forEach(function (rawIngredient) {
+if (!rawIngredient || typeof rawIngredient.name !== "string") { return; }
+var ingredientName = cleanText(rawIngredient.name);
+var ingredientQty = positiveNumber(rawIngredient.qty);
+if (!ingredientName) { return; }
+if (!ingredientQty) { ingredientQty = 1; }
+var unit = cleanText(rawIngredient.unit);
+if (!unit) { unit = "غ"; }
+var section = cleanText(rawIngredient.section);
+if (sections.indexOf(section) < 0) { section = "أخرى"; }
+ingredients.push({ id: pickId("i", rawIngredient.id), name: ingredientName, qty: ingredientQty, unit: unit, section: section });
+});
+}
+if (ingredients.length > 0) {
+var people = positiveNumber(rawDish.yield);
+if (!people) { people = 1; }
+dishes.push({ id: pickId("d", rawDish.id), name: dishName, yield: Math.round(people), ingredients: ingredients });
+}
+});
+data.plan.forEach(function (rawPlan) {
+if (!rawPlan) { return; }
+var dishId = cleanText(rawPlan.dishId);
+if (!findDish(dishId)) { return; }
+var day = parseInt(rawPlan.day, 10);
+if (isNaN(day) || day < 0 || day > 6) { day = 0; }
+var meal = cleanText(rawPlan.meal);
+if (!meal) { meal = "إفطار"; }
+var times = positiveNumber(rawPlan.times);
+if (!times) { times = 1; }
+plan.push({ id: pickId("p", rawPlan.id), dishId: dishId, day: day, meal: meal, times: times });
+});
+renderAll();
+if (dishes.length === 0 && plan.length === 0) {
+setStatus("تمت قراءة الملف لكنه لم يحتوِ على أطباق صالحة.", false);
+} else {
+setStatus("تم استيراد البيانات بنجاح.", true);
+}
+} catch (error) {
+setStatus("تعذّر قراءة الملف؛ تأكد أنه ملف JSON صادر من هذا التطبيق.", false);
+}
+});
+reader.readAsText(file);
+$("importFile").value = "";
+});
+
+renderAll();
+</script>
+</body>
+</html>
