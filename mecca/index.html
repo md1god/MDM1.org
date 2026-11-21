@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مكة 360 — تجوّل في شوارع مكة المكرمة وتعلّم أسماءها</title>
+<meta name="description" content="تجوّل مجاناً في شوارع مكة المكرمة بصور 360° حقيقية وخريطة ونظام GPS، واحفظ أسماء الشوارع والأحياء والاتجاهات باختبار تفاعلي.">
+<link rel="canonical" href="https://mdm1.org/mecca/">
+<meta name="theme-color" content="#050403">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="vendor/mapillary.css">
+<style>
+:root{
+  --bg:#050403; --panel:#12100c; --panel2:#1c1810; --line:rgba(201,168,76,.35);
+  --gold:#c9a84c; --gold2:#f0c060; --text:#f0e6cc; --muted:#a89b78; --ok:#3ecf8e; --bad:#ff6b6b; --blue:#4da3ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+  font-family:'Tajawal',"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+#bar{display:flex;gap:8px;align-items:center;padding:8px;padding-top:max(8px,env(safe-area-inset-top));
+  background:var(--panel);border-bottom:1px solid var(--line);position:relative;z-index:5}
+#bar h1{font-size:1rem;margin:0;color:var(--gold);white-space:nowrap}
+#q{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;white-space:nowrap}
+.btn:hover{border-color:var(--gold)}
+.btn.primary{background:var(--gold);color:#1a1405;border-color:var(--gold);font-weight:700}
+.btn.small{padding:5px 9px;font-size:.8rem}
+.btn:disabled{opacity:.45;cursor:default}
+#results{position:absolute;top:100%;right:8px;left:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  margin-top:4px;max-height:50vh;overflow:auto;display:none;z-index:10}
+#results div{padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:.9rem}
+#results div:hover{background:var(--panel2)}
+#results small{display:block;color:var(--muted)}
+#panes{flex:1;min-height:0;display:flex;flex-direction:row;position:relative}
+#viewerWrap,#mapWrap{position:relative;min-width:0;min-height:0}
+#viewerWrap{flex:1.6;background:#000}
+#mapWrap{flex:1;border-inline-start:1px solid var(--line)}
+#viewer,#map{position:absolute;inset:0}
+body.bigmap #viewerWrap{flex:1}
+body.bigmap #mapWrap{flex:1.6}
+@media (max-width:760px){
+  #panes{flex-direction:column}
+  #mapWrap{border-inline-start:0;border-top:1px solid var(--line)}
+  #bar h1{display:none}
+}
+#info{position:absolute;z-index:4;top:8px;left:8px;right:8px;display:flex;align-items:center;gap:10px;
+  background:rgba(5,4,3,.82);border:1px solid var(--line);border-radius:12px;padding:8px 12px;backdrop-filter:blur(6px)}
+#info .txt{flex:1;min-width:0}
+#street{font-size:1.05rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hood{color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#compass{color:var(--gold2);font-weight:700;font-size:.85rem;min-width:62px;text-align:center}
+body.quiz #info .txt{visibility:hidden}
+body.quiz #mapWrap{visibility:hidden}
+#notice{position:absolute;inset:0;z-index:3;display:none;align-items:center;justify-content:center;padding:20px;text-align:center;
+  background:rgba(5,4,3,.92)}
+#notice .card{max-width:440px;line-height:1.8}
+#notice a{color:var(--gold2)}
+#notice input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:8px 0;direction:ltr}
+#foot{font-size:.68rem;color:var(--muted);text-align:center;padding:3px 8px;background:var(--panel);border-top:1px solid var(--line);
+  padding-bottom:max(3px,env(safe-area-inset-bottom))}
+#foot a{color:var(--muted)}
+#drawer{position:fixed;z-index:1000;top:0;bottom:0;right:0;width:min(380px,100%);background:var(--panel);
+  border-left:1px solid var(--line);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top)}
+#drawer.open{transform:none}
+#dhead{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);color:var(--gold)}
+#tabs{display:flex;border-bottom:1px solid var(--line)}
+#tabs button{flex:1;background:none;border:0;padding:12px 4px;color:var(--muted);border-bottom:3px solid transparent}
+#tabs button.on{color:var(--gold2);border-bottom-color:var(--gold);font-weight:700}
+#tabbody{flex:1;overflow:auto;padding:12px}
+.sec{display:none}.sec.on{display:block}
+.row{display:flex;gap:8px;margin-bottom:8px}
+.row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.list{list-style:none;margin:8px 0;padding:0}
+.list li{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:6px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-size:.9rem}
+.list li small{color:var(--muted);display:block}
+h3{margin:12px 0 6px;font-size:.9rem;color:var(--muted)}
+.hint{color:var(--muted);font-size:.85rem;margin-bottom:8px;line-height:1.7}
+.quizbox{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+#toast{position:fixed;z-index:1100;top:64px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);border:1px solid var(--line);
+  padding:10px 16px;border-radius:10px;display:none;max-width:90%;text-align:center}
+.pin{width:26px;height:26px;pointer-events:none}
+.pin svg{width:100%;height:100%;filter:drop-shadow(0 0 3px #000)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="bar">
+    <h1>🕋 مكة 360</h1>
+    <input id="q" type="search" placeholder="ابحث عن شارع أو حي أو معلم…" autocomplete="off">
+    <button class="btn primary" id="goBtn">بحث</button>
+    <button class="btn" id="locBtn" title="موقعي">📍</button>
+    <button class="btn" id="swapBtn" title="تبديل حجم الخريطة والصورة">⇄</button>
+    <button class="btn" id="menuBtn" title="الأدوات">🧭</button>
+    <div id="results"></div>
+  </div>
+
+  <div id="panes">
+    <div id="viewerWrap">
+      <div id="viewer"></div>
+      <div id="info">
+        <div class="txt"><div id="street">…</div><div id="hood"></div></div>
+        <div id="compass">—</div>
+        <button class="btn small" id="saveBtn">⭐ حفظ</button>
+      </div>
+      <div id="notice"><div class="card"></div></div>
+    </div>
+    <div id="mapWrap"><div id="map"></div></div>
+  </div>
+
+  <div id="foot">
+    الخريطة © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">مساهمو OpenStreetMap</a>
+    • الصور © <a href="https://www.mapillary.com" target="_blank" rel="noopener">Mapillary</a> (CC BY-SA)
+    • البحث: Nominatim • المسارات: OSRM
+  </div>
+</div>
+
+<aside id="drawer">
+  <div id="dhead"><b>أدوات التعلّم والملاحة</b><button class="btn small" id="closeBtn">✕</button></div>
+  <div id="tabs">
+    <button data-t="places" class="on">أماكن</button>
+    <button data-t="route">مسار</button>
+    <button data-t="saved">محفوظ</button>
+    <button data-t="quiz">اختبار</button>
+  </div>
+  <div id="tabbody">
+    <section class="sec on" id="t-places">
+      <h3>معالم رئيسية</h3>
+      <ul class="list" id="presetList"></ul>
+      <div class="hint">الخطوط الخضراء على الخريطة هي الشوارع المصوّرة 360°. اضغط على أي مكان في الخريطة لتنتقل إليه.</div>
+    </section>
+
+    <section class="sec" id="t-route">
+      <div class="row"><input id="from" placeholder="من (فارغ = موقعي الحالي في الصورة)"></div>
+      <div class="row"><input id="to" placeholder="إلى (شارع / حي / معلم)"></div>
+      <div class="row">
+        <button class="btn primary" id="routeBtn" style="flex:1">احسب المسار</button>
+        <button class="btn" id="playBtn" disabled>▶ تجوّل</button>
+        <button class="btn" id="stopBtn" disabled>■</button>
+      </div>
+      <div id="routeSummary" class="hint"></div>
+      <ul class="list" id="steps"></ul>
+    </section>
+
+    <section class="sec" id="t-saved">
+      <div class="hint">اضغط ⭐ أثناء التجوّل لحفظ الشارع والحي الحاليين، وراجعهم من هنا.</div>
+      <ul class="list" id="savedList"></ul>
+    </section>
+
+    <section class="sec" id="t-quiz">
+      <div class="hint">ينقلك لمكان من أماكنك المحفوظة وتخمّن اسم الشارع (ابحث عن اللوحات حولك).</div>
+      <div class="quizbox">
+        <div id="quizQ">اضغط «ابدأ الاختبار».</div>
+        <div class="row" style="margin-top:8px"><input id="quizA" placeholder="اسم الشارع" disabled></div>
+        <div class="row">
+          <button class="btn primary" id="quizStart" style="flex:1">ابدأ الاختبار</button>
+          <button class="btn" id="quizCheck" disabled>تحقق</button>
+          <button class="btn" id="quizNext" disabled>التالي</button>
+        </div>
+        <div id="quizFb" class="fb"></div>
+        <div id="quizScore" class="hint"></div>
+      </div>
+    </section>
+  </div>
+</aside>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script src="vendor/maplibre-gl.js"></script>
+<script src="vendor/mapillary.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ============ إعدادات ============ */
+var START = {lat:21.4225, lng:39.8262};
+var VIEWBOX = '39.60,21.60,40.05,21.20';   // left,top,right,bottom حول مكة
+var PRESETS = [
+  {n:'المسجد الحرام والكعبة', lat:21.4225, lng:39.8262},
+  {n:'أبراج البيت (برج الساعة)', lat:21.4189, lng:39.8256},
+  {n:'جبل النور', lat:21.4586, lng:39.8590},
+  {n:'جسر الجمرات (منى)', lat:21.4281, lng:39.8731},
+  {n:'مشعر عرفات', lat:21.3549, lng:39.9842}
+];
+var DIRS = ['شمال','شمال شرق','شرق','جنوب شرق','جنوب','جنوب غرب','غرب','شمال غرب'];
+
+/* ============ أدوات ============ */
+var $ = function(id){ return document.getElementById(id); };
+var sleep = function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); };
+var store = {
+  get:function(k,d){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set:function(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+var toastT;
+function toast(m){ var t=$('toast'); t.textContent=m; t.style.display='block'; clearTimeout(toastT); toastT=setTimeout(function(){ t.style.display='none'; },4500); }
+function dirName(h){ return DIRS[Math.round((((h%360)+360)%360)/45)%8]; }
+function norm(s){
+  return (s||'').replace(/[ً-ٰٟـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي')
+    .replace(/^(شارع|طريق|ش)\s+/,'').replace(/\s+/g,' ').trim().toLowerCase();
+}
+function hav(a,b){   // متر
+  var R=6371000, r=Math.PI/180, dLat=(b.lat-a.lat)*r, dLng=(b.lng-a.lng)*r;
+  var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function bearing(a,b){
+  var r=Math.PI/180, y=Math.sin((b.lng-a.lng)*r)*Math.cos(b.lat*r);
+  var x=Math.cos(a.lat*r)*Math.sin(b.lat*r)-Math.sin(a.lat*r)*Math.cos(b.lat*r)*Math.cos((b.lng-a.lng)*r);
+  return (Math.atan2(y,x)/r+360)%360;
+}
+function angDiff(a,b){ var d=Math.abs(a-b)%360; return d>180?360-d:d; }
+
+var TOKEN = (window.MECCA_CONFIG && window.MECCA_CONFIG.mapillaryToken) || store.get('mecca_mly_token','') || '';
+
+/* ============ Nominatim (حد 1 طلب/ثانية) ============ */
+var lastNom = 0;
+async function nom(path){
+  var wait = Math.max(0, 1100 - (Date.now() - lastNom));
+  lastNom = Date.now() + wait;
+  if(wait) await sleep(wait);
+  var r = await fetch('https://nominatim.openstreetmap.org/' + path + (path.indexOf('?')<0?'?':'&') + 'format=jsonv2&accept-language=ar');
+  if(!r.ok) throw new Error('NOM_' + r.status);
+  return r.json();
+}
+async function geocode(text, limit){
+  return nom('search?q=' + encodeURIComponent(text) + '&limit=' + (limit||6) + '&countrycodes=sa&addressdetails=1&viewbox=' + VIEWBOX);
+}
+var revCache = {};
+async function reverse(p){
+  var k = p.lat.toFixed(4)+','+p.lng.toFixed(4);
+  if(revCache[k]) return revCache[k];
+  var d = await nom('reverse?lat='+p.lat+'&lon='+p.lng+'&zoom=17&addressdetails=1');
+  var a = (d && d.address) || {};
+  var res = {
+    street: a.road || a.pedestrian || a.footway || a.path || a.residential || '',
+    hood: a.neighbourhood || a.suburb || a.quarter || a.city_district || ''
+  };
+  revCache[k] = res; return res;
+}
+
+/* ============ Mapillary: أقرب صورة ============ */
+async function nearestImage(p, opts){
+  opts = opts || {};
+  var radii = opts.radii || [0.0006, 0.002];
+  for(var i=0;i<radii.length;i++){
+    var r = radii[i];
+    var bbox = [p.lng-r, p.lat-r, p.lng+r, p.lat+r].join(',');
+    var url = 'https://graph.mapillary.com/images?access_token=' + encodeURIComponent(TOKEN) +
+              '&fields=id,computed_geometry,geometry,compass_angle,computed_compass_angle,is_pano&limit=100&bbox=' + bbox;
+    var res = await fetch(url);
+    if(!res.ok){ var e = new Error('MLY_' + res.status); e.status = res.status; throw e; }
+    var j = await res.json(), best = null, bs = Infinity;
+    (j.data || []).forEach(function(im){
+      var g = im.computed_geometry || im.geometry; if(!g || !g.coordinates) return;
+      var pt = {lng:g.coordinates[0], lat:g.coordinates[1]};
+      var d = hav(p, pt);
+      var ang = (im.computed_compass_angle != null ? im.computed_compass_angle : im.compass_angle);
+      if(opts.heading != null && !im.is_pano && ang != null && angDiff(ang, opts.heading) > 100) d += 60;  // نفضّل الصور باتجاه السير
+      if(im.is_pano) d *= 0.8;
+      if(d < bs){ bs = d; best = {id:im.id, lat:pt.lat, lng:pt.lng, ang:ang, pano:!!im.is_pano}; }
+    });
+    if(best) return best;
+  }
+  return null;
+}
+
+/* ============ الخريطة ============ */
+var map, pin, viewer, curImg = null, cur = {street:'', hood:''};
+var mapReady = false;
+
+function showNotice(html){
+  var n = $('notice'); n.style.display = 'flex'; n.firstElementChild.innerHTML = html;
+}
+function hideNotice(){ $('notice').style.display = 'none'; }
+function noTokenNotice(){
+  showNotice('<h3 style="color:var(--gold)">صور الشوارع 360° تحتاج توكن Mapillary مجاني</h3>' +
+    '<p>أنشئ توكناً مجانياً (بدون بطاقة) من <a href="https://www.mapillary.com/dashboard/developers" target="_blank" rel="noopener">لوحة المطورين</a> ' +
+    'ثم الصقه في ملف <code>mecca/config.js</code> أو هنا للتجربة (يُحفظ في متصفحك فقط).</p>' +
+    '<input id="tokIn" placeholder="MLY|…" dir="ltr"><button class="btn primary" id="tokOk">تشغيل</button>' +
+    '<p style="color:var(--muted);font-size:.85rem">الخريطة والبحث والمسارات تعمل بدون توكن.</p>');
+  $('tokOk').onclick = function(){
+    var v = $('tokIn').value.trim(); if(!v) return;
+    store.set('mecca_mly_token', v); location.reload();
+  };
+}
+
+function pinEl(){
+  var el = document.createElement('div'); el.className = 'pin';
+  el.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 1 L20 22 L12 17 L4 22 Z" fill="#e8b923" stroke="#000" stroke-width="1.5"/></svg>';
+  return el;
+}
+
+function initMap(){
+  var sources = {
+    osm:{type:'raster', tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256, maxzoom:19,
+         attribution:'© OpenStreetMap contributors'}
+  };
+  var layers = [{id:'osm', type:'raster', source:'osm'}];
+  if(TOKEN){
+    sources.mly = {type:'vector', minzoom:6, maxzoom:14,
+      tiles:['https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=' + encodeURIComponent(TOKEN)]};
+    layers.push({id:'mly-seq', type:'line', source:'mly', 'source-layer':'sequence',
+      paint:{'line-color':'#05cb63','line-opacity':.85,'line-width':['interpolate',['linear'],['zoom'],10,1,16,3.5]}});
+  }
+  map = new maplibregl.Map({container:'map', style:{version:8, sources:sources, layers:layers},
+    center:[START.lng, START.lat], zoom:15, attributionControl:{compact:true}});
+  map.addControl(new maplibregl.NavigationControl({showCompass:false}), 'top-left');
+  pin = new maplibregl.Marker({element:pinEl(), rotationAlignment:'map', pitchAlignment:'map'}).setLngLat([START.lng, START.lat]).addTo(map);
+  map.on('load', function(){
+    mapReady = true;
+    map.addSource('route', {type:'geojson', data:{type:'FeatureCollection', features:[]}});
+    map.addLayer({id:'route', type:'line', source:'route', paint:{'line-color':'#4da3ff','line-width':5,'line-opacity':.9}, layout:{'line-cap':'round','line-join':'round'}});
+  });
+  map.on('click', function(e){ goTo({lat:e.lngLat.lat, lng:e.lngLat.lng}); });
+}
+
+/* ============ العارض ============ */
+var infoT;
+function initViewer(){
+  if(!TOKEN){ noTokenNotice(); return; }
+  try{
+    viewer = new mapillary.Viewer({accessToken:TOKEN, container:'viewer', component:{cover:false}});
+  }catch(e){
+    showNotice('تعذّر تشغيل عارض الصور (WebGL غير مدعوم في هذا المتصفح؟).');
+    return;
+  }
+  viewer.on('image', function(e){
+    var im = e.image, ll = im.lngLat || im.originalLngLat; if(!ll) return;
+    curImg = {id:im.id, lat:ll.lat, lng:ll.lng};
+    pin.setLngLat([ll.lng, ll.lat]);
+    map.easeTo({center:[ll.lng, ll.lat], duration:400});
+    clearTimeout(infoT); infoT = setTimeout(updateInfo, 800);
+  });
+  viewer.on('bearing', function(e){
+    pin.setRotation(e.bearing);
+    $('compass').textContent = '🧭 ' + dirName(e.bearing);
+  });
+  window.addEventListener('resize', function(){ viewer.resize(); map.resize(); });
+}
+async function updateInfo(){
+  if(!curImg) return;
+  try{
+    var r = await reverse(curImg);
+    cur = r;
+    $('street').textContent = r.street || 'شارع بدون اسم في OSM';
+    $('hood').textContent = r.hood ? ('حي ' + r.hood.replace(/^حي\s+/,'')) : '';
+  }catch(e){
+    $('street').textContent = 'تعذّر جلب اسم الشارع'; $('hood').textContent = 'حاول بعد قليل';
+  }
+}
+
+async function goTo(p, opts){
+  opts = opts || {};
+  if(!TOKEN){ map.flyTo({center:[p.lng,p.lat], zoom:Math.max(map.getZoom(),16)}); pin.setLngLat([p.lng,p.lat]); return false; }
+  try{
+    var im = await nearestImage(p, opts);
+    if(!im){ toast('لا توجد صور 360° قريبة من هذا الموقع. جرّب الخطوط الخضراء على الخريطة.'); map.flyTo({center:[p.lng,p.lat], zoom:Math.max(map.getZoom(),16)}); return false; }
+    await viewer.moveTo(im.id);
+    if(opts.heading != null){
+      try{
+        if(im.pano && im.ang != null) viewer.setCenter([((0.5 + (opts.heading - im.ang)/360) % 1 + 1) % 1, 0.5]);
+      }catch(e){}
+    }
+    return true;
+  }catch(e){
+    if(e.status === 400 || e.status === 401 || e.status === 403) toast('توكن Mapillary غير صالح.');
+    else toast('تعذّر تحميل الصورة. تحقق من الاتصال.');
+    return false;
+  }
+}
+
+/* ============ البحث ============ */
+async function doSearch(){
+  var t = $('q').value.trim(); if(!t) return;
+  var box = $('results'); box.style.display = 'block'; box.textContent = 'جارٍ البحث…';
+  try{
+    var rs = await geocode(t, 6);
+    box.textContent = '';
+    if(!rs.length){ box.textContent = 'لا نتائج.'; return; }
+    rs.forEach(function(x){
+      var d = document.createElement('div');
+      var name = x.name || (x.display_name || '').split('،')[0];
+      d.textContent = name;
+      var sm = document.createElement('small'); sm.textContent = x.display_name || ''; d.appendChild(sm);
+      d.onclick = function(){ box.style.display='none'; goTo({lat:+x.lat, lng:+x.lon}); };
+      box.appendChild(d);
+    });
+  }catch(e){ box.textContent = 'فشل البحث. حاول بعد لحظات.'; }
+}
+$('goBtn').onclick = doSearch;
+$('q').addEventListener('keydown', function(e){ if(e.key==='Enter') doSearch(); });
+document.addEventListener('click', function(e){ if(!$('bar').contains(e.target)) $('results').style.display='none'; });
+
+$('locBtn').onclick = function(){
+  if(!navigator.geolocation) return toast('المتصفح لا يدعم تحديد الموقع.');
+  navigator.geolocation.getCurrentPosition(function(p){ goTo({lat:p.coords.latitude, lng:p.coords.longitude}); },
+    function(){ toast('تعذّر تحديد موقعك. اسمح للموقع بالوصول لـ GPS.'); }, {enableHighAccuracy:true, timeout:10000});
+};
+$('swapBtn').onclick = function(){
+  document.body.classList.toggle('bigmap');
+  setTimeout(function(){ map.resize(); if(viewer) viewer.resize(); }, 50);
+};
+
+/* ============ القائمة ============ */
+function setDrawer(o){ $('drawer').classList.toggle('open', o); }
+$('menuBtn').onclick = function(){ setDrawer(!$('drawer').classList.contains('open')); };
+$('closeBtn').onclick = function(){ setDrawer(false); };
+function closeOnMobile(){ if(innerWidth < 700) setDrawer(false); }
+Array.prototype.forEach.call(document.querySelectorAll('#tabs button'), function(b){
+  b.onclick = function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#tabs button'), function(x){ x.classList.toggle('on', x===b); });
+    Array.prototype.forEach.call(document.querySelectorAll('.sec'), function(s){ s.classList.toggle('on', s.id==='t-'+b.dataset.t); });
+  };
+});
+(function(){
+  var ul = $('presetList');
+  PRESETS.forEach(function(p){
+    var li = document.createElement('li'); li.textContent = p.n;
+    li.onclick = function(){ goTo({lat:p.lat, lng:p.lng}); closeOnMobile(); };
+    ul.appendChild(li);
+  });
+})();
+
+/* ============ المسار ============ */
+var routeData = null, playToken = 0;
+var MOD = {'left':'يساراً','right':'يميناً','slight left':'يساراً قليلاً','slight right':'يميناً قليلاً',
+           'sharp left':'يساراً بشدة','sharp right':'يميناً بشدة','straight':'للأمام','uturn':'للخلف'};
+function stepText(s){
+  var m = s.maneuver || {}, nm = s.name ? (' إلى ' + s.name) : '', mod = MOD[m.modifier] || '';
+  switch(m.type){
+    case 'depart': return 'ابدأ السير' + (s.name ? ' على ' + s.name : '');
+    case 'arrive': return 'وصلت إلى وجهتك';
+    case 'turn': return 'انعطف ' + mod + nm;
+    case 'end of road': return 'في نهاية الطريق انعطف ' + mod + nm;
+    case 'fork': return 'خذ المسار ' + mod + nm;
+    case 'merge': return 'اندمج ' + mod + nm;
+    case 'on ramp': case 'off ramp': return 'اسلك المنحدر ' + mod + nm;
+    case 'roundabout': case 'rotary': case 'roundabout turn':
+      return 'ادخل الدوار' + (m.exit ? ' واخرج من المخرج رقم ' + m.exit : '') + nm;
+    case 'new name': case 'continue': return 'استمر ' + (mod||'للأمام') + (s.name ? ' على ' + s.name : '');
+    default: return 'استمر ' + (mod||'للأمام') + nm;
+  }
+}
+function fmtDist(m){ return m < 1000 ? (Math.max(10, Math.round(m/10)*10) + ' م') : ((m/1000).toFixed(1) + ' كم'); }
+function densify(coords, spacing){
+  var out = [{lng:coords[0][0], lat:coords[0][1]}];
+  for(var i=1;i<coords.length;i++){
+    var a = {lng:coords[i-1][0], lat:coords[i-1][1]}, b = {lng:coords[i][0], lat:coords[i][1]};
+    var d = hav(a,b), n = Math.floor(d/spacing);
+    for(var k=1;k<=n;k++){ var t = k*spacing/d; out.push({lng:a.lng+(b.lng-a.lng)*t, lat:a.lat+(b.lat-a.lat)*t}); }
+  }
+  out.push({lng:coords[coords.length-1][0], lat:coords[coords.length-1][1]});
+  return out;
+}
+async function resolveText(t, fallback){
+  if(!t.trim()) return fallback;
+  var r = await geocode(t, 1);
+  if(!r.length) throw new Error('NOT_FOUND');
+  return {lat:+r[0].lat, lng:+r[0].lon};
+}
+$('routeBtn').onclick = async function(){
+  var to = $('to').value.trim();
+  if(!to) return toast('اكتب وجهة المسار.');
+  try{
+    var from = await resolveText($('from').value, curImg || START);
+    var dest = await resolveText(to);
+    var url = 'https://router.project-osrm.org/route/v1/driving/' + from.lng + ',' + from.lat + ';' + dest.lng + ',' + dest.lat +
+              '?overview=full&geometries=geojson&steps=true';
+    var res = await fetch(url); if(!res.ok) throw new Error('OSRM');
+    var j = await res.json();
+    if(!j.routes || !j.routes.length) throw new Error('NOROUTE');
+    var rt = j.routes[0]; routeData = rt;
+    if(mapReady) map.getSource('route').setData({type:'Feature', geometry:rt.geometry});
+    var b = new maplibregl.LngLatBounds(); rt.geometry.coordinates.forEach(function(c){ b.extend(c); }); map.fitBounds(b, {padding:40});
+    $('routeSummary').textContent = fmtDist(rt.distance) + ' • ' + Math.max(1, Math.round(rt.duration/60)) + ' دقيقة (بالسيارة)';
+    var ul = $('steps'); ul.textContent = '';
+    rt.legs[0].steps.forEach(function(s,i){
+      var li = document.createElement('li'), d = document.createElement('div');
+      d.textContent = (i+1) + '. ' + stepText(s);
+      var sm = document.createElement('small'); sm.textContent = s.distance > 0 ? fmtDist(s.distance) : ''; d.appendChild(sm);
+      li.appendChild(d);
+      li.onclick = function(){ goTo({lat:s.maneuver.location[1], lng:s.maneuver.location[0]}); };
+      ul.appendChild(li);
+    });
+    $('playBtn').disabled = !TOKEN;
+    if(TOKEN) goTo(from);
+  }catch(e){
+    toast(e.message === 'NOT_FOUND' ? 'لم أجد أحد المكانين.' : e.message === 'NOROUTE' ? 'لا يوجد مسار بين المكانين.' : 'تعذّر حساب المسار حالياً.');
+  }
+};
+$('playBtn').onclick = async function(){
+  if(!routeData || !TOKEN) return;
+  var t = ++playToken; $('playBtn').disabled = true; $('stopBtn').disabled = false; closeOnMobile();
+  var pts = densify(routeData.geometry.coordinates, 35), last = null;
+  for(var i=0;i<pts.length && t===playToken;i++){
+    var h = i < pts.length-1 ? bearing(pts[i], pts[i+1]) : null;
+    try{
+      var im = await nearestImage(pts[i], {heading:h, radii:[0.0004]});
+      if(im && im.id !== last){ last = im.id; await viewer.moveTo(im.id); try{ if(im.pano && im.ang!=null && h!=null) viewer.setCenter([((0.5+(h-im.ang)/360)%1+1)%1,0.5]); }catch(e){} await sleep(1300); }
+    }catch(e){}
+  }
+  if(t===playToken){ $('playBtn').disabled = false; $('stopBtn').disabled = true; }
+};
+$('stopBtn').onclick = function(){ playToken++; $('playBtn').disabled = !routeData || !TOKEN; $('stopBtn').disabled = true; };
+
+/* ============ الحفظ ============ */
+function getSaved(){ return store.get('mecca_saved', []); }
+$('saveBtn').onclick = function(){
+  if(!curImg) return toast('انتقل لمكان فيه صورة أولاً.');
+  var list = getSaved();
+  if(list.some(function(x){ return Math.abs(x.lat-curImg.lat)<0.0003 && Math.abs(x.lng-curImg.lng)<0.0003; })) return toast('هذا المكان محفوظ بالفعل.');
+  list.push({id:Date.now(), street:cur.street, hood:cur.hood, lat:curImg.lat, lng:curImg.lng});
+  store.set('mecca_saved', list); renderSaved(); toast('تم الحفظ: ' + (cur.street || 'مكان بدون اسم'));
+};
+function renderSaved(){
+  var ul = $('savedList'); ul.textContent = '';
+  var list = getSaved();
+  if(!list.length){ var e = document.createElement('li'); e.textContent = 'لا توجد أماكن محفوظة بعد.'; ul.appendChild(e); return; }
+  list.forEach(function(x){
+    var li = document.createElement('li'), d = document.createElement('div');
+    d.textContent = x.street || 'شارع بدون اسم';
+    var sm = document.createElement('small'); sm.textContent = x.hood ? ('حي ' + x.hood.replace(/^حي\s+/,'')) : ''; d.appendChild(sm);
+    var del = document.createElement('button'); del.className = 'btn small'; del.textContent = 'حذف';
+    del.onclick = function(ev){ ev.stopPropagation(); store.set('mecca_saved', getSaved().filter(function(y){ return y.id!==x.id; })); renderSaved(); };
+    li.onclick = function(){ goTo({lat:x.lat, lng:x.lng}); closeOnMobile(); };
+    li.appendChild(d); li.appendChild(del); ul.appendChild(li);
+  });
+}
+
+/* ============ الاختبار ============ */
+var quizItem = null, quizLast = null, score = {ok:0, total:0};
+async function quizNextQ(){
+  var pool = getSaved().filter(function(x){ return x.street; });
+  if(!pool.length) return toast('احفظ أماكن بأسمائها أولاً من زر ⭐.');
+  if(!TOKEN) return toast('الاختبار يحتاج صور الشوارع (توكن Mapillary).');
+  var pick; do{ pick = pool[Math.floor(Math.random()*pool.length)]; }while(pool.length>1 && pick.id===quizLast);
+  quizLast = pick.id; quizItem = pick;
+  document.body.classList.add('quiz');
+  await goTo({lat:pick.lat, lng:pick.lng});
+  $('quizQ').textContent = 'ما اسم هذا الشارع؟ (تجوّل حولك وابحث عن اللوحات)';
+  $('quizA').value = ''; $('quizA').disabled = false; $('quizA').focus();
+  $('quizCheck').disabled = false; $('quizNext').disabled = true; $('quizFb').textContent = '';
+  closeOnMobile();
+}
+$('quizStart').onclick = quizNextQ; $('quizNext').onclick = quizNextQ;
+function quizCheck(){
+  if(!quizItem) return;
+  var a = norm($('quizA').value), c = norm(quizItem.street); if(!a) return;
+  var ok = a===c || (a.length>=3 && (c.indexOf(a)>=0 || a.indexOf(c)>=0));
+  score.total++; if(ok) score.ok++;
+  var fb = $('quizFb'); fb.className = 'fb ' + (ok?'ok':'bad');
+  fb.textContent = ok ? ('✔ صحيح: ' + quizItem.street) : ('✘ الإجابة الصحيحة: ' + quizItem.street);
+  document.body.classList.remove('quiz');
+  $('quizCheck').disabled = true; $('quizNext').disabled = false; $('quizA').disabled = true;
+  $('quizScore').textContent = 'النتيجة: ' + score.ok + ' / ' + score.total;
+}
+$('quizCheck').onclick = quizCheck;
+$('quizA').addEventListener('keydown', function(e){ if(e.key==='Enter') quizCheck(); });
+
+/* ============ تشغيل ============ */
+initMap(); initViewer(); renderSaved();
+if(TOKEN) goTo(START);
+else { reverse(START).then(function(r){ cur = r; $('street').textContent = r.street || 'الحرم المكي'; $('hood').textContent = r.hood ? ('حي ' + r.hood) : ''; }).catch(function(){ $('street').textContent = 'مكة المكرمة'; }); }
+})();
+</script>
+</body>
+</html>
