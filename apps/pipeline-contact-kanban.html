@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إدارة العملاء والصفقات داخل المتصفح | تصدير CSV وJSON | MDM1</title>
+<meta name="description" content="نظّم جهات الاتصال والعملاء المحتملين والصفقات في لوحة كانبان تعمل بالصفحة، مع بحث فوري وملاحظات وسجل تفاعلات وتذكير بالمهام، وتصدير البيانات إلى CSV أو JSON.">
+<link rel="canonical" href="https://mdm1.org/apps/pipeline-contact-kanban.html">
+<meta property="og:title" content="لوحة إدارة العملاء والصفقات داخل المتصفح | تصدير CSV وJSON">
+<meta property="og:description" content="نظّم جهات الاتصال والعملاء المحتملين والصفقات في لوحة كانبان تعمل بالصفحة، مع بحث فوري وملاحظات وسجل تفاعلات وتذكير بالمهام، وتصدير البيانات إلى CSV أو JSON.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/pipeline-contact-kanban.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { direction: rtl; text-align: right; max-width: 1120px; margin: 0 auto; padding: 1rem 0; }
+.app .app-hide { display: none; }
+.app .app-board { display: flex; gap: .75rem; overflow-x: auto; align-items: flex-start; padding-bottom: .6rem; }
+.app .app-col { flex: 1 0 190px; min-width: 190px; background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 10px; padding: .55rem; }
+.app .app-col.over { outline: 2px dashed var(--gold-bright); outline-offset: -4px; }
+.app .app-col h4 { margin: .15rem 0 .6rem; color: var(--gold-bright); font-size: 1rem; }
+.app .app-card { background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 8px; padding: .6rem; margin-bottom: .5rem; cursor: grab; }
+.app .app-card.dragging { opacity: .45; cursor: grabbing; }
+.app .app-card p { margin: .25rem 0; }
+.app .app-row2 { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.app .app-muted { color: var(--gold-dim); }
+.app .app-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+.app .app-list li { background: var(--gold-dim); border-radius: 6px; padding: .4rem .6rem; margin-bottom: .35rem; }
+.app .app-warn { color: #ffb4a8; }
+.app .app-ok { color: #a8e6b0; }
+.app .app-center { text-align: center; }
+@media (max-width: 700px) { .app .app-col { flex-basis: 100%; } }</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "لوحة إدارة جهات الاتصال والصفقات", "url": "https://mdm1.org/apps/pipeline-contact-kanban.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ بياناتي بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "البيانات تبقى في ذاكرة الصفحة فقط، لذا صدّر ملف JSON قبل الإغلاق، ويمكنك استيراده لاحقًا لاستكمال العمل من حيث توقفت."}}, {"@type": "Question", "name": "كيف أنقل بطاقة إلى مرحلة أخرى؟", "acceptedAnswer": {"@type": "Answer", "text": "اسحب البطاقة وأفلتها في عمود المرحلة المطلوب، أو افتح التفاصيل واختر المرحلة من القائمة ثم احفظ التغييرات."}}, {"@type": "Question", "name": "هل يمكن البحث داخل الوسوم والشركات؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، حقل البحث يفحص الاسم والشركة والبريد والهاتف والوسم فورًا، ويمكن دمجه مع تصفية المرحلة أو مسح التصفية بضغطة واحدة."}}, {"@type": "Question", "name": "ما الفرق بين CSV وJSON؟", "acceptedAnswer": {"@type": "Answer", "text": "CSV مناسب للجداول والبرامج المحاسبية، أما JSON فيحتفظ بالملاحظات والتفاعلات والمهام كاملة لإعادة استيرادها إلى اللوحة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">لوحة إدارة جهات الاتصال والصفقات</h1>
+  <p class="page-sub">نظّم جهات الاتصال والعملاء المحتملين والصفقات في لوحة كانبان تعمل بالصفحة، مع بحث فوري وملاحظات وسجل تفاعلات وتذكير بالمهام، وتصدير البيانات إلى CSV أو JSON.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p id="intro">نعم، يمكنك إدارة جهات اتصالك وعملائك المحتملين وصفقاتك بالكامل من هذه الصفحة دون أي خادم أو تسجيل. ابدأ بإضافة جهة اتصال جديدة، ثم اسحب بطاقتها بين أعمدة المراحل لمتابعة تقدم الصفقة من أول تواصل حتى الإغلاق. البحث الفوري يضيّق النتائج حين تكتب الاسم أو الشركة أو البريد، والتصفية حسب المرحلة أو الوسم تختصر الوقت. عند فتح البطاقة ستجد ملاحظاتك، وسجل التفاعلات، ومهمة متابعة مع تاريخ وتنبيه للمتأخر منها. واحرص على تصدير ملف JSON أو CSV قبل مغادرة الصفحة، لأن البيانات تعيش في الذاكرة فقط، ويمكن استيراد الملف نفسه لاحقًا لاستئناف عملك من حيث توقفت.</p>
+
+<section class="card" id="toolbarSection">
+  <div class="row app-row2" id="rowFilters">
+    <label for="searchInput" id="lblSearch">بحث فوري</label>
+    <input type="search" id="searchInput" placeholder="ابحث بالاسم أو الشركة أو البريد أو الهاتف">
+    <label for="stageFilter" id="lblStageFilter">تصفية حسب المرحلة</label>
+    <select id="stageFilter"><option id="stageAll" value="all">كل المراحل</option></select>
+    <label for="tagFilter" id="lblTagFilter">تصفية حسب الوسم</label>
+    <select id="tagFilter"><option id="tagAll" value="all">كل الوسوم</option></select>
+    <button type="button" id="btnClearFilters" class="sec">مسح التصفية</button>
+  </div>
+  <div class="row app-actions" id="rowActions">
+    <button type="button" id="btnNew">إضافة جهة اتصال</button>
+    <button type="button" id="btnExportJson" class="sec">تصدير ملف JSON</button>
+    <button type="button" id="btnExportCsv" class="sec">تصدير ملف CSV</button>
+    <label for="importFile" id="lblImportFile">استيراد ملف JSON</label>
+    <input type="file" id="importFile" accept="application/json,.json">
+    <button type="button" id="btnReset" class="sec">إعادة تعيين</button>
+  </div>
+  <output id="statusOut" class="out" aria-live="polite">اللوحة جاهزة للاستخدام.</output>
+</section>
+
+<section class="card" id="boardSection">
+  <h2 id="boardTitle">لوحة مراحل الصفقات</h2>
+  <p id="boardHint" class="app-muted">اسحب البطاقة وأفلتها في عمود المرحلة المطلوب، أو افتح التفاصيل وغيّر المرحلة من القائمة.</p>
+  <div class="app-board" id="board"></div>
+  <p id="emptyBoard" class="app-hide app-center">لا توجد بطاقات مطابقة للبحث أو التصفية الحالية.</p>
+</section>
+
+<section class="card" id="editorSection">
+  <h2 id="editorTitle">تفاصيل جهة الاتصال</h2>
+  <div id="emptyEditor" class="app-center">
+    <p id="emptyEditorText">لم يتم اختيار جهة اتصال. اختر بطاقة من اللوحة أو أضف جهة جديدة.</p>
+  </div>
+  <div id="editorForm" class="app-hide">
+    <div class="row app-row2" id="rowIdentity">
+      <label for="fldName" id="lblName">الاسم</label>
+      <input type="text" id="fldName" placeholder="الاسم الكامل">
+      <label for="fldCompany" id="lblCompany">الشركة</label>
+      <input type="text" id="fldCompany" placeholder="اسم الشركة">
+    </div>
+    <div class="row app-row2" id="rowContact">
+      <label for="fldEmail" id="lblEmail">البريد الإلكتروني</label>
+      <input type="email" id="fldEmail" placeholder="name@example.com">
+      <label for="fldPhone" id="lblPhone">الهاتف</label>
+      <input type="tel" id="fldPhone" placeholder="رقم الهاتف">
+    </div>
+    <div class="row app-row2" id="rowDeal">
+      <label for="fldStage" id="lblStage">المرحلة</label>
+      <select id="fldStage"><option id="stageDefault" value="new">جديد</option></select>
+      <label for="fldValue" id="lblValue">قيمة الصفقة</label>
+      <input type="number" id="fldValue" min="0" step="0.01">
+      <label for="fldTag" id="lblTag">الوسم</label>
+      <select id="fldTag"><option id="tagDefault" value="عميل محتمل">عميل محتمل</option></select>
+    </div>
+    <div class="row app-row2" id="rowFollow">
+      <label for="fldFollowTitle" id="lblFollowTitle">مهمة المتابعة</label>
+      <input type="text" id="fldFollowTitle" placeholder="مثال: مكالمة متابعة">
+      <label for="fldFollowDate" id="lblFollowDate">تاريخ المتابعة</label>
+      <input type="date" id="fldFollowDate">
+      <button type="button" id="btnToggleDone" class="sec">تحديد كمنجز</button>
+    </div>
+    <p id="followUpInfo" class="out"></p>
+    <hr id="notesDivider">
+    <div class="row app-row2" id="rowNote">
+      <label for="fldNote" id="lblNote">ملاحظة جديدة</label>
+      <textarea id="fldNote" rows="2" placeholder="اكتب ملاحظة قصيرة"></textarea>
+      <button type="button" id="btnAddNote" class="sec">إضافة ملاحظة</button>
+    </div>
+    <h3 id="notesTitle">الملاحظات المسجلة</h3>
+    <ul id="notesList" class="app-list"></ul>
+    <div class="row app-row2" id="rowInteraction">
+      <label for="fldInteraction" id="lblInteraction">تفاعل جديد</label>
+      <textarea id="fldInteraction" rows="2" placeholder="صف ما حدث في التواصل"></textarea>
+      <button type="button" id="btnAddInteraction" class="sec">إضافة تفاعل</button>
+    </div>
+    <h3 id="interactionsTitle">سجل التفاعلات</h3>
+    <ol id="interactionsList" class="app-list"></ol>
+    <hr id="saveDivider">
+    <div class="row app-actions" id="rowSave">
+      <button type="button" id="btnSave">حفظ التغييرات</button>
+      <button type="button" id="btnDelete" class="sec">حذف جهة الاتصال</button>
+    </div>
+  </div>
+</section>
+
+<details class="card" id="helpDetails">
+  <summary id="helpSummary">طريقة الاستخدام والحفظ</summary>
+  <p id="helpText">أضف جهة اتصال، ثم اسحب بطاقتها بين الأعمدة أو غيّر المرحلة من التفاصيل. استخدم البحث والتصفية لتضييق النتائج، وأضف الملاحظات والتفاعلات ومهام المتابعة. البيانات تبقى في ذاكرة الصفحة فقط؛ صدّر ملف JSON قبل المغادرة وأعد استيراده عند الرجوع، أو صدّر CSV للمشاركة مع برامج الجداول.</p>
+</details></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ بياناتي بعد إغلاق الصفحة؟</h3><p>البيانات تبقى في ذاكرة الصفحة فقط، لذا صدّر ملف JSON قبل الإغلاق، ويمكنك استيراده لاحقًا لاستكمال العمل من حيث توقفت.</p><h3>كيف أنقل بطاقة إلى مرحلة أخرى؟</h3><p>اسحب البطاقة وأفلتها في عمود المرحلة المطلوب، أو افتح التفاصيل واختر المرحلة من القائمة ثم احفظ التغييرات.</p><h3>هل يمكن البحث داخل الوسوم والشركات؟</h3><p>نعم، حقل البحث يفحص الاسم والشركة والبريد والهاتف والوسم فورًا، ويمكن دمجه مع تصفية المرحلة أو مسح التصفية بضغطة واحدة.</p><h3>ما الفرق بين CSV وJSON؟</h3><p>CSV مناسب للجداول والبرامج المحاسبية، أما JSON فيحتفظ بالملاحظات والتفاعلات والمهام كاملة لإعادة استيرادها إلى اللوحة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="pocket-ledger.html" style="color:var(--gold-bright);font-weight:700">دفتر مالي لتسجيل الدخل والمصروفات داخل المتصفح</a><span style="opacity:.75"> — تطبيق دفتر مالي يعمل بالكامل داخل المتصفح لتسجيل الدخل والمصروفات يدويًا، مع حسابات متعددة، فئات، ميزانيات…</span></li><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li><li style="margin:.5rem 0"><a href="reversible-photo-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور بطبقات غير متلفة داخل المتصفح</a><span style="opacity:.75"> — حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد…</span></li><li style="margin:.5rem 0"><a href="seo-lab-local-workbench.html" style="color:var(--gold-bright);font-weight:700">مختبر SEO داخل المتصفح</a><span style="opacity:.75"> — يعمل المختبر بالكامل داخل المتصفح لتوليد الكلمات المفتاحية وتحليل نيتها وصعوبتها ومقارنتها نسبياً وتتبع…</span></li><li style="margin:.5rem 0"><a href="session-forum-workspace.html" style="color:var(--gold-bright);font-weight:700">منتدى تفاعلي داخل المتصفح</a><span style="opacity:.75"> — منتدى تفاعلي داخل المتصفح دون خادم أو حسابات: تصنيفات ومواضيع وردود منسقة، استطلاعات، تتبع المقروء، أفضل…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  function byId(id) { return document.getElementById(id); }
+  var STAGES = [
+    { key: 'new', label: 'جديد' },
+    { key: 'contacted', label: 'تم التواصل' },
+    { key: 'qualified', label: 'مؤهل' },
+    { key: 'proposal', label: 'عرض سعر' },
+    { key: 'won', label: 'مغلق' }
+  ];
+  var TAGS = ['عميل محتمل', 'عميل حالي', 'شريك', 'أولوية عالية'];
+  function stageLabel(key) {
+    for (var i = 0; i < STAGES.length; i++) { if (STAGES[i].key === key) return STAGES[i].label; }
+    return STAGES[0].label;
+  }
+  function makeSeed() {
+    return [
+      { id: 'c1', name: 'سارة العتيبي', company: 'شركة النور', email: 'sara@example.com', phone: '0500000001', stage: 'new', value: 12000, tag: 'عميل محتمل', notes: [{ text: 'التواصل الأول عبر البريد الإلكتروني.', at: '2026-11-01' }], log: [{ text: 'فتحت الرسالة الترحيبية', at: '2026-11-02' }], follow: { title: 'مكالمة متابعة', date: '2026-11-24', done: false }, created: '2026-11-01' },
+      { id: 'c2', name: 'خالد الحربي', company: 'مجموعة الأفق', email: 'khaled@example.com', phone: '0500000002', stage: 'contacted', value: 25000, tag: 'أولوية عالية', notes: [{ text: 'يفضل التواصل صباحًا.', at: '2026-11-03' }], log: [{ text: 'مكالمة تمهيدية عشر دقائق', at: '2026-11-05' }], follow: { title: 'إرسال عرض أولي', date: '2026-11-22', done: false }, created: '2026-11-03' },
+      { id: 'c3', name: 'منى القحطاني', company: 'متجر الروافد', email: 'mona@example.com', phone: '0500000003', stage: 'proposal', value: 8700, tag: 'عميل حالي', notes: [], log: [{ text: 'اجتماع لشرح الخدمة', at: '2026-11-10' }], follow: { title: 'تأكيد الاستلام', date: '2026-11-20', done: true }, created: '2026-11-06' }
+    ];
+  }
+  var state = { contacts: makeSeed(), selected: 'c1' };
+  var resetArmed = false;
+  var deleteArmed = false;
+
+  function showOut(msg, bad) {
+    var o = byId('statusOut');
+    o.textContent = msg;
+    o.classList.remove('app-warn', 'app-ok');
+    o.classList.add(bad ? 'app-warn' : 'app-ok');
+  }
+
+  function selectedContact() {
+    for (var i = 0; i < state.contacts.length; i++) { if (state.contacts[i].id === state.selected) return state.contacts[i]; }
+    return null;
+  }
+
+  function dueText(c) {
+    if (!c.follow || !c.follow.date) return 'لا توجد مهمة';
+    if (c.follow.done) return 'مكتملة';
+    var d = new Date(c.follow.date + 'T00:00:00');
+    if (isNaN(d.getTime())) return 'تاريخ غير صالح';
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var days = Math.round((d.getTime() - now.getTime()) / 86400000);
+    if (days < 0) return 'متأخرة ' + Math.abs(days) + ' يوم';
+    if (days === 0) return 'اليوم';
+    return 'خلال ' + days + ' يوم';
+  }
+
+  function filtered() {
+    var q = byId('searchInput').value.trim().toLowerCase();
+    var sf = byId('stageFilter').value;
+    var tf = byId('tagFilter').value;
+    var out = [];
+    for (var i = 0; i < state.contacts.length; i++) {
+      var c = state.contacts[i];
+      if (sf !== 'all' && c.stage !== sf) continue;
+      if (tf !== 'all' && c.tag !== tf) continue;
+      if (q) {
+        var hay = (c.name + ' ' + c.company + ' ' + c.email + ' ' + c.phone + ' ' + c.tag).toLowerCase();
+        if (hay.indexOf(q) === -1) continue;
+      }
+      out.push(c);
+    }
+    return out;
+  }
+
+  function makeEl(tag, cls, text) {
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text !== undefined && text !== null) el.textContent = text;
+    return el;
+  }
+
+  function countIn(list, key) {
+    var n = 0;
+    for (var i = 0; i < list.length; i++) { if (list[i].stage === key) n++; }
+    return n;
+  }
+
+  function renderBoard() {
+    var board = byId('board');
+    while (board.firstChild) board.removeChild(board.firstChild);
+    var list = filtered();
+    byId('emptyBoard').classList.toggle('app-hide', list.length > 0);
+    for (var s = 0; s < STAGES.length; s++) {
+      var stage = STAGES[s];
+      var col = makeEl('div', 'app-col');
+      col.id = 'col-' + stage.key;
+      var head = makeEl('h4', '', stage.label);
+      head.appendChild(makeEl('span', 'app-muted', ' (' + countIn(list, stage.key) + ')'));
+      col.appendChild(head);
+      for (var i = 0; i < list.length; i++) {
+        var c = list[i];
+        if (c.stage !== stage.key) continue;
+        col.appendChild(makeCard(c));
+      }
+      col.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('over');
+      });
+      col.addEventListener('dragleave', function (e) {
+        e.currentTarget.classList.remove('over');
+      });
+      col.addEventListener('drop', function (e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('over');
+        var movedId = e.dataTransfer.getData('text/plain');
+        var key = e.currentTarget.id.replace('col-', '');
+        moveTo(movedId, key);
+      });
+      board.appendChild(col);
+    }
+  }
+
+  function makeCard(c) {
+    var card = makeEl('div', 'app-card');
+    card.id = 'card-' + c.id;
+    card.draggable = true;
+    card.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', c.id);
+      e.dataTransfer.effectAllowed = 'move';
+      e.currentTarget.classList.add('dragging');
+    });
+    card.addEventListener('dragend', function (e) {
+      e.currentTarget.classList.remove('dragging');
+    });
+    var title = makeEl('p', '', '');
+    title.appendChild(makeEl('strong', '', c.name));
+    card.appendChild(title);
+    card.appendChild(makeEl('p', 'app-muted', c.company || 'بدون شركة'));
+    card.appendChild(makeEl('p', '', c.tag));
+    card.appendChild(makeEl('p', '', 'القيمة: ' + Number(c.value || 0).toLocaleString()));
+    card.appendChild(makeEl('small', 'app-muted', 'المتابعة: ' + dueText(c)));
+    var btn = makeEl('button', 'sec', 'فتح التفاصيل');
+    btn.id = 'open-' + c.id;
+    btn.type = 'button';
+    btn.addEventListener('click', function () {
+      state.selected = c.id;
+      renderEditor();
+      byId('fldName').focus();
+    });
+    card.appendChild(btn);
+    return card;
+  }
+
+  function moveTo(id, key) {
+    var found = false;
+    for (var i = 0; i < state.contacts.length; i++) {
+      if (state.contacts[i].id === id) { state.contacts[i].stage = key; found = true; }
+    }
+    if (!found) { showOut('لم يتم العثور على البطاقة.', true); return; }
+    state.selected = id;
+    renderBoard();
+    renderEditor();
+    showOut('نُقلت البطاقة إلى مرحلة ' + stageLabel(key) + '.');
+  }
+
+  function fillSelect(sel, values, allLabel) {
+    while (sel.firstChild) sel.removeChild(sel.firstChild);
+    if (allLabel) {
+      var a = makeEl('option', '', allLabel);
+      a.value = 'all';
+      sel.appendChild(a);
+    }
+    for (var i = 0; i < values.length; i++) {
+      var o = makeEl('option', '', values[i].label || values[i]);
+      o.value = values[i].key || values[i];
+      sel.appendChild(o);
+    }
+  }
+
+  function renderEditor() {
+    var c = selectedContact();
+    var form = byId('editorForm');
+    var empty = byId('emptyEditor');
+    if (!c) {
+      form.classList.add('app-hide');
+      empty.classList.remove('app-hide');
+      return;
+    }
+    form.classList.remove('app-hide');
+    empty.classList.add('app-hide');
+    byId('fldName').value = c.name;
+    byId('fldCompany').value = c.company || '';
+    byId('fldEmail').value = c.email || '';
+    byId('fldPhone').value = c.phone || '';
+    byId('fldStage').value = c.stage;
+    byId('fldValue').value = c.value || 0;
+    byId('fldTag').value = c.tag;
+    byId('fldFollowTitle').value = c.follow && c.follow.title ? c.follow.title : '';
+    byId('fldFollowDate').value = c.follow && c.follow.date ? c.follow.date : '';
+    byId('btnToggleDone').textContent = c.follow && c.follow.done ? 'إلغاء الإنجاز' : 'تحديد كمنجز';
+    byId('followUpInfo').textContent = 'المهمة: ' + (c.follow && c.follow.title ? c.follow.title : 'لا توجد مهمة') + ' — الحالة: ' + dueText(c);
+    var nl = byId('notesList');
+    while (nl.firstChild) nl.removeChild(nl.firstChild);
+    if (!c.notes.length) nl.appendChild(makeEl('li', 'app-muted', 'لا توجد ملاحظات بعد.'));
+    for (var i = 0; i < c.notes.length; i++) {
+      var n = c.notes[i];
+      var li = makeEl('li', '', n.text);
+      li.appendChild(makeEl('small', 'app-muted', ' — ' + n.at));
+      nl.appendChild(li);
+    }
+    var il = byId('interactionsList');
+    while (il.firstChild) il.removeChild(il.firstChild);
+    if (!c.log.length) il.appendChild(makeEl('li', 'app-muted', 'لا توجد تفاعلات مسجلة.'));
+    for (var j = 0; j < c.log.length; j++) {
+      var g = c.log[j];
+      var li2 = makeEl('li', '', g.text);
+      li2.appendChild(makeEl('small', 'app-muted', ' — ' + g.at));
+      il.appendChild(li2);
+    }
+  }
+
+  function syncFromForm() {
+    var c = selectedContact();
+    if (!c) return false;
+    var name = byId('fldName').value.trim();
+    if (!name) { showOut('اكتب اسم جهة الاتصال قبل الحفظ.', true); byId('fldName').focus(); return false; }
+    var email = byId('fldEmail').value.trim();
+    if (email && email.indexOf('@') === -1) { showOut('صيغة البريد الإلكتروني غير صحيحة.', true); byId('fldEmail').focus(); return false; }
+    var value = parseFloat(byId('fldValue').value);
+    c.name = name;
+    c.company = byId('fldCompany').value.trim();
+    c.email = email;
+    c.phone = byId('fldPhone').value.trim();
+    c.stage = byId('fldStage').value;
+    c.tag = byId('fldTag').value;
+    c.value = isNaN(value) || value < 0 ? 0 : value;
+    c.follow = c.follow || { title: '', date: '', done: false };
+    c.follow.title = byId('fldFollowTitle').value.trim();
+    c.follow.date = byId('fldFollowDate').value;
+    return true;
+  }
+
+  function todayStr() {
+    var d = new Date();
+    var m = d.getMonth() + 1;
+    var day = d.getDate();
+    return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + (day < 10 ? '0' + day : day);
+  }
+
+  function downloadText(text, name, type) {
+    var blob = new Blob([text], { type: type });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  }
+
+  function csvCell(v) {
+    var s = String(v === undefined || v === null ? '' : v);
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+
+  function exportCsv() {
+    var head = ['الاسم', 'الشركة', 'البريد', 'الهاتف', 'المرحلة', 'القيمة', 'الوسم', 'ملاحظات', 'تفاعلات', 'مهمة المتابعة', 'التاريخ', 'منجز'];
+    var lines = [head.map(csvCell).join(',')];
+    for (var i = 0; i < state.contacts.length; i++) {
+      var c = state.contacts[i];
+      var notes = [];
+      for (var n = 0; n < c.notes.length; n++) notes.push(c.notes[n].text);
+      lines.push([
+        c.name, c.company, c.email, c.phone, stageLabel(c.stage), c.value, c.tag,
+        notes.join(' | '), c.log.length,
+        c.follow && c.follow.title ? c.follow.title : '',
+        c.follow && c.follow.date ? c.follow.date : '',
+        c.follow && c.follow.done ? 'نعم' : 'لا'
+      ].map(csvCell).join(','));
+    }
+    downloadText('\uFEFF' + lines.join('\r\n'), 'crm-export.csv', 'text/csv;charset=utf-8');
+    showOut('تم تصدير ' + state.contacts.length + ' سجل إلى CSV.');
+  }
+
+  function exportJson() {
+    var payload = { version: 1, exportedAt: new Date().toISOString(), contacts: state.contacts };
+    downloadText(JSON.stringify(payload, null, 2), 'crm-export.json', 'application/json');
+    showOut('تم تصدير ملف JSON كامل.');
+  }
+
+  function normalize(raw) {
+    var c = {};
+    c.id = raw.id ? String(raw.id) : 'c' + Date.now() + Math.floor(Math.random() * 1000);
+    c.name = String(raw.name || 'بدون اسم');
+    c.company = String(raw.company || '');
+    c.email = String(raw.email || '');
+    c.phone = String(raw.phone || '');
+    c.stage = 'new';
+    for (var s = 0; s < STAGES.length; s++) { if (STAGES[s].key === raw.stage) c.stage = raw.stage; }
+    c.tag = TAGS.indexOf(raw.tag) !== -1 ? raw.tag : TAGS[0];
+    var v = parseFloat(raw.value);
+    c.value = isNaN(v) || v < 0 ? 0 : v;
+    c.notes = [];
+    if (raw.notes && raw.notes.length) {
+      for (var i = 0; i < raw.notes.length; i++) {
+        var nn = raw.notes[i];
+        c.notes.push({ text: String(nn && nn.text ? nn.text : nn || ''), at: String(nn && nn.at ? nn.at : todayStr()) });
+      }
+    }
+    c.log = [];
+    if (raw.log && raw.log.length) {
+      for (var j = 0; j < raw.log.length; j++) {
+        var gg = raw.log[j];
+        c.log.push({ text: String(gg && gg.text ? gg.text : gg || ''), at: String(gg && gg.at ? gg.at : todayStr()) });
+      }
+    }
+    var f = raw.follow || {};
+    c.follow = { title: String(f.title || ''), date: String(f.date || ''), done: !!f.done };
+    c.created = String(raw.created || todayStr());
+    return c;
+  }
+
+  function renderAll() {
+    fillSelect(byId('stageFilter'), STAGES, 'كل المراحل');
+    fillSelect(byId('tagFilter'), TAGS, 'كل الوسوم');
+    fillSelect(byId('fldStage'), STAGES, null);
+    fillSelect(byId('fldTag'), TAGS, null);
+    renderBoard();
+    renderEditor();
+  }
+
+  byId('searchInput').addEventListener('input', function () { renderBoard(); });
+  byId('stageFilter').addEventListener('change', function () { renderBoard(); });
+  byId('tagFilter').addEventListener('change', function () { renderBoard(); });
+  byId('btnClearFilters').addEventListener('click', function () {
+    byId('searchInput').value = '';
+    byId('stageFilter').value = 'all';
+    byId('tagFilter').value = 'all';
+    renderBoard();
+    showOut('تم مسح التصفية.');
+  });
+  byId('btnNew').addEventListener('click', function () {
+    var c = normalize({ name: 'جهة اتصال جديدة', stage: 'new', tag: TAGS[0] });
+    c.name = '';
+    state.contacts.push(c);
+    state.selected = c.id;
+    renderAll();
+    byId('fldName').focus();
+    showOut('أضيفت جهة اتصال جديدة، أكمل بياناتها ثم احفظ.');
+  });
+  byId('btnSave').addEventListener('click', function () {
+    if (!syncFromForm()) return;
+    renderAll();
+    showOut('تم حفظ التغييرات بنجاح.');
+  });
+  byId('fldStage').addEventListener('change', function () {
+    if (syncFromForm()) { renderBoard(); showOut('تم تحديث المرحلة.'); }
+  });
+  byId('btnAddNote').addEventListener('click', function () {
+    var c = selectedContact();
+    if (!c || !syncFromForm()) return;
+    var t = byId('fldNote').value.trim();
+    if (!t) { showOut('اكتب نص الملاحظة أولًا.', true); return; }
+    c.notes.push({ text: t, at: todayStr() });
+    byId('fldNote').value = '';
+    renderEditor();
+    showOut('أُضيفت الملاحظة.');
+  });
+  byId('btnAddInteraction').addEventListener('click', function () {
+    var c = selectedContact();
+    if (!c || !syncFromForm()) return;
+    var t = byId('fldInteraction').value.trim();
+    if (!t) { showOut('اكتب وصف التفاعل أولًا.', true); return; }
+    c.log.push({ text: t, at: todayStr() });
+    byId('fldInteraction').value = '';
+    renderEditor();
+    showOut('أُضيف التفاعل إلى السجل.');
+  });
+  byId('btnToggleDone').addEventListener('click', function () {
+    var c = selectedContact();
+    if (!c || !syncFromForm()) return;
+    c.follow.done = !c.follow.done;
+    renderEditor();
+    renderBoard();
+    showOut(c.follow.done ? 'تم تحديد المهمة كمنجزة.' : 'تمت إعادة المهمة إلى قيد المتابعة.');
+  });
+  byId('btnDelete').addEventListener('click', function () {
+    var c = selectedContact();
+    if (!c) return;
+    var btn = byId('btnDelete');
+    if (!deleteArmed) {
+      deleteArmed = true;
+      btn.textContent = 'تأكيد حذف جهة الاتصال';
+      setTimeout(function () { deleteArmed = false; btn.textContent = 'حذف جهة الاتصال'; }, 4000);
+      return;
+    }
+    var kept = [];
+    for (var i = 0; i < state.contacts.length; i++) { if (state.contacts[i].id !== c.id) kept.push(state.contacts[i]); }
+    state.contacts = kept;
+    state.selected = state.contacts.length ? state.contacts[0].id : null;
+    deleteArmed = false;
+    btn.textContent = 'حذف جهة الاتصال';
+    renderAll();
+    showOut('تم حذف جهة الاتصال.');
+  });
+  byId('btnExportJson').addEventListener('click', exportJson);
+  byId('btnExportCsv').addEventListener('click', exportCsv);
+  byId('importFile').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      try {
+        var parsed = JSON.parse(ev.target.result);
+        var rawList = parsed && parsed.contacts ? parsed.contacts : parsed;
+        if (!Array.isArray(rawList)) throw new Error('invalid');
+        var clean = [];
+        for (var i = 0; i < rawList.length; i++) {
+          if (rawList[i] && rawList[i].name) clean.push(normalize(rawList[i]));
+        }
+        state.contacts = clean;
+        state.selected = clean.length ? clean[0].id : null;
+        byId('importFile').value = '';
+        renderAll();
+        showOut('تم استيراد ' + clean.length + ' سجل بنجاح.');
+      } catch (err) {
+        byId('importFile').value = '';
+        showOut('تعذر قراءة الملف. استخدم ملف JSON صادرًا من هذه اللوحة.', true);
+      }
+    };
+    reader.onerror = function () { showOut('تعذر فتح الملف.', true); };
+    reader.readAsText(file);
+  });
+  byId('btnReset').addEventListener('click', function () {
+    var btn = byId('btnReset');
+    if (!resetArmed) {
+      resetArmed = true;
+      btn.textContent = 'تأكيد إعادة التعيين';
+      setTimeout(function () { resetArmed = false; btn.textContent = 'إعادة تعيين'; }, 4000);
+      return;
+    }
+    state.contacts = makeSeed();
+    state.selected = 'c1';
+    resetArmed = false;
+    btn.textContent = 'إعادة تعيين';
+    byId('searchInput').value = '';
+    renderAll();
+    showOut('تمت إعادة البيانات التجريبية.');
+  });
+
+  renderAll();
+  showOut('اللوحة جاهزة. اسحب البطاقات بين الأعمدة أو افتح التفاصيل للتعديل.');
+})();
+</script>
+</body>
+</html>
