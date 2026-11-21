@@ -193,6 +193,8 @@
 <footer class="page-footer">✦ MDM1 · 2026-11-03 ✦</footer>
 <script src="../js/global.js"></script>
 <script>
+function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+
 (function(){
   const $ = (id)=>document.getElementById(id);
   const state = { tags:[], archive:[], logs:[], simTimer:null, simRunning:false };
@@ -300,7 +302,7 @@
 
   function renderArchive(){
     const el=$('arc-list'); if(!state.archive.length){ el.textContent='الأرشيف فارغ.'; return; }
-    el.innerHTML=state.archive.slice(0,50).map(a=>`<div>${a.t} | ${a.name} @${a.addr} = ${a.value}</div>`).join('');
+    el.innerHTML=state.archive.slice(0,50).map(a=>`<div>${mdm1Esc(a.t)} | ${mdm1Esc(a.name)} @${mdm1Esc(a.addr)} = ${mdm1Esc(a.value)}</div>`).join('');
   }
 
   function exportJSON(){
