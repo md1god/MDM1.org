@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محوّل الصوت إلى نوتات MIDI وملف MIDI قابل للتنزيل | MDM1</title>
+<meta name="description" content="ارفع ملفاً صوتياً واستخرج النوتات الموسيقية مع أرقام MIDI ومددها، ثم نزّلها كملف MIDI جاهز للاستخدام. التحليل يتم محلياً داخل متصفحك دون رفع ملف ودون إنترنت.">
+<link rel="canonical" href="https://mdm1.org/tools/audio-to-midi-notes.html">
+<meta property="og:title" content="محوّل الصوت إلى نوتات MIDI وملف MIDI قابل للتنزيل">
+<meta property="og:description" content="ارفع ملفاً صوتياً واستخرج النوتات الموسيقية مع أرقام MIDI ومددها، ثم نزّلها كملف MIDI جاهز للاستخدام. التحليل يتم محلياً داخل متصفحك دون رفع ملف ودون إنترنت.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/tools/audio-to-midi-notes.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استخرج النوتات الموسيقية من أي ملف صوتي", "url": "https://mdm1.org/tools/audio-to-midi-notes.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما نوع الصوت الذي يعطي أفضل نتيجة؟", "acceptedAnswer": {"@type": "Answer", "text": "الصوت الأحادي النغمة مثل آلة واحدة أو غناء مفرد، لأن الأداة تتبع التردد الأبرز في كل لحظة. قد لا تُكتشف كل النغمة في تسجيلات الأوركسترا أو الصوت متعدد الآلات."}}, {"@type": "Question", "name": "هل تُرفع ملفاتي إلى خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. يُقرأ الملف داخل متصفحك عبر واجهة الويب الصوتية، ولا يُرسل أي بيانات إلى أي جهة، ويمكن استخدام الأداة بعد تحميل الصفحة حتى دون اتصال بالإنترنت."}}, {"@type": "Question", "name": "كيف أحدّد حساسية الكشف؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر قيمة أعلى في القائمة لالتقاط المقاطع الهادئة، وقيمة أدنى لتجاهل الضوضاء. يمكنك أيضاً ضبط أقصر مدة للنغمة لتصفية النبضات القصيرة."}}, {"@type": "Question", "name": "ما الذي يحتويه ملف MIDI الناتج؟", "acceptedAnswer": {"@type": "Answer", "text": "ملف MIDI من نوع Format 0 بسرعة 120 نبضة في الدقيقة، يحتوي على أحداث تشغيل وإيقاف لكل نغمة مكتشفة، ويمكن فتحه في معظم برامج التأليف الموسيقي."}}, {"@type": "Question", "name": "لماذا تظهر نوتات غير صحيحة أحياناً؟", "acceptedAnswer": {"@type": "Answer", "text": "قد يحدث ذلك مع الآلات التي تُنتج توافقات قوية أو مع تسجيلات فيه ضوضاء. جرّب تقليل الحساسية، أو قصّ المقطع إلى جزء أحادي النغمة وأعد التحليل."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/tools/" class="nav-back">كل الأدوات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · أدوات مجانية</div>
+  <h1 class="page-title">استخرج النوتات الموسيقية من أي ملف صوتي</h1>
+  <p class="page-sub">ارفع ملفاً صوتياً واستخرج النوتات الموسيقية مع أرقام MIDI ومددها، ثم نزّلها كملف MIDI جاهز للاستخدام. التحليل يتم محلياً داخل متصفحك دون رفع ملف ودون إنترنت.</p>
+</header>
+<main class="page-content">
+<div class="tool"><div class="card"><p>ارفع ملفاً صوتياً وستحصل فوراً على سلسلة النوتات الموسيقية المكتشفة مع إمكانية تنزيلها كملف MIDI صالح للاستخدام في برامج التأليف. تعمل الأداة بالكامل داخل متصفحك: لا يرفع أي ملف إلى خادم، ولا يحتاج اتصالاً بالإنترنت، ولا يتطلب تثبيت أي برنامج. ارفع صوتاً أحادي النغمة مثل غناء مفرد أو آلة واحدة للحصول على أفضل نتيجة، ثم اضغط زر التحليل لرؤية النوتات مرتبة حسب الزمن مع درجة كل نغمة ورقمها القياسي ومدتها. يمكنك بعد ذلك تنزيل ملف MIDI وتحميله مباشرة في أي برنامج استوديو أو مشغّل موسيقي لمواصلة العمل عليه.</p>
+<form id='toolForm'>
+<label for='audioFile'>الملف الصوتي</label>
+<input type='file' id='audioFile' accept='audio/*' />
+<label for='sensitivity'>حساسية الكشف</label>
+<select id='sensitivity'><option value='0.012'>منخفضة — تتجاهل الهمس والضوضاء</option><option value='0.005' selected>متوسطة</option><option value='0.0015'>عالية — تلتقط المقاطع الهادئة</option></select>
+<label for='minDuration'>أقصر مدة للنغمة بالمللي ثانية</label>
+<input type='number' id='minDuration' value='90' min='20' max='2000' step='10' />
+<label for='noteText'>قائمة النوتات المكتشفة</label>
+<textarea id='noteText' rows='8' readonly placeholder='تظهر النوتات هنا بعد التحليل'></textarea>
+<button type='button' id='analyzeBtn'>حلّل الملف</button>
+<button type='button' id='downloadBtn' disabled>نزّل ملف MIDI</button>
+</form>
+<div class="out" id="out"><span id='status'>لم يتم تحليل أي ملف بعد.</span></div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما نوع الصوت الذي يعطي أفضل نتيجة؟</h3><p>الصوت الأحادي النغمة مثل آلة واحدة أو غناء مفرد، لأن الأداة تتبع التردد الأبرز في كل لحظة. قد لا تُكتشف كل النغمة في تسجيلات الأوركسترا أو الصوت متعدد الآلات.</p><h3>هل تُرفع ملفاتي إلى خادم؟</h3><p>لا. يُقرأ الملف داخل متصفحك عبر واجهة الويب الصوتية، ولا يُرسل أي بيانات إلى أي جهة، ويمكن استخدام الأداة بعد تحميل الصفحة حتى دون اتصال بالإنترنت.</p><h3>كيف أحدّد حساسية الكشف؟</h3><p>اختر قيمة أعلى في القائمة لالتقاط المقاطع الهادئة، وقيمة أدنى لتجاهل الضوضاء. يمكنك أيضاً ضبط أقصر مدة للنغمة لتصفية النبضات القصيرة.</p><h3>ما الذي يحتويه ملف MIDI الناتج؟</h3><p>ملف MIDI من نوع Format 0 بسرعة 120 نبضة في الدقيقة، يحتوي على أحداث تشغيل وإيقاف لكل نغمة مكتشفة، ويمكن فتحه في معظم برامج التأليف الموسيقي.</p><h3>لماذا تظهر نوتات غير صحيحة أحياناً؟</h3><p>قد يحدث ذلك مع الآلات التي تُنتج توافقات قوية أو مع تسجيلات فيه ضوضاء. جرّب تقليل الحساسية، أو قصّ المقطع إلى جزء أحادي النغمة وأعد التحليل.</p></section><p class="src">فكرة الأداة مستوحاة من اتجاه رائج: <a href="https://news.ycombinator.com/item?id=50526023" rel="nofollow noopener" target="_blank">Show HN: I made an audio-to-MIDI model 60x more efficient</a> — الكود والتصميم مكتوبان من الصفر.</p><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل الأدوات</a> · <a href="../pages/index.html" class="glow-gold">كل الصفحات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">أدوات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="number-to-arabic-words.html" style="color:var(--gold-bright);font-weight:700">محوّل الأرقام إلى كلمات للشيكات والفواتير</a><span style="opacity:.75"> — أداة مجانية تحوّل الأرقام الصحيحة حتى المليارات والكسور العشرية إلى كلمات مكتوبة بشكل سليم، مع المثنى…</span></li><li style="margin:.5rem 0"><a href="scene-plan-builder.html" style="color:var(--gold-bright);font-weight:700">مخطط المشاهد: حوّل فكرتك إلى خطة إنتاج دقيقة</a><span style="opacity:.75"> — خطّط فيديوك خطوة بخطوة داخل متصفحك: حدد المدة والمنصة والأسلوب، ثم احصل على توقيتات المشاهد ووصف كل لقطة…</span></li><li style="margin:.5rem 0"><a href="unit-converter-all.html" style="color:var(--gold-bright);font-weight:700">محوّل وحدات شامل للطول والوزن والحرارة والمساحة والحجم</a><span style="opacity:.75"> — أداة تحويل سريعة ودقيقة لجميع الوحدات الأساسية مثل الطول والوزن والحرارة والمساحة والحجم، تدعم أكثر الوحدات…</span></li><li style="margin:.5rem 0"><a href="bmi-calculator.html" style="color:var(--gold-bright);font-weight:700">حاسبة مؤشر كتلة الجسم والوزن المثالي والسعرات اليومية</a><span style="opacity:.75"> — احسب مؤشر كتلة الجسم ووزنك المثالي ونطاق وزنك الصحي وعدد السعرات الحرارية اليومية بسهولة عبر حاسبة دقيقة…</span></li><li style="margin:.5rem 0"><a href="compound-interest-calculator.html" style="color:var(--gold-bright);font-weight:700">حاسبة الفائدة المركبة والادخار الشهري: احسب أرباحك بدقة</a><span style="opacity:.75"> — احسب نمو مدخراتك مع حاسبة الفائدة المركبة والادخار الشهري. أدخل المبلغ والمساهمة ونسبة الفائدة والمدة، واطلع…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل الأدوات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  var fileInput = document.getElementById('audioFile');
+  var sensSelect = document.getElementById('sensitivity');
+  var minDurInput = document.getElementById('minDuration');
+  var noteText = document.getElementById('noteText');
+  var analyzeBtn = document.getElementById('analyzeBtn');
+  var downloadBtn = document.getElementById('downloadBtn');
+  var out = document.getElementById('out');
+  var ctx = null;
+  var midiBytes = null;
+  var NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+  function noteName(m) { return NAMES[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1); }
+
+  function esc(s) { var d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
+  function getCtx() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { throw new Error('unsupported'); }
+    if (!ctx) { ctx = new AC(); }
+    if (ctx.state === 'suspended' && ctx.resume) { ctx.resume(); }
+    return ctx;
+  }
+
+  function decimate(data, rate) {
+    var f = Math.max(1, Math.round(rate / 11025));
+    var len = Math.floor(data.length / f);
+    var res = new Float32Array(len);
+    for (var i = 0; i < len; i++) {
+      var s = 0;
+      for (var j = 0; j < f; j++) { s += data[i * f + j]; }
+      res[i] = s / f;
+    }
+    return { data: res, rate: rate / f };
+  }
+
+  function detect(win, rate, threshold) {
+    var n = win.length;
+    var p = new Float64Array(n + 1);
+    for (var i = 0; i < n; i++) { p[i + 1] = p[i] + win[i] * win[i]; }
+    var rms = Math.sqrt((p[n] - p[0]) / n);
+    if (rms < threshold) { return { freq: 0 }; }
+
+    function score(lag) {
+      if (lag < 2 || lag >= n) { return 0; }
+      var m = n - lag;
+      var corr = 0;
+      for (var k = 0; k < m; k++) { corr += win[k] * win[k + lag]; }
+      var d = Math.sqrt(p[m] * (p[n] - p[lag]));
+      return d > 0 ? corr / d : 0;
+    }
+
+    var minLag = Math.max(3, Math.floor(rate / 1400));
+    var maxLag = Math.min(Math.floor(rate / 65), n - 3);
+    var best = -1, bestScore = 0, lag, s;
+    for (lag = minLag; lag <= maxLag; lag++) {
+      s = score(lag);
+      if (s > bestScore) { bestScore = s; best = lag; }
+    }
+    if (best < 0 || bestScore < 0.5) { return { freq: 0 }; }
+    for (lag = minLag; lag <= best; lag++) {
+      if (score(lag) >= bestScore * 0.92) { best = lag; break; }
+    }
+    s = score(best);
+    if (s < 0.45) { return { freq: 0 }; }
+    var a = score(best - 1), c = score(best + 1);
+    var den = a - 2 * s + c;
+    var shift = den !== 0 ? (0.5 * (a - c)) / den : 0;
+    if (shift > 0.5) { shift = 0.5; }
+    if (shift < -0.5) { shift = -0.5; }
+    var trueLag = best + shift;
+    if (trueLag <= 0) { return { freq: 0 }; }
+    return { freq: rate / trueLag };
+  }
+
+  function vlq(num) {
+    var v = Math.max(0, Math.floor(num));
+    var bytes = [v & 0x7f];
+    v = v >> 7;
+    while (v > 0) { bytes.unshift((v & 0x7f) | 0x80); v = v >> 7; }
+    return bytes;
+  }
+
+  function buildMidi(notes) {
+    var tps = 960;
+    var events = [];
+    events.push({ t: 0, d: [0xff, 0x51, 0x03, 0x07, 0xa1, 0x20] });
+    events.push({ t: 0, d: [0xc0, 0x00] });
+    for (var i = 0; i < notes.length; i++) {
+      var n = notes[i];
+      var st = Math.round(n.start * tps);
+      var en = Math.round((n.start + n.dur) * tps);
+      if (en <= st) { en = st + 1; }
+      events.push({ t: st, d: [0x90, n.midi, 100] });
+      events.push({ t: en, d: [0x80, n.midi, 0] });
+    }
+    var track = [];
+    var last = 0;
+    for (var j = 0; j < events.length; j++) {
+      var e = events[j];
+      var delta = e.t >= last ? e.t - last : 0;
+      last = e.t;
+      track = track.concat(vlq(delta), e.d);
+    }
+    track = track.concat(vlq(0), [0xff, 0x2f, 0x00]);
+    var header = [0x4d, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, 0x01, 0xe0];
+    var th = [0x4d, 0x54, 0x72, 0x6b, (track.length >>> 24) & 0xff, (track.length >>> 16) & 0xff, (track.length >>> 8) & 0xff, track.length & 0xff];
+    return new Uint8Array(header.concat(th, track));
+  }
+
+  function process(buffer, fileName) {
+    var len = buffer.length;
+    var chans = buffer.numberOfChannels;
+    var mono = new Float32Array(len);
+    var c, i;
+    for (c = 0; c < chans; c++) {
+      var arr = buffer.getChannelData(c);
+      for (i = 0; i < len; i++) { mono[i] += arr[i] / chans; }
+    }
+    var prep = decimate(mono, buffer.sampleRate);
+    var data = prep.data, rate = prep.rate;
+    var winSize = 1024, hop = 512;
+    var threshold = parseFloat(sensSelect.value);
+    if (!isFinite(threshold) || threshold <= 0) { threshold = 0.005; }
+    var minMs = parseInt(minDurInput.value, 10);
+    if (!isFinite(minMs) || minMs < 20) { minMs = 90; }
+
+    var frames = [];
+    for (var start = 0; start + winSize <= data.length; start += hop) {
+      var r = detect(data.subarray(start, start + winSize), rate, threshold);
+      var midi = 0;
+      if (r.freq > 0) {
+        midi = Math.round(69 + 12 * Math.log(r.freq / 440) / Math.LN2);
+        if (midi < 0 || midi > 127) { midi = 0; }
+      }
+      frames.push({ t: start / rate, midi: midi });
+    }
+
+    var notes = [];
+    var cur = null;
+    var gap = 0.12;
+    var step = hop / rate;
+    for (var f = 0; f < frames.length; f++) {
+      var fr = frames[f];
+      if (fr.midi > 0) {
+        if (cur && cur.midi === fr.midi && fr.t - cur.end < gap) {
+          cur.end = fr.t + step;
+        } else {
+          if (cur) { notes.push(cur); }
+          cur = { midi: fr.midi, start: fr.t, end: fr.t + step };
+        }
+      } else if (cur && fr.t - cur.end >= gap) {
+        notes.push(cur);
+        cur = null;
+      }
+    }
+    if (cur) { notes.push(cur); }
+
+    notes = notes.filter(function (n) { return (n.end - n.start) * 1000 >= minMs; });
+    var lines = [];
+    var rows = '';
+    for (var k = 0; k < notes.length; k++) {
+      var note = notes[k];
+      var dur = note.end - note.start;
+      var hz = 440 * Math.pow(2, (note.midi - 69) / 12);
+      lines.push(note.start.toFixed(2) + 's, ' + dur.toFixed(2) + 's, ' + note.midi + ', ' + noteName(note.midi) + ', ' + hz.toFixed(1) + 'Hz');
+      rows += '<tr><td>' + (k + 1) + '</td><td>' + noteName(note.midi) + '</td><td>' + note.midi + '</td><td>' + hz.toFixed(1) + '</td><td>' + note.start.toFixed(2) + '</td><td>' + dur.toFixed(2) + '</td></tr>';
+    }
+    noteText.value = lines.join('\n');
+    midiBytes = buildMidi(notes);
+    downloadBtn.disabled = notes.length === 0;
+
+    var html = '<p>تم تحليل <strong>' + esc(fileName) + '</strong>: تم الكشف عن ' + notes.length + ' نغمة خلال ' + buffer.duration.toFixed(1) + ' ثانية.</p>';
+    if (notes.length > 0) {
+      html += '<table><thead><tr><th>#</th><th>النغمة</th><th>MIDI</th><th>الهرتز</th><th>البداية</th><th>المدة</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      html += '<p>اضغط زر تنزيل ملف MIDI للحصول على النتيجة.</p>';
+    } else {
+      html += '<p>لم يتم العثور على نغمة واضحة. جرّب ملفاً آخر أو ارفع حساسية الكشف.</p>';
+    }
+    out.innerHTML = html;
+  }
+
+  analyzeBtn.addEventListener('click', function () {
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) { out.innerHTML = '<p>اختر ملفاً صوتياً أولاً.</p>'; return; }
+    downloadBtn.disabled = true;
+    noteText.value = '';
+    out.innerHTML = '<p>جارٍ تحليل الملف...</p>';
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      try {
+        var ac = getCtx();
+        ac.decodeAudioData(ev.target.result, function (buf) {
+          try { process(buf, file.name); }
+          catch (err) { out.innerHTML = '<p>تعذّر معالجة هذا الملف.</p>'; }
+        }, function () { out.innerHTML = '<p>تعذّر قراءة الملف الصوتي.</p>'; });
+      } catch (err) {
+        out.innerHTML = '<p>متصفحك لا يدعم تحليل الصوت محلياً.</p>';
+      }
+    };
+    reader.onerror = function () { out.innerHTML = '<p>تعذّر قراءة الملف.</p>'; };
+    reader.readAsArrayBuffer(file);
+  });
+
+  downloadBtn.addEventListener('click', function () {
+    if (!midiBytes) { return; }
+    var blob = new Blob([midiBytes], { type: 'audio/midi' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'notes.mid';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+})();
+</script>
+</body>
+</html>
