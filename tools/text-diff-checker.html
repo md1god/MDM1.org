@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مقارنة نصين وإبراز التغييرات | أداة سطر بسطر | MDM1</title>
+<meta name="description" content="قارن نصين فورًا واحصل على تقرير يبرز الأسطر المضافة والمحذوفة والمتغيرة بألوان واضحة، مع عدد التغييرات وخيارات تصفية، داخل متصفحك دون رفع بيانات.">
+<link rel="canonical" href="https://mdm1.org/tools/text-diff-checker.html">
+<meta property="og:title" content="مقارنة نصين وإبراز التغييرات | أداة سطر بسطر">
+<meta property="og:description" content="قارن نصين فورًا واحصل على تقرير يبرز الأسطر المضافة والمحذوفة والمتغيرة بألوان واضحة، مع عدد التغييرات وخيارات تصفية، داخل متصفحك دون رفع بيانات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/tools/text-diff-checker.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "قارن نصين واكتشف كل تغيير سطر بسطر", "url": "https://mdm1.org/tools/text-diff-checker.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ النصوص التي ألصقها؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. تتم المقارنة داخل المتصفح على جهازك، ولا يُرسل أي نص إلى خادم أو موقع آخر، لذلك تبقى بياناتك خاصة بك."}}, {"@type": "Question", "name": "كيف يُحسب عدد التغييرات؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحتسب السطر المضاف أو المحذوف تغييرًا واحدًا، أما استبدال سطر بآخر فيُحتسب تغييرًا واحدًا أيضًا، وتُضاف السطور الزائدة داخل الموضع نفسه بشكل منفصل."}}, {"@type": "Question", "name": "هل يمكن مقارنة نصوص من لغات مختلفة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. تعتمد الأداة على مقارنة الأسطر كما هي، لذا تعمل مع أي محتوى، بما في ذلك النصوص ذات الاتجاهات والرموز المختلفة."}}, {"@type": "Question", "name": "ماذا أفعل إذا ظهرت رسالة تجاوز الحد؟", "acceptedAnswer": {"@type": "Answer", "text": "قلّل عدد الأسطر أو قسّم النص إلى أجزاء أصغر ثم قارن كل جزء على حدة؛ الحد موضوع للحفاظ على سرعة المتصفح ومنع التبطيء."}}, {"@type": "Question", "name": "هل تظهر الأسطر المتطابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "يعرض التقرير مواضع التغيير فقط حتى تركز على الفروق، ويمكنك استخدام قائمة العرض لتصفية النتائج إلى المضاف أو المحذوف أو المتغير."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/tools/" class="nav-back">كل الأدوات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · أدوات مجانية</div>
+  <h1 class="page-title">قارن نصين واكتشف كل تغيير سطر بسطر</h1>
+  <p class="page-sub">قارن نصين فورًا واحصل على تقرير يبرز الأسطر المضافة والمحذوفة والمتغيرة بألوان واضحة، مع عدد التغييرات وخيارات تصفية، داخل متصفحك دون رفع بيانات.</p>
+</header>
+<main class="page-content">
+<div class="tool"><div class="card"><p id="lead">الإجابة السريعة: الصق النص الأصلي في الحقل الأول، ثم الصق النص المعدّل في الحقل الثاني، واضغط زر المقارنة. سيظهر لك تقرير فوري يحدد الأسطر المضافة والمحذوفة والمتغيرة بألوان واضحة، مع عدد التغييرات الإجمالي، دون رفع أي بيانات أو انتقال إلى صفحة أخرى. يمكنك استخدام الأداة مع نصوص قصيرة أو طويلة، ومع محتوى من لغات مختلفة، فهي تعمل داخل المتصفح مباشرة وتحافظ على خصوصية ما تكتبه. ابدأ بلصق النصين كما هما، بما في ذلك الأسطر الفارغة، ثم راجع النتيجة سطرًا بسطر لتعرف ما أُضيف وما حُذف وما عُدّل بدقة وسهولة.</p>
+<div id="form" class="card">
+  <div id="fields" class="grid">
+    <div id="wrapOld" class="field">
+      <label id="labelOld" for="oldText">النص الأصلي</label>
+      <textarea id="oldText" name="oldText" rows="10" dir="auto" placeholder="الصق هنا النسخة القديمة..."></textarea>
+    </div>
+    <div id="wrapNew" class="field">
+      <label id="labelNew" for="newText">النص المعدّل</label>
+      <textarea id="newText" name="newText" rows="10" dir="auto" placeholder="الصق هنا النسخة الجديدة..."></textarea>
+    </div>
+  </div>
+  <div id="controls">
+    <div id="wrapMode" class="field">
+      <label id="labelMode" for="viewMode">عرض النتائج</label>
+      <select id="viewMode" name="viewMode">
+        <option id="optAll" value="all">كل التغييرات</option>
+        <option id="optAdded" value="added">المضاف فقط</option>
+        <option id="optRemoved" value="removed">المحذوف فقط</option>
+        <option id="optChanged" value="changed">المتغير فقط</option>
+      </select>
+    </div>
+    <div id="actions">
+      <button id="compareBtn" type="button">قارن النصين</button>
+      <button id="clearBtn" type="button">مسح الحقول</button>
+    </div>
+  </div>
+  <p id="hint"><small id="hintText">تتم المقارنة سطرًا بسطر داخل متصفحك فقط. للحفاظ على السرعة، استخدم حتى ٢٠٠٠ سطر و١٠٠ ألف حرف في كل حقل.</small></p>
+  <p id="errorBox" style="display:none;color:#b00020"><b id="errorText"></b></p>
+  <div class="out" id="out" style="display:none">
+    <p id="summary"><b id="summaryText"></b></p>
+    <p id="stats"><b id="statAll"></b> <b id="statAdded"></b> <b id="statRemoved"></b> <b id="statChanged"></b></p>
+    <div id="legend">
+      <p id="legendAdded"><b id="legendAddedText" style="background:#e8f7ee;color:#0b5d2a;padding:2px 6px;border-radius:4px">مضاف</b></p>
+      <p id="legendRemoved"><b id="legendRemovedText" style="background:#fdeaea;color:#8a1c1c;padding:2px 6px;border-radius:4px">محذوف</b></p>
+      <p id="legendChanged"><b id="legendChangedText" style="background:#fff4d6;color:#7a4a00;padding:2px 6px;border-radius:4px">متغير</b></p>
+    </div>
+    <div id="resultLines"></div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ النصوص التي ألصقها؟</h3><p>لا. تتم المقارنة داخل المتصفح على جهازك، ولا يُرسل أي نص إلى خادم أو موقع آخر، لذلك تبقى بياناتك خاصة بك.</p><h3>كيف يُحسب عدد التغييرات؟</h3><p>يُحتسب السطر المضاف أو المحذوف تغييرًا واحدًا، أما استبدال سطر بآخر فيُحتسب تغييرًا واحدًا أيضًا، وتُضاف السطور الزائدة داخل الموضع نفسه بشكل منفصل.</p><h3>هل يمكن مقارنة نصوص من لغات مختلفة؟</h3><p>نعم. تعتمد الأداة على مقارنة الأسطر كما هي، لذا تعمل مع أي محتوى، بما في ذلك النصوص ذات الاتجاهات والرموز المختلفة.</p><h3>ماذا أفعل إذا ظهرت رسالة تجاوز الحد؟</h3><p>قلّل عدد الأسطر أو قسّم النص إلى أجزاء أصغر ثم قارن كل جزء على حدة؛ الحد موضوع للحفاظ على سرعة المتصفح ومنع التبطيء.</p><h3>هل تظهر الأسطر المتطابقة؟</h3><p>يعرض التقرير مواضع التغيير فقط حتى تركز على الفروق، ويمكنك استخدام قائمة العرض لتصفية النتائج إلى المضاف أو المحذوف أو المتغير.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل الأدوات</a> · <a href="../pages/index.html" class="glow-gold">كل الصفحات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">أدوات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="tiles-paint-calculator.html" style="color:var(--gold-bright);font-weight:700">حاسبة عدد البلاط والدهان للغرف</a><span style="opacity:.75"> — أداة مجانية لحساب عدد البلاط المطلوب لتغطية أرضية الغرفة مع نسبة الهالك، وحساب كمية الدهان اللازمة للجدران…</span></li><li style="margin:.5rem 0"><a href="timezone-meeting-planner.html" style="color:var(--gold-bright);font-weight:700">مخطط اجتماعات بين المدن: احسب التوقيت في القاهرة ولندن ونيويورك</a><span style="opacity:.75"> — اختر مدنك وحدد وقت الاجتماع لتحويله تلقائياً إلى التوقيت المحلي لكل مدينة، مع تمييز ساعات العمل المناسبة…</span></li><li style="margin:.5rem 0"><a href="trip-fuel-cost-calculator.html" style="color:var(--gold-bright);font-weight:700">حاسبة تكلفة الرحلة والبنزين حسب المسافة واستهلاك السيارة وسعر اللتر</a><span style="opacity:.75"> — احسب تكلفة البنزين للرحلة بدقة بناءً على المسافة، واستهلاك السيارة، وسعر اللتر لتعرف المبلغ المطلوب قبل…</span></li><li style="margin:.5rem 0"><a href="unit-converter-all.html" style="color:var(--gold-bright);font-weight:700">محوّل وحدات شامل للطول والوزن والحرارة والمساحة والحجم</a><span style="opacity:.75"> — أداة تحويل سريعة ودقيقة لجميع الوحدات الأساسية مثل الطول والوزن والحرارة والمساحة والحجم، تدعم أكثر الوحدات…</span></li><li style="margin:.5rem 0"><a href="unit-converter-arabic.html" style="color:var(--gold-bright);font-weight:700">محول وحدات: الطول والوزن والحرارة والمساحة والحجم</a><span style="opacity:.75"> — أداة مجانية لتحويل وحدات الطول والوزن ودرجة الحرارة والمساحة والحجم داخل المتصفح بسرعة ودقة، مع نتائج فورية…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل الأدوات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+var oldEl=document.getElementById('oldText');
+var newEl=document.getElementById('newText');
+var viewEl=document.getElementById('viewMode');
+var compareBtn=document.getElementById('compareBtn');
+var clearBtn=document.getElementById('clearBtn');
+var out=document.getElementById('out');
+var result=document.getElementById('resultLines');
+var errorBox=document.getElementById('errorBox');
+var errorText=document.getElementById('errorText');
+var summaryText=document.getElementById('summaryText');
+var statAll=document.getElementById('statAll');
+var statAdded=document.getElementById('statAdded');
+var statRemoved=document.getElementById('statRemoved');
+var statChanged=document.getElementById('statChanged');
+var MAX_LINES=2000;
+var MAX_CHARS=100000;
+var lineSeq=0;
+var groupSeq=0;
+function toLines(text){
+  var fixed=text.replace(/\r\n?/g,'\n');
+  var arr=fixed.split('\n');
+  if(arr.length && arr[arr.length-1]==='') arr.pop();
+  return arr;
+}
+function hideError(){
+  errorBox.style.display='none';
+  errorText.textContent='';
+}
+function showError(msg){
+  errorText.textContent=msg;
+  errorBox.style.display='block';
+  out.style.display='none';
+  result.textContent='';
+}
+function makeDiff(a,b){
+  var n=a.length;
+  var m=b.length;
+  var width=m+1;
+  var dp=new Uint16Array((n+1)*width);
+  var i,j;
+  for(i=n-1;i>=0;i--){
+    for(j=m-1;j>=0;j--){
+      if(a[i]===b[j]){
+        dp[i*width+j]=dp[(i+1)*width+j+1]+1;
+      }else{
+        var down=dp[(i+1)*width+j];
+        var right=dp[i*width+j+1];
+        dp[i*width+j]=down>=right?down:right;
+      }
+    }
+  }
+  var ops=[];
+  i=0;j=0;
+  while(i<n && j<m){
+    if(a[i]===b[j]){
+      ops.push({t:'eq',v:a[i]});
+      i++;j++;
+    }else if(dp[(i+1)*width+j]>=dp[i*width+j+1]){
+      ops.push({t:'del',v:a[i]});
+      i++;
+    }else{
+      ops.push({t:'add',v:b[j]});
+      j++;
+    }
+  }
+  while(i<n){ ops.push({t:'del',v:a[i]}); i++; }
+  while(j<m){ ops.push({t:'add',v:b[j]}); j++; }
+  return ops;
+}
+function groupOps(ops){
+  var groups=[];
+  var k=0;
+  while(k<ops.length){
+    if(ops[k].t==='eq'){ k++; continue; }
+    var olds=[];
+    var news=[];
+    while(k<ops.length && ops[k].t!=='eq'){
+      if(ops[k].t==='del') olds.push(ops[k].v);
+      else news.push(ops[k].v);
+      k++;
+    }
+    var type=olds.length && news.length?'changed':(news.length?'added':'removed');
+    groups.push({type:type,olds:olds,news:news});
+  }
+  return groups;
+}
+function countGroups(groups){
+  var added=0,removed=0,changed=0;
+  for(var i=0;i<groups.length;i++){
+    var g=groups[i];
+    if(g.type==='changed'){
+      var pair=Math.min(g.olds.length,g.news.length);
+      changed+=pair;
+      added+=g.news.length-pair;
+      removed+=g.olds.length-pair;
+    }else if(g.type==='added'){
+      added+=g.news.length;
+    }else{
+      removed+=g.olds.length;
+    }
+  }
+  return {added:added,removed:removed,changed:changed,total:added+removed+changed};
+}
+function styleRow(row,kind){
+  row.style.margin='5px 0';
+  row.style.padding='7px 9px';
+  row.style.borderRadius='5px';
+  row.style.borderRight='4px solid transparent';
+  if(kind==='added'){
+    row.style.background='#e8f7ee';
+    row.style.color='#0b5d2a';
+    row.style.borderRightColor='#1c8a45';
+  }else if(kind==='removed'){
+    row.style.background='#fdeaea';
+    row.style.color='#8a1c1c';
+    row.style.borderRightColor='#c62828';
+  }else if(kind==='changed'){
+    row.style.background='#fff4d6';
+    row.style.color='#7a4a00';
+    row.style.borderRightColor='#c77800';
+  }else{
+    row.style.background='#f2f4f7';
+    row.style.color='#33404d';
+    row.style.borderRightColor='#8a97a5';
+  }
+}
+function addLine(label,value,kind){
+  var row=document.createElement('div');
+  row.id='line-'+lineSeq;
+  row.dir='auto';
+  styleRow(row,kind);
+  var tag=document.createElement('b');
+  tag.id='lineTag-'+lineSeq;
+  tag.textContent=label+' ';
+  tag.style.opacity='0.72';
+  var text=document.createElement('b');
+  text.id='lineText-'+lineSeq;
+  text.textContent=value===''?'(سطر فارغ)':value;
+  row.appendChild(tag);
+  row.appendChild(text);
+  result.appendChild(row);
+  lineSeq++;
+}
+function addGroupHeader(number){
+  var head=document.createElement('div');
+  head.id='group-'+groupSeq;
+  head.style.marginTop='12px';
+  head.style.marginBottom='4px';
+  var label=document.createElement('b');
+  label.id='groupLabel-'+groupSeq;
+  label.textContent='التغيير رقم '+number;
+  head.appendChild(label);
+  result.appendChild(head);
+  groupSeq++;
+}
+function render(){
+  hideError();
+  if(oldEl.value.length>MAX_CHARS || newEl.value.length>MAX_CHARS){
+    showError('النص أكبر من الحد المسموح. قلّل الحروف أو قسّم النص إلى أجزاء.');
+    return;
+  }
+  var a=toLines(oldEl.value);
+  var b=toLines(newEl.value);
+  if(a.length>MAX_LINES || b.length>MAX_LINES){
+    showError('عدد الأسطر أكبر من الحد المسموح. قسّم النص إلى أجزاء أصغر.');
+    return;
+  }
+  if(a.length===0 && b.length===0){
+    showError('الصق نصًا في أحد الحقلين على الأقل قبل المقارنة.');
+    return;
+  }
+  var groups=groupOps(makeDiff(a,b));
+  var counts=countGroups(groups);
+  summaryText.textContent=counts.total===0?'لا توجد تغييرات بين النصين.':'تم رصد '+counts.total+' تغييرًا.';
+  statAll.textContent='الإجمالي: '+counts.total;
+  statAdded.textContent='مضاف: '+counts.added;
+  statRemoved.textContent='محذوف: '+counts.removed;
+  statChanged.textContent='متغير: '+counts.changed;
+  result.textContent='';
+  lineSeq=0;
+  groupSeq=0;
+  var mode=viewEl.value;
+  var shown=0;
+  for(var i=0;i<groups.length;i++){
+    var g=groups[i];
+    if(mode==='changed' && g.type!=='changed') continue;
+    if(mode==='added' && g.news.length===0) continue;
+    if(mode==='removed' && g.olds.length===0) continue;
+    shown++;
+    addGroupHeader(shown);
+    var k;
+    if(mode==='added'){
+      for(k=0;k<g.news.length;k++) addLine('مضاف',g.news[k],'added');
+    }else if(mode==='removed'){
+      for(k=0;k<g.olds.length;k++) addLine('محذوف',g.olds[k],'removed');
+    }else if(mode==='changed'){
+      for(k=0;k<g.olds.length;k++) addLine('قبل',g.olds[k],'changed');
+      for(k=0;k<g.news.length;k++) addLine('بعد',g.news[k],'changed');
+    }else if(g.type==='added'){
+      for(k=0;k<g.news.length;k++) addLine('مضاف',g.news[k],'added');
+    }else if(g.type==='removed'){
+      for(k=0;k<g.olds.length;k++) addLine('محذوف',g.olds[k],'removed');
+    }else{
+      for(k=0;k<g.olds.length;k++) addLine('قبل · متغير',g.olds[k],'changed');
+      for(k=0;k<g.news.length;k++) addLine('بعد · متغير',g.news[k],'changed');
+    }
+  }
+  if(shown===0){
+    if(counts.total===0) addLine('النتيجة','النصان متطابقان تمامًا.','same');
+    else addLine('النتيجة','لا توجد عناصر مطابقة للخيار المحدد.','same');
+  }
+  out.style.display='block';
+}
+compareBtn.addEventListener('click',render);
+clearBtn.addEventListener('click',function(){
+  oldEl.value='';
+  newEl.value='';
+  hideError();
+  result.textContent='';
+  out.style.display='none';
+  oldEl.focus();
+});
+viewEl.addEventListener('change',function(){
+  if(out.style.display!=='none') render();
+});
+oldEl.addEventListener('input',hideError);
+newEl.addEventListener('input',hideError);
+})();
+</script>
+</body>
+</html>
