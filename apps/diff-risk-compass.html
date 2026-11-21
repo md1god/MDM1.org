@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحليل الفروقات وتقييم المخاطر للطلبات البرمجية | MDM1</title>
+<meta name="description" content="أداة داخل المتصفح تحلل الفروقات المُلصقة أو وصف طلب سحب يدوي، وتُعطي درجة مخاطر من 0 إلى 100 وتُظهر الملفات التي تحتاج مراجعة بشرية مع توصيات قابلة للتصدير.">
+<link rel="canonical" href="https://mdm1.org/apps/diff-risk-compass.html">
+<meta property="og:title" content="أداة تحليل الفروقات وتقييم المخاطر للطلبات البرمجية">
+<meta property="og:description" content="أداة داخل المتصفح تحلل الفروقات المُلصقة أو وصف طلب سحب يدوي، وتُعطي درجة مخاطر من 0 إلى 100 وتُظهر الملفات التي تحتاج مراجعة بشرية مع توصيات قابلة للتصدير.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/diff-risk-compass.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  direction: rtl;  
+  text-align: right;  
+  padding: 1rem;  
+}  
+.app .row {  
+  display: flex;  
+  flex-direction: column;  
+  margin-bottom: 0.75rem;  
+}  
+.app label {  
+  margin-bottom: 0.25rem;  
+  color: var(--light);  
+}  
+.app .input, .app .select {  
+  background: var(--dark);  
+  color: var(--light);  
+  border: 1px solid var(--gold-dim);  
+  padding: 0.5rem;  
+  border-radius: 4px;  
+}  
+.app .button {  
+  background: var(--gold);  
+  color: var(--dark);  
+  border: none;  
+  padding: 0.5rem 1rem;  
+  margin-right: 0.5rem;  
+  border-radius: 4px;  
+}  
+.app .button.sec {  
+  background: var(--gold-dim);  
+  color: var(--light);  
+}  
+.app .big {  
+  font-size: 2rem;  
+  color: var(--gold-bright);  
+}  
+.app .badge {  
+  display: inline-block;  
+  padding: 0.25rem 0.5rem;  
+  background: var(--gold-dim);  
+  color: var(--dark);  
+  border-radius: 3px;  
+  margin-top: 0.5rem;  
+}  
+.app #detailsBox {  
+  max-height: 200px;  
+  overflow-y: auto;  
+  margin-top: 0.5rem;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تحليل الفروقات وإصدار تقرير المخاطر الفوري", "url": "https://mdm1.org/apps/diff-risk-compass.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما هو مبدأ حساب درجة المخاطر؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحسب بناءً على عدد التغييرات، وجود كلمات مفتاحية حساسة، ودرجة السياسة المحددة من قبل المستخدم."}}, {"@type": "Question", "name": "هل يمكن تعديل حدود السياسة بعد التحليل؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكن تعديل قيمة الحد وإعادة تشغيل التحليل لتحديث النتيجة فوراً."}}, {"@type": "Question", "name": "كيف يتم تصدير التقرير؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكن تصديره إما بصيغة Markdown أو JSON عبر الأزرار المخصصة، وسيُحفظ الملف على الجهاز مباشرة."}}, {"@type": "Question", "name": "هل يدعم التطبيق استيراد إعدادات سابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يتيح زر “استيراد إعدادات” تحميل ملف JSON يحتوي على حدود السياسة والقالب لتطبيقها فوراً."}}, {"@type": "Question", "name": "ما هي الملفات التي تُظهر كخطوط خطر؟", "acceptedAnswer": {"@type": "Answer", "text": "تُظهر أي سطر يحتوي على كلمات مثل DROP أو DELETE أو TRUNCATE مع توضيح رقم السطر والسبب."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تحليل الفروقات وإصدار تقرير المخاطر الفوري</h1>
+  <p class="page-sub">أداة داخل المتصفح تحلل الفروقات المُلصقة أو وصف طلب سحب يدوي، وتُعطي درجة مخاطر من 0 إلى 100 وتُظهر الملفات التي تحتاج مراجعة بشرية مع توصيات قابلة للتصدير.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app card">  
+  <p>يُعطي هذا التطبيق درجة مخاطر فورية للفرق التي تُلصق أو تُدخل يدوياً، مع تحليل الانحدار، الصلاحيات، فقدان البيانات، وإمكانية التراجع. يحدد الملفات التي تستلزم تدقيقاً بشرياً، يوضح أسباب كل تنبيه، ويتيح ضبط حدود السياسة وتبديل قوالب الفرق في الجلسة الحالية فقط. بعد التحليل يمكن تصدير تقرير شامل بصيغة Markdown أو JSON لتوثيق عملية المراجعة أو دمجها في أنظمة تدفق العمل.</p>  
+  <div class="row divider">  
+    <label for="diffInput">نص الفروقات</label>  
+    <textarea id="diffInput" class="input" rows="6" placeholder="الصق الفروقات هنا…"></textarea>  
+  </div>  
+  <div class="row divider">  
+    <label for="descriptionInput">وصف الطلب (اختياري)</label>  
+    <textarea id="descriptionInput" class="input" rows="3" placeholder="أدخل وصف الطلب يدويًا…"></textarea>  
+  </div>  
+  <div class="row divider">  
+    <label for="policyThreshold">حد المخاطرة المسموح (0‑100)</label>  
+    <input id="policyThreshold" type="number" class="input" min="0" max="100" value="70">  
+  </div>  
+  <div class="row divider">  
+    <label for="templateSelect">قالب الفروقات</label>  
+    <select id="templateSelect" class="select">  
+      <option value="git">Git</option>  
+      <option value="svn">SVN</option>  
+      <option value="plain">نص عادي</option>  
+    </select>  
+  </div>  
+  <div class="row divider">  
+    <button id="analyzeBtn" class="button">تحليل</button>  
+    <button id="exportMdBtn" class="button sec">تصدير Markdown</button>  
+    <button id="exportJsonBtn" class="button sec">تصدير JSON</button>  
+    <label for="importFile" class="button sec" style="cursor:pointer;">استيراد إعدادات</label>  
+    <input id="importFile" type="file" accept=".json" style="display:none;">  
+  </div>  
+  <div class="out card divider">  
+    <h3>نتيجة التحليل</h3>  
+    <p>درجة المخاطر العامة: <span id="overallScore" class="big">0</span></p>  
+    <p id="riskBadge" class="badge"></p>  
+    <div id="detailsBox"></div>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما هو مبدأ حساب درجة المخاطر؟</h3><p>يُحسب بناءً على عدد التغييرات، وجود كلمات مفتاحية حساسة، ودرجة السياسة المحددة من قبل المستخدم.</p><h3>هل يمكن تعديل حدود السياسة بعد التحليل؟</h3><p>نعم، يمكن تعديل قيمة الحد وإعادة تشغيل التحليل لتحديث النتيجة فوراً.</p><h3>كيف يتم تصدير التقرير؟</h3><p>يمكن تصديره إما بصيغة Markdown أو JSON عبر الأزرار المخصصة، وسيُحفظ الملف على الجهاز مباشرة.</p><h3>هل يدعم التطبيق استيراد إعدادات سابقة؟</h3><p>نعم، يتيح زر “استيراد إعدادات” تحميل ملف JSON يحتوي على حدود السياسة والقالب لتطبيقها فوراً.</p><h3>ما هي الملفات التي تُظهر كخطوط خطر؟</h3><p>تُظهر أي سطر يحتوي على كلمات مثل DROP أو DELETE أو TRUNCATE مع توضيح رقم السطر والسبب.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="traffic-integrity-scanner.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل بيانات الزوار واكتشاف البوتات وتحديد الإنفاق المهدور</a><span style="opacity:.75"> — اكتشف الزيارات المشبوهة، البوتات، العملاء المكررين، وحساب الإنفاق المهدور، واحصل على قائمة إصلاحات مرتبة…</span></li><li style="margin:.5rem 0"><a href="ai-answer-mention-tracker.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ذكر العلامة التجارية</a><span style="opacity:.75"> — أداة لتحليل نصوص إجابات الذكاء الاصطناعي لرصد ذكر العلامة التجارية وروابطها ومقارنتها بالمنافسين عبر…</span></li><li style="margin:.5rem 0"><a href="ai-citation-lens.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل ظهور العلامة التجارية في إجابات الذكاء الاصطناعي</a><span style="opacity:.75"> — حلّل ذكر علامتك التجارية في إجابات المساعدات الذكية، قارن مع المنافسين، واكشف التضارب بين الزيارات العضوية…</span></li><li style="margin:.5rem 0"><a href="ai-citation-radar.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل الذكاء الاصطناعي لاستخراج العلامات التجارية والاستشهادات</a><span style="opacity:.75"> — أداة تعمل داخل المتصفح لتتبع ذكر العلامات التجارية في ردود ChatGPT وPerplexity وClaude وGemini وGoogle AI…</span></li><li style="margin:.5rem 0"><a href="arabic-text-authenticity-lab.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل النصوص</a><span style="opacity:.75"> — أداة تعمل محلياً لتحليل النصوص إحصائياً، كشف المقاطع المولدة بالذكاء الاصطناعي، حساب درجة بشرية، وإنشاء…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {  
+  const diffInput = document.getElementById('diffInput');  
+  const descriptionInput = document.getElementById('descriptionInput');  
+  const policyThreshold = document.getElementById('policyThreshold');  
+  const templateSelect = document.getElementById('templateSelect');  
+  const analyzeBtn = document.getElementById('analyzeBtn');  
+  const exportMdBtn = document.getElementById('exportMdBtn');  
+  const exportJsonBtn = document.getElementById('exportJsonBtn');  
+  const importFile = document.getElementById('importFile');  
+  const overallScoreEl = document.getElementById('overallScore');  
+  const riskBadge = document.getElementById('riskBadge');  
+  const detailsBox = document.getElementById('detailsBox');  
+
+  const riskyKeywords = ['DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'GRANT', 'REVOKE'];  
+
+  function computeScore(text) {  
+    const lines = text.split('\n');  
+    let risk = 0;  
+    lines.forEach(line => {  
+      const trimmed = line.trim();  
+      if (trimmed.startsWith('+') || trimmed.startsWith('-')) {  
+        risk += 5; // basic change weight  
+        riskyKeywords.forEach(k => {  
+          if (trimmed.toUpperCase().includes(k)) {  
+            risk += 20; // heavy keyword weight  
+          }  
+        });  
+      }  
+    });  
+    // cap at 100  
+    return Math.min(risk, 100);  
+  }  
+
+  function renderResult(score, details) {  
+    overallScoreEl.textContent = score;  
+    if (score >= policyThreshold.value) {  
+      riskBadge.textContent = 'يتجاوز الحد المسموح';  
+      riskBadge.style.background = 'var(--gold-bright)';  
+    } else {  
+      riskBadge.textContent = 'في حدود القبول';  
+      riskBadge.style.background = 'var(--gold-dim)';  
+    }  
+    detailsBox.innerHTML = '';  
+    if (details.length) {  
+      const ul = document.createElement('ul');  
+      details.forEach(d => {  
+        const li = document.createElement('li');  
+        li.textContent = d;  
+        ul.appendChild(li);  
+      });  
+      detailsBox.appendChild(ul);  
+    } else {  
+      detailsBox.textContent = 'لا توجد مخاطر واضحة.';  
+    }  
+  }  
+
+  function analyze() {  
+    const diffText = diffInput.value;  
+    const score = computeScore(diffText);  
+    const flagged = [];  
+    diffText.split('\n').forEach((line, idx) => {  
+      const upper = line.toUpperCase();  
+      riskyKeywords.forEach(k => {  
+        if (upper.includes(k)) {  
+          flagged.push(`سطر ${idx + 1}: احتوى على ${k}`);  
+        }  
+      });  
+    });  
+    renderResult(score, flagged);  
+  }  
+
+  function exportReport(format) {  
+    const report = {  
+      description: descriptionInput.value,  
+      diff: diffInput.value,  
+      template: templateSelect.value,  
+      policyThreshold: policyThreshold.value,  
+      score: overallScoreEl.textContent,  
+      flaggedLines: detailsBox.textContent ? detailsBox.textContent.split('\\n') : []  
+    };  
+    let content, mime, ext;  
+    if (format === 'md') {  
+      content = `# تقرير المخاطر\\n\\n` +  
+        `**درجة المخاطر:** ${report.score}\\n\\n` +  
+        `**وصف الطلب:**\\n${report.description}\\n\\n` +  
+        `**الخطوط المرفوعة:**\\n${report.flaggedLines.join('\\n')}\\n`;  
+      mime = 'text/markdown';  
+      ext = 'md';  
+    } else {  
+      content = JSON.stringify(report, null, 2);  
+      mime = 'application/json';  
+      ext = 'json';  
+    }  
+    const blob = new Blob([content], { type: mime });  
+    const url = URL.createObjectURL(blob);  
+    const a = document.createElement('a');  
+    a.href = url;  
+    a.download = `report.${ext}`;  
+    a.click();  
+    URL.revokeObjectURL(url);  
+  }  
+
+  function importSettings(file) {  
+    const reader = new FileReader();  
+    reader.onload = e => {  
+      try {  
+        const data = JSON.parse(e.target.result);  
+        if (data.policyThreshold) policyThreshold.value = data.policyThreshold;  
+        if (data.template) templateSelect.value = data.template;  
+      } catch (_) {}  
+    };  
+    reader.readAsText(file);  
+  }  
+
+  analyzeBtn.addEventListener('click', analyze);  
+  exportMdBtn.addEventListener('click', () => exportReport('md'));  
+  exportJsonBtn.addEventListener('click', () => exportReport('json'));  
+  importFile.addEventListener('change', e => {  
+    const file = e.target.files[0];  
+    if (file) importSettings(file);  
+    e.target.value = ''; // reset  
+  });  
+})();
+</script>
+</body>
+</html>
