@@ -117,7 +117,7 @@ export async function loadData(base, onProgress) {
 
   // Bridges: straight line between ends (never below ground). Tunnels: line between portals, terrain is carved.
   for (const r of roads) {
-    if (!(r.fl & 3) || r.pts.length < 4) continue;
+    if (!(r.fl & 1) || r.pts.length < 4) continue;
     const n = r.pts.length / 2;
     const ha = terrain.heightAt(r.pts[0], r.pts[1]), hb = terrain.heightAt(r.pts[(n - 1) * 2], r.pts[(n - 1) * 2 + 1]);
     r.ys = new Float32Array(n);
@@ -161,7 +161,7 @@ export async function loadData(base, onProgress) {
     const ys = new Float32Array(n);
     for (let k = 0; k < n; k++) {
       let acc = 0, wsum = 0;
-      for (const off of [-40, -20, 0, 20, 40]) {
+      for (const off of (r.fl & 2 ? [-160, -120, -80, -40, 0, 40, 80, 120, 160] : [-40, -20, 0, 20, 40])) {
         const d = clamp(r.cum[k] + off, 0, r.len);
         let j = k; if (off < 0) { while (j > 0 && r.cum[j] > d) j--; } else if (off > 0) { while (j < n - 2 && r.cum[j + 1] < d) j++; }
         j = Math.min(j, n - 2);
@@ -272,13 +272,29 @@ export async function loadData(base, onProgress) {
   const D = {
     meta, terrain, roads, idx, streets, places, hoods, landmarks: lms, search, nearestHood,
     bcells: new Set(meta.bcells || []),
-    groundAt(x, z) {
-      const r = idx.nearest(x, z, 10, { ys: true });
-      if (r && r.d <= r.road.width * 0.5 + 1.5) {
-        const R = r.road;
-        return R.ys[r.si] + (R.ys[r.si + 1] - R.ys[r.si]) * r.t;
+    groundAt(x, z, ref) {
+      let by = null, bs = 1e9;
+      const cx = Math.floor(x / SEG_CELL), cz = Math.floor(z / SEG_CELL);
+      for (let ix = cx - 1; ix <= cx + 1; ix++) {
+        for (let iz = cz - 1; iz <= cz + 1; iz++) {
+          const a = idx.cells.get((ix + 2000) * 4000 + (iz + 2000));
+          if (!a) continue;
+          for (let q = 0; q < a.length; q++) {
+            const v = a[q], ri = (v / SEG_MUL) | 0, si = v - ri * SEG_MUL, r = roads[ri];
+            if (!r.ys) continue;
+            const p = r.pts, ax = p[si * 2], az = p[si * 2 + 1], dx = p[si * 2 + 2] - ax, dz = p[si * 2 + 3] - az, l2 = dx * dx + dz * dz;
+            let t = l2 > 0 ? ((x - ax) * dx + (z - az) * dz) / l2 : 0;
+            t = t < 0 ? 0 : t > 1 ? 1 : t;
+            const d = Math.hypot(x - (ax + dx * t), z - (az + dz * t));
+            if (d > r.width * 0.5 + 1.5) continue;
+            const y = r.ys[si] + (r.ys[si + 1] - r.ys[si]) * t;
+            const sc = ref === undefined ? d : Math.abs(y - ref) + d * 0.05;
+            if (sc < bs) { bs = sc; by = y; }
+          }
+        }
       }
-      return terrain.heightAt(x, z);
+      const th = terrain.heightAt(x, z);
+      return by !== null ? Math.max(by, th) : th;
     },
     searchItems(q, limit = 12) {
       const nq = norm(q), lq = q.toLowerCase().trim();
