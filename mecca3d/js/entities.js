@@ -16,23 +16,29 @@ export class Car {
     const white = new THREE.MeshLambertMaterial({ color: 0xf1efe8 });
     const glass = new THREE.MeshLambertMaterial({ color: 0x1b2633 });
     const dark = new THREE.MeshLambertMaterial({ color: 0x151515 });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.75, 4.5), white); body.position.set(0, 0.7, 0);
-    const cab = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.62, 2.3), glass); cab.position.set(0, 1.35, 0.35);
-    const roof = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.08, 2.1), white); roof.position.set(0, 1.69, 0.35);
-    g.add(body, cab, roof);
+    const paint = new THREE.MeshLambertMaterial({ color: 0xd9d6cc }), trim = new THREE.MeshLambertMaterial({ color: 0x23252a });
+    const lower = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.85, 4.7), paint); lower.position.set(0, 1.0, 0);
+    const cab = new THREE.Mesh(new THREE.BoxGeometry(1.88, 0.8, 3.0), glass); cab.position.set(0, 1.8, 0.55);
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.08, 3.0), paint); roof.position.set(0, 2.24, 0.55);
+    const hood = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.12, 1.5), paint); hood.position.set(0, 1.46, -1.75);
+    const bumperF = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.28, 0.25), trim); bumperF.position.set(0, 0.68, -2.42);
+    const bumperB = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.28, 0.25), trim); bumperB.position.set(0, 0.68, 2.42);
+    const rack = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.06, 2.4), trim); rack.position.set(0, 2.32, 0.5);
+    const spare = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.28, 14), dark); spare.rotation.x = Math.PI / 2; spare.position.set(0, 1.3, 2.52);
+    g.add(lower, cab, roof, hood, bumperF, bumperB, rack, spare);
     const lamp = new THREE.MeshBasicMaterial({ color: 0xfff1c9 }), tail = new THREE.MeshBasicMaterial({ color: 0xcc2222 });
     for (const sx of [-0.7, 0.7]) {
-      const l = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.08), lamp); l.position.set(sx, 0.78, -2.27);
-      const t = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.08), tail); t.position.set(sx, 0.82, 2.27);
+      const l = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.22, 0.08), lamp); l.position.set(sx, 1.12, -2.37);
+      const t = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.26, 0.08), tail); t.position.set(sx, 1.12, 2.37);
       g.add(l, t);
     }
     this.wheels = [];
-    const wg = new THREE.CylinderGeometry(0.36, 0.36, 0.26, 14); wg.rotateZ(Math.PI / 2);
-    for (const [sx, sz] of [[-0.95, -1.45], [0.95, -1.45], [-0.95, 1.45], [0.95, 1.45]]) {
-      const w = new THREE.Mesh(wg, dark); w.position.set(sx, 0.36, sz); g.add(w); this.wheels.push(w);
+    const wg = new THREE.CylinderGeometry(0.5, 0.5, 0.36, 16); wg.rotateZ(Math.PI / 2);
+    for (const [sx, sz] of [[-1.0, -1.5], [1.0, -1.5], [-1.0, 1.5], [1.0, 1.5]]) {
+      const w = new THREE.Mesh(wg, dark); w.position.set(sx, 0.5, sz); g.add(w); this.wheels.push(w);
     }
     this.spot = new THREE.SpotLight(0xfff2cc, 0, 110, 0.55, 0.6, 1.2);
-    this.spot.position.set(0, 1, -2); this.spot.target.position.set(0, 0, -30);
+    this.spot.position.set(0, 1.3, -2); this.spot.target.position.set(0, 0, -30);
     g.add(this.spot, this.spot.target);
     world.scene.add(g);
     this.place(this.x, this.z, this.h);
@@ -72,11 +78,11 @@ export class Car {
     let thr = active ? inp.throttle : 0, st = active ? inp.steer : 0, brake = active ? inp.brake : false;
     const near = this.D.idx.nearest(this.x, this.z, 14, { drv: true });
     this.offRoad = !(near && near.d <= near.road.width * 0.5 + 1.8);
-    const vmax = this.offRoad ? 13 : 36;
+    const vmax = this.offRoad ? 24 : 38;
     if (thr > 0) this.v += (this.v < 0 ? 14 : 9.5) * thr * dt;
     else if (thr < 0) this.v += (this.v > 0 ? -15 : -6) * -thr * dt;
     if (brake) { const b = 22 * dt; this.v = Math.abs(this.v) <= b ? 0 : this.v - Math.sign(this.v) * b; }
-    this.v -= this.v * (this.offRoad ? 0.9 : 0.12) * dt;
+    this.v -= this.v * (this.offRoad ? 0.35 : 0.12) * dt;
     if (Math.abs(thr) < 0.05 && !brake) { const rr = 1.6 * dt; this.v = Math.abs(this.v) <= rr ? 0 : this.v - Math.sign(this.v) * rr; }
     this.v = clamp(this.v, -9, vmax);
     this.steer = lerp(this.steer, st, 1 - Math.exp(-6 * dt));
@@ -88,7 +94,7 @@ export class Car {
     else if (!this._blocked(nx, this.z)) { this.x = nx; this.v *= 0.7; }
     else if (!this._blocked(this.x, nz)) { this.z = nz; this.v *= 0.7; }
     else this.v *= -0.2;
-    this.wheelRot += (this.v * dt) / 0.36;
+    this.wheelRot += (this.v * dt) / 0.5;
     this._ground(false); this._apply();
   }
 }

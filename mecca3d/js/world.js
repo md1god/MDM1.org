@@ -352,7 +352,7 @@ export class World {
       const rank = (9 - Math.min(r.t, 9)) * 0.004;
       const pieces = Math.max(1, Math.ceil(len / 20));
       const ys = r.ys;
-      const yAt = (x, z, t) => (ys ? ys[si] + (ys[si + 1] - ys[si]) * t + 0.05 : T.heightAt(x, z) + 0.12 + rank);
+      const yAt = (x, z, t) => (ys ? ys[si] + (ys[si + 1] - ys[si]) * t + (r.fl & 3 ? 0.05 : 0.05 + rank) : T.heightAt(x, z) + 0.12 + rank);
       let prev = null;
       for (let s = 0; s <= pieces; s++) {
         const t = s / pieces;

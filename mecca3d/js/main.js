@@ -210,6 +210,7 @@ async function boot() {
       d.append(n, b1, b2); res.appendChild(d);
     }
   }
+  q.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { const b = res.querySelector('.ri button'); if (b) b.click(); } });
   q.addEventListener('input', doSearch);
   q.addEventListener('focus', doSearch);
   document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#sw')) res.style.display = 'none'; });
@@ -305,7 +306,7 @@ async function boot() {
   const refreshToggles = () => { $('s_signs').textContent = '🪧 لوحات التقاطعات: ' + (settings.signs ? 'تشغيل' : 'إيقاف'); $('s_hudn').textContent = '🏷 اسم الشارع: ' + (settings.hudn ? 'ظاهر' : 'مخفي (تحدٍّ)'); };
   $('s_signs').onclick = () => { settings.signs = settings.signs ? 0 : 1; signs.enabled = !!settings.signs; saveSet(); refreshToggles(); };
   $('s_hudn').onclick = () => { settings.hudn = settings.hudn ? 0 : 1; saveSet(); refreshToggles(); };
-  $('s_help').onclick = () => openPanel('help');
+  $('s_help').onclick = () => openPanel('help'); $('help').onclick = () => { $('help').style.display = 'none'; };
   refreshToggles();
 
   // ---------- buttons / keys ----------
@@ -353,6 +354,7 @@ async function boot() {
       hdr.street.textContent = hide ? '؟؟؟' : S.curName && S.curDist < 25 ? S.curName : '—';
       hdr.hood.textContent = hide ? '' : S.hood ? 'حي ' + S.hood.replace(/^حي\s+/, '') : '';
       const spd = S.mode === 'car' ? Math.abs(car.v) * 3.6 : S.mode === 'walk' ? Math.abs(walker.v) * 3.6 : 0;
+      $('spv').textContent = Math.round(spd); $('speedo').style.display = S.mode === 'fly' ? 'none' : 'block';
       hdr.sp.textContent = S.mode === 'fly' ? '🛰 وضع علوي' : Math.round(spd) + ' كم/س' + (S.mode === 'car' && car.offRoad ? ' · خارج الطريق' : '');
       const bk = bearingDeg(-p.x, -p.z), hd = (rig.heading() * 180) / Math.PI;
       hdr.arrow.style.transform = `rotate(${angDiff(hd, bk)}deg)`; hdr.hd.textContent = 'الكعبة ' + fmtDist(Math.hypot(p.x, p.z));
