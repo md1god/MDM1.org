@@ -151,6 +151,78 @@ export async function loadData(base, onProgress) {
     }
   }
 
+
+  // Ground roads: smooth vertical profile + flatten the terrain under/around them (cut & fill),
+  // so the road is continuous and the terrain never pokes through it.
+  prog('تمهيد الطرق على التضاريس…', 0.5);
+  const profile = (r) => {
+    const n = r.pts.length / 2;
+    // sample terrain along the road at <=10 m and smooth over ~40 m, then read back at vertices
+    const ys = new Float32Array(n);
+    for (let k = 0; k < n; k++) {
+      let acc = 0, wsum = 0;
+      for (const off of [-40, -20, 0, 20, 40]) {
+        const d = clamp(r.cum[k] + off, 0, r.len);
+        let j = k; if (off < 0) { while (j > 0 && r.cum[j] > d) j--; } else if (off > 0) { while (j < n - 2 && r.cum[j + 1] < d) j++; }
+        j = Math.min(j, n - 2);
+        const segL = r.cum[j + 1] - r.cum[j], f = segL > 0 ? (d - r.cum[j]) / segL : 0;
+        const x = r.pts[j * 2] + (r.pts[j * 2 + 2] - r.pts[j * 2]) * f, z = r.pts[j * 2 + 1] + (r.pts[j * 2 + 3] - r.pts[j * 2 + 1]) * f;
+        const w = off === 0 ? 2 : 1; acc += terrain.heightAt(x, z) * w; wsum += w;
+      }
+      ys[k] = acc / wsum + 0.12;
+    }
+    return ys;
+  };
+  const order = roads.filter((r) => !r.ys).sort((a, b) => a.t - b.t);
+  for (const r of order) {
+    const n = r.pts.length / 2;
+    if (n < 2) continue;
+    const ys = profile(r);
+    r.ys = ys;
+    if (r.t > 7) continue; // footways follow the ground, no earthworks
+    const hw = r.width / 2, inner = hw + 16, rad = inner + 26, hit = new Map();
+    for (let k = 0; k < n - 1; k++) {
+      const x0 = r.pts[k * 2], z0 = r.pts[k * 2 + 1], x1 = r.pts[k * 2 + 2], z1 = r.pts[k * 2 + 3];
+      const len = Math.hypot(x1 - x0, z1 - z0), steps = Math.max(1, Math.ceil(len / 8));
+      for (let s = 0; s <= steps; s++) {
+        const f = s / steps, px = x0 + (x1 - x0) * f, pz = z0 + (z1 - z0) * f, y = ys[k] + (ys[k + 1] - ys[k]) * f - 0.3;
+        const gx0 = Math.max(0, Math.floor((px - rad - terrain.x0) / terrain.step)), gx1 = Math.min(terrain.w - 1, Math.ceil((px + rad - terrain.x0) / terrain.step));
+        const gz0 = Math.max(0, Math.floor((pz - rad - terrain.z0) / terrain.step)), gz1 = Math.min(terrain.h - 1, Math.ceil((pz + rad - terrain.z0) / terrain.step));
+        for (let gz = gz0; gz <= gz1; gz++) {
+          for (let gx = gx0; gx <= gx1; gx++) {
+            const d = Math.hypot(terrain.x0 + gx * terrain.step - px, terrain.z0 + gz * terrain.step - pz);
+            if (d > rad) continue;
+            const i = gz * terrain.w + gx, o = hit.get(i);
+            if (!o || d < o[0]) hit.set(i, [d, y]);
+          }
+        }
+      }
+    }
+    for (const [i, [d, y]] of hit) {
+      const w = d <= inner ? 1 : 1 - (d - inner) / (rad - inner), sw = w * w * (3 - 2 * w);
+      terrain.data[i] = terrain.data[i] + (y - terrain.data[i]) * sw;
+    }
+  }
+  for (const r of order) if (r.pts.length >= 4) r.ys = profile(r);
+  // final guarantee: cut any terrain still above the finished road surface
+  for (const r of order) {
+    if (r.t > 7 || r.pts.length < 4) continue;
+    const n = r.pts.length / 2, hw = r.width / 2, rad = hw + 14;
+    for (let k = 0; k < n - 1; k++) {
+      const x0 = r.pts[k * 2], z0 = r.pts[k * 2 + 1], x1 = r.pts[k * 2 + 2], z1 = r.pts[k * 2 + 3];
+      const len = Math.hypot(x1 - x0, z1 - z0), steps = Math.max(1, Math.ceil(len / 8));
+      for (let st = 0; st <= steps; st++) {
+        const f = st / steps, px = x0 + (x1 - x0) * f, pz = z0 + (z1 - z0) * f, y = r.ys[k] + (r.ys[k + 1] - r.ys[k]) * f - 0.25;
+        const gx0 = Math.max(0, Math.floor((px - rad - terrain.x0) / terrain.step)), gx1 = Math.min(terrain.w - 1, Math.ceil((px + rad - terrain.x0) / terrain.step));
+        const gz0 = Math.max(0, Math.floor((pz - rad - terrain.z0) / terrain.step)), gz1 = Math.min(terrain.h - 1, Math.ceil((pz + rad - terrain.z0) / terrain.step));
+        for (let gz = gz0; gz <= gz1; gz++) for (let gx = gx0; gx <= gx1; gx++) {
+          if (Math.hypot(terrain.x0 + gx * terrain.step - px, terrain.z0 + gz * terrain.step - pz) > rad) continue;
+          const i = gz * terrain.w + gx; if (terrain.data[i] > y) terrain.data[i] = y;
+        }
+      }
+    }
+  }
+
   prog('بناء الفهارس…', 0.6);
   const idx = new RoadIndex(roads);
 
@@ -196,6 +268,7 @@ export async function loadData(base, onProgress) {
   for (const p of places) search.push({ type: 'hood', name: p.n, en: p.en, nn: norm(p.n), ne: (p.en || '').toLowerCase(), x: p.x, z: p.z, key: 'hood:' + norm(p.n) });
   for (const l of lms) search.push({ type: 'landmark', name: l.n, en: l.en, nn: norm(l.n), ne: (l.en || '').toLowerCase(), x: l.x, z: l.z, kind: l.k, key: 'lm:' + norm(l.n) });
 
+  search.push({ type: 'landmark', name: 'الكعبة المشرفة', en: 'kaaba masjid al haram', nn: norm('الكعبة المشرفة المسجد الحرام الحرم'), ne: 'kaaba masjid al haram', x: 0, z: 40, kind: 'kaaba', key: 'lm:kaaba' });
   const D = {
     meta, terrain, roads, idx, streets, places, hoods, landmarks: lms, search, nearestHood,
     bcells: new Set(meta.bcells || []),
