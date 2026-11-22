@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محول الألوان HEX RGB HSL ومدقق تباين WCAG مع معاينة حية | MDM1</title>
+<meta name="description" content="حوّل الألوان بين HEX وRGB وHSL مع معاينة حية، وافحص تباين النص والخلفية وفق WCAG بنتيجة نجاح أو فشل لكل مستوى AA وAAA. الأداة تعمل محليًا بلا رفع بيانات.">
+<link rel="canonical" href="https://mdm1.org/tools/color-converter-contrast.html">
+<meta property="og:title" content="محول الألوان HEX RGB HSL ومدقق تباين WCAG مع معاينة حية">
+<meta property="og:description" content="حوّل الألوان بين HEX وRGB وHSL مع معاينة حية، وافحص تباين النص والخلفية وفق WCAG بنتيجة نجاح أو فشل لكل مستوى AA وAAA. الأداة تعمل محليًا بلا رفع بيانات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/tools/color-converter-contrast.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محول الألوان بين HEX وRGB وHSL مع مدقق التباين", "url": "https://mdm1.org/tools/color-converter-contrast.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "ما الصيغ التي تدعمها الأداة؟", "acceptedAnswer": {"@type": "Answer", "text": "تدعم الأداة الصيغ الثلاث الشائعة: HEX وRGB وHSL. اكتب قيمة في أي حقل وستتحدث الصيغتان الأخريان والمعاينة تلقائيًا دون خطوات إضافية."}}, {"@type": "Question", "name": "كيف تُحسب نسبة التباين؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحسب السطوع النسبي لكل لون وفق معيار WCAG، ثم تُقسم القيمة الأكبر على الأصغر بعد إضافة 0.05. كلما زادت النتيجة زادت وضوحية النص على الخلفية."}}, {"@type": "Question", "name": "ما الفرق بين AA وAAA؟", "acceptedAnswer": {"@type": "Answer", "text": "مستوى AA يطلب نسبة 4.5:1 للنص العادي و3:1 للنص الكبير، بينما يطلب مستوى AAA نسبة 7:1 للنص العادي و4.5:1 للنص الكبير. تعرض الأداة نتيجة نجاح أو فشل لكل مستوى على حدة."}}, {"@type": "Question", "name": "هل تُرسل الألوان إلى أي خادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كل الحسابات تتم داخل متصفحك باستخدام JavaScript محلي، ولا يوجد أي اتصال بشبكة أو خدمة خارجية."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/tools/" class="nav-back">كل الأدوات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · أدوات مجانية</div>
+  <h1 class="page-title">محول الألوان بين HEX وRGB وHSL مع مدقق التباين</h1>
+  <p class="page-sub">حوّل الألوان بين HEX وRGB وHSL مع معاينة حية، وافحص تباين النص والخلفية وفق WCAG بنتيجة نجاح أو فشل لكل مستوى AA وAAA. الأداة تعمل محليًا بلا رفع بيانات.</p>
+</header>
+<main class="page-content">
+<div class="tool"><div class="card"><p id="intro">حوّل أي لون بين صيغ HEX وRGB وHSL في لحظة مع معاينة حية تتغير أثناء الكتابة، وافحص تباين لون النص مقابل لون الخلفية وفق معيار WCAG لتحصل على نتيجة نجاح أو فشل واضحة لكل مستوى من مستويات AA وAAA. تعمل هذه الأداة بالكامل داخل متصفحك، ولا يتم إرسال أي قيمة إلى خادم أو خدمة خارجية، لذا يمكنك استخدامها بثقة في أي مشروع. ابدأ بكتابة القيمة السداسية عشرية في الحقل المخصص، أو أدخل قيم الأحمر والأخضر والأزرق، أو حدد درجة اللون والإشباع والسطوع؛ سيتم تحديث الصيغ الثلاث تلقائيًا دون الحاجة إلى ضغط زر، وستظهر المعاينة مباشرة بلونك المختار. ثم انتقل إلى قسم التباين لتحديد لون النص ولون الخلفية واختيار حجم النص، واضغط زر الفحص، وستظهر نسبة التباين الدقيقة مع بيان ما إذا كانت النصوص العادية والكبيرة تنجح في المتطلبات. تساعدك هذه النتائج على اختيار ألوان مقروءة ومريحة للعين في المواقع والتطبيقات والمنشورات.</p>
+<div id="converter">
+<p id="convTitle"><b id="convTitleB">تحويل اللون بين الصيغ الثلاث</b></p>
+<label id="lblHex" for="hex">القيمة السداسية عشرية HEX</label>
+<input id="hex" type="text" value="#3366cc" maxlength="7">
+<label id="lblR" for="r">الأحمر R (من 0 إلى 255)</label>
+<input id="r" type="number" min="0" max="255" value="51">
+<label id="lblG" for="g">الأخضر G (من 0 إلى 255)</label>
+<input id="g" type="number" min="0" max="255" value="102">
+<label id="lblB" for="b">الأزرق B (من 0 إلى 255)</label>
+<input id="b" type="number" min="0" max="255" value="204">
+<label id="lblH" for="h">درجة اللون H (من 0 إلى 360)</label>
+<input id="h" type="number" min="0" max="360" value="220">
+<label id="lblS" for="s">الإشباع S (من 0 إلى 100)</label>
+<input id="s" type="number" min="0" max="100" value="60">
+<label id="lblL" for="l">السطوع L (من 0 إلى 100)</label>
+<input id="l" type="number" min="0" max="100" value="50">
+<button id="apply" type="button">تطبيق القيمة الحالية</button>
+<p id="convMsg"><small id="convMsgS"></small></p>
+<div id="preview">معاينة حية للون المختار</div>
+</div>
+<div id="contrastBox">
+<p id="contrastTitle"><b id="contrastTitleB">مدقق تباين النص والخلفية</b></p>
+<label id="lblFg" for="fg">لون النص</label>
+<input id="fg" type="text" value="#000000" maxlength="7">
+<label id="lblBg" for="bg">لون الخلفية</label>
+<input id="bg" type="text" value="#ffffff" maxlength="7">
+<label id="lblSize" for="size">حجم النص</label>
+<select id="size">
+<option id="optNormal" value="normal">نص عادي</option>
+<option id="optLarge" value="large">نص كبير</option>
+</select>
+<button id="check" type="button">فحص التباين</button>
+<div id="cprev">نص تجريبي لاختبار التباين</div>
+</div>
+<div class="out" id="out" style="display:none">
+<p id="outRatio"><b id="outRatioB"></b></p>
+<p id="outAA"><small id="outAAS"></small> <b id="outAAB"></b></p>
+<p id="outAAL"><small id="outAALS"></small> <b id="outAALB"></b></p>
+<p id="outAAA"><small id="outAAAS"></small> <b id="outAAAB"></b></p>
+<p id="outAAAL"><small id="outAAALS"></small> <b id="outAAALB"></b></p>
+<p id="outNote"><small id="outNoteS"></small></p>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>ما الصيغ التي تدعمها الأداة؟</h3><p>تدعم الأداة الصيغ الثلاث الشائعة: HEX وRGB وHSL. اكتب قيمة في أي حقل وستتحدث الصيغتان الأخريان والمعاينة تلقائيًا دون خطوات إضافية.</p><h3>كيف تُحسب نسبة التباين؟</h3><p>يُحسب السطوع النسبي لكل لون وفق معيار WCAG، ثم تُقسم القيمة الأكبر على الأصغر بعد إضافة 0.05. كلما زادت النتيجة زادت وضوحية النص على الخلفية.</p><h3>ما الفرق بين AA وAAA؟</h3><p>مستوى AA يطلب نسبة 4.5:1 للنص العادي و3:1 للنص الكبير، بينما يطلب مستوى AAA نسبة 7:1 للنص العادي و4.5:1 للنص الكبير. تعرض الأداة نتيجة نجاح أو فشل لكل مستوى على حدة.</p><h3>هل تُرسل الألوان إلى أي خادم؟</h3><p>لا. كل الحسابات تتم داخل متصفحك باستخدام JavaScript محلي، ولا يوجد أي اتصال بشبكة أو خدمة خارجية.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل الأدوات</a> · <a href="../pages/index.html" class="glow-gold">كل الصفحات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">أدوات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="cooking-measure-converter.html" style="color:var(--gold-bright);font-weight:700">محول مقادير الطبخ: كوب وملعقة وغرام ومللتر + درجة الفرن</a><span style="opacity:.75"> — حوّل مقادير الطبخ بسهولة بين الكوب والملعقة الكبيرة والصغيرة والمللتر والغرام للدقيق والسكر والأرز والزبدة…</span></li><li style="margin:.5rem 0"><a href="unit-converter-arabic.html" style="color:var(--gold-bright);font-weight:700">محول وحدات: الطول والوزن والحرارة والمساحة والحجم</a><span style="opacity:.75"> — أداة مجانية لتحويل وحدات الطول والوزن ودرجة الحرارة والمساحة والحجم داخل المتصفح بسرعة ودقة، مع نتائج فورية…</span></li><li style="margin:.5rem 0"><a href="arabic-english-digits-converter.html" style="color:var(--gold-bright);font-weight:700">محول الأرقام الهندية والإنجليزية داخل أي نص</a><span style="opacity:.75"> — الصق أي نص لتحويل الأرقام الهندية ٠١٢٣ إلى الإنجليزية 0123 أو العكس، مع الحفاظ على بقية النص، ثم انسخ…</span></li><li style="margin:.5rem 0"><a href="compound-interest-calculator.html" style="color:var(--gold-bright);font-weight:700">حاسبة الفائدة المركبة والادخار الشهري: احسب أرباحك بدقة</a><span style="opacity:.75"> — احسب نمو مدخراتك مع حاسبة الفائدة المركبة والادخار الشهري. أدخل المبلغ والمساهمة ونسبة الفائدة والمدة، واطلع…</span></li><li style="margin:.5rem 0"><a href="currency-profit-margin-calculator.html" style="color:var(--gold-bright);font-weight:700">حاسبة سعر البيع وهامش الربح مع الرسوم والشحن والضريبة</a><span style="opacity:.75"> — احسب سعر البيع المناسب وهامش الربح وصافي الربح لكل وحدة وللطلب كامل مع رسوم المنصة والدفع والشحن والخصم…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل الأدوات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-22 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+var $ = function(id){ return document.getElementById(id); };
+function clamp(v,min,max){ v=Number(v); if(!isFinite(v)) return min; return Math.min(max,Math.max(min,v)); }
+function hex2rgb(x){
+  var s=String(x||'').trim().replace(/^#/,'');
+  if(/^[0-9a-fA-F]{3}$/.test(s)) s=s.charAt(0)+s.charAt(0)+s.charAt(1)+s.charAt(1)+s.charAt(2)+s.charAt(2);
+  if(!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)];
+}
+function rgb2hex(a){
+  return '#'+a.map(function(v){ var h=Math.round(clamp(v,0,255)).toString(16); return h.length<2?'0'+h:h; }).join('');
+}
+function rgb2hsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  var mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn, h=0, s=0, l=(mx+mn)/2;
+  if(d!==0){
+    s=d/(1-Math.abs(2*l-1));
+    if(mx===r) h=((g-b)/d)%6;
+    else if(mx===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60; if(h<0) h+=360;
+  }
+  return [Math.round(h),Math.round(s*100),Math.round(l*100)];
+}
+function hsl2rgb(h,s,l){
+  h=((h%360)+360)%360; s=clamp(s,0,100)/100; l=clamp(l,0,100)/100;
+  var c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r=0,g=0,b=0;
+  if(h<60){r=c;g=x;}
+  else if(h<120){r=x;g=c;}
+  else if(h<180){g=c;b=x;}
+  else if(h<240){g=x;b=c;}
+  else if(h<300){r=x;b=c;}
+  else {r=c;b=x;}
+  return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+}
+function lum(a){
+  var v=a.map(function(n){ n/=255; return n<=0.03928?n/12.92:Math.pow((n+0.055)/1.055,2.4); });
+  return 0.2126*v[0]+0.7152*v[1]+0.0722*v[2];
+}
+function ratio(a,b){
+  var x=lum(a), y=lum(b), hi=Math.max(x,y), lo=Math.min(x,y);
+  return (hi+0.05)/(lo+0.05);
+}
+function paint(el,a){
+  el.style.background=rgb2hex(a);
+  el.style.color=lum(a)>0.45?'#000000':'#ffffff';
+  el.style.padding='10px';
+}
+function sync(a,src){
+  var hsl=rgb2hsl(a[0],a[1],a[2]);
+  if(src!=='hex') $('hex').value=rgb2hex(a);
+  if(src!=='rgb'){ $('r').value=a[0]; $('g').value=a[1]; $('b').value=a[2]; }
+  if(src!=='hsl'){ $('h').value=hsl[0]; $('s').value=hsl[1]; $('l').value=hsl[2]; }
+  paint($('preview'),a);
+  $('convMsgS').textContent='';
+}
+$('hex').addEventListener('input',function(){
+  var a=hex2rgb($('hex').value);
+  if(!a){ $('convMsgS').textContent='أدخل قيمة سداسية صحيحة مثل #3366cc'; return; }
+  sync(a,'hex');
+});
+function fromRgb(){ sync([clamp($('r').value,0,255),clamp($('g').value,0,255),clamp($('b').value,0,255)],'rgb'); }
+function fromHsl(){ sync(hsl2rgb(clamp($('h').value,0,360),clamp($('s').value,0,100),clamp($('l').value,0,100)),'hsl'); }
+['r','g','b'].forEach(function(id){ $(id).addEventListener('input',fromRgb); });
+['h','s','l'].forEach(function(id){ $(id).addEventListener('input',fromHsl); });
+$('apply').addEventListener('click',function(){
+  var a=hex2rgb($('hex').value);
+  if(a) sync(a,'hex'); else fromRgb();
+});
+function row(textId,valId,label,ok){
+  $(textId).textContent=label;
+  $(valId).textContent=ok?'نجاح':'فشل';
+  $(valId).style.color=ok?'#0a7d28':'#c1121f';
+}
+$('check').addEventListener('click',function(){
+  var f=hex2rgb($('fg').value), b=hex2rgb($('bg').value);
+  $('out').style.display='block';
+  if(!f||!b){
+    $('outRatioB').textContent='تعذرت قراءة أحد اللونين';
+    $('outAAS').textContent=''; $('outAAB').textContent='';
+    $('outAALS').textContent=''; $('outAALB').textContent='';
+    $('outAAAS').textContent=''; $('outAAAB').textContent='';
+    $('outAAALS').textContent=''; $('outAAALB').textContent='';
+    $('outNoteS').textContent='أدخل لوني نص وخلفية بصيغة مثل #000000 أو #fff';
+    return;
+  }
+  var r=ratio(f,b), large=$('size').value==='large';
+  paint($('cprev'),b);
+  $('cprev').style.color=rgb2hex(f);
+  $('outRatioB').textContent='نسبة التباين: '+r.toFixed(2)+' : 1';
+  row('outAAS','outAAB','AA للنص العادي (4.5:1) ',r>=4.5);
+  row('outAALS','outAALB','AA للنص الكبير (3:1) ',r>=3);
+  row('outAAAS','outAAAB','AAA للنص العادي (7:1) ',r>=7);
+  row('outAAALS','outAAALB','AAA للنص الكبير (4.5:1) ',r>=4.5);
+  $('outNoteS').textContent=large?'الحجم المحدد: نص كبير؛ الحد المطلوب للنجاح هو 3:1 في AA و4.5:1 في AAA.':'الحجم المحدد: نص عادي؛ الحد المطلوب للنجاح هو 4.5:1 في AA و7:1 في AAA.';
+});
+sync(hex2rgb($('hex').value)||[51,102,204],'hex');
+})();
+</script>
+</body>
+</html>
