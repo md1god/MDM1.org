@@ -50,3 +50,6 @@ create policy "Upload own mecca photos" on storage.objects for insert to authent
   with check (bucket_id = 'mecca-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "Delete own mecca photos" on storage.objects for delete to authenticated
   using (bucket_id = 'mecca-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- the rate-limit function is only meant to run as a trigger, never through the REST API
+revoke execute on function public.mecca_contrib_rate_limit() from public, anon, authenticated;
