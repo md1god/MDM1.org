@@ -320,11 +320,53 @@ async function boot() {
   ctl.onAction = (k) => {
     if (big.open) { if (k === 'escape' || k === 'm') openMap(false); return; }
     if (k === 'f') onF(); else if (k === 'c') rig.cycleView(); else if (k === 'v') setMode(S.mode === 'fly' ? 'car' : 'fly');
-    else if (k === 'm') openMap(true); else if (k === 'g') openPanel('gps'); else if (k === 'l') openPanel('learn');
+    else if (k === 'p') setAuto(!S.auto); else if (k === 'm') openMap(true); else if (k === 'g') openPanel('gps'); else if (k === 'l') openPanel('learn');
     else if (k === 't') { teleport(0, 200); toast('🕋 الكعبة المشرفة'); } else if (k === 'escape') for (const p of panels) $(p).style.display = 'none';
     else if (k === 'h') openPanel('help');
   };
   if (!store.get('m3d_help', 0)) { store.set('m3d_help', 1); setTimeout(() => { $('help').style.display = 'block'; setTimeout(() => { $('help').style.display = 'none'; }, 9000); }, 800); }
+
+
+  // ---------- autopilot ----------
+  S.auto = false; S.cruise = false;
+  function pickCruise() {
+    const pool = learn.pool('major'); if (!pool.length) return false;
+    for (let i = 0; i < 6; i++) {
+      const st = pool[Math.floor(Math.random() * pool.length)];
+      const p = nav.nearestOnStreet(st.key, car.x, car.z);
+      if (p && Math.hypot(p.x - car.x, p.z - car.z) > 600 && routeTo({ x: p.x, z: p.z, name: st.name })) return true;
+    }
+    return false;
+  }
+  function setAuto(on) {
+    if (on && S.mode !== 'car') { toast('القيادة الآلية للسيارة فقط — اضغط F للركوب'); return; }
+    S.auto = on; $('b_auto').classList.toggle('on', on);
+    if (on) {
+      if (!S.route) { S.cruise = true; if (!pickCruise()) { S.auto = false; $('b_auto').classList.remove('on'); toast('تعذّر بدء الجولة'); return; } toast('🤖 جولة آلية — المس أي تحكم لإيقافها'); }
+      else { S.cruise = false; toast('🤖 قيادة آلية إلى ' + S.goalInfo.name + ' — المس أي تحكم لإيقافها'); }
+    } else { S.cruise = false; toast('تم إيقاف القيادة الآلية'); }
+  }
+  $('b_auto').onclick = () => setAuto(!S.auto);
+  function autoInput(inp) {
+    const r = S.route;
+    if (!r) { if (S.cruise) pickCruise(); else setAuto(false); return; }
+    const pr = routeProgress(r, car.x, car.z, S.rIdx); S.rIdx = pr.idx;
+    const rem = r.total - pr.along;
+    if (rem < 20) { inp.throttle = 0; inp.steer = 0; inp.brake = true; if (Math.abs(car.v) < 1) { if (S.cruise) { clearRoute(); pickCruise(); } else { clearRoute(); setAuto(false); toast('🏁 وصلنا'); } } return; }
+    const look = 10 + Math.abs(car.v) * 0.9, n = r.pts.length / 2;
+    const at = (d) => { let k = pr.idx; while (k < n - 1 && r.cum[k] < pr.along + d) k++; return [r.pts[k * 2], r.pts[k * 2 + 1]]; };
+    const [tx, tz] = at(look), [fx, fz] = at(look + 35);
+    const want = Math.atan2(tx - car.x, -(tz - car.z)), diff = Math.atan2(Math.sin(want - car.h), Math.cos(want - car.h));
+    inp.steer = clamp(diff * 1.7, -1, 1);
+    const w2 = Math.atan2(fx - car.x, -(fz - car.z)), bend = Math.abs(Math.atan2(Math.sin(w2 - want), Math.cos(w2 - want)));
+    let vt = (S.curRoad && S.curRoad.t <= 3 ? 20 : 12) - bend * 9 - Math.abs(diff) * 6;
+    vt = Math.min(vt, 3 + rem * 0.35); vt = clamp(vt, 3, 22);
+    if (pr.off > 25) vt = Math.min(vt, 6);
+    inp.brake = false;
+    if (car.v < vt - 0.7) inp.throttle = clamp((vt - car.v) / 4, 0.25, 1);
+    else if (car.v > vt + 2.5) { inp.throttle = -0.6; inp.brake = car.v > vt + 6; }
+    else inp.throttle = 0.12;
+  }
 
   // ---------- main loop ----------
   $('load').style.display = 'none';
@@ -334,6 +376,9 @@ async function boot() {
     requestAnimationFrame(loop);
     const dt = Math.min(0.05, (now - last) / 1000); last = now; frame++;
     const inp = ctl.read();
+    if (S.auto) {
+      if (S.mode !== 'car' || Math.abs(inp.throttle) > 0.3 || Math.abs(inp.steer) > 0.3 || inp.brake) setAuto(false); else autoInput(inp);
+    }
     const camYaw = rig.mode === 'walk' ? rig.yaw : walker.h;
     car.update(dt, inp, S.mode === 'car');
     walker.update(dt, inp, rig.yaw, S.mode === 'walk');

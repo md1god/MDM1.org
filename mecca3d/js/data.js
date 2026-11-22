@@ -3,7 +3,7 @@ import { norm, streetKey, clamp } from './util.js';
 
 const SEG_CELL = 80;
 const SEG_MUL = 8192;
-export const ROAD_WIDTH = [16, 14, 12, 10, 8.5, 7, 6.5, 4.5, 4, 2, 2]; // by type code 0..9 (10 spare)
+export const ROAD_WIDTH = [20, 17, 15, 12.5, 10.5, 8.5, 7.5, 5, 4, 2, 2]; // by type code 0..9 (10 spare)
 export const ROAD_SPEED = [27, 24, 20, 16, 14, 12, 10, 8, 1.4, 1.4];
 
 export class Terrain {
@@ -18,6 +18,19 @@ export class Terrain {
     for (let i = 0; i < i16.length; i++) this.data[i] = i16[i] / s;
     this.x1 = this.x0 + (this.w - 1) * this.step;
     this.z1 = this.z0 + (this.h - 1) * this.step;
+  }
+  upsample(f) {
+    const w2 = (this.w - 1) * f + 1, h2 = (this.h - 1) * f + 1, d = new Float32Array(w2 * h2);
+    for (let j = 0; j < h2; j++) {
+      const gj = j / f, j0 = Math.min(this.h - 2, Math.floor(gj)), tj = gj - j0;
+      for (let i = 0; i < w2; i++) {
+        const gi = i / f, i0 = Math.min(this.w - 2, Math.floor(gi)), ti = gi - i0;
+        const a = this.data[j0 * this.w + i0], b = this.data[j0 * this.w + i0 + 1], c = this.data[(j0 + 1) * this.w + i0], e = this.data[(j0 + 1) * this.w + i0 + 1];
+        d[j * w2 + i] = (a * (1 - ti) + b * ti) * (1 - tj) + (c * (1 - ti) + e * ti) * tj;
+      }
+    }
+    this.data = d; this.w = w2; this.h = h2; this.step /= f;
+    this.x1 = this.x0 + (this.w - 1) * this.step; this.z1 = this.z0 + (this.h - 1) * this.step;
   }
   at(ix, iz) {
     ix = clamp(ix, 0, this.w - 1); iz = clamp(iz, 0, this.h - 1);
@@ -98,6 +111,7 @@ export async function loadData(base, onProgress) {
   ]);
   prog('تجهيز التضاريس…', 0.3);
   const terrain = new Terrain(tj);
+  terrain.upsample(2);
 
   const names = rd.names;
   const roads = [];
@@ -110,7 +124,7 @@ export async function loadData(base, onProgress) {
     const nm = ni >= 0 ? (names[ni][0] || names[ni][1]) : '';
     roads.push({
       id: i, ni, name: nm, en: ni >= 0 ? names[ni][1] : '', t, ow, fl, lanes: ln, ms, pts, cum, j: Int32Array.from(j),
-      len: cum[n - 1], width: ROAD_WIDTH[t] || 5, key: nm ? streetKey(nm) : '', ys: null,
+      len: cum[n - 1], width: Math.min(26, Math.max(ROAD_WIDTH[t] || 5, t <= 6 && ln > 0 ? ln * 3.6 + 2 : 0)), key: nm ? streetKey(nm) : '', ys: null,
     });
   }
   prog('معالجة الجسور والأنفاق…', 0.45);
@@ -180,7 +194,7 @@ export async function loadData(base, onProgress) {
     const ys = profile(r);
     r.ys = ys;
     if (r.t > 7) continue; // footways follow the ground, no earthworks
-    const hw = r.width / 2, inner = hw + 16, rad = inner + 26, hit = new Map();
+    const hw = r.width / 2, inner = hw + 19, rad = inner + 22, hit = new Map();
     for (let k = 0; k < n - 1; k++) {
       const x0 = r.pts[k * 2], z0 = r.pts[k * 2 + 1], x1 = r.pts[k * 2 + 2], z1 = r.pts[k * 2 + 3];
       const len = Math.hypot(x1 - x0, z1 - z0), steps = Math.max(1, Math.ceil(len / 8));
@@ -207,7 +221,7 @@ export async function loadData(base, onProgress) {
   // final guarantee: cut any terrain still above the finished road surface
   for (const r of order) {
     if (r.t > 7 || r.pts.length < 4) continue;
-    const n = r.pts.length / 2, hw = r.width / 2, rad = hw + 14;
+    const n = r.pts.length / 2, hw = r.width / 2, rad = hw + 19;
     for (let k = 0; k < n - 1; k++) {
       const x0 = r.pts[k * 2], z0 = r.pts[k * 2 + 1], x1 = r.pts[k * 2 + 2], z1 = r.pts[k * 2 + 3];
       const len = Math.hypot(x1 - x0, z1 - z0), steps = Math.max(1, Math.ceil(len / 8));
