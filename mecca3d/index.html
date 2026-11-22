@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>مكة 3D — تجوّل حر وتعلّم الشوارع | MDM1</title>
+<meta name="description" content="عالم ثلاثي الأبعاد مفتوح لمدينة مكة المكرمة من بيانات OpenStreetMap: قُد سيارة أو امشِ على قدميك، مع GPS وخريطة وتدريب لحفظ أسماء الشوارع والأحياء.">
+<meta name="theme-color" content="#0f0d09">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+<style>
+:root{--bg:#0f0d09;--pan:rgba(22,19,13,.92);--ln:rgba(255,255,255,.12);--gold:#e8b84a;--blue:#4da3ff;--ok:#3ddc97;--bad:#ff6b6b;--tx:#f4efe4;--mu:#a79f8c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:Tajawal,"Segoe UI",Tahoma,sans-serif;overflow:hidden;overscroll-behavior:none}
+body>*:not(#app):not(script):not(style):not(link){display:none!important}
+#app{position:fixed;inset:0}
+#stage{position:absolute;inset:0;touch-action:none}
+#stage canvas{display:block;width:100%;height:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+.lab{position:absolute;left:0;top:0;pointer-events:none;white-space:nowrap;text-shadow:0 0 4px #000,0 0 8px #000;font-weight:700;will-change:transform}
+.lab.hood{color:#ffe2a3;font-size:19px}.lab.hood.t0{font-size:26px}.lab.hood.t1{font-size:22px}
+.lab.lm{color:#a9dcff;font-size:13px}.lab.kaaba{color:#fff;font-size:17px}
+#top{position:absolute;top:max(8px,env(safe-area-inset-top));left:8px;right:8px;display:flex;gap:8px;align-items:flex-start;pointer-events:none}
+#top>*{pointer-events:auto}
+#hud{background:var(--pan);border:1px solid var(--ln);border-radius:14px;padding:8px 12px;min-width:150px;max-width:44vw}
+#st{font-size:18px;font-weight:800;line-height:1.25}
+#hd{font-size:13px;color:var(--gold)}
+#sp{font-size:12px;color:var(--mu);margin-top:2px}
+#haram{font-size:12px;color:var(--mu);margin-top:4px;display:flex;gap:6px;align-items:center}
+#harrow{display:inline-block;transition:transform .15s}
+#sw{flex:1;position:relative}
+#q{width:100%;padding:11px 14px;border-radius:14px;border:1px solid var(--ln);background:var(--pan);color:var(--tx);font:inherit;font-size:15px;outline:none}
+#q:focus{border-color:var(--gold)}
+#res{position:absolute;top:100%;margin-top:4px;left:0;right:0;background:var(--pan);border:1px solid var(--ln);border-radius:12px;max-height:50vh;overflow:auto;display:none}
+.ri{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--ln)}
+.ri:last-child{border:0}
+.ri .n{flex:1;min-width:0}.ri .n b{display:block;font-size:14px}.ri .n small{color:var(--mu);font-size:12px}
+.ri button,.sbtn{background:#2a2518;border:1px solid var(--ln);border-radius:9px;padding:6px 10px;font-size:13px}
+.ri button:hover,.sbtn:hover{border-color:var(--gold)}
+#mini{width:150px;height:150px;border-radius:50%;border:2px solid var(--ln);background:#14120d;box-shadow:0 2px 14px #0008;flex:none}
+#mw{position:absolute;top:calc(max(8px,env(safe-area-inset-top)) + 66px);left:8px;pointer-events:none}
+#bar{position:absolute;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:6px;background:var(--pan);border:1px solid var(--ln);border-radius:16px;padding:6px;max-width:96vw;overflow-x:auto}
+#bar button{background:transparent;border:0;border-radius:10px;padding:7px 10px;font-size:20px;line-height:1;flex:none;position:relative}
+#bar button small{display:block;font-size:10px;color:var(--mu);margin-top:2px}
+#bar button.on{background:#3a311a}
+#banner{position:absolute;top:calc(max(8px,env(safe-area-inset-top)) + 62px);left:50%;transform:translateX(-50%);width:min(520px,calc(100vw - 180px));background:#1d3a66;border:1px solid #3d6db0;border-radius:14px;padding:9px 14px;display:none;z-index:5}
+#banner b{font-size:17px;display:block}#banner small{color:#cfe2ff}
+#banner .x{position:absolute;top:4px;left:6px;background:none;border:0;font-size:16px;color:#cfe2ff}
+.panel{position:absolute;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 62px);left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 16px));max-height:64vh;overflow:auto;background:var(--pan);border:1px solid var(--ln);border-radius:16px;padding:12px 14px;display:none;z-index:6}
+.panel h3{margin:0 0 8px;font-size:16px;color:var(--gold)}
+.panel label{display:block;font-size:13px;color:var(--mu);margin:9px 0 3px}
+.panel select,.panel input[type=text]{width:100%;padding:8px 10px;border-radius:9px;border:1px solid var(--ln);background:#1b170e;color:var(--tx);font:inherit}
+.panel input[type=range]{width:100%}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.row button{flex:1;min-width:120px;background:#2d2713;border:1px solid var(--ln);border-radius:10px;padding:9px 8px;font-size:14px}
+.row button.pri{background:#7a5c14;border-color:var(--gold)}
+.row button:hover{border-color:var(--gold)}
+.steps{list-style:none;margin:6px 0 0;padding:0;font-size:14px}
+.steps li{padding:7px 4px;border-bottom:1px solid var(--ln);display:flex;gap:8px}.steps li.cur{background:#243a5c;border-radius:8px}.steps li.done{opacity:.4}
+.steps li span{color:var(--mu);margin-inline-start:auto;white-space:nowrap}
+.tabs{display:flex;gap:4px;margin-bottom:8px}.tabs button{flex:1;padding:7px;border-radius:9px;border:1px solid var(--ln);background:transparent;font-size:14px}.tabs button.on{background:#3a311a;border-color:var(--gold)}
+.bar{height:8px;background:#2a2518;border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}.bar i.s{background:#d0a23a;opacity:.5;position:absolute}
+.hrow{margin:7px 0;font-size:13px}.hrow .bar{position:relative;margin-top:3px}
+#task{background:#18253a;border:1px solid #3d6db0;border-radius:12px;padding:10px;margin-bottom:8px}
+#task b{font-size:17px}
+#bigmap{position:absolute;inset:0;background:#0d0c09;display:none;z-index:8}
+#bigmap canvas{width:100%;height:100%;display:block;touch-action:none}
+#bmtop{position:absolute;top:max(8px,env(safe-area-inset-top));left:8px;right:8px;display:flex;gap:6px;pointer-events:none}
+#bmtop button{pointer-events:auto;background:var(--pan);border:1px solid var(--ln);border-radius:12px;padding:9px 13px;font-size:15px}
+#bmcard{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 16px));background:var(--pan);border:1px solid var(--ln);border-radius:16px;padding:12px;display:none}
+#bmcard b{font-size:16px}
+#bmz{position:absolute;right:10px;top:50%;display:flex;flex-direction:column;gap:6px;transform:translateY(-50%)}
+#bmz button{width:42px;height:42px;background:var(--pan);border:1px solid var(--ln);border-radius:12px;font-size:22px}
+#toast{position:absolute;top:30%;left:50%;transform:translateX(-50%);background:#000c;border:1px solid var(--ln);border-radius:12px;padding:10px 18px;font-size:16px;display:none;z-index:20;text-align:center;max-width:90vw}
+#joy{position:absolute;left:18px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 74px);width:120px;height:120px;border-radius:50%;background:#ffffff14;border:2px solid #ffffff30;display:none;touch-action:none}
+#knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:#ffffff55}
+#btns{position:absolute;right:14px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 74px);display:none;flex-direction:column;gap:8px}
+#btns button{width:58px;height:58px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;font-size:13px;color:#fff}
+body.touch #joy{display:block}body.touch #btns{display:flex}
+#load{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#2a2111,#0b0a07);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:50;text-align:center;padding:20px}
+#load h1{margin:0;font-size:30px;color:var(--gold)}#load p{margin:0;color:var(--mu);max-width:480px;line-height:1.7;font-size:14px}
+#lb{width:min(320px,80vw)}
+#back{position:absolute;bottom:max(10px,env(safe-area-inset-bottom));right:8px;font-size:11px;color:var(--mu);text-decoration:none;background:var(--pan);border:1px solid var(--ln);border-radius:10px;padding:5px 9px}
+#attr{position:absolute;bottom:2px;left:6px;font-size:10px;color:#fff8;pointer-events:none}
+.help td{padding:3px 8px;font-size:13px}.help kbd{background:#2d2713;border:1px solid var(--ln);border-radius:5px;padding:1px 6px;font-size:12px}
+@media(max-width:600px){#mini{width:104px;height:104px}#mw{top:calc(max(8px,env(safe-area-inset-top)) + 62px)}#hud{max-width:50vw}#banner{width:calc(100vw - 16px);top:auto;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 66px)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"></div>
+  <div id="labels" style="position:absolute;inset:0;overflow:hidden;pointer-events:none"></div>
+
+  <div id="top">
+    <div id="hud"><div id="st">—</div><div id="hd"></div><div id="sp"></div><div id="haram"><span id="harrow">⬆</span><span id="hdist"></span></div></div>
+    <div id="sw"><input id="q" type="search" placeholder="🔍 ابحث عن شارع أو حي أو معلم…" autocomplete="off"><div id="res"></div></div>
+  </div>
+  <div id="mw"><canvas id="mini" width="300" height="300"></canvas></div>
+
+  <div id="banner"><button class="x" id="bx">✕</button><b id="bt"></b><small id="bs"></small></div>
+
+  <div id="gps" class="panel">
+    <h3>🧭 GPS — الاتجاهات</h3><div id="gpsinfo" style="font-size:14px;color:var(--mu)"></div><ul class="steps" id="steps"></ul>
+    <div class="row"><button id="g_voice">🔊 الإرشاد الصوتي: إيقاف</button><button id="g_clear">❌ إلغاء المسار</button></div>
+    <div class="row"><button id="g_here">📍 مسار من الكعبة إلى هنا</button></div>
+  </div>
+
+  <div id="learn" class="panel">
+    <div class="tabs"><button data-t="train" class="on">🎯 تدريب</button><button data-t="prog">📊 تقدّمي</button></div>
+    <div id="l_train">
+      <div id="task" style="display:none"><b id="tk_t"></b><div id="tk_h" style="color:var(--gold);margin-top:4px;font-size:14px"></div>
+        <div id="tk_a" style="margin-top:6px;display:none"><input id="tk_in" type="text" placeholder="اكتب اسم الشارع…"><div class="row"><button class="pri" id="tk_ok">تأكيد</button></div></div>
+        <div class="row"><button id="tk_hint">💡 تلميح</button><button id="tk_show">👁 أرني</button><button id="tk_skip">⏭ تخطّي</button><button id="tk_end">⏹ إنهاء</button></div></div>
+      <label>النطاق</label><select id="l_scope"></select>
+      <label>مستوى المساعدة</label>
+      <select id="l_assist"><option value="1">1 — بدون مساعدة (الأقوى للحفظ)</option><option value="2" selected>2 — تلميح عند الطلب</option><option value="3">3 — اتجاه ومسافة مستمران</option><option value="4">4 — GPS كامل (للتعرّف الأول)</option></select>
+      <div class="row"><button class="pri" id="l_goto">🚗 اذهب إلى شارع…</button><button class="pri" id="l_name">❓ ما اسم هذا الشارع؟</button></div>
+      <div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.6">التكرار المتباعد: الشوارع التي تخطئ فيها تعود قريباً، والتي تعرفها تتباعد (10 دقائق ← يوم ← 3 أيام ← أسبوع ← 3 أسابيع). قلّل المساعدة تدريجياً حتى تمشي بلا GPS.</div>
+    </div>
+    <div id="l_prog" style="display:none"></div>
+  </div>
+
+  <div id="set" class="panel">
+    <h3>⚙️ الإعدادات</h3>
+    <label>الوقت: <span id="s_tv"></span></label><input type="range" id="s_t" min="0" max="24" step="0.25">
+    <label>جودة الرسوم</label><select id="s_q"><option value="low">منخفضة (أسرع)</option><option value="medium">متوسطة</option><option value="high">عالية</option></select>
+    <label>نوع الإرشاد</label><select id="s_mm"><option value="1">أسماء الشوارع على الخريطة الصغيرة</option><option value="0">بدون أسماء (للتحدّي)</option></select>
+    <div class="row"><button id="s_signs">🪧 لوحات التقاطعات: تشغيل</button><button id="s_hudn">🏷 اسم الشارع: ظاهر</button></div>
+    <div class="row"><button id="s_reset">🗑 مسح تقدّم التعلّم</button><button id="s_help">❓ أزرار التحكم</button></div>
+    <div style="font-size:11px;color:var(--mu);margin-top:10px;line-height:1.6">البيانات: © مساهمو OpenStreetMap (ODbL) — الارتفاعات: Mapzen/AWS Terrain Tiles. شكل المباني تقريبي ومبني تلقائياً من الخريطة وليس تصويراً حقيقياً.</div>
+  </div>
+
+  <div id="help" class="panel">
+    <h3>❓ أزرار التحكم</h3>
+    <table class="help"><tr><td><kbd>W A S D</kbd> / الأسهم</td><td>قيادة / مشي</td></tr><tr><td><kbd>Space</kbd></td><td>فرامل</td></tr><tr><td><kbd>Shift</kbd></td><td>جري (مشي) / سرعة (طيران)</td></tr><tr><td>الماوس / اللمس</td><td>تدوير الكاميرا</td></tr><tr><td><kbd>F</kbd></td><td>النزول من السيارة / الركوب (يستدعيها إن كانت بعيدة)</td></tr><tr><td><kbd>C</kbd></td><td>تبديل الكاميرا</td></tr><tr><td><kbd>V</kbd></td><td>طيران (نظرة علوية) — <kbd>Q</kbd>/<kbd>E</kbd> هبوط/صعود</td></tr><tr><td><kbd>M</kbd></td><td>الخريطة الكبيرة (اضغط أي مكان للانتقال/الاتجاهات)</td></tr><tr><td><kbd>G</kbd></td><td>GPS</td></tr><tr><td><kbd>L</kbd></td><td>التدريب</td></tr><tr><td><kbd>T</kbd></td><td>انتقال للكعبة</td></tr></table>
+    <div style="font-size:13px;color:var(--mu);margin-top:8px;line-height:1.7">اكتب اسم أي شارع في البحث ثم اضغط 🧭 للاتجاهات أو 📍 للانتقال إليه فوراً.</div>
+  </div>
+
+  <div id="bar">
+    <button id="b_mode" title="F">🚗<small>سيارة</small></button>
+    <button id="b_cam" title="C">📷<small>كاميرا</small></button>
+    <button id="b_fly" title="V">🛰<small>علوي</small></button>
+    <button id="b_map" title="M">🗺<small>خريطة</small></button>
+    <button id="b_gps" title="G">🧭<small>GPS</small></button>
+    <button id="b_learn" title="L">🎓<small>تعلّم</small></button>
+    <button id="b_set">⚙️<small>إعدادات</small></button>
+  </div>
+
+  <div id="joy"><div id="knob"></div></div>
+  <div id="btns"><button id="t_brake">فرامل</button><button id="t_run">جري</button><button id="t_f">نزول/ركوب</button></div>
+
+  <div id="bigmap"><canvas id="bmc"></canvas>
+    <div id="bmtop"><button id="bm_close">✕ إغلاق</button><button id="bm_me">📍 موقعي</button><button id="bm_kaaba">🕋 الكعبة</button></div>
+    <div id="bmz"><button id="bm_in">＋</button><button id="bm_out">－</button></div>
+    <div id="bmcard"><b id="bmn"></b><div id="bmh" style="color:var(--mu);font-size:13px"></div><div class="row"><button class="pri" id="bm_route">🧭 اتجاهات</button><button id="bm_tp">📍 انتقال إلى هنا</button></div></div>
+  </div>
+
+  <div id="toast"></div>
+  <a id="back" href="../">← موقع MDM1</a>
+  <div id="attr">© OpenStreetMap contributors</div>
+
+  <div id="load"><h1>🕋 مكة 3D</h1><p id="lt">جارٍ تحميل المدينة…</p><progress id="lb" max="1" value="0"></progress>
+    <p>عالم مفتوح مبني من خرائط OpenStreetMap بأسماء الشوارع الحقيقية — تجوّل بالسيارة أو مشياً، واستخدم GPS والتدريب لحفظ الشوارع والأحياء كأنك هناك.</p></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
