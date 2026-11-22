@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة وتيرة الجري والمشي والدراجة | دَربي | MDM1</title>
+<meta name="description" content="أدخل المسافة والزمن والوزن والارتفاع فتحصل فورًا على وتيرتك وسرعتك والسعرات التقديرية وشرائح زمنية واضحة لكل كيلومتر، دون حساب أو إرسال بيانات إلى أي خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/darbi-workout-pace-calculator.html">
+<meta property="og:title" content="حاسبة وتيرة الجري والمشي والدراجة | دَربي">
+<meta property="og:description" content="أدخل المسافة والزمن والوزن والارتفاع فتحصل فورًا على وتيرتك وسرعتك والسعرات التقديرية وشرائح زمنية واضحة لكل كيلومتر، دون حساب أو إرسال بيانات إلى أي خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/darbi-workout-pace-calculator.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}:root{color-scheme:light;--ink:#1f2b26;--muted:#65736c;--line:#dfe6e0;--accent:#2f7d63;--soft:#f7f4ed;--paper:#fffdf8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--soft);color:var(--ink);font-family:system-ui,"Segoe UI",Tahoma,sans-serif;line-height:1.75}
+.wrap{max-width:860px;margin:0 auto;padding:28px 18px 60px}
+.intro{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin:0 0 18px;font-size:16px}
+.section{margin:0 0 12px;font-weight:700;font-size:18px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin:0 0 18px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:14px;font-weight:600;color:var(--muted)}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;font:inherit;color:var(--ink)}
+input:focus,select:focus,button:focus{outline:3px solid rgba(47,125,99,.18);outline-offset:2px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button{border:0;border-radius:11px;padding:11px 18px;background:var(--accent);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+button.ghost{background:#edf2ee;color:var(--ink)}
+.out{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.result-head{margin:0 0 14px;font-size:17px;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.card{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.card span{display:block;color:var(--muted);font-size:13px}
+.card strong{display:block;font-size:21px;margin-top:4px}
+.sub{margin:18px 0 8px;font-weight:700}
+.splits{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;color:var(--muted)}
+.splits span{background:#edf2ee;border-radius:999px;padding:5px 11px;font-size:13px}
+canvas{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
+.small{font-size:13px;color:var(--muted);margin:12px 0 0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "احسب وتيرة تمرينك وشرائحك الزمنية فورًا", "url": "https://mdm1.org/apps/darbi-workout-pace-calculator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل أحتاج إلى حساب أو بريد إلكتروني؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. تفتح الصفحة وتدخل أرقامك مباشرة، ولا يوجد تسجيل أو بريد إلكتروني أو اشتراك."}}, {"@type": "Question", "name": "هل تُحفظ بياناتي بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. الحساب يتم داخل المتصفح أثناء وجود الصفحة فقط، ولا تكتب الصفحة أي معلومات إلى تخزين الجهاز أو إلى خادم."}}, {"@type": "Question", "name": "هل تعمل دون اتصال؟", "acceptedAnswer": {"@type": "Answer", "text": "بعد فتح الصفحة لا تجري أي طلبات شبكية، لذلك تبقى الحاسبة قابلة للاستخدام داخل الصفحة المفتوحة حتى لو انقطع الاتصال."}}, {"@type": "Question", "name": "كيف أحسب السعرات التقديرية؟", "acceptedAnswer": {"@type": "Answer", "text": "تعتمد الحاسبة على نوع النشاط ووزنك ومدة التمرين مع زيادة بسيطة للارتفاع المكتسب؛ النتيجة تقديرية وليست قياسًا مخبريًا."}}, {"@type": "Question", "name": "هل يمكنني استخدامها لركوب الدراجة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. اختر ركوب دراجة، وستصبح الشريحة الافتراضية خمسة كيلومترات، ويمكنك تغييرها يدويًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">احسب وتيرة تمرينك وشرائحك الزمنية فورًا</h1>
+  <p class="page-sub">أدخل المسافة والزمن والوزن والارتفاع فتحصل فورًا على وتيرتك وسرعتك والسعرات التقديرية وشرائح زمنية واضحة لكل كيلومتر، دون حساب أو إرسال بيانات إلى أي خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="wrap">
+  <p class="intro" id="intro">إجابة سريعة: ضع أرقام تمرينك هنا وستحصل خلال ثانية على الوتيرة لكل كيلومتر، ومتوسط السرعة، والسعرات التقديرية، وشرائح زمنية يمكنك قراءتها أثناء الراحة. الفكرة بسيطة: تستخدم دَربي ما تدخله يدويًا من مسافة وزمن ووزن وارتفاع، ثم تحوّله إلى أرقام مفهومة تساعدك على مقارنة جلساتك وتخطيط جلستك التالية دون تعقيد. لا يوجد حساب، ولا اشتراك، ولا إرسال لأي جهة، وكل شيء يبقى داخل هذه الصفحة ما دمت تستخدمها. إن كنت تركب الدراجة فستجد شرائح أطول، وإن كنت تمشي أو تجري فستجد وتيرة دقيقة لكل كيلومتر. ابدأ بتعديل الأرقام الموجودة ثم اضغط احسب النتائج.</p>
+  <div class="panel">
+    <p class="section" id="formTitle">أدخل بياناتك</p>
+    <div class="fields">
+      <div class="field">
+        <label for="activity">نوع النشاط</label>
+        <select id="activity">
+          <option value="جري">جري</option>
+          <option value="مشي">مشي</option>
+          <option value="دراجة">ركوب دراجة</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="distance">المسافة (كم)</label>
+        <input id="distance" type="number" min="0" max="10000" step="0.01" value="10">
+      </div>
+      <div class="field">
+        <label for="hours">الساعات</label>
+        <input id="hours" type="number" min="0" max="99" step="1" value="1">
+      </div>
+      <div class="field">
+        <label for="minutes">الدقائق</label>
+        <input id="minutes" type="number" min="0" max="59" step="1" value="0">
+      </div>
+      <div class="field">
+        <label for="seconds">الثواني</label>
+        <input id="seconds" type="number" min="0" max="59" step="1" value="0">
+      </div>
+      <div class="field">
+        <label for="weight">الوزن (كغ)</label>
+        <input id="weight" type="number" min="1" max="400" step="0.5" value="70">
+      </div>
+      <div class="field">
+        <label for="elevation">الارتفاع المكتسب (م)</label>
+        <input id="elevation" type="number" min="0" max="10000" step="1" value="40">
+      </div>
+      <div class="field">
+        <label for="step">طول الشريحة (كم)</label>
+        <input id="step" type="number" min="0.1" max="100" step="0.1" value="1">
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="calc">احسب النتائج</button>
+      <button type="button" id="reset" class="ghost">إعادة الضبط</button>
+    </div>
+  </div>
+  <div class="out" id="out">
+    <p class="result-head" id="resultTitle">النتائج جاهزة فور إدخال الأرقام.</p>
+    <div class="cards">
+      <div class="card"><span>الوتيرة</span><strong id="pace">—</strong></div>
+      <div class="card"><span>متوسط السرعة</span><strong id="speed">—</strong></div>
+      <div class="card"><span>السعرات التقديرية</span><strong id="calories">—</strong></div>
+      <div class="card"><span>الارتفاع المكتسب</span><strong id="gainOut">—</strong></div>
+    </div>
+    <p class="sub" id="splitsTitle">الشرائح الزمنية</p>
+    <div class="splits" id="splits">—</div>
+    <canvas id="chart" width="640" height="220" aria-label="رسم بياني للشرائح الزمنية"></canvas>
+    <p class="small" id="note">هذه تقديرات حسابية تعتمد على إدخالك اليدوي، ولا تُرسل إلى أي جهة.</p>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل أحتاج إلى حساب أو بريد إلكتروني؟</h3><p>لا. تفتح الصفحة وتدخل أرقامك مباشرة، ولا يوجد تسجيل أو بريد إلكتروني أو اشتراك.</p><h3>هل تُحفظ بياناتي بعد إغلاق الصفحة؟</h3><p>لا. الحساب يتم داخل المتصفح أثناء وجود الصفحة فقط، ولا تكتب الصفحة أي معلومات إلى تخزين الجهاز أو إلى خادم.</p><h3>هل تعمل دون اتصال؟</h3><p>بعد فتح الصفحة لا تجري أي طلبات شبكية، لذلك تبقى الحاسبة قابلة للاستخدام داخل الصفحة المفتوحة حتى لو انقطع الاتصال.</p><h3>كيف أحسب السعرات التقديرية؟</h3><p>تعتمد الحاسبة على نوع النشاط ووزنك ومدة التمرين مع زيادة بسيطة للارتفاع المكتسب؛ النتيجة تقديرية وليست قياسًا مخبريًا.</p><h3>هل يمكنني استخدامها لركوب الدراجة؟</h3><p>نعم. اختر ركوب دراجة، وستصبح الشريحة الافتراضية خمسة كيلومترات، ويمكنك تغييرها يدويًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="drought-index-studio.html" style="color:var(--gold-bright);font-weight:700">حاسبة مؤشرات الجفاف والرطوبة SPI وSPEI وتحليل الأمطار والحرارة</a><span style="opacity:.75"> — احسب مؤشرات الجفاف والرطوبة SPI وSPEI وشذوذ الأمطار من سلاسل شهرية CSV داخل المتصفح، مع تصنيف الشدة ورسوم…</span></li><li style="margin:.5rem 0"><a href="private-calorie-diary.html" style="color:var(--gold-bright);font-weight:700">حاسبة السعرات والماكروز ودفتر الطعام اليومي في المتصفح</a><span style="opacity:.75"> — سجّل طعامك وشرابك مقابل هدف يومي من السعرات والماكروز يُحسب من طولك ووزنك وعمرك ونشاطك، مع قاعدة أطعمة…</span></li><li style="margin:.5rem 0"><a href="arabic-scientific-calculator.html" style="color:var(--gold-bright);font-weight:700">آلة حاسبة علمية: مصفوفات ومعادلات ورسم بياني</a><span style="opacity:.75"> — آلة حاسبة علمية دون إنترنت: مثلثات ولوغاريتمات وجذور، مصفوفات، معادلات خطية وتربيعية بالخطوات، رسم بياني…</span></li><li style="margin:.5rem 0"><a href="darkroom-density-lab.html" style="color:var(--gold-bright);font-weight:700">معالج مسحات الأفلام: إزالة القناع والكثافة ومنحنى H&amp;D</a><span style="opacity:.75"> — عالج مسحات الأفلام السلبية والشرائح محلياً في متصفحك دون رفع أو حفظ، أزل القناع البرتقالي لكل قناة، واحسب…</span></li><li style="margin:.5rem 0"><a href="data-exposure-pricing-lab.html" style="color:var(--gold-bright);font-weight:700">كتالوج بيانات مؤسسي وبوابات وهمية للوكلاء</a><span style="opacity:.75"> — تطبيق متصفح لبناء كتالوج لمصادر بيانات مؤسسة وتحديد ما يُكشف للوكلاء عبر واجهات وهمية، مع سياسات وصول…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-22 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const get = (id) => document.getElementById(id);
+const data = {
+  "جري": { met: 9.8, step: 1 },
+  "مشي": { met: 4.3, step: 1 },
+  "دراجة": { met: 7.5, step: 5 }
+};
+const readNumber = (id) => {
+  const raw = Number(get(id).value);
+  return Number.isFinite(raw) ? raw : 0;
+};
+const clock = (secs) => {
+  const whole = Math.max(0, Math.round(secs));
+  const mins = Math.floor(whole / 60);
+  const rest = whole % 60;
+  return String(mins) + ":" + String(rest).padStart(2, "0");
+};
+const clean = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+const read = () => {
+  const kind = get("activity").value;
+  const seconds = readNumber("hours") * 3600 + readNumber("minutes") * 60 + readNumber("seconds");
+  return {
+    kind,
+    distance: clean(readNumber("distance"), 0, 10000),
+    seconds: clean(seconds, 1, 360000),
+    weight: clean(readNumber("weight"), 1, 400),
+    gain: clean(readNumber("elevation"), 0, 10000),
+    step: clean(readNumber("step"), 0.1, 100)
+  };
+};
+const fillSplits = (pace, distance, step) => {
+  const host = get("splits");
+  host.replaceChildren();
+  if (distance <= 0) {
+    host.textContent = "—";
+    return [];
+  }
+  const items = [];
+  let at = step;
+  let guard = 0;
+  while (at < distance && guard < 40) {
+    items.push({ label: String(Math.round(at * 10) / 10) + " كم", value: pace * step });
+    at += step;
+    guard += 1;
+  }
+  const last = distance - (at - step);
+  if (last > 0 && guard < 40) {
+    items.push({ label: String(Math.round(distance * 10) / 10) + " كم", value: pace * last });
+  }
+  if (!items.length) {
+    items.push({ label: String(Math.round(distance * 10) / 10) + " كم", value: pace * distance });
+  }
+  const frag = document.createDocumentFragment();
+  items.forEach((item) => {
+    const chip = document.createElement("span");
+    chip.textContent = item.label + " · " + clock(item.value);
+    frag.appendChild(chip);
+  });
+  host.appendChild(frag);
+  return items.map((item) => item.value);
+};
+const draw = (values, labels) => {
+  const canvas = get("chart");
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#f7f4ed";
+  ctx.fillRect(0, 0, w, h);
+  ctx.direction = "rtl";
+  ctx.textAlign = "center";
+  ctx.font = "15px sans-serif";
+  ctx.fillStyle = "#3f4a44";
+  ctx.fillText("توزيع الزمن على الشرائح", w / 2, 26);
+  if (!values.length) {
+    ctx.fillText("لا توجد بيانات كافية", w / 2, h / 2);
+    return;
+  }
+  const shown = values.slice(-12);
+  const names = labels.slice(-12);
+  const top = Math.max.apply(null, shown);
+  const pad = 44;
+  const bw = (w - pad * 2) / shown.length;
+  shown.forEach((value, index) => {
+    const bar = (value / top) * (h - 92);
+    const x = w - pad - (index + 1) * bw + 7;
+    ctx.fillStyle = "#2f7d63";
+    ctx.fillRect(x, h - 44 - bar, bw - 14, bar);
+    ctx.fillStyle = "#25322c";
+    ctx.fillText(names[index] || "", x + (bw - 14) / 2, h - 20);
+  });
+};
+const update = () => {
+  const input = read();
+  const meta = data[input.kind] || data["جري"];
+  if (input.distance <= 0) {
+    get("resultTitle").textContent = "أدخل مسافة أكبر من صفر لعرض النتائج.";
+    get("pace").textContent = "—";
+    get("speed").textContent = "—";
+    get("calories").textContent = "—";
+    get("gainOut").textContent = "—";
+    get("splits").textContent = "—";
+    draw([], []);
+    return;
+  }
+  const hours = input.seconds / 3600;
+  const pace = input.seconds / input.distance;
+  const speed = input.distance / hours;
+  const kcal = Math.round(meta.met * input.weight * hours + input.gain * input.weight * 0.009);
+  const step = input.step > 0 ? input.step : meta.step;
+  const values = fillSplits(pace, input.distance, step);
+  const labels = [];
+  let at = step;
+  let guard = 0;
+  while (at < input.distance && guard < 40) {
+    labels.push(String(Math.round(at * 10) / 10) + " كم");
+    at += step;
+    guard += 1;
+  }
+  if (input.distance - (at - step) > 0 && guard < 40) {
+    labels.push(String(Math.round(input.distance * 10) / 10) + " كم");
+  }
+  if (!labels.length) {
+    labels.push(String(Math.round(input.distance * 10) / 10) + " كم");
+  }
+  get("resultTitle").textContent = "نتيجة " + input.kind + " لمسافة " + String(Math.round(input.distance * 100) / 100) + " كم";
+  get("pace").textContent = clock(pace) + " / كم";
+  get("speed").textContent = String(Math.round(speed * 10) / 10) + " كم/س";
+  get("calories").textContent = String(kcal) + " سعرة";
+  get("gainOut").textContent = String(Math.round(input.gain)) + " م";
+  draw(values, labels);
+};
+const setDefaultStep = () => {
+  get("step").value = get("activity").value === "دراجة" ? "5" : "1";
+  update();
+};
+const reset = () => {
+  get("activity").value = "جري";
+  get("distance").value = "10";
+  get("hours").value = "1";
+  get("minutes").value = "0";
+  get("seconds").value = "0";
+  get("weight").value = "70";
+  get("elevation").value = "40";
+  get("step").value = "1";
+  update();
+};
+get("calc").addEventListener("click", update);
+get("reset").addEventListener("click", reset);
+get("activity").addEventListener("change", setDefaultStep);
+reset();
+</script>
+</body>
+</html>
