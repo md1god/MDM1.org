@@ -49,9 +49,10 @@ export class Car {
   }
   _ground(snap) {
     const D = this.D, [fx, fz] = fwdOf(this.h), [rx, rz] = rightOf(this.h);
-    const f = D.groundAt(this.x + fx * 1.4, this.z + fz * 1.4), b = D.groundAt(this.x - fx * 1.4, this.z - fz * 1.4);
-    const l = D.groundAt(this.x - rx * 0.9, this.z - rz * 0.9), r = D.groundAt(this.x + rx * 0.9, this.z + rz * 0.9);
-    const y = (f + b + l + r) / 4, pitch = Math.atan2(f - b, 2.8), roll = Math.atan2(l - r, 1.8);
+    const ref = snap ? undefined : this.y;
+    const f = D.groundAt(this.x + fx * 1.4, this.z + fz * 1.4, ref), b = D.groundAt(this.x - fx * 1.4, this.z - fz * 1.4, ref);
+    const l = D.groundAt(this.x - rx * 0.9, this.z - rz * 0.9, ref), r = D.groundAt(this.x + rx * 0.9, this.z + rz * 0.9, ref);
+    const y = (f + b + l + r) / 4, pitch = clamp(Math.atan2(f - b, 2.8), -0.5, 0.5), roll = clamp(Math.atan2(l - r, 1.8), -0.4, 0.4);
     if (snap) { this.y = y; this.pitch = pitch; this.roll = roll; }
     else { this.y = lerp(this.y, y, 0.35); this.pitch = lerp(this.pitch, pitch, 0.25); this.roll = lerp(this.roll, roll, 0.25); }
   }
@@ -150,7 +151,7 @@ export class Walker {
       else if (!this._blocked(this.x, nz)) this.z = nz;
     }
     this.phase += this.v * dt * 3.2;
-    this.y = lerp(this.y, this.D.groundAt(this.x, this.z), 1 - Math.exp(-18 * dt));
+    this.y = lerp(this.y, this.D.groundAt(this.x, this.z, this.y), 1 - Math.exp(-18 * dt));
     this._apply();
   }
 }
