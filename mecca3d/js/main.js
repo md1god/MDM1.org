@@ -4,6 +4,7 @@ import { Nav, routeProgress } from './nav.js';
 import { World, Signs } from './world.js';
 import { Car, Walker, CameraRig } from './entities.js';
 import { Learn } from './learn.js';
+import { Contrib, Pins } from './contrib.js';
 import { Minimap, BigMap, Controls, Labels } from './ui.js';
 import { $, clamp, store, fmtDist, fmtDistFine, bearingDeg, angDiff, norm } from './util.js';
 
@@ -109,13 +110,14 @@ async function boot() {
   }
 
   // ---------- panels ----------
-  const panels = ['gps', 'learn', 'set', 'help'];
+  const panels = ['gps', 'learn', 'set', 'help', 'contrib'];
   function openPanel(id) {
     for (const p of panels) $(p).style.display = p === id && $(p).style.display !== 'block' ? 'block' : 'none';
     $('b_gps').classList.toggle('on', $('gps').style.display === 'block');
     $('b_learn').classList.toggle('on', $('learn').style.display === 'block');
     if ($('learn').style.display === 'block') renderProgress();
     if ($('gps').style.display === 'block') renderSteps();
+    if ($('contrib').style.display === 'block') renderContrib();
   }
 
   // ---------- big map ----------
@@ -320,12 +322,62 @@ async function boot() {
   ctl.onAction = (k) => {
     if (big.open) { if (k === 'escape' || k === 'm') openMap(false); return; }
     if (k === 'f') onF(); else if (k === 'c') rig.cycleView(); else if (k === 'v') setMode(S.mode === 'fly' ? 'car' : 'fly');
-    else if (k === 'p') setAuto(!S.auto); else if (k === 'o') (S.tour ? setAuto(false) : startTour()); else if (k === 'm') openMap(true); else if (k === 'g') openPanel('gps'); else if (k === 'l') openPanel('learn');
+    else if (k === 'p') setAuto(!S.auto); else if (k === 'o') (S.tour ? setAuto(false) : startTour()); else if (k === 'k') openPanel('contrib'); else if (k === 'm') openMap(true); else if (k === 'g') openPanel('gps'); else if (k === 'l') openPanel('learn');
     else if (k === 't') { teleport(0, 200); toast('🕋 الكعبة المشرفة'); } else if (k === 'escape') for (const p of panels) $(p).style.display = 'none';
     else if (k === 'h') openPanel('help');
   };
   if (!store.get('m3d_help', 0)) { store.set('m3d_help', 1); setTimeout(() => { $('help').style.display = 'block'; setTimeout(() => { $('help').style.display = 'none'; }, 9000); }, 800); }
 
+
+
+  // ---------- community contributions ----------
+  const contrib = new Contrib(D);
+  const pins = new Pins($('pins'), world, (it) => openPin(it));
+  contrib.init();
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const KIND = { rename: '✏️ اسم مقترح', note: '💬 ملاحظة', photo: '📷 صورة' }, STAT = { pending: '⏳ قيد المراجعة', approved: '✅ معتمدة', rejected: '⛔ مرفوضة' };
+  function openPin(it) {
+    $('pci').style.display = it.url ? 'block' : 'none'; if (it.url) $('pci').src = it.url;
+    $('pct').textContent = it.body; $('pcm').textContent = (KIND[it.kind] || '') + (it.street_name ? ' — ' + it.street_name : '') + ' · مساهمة من مستخدم';
+    $('pcard').style.display = 'block';
+  }
+  $('pcx').onclick = () => { $('pcard').style.display = 'none'; };
+  function ctLabels() {
+    const k = $('ct_kind').value;
+    $('ct_lab').textContent = k === 'rename' ? 'الاسم المقترح لهذا الشارع' : k === 'note' ? 'ملاحظتك' : 'وصف قصير للصورة';
+    $('ct_pick').style.display = k === 'photo' ? '' : 'none';
+    $('ct_text').placeholder = k === 'rename' ? 'مثال: شارع إبراهيم الخليل' : k === 'note' ? 'مثال: هذا التقاطع مزدحم بعد صلاة العشاء' : 'مثال: مدخل نفق أجياد من جهة الحرم';
+  }
+  $('ct_kind').onchange = ctLabels;
+  $('ct_pick').onclick = () => $('ct_file').click();
+  $('ct_file').onchange = () => { const f = $('ct_file').files[0]; $('ct_pick').textContent = f ? '📷 ' + f.name.slice(0, 22) : '📷 اختر / التقط صورة'; };
+  async function renderContrib() {
+    ctLabels();
+    const p = pos();
+    $('ct_where').textContent = 'موقعك: ' + (S.curName && S.curDist < 30 ? S.curName : 'خارج الشوارع المسمّاة') + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '');
+    const near = contrib.nearby(p.x, p.z, 600).slice(0, 8);
+    $('ct_near').innerHTML = !contrib.ready ? '<span style="color:var(--mu)">المساهمات المعتمدة ستظهر هنا عند تفعيل الخدمة.</span>' : near.length ? near.map(([d, it]) => `<div class="hrow">${KIND[it.kind]} — ${esc(it.body).slice(0, 80)} <span style="color:var(--mu)">(${fmtDist(d)})</span></div>`).join('') : '<span style="color:var(--mu)">لا مساهمات معتمدة قريبة بعد.</span>';
+    try {
+      const mine = await contrib.loadMine();
+      $('ct_mine').innerHTML = mine.length ? mine.slice(0, 8).map((it) => `<div class="hrow">${KIND[it.kind]} — ${esc(it.body).slice(0, 60)} <span style="color:var(--mu)">${STAT[it.status] || ''}</span></div>`).join('') : '<span style="color:var(--mu)">لم ترسل شيئاً بعد.</span>';
+    } catch (e) { $('ct_mine').innerHTML = '<span style="color:var(--mu)">سجّل الدخول لترى مساهماتك.</span>'; }
+  }
+  $('ct_send').onclick = async () => {
+    const kind = $('ct_kind').value, body = $('ct_text').value.trim(), p = pos(), msg = $('ct_msg');
+    if (!body) { msg.textContent = 'اكتب النص أولاً'; return; }
+    if (kind === 'rename' && !(S.curKey && S.curDist < 30)) { msg.textContent = 'قف على الشارع المقصود أولاً ليُسجَّل اسمه'; return; }
+    msg.textContent = 'جارٍ الإرسال…'; $('ct_send').disabled = true;
+    try {
+      const r = await Promise.race([new Promise((res) => setTimeout(() => res({ error: 'الخدمة غير متاحة الآن، حاول لاحقاً' }), 30000)), contrib.submit({ kind, body, x: p.x, z: p.z, street_key: S.curKey || null, street_name: S.curName || null, file: $('ct_file').files[0] })]);
+      if (r.needLogin) {
+        msg.textContent = 'سجّل الدخول أولاً من الزر الذهبي 👤 ثم أعد الإرسال';
+        const host = document.getElementById('mdm1a-host'), fab = host && host.shadowRoot && host.shadowRoot.querySelector('.fab'); if (fab) fab.click();
+      } else if (r.error) msg.textContent = r.error;
+      else { msg.textContent = '✅ شكراً! وصلت مساهمتك وستظهر بعد المراجعة'; $('ct_text').value = ''; $('ct_file').value = ''; $('ct_pick').textContent = '📷 اختر / التقط صورة'; renderContrib(); }
+    } catch (e) { msg.textContent = 'الخدمة غير متاحة الآن، حاول لاحقاً'; }
+    $('ct_send').disabled = false;
+  };
+  $('b_contrib').onclick = () => openPanel('contrib');
 
   // ---------- autopilot ----------
   S.auto = false; S.cruise = false;
@@ -434,6 +486,7 @@ async function boot() {
     world.update(p.x, p.z, dt);
     if (settings.signs && S.mode !== 'fly') signs.update(p.x, p.z);
     labels.update(p.x, p.z, dt);
+    if (contrib.ready) pins.update(contrib, p.x, p.z, dt);
 
     infoT += dt;
     if (infoT > 0.2) {
