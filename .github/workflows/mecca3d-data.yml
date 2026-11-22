@@ -1,0 +1,42 @@
+name: Mecca 3D data
+on:
+  workflow_dispatch:
+    inputs:
+      south: { description: 'South latitude', default: '21.375' }
+      west:  { description: 'West longitude', default: '39.775' }
+      north: { description: 'North latitude', default: '21.465' }
+      east:  { description: 'East longitude', default: '39.875' }
+      tile:  { description: 'Overpass tile size (degrees)', default: '0.03' }
+permissions:
+  contents: write
+concurrency:
+  group: mecca3d-data
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Install Python deps
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet pillow numpy
+      - name: Build data from OpenStreetMap and terrain tiles
+        run: |
+          rm -rf mecca3d/data
+          /tmp/venv/bin/python mecca3d/tools/build_data.py \
+            --south "${{ inputs.south }}" --west "${{ inputs.west }}" \
+            --north "${{ inputs.north }}" --east "${{ inputs.east }}" \
+            --tile "${{ inputs.tile }}" --out mecca3d/data
+          du -sh mecca3d/data
+          find mecca3d/data -type f | wc -l
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A mecca3d/data
+          if git diff --cached --quiet; then echo "no data changes"; exit 0; fi
+          git commit -m "Update Mecca 3D data from OpenStreetMap"
+          git pull --rebase origin main
+          git push origin HEAD:main
