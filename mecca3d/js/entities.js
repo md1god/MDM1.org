@@ -54,7 +54,7 @@ export class Car {
     const l = D.groundAt(this.x - rx * 0.9, this.z - rz * 0.9, ref), r = D.groundAt(this.x + rx * 0.9, this.z + rz * 0.9, ref);
     const y = (f + b + l + r) / 4, pitch = clamp(Math.atan2(f - b, 2.8), -0.5, 0.5), roll = clamp(Math.atan2(l - r, 1.8), -0.4, 0.4);
     if (snap) { this.y = y; this.pitch = pitch; this.roll = roll; }
-    else { this.y = lerp(this.y, y, 0.35); this.pitch = lerp(this.pitch, pitch, 0.25); this.roll = lerp(this.roll, roll, 0.25); }
+    else { this.y = lerp(this.y, y, 0.3); this.pitch = lerp(this.pitch, pitch, 0.12); this.roll = lerp(this.roll, roll, 0.12); }
   }
   _apply() {
     const g = this.group;
