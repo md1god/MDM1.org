@@ -45,7 +45,7 @@ export class World {
     r.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(r.domElement);
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(62, container.clientWidth / container.clientHeight, 0.8, 5200);
+    this.camera = new THREE.PerspectiveCamera(62, container.clientWidth / container.clientHeight, 1.2, 5200);
     this.scene.add(this.camera);
 
     this.hemi = new THREE.HemisphereLight(0xdfeaff, 0x8a7a60, 0.8);
@@ -349,7 +349,7 @@ export class World {
       const ux = (x1 - x0) / len, uz = (z1 - z0) / len, nx = -uz, nz = ux, hw = r.width / 2;
       const ext = Math.min(hw * 0.35, len * 0.4);
       const col0 = ROAD_COL[Math.min(r.t, 9)];
-      const rank = (9 - Math.min(r.t, 9)) * 0.004;
+      const rank = (9 - Math.min(r.t, 9)) * 0.02;
       const pieces = Math.max(1, Math.ceil(len / 20));
       const ys = r.ys;
       const yAt = (x, z, t) => (ys ? ys[si] + (ys[si + 1] - ys[si]) * t + (r.fl & 3 ? 0.05 : 0.05 + rank) : T.heightAt(x, z) + 0.12 + rank);

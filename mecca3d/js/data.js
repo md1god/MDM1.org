@@ -112,6 +112,16 @@ export async function loadData(base, onProgress) {
   prog('تجهيز التضاريس…', 0.3);
   const terrain = new Terrain(tj);
   terrain.upsample(2);
+  { // gentle smoothing so the up-sampled ground has no creases
+    for (let pass = 0; pass < 2; pass++) {
+      const src = terrain.data.slice(), W = terrain.w, H = terrain.h;
+      for (let j = 1; j < H - 1; j++) for (let i = 1; i < W - 1; i++) {
+        const k = j * W + i;
+        terrain.data[k] = (src[k] * 4 + src[k - 1] * 2 + src[k + 1] * 2 + src[k - W] * 2 + src[k + W] * 2 + src[k - W - 1] + src[k - W + 1] + src[k + W - 1] + src[k + W + 1]) / 16;
+      }
+    }
+  }
+  const ownerT = new Int8Array(terrain.w * terrain.h).fill(99);
 
   const names = rd.names;
   const roads = [];
@@ -181,7 +191,8 @@ export async function loadData(base, onProgress) {
         j = Math.min(j, n - 2);
         const segL = r.cum[j + 1] - r.cum[j], f = segL > 0 ? (d - r.cum[j]) / segL : 0;
         const x = r.pts[j * 2] + (r.pts[j * 2 + 2] - r.pts[j * 2]) * f, z = r.pts[j * 2 + 1] + (r.pts[j * 2 + 3] - r.pts[j * 2 + 1]) * f;
-        const w = off === 0 ? 2 : 1; acc += terrain.heightAt(x, z) * w; wsum += w;
+        const oi = Math.round((z - terrain.z0) / terrain.step) * terrain.w + Math.round((x - terrain.x0) / terrain.step);
+        const w = (ownerT[oi] < r.t ? 12 : 1) * (off === 0 ? 2 : 1); acc += terrain.heightAt(x, z) * w; wsum += w;
       }
       ys[k] = acc / wsum + 0.12;
     }
@@ -206,7 +217,9 @@ export async function loadData(base, onProgress) {
           for (let gx = gx0; gx <= gx1; gx++) {
             const d = Math.hypot(terrain.x0 + gx * terrain.step - px, terrain.z0 + gz * terrain.step - pz);
             if (d > rad) continue;
-            const i = gz * terrain.w + gx, o = hit.get(i);
+            const i = gz * terrain.w + gx;
+            if (ownerT[i] <= r.t) continue;
+            const o = hit.get(i);
             if (!o || d < o[0]) hit.set(i, [d, y]);
           }
         }
@@ -215,9 +228,18 @@ export async function loadData(base, onProgress) {
     for (const [i, [d, y]] of hit) {
       const w = d <= inner ? 1 : 1 - (d - inner) / (rad - inner), sw = w * w * (3 - 2 * w);
       terrain.data[i] = terrain.data[i] + (y - terrain.data[i]) * sw;
+      if (d <= inner) ownerT[i] = Math.min(ownerT[i], r.t);
     }
   }
-  for (const r of order) if (r.pts.length >= 4) r.ys = profile(r);
+  // final road heights follow the finished ground exactly (so crossing/overlapping roads agree)
+  for (const r of order) {
+    const n = r.pts.length / 2; if (n < 2) continue;
+    const raw = new Float32Array(n);
+    for (let k = 0; k < n; k++) raw[k] = terrain.heightAt(r.pts[k * 2], r.pts[k * 2 + 1]);
+    const ys = new Float32Array(n), lift = r.t > 7 ? 0.22 : 0.12;
+    for (let k = 0; k < n; k++) ys[k] = (k > 0 && k < n - 1 && r.t <= 7 ? (raw[k - 1] + raw[k] * 2 + raw[k + 1]) / 4 : raw[k]) + lift;
+    r.ys = ys;
+  }
   // final guarantee: cut any terrain still above the finished road surface
   for (const r of order) {
     if (r.t > 7 || r.pts.length < 4) continue;
@@ -231,7 +253,7 @@ export async function loadData(base, onProgress) {
         const gz0 = Math.max(0, Math.floor((pz - rad - terrain.z0) / terrain.step)), gz1 = Math.min(terrain.h - 1, Math.ceil((pz + rad - terrain.z0) / terrain.step));
         for (let gz = gz0; gz <= gz1; gz++) for (let gx = gx0; gx <= gx1; gx++) {
           if (Math.hypot(terrain.x0 + gx * terrain.step - px, terrain.z0 + gz * terrain.step - pz) > rad) continue;
-          const i = gz * terrain.w + gx; if (terrain.data[i] > y) terrain.data[i] = y;
+          const i = gz * terrain.w + gx; if (ownerT[i] < r.t) continue; if (terrain.data[i] > y) terrain.data[i] = y;
         }
       }
     }
