@@ -240,6 +240,12 @@ export class World {
     this.coarse = new THREE.Mesh(g, this.coarseMat);
     this.coarse.frustumCulled = false;
     this.scene.add(this.coarse);
+    { // أرض واسعة خارج حدود الخريطة كي لا يظهر فراغ أبيض
+      const B = this.T.heightAt(0, 0) - 7.6, pg = new THREE.PlaneGeometry(400000, 400000);
+      pg.rotateX(-Math.PI / 2);
+      const pm = new THREE.Mesh(pg, new THREE.MeshLambertMaterial({ color: 0xa89a7c }));
+      pm.position.set((this.D.meta.x0 + this.D.meta.x1) / 2, B, (this.D.meta.z0 + this.D.meta.z1) / 2); pm.frustumCulled = false; this.scene.add(pm);
+    }
   }
 
   _buildLandmarks() {
@@ -712,6 +718,74 @@ export class HoodSigns {
       s.scale.set(w, w / tex.aspect, 1);
       s.position.set(p.x, D.terrain.heightAt(p.x, p.z) + 38 + w * 0.2, p.z);
       s.visible = true; this.near.add(p.n);
+    }
+  }
+}
+
+// صور حقيقية للمعالم المشهورة (من ويكيبيديا وقت التشغيل، مع ذكر المصدر) كلوحات معلّقة فوق المعلم
+export const FAMOUS = [
+  { id: 'kaaba', n: 'الكعبة المشرفة', x: -2, z: -2, wiki: ['Kaaba'], ar: ['الكعبة'] },
+  { id: 'haram', n: 'المسجد الحرام', x: 70, z: -150, wiki: ['Great_Mosque_of_Mecca', 'Masjid_al-Haram'], ar: ['المسجد_الحرام'] },
+  { id: 'clock', n: 'أبراج البيت (برج الساعة)', x: -68, z: 490, wiki: ['Abraj_Al-Bait', 'Makkah_Royal_Clock_Tower'], ar: ['أبراج_البيت', 'برج_الساعة_الملكي_بمكة_المكرمة'] },
+  { id: 'safa', n: 'الصفا والمروة (المسعى)', x: 113, z: -114, wiki: ['Safa_and_Marwa', 'Al-Safa_and_Al-Marwa'], ar: ['الصفا_والمروة'] },
+  { id: 'nour', n: 'جبل النور', x: 3471, z: -3923, wiki: ['Jabal_al-Nour', 'Jabal_al-Noor'], ar: ['جبل_النور'] },
+  { id: 'hira', n: 'غار حراء', x: 3415, z: -3877, wiki: ['Cave_of_Hira', 'Hira'], ar: ['غار_حراء'] },
+  { id: 'thawr', n: 'جبل ثور وغار ثور', x: 2450, z: 5055, wiki: ['Jabal_Thawr', 'Thawr_Cave'], ar: ['جبل_ثور', 'غار_ثور'] },
+  { id: 'jamarat', n: 'الجمرات (منى)', x: 4811, z: 191, wiki: ['Jamaraat_Bridge', 'Jamarat', 'Stoning_of_the_Devil'], ar: ['جسر_الجمرات', 'رمي_الجمرات'] },
+  { id: 'haramain', n: 'قطار الحرمين السريع', x: -3899, z: 538, wiki: ['Haramain_high-speed_railway'], ar: ['قطار_الحرمين_السريع'] },
+];
+export class LandmarkPhotos {
+  constructor(world) { this.world = world; this.st = new Map(); this.pool = []; this.enabled = true; this.t = 0;
+    for (let i = 0; i < 3; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false })); s.visible = false; s.renderOrder = 8; world.scene.add(s); this.pool.push(s); } }
+  async _fetchInfo(f) {
+    const tries = f.wiki.map((t) => ['en', t]).concat(f.ar.map((t) => ['ar', t]));
+    for (const [lang, t] of tries) {
+      try {
+        const r = await fetch('https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t), { headers: { Accept: 'application/json' } });
+        if (!r.ok) continue;
+        const j = await r.json(), src = j.thumbnail && j.thumbnail.source;
+        if (src) return { src: src.replace(/\/(\d+)px-/, '/640px-'), page: j.content_urls && j.content_urls.desktop && j.content_urls.desktop.page };
+      } catch (e) { /* جرّب التالي */ }
+    }
+    return null;
+  }
+  _load(f) {
+    const st = { state: 'loading', tex: null }; this.st.set(f.id, st);
+    (async () => {
+      const info = await this._fetchInfo(f);
+      if (!info) { st.state = 'fail'; return; }
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const cv = document.createElement('canvas'); cv.width = 640; cv.height = 420; const g = cv.getContext('2d');
+          g.fillStyle = '#3a2410'; g.fillRect(0, 0, 640, 420);
+          const k = Math.max(616 / img.width, 330 / img.height), w = img.width * k, h = img.height * k;
+          g.save(); g.beginPath(); g.rect(12, 12, 616, 330); g.clip(); g.drawImage(img, 12 + (616 - w) / 2, 12 + (330 - h) / 2, w, h); g.restore();
+          g.lineWidth = 8; g.strokeStyle = '#f2c35a'; g.strokeRect(4, 4, 632, 412);
+          g.fillStyle = '#fff'; g.textAlign = 'center'; g.direction = 'rtl'; g.font = 'bold 40px Tajawal, "Segoe UI", Tahoma, sans-serif'; g.fillText(f.n, 320, 388);
+          g.fillStyle = '#e8cf93'; g.font = '16px "Segoe UI", Tahoma, sans-serif'; g.fillText('الصورة: ويكيبيديا', 320, 408);
+          const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; st.tex = t; st.state = 'ok';
+        } catch (e) { st.state = 'fail'; }
+      };
+      img.onerror = () => { st.state = 'fail'; };
+      img.src = info.src;
+    })();
+  }
+  update(px, pz) {
+    const T = this.world.D.terrain, list = [];
+    if (this.enabled) for (const f of FAMOUS) { const d = Math.hypot(f.x - px, f.z - pz); if (d < 900) list.push([d, f]); }
+    list.sort((a, b) => a[0] - b[0]);
+    for (let i = 0; i < this.pool.length; i++) {
+      const s = this.pool[i], it = list[i];
+      if (!it || it[0] < 35) { s.visible = false; continue; }
+      const [d, f] = it; let st = this.st.get(f.id);
+      if (!st) { this._load(f); s.visible = false; continue; }
+      if (st.state !== 'ok') { s.visible = false; continue; }
+      if (s.material.map !== st.tex) { s.material.map = st.tex; s.material.needsUpdate = true; }
+      const w = clamp(22 + d * 0.06, 22, 70);
+      s.scale.set(w, w * 420 / 640, 1);
+      s.position.set(f.x, T.heightAt(f.x, f.z) + 34 + w * 0.3, f.z);
+      s.visible = true;
     }
   }
 }

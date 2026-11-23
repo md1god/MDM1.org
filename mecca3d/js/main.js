@@ -1,7 +1,7 @@
 // Mecca 3D explorer — orchestration.
 import { loadData } from './data.js';
 import { Nav, routeProgress } from './nav.js';
-import { World, Signs, HoodSigns } from './world.js';
+import { World, Signs, HoodSigns, LandmarkPhotos, FAMOUS } from './world.js';
 import { Car, Walker, CameraRig } from './entities.js';
 import { Learn } from './learn.js';
 import { Contrib, Pins } from './contrib.js';
@@ -31,7 +31,7 @@ async function boot() {
   const world = new World(stage, D, 'data/');
   world.setQuality(settings.quality); world.setTime(settings.hour);
   const signs = new Signs(world, nav); signs.enabled = !!settings.signs;
-  const hoodSigns = new HoodSigns(world);
+  const hoodSigns = new HoodSigns(world), lmPhotos = new LandmarkPhotos(world);
   const car = new Car(world), walker = new Walker(world);
   const rig = new CameraRig(world, car, walker);
   const learn = new Learn(D);
@@ -386,7 +386,8 @@ async function boot() {
   function streetEnds(st) {
     if (endsCache.has(st.key)) return endsCache.get(st.key);
     const pts = [];
-    for (const ri of st.ri) { const r = D.roads[ri]; if (r.t > 7 || r.pts.length < 4) continue; pts.push([r.pts[0], r.pts[1]], [r.pts[r.pts.length - 2], r.pts[r.pts.length - 1]]); if (pts.length > 60) break; }
+    const M = D.meta, inB = (x, z) => x > M.x0 + 150 && x < M.x1 - 150 && z > M.z0 + 150 && z < M.z1 - 150;
+    for (const ri of st.ri) { const r = D.roads[ri]; if (r.t > 7 || r.pts.length < 4) continue; const a = [r.pts[0], r.pts[1]], b = [r.pts[r.pts.length - 2], r.pts[r.pts.length - 1]]; if (inB(a[0], a[1]) && inB(b[0], b[1])) pts.push(a, b); if (pts.length > 60) break; }
     let a = null, b = null, bd = -1;
     for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) { const d = Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]); if (d > bd) { bd = d; a = pts[i]; b = pts[j]; } }
     const res = a ? [{ x: a[0], z: a[1] }, { x: b[0], z: b[1] }] : null;
@@ -394,21 +395,42 @@ async function boot() {
   }
   function stopTour() { S.tour = null; $('tourbar').style.display = 'none'; $('b_tour').classList.remove('on'); }
   function tourBar() { const T = S.tour; if (!T) return; $('tourbar').style.display = 'block'; $('tbt').textContent = '🌍 جولة شاملة: ' + T.done.size + ' / ' + T.total + ' شارع' + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '') + (T.cur ? ' — ' + T.cur.name : ''); }
+  const inMap = (x, z, m) => x > D.meta.x0 + m && x < D.meta.x1 - m && z > D.meta.z0 + m && z < D.meta.z1 - m;
+  function ensureOnNetwork() { // لو السيارة خارج الشبكة أو عند حافة الخريطة: أعدها لأقرب طريق داخل الخريطة (أو للحرم)
+    if (S.mode !== 'car') return;
+    const n0 = D.idx.nearest(car.x, car.z, 120, { drv: true });
+    if (n0 && inMap(n0.x, n0.z, 220)) return;
+    const cx = clamp(car.x, D.meta.x0 + 400, D.meta.x1 - 400), cz = clamp(car.z, D.meta.z0 + 400, D.meta.z1 - 400);
+    let n = D.idx.nearest(cx, cz, 1500, { drv: true });
+    if (!n || !inMap(n.x, n.z, 220)) n = D.idx.nearest(0, 0, 4000, { drv: true });
+    if (n) { const p = n.road.pts, si = n.si; car.place(n.x, n.z, Math.atan2(p[si * 2 + 2] - p[si * 2], -(p[si * 2 + 3] - p[si * 2 + 1]))); }
+  }
   function snapCarToRoad() {
-    const n = D.idx.nearest(car.x, car.z, 200, { drv: true }); if (!n) return false;
+    const n = D.idx.nearest(car.x, car.z, 3000, { drv: true }); if (!n) return false;
     const p = n.road.pts, si = n.si; car.place(n.x, n.z, Math.atan2(p[si * 2 + 2] - p[si * 2], -(p[si * 2 + 3] - p[si * 2 + 1]))); return true;
   }
   // الجولة: الأقرب فالأقرب (من نهاية الشارع الذي انتهينا منه)، وكل شارع نمر عليه فعلياً أثناء الطريق يُحسب مُنجَزاً فلا نكرره
   function nextTourLeg() {
     const T = S.tour; if (!T) return false;
-    const endD = (st) => { const e = streetEnds(st); return e ? Math.min(Math.hypot(e[0].x - car.x, e[0].z - car.z), Math.hypot(e[1].x - car.x, e[1].z - car.z)) : 1e9; };
+    const endD = (st) => { if (st.lm) return Math.hypot(st.x - car.x, st.z - car.z); const e = streetEnds(st); return e ? Math.min(Math.hypot(e[0].x - car.x, e[0].z - car.z), Math.hypot(e[1].x - car.x, e[1].z - car.z)) : 1e9; };
     for (let attempt = 0; attempt < 20; attempt++) {
       if (attempt === 5 && car.offRoad) snapCarToRoad();
+      if (T.stage === 1 && T.cur && T.cur.lm) { // وصلنا للمعلم: توقف قليلاً واعرض اسمه
+        const L = T.cur; T.done.add(L.key); T.cur = null; T.stage = 0;
+        toast('🏛 ' + L.name, 4500); if (settings.voice) say(L.name); S.dwellUntil = S.simT + 6; tourBar(); return true;
+      }
       if (T.stage === 1 && T.cur) { T.stage = 2; T.legT = S.simT; if (routeTo({ x: T.leg[1].x, z: T.leg[1].z, name: T.cur.name })) { tourBar(); return true; } T.done.add(T.cur.key); T.cur = null; T.stage = 0; continue; }
       if (T.stage === 2 && T.cur) { T.done.add(T.cur.key); learn.markSeen(T.cur.key); big.discDirty = true; T.cur = null; T.stage = 0; }
       let best = null, bd = 1e18;
-      for (const st of T.pool) { if (T.done.has(st.key)) continue; const d = endD(st); if (d < bd) { bd = d; best = st; } }
+      if (!T.forced) { T.forced = true; best = T.pool.find((x) => x.key === 'lm:kaaba') || null; }
+      if (!best) for (const st of T.pool) { if (T.done.has(st.key)) continue; const d = endD(st); if (d < bd) { bd = d; best = st; } }
       if (!best) { toast('🎉 انتهت الجولة — زرنا ' + T.total + ' شارعًا', 5000); setAuto(false); return false; }
+      if (best.lm) {
+        T.cur = best; T.leg = [best, best]; T.legT = S.simT; T.stage = 1;
+        if (Math.hypot(best.x - car.x, best.z - car.z) < 60) continue;
+        if (routeTo({ x: best.x, z: best.z, name: '🏛 ' + best.name })) { tourBar(); return true; }
+        T.done.add(best.key); T.cur = null; T.stage = 0; continue;
+      }
       const e = streetEnds(best);
       const nearA = Math.hypot(e[0].x - car.x, e[0].z - car.z) <= Math.hypot(e[1].x - car.x, e[1].z - car.z);
       T.cur = best; T.leg = nearA ? [e[0], e[1]] : [e[1], e[0]]; T.legT = S.simT; T.stage = 1;
@@ -423,7 +445,9 @@ async function boot() {
     if (S.mode !== 'car') { toast('الجولة بالسيارة — اضغط F للركوب أولاً'); return; }
     const pool = learn.pool(scopeSel.value).filter((s) => { if (!s.drv || s.len < 150) return false; const e = streetEnds(s); return e && Math.hypot(e[0].x, e[0].z) < 9000 && Math.hypot(e[1].x, e[1].z) < 9000 && Math.hypot(e[0].x - e[1].x, e[0].z - e[1].z) < 7000; });
     if (!pool.length) { toast('لا توجد شوارع في هذا النطاق'); return; }
-    clearRoute(); if (car.offRoad) snapCarToRoad();
+    const M = D.meta;
+    for (const f of FAMOUS) if (f.x > M.x0 + 200 && f.x < M.x1 - 200 && f.z > M.z0 + 200 && f.z < M.z1 - 200 && f.id !== 'hira' && f.id !== 'haram') pool.push({ key: 'lm:' + f.id, name: f.n, lm: true, x: f.x, z: f.z, drv: true, len: 0, hood: '' });
+    ensureOnNetwork(); clearRoute();
     S.tour = { pool, done: new Set(), total: pool.length, cur: null, stage: 0, leg: null, legT: 0, drive: new Map() };
     S.cruise = true; S.auto = true; $('b_auto').classList.add('on'); $('b_tour').classList.add('on'); wake(true);
     if (!nextTourLeg()) { setAuto(false); return; }
@@ -439,12 +463,13 @@ async function boot() {
     for (let i = 0; i < 6; i++) {
       const st = pool[Math.floor(Math.random() * pool.length)];
       const p = nav.nearestOnStreet(st.key, car.x, car.z);
-      if (p && Math.hypot(p.x - car.x, p.z - car.z) > 600 && routeTo({ x: p.x, z: p.z, name: st.name })) return true;
+      if (p && Math.hypot(p.x - car.x, p.z - car.z) > 600 && p.x > D.meta.x0 + 200 && p.x < D.meta.x1 - 200 && p.z > D.meta.z0 + 200 && p.z < D.meta.z1 - 200 && routeTo({ x: p.x, z: p.z, name: st.name })) return true;
     }
     return false;
   }
   function setAuto(on) {
     if (on && S.mode !== 'car') { toast('القيادة الآلية للسيارة فقط — اضغط F للركوب'); return; }
+    if (on) ensureOnNetwork();
     S.auto = on; $('b_auto').classList.toggle('on', on); wake(on);
     if (on) {
       if (!S.route) { S.cruise = true; if (!pickCruise()) { S.auto = false; $('b_auto').classList.remove('on'); toast('تعذّر بدء الجولة'); return; } toast('🤖 جولة آلية — المس أي تحكم لإيقافها'); }
@@ -466,6 +491,7 @@ async function boot() {
   S.simT = 0;
   function autoInput(inp, dt) {
     const r = S.route;
+    if (S.dwellUntil > S.simT) { inp.throttle = 0; inp.steer = 0; inp.brake = true; return; }
     // لو علقت السيارة (مبنى/جدار): لا تقدّم على المسار لمدة 7 ثوانٍ → رجوع للخلف، ثم وضعها على المسار، وإن تكرر تخطَّ هذا الشارع
     if (S.route && S._rec && S.simT < S._rec.until) { inp.throttle = -1; inp.steer = S._rec.steer; inp.brake = false; return; }
     if (r) {
@@ -484,7 +510,7 @@ async function boot() {
         return;
       }
     }
-    if (S.cruise && S.route && S.tour && S.tour.cur && S.simT - S.tour.legT > 420) { S.tour.done.add(S.tour.cur.key); S.tour.cur = null; S.tour.stage = 0; clearRoute(); if (!pickCruise()) setAuto(false); return; }
+    if (S.cruise && S.route && S.tour && S.tour.cur && S.simT - S.tour.legT > 150 + S.route.total / 5) { S.tour.done.add(S.tour.cur.key); S.tour.cur = null; S.tour.stage = 0; clearRoute(); if (!pickCruise()) setAuto(false); return; }
     if (!r) { if (S.cruise) pickCruise(); else setAuto(false); return; }
     const pr = routeProgress(r, car.x, car.z, S.rIdx); S.rIdx = pr.idx;
     const rem = r.total - pr.along;
@@ -519,12 +545,16 @@ async function boot() {
     }
     const camYaw = rig.mode === 'walk' ? rig.yaw : walker.h;
     car.update(dt, inp, S.mode === 'car');
+    { // حدود الخريطة: لا خروج إلى الفراغ
+      const M = D.meta, m = 60, cx = clamp(car.x, M.x0 + m, M.x1 - m), cz = clamp(car.z, M.z0 + m, M.z1 - m);
+      if (cx !== car.x || cz !== car.z) { car.x = cx; car.z = cz; car.v *= 0.5; if (now - (S._edgeT || 0) > 4000) { S._edgeT = now; toast('🚧 وصلت إلى حدود الخريطة'); } }
+    }
     walker.update(dt, inp, rig.yaw, S.mode === 'walk');
     rig.update(dt, inp);
     const p = pos();
     world.update(p.x, p.z, dt);
     if (settings.signs && S.mode !== 'fly') signs.update(p.x, p.z);
-    hoodSigns.enabled = !!settings.signs && S.mode !== 'fly'; hoodSigns.update(p.x, p.z); labels.skip = hoodSigns.near;
+    hoodSigns.enabled = !!settings.signs && S.mode !== 'fly'; hoodSigns.update(p.x, p.z); lmPhotos.enabled = !!settings.signs && S.mode !== 'fly'; lmPhotos.update(p.x, p.z); labels.skip = hoodSigns.near;
     labels.update(p.x, p.z, dt);
     if (contrib.ready) pins.update(contrib, p.x, p.z, dt);
 
@@ -574,7 +604,7 @@ async function boot() {
     world.render();
   }
   requestAnimationFrame(loop);
-  window.__m3d = { startTour, setAuto, D, world, car, walker, rig, nav, learn, S, teleport, setMode, routeTo };
+  window.__m3d = { lmPhotos, startTour, setAuto, D, world, car, walker, rig, nav, learn, S, teleport, setMode, routeTo };
   document.addEventListener('visibilitychange', () => { last = performance.now(); });
 }
 
