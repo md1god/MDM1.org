@@ -11,7 +11,7 @@ export class Car {
   constructor(world) {
     this.world = world; this.D = world.D;
     this.x = 0; this.z = 70; this.h = Math.PI; this.v = 0; this.steer = 0; this.y = 0; this.pitch = 0; this.roll = 0;
-    this.offRoad = false; this.wheelRot = 0;
+    this.offRoad = false; this.wheelRot = 0; this.maxSt = 0.5;
     const g = this.group = new THREE.Group();
     const white = new THREE.MeshLambertMaterial({ color: 0xf1efe8 });
     const glass = new THREE.MeshLambertMaterial({ color: 0x1b2633 });
@@ -35,7 +35,7 @@ export class Car {
     this.wheels = [];
     const wg = new THREE.CylinderGeometry(0.5, 0.5, 0.36, 16); wg.rotateZ(Math.PI / 2);
     for (const [sx, sz] of [[-1.0, -1.5], [1.0, -1.5], [-1.0, 1.5], [1.0, 1.5]]) {
-      const w = new THREE.Mesh(wg, dark); w.position.set(sx, 0.5, sz); g.add(w); this.wheels.push(w);
+      const w = new THREE.Mesh(wg, dark); w.rotation.order = 'YXZ'; w.position.set(sx, 0.5, sz); g.add(w); this.wheels.push(w);
     }
     this.spot = new THREE.SpotLight(0xfff2cc, 0, 110, 0.55, 0.6, 1.2);
     this.spot.position.set(0, 1.3, -2); this.spot.target.position.set(0, 0, -30);
@@ -64,7 +64,7 @@ export class Car {
     g.rotation.y = -this.h; g.rotation.x = this.pitch; g.rotation.z = this.roll;
     for (let i = 0; i < 4; i++) {
       this.wheels[i].rotation.x = this.wheelRot;
-      if (i < 2) this.wheels[i].rotation.y = -this.steer * 0.5;
+      if (i < 2) this.wheels[i].rotation.y = -Math.atan(Math.tan(this.steer * this.maxSt) * 0.9);
     }
     this.spot.intensity = this.world.night > 0.35 ? 500 * this.world.night : 0;
   }
@@ -87,7 +87,7 @@ export class Car {
     if (Math.abs(thr) < 0.05 && !brake) { const rr = 1.6 * dt; this.v = Math.abs(this.v) <= rr ? 0 : this.v - Math.sign(this.v) * rr; }
     this.v = clamp(this.v, -9, vmax);
     this.steer = lerp(this.steer, st, 1 - Math.exp(-6 * dt));
-    const maxSt = 0.62 / (1 + Math.abs(this.v) / 7);
+    const maxSt = this.maxSt = 0.62 / (1 + Math.abs(this.v) / 12);
     this.h += (this.v / 2.8) * Math.tan(this.steer * maxSt) * dt;
     const [fx, fz] = fwdOf(this.h);
     const nx = this.x + fx * this.v * dt, nz = this.z + fz * this.v * dt;
@@ -185,7 +185,7 @@ export class CameraRig {
     this.snap = false;
     let tx, ty, tz, lx, ly, lz;
     if (this.mode === 'car') {
-      const c = this.car;
+      const c = this.car; c.group.visible = this.view !== 1; // داخل السيارة: لا نرسم هيكلها (سقف/عجلات/فوانيس)
       if (performance.now() - this.lastLook > 2200) { this.yawOff = lerp(this.yawOff, 0, 1 - Math.exp(-2.5 * dt)); this.pitch = lerp(this.pitch, 0.18, 1 - Math.exp(-2 * dt)); }
       this.camH = angLerp(this.camH, c.h, 1 - Math.exp(-(this.view === 1 ? 30 : 5) * dt));
       const h = (this.view === 1 ? c.h : this.camH) + this.yawOff, [fx, fz] = fwdOf(h);
@@ -198,6 +198,7 @@ export class CameraRig {
         lx = c.x + fx * 4; ly = c.y + 1.3; lz = c.z + fz * 4;
       }
     } else if (this.mode === 'walk') {
+      this.car.group.visible = true;
       const w = this.walker, [fx, fz] = fwdOf(this.yaw);
       if (this.view === 1) {
         tx = w.x; ty = w.y + 1.68; tz = w.z;
@@ -209,6 +210,7 @@ export class CameraRig {
         lx = w.x; ly = w.y + 1.5; lz = w.z;
       }
     } else {
+      this.car.group.visible = true;
       const f = this.fly, sp = (inp.run ? 220 : 60) * dt;
       const cp = Math.cos(f.pitch), dx = Math.sin(f.yaw) * cp, dz = -Math.cos(f.yaw) * cp, dy = Math.sin(f.pitch);
       f.x += (dx * inp.fwd + Math.cos(f.yaw) * inp.side) * sp; f.z += (dz * inp.fwd + Math.sin(f.yaw) * inp.side) * sp; f.y += dy * inp.fwd * sp + inp.up * sp;
