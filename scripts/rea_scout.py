@@ -5,6 +5,9 @@ stage 2 builds an original page from that spec alone. The studied product is nam
 import contextlib, datetime as dt, io, ipaddress, json, os, re, socket, sys, urllib.error, urllib.request
 from urllib.parse import urlsplit
 sys.path.insert(0, os.path.dirname(__file__))
+# Time budget for LLM calls (read by llm.py at import). The Actions job "build" is cancelled at 30 min and "pick" at 10 min; free models
+# sometimes hang for minutes, so stop asking before that and let the report step run. Override with the LLM_BUDGET_SECONDS env var.
+os.environ.setdefault("LLM_BUDGET_SECONDS", "480" if sys.argv[1:] == ["pick"] else "1380")
 import trend_pages as T
 import llm as LLM
 
