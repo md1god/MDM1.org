@@ -740,12 +740,14 @@ export class LandmarkPhotos {
   async _fetchInfo(f) {
     const tries = f.wiki.map((t) => ['en', t]).concat(f.ar.map((t) => ['ar', t]));
     for (const [lang, t] of tries) {
-      try {
-        const r = await fetch('https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t), { headers: { Accept: 'application/json' } });
-        if (!r.ok) continue;
-        const j = await r.json(), src = j.thumbnail && j.thumbnail.source;
-        if (src) return { src: src.replace(/\/(\d+)px-/, '/640px-'), page: j.content_urls && j.content_urls.desktop && j.content_urls.desktop.page };
-      } catch (e) { /* جرّب التالي */ }
+      try { // 1) واجهة REST الملخّص
+        const r = await fetch('https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t));
+        if (r.ok) { const j = await r.json(), src = j.thumbnail && j.thumbnail.source; if (src) return { src: src.replace(/\/(\d+)px-/, '/640px-') }; }
+      } catch (e) { /* جرّب الطريقة التالية */ }
+      try { // 2) واجهة MediaWiki (pageimages) كاحتياط
+        const r = await fetch('https://' + lang + '.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=640&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(t));
+        if (r.ok) { const j = await r.json(), pg = j.query && j.query.pages; for (const k in pg || {}) if (pg[k].thumbnail) return { src: pg[k].thumbnail.source }; }
+      } catch (e) { /* التالي */ }
     }
     return null;
   }
@@ -753,7 +755,7 @@ export class LandmarkPhotos {
     const st = { state: 'loading', tex: null }; this.st.set(f.id, st);
     (async () => {
       const info = await this._fetchInfo(f);
-      if (!info) { st.state = 'fail'; return; }
+      if (!info) { st.state = 'fail'; st.err = 'no-image'; setTimeout(() => this.st.delete(f.id), 120000); return; } // نعيد المحاولة بعد دقيقتين
       const img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = () => {
         try {
@@ -767,13 +769,13 @@ export class LandmarkPhotos {
           const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; st.tex = t; st.state = 'ok';
         } catch (e) { st.state = 'fail'; }
       };
-      img.onerror = () => { st.state = 'fail'; };
+      img.onerror = () => { st.state = 'fail'; st.err = 'img'; setTimeout(() => this.st.delete(f.id), 120000); };
       img.src = info.src;
     })();
   }
   update(px, pz) {
     const T = this.world.D.terrain, list = [];
-    if (this.enabled) for (const f of FAMOUS) { const d = Math.hypot(f.x - px, f.z - pz); if (d < 900) list.push([d, f]); }
+    if (this.enabled) for (const f of FAMOUS) { const d = Math.hypot(f.x - px, f.z - pz); if (d < 2500) list.push([d, f]); }
     list.sort((a, b) => a[0] - b[0]);
     for (let i = 0; i < this.pool.length; i++) {
       const s = this.pool[i], it = list[i];

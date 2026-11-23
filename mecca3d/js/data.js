@@ -1,5 +1,6 @@
 // Data loading, terrain, road index, streets and search index.
 import { norm, streetKey, clamp } from './util.js';
+import { fixAr, latinToAr } from './names.js';
 
 const SEG_CELL = 80;
 const SEG_MUL = 8192;
@@ -126,7 +127,12 @@ export async function loadData(base, onProgress) {
   terrain.data.fill(BASE);
   const ownerT = new Int8Array(terrain.w * terrain.h).fill(99);
 
-  const names = rd.names;
+  const names = rd.names.map(([a, e]) => [fixAr(a) || latinToAr(e) || '', e]);
+  { // إملاء الأحياء والمعالم + إزالة تكرار الأحياء بعد التصحيح
+    const seen = new Set();
+    for (let i = places.length - 1; i >= 0; i--) { places[i].n = fixAr(places[i].n); if (seen.has(places[i].n)) places.splice(i, 1); else seen.add(places[i].n); }
+    for (const l of lms) l.n = fixAr(l.n);
+  }
   const roads = [];
   for (let i = 0; i < rd.roads.length; i++) {
     const [ni, t, ow, fl, ln, ms, flat, j] = rd.roads[i];

@@ -147,6 +147,11 @@ async function boot() {
   }
   function setRoute(r, goal) {
     S.route = r; S.rIdx = 0; S.rStep = 0; S.off = 0; S.announced = -1; S.goalInfo = goal;
+    if (S.mode === 'car' && Math.abs(car.v) < 2) { // السيارة واقفة: وجّهها في اتجاه المسار بدل الاتجاه العكسي
+      let k = 1; while (k < r.cum.length - 1 && r.cum[k] < 18) k++;
+      const want = Math.atan2(r.pts[k * 2] - car.x, -(r.pts[k * 2 + 1] - car.z)), d = Math.abs(Math.atan2(Math.sin(want - car.h), Math.cos(want - car.h)));
+      if (d > 0.35 && Math.hypot(r.pts[k * 2] - car.x, r.pts[k * 2 + 1] - car.z) > 3) { car.h = want; rig.camH = want; rig.snap = true; }
+    }
     world.setRoute(r);
     renderSteps(); updateBanner(true);
     toast('🧭 ' + goal.name + ' — ' + fmtDist(r.total) + ' (~' + Math.max(1, Math.round(r.total / (S.mode === 'walk' ? 1.4 : 14) / 60)) + ' د)');
@@ -517,13 +522,13 @@ async function boot() {
     const rem = r.total - pr.along;
     if (rem < 24 && S.cruise) { clearRoute(); if (!pickCruise()) setAuto(false); return; }
     if (rem < 20) { inp.throttle = 0; inp.steer = 0; inp.brake = true; if (Math.abs(car.v) < 1) { if (S.cruise) { clearRoute(); pickCruise(); } else { clearRoute(); setAuto(false); toast('🏁 وصلنا'); } } return; }
-    const look = 10 + Math.abs(car.v) * 0.9, n = r.pts.length / 2;
+    const look = 8 + Math.abs(car.v) * 0.7, n = r.pts.length / 2;
     const at = (d) => { let k = pr.idx; while (k < n - 1 && r.cum[k] < pr.along + d) k++; return [r.pts[k * 2], r.pts[k * 2 + 1]]; };
-    const [tx, tz] = at(look), [fx, fz] = at(look + 35);
+    const [tx, tz] = at(look), [fx, fz] = at(look + 45);
     const want = Math.atan2(tx - car.x, -(tz - car.z)), diff = Math.atan2(Math.sin(want - car.h), Math.cos(want - car.h));
     inp.steer = clamp(diff * 1.7, -1, 1);
     const w2 = Math.atan2(fx - car.x, -(fz - car.z)), bend = Math.abs(Math.atan2(Math.sin(w2 - want), Math.cos(w2 - want)));
-    let vt = (S.curRoad && S.curRoad.t <= 3 ? (S.tour ? 25 : 20) : 12) - bend * 9 - Math.abs(diff) * 6;
+    let vt = (S.curRoad && S.curRoad.t <= 3 ? (S.tour ? 25 : 20) : 12) - bend * 12 - Math.abs(diff) * 7;
     vt = Math.min(vt, 3 + rem * 0.35); vt = clamp(vt, 3, S.tour ? 28 : 22);
     if (S.tour) vt = Math.min(vt, S.curRoad && S.curRoad.t <= 3 ? 26 : 16);
     if (pr.off > 25) vt = Math.min(vt, 6);
