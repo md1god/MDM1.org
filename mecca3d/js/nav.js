@@ -35,7 +35,7 @@ class MinHeap {
 export class Nav {
   constructor(D) {
     this.D = D;
-    const roads = D.roads;
+    const roads = D.roads, M = D.meta, inB = (x, z) => x > M.x0 + 100 && x < M.x1 - 100 && z > M.z0 + 100 && z < M.z1 - 100;
     let G = 0;
     for (const r of roads) for (let k = 1; k < r.j.length; k += 2) if (r.j[k] + 1 > G) G = r.j[k] + 1;
     this.G = G;
@@ -50,6 +50,7 @@ export class Nav {
       for (let k = 0; k + 3 < j.length; k += 2) {
         const i0 = j[k], g0 = j[k + 1], i1 = j[k + 2], g1 = j[k + 3];
         if (i1 <= i0 || g0 === g1) continue;
+        if (!inB(r.pts[i0 * 2], r.pts[i0 * 2 + 1]) || !inB(r.pts[i1 * 2], r.pts[i1 * 2 + 1])) continue; // خارج حدود الخريطة
         const e = { a: g0, b: g1, ri, i0, i1, len: r.cum[i1] - r.cum[i0], drv: r.t <= 7, ow: r.ow, spd: ROAD_SPEED[r.t] || 8 };
         const ei = this.edges.length;
         this.edges.push(e); list.push(ei);
