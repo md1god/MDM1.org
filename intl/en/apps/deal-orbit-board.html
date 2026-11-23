@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deal Hub | Manage clients and deals in your browser | MDM1</title>
+<meta name="description" content="Organize your clients and deals in your browser: a drag-and-drop Kanban board, a unified log for activities, notes, and tasks, customizable views, and…">
+<link rel="canonical" href="https://mdm1.org/intl/en/apps/deal-orbit-board.html">
+<link rel="alternate" hreflang="ar" href="https://mdm1.org/apps/deal-orbit-board.html">
+<link rel="alternate" hreflang="en" href="https://mdm1.org/intl/en/apps/deal-orbit-board.html">
+<link rel="alternate" hreflang="x-default" href="https://mdm1.org/intl/en/apps/deal-orbit-board.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDM1">
+<meta property="og:title" content="Deal Hub | Manage clients and deals in your browser">
+<meta property="og:description" content="Organize your clients and deals in your browser: a drag-and-drop Kanban board, a unified log for activities, notes, and tasks, customizable views, and…">
+<meta property="og:url" content="https://mdm1.org/intl/en/apps/deal-orbit-board.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Deal Hub | Manage clients and deals in your browser", "description": "Organize your clients and deals in your browser: a drag-and-drop Kanban board, a unified log for activities, notes, and tasks, customizable views, and…", "inLanguage": "en", "url": "https://mdm1.org/intl/en/apps/deal-orbit-board.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { max-width: 1100px; margin: 0 auto; padding: 12px; }
+.app .app-intro { line-height: 1.9; font-size: 15px; margin: 0 0 16px; }
+.app .app-board { display: flex; gap: 10px; overflow-x: auto; align-items: flex-start; padding: 6px 2px 12px; }
+.app .app-col { flex: 1 0 195px; min-width: 195px; background: rgba(0,0,0,.18); border: 1px solid var(--gold-dim); border-radius: 10px; padding: 8px; }
+.app .app-col-title { font-size: 15px; color: var(--gold-bright); margin: 2px 0 8px; text-align: center; }
+.app .app-col-list { min-height: 100px; display: flex; flex-direction: column; gap: 8px; }
+.app .app-deal { background: rgba(0,0,0,.25); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 8px; cursor: grab; }
+.app .app-deal strong { color: var(--light); }
+.app .app-muted { font-size: 12px; opacity: .75; margin: 4px 0; }
+.app .app-card-tools { display: flex; gap: 4px; flex-wrap: wrap; }
+.app .app-card-tools button { font-size: 11px; padding: 3px 7px; }
+.app .app-row-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.app .app-full { flex: 1 1 240px; }
+.app .app-log-item { border-bottom: 1px solid var(--gold-dim); padding: 8px 2px; display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
+.app .app-log-meta { font-size: 12px; opacity: .7; }
+.app .app-done { text-decoration: line-through; opacity: .6; }
+.app .app-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.app .app-table th, .app .app-table td { border: 1px solid var(--gold-dim); padding: 6px 8px; text-align: right; }
+.app .app-table th { color: var(--gold-bright); background: rgba(0,0,0,.2); }
+.app .app-empty { opacity: .7; padding: 14px 4px; font-size: 13px; }
+.app .app-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.app .app-stat { flex: 1 1 120px; text-align: center; }
+.app .app-stat .big { display: block; }
+.app .app-checks { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0; }
+@media (max-width: 700px){ .app .app-board{ flex-direction: column; } .app .app-col{ min-width: 0; } }
+.app .app-off { display: none; }</style>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- generated by scripts/intl_tools.py. The hidden ids make the deploy-time injector skip its Arabic menu/music here. -->
+<span id="mdm1m-btn" hidden></span><audio id="bg-music" preload="none"></audio><button id="music-btn" type="button" aria-label="Music" style="display:none">🔇</button>
+<nav class="navbar">
+  <a href="/en/" class="nav-logo">👁️ MDM1</a>
+  <a href="/intl/en/" class="nav-back">MDM1 · Free apps</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · Free apps</div>
+  <h1 class="page-title">Deal Hub — Kanban board and unified log for managing deals</h1>
+  <p class="page-sub">Organize your clients and deals in your browser: a drag-and-drop Kanban board, a unified log for activities, notes, and tasks, customizable views, and…</p>
+</header>
+<main class="page-content">
+
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+<p class="app-intro">Quick answer: You can manage all your prospects and deals from this page alone, right in your browser, with no server, account, or network connection, because the data stays in memory during your session and can be exported and imported as a local file at any time. Start by adding your first deal with the «Add deal» button, then drag and drop its card between Kanban stages to track its progress step by step. Log every call, message, note, and task in the unified log, mark completed tasks, and use custom views to filter and sort deals and choose the columns that matter to you. Everything works instantly with no setup or extra steps.</p>
+
+<section class="card">
+<div class="row">
+<button id="navKanban" class="button" type="button">Kanban board</button>
+<button id="navLog" class="button sec" type="button">Unified log</button>
+<button id="navView" class="button sec" type="button">Views</button>
+</div>
+</section>
+
+<section class="card">
+<div class="app-stats">
+<div class="app-stat"><label id="lblStatDeals" for="statDeals" class="label">Number of deals</label><output id="statDeals" class="big">0</output></div>
+<div class="app-stat"><label id="lblStatValue" for="statValue" class="label">Total value</label><output id="statValue" class="big">0</output></div>
+<div class="app-stat"><label id="lblStatLogs" for="statLogs" class="label">Number of entries</label><output id="statLogs" class="big">0</output></div>
+<div class="app-stat"><label id="lblStatTasks" for="statTasks" class="label">Open tasks</label><output id="statTasks" class="big">0</output></div>
+</div>
+</section>
+
+<section class="card">
+<div class="row">
+<button id="btnNewDeal" class="button" type="button">Add deal</button>
+<button id="btnExport" class="button sec" type="button">Export JSON file</button>
+<label id="lblImport" for="importFile" class="label">Import file</label>
+<input id="importFile" type="file" accept="application/json,.json">
+<button id="btnClearAll" class="button sec" type="button">Clear all data</button>
+</div>
+</section>
+
+<section id="editorPanel" class="card app-off">
+<h2 id="editorTitle">Add new deal</h2>
+<input id="dealId" type="hidden" value="">
+<div class="row">
+<label id="lblDealCompany" for="dealCompany" class="label">Company name</label>
+<input id="dealCompany" class="input" type="text" placeholder="Example: Al Noor Company">
+</div>
+<div class="row">
+<label id="lblDealContact" for="dealContact" class="label">Client name</label>
+<input id="dealContact" class="input" type="text" placeholder="Contact name">
+<label id="lblDealPhone" for="dealPhone" class="label">Phone number</label>
+<input id="dealPhone" class="input" type="tel" placeholder="Optional">
+</div>
+<div class="row">
+<label id="lblDealValue" for="dealValue" class="label">Deal value</label>
+<input id="dealValue" class="input" type="number" min="0" value="0">
+<label id="lblDealStage" for="dealStage" class="label">Stage</label>
+<select id="dealStage" class="select"></select>
+</div>
+<div class="row">
+<label id="lblDealNote" for="dealNote" class="label">Notes</label>
+<textarea id="dealNote" class="textarea" rows="2" placeholder="Additional details"></textarea>
+</div>
+<div class="row">
+<button id="btnSaveDeal" class="button" type="button">Save deal</button>
+<button id="btnCancelDeal" class="button sec" type="button">Cancel</button>
+</div>
+</section>
+
+<section id="kanbanView" class="app-board"></section>
+
+<section id="logView" class="card app-off">
+<h2>Unified log</h2>
+<div class="row">
+<label id="lblLogType" for="logType" class="label">Entry type</label>
+<select id="logType" class="select">
+<option id="optLogActivity" value="activity">Activity</option>
+<option id="optLogComment" value="comment">Comment</option>
+<option id="optLogNote" value="note">Note</option>
+<option id="optLogTask" value="task">Task</option>
+</select>
+<label id="lblLogDeal" for="logDeal" class="label">Deal</label>
+<select id="logDeal" class="select"></select>
+</div>
+<div class="row">
+<label id="lblLogText" for="logText" class="label">Entry text</label>
+<textarea id="logText" class="textarea" rows="2" placeholder="Type text here"></textarea>
+<button id="btnAddLog" class="button" type="button">Add entry</button>
+</div>
+<hr class="divider">
+<div id="logList"></div>
+</section>
+
+<section id="customView" class="card app-off">
+<h2>Custom views</h2>
+<div class="row">
+<label id="lblFilterStage" for="filterStage" class="label">Stage</label>
+<select id="filterStage" class="select"></select>
+<label id="lblFilterSearch" for="filterSearch" class="label">Search</label>
+<input id="filterSearch" class="input" type="text" placeholder="Company or client name">
+<label id="lblFilterMin" for="filterMin" class="label">Min value</label>
+<input id="filterMin" class="input" type="number" min="0" placeholder="0">
+</div>
+<div class="row">
+<label id="lblSortKey" for="sortKey" class="label">Sort by</label>
+<select id="sortKey" class="select">
+<option id="optSortCreated" value="created">Date added</option>
+<option id="optSortCompany" value="company">Company name</option>
+<option id="optSortValue" value="value">Value</option>
+<option id="optSortStage" value="stage">Stage</option>
+</select>
+<label id="lblSortDir" for="sortDir" class="label">Direction</label>
+<select id="sortDir" class="select">
+<option id="optDirDesc" value="desc">Descending</option>
+<option id="optDirAsc" value="asc">Ascending</option>
+</select>
+</div>
+<div class="app-checks">
+<label id="lblColCompany" for="colCompany" class="label">Show company<input id="colCompany" type="checkbox" checked></label>
+<label id="lblColContact" for="colContact" class="label">Show client<input id="colContact" type="checkbox" checked></label>
+<label id="lblColValue" for="colValue" class="label">Show value<input id="colValue" type="checkbox" checked></label>
+<label id="lblColStage" for="colStage" class="label">Show stage<input id="colStage" type="checkbox" checked></label>
+<label id="lblColCreated" for="colCreated" class="label">Show date<input id="colCreated" type="checkbox" checked></label>
+</div>
+<div id="customTableWrap"></div>
+</section>
+
+<div id="status" class="out" aria-live="polite"></div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">FAQ</h2><h3>Do you need an account or an internet connection to use Deal Hub?</h3><p>No. The app runs entirely in your browser, your data stays in memory only during the session, and you can export and import it as a local file whenever you want.</p><h3>How do I move a deal between Kanban stages?</h3><p>Drag the deal card and drop it into the desired column, and the move is logged automatically in the unified log with the new stage name.</p><h3>What's the difference between the unified log and custom views?</h3><p>The unified log collects activities, comments, notes, and tasks for all deals, while custom views let you filter and sort deals and choose which columns appear.</p><h3>Is my data saved after I close the page?</h3><p>It isn't saved automatically; click «Export JSON file» before closing, then use «Import file» to restore it in a later session.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← All apps</a> · <a href="../tools/" class="glow-gold">Tools</a></p></div>
+
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
+<script src="/js/global.js"></script>
+<script>(function(){
+function $(id){ return document.getElementById(id); }
+var STAGES = [
+{ id:'new', name:'New' },
+{ id:'contact', name:'Contacted' },
+{ id:'proposal', name:'Quote' },
+{ id:'negotiation', name:'Negotiation' },
+{ id:'closed', name:'Closed' }
+];
+var state = { deals:[], logs:[], activeView:'kanban', sortKey:'created', sortDir:'desc', columns:{ company:true, contact:true, value:true, stage:true, created:true } };
+var seq = 1;
+function uid(p){ return p + '-' + Date.now() + '-' + seq++; }
+function make(tag, cls, text){
+var e = document.createElement(tag);
+if(cls){ e.className = cls; }
+if(text !== null && text !== undefined){ e.textContent = text; }
+return e;
+}
+function fmt(n){ return (Number(n) || 0).toLocaleString(); }
+function stageName(id){
+for(var i=0;i<STAGES.length;i++){ if(STAGES[i].id === id){ return STAGES[i].name; } }
+return '—';
+}
+function findDeal(id){
+for(var i=0;i<state.deals.length;i++){ if(state.deals[i].id === id){ return state.deals[i]; } }
+return null;
+}
+function notify(msg){ $('status').textContent = msg; }
+function show(id, on){
+if(on){ $(id).classList.remove('app-off'); } else { $(id).classList.add('app-off'); }
+}
+function addLog(type, dealId, text){
+state.logs.unshift({ id:uid('log'), type:type, dealId:dealId || '', text:text, done:false, created:new Date().toISOString() });
+}
+function renderStats(){
+var total = 0, openTasks = 0;
+for(var i=0;i<state.deals.length;i++){ total += Number(state.deals[i].value) || 0; }
+for(var j=0;j<state.logs.length;j++){ if(state.logs[j].type === 'task' && !state.logs[j].done){ openTasks++; } }
+$('statDeals').textContent = state.deals.length;
+$('statValue').textContent = fmt(total);
+$('statLogs').textContent = state.logs.length;
+$('statTasks').textContent = openTasks;
+}
+var dragId = null;
+function renderKanban(){
+var board = $('kanbanView');
+board.textContent = '';
+for(var s=0;s<STAGES.length;s++){
+(function(stage){
+var col = make('div','app-col');
+col.appendChild(make('h3','app-col-title', stage.name));
+var list = make('div','app-col-list');
+list.id = 'stageList-' + stage.id;
+var items = state.deals.filter(function(d){ return d.stage === stage.id; });
+if(items.length === 0){ list.appendChild(make('p','app-empty','Drag a deal here')); }
+for(var i=0;i<items.length;i++){ list.appendChild(dealCard(items[i])); }
+list.addEventListener('dragover', function(e){ e.preventDefault(); });
+list.addEventListener('drop', function(e){
+e.preventDefault();
+if(dragId){ setDealStage(dragId, stage.id); dragId = null; }
+});
+col.appendChild(list);
+board.appendChild(col);
+})(STAGES[s]);
+}
+}
+function dealCard(d){
+var card = make('div','app-deal');
+card.id = 'dealCard-' + d.id;
+card.draggable = true;
+card.addEventListener('dragstart', function(){ dragId = d.id; });
+card.appendChild(make('strong','', d.company || 'Unnamed deal'));
+card.appendChild(make('p','app-muted', (d.contact || 'No client') + ' · ' + fmt(d.value)));
+if(d.phone){ card.appendChild(make('p','app-muted', d.phone)); }
+if(d.note){ card.appendChild(make('p','app-muted', d.note)); }
+var tools = make('div','app-card-tools');
+var bEdit = make('button','button sec','Edit'); bEdit.id = 'btnEdit-' + d.id;
+bEdit.addEventListener('click', function(){ openEditor(d.id); });
+var bLog = make('button','button sec','Log'); bLog.id = 'btnLog-' + d.id;
+bLog.addEventListener('click', function(){ logForDeal(d.id); });
+var bDel = make('button','button sec','Delete'); bDel.id = 'btnDel-' + d.id;
+bDel.addEventListener('click', function(){ deleteDeal(d.id); });
+tools.appendChild(bEdit); tools.appendChild(bLog); tools.appendChild(bDel);
+card.appendChild(tools);
+return card;
+}
+function setDealStage(id, stageId){
+var d = findDeal(id);
+if(!d || d.stage === stageId){ return; }
+var old = stageName(d.stage);
+d.stage = stageId;
+addLog('activity', d.id, 'Deal moved from «' + old + '» to «' + stageName(stageId) + '»');
+render();
+notify('Deal moved to: ' + stageName(stageId));
+}
+function openEditor(id){
+$('editorTitle').textContent = id ? 'Edit deal' : 'Add new deal';
+$('dealId').value = id || '';
+var d = id ? findDeal(id) : null;
+$('dealCompany').value = d ? d.company || '' : '';
+$('dealContact').value = d ? d.contact || '' : '';
+$('dealPhone').value = d ? d.phone || '' : '';
+$('dealValue').value = d ? d.value || 0 : 0;
+$('dealStage').value = d ? d.stage || 'new' : 'new';
+$('dealNote').value = d ? d.note || '' : '';
+show('editorPanel', true);
+$('dealCompany').focus();
+}
+function closeEditor(){ show('editorPanel', false); }
+function saveDeal(){
+var company = $('dealCompany').value.trim();
+if(!company){ notify('Please enter the company name'); return; }
+var id = $('dealId').value;
+if(id){
+var d = findDeal(id);
+if(d){
+d.company = company;
+d.contact = $('dealContact').value.trim();
+d.phone = $('dealPhone').value.trim();
+d.value = $('dealValue').value;
+d.stage = $('dealStage').value;
+d.note = $('dealNote').value.trim();
+}
+addLog('activity', id, 'Deal details updated: ' + company);
+notify('Changes saved');
+} else {
+var data = { company:company, contact:$('dealContact').value.trim(), phone:$('dealPhone').value.trim(), value:$('dealValue').value, stage:$('dealStage').value, note:$('dealNote').value.trim() };
+data.id = uid('deal');
+data.created = new Date().toISOString();
+state.deals.push(data);
+addLog('activity', data.id, 'New deal created: ' + company);
+notify('Deal added');
+}
+closeEditor();
+render();
+}
+function deleteDeal(id){
+var d = findDeal(id);
+if(!d){ return; }
+if(!confirm('Delete deal «' + d.company + '» and all its logs?')){ return; }
+state.deals = state.deals.filter(function(x){ return x.id !== id; });
+state.logs = state.logs.filter(function(x){ return x.dealId !== id; });
+render();
+notify('Deal deleted');
+}
+function fillDealSelect(sel, withAll){
+sel.textContent = '';
+if(withAll){
+var all = make('option','','All deals'); all.id = 'optAllDeals'; all.value = '';
+sel.appendChild(all);
+}
+for(var i=0;i<state.deals.length;i++){
+var o = make('option','', state.deals[i].company);
+o.id = 'optDeal-' + state.deals[i].id;
+o.value = state.deals[i].id;
+sel.appendChild(o);
+}
+}
+function switchView(v){ state.activeView = v; render(); }
+function logForDeal(id){
+fillDealSelect($('logDeal'), true);
+$('logDeal').value = id;
+switchView('log');
+notify('View single deal log');
+}
+function logLabel(t){
+if(t === 'activity'){ return 'Activity'; }
+if(t === 'comment'){ return 'Comment'; }
+if(t === 'note'){ return 'Note'; }
+if(t === 'task'){ return 'Task'; }
+return 'Log';
+}
+function addLogFromForm(){
+var text = $('logText').value.trim();
+if(!text){ notify('Enter log text first'); return; }
+addLog($('logType').value, $('logDeal').value, text);
+$('logText').value = '';
+render();
+notify('Log added');
+}
+function renderLog(){
+fillDealSelect($('logDeal'), true);
+var list = $('logList');
+list.textContent = '';
+if(state.logs.length === 0){
+list.appendChild(make('p','app-empty','No logs yet. Add an activity, comment, note, or task.'));
+return;
+}
+for(var i=0;i<state.logs.length;i++){ list.appendChild(logRow(state.logs[i])); }
+}
+function logRow(entry){
+var related = findDeal(entry.dealId);
+var row = make('div','app-log-item');
+row.id = 'logRow-' + entry.id;
+var main = make('div','app-full');
+var line = make('p','', logLabel(entry.type) + ': ' + entry.text);
+if(entry.type === 'task' && entry.done){ line.className = 'app-done'; }
+main.appendChild(line);
+main.appendChild(make('p','app-log-meta', (related ? related.company : 'No deal') + ' · ' + entry.created.slice(0,10)));
+row.appendChild(main);
+var acts = make('div','app-card-tools');
+if(entry.type === 'task'){
+var bDone = make('button','button sec', entry.done ? 'Reopen' : 'Completed');
+bDone.id = 'btnToggle-' + entry.id;
+bDone.addEventListener('click', function(){ toggleTask(entry.id); });
+acts.appendChild(bDone);
+}
+var bDel = make('button','button sec','Delete');
+bDel.id = 'btnDelLog-' + entry.id;
+bDel.addEventListener('click', function(){ deleteLog(entry.id); });
+acts.appendChild(bDel);
+row.appendChild(acts);
+return row;
+}
+function toggleTask(id){
+for(var i=0;i<state.logs.length;i++){
+if(state.logs[i].id === id){ state.logs[i].done = !state.logs[i].done; break; }
+}
+render();
+}
+function deleteLog(id){
+state.logs = state.logs.filter(function(x){ return x.id !== id; });
+render();
+notify('Log deleted');
+}
+function fieldVal(d, key){
+if(key === 'company'){ return String(d.company || ''); }
+if(key === 'contact'){ return String(d.contact || ''); }
+if(key === 'value'){ return Number(d.value) || 0; }
+if(key === 'stage'){ return stageName(d.stage); }
+if(key === 'created'){ return String(d.created || ''); }
+return '';
+}
+function filteredDeals(){
+var st = $('filterStage').value;
+var q = $('filterSearch').value.trim();
+var min = $('filterMin').value;
+var arr = state.deals.filter(function(d){
+if(st && st !== 'all' && d.stage !== st){ return false; }
+if(q){
+var hay = (d.company || '') + ' ' + (d.contact || '') + ' ' + (d.phone || '');
+if(hay.indexOf(q) === -1){ return false; }
+}
+if(min && (Number(d.value) || 0) < Number(min)){ return false; }
+return true;
+});
+arr.sort(function(a,b){
+var av = fieldVal(a, state.sortKey), bv = fieldVal(b, state.sortKey);
+var r = av < bv ? -1 : (av > bv ? 1 : 0);
+return state.sortDir === 'asc' ? r : -r;
+});
+return arr;
+}
+var COLS = [
+{ key:'company', label:'Company' },
+{ key:'contact', label:'Client' },
+{ key:'value', label:'Value' },
+{ key:'stage', label:'Stage' },
+{ key:'created', label:'Date added' }
+];
+function renderCustom(){
+var arr = filteredDeals();
+var wrap = $('customTableWrap');
+wrap.textContent = '';
+if(arr.length === 0){
+wrap.appendChild(make('p','app-empty','No matching results. Adjust filters or add deals.'));
+return;
+}
+var table = make('table','app-table');
+var head = make('thead');
+var hr = make('tr');
+COLS.forEach(function(col){
+if(state.columns[col.key]){ hr.appendChild(make('th','', col.label)); }
+});
+hr.appendChild(make('th','','Actions'));
+head.appendChild(hr);
+table.appendChild(head);
+var body = make('tbody');
+for(var i=0;i<arr.length;i++){ body.appendChild(dealRow(arr[i])); }
+table.appendChild(body);
+wrap.appendChild(table);
+}
+function dealRow(d){
+var tr = make('tr');
+tr.id = 'dealRow-' + d.id;
+if(state.columns.company){ tr.appendChild(make('td','', d.company || '—')); }
+if(state.columns.contact){ tr.appendChild(make('td','', d.contact || '—')); }
+if(state.columns.value){ tr.appendChild(make('td','', fmt(d.value))); }
+if(state.columns.stage){ tr.appendChild(make('td','', stageName(d.stage))); }
+if(state.columns.created){ tr.appendChild(make('td','', (d.created || '').slice(0,10))); }
+var td = make('td','app-card-tools');
+var bEdit = make('button','button sec','Edit'); bEdit.id = 'btnRowEdit-' + d.id;
+bEdit.addEventListener('click', function(){ openEditor(d.id); });
+var bLog = make('button','button sec','Log'); bLog.id = 'btnRowLog-' + d.id;
+bLog.addEventListener('click', function(){ logForDeal(d.id); });
+td.appendChild(bEdit); td.appendChild(bLog);
+tr.appendChild(td);
+return tr;
+}
+function render(){
+renderStats();
+show('kanbanView', state.activeView === 'kanban');
+show('logView', state.activeView === 'log');
+show('customView', state.activeView === 'custom');
+if(state.activeView === 'kanban'){ renderKanban(); }
+else if(state.activeView === 'log'){ renderLog(); }
+else { renderCustom(); }
+}
+function exportJSON(){
+var payload = { version:1, deals:state.deals, logs:state.logs };
+var text = JSON.stringify(payload, null, 2);
+var blob = new Blob([text], { type:'application/json' });
+var url = URL.createObjectURL(blob);
+var a = document.createElement('a');
+a.id = 'downloadAnchor';
+a.href = url;
+a.download = 'madar-deals.json';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+notify('File exported successfully');
+}
+function importJSON(file){
+if(!file){ return; }
+var reader = new FileReader();
+reader.onload = function(e){
+try{
+var data = JSON.parse(e.target.result);
+if(!data.deals || !Array.isArray(data.deals)){ notify('Invalid file'); return; }
+state.deals = data.deals;
+state.logs = Array.isArray(data.logs) ? data.logs : [];
+render();
+notify('Imported ' + state.deals.length + ' deals');
+} catch(err){
+notify('Could not read the file');
+}
+};
+reader.onerror = function(){ notify('Could not read the file'); };
+reader.readAsText(file);
+}
+function clearAll(){
+if(!confirm('Clear all deals and logs?')){ return; }
+state.deals = []; state.logs = [];
+render();
+notify('All data cleared');
+}
+function init(){
+var ds = $('dealStage'), fs = $('filterStage');
+var all = make('option','','All stages'); all.id = 'optAllStages'; all.value = 'all';
+fs.appendChild(all);
+for(var i=0;i<STAGES.length;i++){
+var o1 = make('option','',STAGES[i].name); o1.id = 'dsOpt-' + STAGES[i].id; o1.value = STAGES[i].id; ds.appendChild(o1);
+var o2 = make('option','',STAGES[i].name); o2.id = 'fsOpt-' + STAGES[i].id; o2.value = STAGES[i].id; fs.appendChild(o2);
+}
+$('navKanban').addEventListener('click', function(){ switchView('kanban'); });
+$('navLog').addEventListener('click', function(){ switchView('log'); });
+$('navView').addEventListener('click', function(){ switchView('custom'); });
+$('btnNewDeal').addEventListener('click', function(){ openEditor(null); });
+$('btnSaveDeal').addEventListener('click', saveDeal);
+$('btnCancelDeal').addEventListener('click', closeEditor);
+$('btnExport').addEventListener('click', exportJSON);
+$('btnClearAll').addEventListener('click', clearAll);
+$('importFile').addEventListener('change', function(e){ importJSON(e.target.files.item(0)); });
+$('btnAddLog').addEventListener('click', addLogFromForm);
+$('filterStage').addEventListener('change', renderCustom);
+$('filterSearch').addEventListener('input', renderCustom);
+$('filterMin').addEventListener('input', renderCustom);
+$('sortKey').addEventListener('change', function(){ state.sortKey = $('sortKey').value; renderCustom(); });
+$('sortDir').addEventListener('change', function(){ state.sortDir = $('sortDir').value; renderCustom(); });
+var boxIds = [ ['colCompany','company'], ['colContact','contact'], ['colValue','value'], ['colStage','stage'], ['colCreated','created'] ];
+for(var c=0;c<boxIds.length;c++){
+(function(pair){
+$(pair[0]).addEventListener('change', function(){ state.columns[pair[1]] = $(pair[0]).checked; renderCustom(); });
+})(boxIds[c]);
+}
+render();
+}
+init();
+})();</script>
+</body>
+</html>
