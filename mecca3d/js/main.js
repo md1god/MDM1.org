@@ -180,8 +180,9 @@ async function boot() {
     if (i !== S.rStep || force) { S.rStep = i; if (!force) renderSteps(); }
     const nxt = steps[nx], rem = Math.max(0, nxt.dist - along);
     $('banner').style.display = 'block';
-    $('bt').textContent = (nxt.kind === 'arrive' ? '🏁 ' : arrow(nxt.kind) + ' ') + (nxt.text || 'استمر');
-    $('bs').textContent = (nxt.kind === 'arrive' ? '' : 'بعد ' + fmtDistFine(rem) + ' — ') + 'المتبقي ' + fmtDist(Math.max(0, r.total - along));
+    const arriving = nxt.kind === 'arrive' && rem < 60;
+    $('bt').textContent = arriving ? '🏁 ' + (nxt.text || 'استمر') : nxt.kind === 'arrive' ? '⬆ استمر حتى الوصول' + (S.goalInfo && S.goalInfo.name ? ' إلى ' + S.goalInfo.name : '') : arrow(nxt.kind) + ' ' + (nxt.text || 'استمر');
+    $('bs').textContent = (arriving ? '' : 'بعد ' + fmtDistFine(rem) + ' — ') + 'المتبقي ' + fmtDist(Math.max(0, r.total - along));
     const bucket = rem < 40 ? 2 : rem < 220 ? 1 : 0, id = nx * 3 + bucket;
     if (id !== S.announced && nxt.text) { S.announced = id; if (bucket >= 1 || nxt.kind === 'arrive') say((bucket === 1 ? 'بعد ' + fmtDistFine(rem) + ' ' : '') + nxt.text); }
   }
