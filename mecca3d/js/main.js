@@ -460,7 +460,7 @@ async function boot() {
   function pickCruise() {
     if (S.tour) return nextTourLeg();
     const pool = learn.pool('major'); if (!pool.length) return false;
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 25; i++) {
       const st = pool[Math.floor(Math.random() * pool.length)];
       const p = nav.nearestOnStreet(st.key, car.x, car.z);
       if (p && Math.hypot(p.x - car.x, p.z - car.z) > 600 && p.x > D.meta.x0 + 200 && p.x < D.meta.x1 - 200 && p.z > D.meta.z0 + 200 && p.z < D.meta.z1 - 200 && routeTo({ x: p.x, z: p.z, name: st.name })) return true;

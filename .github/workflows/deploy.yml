@@ -25,6 +25,9 @@ jobs:
       - name: ✅ Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: 🔖 Stamp build id for cache busting (mecca3d)
+        run: sed -i "s/__BUILD__/${GITHUB_SHA}/" mecca3d/index.html
+
       - name: 🛡️ Block publishing broken titles/descriptions
         run: node scripts/check-page-quality.js
 
