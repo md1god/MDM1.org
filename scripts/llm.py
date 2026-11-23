@@ -29,10 +29,21 @@ def explain():
     return " | ".join(REASONS)
 
 
+# Optional wall-clock budget for the whole process (seconds). 0/unset = unlimited (every other pipeline behaves exactly as before).
+# REA Scout sets it so a hanging free model cannot eat the whole Actions job (30 min) and get it cancelled: when the budget is spent,
+# chat() returns None quickly and the caller reports a clean failure instead.
+_T0 = time.monotonic()
+try: BUDGET = float(os.environ.get("LLM_BUDGET_SECONDS", "0") or 0)
+except ValueError: BUDGET = 0.0
+
+def _left():
+    return float("inf") if BUDGET <= 0 else BUDGET - (time.monotonic() - _T0)
+
+
 def _http(url, body=None, headers=None, timeout=180):
     h = {"User-Agent": "mdm1-pipeline/1.0 (+https://mdm1.org)", **(headers or {})}   # a bare Python-urllib agent is blocked by some CDNs (403)
     req = urllib.request.Request(url, json.dumps(body).encode() if body is not None else None, h, method="POST" if body is not None else "GET")
-    return urllib.request.urlopen(req, timeout=timeout).read().decode("utf-8", "replace")
+    return urllib.request.urlopen(req, timeout=max(10, min(timeout, _left()))).read().decode("utf-8", "replace")
 
 
 def _nums(x):
@@ -156,10 +167,12 @@ def _cli_models():
     return _cache["cli_list"]
 
 
-def _cli(model, prompt, timeout=600):
+def _cli(model, prompt, timeout=300):
     """One question to `opencode run -m opencode/<model>` in an empty temp dir; returns the answer text or None."""
     b = _cli_bin()
     if not b: _cache["cli_off"] = True; return None
+    timeout = min(timeout, _left())
+    if timeout < 30: return None   # budget spent (chat() reports it)
     ask = "Answer with text only. Do not use any tool, do not read or write files, do not run commands.\n\n" + prompt
     with tempfile.TemporaryDirectory() as d:
         proc = subprocess.Popen([b, "run", "-m", "opencode/" + model, ask], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -183,6 +196,9 @@ def _cli(model, prompt, timeout=600):
 
 def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
     key = os.environ.get("OPENCODE_API_KEY", "").strip()
+    if _left() < 30:
+        _why("LLM time budget (%d s) used up" % BUDGET); LAST["backend"] = None
+        print("::warning::LLM: time budget of %d s is used up, not asking any more models" % BUDGET); return None
     if not _cache["cli_off"] and not os.environ.get("REA_MOCK"):
         for m in [x for x in dict.fromkeys(CLI_MODELS + _cli_models() + free_models()[:2]) if x not in _cache["cli_dead"]][:4]:
             txt = _cli(m, prompt)
@@ -193,7 +209,7 @@ def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
         h = {"Authorization": "Bearer " + key, "Content-Type": "application/json"}
         for m in free_models():
             if m in _cache["dead"]: continue
-            if _cache["zen_off"]: break
+            if _cache["zen_off"] or _left() < 30: break
             for fmt in ((True, False) if json_mode else (False,)):   # some models reject response_format: retry without it
                 txt = _call(ZEN + "/chat/completions", h, m, prompt, max_tokens, temperature, fmt)
                 if txt and txt.strip(): LAST["backend"] = "zen:" + m; print("::notice::LLM answered via", LAST["backend"]); return txt
@@ -203,13 +219,14 @@ def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
     if tok and not _cache["gh_off"]:
         h = {"Authorization": "Bearer " + tok, "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
         for m in GH_MODELS:
-            if _cache["gh_off"]: break
+            if _cache["gh_off"] or _left() < 30: break
             for fmt in ((True, False) if json_mode else (False,)):
                 txt = _call(GH, h, m, prompt, max_tokens, temperature, fmt)
                 if txt and txt.strip(): LAST["backend"] = "github:" + m; print("::notice::LLM answered via", LAST["backend"]); return txt
                 if _cache["gh_off"]: break
     elif not tok: _why("GITHUB_TOKEN not provided")
     LAST["backend"] = None
+    if _left() < 30: _why("LLM time budget (%d s) used up" % BUDGET)
     print("::warning::LLM: no backend produced an answer (zen key: %s, zen skipped for quota: %s, github token: %s). Why: %s" % (bool(key), _cache["zen_off"], bool(tok), explain() or "unknown"))
     return None
 
