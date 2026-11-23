@@ -7,7 +7,10 @@ Order of attack:
   1. OpenCode Zen (OPENCODE_API_KEY, from the OPENCODE repository secret). Which models are FREE is decided live, every run, from the
      prices Zen itself publishes in GET /zen/v1/models (input and output cost both zero). No model name is hard-coded anywhere, so a
      model that is added, renamed or withdrawn needs no code change.
-  2. GitHub Models (GITHUB_TOKEN) as the fallback, exactly as the repo did before.
+  2. OpenRouter (OPENROUTER_API_KEY), optional: only when the secret reaches the job. Which models are FREE is decided live from the prices
+     published in GET /api/v1/models (prompt and completion both zero, text output, context >= 32k, biggest context first, at most 4);
+     OPENROUTER_MODELS (comma list) overrides that choice.
+  3. GitHub Models (GITHUB_TOKEN) as the fallback, exactly as the repo did before.
 
 chat(prompt, max_tokens, temperature, json_mode) -> text or None. Never raises. Prints ::warning:: / ::notice:: lines for the Actions log;
 the ::notice:: line says which backend and model actually answered.
@@ -17,7 +20,8 @@ import json, os, re, shutil, signal, subprocess, tempfile, time, urllib.error, u
 ZEN = os.environ.get("OPENCODE_BASE_URL", "https://opencode.ai/zen/v1")
 GH = "https://models.github.ai/inference/chat/completions"
 GH_MODELS = ["openai/gpt-4.1", "openai/gpt-4.1-mini", "openai/gpt-4o"]
-_cache = {"cli_off": False, "cli_dead": set(), "free": None, "dead": set(), "zen_off": False, "gh_off": False}   # zen_off: Zen answered a free-usage-limit 429; gh_off: GitHub Models is intercepted (see _call). Both skip that backend for the rest of the run
+ORR = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+_cache = {"cli_off": False, "cli_dead": set(), "free": None, "dead": set(), "zen_off": False, "gh_off": False, "or_off": False, "or_free": None}   # zen_off: Zen answered a free-usage-limit 429; gh_off: GitHub Models is intercepted (see _call). Both skip that backend for the rest of the run
 LAST = {"code": None, "backend": None}   # code: HTTP status of the most recent failed call (None after a success); backend: who answered last
 REASONS = []   # one human-readable line per backend that failed this run; explain() joins them so a failed run says WHY
 
@@ -91,6 +95,30 @@ def free_models():
     return ids
 
 
+def or_models():
+    """OpenRouter model ids to try (cached for the run): OPENROUTER_MODELS if set, else the free text models from the live catalogue."""
+    if _cache["or_free"] is not None: return _cache["or_free"]
+    ids = [x.strip() for x in os.environ.get("OPENROUTER_MODELS", "").split(",") if x.strip()]
+    if not ids:
+        try:
+            data = json.loads(_http(ORR + "/models", timeout=60))
+            cand = []
+            for m in (data.get("data", []) if isinstance(data, dict) else data):
+                if not isinstance(m, dict) or not m.get("id"): continue
+                p = m.get("pricing") or {}
+                n = [x for k in ("prompt", "completion") if k in p for x in _nums(p[k])]
+                out = (m.get("architecture") or {}).get("output_modalities")
+                if not n or any(x != 0 for x in n) or (out and out != ["text"]): continue
+                if re.search(r"guard|embed|moderat", str(m["id"]), re.I): continue
+                ctx = m.get("context_length") or 0
+                if ctx >= 32000: cand.append((ctx, m["id"]))
+            ids = [i for _, i in sorted(cand, key=lambda t: -t[0])[:4]]
+        except urllib.error.HTTPError as e: print("::warning::openrouter model list failed: HTTP", e.code)
+        except Exception as e: print("::warning::openrouter model list failed:", type(e).__name__, str(e)[:120])
+    _cache["or_free"] = ids
+    return ids
+
+
 def _extract(raw, who=""):
     try: return json.loads(raw)["choices"][0]["message"]["content"]
     except Exception:
@@ -99,11 +127,11 @@ def _extract(raw, who=""):
         return None
 
 
-def _call(url, headers, model, prompt, max_tokens, temperature, json_mode):
+def _call(url, headers, model, prompt, max_tokens, temperature, json_mode, timeout=180):
     body = {"model": model, "temperature": temperature, "max_tokens": max_tokens, "messages": [{"role": "user", "content": prompt}]}
     if json_mode: body["response_format"] = {"type": "json_object"}
     try:
-        raw = _http(url, body, headers)
+        raw = _http(url, body, headers, timeout)
         if url.startswith(GH) and raw.strip().upper() == "OK":
             # Seen on every run since 2026-11-09 (scripts/models_probe.py): even GET /catalog/models answers a bare text/plain "OK", so the
             # runner's network layer is answering instead of models.github.ai. Every model would get the same reply: stop asking.
@@ -125,6 +153,15 @@ def _call(url, headers, model, prompt, max_tokens, temperature, json_mode):
             except Exception: wait = ""
             _why("OpenCode Zen free quota exhausted (HTTP 429 FreeUsageLimitError)" + wait)
         elif e.code in (401, 403) and url.startswith(ZEN): _why("OpenCode Zen refused the key (HTTP %d)" % e.code)
+        elif e.code == 429 and url.startswith(ORR):
+            LAST["code"] = None   # one rate-limited free model is not "quota gone for today" (callers stop the whole run on 429): the next model may answer
+            if b"per-day" in body: _cache["or_off"] = True; _why("OpenRouter free daily limit reached (HTTP 429)")
+            else:
+                n = _cache.setdefault("or_429", {}); n[model] = n.get(model, 0) + 1
+                if n[model] >= 2: _cache["dead"].add(model)
+        elif e.code in (401, 403) and url.startswith(ORR):
+            _why("OpenRouter refused the key (HTTP %d)" % e.code)
+            if e.code == 401: _cache["or_off"] = True
         if e.code in (401, 402, 403, 404): _cache["dead"].add(model)   # not free anymore / not allowed / gone: stop retrying it this run
         return None
     except Exception as e:
@@ -167,7 +204,7 @@ def _cli_models():
     return _cache["cli_list"]
 
 
-def _cli(model, prompt, timeout=300):
+def _cli(model, prompt, timeout=120):
     """One question to `opencode run -m opencode/<model>` in an empty temp dir; returns the answer text or None."""
     b = _cli_bin()
     if not b: _cache["cli_off"] = True; return None
@@ -215,6 +252,17 @@ def chat(prompt, max_tokens=6000, temperature=0.4, json_mode=True):
                 if txt and txt.strip(): LAST["backend"] = "zen:" + m; print("::notice::LLM answered via", LAST["backend"]); return txt
                 if m in _cache["dead"] or _cache["zen_off"]: break
     if not key: _why("OPENCODE_API_KEY is empty (secret OPENCODE missing)")
+    orkey = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if orkey and not _cache["or_off"]:
+        h = {"Authorization": "Bearer " + orkey, "Content-Type": "application/json", "HTTP-Referer": "https://mdm1.org", "X-Title": "MDM1 pipeline"}
+        for m in or_models():
+            if m in _cache["dead"]: continue
+            if _cache["or_off"] or _left() < 30: break
+            for fmt in ((True, False) if json_mode else (False,)):   # some models reject response_format: retry without it
+                txt = _call(ORR + "/chat/completions", h, m, prompt, max_tokens, temperature, fmt, 120)
+                if txt and txt.strip(): LAST["backend"] = "or:" + m; print("::notice::LLM answered via", LAST["backend"]); return txt
+                if m in _cache["dead"] or _cache["or_off"]: break
+        if not _cache["or_off"]: _why("OpenRouter: no free model answered")
     tok =os.environ.get("GITHUB_TOKEN", "")
     if tok and not _cache["gh_off"]:
         h = {"Authorization": "Bearer " + tok, "Content-Type": "application/json", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
@@ -252,5 +300,6 @@ def chat_json(prompt, max_tokens=6000, temperature=0.4):
         print("::warning::reply was not JSON, len=%d (%s): trying another model" % (len(txt), who))
         if who.startswith("cli:"): _cache["cli_dead"].add(who[4:])
         elif who.startswith("zen:"): _cache["dead"].add(who[4:])
+        elif who.startswith("or:"): _cache["dead"].add(who[3:])
         else: break
     return None
