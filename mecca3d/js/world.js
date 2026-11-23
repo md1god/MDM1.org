@@ -411,6 +411,18 @@ export class World {
         const g = T.heightAt(x1, z1);
         if (g < gmin) gmin = g; if (g > gmax) gmax = g;
       }
+      if (b.k !== 1) { // لا مبنى فوق طريق: تجاهل أي مبنى تلمس بصمته طريقاً (عدا الأنفاق) كي لا يسدّ السيارة
+        let onRoad = false;
+        for (let i = 0; i < n && !onRoad; i++) {
+          const x1 = pts[i * 2], z1 = pts[i * 2 + 1], x2 = pts[((i + 1) % n) * 2], z2 = pts[((i + 1) % n) * 2 + 1];
+          for (const [qx, qz] of [[x1, z1], [(x1 + x2) / 2, (z1 + z2) / 2]]) {
+            const nr = this.D.idx.nearest(qx, qz, 16, { drv: true });
+            if (nr && nr.road.t <= 6 && !(nr.road.fl & 2) && nr.d < nr.road.width * 0.5 + 0.8) { onRoad = true; break; }
+          }
+        }
+        if (!onRoad) { const nr = this.D.idx.nearest((minX + maxX) / 2, (minZ + maxZ) / 2, 16, { drv: true }); if (nr && nr.road.t <= 6 && !(nr.road.fl & 2) && nr.d < nr.road.width * 0.5) onRoad = true; }
+        if (onRoad) continue;
+      }
       if (b.k === 1) { // Masjid al-Haram complex: open plaza
         const y = T.heightAt(0, 0) + 0.3;
         c.set('#ebe5d6');
