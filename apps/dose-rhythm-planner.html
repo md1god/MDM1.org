@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مفكرة الجرعات: تدوير مواقع الحقن ومنحنى الدواء وتقرير الطبيب | MDM1</title>
+<meta name="description" content="سجل جرعات الحقن والحبوب، واحصل على اقتراح الموقع التالي بصرياً، واعرض منحنى المستوى حسب نصف العمر، مع متابعة البروتين والألياف والأعراض وتقرير طباعة للطبيب.">
+<link rel="canonical" href="https://mdm1.org/apps/dose-rhythm-planner.html">
+<meta property="og:title" content="مفكرة الجرعات: تدوير مواقع الحقن ومنحنى الدواء وتقرير الطبيب">
+<meta property="og:description" content="سجل جرعات الحقن والحبوب، واحصل على اقتراح الموقع التالي بصرياً، واعرض منحنى المستوى حسب نصف العمر، مع متابعة البروتين والألياف والأعراض وتقرير طباعة للطبيب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/dose-rhythm-planner.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: block; }
+.app .intro { line-height: 1.9; margin: 0 0 1.2rem; }
+.app .row { flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; margin: 0.5rem 0; }
+.app .row > div { min-width: 140px; }
+.app .grow { flex: 1 1 260px; }
+.app label { display: block; font-size: 0.85rem; margin-bottom: 0.25rem; }
+.app input, .app select, .app textarea { width: 100%; box-sizing: border-box; }
+.app canvas { max-width: 100%; background: var(--dark); border: 1px solid var(--gold-dim); border-radius: 8px; }
+.app table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.85rem; }
+.app th, .app td { border-bottom: 1px solid var(--gold-dim); padding: 0.4rem; text-align: right; vertical-align: top; }
+.app caption { text-align: right; color: var(--gold-bright); padding: 0.4rem 0; }
+.app .small { font-size: 0.82rem; opacity: 0.85; }
+.app .out.big { display: block; font-size: 1.4rem; color: var(--gold-bright); }
+.app .report { background: #fff; color: #111; padding: 1rem; line-height: 1.8; }
+.app .report p { margin: 0.35rem 0; }
+@media print {
+  .app-printing > *:not(.app) { display: none !important; }
+  .app-printing .app .intro, .app-printing .app .card { display: none !important; }
+  .app .no-print { display: none !important; }
+  .app #printArea { display: block !important; }
+  .app .report { padding: 0; }
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "سجّل جرعاتك، خطّط مواقع الحقن، وتابع مستوى الدواء", "url": "https://mdm1.org/apps/dose-rhythm-planner.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل تُحفظ البيانات بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، تعمل الأداة داخل ذاكرة المتصفح فقط. يمكنك تصدير ملف JSON واستيراده لاحقاً عند الحاجة، ولا يوجد أي خادم أو حساب."}}, {"@type": "Question", "name": "كيف يُحسب المستوى التقديري للدواء؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحسب بجمع مساهمات الجرعات المسجلة مع انحناء أُسّي مبني على نصف العمر الذي تدخله، وتظهر الذروة والمستوى النهائي أعلى الرسم."}}, {"@type": "Question", "name": "كيف يختار المخطط موقع الحقن التالي؟", "acceptedAnswer": {"@type": "Answer", "text": "يختار أول موقع لم يُستخدم في آخر أربع مرات، وإذا استُخدمت كل المواقع يعود إلى الموقع الأقدم استخداماً."}}, {"@type": "Question", "name": "هل يمكن طباعة التقرير مباشرة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، اضغط تجهيز تقرير الطبيب ثم طباعة التقرير، فيُفتح مربع طباعة المتصفح بتقرير مرتب جاهز للإخراج الورقي."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">سجّل جرعاتك، خطّط مواقع الحقن، وتابع مستوى الدواء</h1>
+  <p class="page-sub">سجل جرعات الحقن والحبوب، واحصل على اقتراح الموقع التالي بصرياً، واعرض منحنى المستوى حسب نصف العمر، مع متابعة البروتين والألياف والأعراض وتقرير طباعة للطبيب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p class="app intro" id="introText">الإجابة السريعة: أدخل جرعتك الآن، ثم اترك المخطط البصري يقترح موقع الحقن التالي، وتابع المنحنى التقديري لمستوى الدواء في جسمك خلال الساعات القادمة. تعمل هذه الصفحة بالكامل داخل المتصفح بلا حساب ولا خادم ولا حفظ دائم، فكل ما تكتبه يبقى في الذاكرة مؤقتاً إلى أن تصدره ملفاً بنفسك. سجّل نوع الجرعة ووقتَها وكميتَها، وأضف ما لاحظته من تفاصيل، وحدد نصف العمر المعروف للدواء لديك ليُحدَّث الرسم البياني مباشرة. كما تستطيع متابعة ما تناولته من بروتين وألياف مقابل هدفك اليومي، وتدوين أي عرض جانبي مع درجة شدته ووصفه الدقيق. وفي نهاية الجلسة اضغط تجهيز تقرير الطبيب لتجميع كل المعلومات في صيغة مرتبة جاهزة للطباعة من المتصفح، أو صدّر البيانات واستعدها لاحقاً عند الحاجة.</p>
+
+<div class="app" id="appRoot">
+<section class="card" id="doseSection">
+<h2 id="doseHeading">تسجيل الجرعات</h2>
+<div class="row" id="doseRowOne">
+<div><label for="doseType" id="doseTypeLabel">نوع الجرعة</label><select id="doseType"><option value="injection" id="optInjection">حقن</option><option value="pill" id="optPill">حبوب</option></select></div>
+<div><label for="doseTime" id="doseTimeLabel">التاريخ والوقت</label><input type="datetime-local" id="doseTime"></div>
+<div><label for="doseAmount" id="doseAmountLabel">الكمية</label><input type="number" id="doseAmount" min="0" step="0.1" placeholder="مثال: 1"></div>
+<div><label for="doseSite" id="doseSiteLabel">موقع الحقن</label><select id="doseSite"><option value="البطن - يمين" id="siteOpt1">البطن - يمين</option><option value="البطن - يسار" id="siteOpt2">البطن - يسار</option><option value="الفخذ - يمين" id="siteOpt3">الفخذ - يمين</option><option value="الفخذ - يسار" id="siteOpt4">الفخذ - يسار</option><option value="الذراع - يمين" id="siteOpt5">الذراع - يمين</option><option value="الذراع - يسار" id="siteOpt6">الذراع - يسار</option><option value="الإلية - يمين" id="siteOpt7">الإلية - يمين</option><option value="الإلية - يسار" id="siteOpt8">الإلية - يسار</option></select></div>
+</div>
+<div class="row" id="doseRowTwo"><div class="grow"><label for="doseNotes" id="doseNotesLabel">ملاحظات الجرعة</label><textarea id="doseNotes" rows="2"></textarea></div></div>
+<div class="row" id="doseActions"><button type="button" id="addDoseBtn">إضافة الجرعة</button><button type="button" id="clearDosesBtn" class="sec">مسح كل الجرعات</button><output class="badge" id="doseCountOut">0 جرعة</output></div>
+<table id="doseTable"><caption id="doseCaption">الجرعات المسجلة</caption><thead id="doseThead"><tr id="doseHeadRow"><th id="thDoseType">النوع</th><th id="thDoseTime">الوقت</th><th id="thDoseAmount">الكمية</th><th id="thDoseSite">الموقع</th><th id="thDoseNotes">ملاحظات</th><th id="thDoseAction">إجراء</th></tr></thead><tbody id="doseListBody"></tbody></table>
+<p class="out" id="doseEmpty">لا توجد جرعات مسجلة بعد.</p>
+</section>
+
+<section class="card" id="rotationSection">
+<h2 id="rotationHeading">مخطط تدوير مواقع الحقن</h2>
+<div class="row" id="rotationRow"><canvas id="rotationCanvas" width="300" height="280"></canvas><div class="grow" id="rotationInfo"><p class="small" id="rotationHint">الأرقام على الرسم تمثل المواقع بالترتيب، والموقع المضيء هو المقترح التالي.</p><output class="out big" id="nextSiteOut">—</output><div class="row" id="rotationButtons"><button type="button" id="suggestSiteBtn">اقتراح الموقع التالي</button><button type="button" id="markSiteBtn" class="sec">تسجيل استخدام الموقع المقترح</button></div><p class="small" id="siteLogLabel">آخر المواقع المستخدمة:</p><ul id="siteLogList"></ul></div></div>
+</section>
+
+<section class="card" id="levelSection">
+<h2 id="levelHeading">منحنى المستوى التقديري</h2>
+<div class="row" id="levelControls"><div><label for="halfLifeInput" id="halfLifeLabel">نصف العمر بالساعات</label><input type="number" id="halfLifeInput" value="8" min="0.5" step="0.5"></div><div><label for="horizonInput" id="horizonLabel">مدة العرض بالساعات</label><input type="number" id="horizonInput" value="24" min="1" step="1"></div><button type="button" id="drawCurveBtn">تحديث المنحنى</button></div>
+<canvas id="levelCanvas" width="640" height="260"></canvas>
+<output class="out" id="levelSummary">أضف جرعة لرسم المنحنى التقديري.</output>
+</section>
+
+<section class="card" id="nutritionSection">
+<h2 id="nutritionHeading">أهداف البروتين والألياف</h2>
+<div class="row" id="nutritionRow"><div><label for="proteinGoalInput" id="proteinGoalLabel">هدف البروتين بالغرام</label><input type="number" id="proteinGoalInput" value="120" min="0"></div><div><label for="proteinDoneInput" id="proteinDoneLabel">المستهلك من البروتين بالغرام</label><input type="number" id="proteinDoneInput" value="0" min="0"></div><div><label for="fiberGoalInput" id="fiberGoalLabel">هدف الألياف بالغرام</label><input type="number" id="fiberGoalInput" value="30" min="0"></div><div><label for="fiberDoneInput" id="fiberDoneLabel">المستهلك من الألياف بالغرام</label><input type="number" id="fiberDoneInput" value="0" min="0"></div></div>
+<div class="row" id="nutritionActions"><button type="button" id="updateGoalsBtn">تحديث الأهداف</button></div>
+<div class="row" id="nutritionBars"><div class="grow"><p class="small" id="proteinText">البروتين: 0 من 120 غرام</p><progress id="proteinBar" max="100" value="0"></progress></div><div class="grow"><p class="small" id="fiberText">الألياف: 0 من 30 غرام</p><progress id="fiberBar" max="100" value="0"></progress></div></div>
+<output class="out" id="nutritionOut">أدخل الكميات ثم اضغط تحديث الأهداف.</output>
+</section>
+
+<section class="card" id="symptomsSection">
+<h2 id="symptomsHeading">الأعراض الجانبية</h2>
+<div class="row" id="symptomRowOne"><div><label for="symptomNameInput" id="symptomNameLabel">اسم العرض</label><input type="text" id="symptomNameInput" placeholder="مثال: صداع"></div><div><label for="symptomSeverityInput" id="symptomSeverityLabel">درجة الشدة</label><select id="symptomSeverityInput"><option value="خفيف" id="sevMild">خفيف</option><option value="متوسط" id="sevMedium">متوسط</option><option value="شديد" id="sevSevere">شديد</option></select></div><div><label for="symptomTimeInput" id="symptomTimeLabel">وقت الظهور</label><input type="datetime-local" id="symptomTimeInput"></div></div>
+<div class="row" id="symptomRowTwo"><div class="grow"><label for="symptomNotesInput" id="symptomNotesLabel">وصف العرض</label><textarea id="symptomNotesInput" rows="2"></textarea></div></div>
+<div class="row" id="symptomActions"><button type="button" id="addSymptomBtn">إضافة العرض</button><button type="button" id="clearSymptomsBtn" class="sec">مسح كل الأعراض</button></div>
+<table id="symptomTable"><caption id="symptomCaption">الأعراض المسجلة</caption><thead id="symptomThead"><tr id="symptomHeadRow"><th id="thSymptomName">العرض</th><th id="thSymptomSeverity">الشدة</th><th id="thSymptomTime">الوقت</th><th id="thSymptomNotes">الوصف</th><th id="thSymptomAction">إجراء</th></tr></thead><tbody id="symptomListBody"></tbody></table>
+<p class="out" id="symptomEmpty">لا توجد أعراض مسجلة.</p>
+</section>
+
+<section class="card" id="dataSection">
+<h2 id="dataHeading">الملف والتقرير</h2>
+<div class="row" id="dataRowOne"><button type="button" id="exportBtn">تصدير ملف JSON</button><label for="importFileInput" id="importFileLabel">اختر ملفاً للاستيراد</label><input type="file" id="importFileInput" accept=".json,application/json"><button type="button" id="importBtn" class="sec">استيراد الملف</button></div>
+<hr class="divider" id="dataDivider">
+<div class="row" id="dataRowTwo"><button type="button" id="buildReportBtn">تجهيز تقرير الطبيب</button><button type="button" id="printBtn" class="sec">طباعة التقرير</button></div>
+<output class="out" id="dataStatus">لم يتم تنفيذ أي إجراء بعد.</output>
+<details id="reportDetails"><summary id="reportSummary">عرض التقرير المجهز</summary><div class="report" id="printArea"></div></details>
+</section>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل تُحفظ البيانات بعد إغلاق الصفحة؟</h3><p>لا، تعمل الأداة داخل ذاكرة المتصفح فقط. يمكنك تصدير ملف JSON واستيراده لاحقاً عند الحاجة، ولا يوجد أي خادم أو حساب.</p><h3>كيف يُحسب المستوى التقديري للدواء؟</h3><p>يُحسب بجمع مساهمات الجرعات المسجلة مع انحناء أُسّي مبني على نصف العمر الذي تدخله، وتظهر الذروة والمستوى النهائي أعلى الرسم.</p><h3>كيف يختار المخطط موقع الحقن التالي؟</h3><p>يختار أول موقع لم يُستخدم في آخر أربع مرات، وإذا استُخدمت كل المواقع يعود إلى الموقع الأقدم استخداماً.</p><h3>هل يمكن طباعة التقرير مباشرة؟</h3><p>نعم، اضغط تجهيز تقرير الطبيب ثم طباعة التقرير، فيُفتح مربع طباعة المتصفح بتقرير مرتب جاهز للإخراج الورقي.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="flatfile-site-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو لإنشاء مواقع ثابتة مع تحرير Markdown ومعاينة فورية</a><span style="opacity:.75"> — أداة متكاملة لتصميم وتحرير صفحات ثابتة باستخدام Markdown وYAML وTwig، مع معاينة فورية وإدارة حزم محلية…</span></li><li style="margin:.5rem 0"><a href="glp1-shot-pill-companion.html" style="color:var(--gold-bright);font-weight:700">منظم جرعات أدوية السكر والوزن: جدولة وتدوير مواضع الحقن</a><span style="opacity:.75"> — تطبيق مجاني لجدولة جرعات أدوية السكر والوزن وتدوير مواضع الحقن وتقدير تركيز الدواء، مع تسجيل الآثار الجانبية…</span></li><li style="margin:.5rem 0"><a href="local-knowledge-vault.html" style="color:var(--gold-bright);font-weight:700">مفكرة بحث محلية مع نسخ معزولة</a><span style="opacity:.75"> — أداة محلية لحفظ الملاحظات بفهرسة بحث كامل وعلامات مع نسخة معزولة واستيراد وتصدير آمن داخل المتصفح من تطبيقات…</span></li><li style="margin:.5rem 0"><a href="aqar-site-builder.html" style="color:var(--gold-bright);font-weight:700">مُنشئ مواقع عقارية داخل المتصفح</a><span style="opacity:.75"> — أداة عقارية متكاملة داخل المتصفح لإضافة عقارات للبيع أو الإيجار مع الصور والأسعار والمواصفات، حفظ محلي، بحث…</span></li><li style="margin:.5rem 0"><a href="darkroom-density-lab.html" style="color:var(--gold-bright);font-weight:700">معالج مسحات الأفلام: إزالة القناع والكثافة ومنحنى H&amp;D</a><span style="opacity:.75"> — عالج مسحات الأفلام السلبية والشرائح محلياً في متصفحك دون رفع أو حفظ، أزل القناع البرتقالي لكل قناة، واحسب…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-23 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const get = (id) => document.getElementById(id);
+const sites = ["البطن - يمين", "البطن - يسار", "الفخذ - يمين", "الفخذ - يسار", "الذراع - يمين", "الذراع - يسار", "الإلية - يمين", "الإلية - يسار"];
+let state = { doses: [], usedSites: [], symptoms: [], goals: { proteinGoal: 120, proteinDone: 0, fiberGoal: 30, fiberDone: 0 }, halfLife: 8, horizon: 24 };
+let suggested = 0;
+
+const asNumber = (value, fallback) => { const n = Number(value); return Number.isFinite(n) ? n : fallback; };
+const localStamp = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+const readable = (value) => { const d = new Date(value); return Number.isNaN(d.getTime()) ? "غير محدد" : d.toLocaleString("ar"); };
+
+const renderDoses = () => {
+  const body = get("doseListBody");
+  body.replaceChildren();
+  state.doses.forEach((dose, index) => {
+    const row = document.createElement("tr");
+    const cells = [dose.type === "pill" ? "حبوب" : "حقن", readable(dose.time), String(dose.amount), dose.type === "pill" ? "—" : dose.site, dose.notes || "—"];
+    cells.forEach((text) => { const cell = document.createElement("td"); cell.textContent = text; row.appendChild(cell); });
+    const action = document.createElement("td");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = "doseDelete" + index;
+    button.className = "sec";
+    button.textContent = "حذف";
+    button.addEventListener("click", () => { state.doses.splice(index, 1); renderDoses(); drawCurve(); get("dataStatus").textContent = "تم حذف الجرعة."; });
+    action.appendChild(button);
+    row.appendChild(action);
+    body.appendChild(row);
+  });
+  get("doseEmpty").style.display = state.doses.length ? "none" : "block";
+  get("doseCountOut").textContent = state.doses.length + " جرعة";
+};
+
+const renderSymptoms = () => {
+  const body = get("symptomListBody");
+  body.replaceChildren();
+  state.symptoms.forEach((item, index) => {
+    const row = document.createElement("tr");
+    const cells = [item.name, item.severity, readable(item.time), item.notes || "—"];
+    cells.forEach((text) => { const cell = document.createElement("td"); cell.textContent = text; row.appendChild(cell); });
+    const action = document.createElement("td");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = "symptomDelete" + index;
+    button.className = "sec";
+    button.textContent = "حذف";
+    button.addEventListener("click", () => { state.symptoms.splice(index, 1); renderSymptoms(); get("dataStatus").textContent = "تم حذف العرض."; });
+    action.appendChild(button);
+    row.appendChild(action);
+    body.appendChild(row);
+  });
+  get("symptomEmpty").style.display = state.symptoms.length ? "none" : "block";
+};
+
+const renderSiteLog = () => {
+  const list = get("siteLogList");
+  list.replaceChildren();
+  if (!state.usedSites.length) { const li = document.createElement("li"); li.textContent = "لم يُسجَّل استخدام بعد."; list.appendChild(li); return; }
+  state.usedSites.slice(-6).reverse().forEach((name) => { const li = document.createElement("li"); li.textContent = name; list.appendChild(li); });
+};
+
+const points = [[150, 62], [150, 148], [92, 172], [208, 172], [60, 120], [240, 120], [108, 238], [192, 238]];
+
+const drawRotation = () => {
+  const canvas = get("rotationCanvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#d4af37";
+  ctx.fillStyle = "#7a6320";
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(150, 42, 18, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.rect(122, 66, 56, 104); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(122, 84); ctx.lineTo(62, 132); ctx.moveTo(178, 84); ctx.lineTo(238, 132); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(134, 170); ctx.lineTo(108, 252); ctx.moveTo(166, 170); ctx.lineTo(192, 252); ctx.stroke();
+  points.forEach((point, index) => {
+    const used = state.usedSites.indexOf(sites[index]) !== -1;
+    ctx.beginPath();
+    ctx.arc(point[0], point[1], 13, 0, Math.PI * 2);
+    ctx.fillStyle = index === suggested ? "#d4af37" : used ? "#7a6320" : "#222222";
+    ctx.fill();
+    ctx.strokeStyle = "#d4af37"; ctx.stroke();
+    ctx.fillStyle = index === suggested ? "#111111" : "#f5f5f5";
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText(String(index + 1), point[0] - 5, point[1] + 5);
+  });
+};
+
+const suggestSite = () => {
+  const recent = state.usedSites.slice(-4);
+  let pick = -1;
+  for (let i = 0; i < sites.length; i += 1) { if (recent.indexOf(sites[i]) === -1) { pick = i; break; } }
+  if (pick === -1) {
+    let oldest = 999;
+    for (let i = 0; i < sites.length; i += 1) { const mark = state.usedSites.lastIndexOf(sites[i]); const score = mark === -1 ? -1 : mark; if (score < oldest) { oldest = score; pick = i; } }
+  }
+  suggested = pick;
+  get("nextSiteOut").textContent = "الموقع المقترح: " + sites[pick];
+  drawRotation();
+};
+
+const drawCurve = () => {
+  const canvas = get("levelCanvas");
+  const ctx = canvas.getContext("2d");
+  const halfLife = Math.max(0.1, asNumber(get("halfLifeInput").value, 8));
+  const hours = Math.max(1, asNumber(get("horizonInput").value, 24));
+  state.halfLife = halfLife;
+  state.horizon = hours;
+  const doses = state.doses.map((dose) => ({ at: (new Date(dose.time).getTime() - Date.now()) / 3600000, amount: asNumber(dose.amount, 0) * (dose.type === "pill" ? 0.6 : 1) })).filter((dose) => Number.isFinite(dose.at));
+  const samples = [];
+  let peak = 0;
+  let peakHour = 0;
+  for (let step = 0; step <= 120; step += 1) {
+    const hour = hours * step / 120;
+    let value = 0;
+    doses.forEach((dose) => { if (dose.at <= hour) { value += dose.amount * Math.exp(-Math.LN2 * (hour - dose.at) / halfLife); } });
+    samples.push({ hour, value });
+    if (value > peak) { peak = value; peakHour = hour; }
+  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const left = 46; const right = canvas.width - 16; const topPad = 16; const bottom = canvas.height - 30;
+  ctx.strokeStyle = "#7a6320"; ctx.lineWidth = 1;
+  for (let g = 0; g <= 4; g += 1) { const y = topPad + (bottom - topPad) * g / 4; ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke(); }
+  ctx.fillStyle = "#f5f5f5"; ctx.font = "12px sans-serif";
+  ctx.fillText("0 س", left, canvas.height - 8);
+  ctx.fillText(String(hours) + " س", right - 34, canvas.height - 8);
+  ctx.fillText(peak.toFixed(1), 6, topPad + 10);
+  if (!doses.length || peak === 0) {
+    ctx.fillStyle = "#d4af37";
+    ctx.fillText("لا توجد جرعات كافية لرسم المنحنى", left + 20, (topPad + bottom) / 2);
+    get("levelSummary").textContent = "أضف جرعة واحدة على الأقل لعرض المنحنى.";
+    return;
+  }
+  const scaleY = (value) => bottom - (value / peak) * (bottom - topPad);
+  const scaleX = (hour) => left + (hour / hours) * (right - left);
+  ctx.beginPath();
+  samples.forEach((sample, index) => { const x = scaleX(sample.hour); const y = scaleY(sample.value); if (index === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); } });
+  ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 2; ctx.stroke();
+  ctx.lineTo(right, bottom); ctx.lineTo(left, bottom); ctx.closePath(); ctx.fillStyle = "rgba(212,175,55,0.18)"; ctx.fill();
+  const endValue = samples[samples.length - 1].value;
+  get("levelSummary").textContent = "الذروة التقديرية " + peak.toFixed(2) + " عند الساعة " + peakHour.toFixed(1) + "، والمستوى في نهاية العرض " + endValue.toFixed(2) + ".";
+};
+
+const updateNutrition = () => {
+  const proteinGoal = Math.max(0, asNumber(get("proteinGoalInput").value, 0));
+  const proteinDone = Math.max(0, asNumber(get("proteinDoneInput").value, 0));
+  const fiberGoal = Math.max(0, asNumber(get("fiberGoalInput").value, 0));
+  const fiberDone = Math.max(0, asNumber(get("fiberDoneInput").value, 0));
+  state.goals = { proteinGoal, proteinDone, fiberGoal, fiberDone };
+  const proteinPct = proteinGoal > 0 ? Math.min(100, proteinDone / proteinGoal * 100) : 0;
+  const fiberPct = fiberGoal > 0 ? Math.min(100, fiberDone / fiberGoal * 100) : 0;
+  get("proteinBar").value = proteinPct;
+  get("fiberBar").value = fiberPct;
+  get("proteinText").textContent = "البروتين: " + proteinDone + " من " + proteinGoal + " غرام";
+  get("fiberText").textContent = "الألياف: " + fiberDone + " من " + fiberGoal + " غرام";
+  get("nutritionOut").textContent = "المتبقي من البروتين " + Math.max(0, proteinGoal - proteinDone) + " غرام، ومن الألياف " + Math.max(0, fiberGoal - fiberDone) + " غرام.";
+};
+
+const normalize = (data) => ({
+  doses: Array.isArray(data.doses) ? data.doses : [],
+  usedSites: Array.isArray(data.usedSites) ? data.usedSites : [],
+  symptoms: Array.isArray(data.symptoms) ? data.symptoms : [],
+  goals: data.goals && typeof data.goals === "object" ? data.goals : { proteinGoal: 120, proteinDone: 0, fiberGoal: 30, fiberDone: 0 },
+  halfLife: asNumber(data.halfLife, 8),
+  horizon: asNumber(data.horizon, 24)
+});
+
+const renderAll = () => {
+  get("doseTime").value = localStamp();
+  get("symptomTimeInput").value = localStamp();
+  get("halfLifeInput").value = state.halfLife;
+  get("horizonInput").value = state.horizon;
+  get("proteinGoalInput").value = state.goals.proteinGoal;
+  get("proteinDoneInput").value = state.goals.proteinDone;
+  get("fiberGoalInput").value = state.goals.fiberGoal;
+  get("fiberDoneInput").value = state.goals.fiberDone;
+  renderDoses(); renderSymptoms(); renderSiteLog(); drawRotation(); updateNutrition(); drawCurve();
+};
+
+get("addDoseBtn").addEventListener("click", () => {
+  const amount = asNumber(get("doseAmount").value, 0);
+  if (amount <= 0) { get("dataStatus").textContent = "أدخل كمية أكبر من صفر قبل الإضافة."; return; }
+  const type = get("doseType").value;
+  state.doses.push({ type, time: get("doseTime").value || localStamp(), amount, site: get("doseSite").value, notes: get("doseNotes").value.trim() });
+  if (type === "injection") { state.usedSites.push(get("doseSite").value); }
+  get("doseAmount").value = ""; get("doseNotes").value = "";
+  renderDoses(); renderSiteLog(); drawRotation(); drawCurve(); suggestSite();
+  get("dataStatus").textContent = "تمت إضافة الجرعة بنجاح.";
+});
+
+get("clearDosesBtn").addEventListener("click", () => { state.doses = []; renderDoses(); drawCurve(); get("dataStatus").textContent = "تم مسح كل الجرعات."; });
+get("suggestSiteBtn").addEventListener("click", suggestSite);
+get("markSiteBtn").addEventListener("click", () => { state.usedSites.push(sites[suggested]); renderSiteLog(); suggestSite(); get("dataStatus").textContent = "تم تسجيل استخدام الموقع."; });
+get("drawCurveBtn").addEventListener("click", drawCurve);
+get("updateGoalsBtn").addEventListener("click", () => { updateNutrition(); get("dataStatus").textContent = "تم تحديث الأهداف اليومية."; });
+
+get("addSymptomBtn").addEventListener("click", () => {
+  const name = get("symptomNameInput").value.trim();
+  if (!name) { get("dataStatus").textContent = "اكتب اسم العرض قبل الإضافة."; return; }
+  state.symptoms.push({ name, severity: get("symptomSeverityInput").value, time: get("symptomTimeInput").value || localStamp(), notes: get("symptomNotesInput").value.trim() });
+  get("symptomNameInput").value = ""; get("symptomNotesInput").value = "";
+  renderSymptoms(); get("dataStatus").textContent = "تمت إضافة العرض الجانبي.";
+});
+get("clearSymptomsBtn").addEventListener("click", () => { state.symptoms = []; renderSymptoms(); get("dataStatus").textContent = "تم مسح كل الأعراض."; });
+
+get("exportBtn").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "dose-record.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  get("dataStatus").textContent = "تم تصدير الملف.";
+});
+
+get("importBtn").addEventListener("click", () => {
+  const file = get("importFileInput").files[0];
+  if (!file) { get("dataStatus").textContent = "اختر ملفاً قبل الاستيراد."; return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      state = normalize(JSON.parse(reader.result));
+      renderAll();
+      suggestSite();
+      get("dataStatus").textContent = "تم استيراد الملف بنجاح.";
+    } catch (error) {
+      get("dataStatus").textContent = "تعذر قراءة الملف أو صيغته غير صحيحة.";
+    }
+  };
+  reader.onerror = () => { get("dataStatus").textContent = "تعذر قراءة الملف."; };
+  reader.readAsText(file);
+});
+
+get("buildReportBtn").addEventListener("click", () => {
+  const area = get("printArea");
+  area.replaceChildren();
+  const addLine = (text) => { const line = document.createElement("p"); line.textContent = text; area.appendChild(line); };
+  addLine("تقرير زيارة الطبيب");
+  addLine("تاريخ التقرير: " + new Date().toLocaleString("ar"));
+  addLine("عدد الجرعات المسجلة: " + state.doses.length);
+  if (state.doses.length) { state.doses.forEach((dose, index) => { addLine((index + 1) + ". " + (dose.type === "pill" ? "حبوب" : "حقن") + " - " + readable(dose.time) + " - الكمية: " + dose.amount + (dose.site ? " - الموقع: " + dose.site : "") + (dose.notes ? " - " + dose.notes : "")); }); }
+  else { addLine("لا توجد جرعات مسجلة."); }
+  addLine("آخر مواقع الحقن: " + (state.usedSites.length ? state.usedSites.join("، ") : "لا يوجد"));
+  addLine("الموقع المقترح التالي: " + sites[suggested]);
+  addLine("نصف العمر المستخدم: " + state.halfLife + " ساعة");
+  addLine(get("levelSummary").textContent);
+  addLine("البروتين: " + state.goals.proteinDone + " من " + state.goals.proteinGoal + " غرام");
+  addLine("الألياف: " + state.goals.fiberDone + " من " + state.goals.fiberGoal + " غرام");
+  addLine("الأعراض الجانبية: " + (state.symptoms.length ? "" : "لا يوجد"));
+  state.symptoms.forEach((item, index) => { addLine((index + 1) + ". " + item.name + " - " + item.severity + " - " + readable(item.time) + (item.notes ? " - " + item.notes : "")); });
+  get("dataStatus").textContent = "تم تجهيز التقرير، افتح عرض التقرير ثم اضغط طباعة التقرير.";
+});
+
+get("printBtn").addEventListener("click", () => { get("reportDetails").open = true; document.body.classList.add("app-printing"); window.print(); });
+
+renderAll();
+suggestSite();
+</script>
+</body>
+</html>
