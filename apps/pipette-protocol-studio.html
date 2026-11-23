@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر بروتوكولات المختبر الآلي بصري ونصّي داخل المتصفح | MDM1</title>
+<meta name="description" content="محرّك بصري ونصي يتيح كتابة بروتوكولات المختبر الآلي، سحب وإسقاط الألواح والأنابيب، تحديد أحجام النقل، معاينة الحركة والتحقق من الصلاحية، وتصدير البيانات كملف للمراجعة أو الاستيراد.">
+<link rel="canonical" href="https://mdm1.org/apps/pipette-protocol-studio.html">
+<meta property="og:title" content="محرر بروتوكولات المختبر الآلي بصري ونصّي داخل المتصفح">
+<meta property="og:description" content="محرّك بصري ونصي يتيح كتابة بروتوكولات المختبر الآلي، سحب وإسقاط الألواح والأنابيب، تحديد أحجام النقل، معاينة الحركة والتحقق من الصلاحية، وتصدير البيانات كملف للمراجعة أو الاستيراد.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/pipette-protocol-studio.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .row {  
+  display: flex;  
+  flex-wrap: wrap;  
+  gap: 0.5rem;  
+  align-items: center;  
+}  
+.app .badge {  
+  padding: 0.4rem 0.8rem;  
+  background-color: var(--gold);  
+  color: var(--dark);  
+  border-radius: 4px;  
+}  
+.app canvas {  
+  display: block;  
+  margin: 0 auto;  
+}  
+.app .out {  
+  background-color: var(--dark);  
+  color: var(--light);  
+  padding: 0.5rem;  
+  border: 1px solid var(--gold-dim);  
+  border-radius: 4px;  
+}  
+.app .big {  
+  font-size: 1.2rem;  
+}  
+.app .divider {  
+  height: 1px;  
+  background-color: var(--gold-dim);  
+  margin: 1rem 0;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أنشئ واختبر خطوات الأتمتة المختبرية بسهولة", "url": "https://mdm1.org/apps/pipette-protocol-studio.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف أتحقق من عدم وجود تصادم بين العناصر؟", "acceptedAnswer": {"@type": "Answer", "text": "عند وضع عنصر جديد يتم فحص المساحة المتاحة تلقائيًا؛ إذا كان هناك تداخل يُظهر النظام رسالة خطأ ولا يضيف العنصر."}}, {"@type": "Question", "name": "هل يمكنني تعديل حجم النقل بعد إضافة الخطوة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك تعديل القيم في الحقول أعلى القائمة ثم الضغط على \"إضافة خطوة\" لتحديث القائمة."}}, {"@type": "Question", "name": "ما صيغة الملف الذي يُصدّر؟", "acceptedAnswer": {"@type": "Answer", "text": "يُصدّر الملف بصيغة JSON يحتوي على تفاصيل المكونات والخطوات، ويمكن استيراده مرة أخرى بسهولة."}}, {"@type": "Question", "name": "هل تدعم الوحدات الأخرى غير µL؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم التطبيق وحدتي µL و mL ويمكنك اختيار الوحدة من القائمة المنسدلة."}}, {"@type": "Question", "name": "هل يمكن تشغيل المعاينة بدون أي مكوّنات مرئية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، حتى بدون مكوّنات، تُظهر المعاينة مسار النقل على مساحة العمل لتوضيح التوقيت والترتيب."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أنشئ واختبر خطوات الأتمتة المختبرية بسهولة</h1>
+  <p class="page-sub">محرّك بصري ونصي يتيح كتابة بروتوكولات المختبر الآلي، سحب وإسقاط الألواح والأنابيب، تحديد أحجام النقل، معاينة الحركة والتحقق من الصلاحية، وتصدير البيانات كملف للمراجعة أو الاستيراد.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>يمكنك إنشاء بروتوكولات المختبر الآلي بسهولة عبر هذا المحرر البصري والنصّي داخل المتصفح. يتيح لك اختيار الألواح والأنابيب بسحب وإسقاط، تحديد أحجام النقل مثل 30 ميكرولتر من الحوض إلى لوح الآبار، ومعاينة تسلسل الخطوات على مساحة عمل افتراضية مع إظهار الوقت، كشف التصادمات، وإبلاغك بأي حجم غير صالح. بعد الانتهاء يمكنك تصدير الوصف كملف JSON لمراجعته أو استيراده إلى بيئات أخرى. كل ذلك يتم داخل صفحة الموقع دون الحاجة إلى أي مكوّنات خارجية.</p>  
+
+<div class="app card">  
+  <h2>لوحة الأدوات</h2>  
+  <div id="paletteDiv" class="row">  
+    <div class="badge" data-type="board" style="cursor:move; user-select:none;">لوح</div>  
+    <div class="badge" data-type="tube" style="cursor:move; user-select:none;">أنبوب</div>  
+  </div>  
+</div>  
+
+<div class="app card" style="margin-top:1rem;">  
+  <h2>مساحة العمل</h2>  
+  <canvas id="workspaceCanvas" width="600" height="400" style="border:1px solid var(--gold-dim); background-color:var(--dark);"></canvas>  
+</div>  
+
+<div class="app card" style="margin-top:1rem;">  
+  <h2>إضافة خطوة نصية</h2>  
+  <div class="row">  
+    <label for="volumeInput">الحجم</label>  
+    <input id="volumeInput" type="number" min="0" placeholder="مثال: 30" class="input">  
+    <label for="unitSelect">الوحدة</label>  
+    <select id="unitSelect" class="select">  
+      <option value="µL">ميكرولتر (µL)</option>  
+      <option value="mL">ملليلتر (mL)</option>  
+    </select>  
+    <label for="sourceSelect">المصدر</label>  
+    <select id="sourceSelect" class="select">  
+      <option value="reservoir">الحوض</option>  
+      <option value="well">الآبار</option>  
+    </select>  
+    <label for="destSelect">الوجهة</label>  
+    <select id="destSelect" class="select">  
+      <option value="well">الآبار</option>  
+      <option value="plate">لوح الآبار</option>  
+    </select>  
+    <button id="addStepBtn" class="button">إضافة خطوة</button>  
+  </div>  
+  <textarea id="stepTextarea" rows="4" placeholder="قائمة الخطوات النصية (كل خطوة في سطر جديد)" class="textarea" style="width:100%; margin-top:0.5rem;"></textarea>  
+  <div class="row" style="margin-top:0.5rem;">  
+    <button id="previewBtn" class="button">معاينة التسلسل</button>  
+    <button id="exportBtn" class="button">تصدير كملف</button>  
+    <input id="importInput" type="file" accept=".json" class="input" style="display:none;">  
+    <button id="importBtn" class="button sec">استيراد ملف</button>  
+  </div>  
+  <div id="outputBox" class="out big" style="margin-top:0.5rem; min-height:2rem;"></div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف أتحقق من عدم وجود تصادم بين العناصر؟</h3><p>عند وضع عنصر جديد يتم فحص المساحة المتاحة تلقائيًا؛ إذا كان هناك تداخل يُظهر النظام رسالة خطأ ولا يضيف العنصر.</p><h3>هل يمكنني تعديل حجم النقل بعد إضافة الخطوة؟</h3><p>نعم، يمكنك تعديل القيم في الحقول أعلى القائمة ثم الضغط على &quot;إضافة خطوة&quot; لتحديث القائمة.</p><h3>ما صيغة الملف الذي يُصدّر؟</h3><p>يُصدّر الملف بصيغة JSON يحتوي على تفاصيل المكونات والخطوات، ويمكن استيراده مرة أخرى بسهولة.</p><h3>هل تدعم الوحدات الأخرى غير µL؟</h3><p>يدعم التطبيق وحدتي µL و mL ويمكنك اختيار الوحدة من القائمة المنسدلة.</p><h3>هل يمكن تشغيل المعاينة بدون أي مكوّنات مرئية؟</h3><p>نعم، حتى بدون مكوّنات، تُظهر المعاينة مسار النقل على مساحة العمل لتوضيح التوقيت والترتيب.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="raw-dev-browser-studio.html" style="color:var(--gold-bright);font-weight:700">محرر صور احترافي داخل المتصفح: تعريض وألوان ومنحنيات RGB</a><span style="opacity:.75"> — أداة مجانية لتطوير الصور داخل المتصفح دون خادم أو حساب: اضبط التعريض والألوان ومنحنيات RGB، والاقتصاص…</span></li><li style="margin:.5rem 0"><a href="reversible-photo-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور بطبقات غير متلفة داخل المتصفح</a><span style="opacity:.75"> — حرّر صورك دون فقدان الأصل عبر طبقات مستقلة للسطوع والتباين والتشبع والحدة والقص والدوران، مع معاينة قبل/بعد…</span></li><li style="margin:.5rem 0"><a href="wave-slice-mix.html" style="color:var(--gold-bright);font-weight:700">محرر مقاطع صوتية داخل المتصفح</a><span style="opacity:.75"> — محرر كامل لرفع المقاطع الصوتية وقصها وترتيبها ودمجها ومعاينتها وتصديرها محليًا دون خادم أو حساب، تطبيق مجاني…</span></li><li style="margin:.5rem 0"><a href="pocket-ledger.html" style="color:var(--gold-bright);font-weight:700">دفتر مالي لتسجيل الدخل والمصروفات داخل المتصفح</a><span style="opacity:.75"> — تطبيق دفتر مالي يعمل بالكامل داخل المتصفح لتسجيل الدخل والمصروفات يدويًا، مع حسابات متعددة، فئات، ميزانيات…</span></li><li style="margin:.5rem 0"><a href="seo-lab-local-workbench.html" style="color:var(--gold-bright);font-weight:700">مختبر SEO داخل المتصفح</a><span style="opacity:.75"> — يعمل المختبر بالكامل داخل المتصفح لتوليد الكلمات المفتاحية وتحليل نيتها وصعوبتها ومقارنتها نسبياً وتتبع…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-23 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const canvas = document.getElementById('workspaceCanvas');  
+const ctx = canvas.getContext('2d');  
+let dragItem = null;  
+let components = []; // {type,x,y,width,height}  
+let steps = []; // {volume,unit,source,dest}  
+
+function drawWorkspace() {  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);  
+  components.forEach(c => {  
+    ctx.fillStyle = c.type === 'board' ? 'var(--gold-bright)' : 'var(--gold-dim)';  
+    ctx.fillRect(c.x, c.y, c.width, c.height);  
+    ctx.fillStyle = 'var(--dark)';  
+    ctx.font = '12px sans-serif';  
+    ctx.fillText(c.type, c.x + 4, c.y + 14);  
+  });  
+}  
+
+function isOverlap(x, y, w, h) {  
+  return components.some(c => !(x + w < c.x || x > c.x + c.width || y + h < c.y || y > c.y + c.height));  
+}  
+
+document.getElementById('paletteDiv').addEventListener('mousedown', e => {  
+  if (e.target.dataset.type) {  
+    dragItem = { type: e.target.dataset.type, offsetX: e.offsetX, offsetY: e.offsetY };  
+  }  
+});  
+
+canvas.addEventListener('mousemove', e => {  
+  if (dragItem) {  
+    // optional visual feedback could be added here  
+  }  
+});  
+
+canvas.addEventListener('mouseup', e => {  
+  if (dragItem) {  
+    const rect = canvas.getBoundingClientRect();  
+    const x = e.clientX - rect.left - dragItem.offsetX;  
+    const y = e.clientY - rect.top - dragItem.offsetY;  
+    const size = dragItem.type === 'board' ? 80 : 30;  
+    if (isOverlap(x, y, size, size)) {  
+      setOutput('خطأ: الموقع المختار يتداخل مع عنصر آخر');  
+    } else {  
+      components.push({ type: dragItem.type, x, y, width: size, height: size });  
+      drawWorkspace();  
+      setOutput('تم إضافة ' + dragItem.type);  
+    }  
+    dragItem = null;  
+  }  
+});  
+
+function setOutput(msg) {  
+  document.getElementById('outputBox').textContent = msg;  
+}  
+
+document.getElementById('addStepBtn').addEventListener('click', () => {  
+  const vol = parseFloat(document.getElementById('volumeInput').value);  
+  const unit = document.getElementById('unitSelect').value;  
+  const src = document.getElementById('sourceSelect').value;  
+  const dst = document.getElementById('destSelect').value;  
+  if (isNaN(vol) || vol <= 0) {  
+    setOutput('حجم غير صالح');  
+    return;  
+  }  
+  const step = { volume: vol, unit, source: src, dest: dst };  
+  steps.push(step);  
+  const txt = document.getElementById('stepTextarea');  
+  txt.value += `${vol}${unit} من ${src} إلى ${dst}\\n`;  
+  setOutput('تم إضافة خطوة');  
+});  
+
+function animateLine(step, index, total) {  
+  const start = { x: 50, y: 50 }; // placeholder start point  
+  const end = { x: 550, y: 350 }; // placeholder end point  
+  const progress = (Date.now() % 1000) / 1000;  
+  const curX = start.x + (end.x - start.x) * progress;  
+  const curY = start.y + (end.y - start.y) * progress;  
+  ctx.strokeStyle = 'var(--gold-bright)';  
+  ctx.beginPath();  
+  ctx.moveTo(start.x, start.y);  
+  ctx.lineTo(curX, curY);  
+  ctx.stroke();  
+  if (progress < 1) {  
+    requestAnimationFrame(() => animateLine(step, index, total));  
+  } else {  
+    if (index + 1 < total) {  
+      setTimeout(() => animateLine(steps[index + 1], index + 1, total), 300);  
+    } else {  
+      setOutput('انتهت المعاينة');  
+    }  
+  }  
+}  
+
+document.getElementById('previewBtn').addEventListener('click', () => {  
+  if (steps.length === 0) {  
+    setOutput('لا توجد خطوات للمعاينة');  
+    return;  
+  }  
+  drawWorkspace();  
+  setOutput('جاري تشغيل المعاينة...');  
+  animateLine(steps[0], 0, steps.length);  
+});  
+
+function exportData() {  
+  const data = { components, steps };  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });  
+  const url = URL.createObjectURL(blob);  
+  const a = document.createElement('a');  
+  a.href = url;  
+  a.download = 'protocol.json';  
+  a.click();  
+  URL.revokeObjectURL(url);  
+  setOutput('تم تصدير البيانات');  
+}  
+
+document.getElementById('exportBtn').addEventListener('click', exportData);  
+
+document.getElementById('importBtn').addEventListener('click', () => {  
+  document.getElementById('importInput').click();  
+});  
+
+document.getElementById('importInput').addEventListener('change', e => {  
+  const file = e.target.files[0];  
+  if (!file) { return; }  
+  const reader = new FileReader();  
+  reader.onload = ev => {  
+    try {  
+      const obj = JSON.parse(ev.target.result);  
+      components = obj.components || [];  
+      steps = obj.steps || [];  
+      drawWorkspace();  
+      const txt = document.getElementById('stepTextarea');  
+      txt.value = steps.map(s => `${s.volume}${s.unit} من ${s.source} إلى ${s.dest}`).join('\\n');  
+      setOutput('تم استيراد البيانات');  
+    } catch (err) {  
+      setOutput('خطأ في قراءة الملف');  
+    }  
+  };  
+  reader.readAsText(file);  
+});
+</script>
+</body>
+</html>
