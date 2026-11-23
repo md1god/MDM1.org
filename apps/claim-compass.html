@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة مطابقة التعويضات والأموال غير المطالب بها | MDM1</title>
+<meta name="description" content="أدخل بياناتك المجهولة لمطابقة الدعاوى الجماعية وبرامج الاسترداد والأموال غير المطالب بها، مع مواعيد نهائية وقائمة تحقق قابلة للطباعة.">
+<link rel="canonical" href="https://mdm1.org/apps/claim-compass.html">
+<meta property="og:title" content="أداة مطابقة التعويضات والأموال غير المطالب بها">
+<meta property="og:description" content="أدخل بياناتك المجهولة لمطابقة الدعاوى الجماعية وبرامج الاسترداد والأموال غير المطالب بها، مع مواعيد نهائية وقائمة تحقق قابلة للطباعة.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/claim-compass.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app { display: flex; flex-direction: column; gap: 16px; }
+.app .card { padding: 20px; }
+.app h2 { margin: 0 0 12px; color: var(--gold-bright); font-size: 1.2rem; }
+.app p, .app li { line-height: 1.8; }
+.app .row { gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.app .app-field { display: flex; flex-direction: column; gap: 6px; min-width: 170px; flex: 1; }
+.app .app-grow { flex: 2; min-width: 240px; }
+.app .app-mt { margin-top: 12px; }
+.app .app-actions { align-items: center; }
+.app .app-between { justify-content: space-between; align-items: center; }
+.app .app-results { display: grid; gap: 12px; margin-top: 12px; }
+.app .result-item { border: 1px solid var(--gold-dim); border-radius: 10px; padding: 14px; background: rgba(255,255,255,0.02); }
+.app .result-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+.app .result-title { margin: 0; font-size: 1.05rem; color: var(--light); }
+.app .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px 12px; margin-top: 10px; }
+.app .meta-item { font-size: 0.95rem; }
+.app .meta-label { color: var(--gold); font-weight: 700; display: block; margin-bottom: 2px; }
+.app .result-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.app .badge { white-space: nowrap; }
+.app .check-item { padding: 10px 0; border-bottom: 1px solid var(--gold-dim); }
+.app .check-item:last-child { border-bottom: 0; }
+.app .muted { opacity: 0.85; }
+.app .status-ok { color: var(--gold-bright); }
+.app .status-err { color: #ffb4b4; }
+.app input[type="file"] { color: var(--light); }
+.app .empty { opacity: 0.85; }
+@media print {
+  body * { visibility: hidden !important; }
+  .app.print-mode #checklistCard, .app.print-mode #checklistCard * { visibility: visible !important; }
+  .app.print-mode #checklistCard { position: absolute; inset: 0; background: #fff; color: #000; }
+  .app.print-mode #checklistCard .out, .app.print-mode #checklistCard .badge, .app.print-mode #checklistCard h2 { color: #000 !important; }
+  .app.print-mode #checklistCard button { display: none !important; }
+}
+@media (max-width: 700px) {
+  .app .app-field { min-width: 100%; }
+  .app .app-actions button { width: 100%; }
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة مطابقة التعويضات والأموال غير المطالب بها", "url": "https://mdm1.org/apps/claim-compass.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يتم حفظ بياناتي أو إرسالها؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. تعمل الأداة داخل المتصفح فقط ولا تستخدم تخزينًا محليًا ولا ترسل بياناتك، ويمكنك تصدير النتائج كملف عند الحاجة."}}, {"@type": "Question", "name": "ما نوع الفرص التي يمكن مطابقتها؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكن مطابقة دعاوى جماعية، وبرامج استرداد الرسوم، والأموال غير المطالب بها، بحسب البيانات المجهولة التي تدخلها والقوائم المتاحة."}}, {"@type": "Question", "name": "كيف أضيف فرصًا خاصة ببلدي؟", "acceptedAnswer": {"@type": "Answer", "text": "استخدم زر تصدير القالب لمعرفة الصيغة، ثم املأ ملف JSON بفرص محلية واستورده عبر خيار الاستيراد لدمجه مع القاعدة المدمجة."}}, {"@type": "Question", "name": "هل المبالغ والمواعيد النهائية مؤكدة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، هي تقديرات استرشادية مبنية على بيانات القائمة. يجب دائمًا مراجعة شروط الجهة الرسمية والمستندات المطلوبة قبل التقديم."}}, {"@type": "Question", "name": "هل يمكنني الطباعة بدون حساب؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم. أضف الفرص المناسبة إلى قائمة التحقق ثم استخدم زر الطباعة أو صدّر القائمة كملف واحتفظ بها محليًا."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة مطابقة التعويضات والأموال غير المطالب بها</h1>
+  <p class="page-sub">أدخل بياناتك المجهولة لمطابقة الدعاوى الجماعية وبرامج الاسترداد والأموال غير المطالب بها، مع مواعيد نهائية وقائمة تحقق قابلة للطباعة.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" id="appRoot" dir="rtl">
+  <p id="introText">الإجابة السريعة: يمكنك معرفة فرص استرداد المال أو المطالبة بالتعويض في دقائق عبر إدخال بيانات مجهولة فقط مثل البلد وعدد سنوات التعامل ونوع المنتج أو الخدمة واسم البنك أو المتجر، ثم تحصل فوراً على قائمة بالفرص المطابقة من قاعدة مدمجة تشمل دعاوى جماعية وبرامج استرداد رسوم وأموالاً غير مطالب بها. تعرض لك الأداة لكل فرصة الموعد النهائي، ومستندات الإثبات المطلوبة، ونطاق المبلغ المتوقع، مع إمكانية استيراد قائمة محلية خاصة ببلدك بصيغة ملف بيانات، وتصدير قائمة تحقق للطباعة دون إنشاء حساب ودون حفظ بياناتك في المتصفح ودون إرسال أي شيء إلى الخارج.</p>
+
+  <div class="card" id="inputCard">
+    <h2 id="formTitle">بيانات المطابقة المجهولة</h2>
+    <div class="row">
+      <div class="app-field">
+        <label for="countryInput">البلد</label>
+        <select id="countryInput">
+          <option value="">كل البلدان</option>
+          <option value="SA">السعودية</option>
+          <option value="AE">الإمارات</option>
+          <option value="EG">مصر</option>
+          <option value="JO">الأردن</option>
+          <option value="KW">الكويت</option>
+          <option value="QA">قطر</option>
+          <option value="BH">البحرين</option>
+          <option value="OM">عُمان</option>
+          <option value="US">الولايات المتحدة</option>
+          <option value="UK">المملكة المتحدة</option>
+          <option value="CA">كندا</option>
+          <option value="AU">أستراليا</option>
+          <option value="EU">دول أوروبية أخرى</option>
+          <option value="OTHER">بلد آخر</option>
+        </select>
+      </div>
+      <div class="app-field">
+        <label for="yearsInput">سنوات التعامل</label>
+        <input id="yearsInput" type="number" min="0" max="60" value="2">
+      </div>
+      <div class="app-field">
+        <label for="categoryInput">نوع المنتج أو الخدمة</label>
+        <select id="categoryInput">
+          <option value="">كل الأنواع</option>
+          <option value="banking">خدمات مصرفية</option>
+          <option value="telecom">اتصالات وإنترنت</option>
+          <option value="insurance">تأمين</option>
+          <option value="retail">تسوق ومتاجر</option>
+          <option value="travel">سفر وطيران</option>
+          <option value="subscription">اشتراكات رقمية</option>
+          <option value="utilities">خدمات ومرافق</option>
+          <option value="investment">استثمار وأوراق مالية</option>
+        </select>
+      </div>
+      <div class="app-field">
+        <label for="providerTypeInput">نوع الجهة</label>
+        <select id="providerTypeInput">
+          <option value="">بنك أو متجر أو جهة أخرى</option>
+          <option value="bank">بنك</option>
+          <option value="store">متجر</option>
+          <option value="telecom">شركة اتصالات</option>
+          <option value="insurer">شركة تأمين</option>
+          <option value="platform">منصة رقمية</option>
+          <option value="government">جهة حكومية</option>
+        </select>
+      </div>
+    </div>
+    <div class="row app-mt">
+      <div class="app-field app-grow">
+        <label for="providerNameInput">اسم البنك أو المتجر أو الجهة (اختياري)</label>
+        <input id="providerNameInput" type="text" placeholder="مثال: بنك الأفق، متجر المدينة">
+      </div>
+    </div>
+    <div class="row app-mt app-actions">
+      <button id="matchBtn">مطابقة الفرص</button>
+      <button id="clearBtn" class="sec">مسح المدخلات</button>
+      <button id="sampleBtn" class="sec">تعبئة مثال</button>
+    </div>
+  </div>
+
+  <div class="card app-mt" id="importCard">
+    <h2 id="importTitle">قائمة محلية خاصة ببلدك</h2>
+    <p id="importDesc">يمكنك استيراد ملف بيانات بصيغة JSON يحتوي على فرص إضافية. يتم دمج القائمة مع القاعدة المدمجة داخل هذه الجلسة فقط ولا تُحفظ في المتصفح.</p>
+    <div class="row app-actions">
+      <div class="app-field">
+        <label for="importFileInput">ملف القائمة المحلية</label>
+        <input id="importFileInput" type="file" accept=".json,application/json">
+      </div>
+      <button id="importBtn" class="sec">استيراد ودمج</button>
+      <button id="resetDataBtn" class="sec">استعادة القاعدة المدمجة</button>
+      <button id="templateBtn" class="sec">تصدير قالب القائمة</button>
+    </div>
+    <div id="importStatus" class="out app-mt" aria-live="polite">لم يتم استيراد أي قائمة محلية بعد.</div>
+  </div>
+
+  <div class="card app-mt" id="resultsCard">
+    <div class="row app-between">
+      <h2 id="resultsTitle">النتائج المطابقة</h2>
+      <span id="resultsCount" class="badge">0 فرصة</span>
+    </div>
+    <div id="resultsSummary" class="out" aria-live="polite">أدخل بياناتك واضغط على «مطابقة الفرص» لعرض النتائج.</div>
+    <div id="resultsList" class="app-results"></div>
+  </div>
+
+  <div class="card app-mt" id="checklistCard">
+    <div class="row app-between">
+      <h2 id="checklistTitle">قائمة التحقق للطباعة</h2>
+      <span id="checklistCount" class="badge">0 عنصر</span>
+    </div>
+    <p id="checklistDesc">اختر الفرص المناسبة من النتائج لإضافتها إلى قائمة التحقق، ثم اطبعها أو صدّرها كملف بيانات.</p>
+    <div class="row app-actions app-mt">
+      <button id="printBtn">طباعة قائمة التحقق</button>
+      <button id="exportChecklistBtn" class="sec">تصدير قائمة التحقق</button>
+      <button id="clearChecklistBtn" class="sec">تفريغ القائمة</button>
+    </div>
+    <div id="checklistArea" class="out app-mt" aria-live="polite">لا توجد عناصر في قائمة التحقق بعد.</div>
+  </div>
+
+  <div class="card app-mt" id="privacyCard">
+    <h2 id="privacyTitle">الخصوصية والاستخدام</h2>
+    <ul id="privacyList">
+      <li>لا يتم حفظ أي بيانات في المتصفح ولا إرسالها إلى أي جهة.</li>
+      <li>النتائج استرشادية وتحتاج إلى مراجعة شروط الجهة المعلنة قبل التقديم.</li>
+      <li>يمكنك استيراد قائمة محلية من ملفك الخاص ومراجعتها قبل الدمج.</li>
+    </ul>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يتم حفظ بياناتي أو إرسالها؟</h3><p>لا. تعمل الأداة داخل المتصفح فقط ولا تستخدم تخزينًا محليًا ولا ترسل بياناتك، ويمكنك تصدير النتائج كملف عند الحاجة.</p><h3>ما نوع الفرص التي يمكن مطابقتها؟</h3><p>يمكن مطابقة دعاوى جماعية، وبرامج استرداد الرسوم، والأموال غير المطالب بها، بحسب البيانات المجهولة التي تدخلها والقوائم المتاحة.</p><h3>كيف أضيف فرصًا خاصة ببلدي؟</h3><p>استخدم زر تصدير القالب لمعرفة الصيغة، ثم املأ ملف JSON بفرص محلية واستورده عبر خيار الاستيراد لدمجه مع القاعدة المدمجة.</p><h3>هل المبالغ والمواعيد النهائية مؤكدة؟</h3><p>لا، هي تقديرات استرشادية مبنية على بيانات القائمة. يجب دائمًا مراجعة شروط الجهة الرسمية والمستندات المطلوبة قبل التقديم.</p><h3>هل يمكنني الطباعة بدون حساب؟</h3><p>نعم. أضف الفرص المناسبة إلى قائمة التحقق ثم استخدم زر الطباعة أو صدّر القائمة كملف واحتفظ بها محليًا.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="resume-matcher-creator.html" style="color:var(--gold-bright);font-weight:700">أداة مطابقة السيرة الذاتية مع الوصف الوظيفي وإنشاء خطاب تغطية مخصص</a><span style="opacity:.75"> — أداة تسمح لك بتحميل سيرتك الذاتية، إدخال الوصف الوظيفي، استخراج الكلمات المفتاحية، وإنشاء خطاب تغطية ونموذج…</span></li><li style="margin:.5rem 0"><a href="comic-bubble-rewriter.html" style="color:var(--gold-bright);font-weight:700">أداة ترجمة المانجا والقصص المصورة</a><span style="opacity:.75"> — محرر مرئي داخل المتصفح لفتح صفحات المانجا، رسم الفقاعات والصناديق، تحرير النص، إزالة النص القديم، وإدارة…</span></li><li style="margin:.5rem 0"><a href="daylight-rhythm-tuner.html" style="color:var(--gold-bright);font-weight:700">أداة موقع الشمس وحرارة لون ضوء النهار بالعرض والوقت</a><span style="opacity:.75"> — احسب ارتفاع الشمس وحرارة لون ضوء النهار (CCT) والسطوع (lx) لحظة بلحظة حسب خط العرض والوقت المحلي مع رسوم…</span></li><li style="margin:.5rem 0"><a href="diff-risk-compass.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل الفروقات وتقييم المخاطر للطلبات البرمجية</a><span style="opacity:.75"> — أداة داخل المتصفح تحلل الفروقات المُلصقة أو وصف طلب سحب يدوي، وتُعطي درجة مخاطر من 0 إلى 100 وتُظهر الملفات…</span></li><li style="margin:.5rem 0"><a href="feedback-studio.html" style="color:var(--gold-bright);font-weight:700">أداة إنشاء استطلاعات مصغرة</a><span style="opacity:.75"> — صمم أسئلة استطلاع مصغرة ومعاينة النموذج وحفظ الردود محليًا وتصديرها بصيغ JSON وCSV بسهولة داخل المتصفح من…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-23 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function () {
+  var baseData = [
+    { id: 'SA-BANK-FEE-01', country: 'SA', category: 'banking', providerType: 'bank', provider: 'بنوك متعددة', title: 'استرداد رسوم إدارية مصرفية غير مبررة', kind: 'برنامج استرداد رسوم', deadline: '2026-12-31', docs: ['كشف حساب يوضح الرسوم', 'عقد أو اتفاقية الحساب', 'إثبات هوية'], amountMin: 100, amountMax: 2500, currency: 'SAR', yearsMin: 0, yearsMax: 10 },
+    { id: 'AE-TEL-CLS-01', country: 'AE', category: 'telecom', providerType: 'telecom', provider: 'شركات اتصالات', title: 'مطالبة برسوم خدمة مضافة دون موافقة واضحة', kind: 'دعوى جماعية', deadline: '2027-03-15', docs: ['فواتير شهرية', 'إثبات الاشتراك أو رقم الحساب', 'مراسلات الإلغاء إن وجدت'], amountMin: 50, amountMax: 1200, currency: 'AED', yearsMin: 0, yearsMax: 6 },
+    { id: 'EG-SUB-REF-01', country: 'EG', category: 'subscription', providerType: 'platform', provider: 'منصات رقمية', title: 'استرداد رسوم تجديد اشتراك تلقائي بعد الإلغاء', kind: 'برنامج استرداد رسوم', deadline: '2026-11-30', docs: ['إيصال الدفع', 'لقطة شاشة لطلب الإلغاء', 'بريد تأكيد الحساب'], amountMin: 200, amountMax: 3000, currency: 'EGP', yearsMin: 0, yearsMax: 5 },
+    { id: 'JO-INS-CLS-01', country: 'JO', category: 'insurance', providerType: 'insurer', provider: 'شركات تأمين', title: 'تعويض عن رفض مطالبة تأمين ضمن تسوية جماعية', kind: 'دعوى جماعية', deadline: '2027-01-20', docs: ['وثيقة التأمين', 'خطاب الرفض', 'فواتير أو تقارير داعمة'], amountMin: 100, amountMax: 5000, currency: 'JOD', yearsMin: 1, yearsMax: 12 },
+    { id: 'KW-UTIL-REF-01', country: 'KW', category: 'utilities', providerType: 'government', provider: 'جهات خدمات', title: 'استرداد مبالغ تأمين أو رسوم خدمات زائدة', kind: 'برنامج استرداد رسوم', deadline: '2026-10-01', docs: ['فواتير السداد', 'رقم الحساب أو العقد', 'إثبات هوية'], amountMin: 20, amountMax: 600, currency: 'KWD', yearsMin: 0, yearsMax: 15 },
+    { id: 'US-RET-CLS-01', country: 'US', category: 'retail', providerType: 'store', provider: 'متاجر كبرى', title: 'تسوية جماعية بشأن رسوم حماية شراء غير مفصح عنها', kind: 'دعوى جماعية', deadline: '2027-05-10', docs: ['إيصال شراء أو كشف بطاقة', 'تأكيد البريد الإلكتروني', 'رقم الطلب إن وجد'], amountMin: 10, amountMax: 250, currency: 'USD', yearsMin: 0, yearsMax: 8 },
+    { id: 'UK-BANK-UNCL-01', country: 'UK', category: 'banking', providerType: 'bank', provider: 'بنوك ومؤسسات مالية', title: 'أموال غير مطالب بها في حسابات خاملة أو شيكات قديمة', kind: 'أموال غير مطالب بها', deadline: 'مفتوح', docs: ['إثبات هوية', 'إثبات عنوان سابق', 'أي بيان حساب أو رقم مرجعي'], amountMin: 25, amountMax: 10000, currency: 'GBP', yearsMin: 2, yearsMax: 60 },
+    { id: 'CA-TRVL-CLS-01', country: 'CA', category: 'travel', providerType: 'platform', provider: 'شركات سفر وطيران', title: 'تعويض عن تأخير أو إلغاء مع رسوم إضافية ضمن تسوية', kind: 'دعوى جماعية', deadline: '2027-02-28', docs: ['تذكرة أو تأكيد الحجز', 'إشعار التأخير أو الإلغاء', 'إيصالات المصاريف'], amountMin: 50, amountMax: 900, currency: 'CAD', yearsMin: 0, yearsMax: 6 },
+    { id: 'AU-INV-UNCL-01', country: 'AU', category: 'investment', providerType: 'government', provider: 'سجلات حكومية', title: 'أرصدة استثمار أو معاشات غير مطالب بها', kind: 'أموال غير مطالب بها', deadline: 'مفتوح', docs: ['إثبات هوية', 'رقم ضريبي أو مرجع حساب إن وجد', 'إثبات عنوان'], amountMin: 100, amountMax: 20000, currency: 'AUD', yearsMin: 3, yearsMax: 60 },
+    { id: 'EU-RETAIL-REF-01', country: 'EU', category: 'retail', providerType: 'store', provider: 'متاجر ومنصات بيع', title: 'استرداد رسوم ضمان ممتد أو خدمة ملحقة', kind: 'برنامج استرداد رسوم', deadline: '2026-09-30', docs: ['فاتورة الشراء', 'شروط الضمان', 'إثبات الدفع'], amountMin: 15, amountMax: 300, currency: 'EUR', yearsMin: 0, yearsMax: 7 },
+    { id: 'QA-BANK-CLS-01', country: 'QA', category: 'banking', providerType: 'bank', provider: 'بنوك', title: 'مطالبة برسوم تحويل أو عملة غير واضحة', kind: 'دعوى جماعية', deadline: '2027-04-01', docs: ['كشف حساب', 'إشعارات التحويل', 'عقد البطاقة أو الحساب'], amountMin: 75, amountMax: 4000, currency: 'QAR', yearsMin: 0, yearsMax: 8 },
+    { id: 'BH-TEL-REF-01', country: 'BH', category: 'telecom', providerType: 'telecom', provider: 'مزودو اتصالات', title: 'استرداد رسوم إنهاء مبكر أو معدات', kind: 'برنامج استرداد رسوم', deadline: '2026-12-15', docs: ['العقد', 'فاتورة الإنهاء', 'إثبات السداد'], amountMin: 20, amountMax: 500, currency: 'BHD', yearsMin: 0, yearsMax: 5 },
+    { id: 'OM-INS-REF-01', country: 'OM', category: 'insurance', providerType: 'insurer', provider: 'شركات تأمين', title: 'استرداد جزء من قسط تأمين عند الإلغاء المبكر', kind: 'برنامج استرداد رسوم', deadline: '2027-06-30', docs: ['وثيقة التأمين', 'طلب الإلغاء', 'إثبات دفع القسط'], amountMin: 10, amountMax: 800, currency: 'OMR', yearsMin: 0, yearsMax: 6 },
+    { id: 'ALL-SUB-CLS-01', country: 'ALL', category: 'subscription', providerType: 'platform', provider: 'خدمات اشتراك رقمية', title: 'مطالبة بتجديد تلقائي دون إشعار واضح', kind: 'دعوى جماعية', deadline: '2027-07-01', docs: ['سجل الدفعات', 'شروط الاشتراك وقت التسجيل', 'رسالة الإلغاء أو محاولة الإلغاء'], amountMin: 5, amountMax: 200, currency: 'USD', yearsMin: 0, yearsMax: 4 }
+  ];
+
+  var data = baseData.slice();
+  var checklist = [];
+  var lastResults = [];
+
+  function byId(id) { return document.getElementById(id); }
+  var countryInput = byId('countryInput');
+  var yearsInput = byId('yearsInput');
+  var categoryInput = byId('categoryInput');
+  var providerTypeInput = byId('providerTypeInput');
+  var providerNameInput = byId('providerNameInput');
+  var matchBtn = byId('matchBtn');
+  var clearBtn = byId('clearBtn');
+  var sampleBtn = byId('sampleBtn');
+  var importFileInput = byId('importFileInput');
+  var importBtn = byId('importBtn');
+  var resetDataBtn = byId('resetDataBtn');
+  var templateBtn = byId('templateBtn');
+  var importStatus = byId('importStatus');
+  var resultsSummary = byId('resultsSummary');
+  var resultsList = byId('resultsList');
+  var resultsCount = byId('resultsCount');
+  var checklistArea = byId('checklistArea');
+  var checklistCount = byId('checklistCount');
+  var printBtn = byId('printBtn');
+  var exportChecklistBtn = byId('exportChecklistBtn');
+  var clearChecklistBtn = byId('clearChecklistBtn');
+  var appRoot = byId('appRoot');
+
+  function esc(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function normalize(str) {
+    return String(str || '').toLowerCase().trim();
+  }
+
+  function amountText(item) {
+    return item.amountMin + ' - ' + item.amountMax + ' ' + item.currency;
+  }
+
+  function setStatus(el, msg, ok) {
+    el.textContent = msg;
+    el.className = 'out app-mt' + (ok ? ' status-ok' : ' status-err');
+  }
+
+  function validItem(x) {
+    return x && typeof x === 'object' && typeof x.title === 'string' && x.title.trim() &&
+      typeof x.country === 'string' && typeof x.category === 'string' && typeof x.providerType === 'string' &&
+      typeof x.kind === 'string' && typeof x.deadline === 'string' && Array.isArray(x.docs);
+  }
+
+  function cleanItem(x, idx) {
+    return {
+      id: String(x.id || ('LOCAL-' + Date.now() + '-' + idx)),
+      country: String(x.country || 'OTHER').toUpperCase(),
+      category: String(x.category || 'other'),
+      providerType: String(x.providerType || 'other'),
+      provider: String(x.provider || 'جهة محلية'),
+      title: String(x.title || '').trim(),
+      kind: String(x.kind || 'برنامج محلي'),
+      deadline: String(x.deadline || 'غير محدد'),
+      docs: x.docs.map(function (d) { return String(d); }).filter(function (d) { return d.trim(); }),
+      amountMin: Number(x.amountMin || 0),
+      amountMax: Number(x.amountMax || 0),
+      currency: String(x.currency || 'USD'),
+      yearsMin: Number(x.yearsMin || 0),
+      yearsMax: Number(x.yearsMax || 60)
+    };
+  }
+
+  function matchData() {
+    var country = countryInput.value;
+    var years = Number(yearsInput.value || 0);
+    var category = categoryInput.value;
+    var providerType = providerTypeInput.value;
+    var providerName = normalize(providerNameInput.value);
+
+    var results = data.filter(function (item) {
+      var countryOk = !country || item.country === country || item.country === 'ALL';
+      var catOk = !category || item.category === category;
+      var pTypeOk = !providerType || item.providerType === providerType;
+      var yearsOk = years >= Number(item.yearsMin || 0) && years <= Number(item.yearsMax || 60);
+      var nameOk = !providerName || normalize(item.provider).indexOf(providerName) > -1 || normalize(item.title).indexOf(providerName) > -1;
+      return countryOk && catOk && pTypeOk && yearsOk && nameOk;
+    });
+
+    results.sort(function (a, b) {
+      var aScore = (a.country === country ? 2 : 0) + (a.providerType === providerType ? 1 : 0);
+      var bScore = (b.country === country ? 2 : 0) + (b.providerType === providerType ? 1 : 0);
+      return bScore - aScore;
+    });
+
+    lastResults = results;
+    renderResults(results);
+  }
+
+  function inChecklist(id) {
+    return checklist.some(function (c) { return c.id === id; });
+  }
+
+  function renderResults(results) {
+    resultsCount.textContent = results.length + ' فرصة';
+    if (!results.length) {
+      resultsSummary.textContent = 'لم يتم العثور على مطابقات. جرّب توسيع البلد أو تغيير النوع أو استيراد قائمة محلية.';
+      resultsList.innerHTML = '<div class="out empty">لا توجد نتائج مطابقة للمدخلات الحالية.</div>';
+      return;
+    }
+    resultsSummary.textContent = 'تم العثور على ' + results.length + ' فرصة مطابقة. راجع التفاصيل وأضف المناسب منها إلى قائمة التحقق.';
+    var html = '';
+    for (var i = 0; i < results.length; i++) {
+      var item = results[i];
+      var added = inChecklist(item.id);
+      html += '<div class="result-item">';
+      html += '<div class="result-head"><div><h3 class="result-title">' + esc(item.title) + '</h3><div class="muted">' + esc(item.provider) + '</div></div>';
+      html += '<span class="badge">' + esc(item.kind) + '</span></div>';
+      html += '<div class="meta-grid">';
+      html += '<div class="meta-item"><span class="meta-label">الموعد النهائي</span>' + esc(item.deadline) + '</div>';
+      html += '<div class="meta-item"><span class="meta-label">نطاق المبلغ المتوقع</span>' + esc(amountText(item)) + '</div>';
+      html += '<div class="meta-item"><span class="meta-label">البلد</span>' + esc(item.country === 'ALL' ? 'متعدد البلدان' : item.country) + '</div>';
+      html += '<div class="meta-item"><span class="meta-label">مستندات الإثبات</span>' + esc(item.docs.join('، ')) + '</div>';
+      html += '</div>';
+      html += '<div class="result-actions"><button data-add="' + esc(item.id) + '"' + (added ? ' class="sec"' : '') + '>' + (added ? 'مضاف إلى قائمة التحقق' : 'إضافة إلى قائمة التحقق') + '</button></div>';
+      html += '</div>';
+    }
+    resultsList.innerHTML = html;
+    var buttons = resultsList.querySelectorAll('button[data-add]');
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].addEventListener('click', onAddChecklist);
+    }
+  }
+
+  function onAddChecklist(ev) {
+    var id = ev.currentTarget.getAttribute('data-add');
+    var item = null;
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].id === id) { item = data[i]; break; }
+    }
+    if (!item) return;
+    if (!inChecklist(id)) {
+      checklist.push(item);
+      renderChecklist();
+      renderResults(lastResults.length ? lastResults : data.slice(0, 0));
+      if (lastResults.length) renderResults(lastResults);
+    }
+  }
+
+  function renderChecklist() {
+    checklistCount.textContent = checklist.length + ' عنصر';
+    if (!checklist.length) {
+      checklistArea.innerHTML = 'لا توجد عناصر في قائمة التحقق بعد.';
+      return;
+    }
+    var html = '<div>';
+    for (var i = 0; i < checklist.length; i++) {
+      var item = checklist[i];
+      html += '<div class="check-item">';
+      html += '<strong>' + (i + 1) + '. ' + esc(item.title) + '</strong>';
+      html += '<div class="muted">' + esc(item.kind) + ' | ' + esc(item.provider) + '</div>';
+      html += '<div>الموعد النهائي: ' + esc(item.deadline) + '</div>';
+      html += '<div>نطاق المبلغ المتوقع: ' + esc(amountText(item)) + '</div>';
+      html += '<div>المستندات المطلوبة: ' + esc(item.docs.join('، ')) + '</div>';
+      html += '<div class="result-actions"><button class="sec" data-remove="' + esc(item.id) + '">إزالة</button></div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    checklistArea.innerHTML = html;
+    var removeButtons = checklistArea.querySelectorAll('button[data-remove]');
+    for (var j = 0; j < removeButtons.length; j++) {
+      removeButtons[j].addEventListener('click', function (ev2) {
+        var rid = ev2.currentTarget.getAttribute('data-remove');
+        checklist = checklist.filter(function (c) { return c.id !== rid; });
+        renderChecklist();
+        if (lastResults.length) renderResults(lastResults);
+      });
+    }
+  }
+
+  function downloadJson(filename, obj) {
+    var json = JSON.stringify(obj, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function importLocal() {
+    var file = importFileInput.files && importFileInput.files[0];
+    if (!file) {
+      setStatus(importStatus, 'اختر ملف JSON أولاً.', false);
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var parsed = JSON.parse(String(e.target.result || ''));
+        var arr = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.items) ? parsed.items : null);
+        if (!arr) {
+          setStatus(importStatus, 'صيغة الملف غير صحيحة. يجب أن يكون مصفوفة أو كائنًا يحتوي على items.', false);
+          return;
+        }
+        var clean = [];
+        for (var i = 0; i < arr.length; i++) {
+          if (validItem(arr[i])) clean.push(cleanItem(arr[i], i));
+        }
+        if (!clean.length) {
+          setStatus(importStatus, 'لم يتم العثور على عناصر صالحة في الملف.', false);
+          return;
+        }
+        var existing = {};
+        for (var k = 0; k < data.length; k++) existing[data[k].id] = true;
+        var added = 0;
+        for (var m = 0; m < clean.length; m++) {
+          if (!existing[clean[m].id]) { data.push(clean[m]); existing[clean[m].id] = true; added++; }
+        }
+        setStatus(importStatus, 'تم استيراد ' + clean.length + ' عنصر، وإضافة ' + added + ' عنصر جديد إلى القاعدة الحالية.', true);
+        if (lastResults.length) matchData();
+      } catch (err) {
+        setStatus(importStatus, 'تعذر قراءة الملف. تأكد أنه JSON صالح.', false);
+      }
+    };
+    reader.onerror = function () { setStatus(importStatus, 'حدث خطأ أثناء قراءة الملف.', false); };
+    reader.readAsText(file);
+  }
+
+  function exportTemplate() {
+    var template = {
+      items: [
+        {
+          id: 'LOCAL-001',
+          country: 'SA',
+          category: 'banking',
+          providerType: 'bank',
+          provider: 'اسم الجهة',
+          title: 'عنوان الفرصة',
+          kind: 'دعوى جماعية',
+          deadline: '2027-12-31',
+          docs: ['مستند 1', 'مستند 2'],
+          amountMin: 100,
+          amountMax: 1000,
+          currency: 'SAR',
+          yearsMin: 0,
+          yearsMax: 10
+        }
+      ]
+    };
+    downloadJson('local-claims-template.json', template);
+    setStatus(importStatus, 'تم تجهيز ملف القالب للتنزيل.', true);
+  }
+
+  matchBtn.addEventListener('click', matchData);
+  clearBtn.addEventListener('click', function () {
+    countryInput.value = '';
+    yearsInput.value = '2';
+    categoryInput.value = '';
+    providerTypeInput.value = '';
+    providerNameInput.value = '';
+    lastResults = [];
+    resultsCount.textContent = '0 فرصة';
+    resultsSummary.textContent = 'تم مسح المدخلات. أدخل بيانات جديدة ثم اضغط على «مطابقة الفرص».';
+    resultsList.innerHTML = '';
+  });
+  sampleBtn.addEventListener('click', function () {
+    countryInput.value = 'SA';
+    yearsInput.value = '3';
+    categoryInput.value = 'banking';
+    providerTypeInput.value = 'bank';
+    providerNameInput.value = 'بنك';
+    matchData();
+  });
+  importBtn.addEventListener('click', importLocal);
+  resetDataBtn.addEventListener('click', function () {
+    data = baseData.slice();
+    checklist = checklist.filter(function (c) { return baseData.some(function (b) { return b.id === c.id; }); });
+    setStatus(importStatus, 'تمت استعادة القاعدة المدمجة وإزالة العناصر المحلية المستوردة.', true);
+    renderChecklist();
+    if (lastResults.length) matchData();
+  });
+  templateBtn.addEventListener('click', exportTemplate);
+  printBtn.addEventListener('click', function () {
+    if (!checklist.length) {
+      checklistArea.innerHTML = 'أضف عنصرًا واحدًا على الأقل قبل الطباعة.';
+      return;
+    }
+    appRoot.className = 'app print-mode';
+    window.print();
+    setTimeout(function () { appRoot.className = 'app'; }, 300);
+  });
+  exportChecklistBtn.addEventListener('click', function () {
+    if (!checklist.length) {
+      checklistArea.innerHTML = 'لا توجد عناصر لتصديرها. أضف فرصًا من النتائج أولاً.';
+      return;
+    }
+    var payload = { exportedAt: new Date().toISOString(), items: checklist };
+    downloadJson('claims-checklist.json', payload);
+  });
+  clearChecklistBtn.addEventListener('click', function () {
+    checklist = [];
+    renderChecklist();
+    if (lastResults.length) renderResults(lastResults);
+  });
+})();
+</script>
+</body>
+</html>
