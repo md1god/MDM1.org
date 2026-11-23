@@ -346,9 +346,10 @@ export class Labels {
       const s = this.world.project(it.x, it.y, it.z);
       if (s.z > 1 || s.x < -80 || s.x > innerWidth + 80 || s.y < 40 || s.y > innerHeight) { it.el.style.display = 'none'; continue; }
       const d = Math.hypot(it.x - px, it.z - pz);
+      if (this.skip && it.cls.startsWith('hood') && this.skip.has(it.txt)) { it.el.style.display = 'none'; continue; }
       it.el.style.display = 'block';
       it.el.style.transform = `translate(${s.x}px,${s.y}px) translate(-50%,-50%)`;
-      it.el.style.opacity = it.cls.startsWith('hood') ? String(clamp(1.2 - d / 3000, 0.25, 0.95)) : String(clamp(1.3 - d / 900, 0.3, 1));
+      it.el.style.opacity = it.cls.startsWith('hood') ? String(clamp(1.3 - d / 5000, 0.8, 1)) : String(clamp(1.3 - d / 900, 0.3, 1));
     }
   }
 }

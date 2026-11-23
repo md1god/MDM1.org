@@ -323,7 +323,8 @@ export async function loadData(base, onProgress) {
             t = t < 0 ? 0 : t > 1 ? 1 : t;
             const d = Math.hypot(x - (ax + dx * t), z - (az + dz * t));
             if (d > r.width * 0.5 + 1.5) continue;
-            const y = r.ys[si] + (r.ys[si + 1] - r.ys[si]) * t;
+            // نفس ارتفاع شريحة الطريق المرسومة (world.js _roadGeometry) كي لا تغطس العجلات فيها
+            const y = r.ys[si] + (r.ys[si + 1] - r.ys[si]) * t + 0.05 + ((r.fl & 3) ? 0 : (9 - Math.min(r.t, 9)) * 0.02);
             const sc = ref === undefined ? d : Math.abs(y - ref) + d * 0.05;
             if (sc < bs) { bs = sc; by = y; }
           }

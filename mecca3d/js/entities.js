@@ -52,9 +52,9 @@ export class Car {
     const ref = snap ? undefined : this.y;
     const f = D.groundAt(this.x + fx * 1.4, this.z + fz * 1.4, ref), b = D.groundAt(this.x - fx * 1.4, this.z - fz * 1.4, ref);
     const l = D.groundAt(this.x - rx * 0.9, this.z - rz * 0.9, ref), r = D.groundAt(this.x + rx * 0.9, this.z + rz * 0.9, ref);
-    const y = (f + b + l + r) / 4, pitch = clamp(Math.atan2(f - b, 2.8), -0.5, 0.5), roll = clamp(Math.atan2(l - r, 1.8), -0.4, 0.4);
+    const hi = Math.max(f, b, l, r), y = Math.max((f + b + l + r) / 4 + 0.1, hi - 0.3), pitch = clamp(Math.atan2(f - b, 2.8), -0.5, 0.5), roll = clamp(Math.atan2(l - r, 1.8), -0.4, 0.4);
     if (snap) { this.y = y; this.pitch = pitch; this.roll = roll; }
-    else { this.y = lerp(this.y, y, 0.3); this.pitch = lerp(this.pitch, pitch, 0.12); this.roll = lerp(this.roll, roll, 0.12); }
+    else { this.y = Math.max(lerp(this.y, y, 0.35), y - 0.05); this.pitch = lerp(this.pitch, pitch, 0.12); this.roll = lerp(this.roll, roll, 0.12); }
   }
   _apply() {
     const g = this.group;

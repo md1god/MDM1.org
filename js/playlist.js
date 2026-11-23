@@ -5,8 +5,21 @@
   var N = 12, KEY = "mdm1_track";
   var audio = document.getElementById("bg-music");
   if (!audio || audio.dataset.playlist) return;
-  if (/\.opus(\?|$)/.test(audio.getAttribute("src") || "")) return;
   audio.dataset.playlist = "1";
+  audio.loop = false;
+  function nextTrack(a) {
+    var cs = a.currentSrc || a.src || "", now = Date.now();
+    if (a.__advFor === cs && now - (a.__advT || 0) < 3000) return;
+    a.__advFor = cs; a.__advT = now;
+    var m = cs.match(/\/audio\/(\d+)\.opus/), n = m ? (parseInt(m[1], 10) % N) + 1 : 1;
+    var s = a.querySelectorAll("source"); for (var q = 0; q < s.length; q++) s[q].remove();
+    a.loop = false; a.src = "/audio/" + n + ".opus";
+    try { sessionStorage.setItem(KEY, String(n)); } catch (e) {}
+    var p = a.play(); if (p && p.catch) p.catch(function () {});
+  }
+  audio.addEventListener("ended", function () { nextTrack(audio); });
+  audio.addEventListener("error", function () { nextTrack(audio); });
+  if (/\.opus(\?|$)/.test(audio.getAttribute("src") || "")) return;
   try {
     var i = parseInt(sessionStorage.getItem(KEY), 10);
     if (!(i >= 1 && i <= N)) {
@@ -20,7 +33,5 @@
       try { sessionStorage.setItem(KEY, String(n)); } catch (e) {}
     };
     load(i);
-    audio.loop = false;
-    audio.addEventListener("ended", function () { i = (i % N) + 1; load(i); audio.play().catch(function () {}); });
   } catch (e) { /* keep the page's own source */ }
 })();

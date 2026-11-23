@@ -544,7 +544,7 @@ export class World {
     if (this.routeMesh) { this.scene.remove(this.routeMesh); this.routeMesh.geometry.dispose(); this.routeMesh = null; }
     if (this.beacon) { this.scene.remove(this.beacon); this.beacon.geometry.dispose(); this.beacon = null; }
     if (!route) return;
-    this.routeMesh = this.makeRibbon([this._densify(route.pts, 12)], 3.2, 0.5, 0xffc933, 0.92);
+    this.routeMesh = this.makeRibbon([this._densify(route.pts, 12)], 3.2, 0.3, 0xffc933, 0.92);
     this.scene.add(this.routeMesh);
     this.setBeacon(route.goal.x, route.goal.z);
   }
@@ -560,7 +560,7 @@ export class World {
     if (this.hlMesh) { this.scene.remove(this.hlMesh); this.hlMesh.geometry.dispose(); this.hlMesh = null; }
     if (!roadIdx || !roadIdx.length) return;
     const lines = roadIdx.map((i) => this._densify(this.D.roads[i].pts, 15));
-    this.hlMesh = this.makeRibbon(lines, 4, 0.7, 0x4da3ff, 0.9);
+    this.hlMesh = this.makeRibbon(lines, 4, 0.4, 0x4da3ff, 0.9);
     this.scene.add(this.hlMesh);
   }
 
@@ -653,6 +653,53 @@ export class Signs {
       s.scale.set(8, 8 / tex.aspect, 1);
       s.position.set(j.x + 4, this.world.D.groundAt(j.x, j.z) + 5.5, j.z + 4);
       s.visible = true;
+    }
+  }
+}
+
+// يافطات المناطق/الأحياء: لوحات كبيرة بنية بإطار ذهبي، مميزة عن يافطات الشوارع الخضراء، ظاهرة دائماً (لا يحجبها شيء)
+export class HoodSigns {
+  constructor(world) {
+    this.world = world; this.cache = new Map(); this.pool = [];
+    for (let i = 0; i < 10; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false }));
+      s.visible = false; s.renderOrder = 9; world.scene.add(s); this.pool.push(s);
+    }
+    this.enabled = true;
+  }
+  _tex(name) {
+    let t = this.cache.get(name);
+    if (t) return t;
+    const cv = document.createElement('canvas'); cv.width = 640; cv.height = 200;
+    const g = cv.getContext('2d'), w = cv.width, h = cv.height, r = 30;
+    g.beginPath(); g.moveTo(r, 4); g.arcTo(w - 4, 4, w - 4, h - 4, r); g.arcTo(w - 4, h - 4, 4, h - 4, r); g.arcTo(4, h - 4, 4, 4, r); g.arcTo(4, 4, w - 4, 4, r); g.closePath();
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#8a5a1c'); gr.addColorStop(1, '#4a2d0c');
+    g.fillStyle = gr; g.fill(); g.lineWidth = 10; g.strokeStyle = '#f2c35a'; g.stroke();
+    g.lineWidth = 3; g.strokeStyle = '#fff3c9'; g.strokeRect(22, 22, w - 44, h - 44);
+    g.fillStyle = '#ffe9b0'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.direction = 'rtl';
+    g.font = 'bold 34px Tajawal, "Segoe UI", Tahoma, Arial, sans-serif'; g.fillText('🏘 منطقة', w / 2, 52);
+    let size = 76; g.font = `bold ${size}px Tajawal, "Segoe UI", Tahoma, Arial, sans-serif`;
+    const nm = name.replace(/^حي\s+/, '');
+    while (g.measureText(nm).width > w - 70 && size > 28) { size -= 4; g.font = `bold ${size}px Tajawal, "Segoe UI", Tahoma, Arial, sans-serif`; }
+    g.fillStyle = '#fff'; g.fillText(nm, w / 2, 124);
+    t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.aspect = w / h;
+    this.cache.set(name, t);
+    return t;
+  }
+  update(px, pz) {
+    const D = this.world.D, list = [];
+    if (this.enabled) for (const p of D.places) { const d = Math.hypot(p.x - px, p.z - pz); if (d < 1300) list.push([d, p]); }
+    list.sort((a, b) => a[0] - b[0]);
+    this.near = new Set();
+    for (let i = 0; i < this.pool.length; i++) {
+      const s = this.pool[i], it = list[i];
+      if (!it) { s.visible = false; continue; }
+      const [d, p] = it, tex = this._tex(p.n);
+      if (s.material.map !== tex) { s.material.map = tex; s.material.needsUpdate = true; }
+      const w = clamp(26 + d * 0.05, 26, 80);
+      s.scale.set(w, w / tex.aspect, 1);
+      s.position.set(p.x, D.terrain.heightAt(p.x, p.z) + 38 + w * 0.2, p.z);
+      s.visible = true; this.near.add(p.n);
     }
   }
 }

@@ -44,6 +44,17 @@
   /* ---------------- PLAYLIST: الأغاني 1-12 (audio/1.opus ... audio/12.opus) ----------------
      كل صفحة تبدأ بأغنية حسب رقمها، وتكمل الجلسة على نفس الأغنية عند التنقل، وبعد انتهاء الأغنية تنتقل للتالية (1 → 12 ثم تعود). */
   const TRACK_COUNT = 12, TRACK_KEY = 'mdm1_track';
+  // التالية: تُحسب من الأغنية الجارية فعلاً (لا من عدّاد قديم) ومحمية من التنفيذ المزدوج
+  function nextTrack(a){
+    var cs = a.currentSrc || a.src || '', now = Date.now();
+    if (a.__advFor === cs && now - (a.__advT || 0) < 3000) return;
+    a.__advFor = cs; a.__advT = now;
+    var m = cs.match(/\/audio\/(\d+)\.opus/), n = m ? (parseInt(m[1], 10) % 12) + 1 : 1;
+    a.querySelectorAll('source').forEach(function(x){ x.remove(); });
+    a.loop = false; a.src = '/audio/' + n + '.opus';
+    try { sessionStorage.setItem('mdm1_track', String(n)); } catch (e) {}
+    var p = a.play(); if (p && p.catch) p.catch(function(){});
+  }
   function setupPlaylist(audio){
     if(audio.dataset.playlist) return;
     audio.dataset.playlist = '1';
@@ -62,7 +73,8 @@
       };
       load(i);
       audio.loop = false;
-      audio.addEventListener('ended', () => { i = (i % TRACK_COUNT) + 1; load(i); audio.play().catch(() => {}); });
+      audio.addEventListener('ended', () => nextTrack(audio));
+      audio.addEventListener('error', () => nextTrack(audio));
     } catch(e){ /* لو فشل نبقى على المصدر الأصلي للصفحة */ }
   }
 
