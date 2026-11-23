@@ -52,7 +52,19 @@
       o.pages[PAGE] = { src: s, t: pos }; o.tracks[s] = { t: pos }; o.last = s; wr(o);
     }
     a.addEventListener("timeupdate", function () { var n = Date.now(); if (n - last > 1000) { last = n; save(); } });
-    a.addEventListener("pause", save); a.addEventListener("ended", save);
+    a.addEventListener("pause", save);
+    a.loop = false;
+    a.addEventListener("ended", function () {
+      save();
+      var cs = a.currentSrc || a.src || "", now = Date.now();
+      if (a.__advFor === cs && now - (a.__advT || 0) < 3000) return;   // another handler already advanced
+      a.__advFor = cs; a.__advT = now;
+      var m = cs.match(/\/audio\/(\d+)\.opus/), n = m ? (parseInt(m[1], 10) % TRACKS) + 1 : 1;
+      a.querySelectorAll("source").forEach(function (x) { x.remove(); });
+      a.src = "/audio/" + n + ".opus";
+      try { sessionStorage.setItem("mdm1_track", String(n)); } catch (e) {}
+      var p = a.play(); if (p && p.catch) p.catch(function () {});
+    });
     window.addEventListener("pagehide", save);
     document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") save(); });
   }
