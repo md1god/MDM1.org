@@ -393,50 +393,41 @@ async function boot() {
     endsCache.set(st.key, res); return res;
   }
   function stopTour() { S.tour = null; $('tourbar').style.display = 'none'; $('b_tour').classList.remove('on'); }
-  function tourBar() { const T = S.tour; if (!T) return; $('tourbar').style.display = 'block'; $('tbt').textContent = '🌍 جولة شاملة — حي ' + (T.hood || '') + ' (' + Math.min(T.hoodsDone + 1, T.hoodsTotal) + '/' + T.hoodsTotal + ')' + (T.cur ? ' — ' + T.cur.name : ''); }
-  // الجولة تمرّ على الأحياء حيًّا حيًّا (الأقرب أولاً) وفي كل حي أهم شوارعه، فتغطي المدينة كلها بدل أن تدور في منطقة واحدة
+  function tourBar() { const T = S.tour; if (!T) return; $('tourbar').style.display = 'block'; $('tbt').textContent = '🌍 جولة شاملة: ' + T.done.size + ' / ' + T.total + ' شارع' + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '') + (T.cur ? ' — ' + T.cur.name : ''); }
+  function snapCarToRoad() {
+    const n = D.idx.nearest(car.x, car.z, 200, { drv: true }); if (!n) return false;
+    const p = n.road.pts, si = n.si; car.place(n.x, n.z, Math.atan2(p[si * 2 + 2] - p[si * 2], -(p[si * 2 + 3] - p[si * 2 + 1]))); return true;
+  }
+  // الجولة: الأقرب فالأقرب (من نهاية الشارع الذي انتهينا منه)، وكل شارع نمر عليه فعلياً أثناء الطريق يُحسب مُنجَزاً فلا نكرره
   function nextTourLeg() {
     const T = S.tour; if (!T) return false;
     const endD = (st) => { const e = streetEnds(st); return e ? Math.min(Math.hypot(e[0].x - car.x, e[0].z - car.z), Math.hypot(e[1].x - car.x, e[1].z - car.z)) : 1e9; };
-    for (let attempt = 0; attempt < 12; attempt++) {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      if (attempt === 5 && car.offRoad) snapCarToRoad();
       if (T.stage === 1 && T.cur) { T.stage = 2; T.legT = S.simT; if (routeTo({ x: T.leg[1].x, z: T.leg[1].z, name: T.cur.name })) { tourBar(); return true; } T.done.add(T.cur.key); T.cur = null; T.stage = 0; continue; }
       if (T.stage === 2 && T.cur) { T.done.add(T.cur.key); learn.markSeen(T.cur.key); big.discDirty = true; T.cur = null; T.stage = 0; }
-      // الشارع التالي داخل الحي الحالي (الأقرب لنهايتيه)
       let best = null, bd = 1e18;
-      if (T.hood) for (const st of T.byHood.get(T.hood) || []) { if (T.done.has(st.key)) continue; const d = endD(st); if (d < bd) { bd = d; best = st; } }
-      if (!best) {
-        // الحي انتهى → أقرب حي لم يُزر بعد
-        if (T.hood) { T.hoodsDone++; T.byHood.delete(T.hood); }
-        let bh = null, hd = 1e18;
-        for (const [h, list] of T.byHood) { for (const st of list) { if (T.done.has(st.key)) continue; const d = endD(st); if (d < hd) { hd = d; bh = h; } } }
-        if (!bh) { toast('🎉 انتهت الجولة — زرنا ' + T.hoodsTotal + ' حيًّا و' + T.total + ' شارعًا', 5000); stopTour(); return false; }
-        T.hood = bh; toast('📍 حي ' + bh, 2500); if (settings.voice) say('حي ' + bh);
-        continue;
-      }
+      for (const st of T.pool) { if (T.done.has(st.key)) continue; const d = endD(st); if (d < bd) { bd = d; best = st; } }
+      if (!best) { toast('🎉 انتهت الجولة — زرنا ' + T.total + ' شارعًا', 5000); setAuto(false); return false; }
       const e = streetEnds(best);
-      if (!e) { T.done.add(best.key); continue; }
       const nearA = Math.hypot(e[0].x - car.x, e[0].z - car.z) <= Math.hypot(e[1].x - car.x, e[1].z - car.z);
-      T.cur = best; T.leg = nearA ? [e[0], e[1]] : [e[1], e[0]]; T.legT = S.simT;
-      T.stage = 1;
+      T.cur = best; T.leg = nearA ? [e[0], e[1]] : [e[1], e[0]]; T.legT = S.simT; T.stage = 1;
       if (Math.hypot(T.leg[0].x - car.x, T.leg[0].z - car.z) < 45) continue;
       if (routeTo({ x: T.leg[0].x, z: T.leg[0].z, name: 'بداية ' + best.name })) { tourBar(); return true; }
       T.done.add(best.key); T.cur = null; T.stage = 0;
     }
+    toast('تعذّرت متابعة الجولة هنا — ابدأها من مكان آخر'); setAuto(false);
     return false;
   }
   function startTour() {
     if (S.mode !== 'car') { toast('الجولة بالسيارة — اضغط F للركوب أولاً'); return; }
-    const scope = scopeSel.value, all = learn.pool(scope).filter((s) => { if (!s.drv || s.len < 120) return false; const e = streetEnds(s); return e && Math.hypot(e[0].x, e[0].z) < 9000 && Math.hypot(e[1].x, e[1].z) < 9000 && Math.hypot(e[0].x - e[1].x, e[0].z - e[1].z) < 7000; });
-    if (!all.length) { toast('لا توجد شوارع في هذا النطاق'); return; }
-    const byHood = new Map();
-    for (const st of all) { const h = st.hood || 'أخرى'; if (!byHood.has(h)) byHood.set(h, []); byHood.get(h).push(st); }
-    let total = 0;
-    for (const [h, list] of byHood) { list.sort((a, b) => (a.minT - b.minT) || (b.len - a.len)); if (!scope.startsWith('hood:')) list.length = Math.min(list.length, 3); total += list.length; }
-    clearRoute();
-    S.tour = { byHood, done: new Set(), total, cur: null, stage: 0, leg: null, hood: null, hoodsDone: 0, hoodsTotal: byHood.size, legT: 0 };
+    const pool = learn.pool(scopeSel.value).filter((s) => { if (!s.drv || s.len < 150) return false; const e = streetEnds(s); return e && Math.hypot(e[0].x, e[0].z) < 9000 && Math.hypot(e[1].x, e[1].z) < 9000 && Math.hypot(e[0].x - e[1].x, e[0].z - e[1].z) < 7000; });
+    if (!pool.length) { toast('لا توجد شوارع في هذا النطاق'); return; }
+    clearRoute(); if (car.offRoad) snapCarToRoad();
+    S.tour = { pool, done: new Set(), total: pool.length, cur: null, stage: 0, leg: null, legT: 0, drive: new Map() };
     S.cruise = true; S.auto = true; $('b_auto').classList.add('on'); $('b_tour').classList.add('on'); wake(true);
     if (!nextTourLeg()) { setAuto(false); return; }
-    toast('🌍 جولة شاملة: ' + byHood.size + ' حيًّا — السيارة تقود وأنت تتعلّم الأسماء (المس أي تحكم للإيقاف)', 4200);
+    toast('🌍 جولة شاملة: ' + pool.length + ' شارعًا — السيارة تقود وأنت تتعلّم الأسماء (المس أي تحكم للإيقاف)', 4200);
     $('learn').style.display = 'none';
   }
   $('b_tour').onclick = () => (S.tour ? setAuto(false) : startTour());
@@ -542,6 +533,10 @@ async function boot() {
       infoT = 0;
       const n = D.idx.nearest(p.x, p.z, 30, { named: true });
       S.curRoad = n ? n.road : null; S.curDist = n ? n.d : 99; S.curKey = n ? n.road.key : null; S.curName = n ? n.road.name : '';
+      if (S.tour && S.curKey && S.curDist < (S.curRoad ? S.curRoad.width * 0.5 + 3 : 0)) { // شارع مررنا عليه فعلاً → لا نعيده
+        const T = S.tour, st = D.streets.get(S.curKey), m = (T.drive.get(S.curKey) || 0) + Math.abs(car.v) * 0.2; T.drive.set(S.curKey, m);
+        if (st && !T.done.has(S.curKey) && (!T.cur || T.cur.key !== S.curKey) && m >= Math.max(120, st.len * 0.7)) { T.done.add(S.curKey); learn.markSeen(S.curKey); tourBar(); }
+      }
       if (S.tour && settings.voice && S.curKey && S.curKey !== S._lastSay && S.curDist < 14) { S._lastSay = S.curKey; say(S.curName); }
       const h = D.nearestHood(p.x, p.z), nh = h ? h.n : '';
       if (nh && S.hood && nh !== S.hood && !S.blind) { toast('📍 دخلت حي ' + nh.replace(/^حي\s+/, ''), 2600); if (S.tour && settings.voice) say('حي ' + nh); }

@@ -91,7 +91,7 @@ export class Car {
     this.h += (this.v / 2.8) * Math.tan(this.steer * maxSt) * dt;
     const [fx, fz] = fwdOf(this.h);
     const nx = this.x + fx * this.v * dt, nz = this.z + fz * this.v * dt;
-    if (!this._blocked(nx, nz)) { this.x = nx; this.z = nz; }
+    if (!this.offRoad || this._blocked(this.x, this.z) || !this._blocked(nx, nz)) { this.x = nx; this.z = nz; } // على الطريق لا تصادم بالمباني؛ ومن الداخل يُسمح بالخروج
     else if (!this._blocked(nx, this.z)) { this.x = nx; this.v *= 0.7; }
     else if (!this._blocked(this.x, nz)) { this.z = nz; this.v *= 0.7; }
     else this.v *= -0.2;

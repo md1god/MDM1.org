@@ -121,6 +121,9 @@ export async function loadData(base, onProgress) {
       }
     }
   }
+  // أرض مسطّحة: الطرق والمباني والسيارة كلها على مستوى واحد فلا غطس ولا تداخل ولا ميل (بدل تضاريس مكة الحقيقية)
+  const BASE = terrain.heightAt(0, 0);
+  terrain.data.fill(BASE);
   const ownerT = new Int8Array(terrain.w * terrain.h).fill(99);
 
   const names = rd.names;
@@ -148,7 +151,7 @@ export async function loadData(base, onProgress) {
     for (let k = 0; k < n; k++) {
       const f = r.len > 0 ? r.cum[k] / r.len : 0;
       let y = ha + (hb - ha) * f;
-      if (r.fl & 1) y = Math.max(y + 0.3, terrain.heightAt(r.pts[k * 2], r.pts[k * 2 + 1]) + 0.15);
+      if (r.fl & 1) y = BASE + 0.12;
       r.ys[k] = y;
     }
   }
