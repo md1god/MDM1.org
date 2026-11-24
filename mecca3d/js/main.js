@@ -12,7 +12,7 @@ const stage = $('stage');
 if (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) document.body.classList.add('touch');
 const TOUCH = document.body.classList.contains('touch');
 const K = (key, touchText) => TOUCH ? touchText : 'اضغط ' + key;
-const settings = Object.assign({ hour: 14, quality: 'medium', mm: 1, signs: 1, hudn: 1, voice: 0 }, store.get('m3d_set', {}));
+const settings = Object.assign({ sat: 1, hour: 14, quality: 'medium', mm: 1, signs: 1, hudn: 1, voice: 0 }, store.get('m3d_set', {}));
 const saveSet = () => store.set('m3d_set', settings);
 
 let toastT = 0;
@@ -31,6 +31,7 @@ async function boot() {
   await new Promise((r) => setTimeout(r, 30));
   const nav = new Nav(D);
   const world = new World(stage, D, 'data/');
+  world.satOn = !!settings.sat;
   world.setQuality(settings.quality); world.setTime(settings.hour);
   const signs = new Signs(world, nav); signs.enabled = !!settings.signs;
   const hoodSigns = new HoodSigns(world), lmPhotos = new LandmarkPhotos(world);
@@ -314,7 +315,8 @@ async function boot() {
   function fmtHour(h) { const hh = Math.floor(h) % 24, mm = Math.round((h % 1) * 60); return (hh % 12 || 12) + ':' + String(mm).padStart(2, '0') + (hh < 12 ? ' ص' : ' م'); }
   $('s_q').value = settings.quality; $('s_q').onchange = (e) => { settings.quality = e.target.value; world.setQuality(settings.quality); saveSet(); };
   $('s_mm').value = String(settings.mm); $('s_mm').onchange = (e) => { settings.mm = +e.target.value; saveSet(); };
-  const refreshToggles = () => { $('s_signs').textContent = '🪧 لوحات التقاطعات: ' + (settings.signs ? 'تشغيل' : 'إيقاف'); $('s_hudn').textContent = '🏷 اسم الشارع: ' + (settings.hudn ? 'ظاهر' : 'مخفي (تحدٍّ)'); };
+  const refreshToggles = () => { $('s_sat').textContent = '🛰 صور الأقمار الصناعية: ' + (settings.sat ? 'تشغيل' : 'إيقاف'); $('s_signs').textContent = '🪧 لوحات التقاطعات: ' + (settings.signs ? 'تشغيل' : 'إيقاف'); $('s_hudn').textContent = '🏷 اسم الشارع: ' + (settings.hudn ? 'ظاهر' : 'مخفي (تحدٍّ)'); };
+  $('s_sat').onclick = () => { settings.sat = settings.sat ? 0 : 1; world.satOn = !!settings.sat; saveSet(); refreshToggles(); toast('أعد تحميل الصفحة لتطبيق الخيار'); };
   $('s_signs').onclick = () => { settings.signs = settings.signs ? 0 : 1; signs.enabled = !!settings.signs; saveSet(); refreshToggles(); };
   $('s_hudn').onclick = () => { settings.hudn = settings.hudn ? 0 : 1; saveSet(); refreshToggles(); };
   $('s_help').onclick = () => openPanel('help'); $('help').onclick = () => { $('help').style.display = 'none'; };
