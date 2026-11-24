@@ -63,7 +63,7 @@ def tool_page(t):
     faq = "".join(f"<h3>{E(x['q'])}</h3><p>{E(x['a'])}</p>" for x in t["faq"])
     src = (f'<p class="src">فكرة الأداة مستوحاة من اتجاه رائج: <a href="{E(t["source_url"])}" rel="nofollow noopener" target="_blank">{E(t["source"])}</a> — الكود والتصميم مكتوبان من الصفر.</p>'
            if t.get("source") else "")
-    main = f'<div class="tool"><div class="card">{t["body_html"]}</div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2>{faq}</section>{src}<p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل الأدوات</a> · <a href="../pages/index.html" class="glow-gold">كل الصفحات</a></p></div>'
+    main = f'<div class="tool"><div class="card">{t["body_html"]}</div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2>{faq}</section>{src}<p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل الأدوات</a> · <a href="/pages/index.html" class="glow-gold">كل الصفحات</a></p></div>'
     canon = f"{SITE}/tools/{t['slug']}.html"
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "WebApplication", "name": t["h1"], "url": canon, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}},
