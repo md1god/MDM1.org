@@ -15,12 +15,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-26.04
     timeout-minutes: 45
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: ✅ Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -132,10 +129,34 @@ jobs:
         with:
           path: '_site'
 
+  # Deploy runs as its own job: when it ran in the same job right after the upload, deploy-pages
+  # intermittently reported "Found 0 artifact(s)" and the whole site update was lost.
+  deploy:
+    needs: build
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment_retry.outputs.page_url || steps.deployment.outputs.page_url }}
+    steps:
       - name: 🌐 Deploy
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
         with:
-          timeout: 1800000
+          timeout: 600000
+          error_count: 20
+          reporting_interval: 15000
+
+      - name: ⏳ Wait before retrying the deploy
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - name: 🌐 Deploy (retry once)
+        id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+        with:
+          timeout: 600000
           error_count: 20
           reporting_interval: 15000
