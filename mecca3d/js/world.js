@@ -679,7 +679,7 @@ export class Signs {
 export class HoodSigns {
   constructor(world) {
     this.world = world; this.cache = new Map(); this.pool = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 16; i++) {
       const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false }));
       s.visible = false; s.renderOrder = 9; world.scene.add(s); this.pool.push(s);
     }
@@ -706,7 +706,7 @@ export class HoodSigns {
   }
   update(px, pz) {
     const D = this.world.D, list = [];
-    if (this.enabled) for (const p of D.places) { const d = Math.hypot(p.x - px, p.z - pz); if (d < 1300) list.push([d, p]); }
+    if (this.enabled) for (const p of D.places) { const d = Math.hypot(p.x - px, p.z - pz); if (d < 2400) list.push([d, p]); }
     list.sort((a, b) => a[0] - b[0]);
     this.near = new Set();
     for (let i = 0; i < this.pool.length; i++) {
@@ -732,11 +732,14 @@ export const FAMOUS = [
   { id: 'hira', n: 'غار حراء', x: 3415, z: -3877, wiki: ['Cave_of_Hira', 'Hira'], ar: ['غار_حراء'] },
   { id: 'thawr', n: 'جبل ثور وغار ثور', x: 2450, z: 5055, wiki: ['Jabal_Thawr', 'Thawr_Cave'], ar: ['جبل_ثور', 'غار_ثور'] },
   { id: 'jamarat', n: 'الجمرات (منى)', x: 4811, z: 191, wiki: ['Jamaraat_Bridge', 'Jamarat', 'Stoning_of_the_Devil'], ar: ['جسر_الجمرات', 'رمي_الجمرات'] },
+  { id: 'muala', n: 'مقبرة المعلاة', x: 705, z: -833, wiki: ["Jannat_al-Mu'alla"], ar: ['مقبرة_المعلاة'] },
+  { id: 'qubays', n: 'جبل أبي قبيس', x: 238, z: 228, wiki: ['Jabal_Abu_Qubays', 'Abu_Qubays'], ar: ['جبل_أبي_قبيس'] },
+  { id: 'jinn', n: 'مسجد الجن', x: 186, z: -943, wiki: ['Masjid_al-Jinn'], ar: ['مسجد_الجن'] },
   { id: 'haramain', n: 'قطار الحرمين السريع', x: -3899, z: 538, wiki: ['Haramain_high-speed_railway'], ar: ['قطار_الحرمين_السريع'] },
 ];
 export class LandmarkPhotos {
   constructor(world) { this.world = world; this.st = new Map(); this.pool = []; this.enabled = true; this.t = 0;
-    for (let i = 0; i < 4; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false })); s.visible = false; s.renderOrder = 8; world.scene.add(s); this.pool.push(s); } }
+    for (let i = 0; i < 6; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false })); s.visible = false; s.renderOrder = 8; world.scene.add(s); this.pool.push(s); } }
   async _fetchInfo(f) {
     const tries = f.wiki.map((t) => ['en', t]).concat(f.ar.map((t) => ['ar', t]));
     for (const [lang, t] of tries) {

@@ -402,7 +402,7 @@ async function boot() {
     endsCache.set(st.key, res); return res;
   }
   function stopTour() { S.tour = null; $('tourbar').style.display = 'none'; $('b_tour').classList.remove('on'); }
-  function tourBar() { const T = S.tour; if (!T) return; $('tourbar').style.display = 'block'; $('tbt').textContent = '🌍 جولة شاملة: ' + T.done.size + ' / ' + T.total + ' شارع' + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '') + (T.cur ? ' — ' + T.cur.name : ''); }
+  function tourBar() { const T = S.tour; if (!T) return; $('tourbar').style.display = matchMedia('(max-width:700px)').matches ? 'flex' : 'block'; $('tbt').textContent = '🌍 جولة شاملة: ' + T.done.size + ' / ' + T.total + ' شارع' + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '') + (T.cur ? ' — ' + T.cur.name : ''); }
   const inMap = (x, z, m) => x > D.meta.x0 + m && x < D.meta.x1 - m && z > D.meta.z0 + m && z < D.meta.z1 - m;
   function ensureOnNetwork() { // لو السيارة خارج الشبكة أو عند حافة الخريطة: أعدها لأقرب طريق داخل الخريطة (أو للحرم)
     if (S.mode !== 'car') return;
