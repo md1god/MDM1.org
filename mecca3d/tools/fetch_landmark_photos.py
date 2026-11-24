@@ -16,6 +16,12 @@ FAMOUS = {
   'muala': (["Jannat_al-Mu'alla"], ['مقبرة_المعلاة']),
   'qubays': (['Jabal_Abu_Qubays', 'Abu_Qubays'], ['جبل_أبي_قبيس']),
   'jinn': (['Masjid_al-Jinn'], ['مسجد_الجن']),
+  'library': (["Makkah_Al-Mukarramah_Library", "Birthplace_of_Muhammad"], ["مكتبة_مكة_المكرمة"]),
+  'omar': (["Jabal_Omar_Development", "Jabal_Omar"], ["مشروع_جبل_عمر"]),
+  'bayah': (["Masjid_al-Bay'ah", "Al-Bay'ah_Mosque"], ["مسجد_البيعة"]),
+  'quranm': (["Museum_of_the_Holy_Quran"], ["متحف_القرآن_الكريم"]),
+  'uqu': (["Umm_al-Qura_University"], ["جامعة_أم_القرى"]),
+  'kudai': (["Abraj_Kudai"], ["أبراج_كدي"]),
   'haramain': (['Haramain_high-speed_railway'], ['قطار_الحرمين_السريع']),
 }
 def get(url, binary=False):
