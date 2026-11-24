@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cube Garden: Swap Puzzle | MDM1</title>
+<meta name="description" content="Play a free puzzle game in your browser: swap adjacent pieces, form matching groups, trigger special effects, and complete level goals before moves or…">
+<link rel="canonical" href="https://mdm1.org/intl/en/apps/hadikat-al-mukammimat.html">
+<link rel="alternate" hreflang="ar" href="https://mdm1.org/apps/hadikat-al-mukammimat.html">
+<link rel="alternate" hreflang="en" href="https://mdm1.org/intl/en/apps/hadikat-al-mukammimat.html">
+<link rel="alternate" hreflang="x-default" href="https://mdm1.org/intl/en/apps/hadikat-al-mukammimat.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDM1">
+<meta property="og:title" content="Cube Garden: Swap Puzzle">
+<meta property="og:description" content="Play a free puzzle game in your browser: swap adjacent pieces, form matching groups, trigger special effects, and complete level goals before moves or…">
+<meta property="og:url" content="https://mdm1.org/intl/en/apps/hadikat-al-mukammimat.html">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Cube Garden: Swap Puzzle", "description": "Play a free puzzle game in your browser: swap adjacent pieces, form matching groups, trigger special effects, and complete level goals before moves or…", "inLanguage": "en", "url": "https://mdm1.org/intl/en/apps/hadikat-al-mukammimat.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}* { box-sizing: border-box; } body { margin:0; padding:24px; background:#101522; color:#eef2ff; font-family:Tahoma,Arial,sans-serif; line-height:1.7; } h1,h2 { color:#fff; } h1 { font-size:1.9rem; margin:0 0 12px; } h2 { font-size:1.1rem; margin:0 0 10px; } p { margin:10px 0; } .panel,.card,.out { background:#1b2336; border:1px solid #2e3a57; border-radius:14px; padding:16px; margin:16px 0; } .row { display:flex; gap:12px; flex-wrap:wrap; } .center { align-items:center; } .field { flex:1 1 180px; display:flex; flex-direction:column; gap:4px; } label { font-weight:bold; color:#b9c6e6; } input,select,button { font:inherit; border-radius:9px; border:1px solid #3d4c6e; padding:8px 10px; background:#111827; color:#eef2ff; } button { cursor:pointer; transition:.15s; } button:hover:not(:disabled) { background:#2a3654; } button:disabled { opacity:.45; cursor:not-allowed; } .primary { background:#3f7cf5; border-color:#3f7cf5; color:#fff; font-weight:bold; } .game { display:grid; grid-template-columns:minmax(320px,1fr) 300px; gap:16px; align-items:start; } .board { display:grid; gap:5px; padding:10px; background:#0c1120; border-radius:16px; border:1px solid #2e3a57; touch-action:none; } .cell { aspect-ratio:1; padding:0; border-radius:10px; border:1px solid #33415f; background:#182034; display:flex; align-items:center; justify-content:center; position:relative; font-size:clamp(18px,3.4vw,30px); user-select:none; } .cell.piece { color:#fff; text-shadow:0 2px 5px #0008; } .cell.t0 { background:#7e2f32; } .cell.t1 { background:#235a89; } .cell.t2 { background:#226b4b; } .cell.t3 { background:#8a6718; } .cell.t4 { background:#5c438c; } .cell.selected { outline:3px solid #fff; outline-offset:-3px; transform:scale(.92); } .cell.blocked { background:#3a3f4d; color:#ff9b9b; } .cell.dest { background:#123f3c; box-shadow:inset 0 0 0 3px #37c9a3; } .cell.empty { background:#111827; } .fx { position:absolute; bottom:1px; right:3px; font-size:12px; background:#0007; border-radius:50%; width:16px; height:16px; line-height:16px; } .sym { pointer-events:none; } .statusLine { text-align:center; margin-top:10px; font-weight:bold; color:#ffd97a; min-height:28px; } .stat { display:flex; justify-content:space-between; border-bottom:1px solid #2e3a57; padding:5px 0; } .bar { height:9px; background:#0c1120; border-radius:9px; margin-top:10px; overflow:hidden; } .bar div { height:100%; width:0; background:linear-gradient(90deg,#37c9a3,#3f7cf5); transition:.25s; } .hint { font-size:.85rem; color:#9fb0d2; } .log { padding-left:18px; margin:0; font-size:.85rem; max-height:170px; overflow:auto; } pre { white-space:pre-wrap; margin:0; direction:ltr; text-align:left; font-family:monospace; font-size:.82rem; } .faq details { border-bottom:1px solid #2e3a57; padding:8px 0; } .faq summary { cursor:pointer; font-weight:bold; color:#b9c6e6; } @media (max-width:820px) { body { padding:12px; } .game { grid-template-columns:1fr; } }</style>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- generated by scripts/intl_tools.py. The hidden ids make the deploy-time injector skip its Arabic menu/music here. -->
+<span id="mdm1m-btn" hidden></span><audio id="bg-music" preload="none"></audio><button id="music-btn" type="button" aria-label="Music" style="display:none">🔇</button>
+<nav class="navbar">
+  <a href="/en/" class="nav-logo">👁️ MDM1</a>
+  <a href="/intl/en/" class="nav-back">MDM1 · Free apps</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · Free apps</div>
+  <h1 class="page-title">Cube Garden — Swap Puzzle Game</h1>
+  <p class="page-sub">Play a free puzzle game in your browser: swap adjacent pieces, form matching groups, trigger special effects, and complete level goals before moves or…</p>
+</header>
+<main class="page-content">
+
+<div class="tool app"><div class="card"><p>Looking for a smart, quick puzzle game that runs right in your browser? «Cube Garden» gives you a goal-driven level: swap a piece with its horizontal or vertical neighbor to make three or more matching pieces, then watch them disappear, 其他 pieces fall, and waves of chains keep forming. Every valid move costs one move, while follow-up reactions cost nothing extra. Choose a move-limited or time-limited level, use boosters like row or column blasts, pause, and restart whenever you like. Everything runs locally on your device, with no connection or sign-up.</p>
+
+<div class="panel">
+  <div class="row">
+    <div class="field">
+      <label for="levelMode">Level mode</label>
+      <select id="levelMode">
+        <option value="moves">Move-limited</option>
+        <option value="time">Time-limited</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="boardSize">Board size</label>
+      <select id="boardSize">
+        <option value="6">6 × 6</option>
+        <option value="7" selected>7 × 7</option>
+        <option value="8">8 × 8</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="goalType">Main goal</label>
+      <select id="goalType">
+        <option value="score">Reach a target score</option>
+        <option value="collect">Collect pieces of a specific type</option>
+        <option value="blocker">Break obstacles</option>
+        <option value="exit">Deliver pieces to exits</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="targetValue">Target value</label>
+      <input id="targetValue" type="number" min="3" max="9999" value="1200" />
+    </div>
+    <div class="field" id="collectTypeField">
+      <label for="collectType">Required piece type</label>
+      <select id="collectType">
+        <option value="0">Red pieces</option>
+        <option value="1">Blue pieces</option>
+        <option value="2">Green pieces</option>
+        <option value="3">Yellow pieces</option>
+        <option value="4">Purple pieces</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="allowance">Moves or seconds</label>
+      <input id="allowance" type="number" min="10" max="600" value="25" />
+    </div>
+  </div>
+
+  <div class="row center">
+    <button id="startBtn" type="button" class="primary">Start level</button>
+    <button id="pauseBtn" type="button" disabled>Pause</button>
+    <button id="restartBtn" type="button" disabled>Restart</button>
+    <button id="exitBtn" type="button" disabled>Exit</button>
+  </div>
+</div>
+
+<div class="game">
+  <div class="boardWrap">
+    <div id="board" class="board" aria-label="Game board"></div>
+    <div id="statusLine" class="statusLine">Ready to play</div>
+  </div>
+
+  <div class="side">
+    <div class="card">
+      <h2>Level status</h2>
+      <div class="stat"><span>Score</span><strong id="scoreValue">0</strong></div>
+      <div class="stat"><span id="allowanceLabel">Moves remaining</span><strong id="allowanceValue">25</strong></div>
+      <div class="stat"><span>Cascade depth</span><strong id="cascadeValue">0</strong></div>
+      <div class="stat"><span>Goal progress</span><strong id="goalValue">0 / 1200</strong></div>
+      <div class="bar"><div id="goalBar"></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Tools</h2>
+      <p class="hint">Choose a tool, then tap any piece on the board.</p>
+      <div class="row center">
+        <button id="boostRowBtn" type="button" disabled>Row blast (2)</button>
+        <button id="boostColBtn" type="button" disabled>Column blast (2)</button>
+        <button id="boostClearBtn" type="button" disabled>Clear (1)</button>
+      </div>
+      <p id="boostHint" class="hint">No active tools right now.</p>
+    </div>
+
+    <div class="card">
+      <h2>Event log</h2>
+      <ul id="log" class="log"><li>Start the level to see events here.</li></ul>
+    </div>
+  </div>
+</div>
+
+<div class="out" id="out">
+  <h2>Game summary</h2>
+  <pre id="summary">The level hasn't started yet.</pre>
+</div>
+
+<section class="faq">
+  <h2>FAQ</h2>
+  <details><summary>How do I make a valid match?</summary><p>Select a piece and then an adjacent piece, or drag from one cell to a neighboring cell. A move is accepted only if it forms three connected matching pieces horizontally or vertically, or triggers a special effect.</p></details>
+  <details><summary>Do cascades cost extra moves?</summary><p>No. After a valid swap, groups are removed, pieces fall, and cells refill automatically; any new matches resolve without costing you another move.</p></details>
+  <details><summary>What happens if there are no legal moves?</summary><p>Pieces are reshuffled automatically, keeping obstacles and progress intact. If 配置为 a valid arrangement is impossible, the level ends according to the failure condition.</p></details>
+  <details><summary>Can I pause the level?</summary><p>Yes. The pause button freezes the timer and prevents board changes until you press Resume. Restart resets the board, goal, score, and counter to their original values.</p></details>
+</section></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">FAQ</h2><h3>How do I start the first level?</h3><p>Choose the game mode, board size, and goal type, then press «Start level». Then select a piece and an adjacent piece, or drag toward a neighboring cell.</p><h3>What's the difference between moves and time?</h3><p>In moves mode, one move is deducted for each valid swap. In time mode, the seconds keep counting during play and aren't interrupted by falling pieces or cascades.</p><h3>How do I get special pieces?</h3><p>A special piece is created when configuring four consecutive pieces or five or more, as well as at the intersection of two groups. Its effect stays saved until you use it in a later swap.</p><h3>What do obstacles and exits do?</h3><p>Obstacles block matches and movement and are cleared after a set number of nearby hits or special effects. Exits count toward the goal of moving pieces to the target cells.</p><h3>Does the game need an internet connection?</h3><p>No. The game runs entirely in the browser using local JavaScript and sends no data or requests any external connection.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← All apps</a> · <a href="../tools/" class="glow-gold">Tools</a></p></div>
+
+</main>
+<footer class="page-footer">✦ MDM1 · 2026-11-23 ✦</footer>
+<script src="/js/global.js"></script>
+<script>(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var boardEl=$('board'),statusLine=$('statusLine'),logEl=$('log'),summaryEl=$('summary');
+var scoreEl=$('scoreValue'),allowanceEl=$('allowanceValue'),allowanceLabel=$('allowanceLabel'),cascadeEl=$('cascadeValue'),goalEl=$('goalValue'),goalBar=$('goalBar');
+var startBtn=$('startBtn'),pauseBtn=$('pauseBtn'),restartBtn=$('restartBtn'),exitBtn=$('exitBtn');
+var boostRowBtn=$('boostRowBtn'),boostColBtn=$('boostColBtn'),boostClearBtn=$('boostClearBtn'),boostHint=$('boostHint');
+var TYPES=5,COLORS=['#e45756','#3b82c4','#37a169','#e3a928','#8b6bc7'];
+var SHAPES=['◆','●','▲','■','✦'];
+var SPECIAL_NONE=0,SPECIAL_ROW=1,SPECIAL_COL=2,SPECIAL_BOMB=3;
+var state={status:'ready',n:7,mode:'moves',goalType:'score',target:1200,collectType:0,allowance:25,remaining:25,timeLeft:0,score:0,cascade:0,progress:0,grid:[],cells:[],selected:null,boost:null,boosts:{row:2,col:2,clear:1},initial:null,timer:null,log:[],dragStart:null,resolving:false};
+
+function rnd(n){return Math.floor(Math.random()*n);}
+function fmtTime(s){s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function key(r,c){return r+','+c;}
+function inside(r,c){return r>=0&&c>=0&&r<state.n&&c<state.n;}
+function cell(r,c){return state.grid[r][c];}
+function log(msg){state.log.unshift(msg);if(state.log.length>8)state.log.pop();logEl.innerHTML=state.log.map(function(x){return '<li>'+x+'</li>';}).join('');}
+function status(txt){statusLine.textContent=txt;}
+
+function makeCell(r,c,type,blocker,dest){
+  return {r:r,c:c,type:type,special:SPECIAL_NONE,blocker:blocker||0,dest:!!dest,visible:true};
+}
+
+function hasInitialMatch(r,c,type){
+  if(type<0)return false;
+  var a=1;for(var i=c-1;i>=0&&cell(r,i).type===type&&!cell(r,i).blocker;i--)a++;
+  for(i=c+1;i<state.n&&cell(r,i).type===type&&!cell(r,i).blocker;i++)a++;
+  if(a>=3)return true;
+  a=1;for(i=r-1;i>=0&&cell(i,c).type===type&&!cell(i,c).blocker;i--)a++;
+  for(i=r+1;i<state.n&&cell(i,c).type===type&&!cell(i,c).blocker;i++)a++;
+  return a>=3;
+}
+
+function buildGrid(){
+  state.grid=[];
+  for(var r=0;r<state.n;r++){state.grid[r]=[];for(var c=0;c<state.n;c++){state.grid[r][c]=makeCell(r,c,-1,0,false);}}
+  var blocked=[];
+  var blockCount=state.n>=8?5:(state.n===7?4:3);
+  while(blocked.length<blockCount){
+    var br=1+rnd(state.n-2),bc=1+rnd(state.n-2);
+    if(!cell(br,bc).blocker){blocked.push(key(br,bc));cell(br,bc).blocker=state.goalType==='blocker'?2:1;}
+  }
+  if(state.goalType==='exit'){
+    for(var e=0;e<2;e++){
+      var er=e===0?0:state.n-1,ec=e===0?0:state.n-1;
+      cell(er,ec).blocker=0;cell(er,ec).dest=true;
+    }
+  }
+  for(var rr=0;rr<state.n;rr++){
+    for(var cc=0;cc<state.n;cc++){
+      if(cell(rr,cc).blocker)continue;
+      var t,tries=0;
+      do{t=rnd(TYPES);tries++;}while(hasInitialMatch(rr,cc,t)&&tries<60);
+      cell(rr,cc).type=t;
+    }
+  }
+  if(!findAnyLegalSwap())rebuildFill();
+  state.initial=state.grid.map(function(row){return row.map(function(x){return {type:x.type,special:x.special,blocker:x.blocker,dest:x.dest};});});
+}
+
+function rebuildFill(){
+  for(var r=0;r<state.n;r++)for(var c=0;c<state.n;c++){
+    if(!cell(r,c).blocker){var t,tries=0;do{t=rnd(TYPES);tries++;}while(hasInitialMatch(r,c,t)&&tries<80);cell(r,c).type=t;cell(r,c).special=SPECIAL_NONE;}
+  }
+}
+
+function swapCells(a,b){
+  var ca=cell(a.r,a.c),cb=cell(b.r,b.c);
+  var ta=ca.type,tb=cb.type,sa=ca.special,sb=cb.special;
+  ca.type=tb;cb.type=ta;ca.special=sb;cb.special=sa;
+}
+
+function findMatches(){
+  var found=[],seen={};
+  for(var r=0;r<state.n;r++){
+    var c=0;
+    while(c<state.n){
+      var x=cell(r,c);
+      if(x.blocker||x.type<0){c++;continue;}
+      var e=c+1;while(e<state.n&&!cell(r,e).blocker&&cell(r,e).type===x.type)e++;
+      if(e-c>=3){var g=[];for(var i=c;i<e;i++)g.push(key(r,i));found.push({cells:g,dir:'h',type:x.type,len:e-c});}
+      c=e;
+    }
+  }
+  for(var cc2=0;cc2<state.n;cc2++){
+    var rr2=0;
+    while(rr2<state.n){
+      var y=cell(rr2,cc2);
+      if(y.blocker||y.type<0){rr2++;continue;}
+      var e2=rr2+1;while(e2<state.n&&!cell(e2,cc2).blocker&&cell(e2,cc2).type===y.type)e2++;
+      if(e2-rr2>=3){var g2=[];for(var j=rr2;j<e2;j++)g2.push(key(j,cc2));found.push({cells:g2,dir:'v',type:y.type,len:e2-rr2});}
+      rr2=e2;
+    }
+  }
+  return found;
+}
+
+function findAnyLegalSwap(){
+  for(var r=0;r<state.n;r++)for(var c=0;c<state.n;c++){
+    if(cell(r,c).blocker||cell(r,c).type<0)continue;
+    var dirs=[[0,1],[1,0]];
+    for(var d=0;d<dirs.length;d++){
+      var nr=r+dirs[d][0],nc=c+dirs[d][1];
+      if(!inside(nr,nc)||cell(nr,nc).blocker||cell(nr,nc).type<0)continue;
+      swapCells({r:r,c:c},{r:nr,c:nc});
+      var ok=findMatches().length>0||cell(r,c).special!==SPECIAL_NONE||cell(nr,nc).special!==SPECIAL_NONE;
+      swapCells({r:r,c:c},{r:nr,c:nc});
+      if(ok)return true;
+    }
+  }
+  return false;
+}
+
+function parseKey(k){var p=k.split(',');return {r:+p[0],c:+p[1]};}
+function unique(arr){var o={},out=[];arr.forEach(function(k){if(!o[k]){o[k]=1;out.push(k);}});return out;}
+
+function specialFromGroups(groups){
+  var plans=[];
+  groups.forEach(function(g){
+    if(g.len===4)plans.push({at:g.cells[1],kind:SPECIAL_ROW,dir:g.dir});
+    else if(g.len>=5)plans.push({at:g.cells[Math.floor(g.cells.length/2)],kind:SPECIAL_BOMB});
+  });
+  var count={};
+  groups.forEach(function(g){g.cells.forEach(function(k){count[k]=(count[k]||0)+1;});});
+  Object.keys(count).forEach(function(k){if(count[k]>=2){var p=parseKey(k);plans.push({at:k,kind:SPECIAL_BOMB});}});
+  return plans;
+}
+
+function neighborsOf(k){
+  var p=parseKey(k),out=[];
+  [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){
+    var r=p.r+d[0],c=p.c+d[1];
+    if(inside(r,c)&&!cell(r,c).blocker)out.push(key(r,c));
+  });
+  return out;
+}
+
+function applyEffect(kind,at,dir,queue,originType){
+  var p=parseKey(at),r=p.r,c=p.c,i;
+  if(kind===SPECIAL_ROW){for(i=0;i<state.n;i++)if(!cell(r,i).blocker)queue.push(key(r,i));}
+  else if(kind===SPECIAL_COL){for(i=0;i<state.n;i++)if(!cell(i,c).blocker)queue.push(key(i,c));}
+  else if(kind===SPECIAL_BOMB){
+    for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){
+      var rr=r+dr,cc=c+dc;if(inside(rr,cc)&&!cell(rr,cc).blocker)queue.push(key(rr,cc));
+    }
+  }
+  if(originType!==undefined){
+    for(var rr2=0;rr2<state.n;rr2++)for(var cc2=0;cc2<state.n;cc2++){
+      if(!cell(rr2,cc2).blocker&&cell(rr2,cc2).type===originType)queue.push(key(rr2,cc2));
+    }
+  }
+}
+
+function damageBlockersAround(cleared){
+  var hit={};
+  cleared.forEach(function(k){neighborsOf(k).forEach(function(nk){
+    var q=parseKey(nk);
+    var dirs=[[parseKey(k).r-q.r,parseKey(k).c-q.c]];
+    var br=q.r+dirs[0][0],bc=q.c+dirs[0][1];
+    if(inside(br,bc)&&cell(br,bc).blocker>0)hit[key(br,bc)]=1;
+  });});
+  return Object.keys(hit);
+}
+
+function applyGravityAndRefill(){
+  var moved=0,added=0;
+  for(var c=0;c<state.n;c++){
+    var blocks=[];
+    for(var r=0;r<state.n;r++)if(cell(r,c).blocker)blocks.push(r);
+    var segments=[],start=0;
+    blocks.forEach(function(b){if(b>start)segments.push([start,b-1]);start=b+1;});
+    if(start<state.n)segments.push([start,state.n-1]);
+    segments.forEach(function(seg){
+      var top=seg[0],bottom=seg[1];
+      var write=bottom;
+      for(var r=bottom;r>=top;r--){
+        if(cell(r,c).type>=0&&!cell(r,c).blocker){
+          if(write!==r){cell(write,c).type=cell(r,c).type;cell(write,c).special=cell(r,c).special;cell(r,c).type=-1;cell(r,c).special=SPECIAL_NONE;moved++;}
+          write--;
+        }
+      }
+      for(var w=write;w>=top;w--){cell(w,c).type=rnd(TYPES);cell(w,c).special=SPECIAL_NONE;added++;}
+    });
+  }
+  return {moved:moved,added:added};
+}
+
+function progressForClear(count,types){
+  var inc=0;
+  if(state.goalType==='score'){var gain=count*60+Math.max(0,count-3)*25;state.score+=gain;inc=gain;}
+  else if(state.goalType==='collect'){inc=types[state.collectType]||0;}
+  else if(state.goalType==='blocker'){inc=0;}
+  else if(state.goalType==='exit'){inc=0;}
+  if(state.goalType==='score'||state.goalType==='collect')state.progress=Math.min(state.target,state.progress+inc);
+}
+
+function moveExits(){
+  if(state.goalType!=='exit')return;
+  for(var r=state.n-1;r>=0;r--)for(var c=0;c<state.n;c++){
+    var x=cell(r,c);
+    if(x.dest&&x.type>=0&&!x.blocker){state.progress=Math.min(state.target,state.progress+1);x.type=-1;x.special=SPECIAL_NONE;x.dest=false;}
+  }
+}
+
+function checkGoal(){return state.progress>=state.target;}
+
+function render(){
+  var html='';
+  for(var r=0;r<state.n;r++)for(var c=0;c<state.n;c++){
+    var x=cell(r,c),cls='cell';
+    if(x.blocker)cls+=' blocked b'+x.blocker;
+    else if(x.type<0)cls+=' empty';
+    else cls+=' piece t'+x.type+(x.selected?' selected':'')+(x.special?' sp'+x.special:'');
+    if(x.dest)cls+=' dest';
+    var content='';
+    if(x.blocker)content='<span class="blk">✖'+(x.blocker>1?'<sup>'+x.blocker+'</sup>':'')+'</span>';
+    else if(x.type>=0)content='<span class="sym">'+SHAPES[x.type]+'</span>'+(x.special?'<span class="fx">'+['','↔','↕','✺'][x.special]+'</span>':'');
+    else if(x.dest)content='<span class="exit">⌂</span>';
+    html+='<button type="button" class="'+cls+'" data-r="'+r+'" data-c="'+c+'" aria-label="cell '+r+' '+c+'">'+content+'</button>';
+  }
+  boardEl.style.gridTemplateColumns='repeat('+state.n+',1fr)';
+  boardEl.innerHTML=html;
+  scoreEl.textContent=state.score;
+  allowanceEl.textContent=state.mode==='time'?fmtTime(state.timeLeft):state.remaining;
+  allowanceLabel.textContent=state.mode==='time'?'Time left':'Moves left';
+  cascadeEl.textContent=state.cascade;
+  goalEl.textContent=state.progress+' / '+state.target;
+  goalBar.style.width=Math.min(100,state.progress/state.target*100)+'%';
+  boostRowBtn.disabled=state.status!=='playing'||state.boosts.row<1||state.resolving;
+  boostColBtn.disabled=state.status!=='playing'||state.boosts.col<1||state.resolving;
+  boostClearBtn.disabled=state.status!=='playing'||state.boosts.clear<1||state.resolving;
+  pauseBtn.disabled=state.status!=='playing'&&state.status!=='paused';
+  pauseBtn.textContent=state.status==='paused'?'Resume':'Pause';
+  restartBtn.disabled=state.status==='ready'||state.status==='abandoned';
+  exitBtn.disabled=state.status==='ready';
+  summaryEl.textContent=JSON.stringify({status:state.status,score:state.score,cascade:state.cascade,goal:state.progress+'/'+state.target,allowance:state.mode==='time'?fmtTime(state.timeLeft):state.remaining,boosts:state.boosts},null,2);
+}
+
+function clearSelection(){if(state.selected){var p=parseKey(state.selected);cell(p.r,p.c).selected=false;}state.selected=null;}
+
+function finishIfNeeded(){
+  if(state.status!=='playing')return true;
+  if(checkGoal()){
+    state.status='success';status('Success! Goal fulfilled.');log('Stage completed successfully');stopTimer();render();return true;
+  }
+  var out=state.mode==='time'?state.timeLeft<=0:state.remaining<=0;
+  if(out){state.status='failure';status('Stage ended without reaching the goal.');log('Failed: Out of moves or time');stopTimer();render();return true;}
+  return false;
+}
+
+function ensurePlayable(){
+  if(findAnyLegalSwap())return;
+  log('No legal moves — reshuffling');
+  rebuildFill();
+  render();
+  if(!findAnyLegalSwap()){
+    state.status='failure';status('Could not create a valid arrangement.');log('Failed: Cannot reshuffle');stopTimer();render();
+  }
+}
+
+function resolve(fromSpecial){
+  state.resolving=true;render();
+  var chain=0;
+  function step(){
+    var groups=findMatches();
+    if(groups.length===0){
+      state.cascade=chain;state.resolving=false;
+      moveExits();render();
+      if(!finishIfNeeded())ensurePlayable();
+      render();return;
+    }
+    chain++;
+    var all=[],types=[0,0,0,0,0];
+    groups.forEach(function(g){g.cells.forEach(function(k){all.push(k);});});
+    all=unique(all);
+    all.forEach(function(k){var p=parseKey(k),x=cell(p.r,p.c);if(x.type>=0)types[x.type]++;});
+    progressForClear(all.length,types);
+    var plans=specialFromGroups(groups);
+    var queue=all.slice();
+    if(fromSpecial){queue=queue.concat(fromSpecial.extra||[]);queue=unique(queue);fromSpecial=null;}
+    var effects=[];
+    all.forEach(function(k){var p=parseKey(k),sp=cell(p.r,p.c).special;if(sp!==SPECIAL_NONE)effects.push({kind:sp,at:k,type:cell(p.r,p.c).type});});
+    var loop=0;
+    while(effects.length&&loop<20){
+      var e=effects.shift(),extra=[];
+      applyEffect(e.kind,e.at,null,extra,e.kind===SPECIAL_BOMB?undefined:e.type);
+      extra.forEach(function(k){if(queue.indexOf(k)<0){queue.push(k);var p=parseKey(k),x=cell(p.r,p.c);if(x.type>=0)types[x.type]++;}});
+      loop++;
+    }
+    queue=unique(queue);
+    var blockers=damageBlockersAround(queue);
+    if(state.goalType==='blocker'){
+      var broken=0;
+      blockers.forEach(function(k){var p=parseKey(k);if(cell(p.r,p.c).blocker>0){cell(p.r,p.c).blocker--;if(cell(p.r,p.c).blocker===0)broken++;}});
+      state.progress=Math.min(state.target,state.progress+broken);
+      if(broken)log('Broke '+broken+' obstacle');
+    } else {
+      blockers.forEach(function(k){var p=parseKey(k);if(cell(p.r,p.c).blocker>0)cell(p.r,p.c).blocker--;if(cell(p.r,p.c).blocker===0)log('Obstacle removed');});
+    }
+    var specialAt={};
+    plans.forEach(function(pl){specialAt[pl.at]=pl.kind;});
+    queue.forEach(function(k){
+      var p=parseKey(k),x=cell(p.r,p.c);
+      if(x.type>=0||x.special!==SPECIAL_NONE){
+        x.type=-1;x.special=SPECIAL_NONE;
+      }
+    });
+    Object.keys(specialAt).forEach(function(k){
+      var p=parseKey(k);
+      if(!cell(p.r,p.c).blocker){cell(p.r,p.c).type=types.indexOf(Math.max.apply(null,types));cell(p.r,p.c).special=specialAt[k];log('Special piece created');}
+    });
+    var mv=applyGravityAndRefill();
+    log('Wave '+(chain+1)+': removed '+queue.length+' pieces, dropped '+mv.moved+' and added '+mv.added);
+    render();
+    setTimeout(step,260);
+  }
+  setTimeout(step,180);
+}
+
+function trySwap(a,b){
+  if(state.status!=='playing'||state.resolving)return;
+  if(Math.abs(a.r-b.r)+Math.abs(a.c-b.c)!==1){status('The two cells must be adjacent.');render();return;}
+  var ca=cell(a.r,a.c),cb=cell(b.r,b.c);
+  if(ca.blocker||cb.blocker||ca.type<0||cb.type<0){status('Cannot swap an unavailable cell.');render();return;}
+  var sa=ca.special,sb=cb.special;
+  swapCells(a,b);
+  var groups=findMatches();
+  var combo=(sa!==SPECIAL_NONE||sb!==SPECIAL_NONE);
+  if(!groups.length&&!combo){
+    swapCells(a,b);status('Swap did not form a match — board reset.');log('Swap rejected');render();return;
+  }
+  if(state.mode==='moves')state.remaining--;
+  status('Move accepted — resolving...');log('Move accepted');
+  var extra=[];
+  if(combo){
+    var specialPos=(sa!==SPECIAL_NONE)?b:a;
+    var originType=cell(specialPos.r,specialPos.c).type;
+    applyEffect((sa!==SPECIAL_NONE?sa:sb),key(specialPos.r,specialPos.c),null,extra,originType);
+    extra=unique(extra);
+  }
+  render();
+  resolve(combo?{extra:extra}:null);
+}
+
+function useBoost(kind){
+  if(state.status!=='playing'||state.resolving||state.boosts[kind]<1)return;
+  state.boosts[kind]--;state.boost=kind;boostHint.textContent=kind==='clear'?'Choose a piece to remove.':'Choose a piece to select the row or column.';status('Tool active: choose a cell.');log('Activated tool '+kind);render();
+}
+
+function applyBoost(p){
+  var kind=state.boost;state.boost=null;
+  var extra=[];
+  if(kind==='row')applyEffect(SPECIAL_ROW,key(p.r,p.c),null,extra);
+  else if(kind==='col')applyEffect(SPECIAL_COL,key(p.r,p.c),null,extra);
+  else extra=[key(p.r,p.c)];
+  state.score+=extra.length*40;
+  log('Tool used on '+extra.length+' cell');
+  render();resolve({extra:unique(extra)});
+}
+
+function onCellClick(e){
+  var btn=e.target.closest('.cell');if(!btn)return;
+  var a={r:+btn.dataset.r,c:+btn.dataset.c};
+  if(state.boost){applyBoost(a);return;}
+  if(state.status==='paused'||state.status!=='playing'||state.resolving)return;
+  if(!state.selected){
+    if(cell(a.r,a.c).type<0||cell(a.r,a.c).blocker){status('Choose an available piece.');render();return;}
+    cell(a.r,a.c).selected=true;state.selected=key(a.r,a.c);status('Piece selected — choose a neighbor.');render();return;
+  }
+  if(state.selected===key(a.r,a.c)){clearSelection();status('Selection canceled.');render();return;}
+  var s=parseKey(state.selected);clearSelection();trySwap(s,a);
+}
+
+function onDragStart(e){
+  var btn=e.target.closest('.cell');if(!btn||state.resolving||state.status!=='playing')return;
+  state.dragStart={r:+btn.dataset.r,c:+btn.dataset.c};
+}
+function onDragEnd(e){
+  if(!state.dragStart)return;
+  var start=state.dragStart;state.dragStart=null;
+  var btn=document.elementFromPoint(e.clientX,e.clientY);
+  if(!btn)btn=e.target;
+  btn=btn.closest?btn.closest('.cell'):null;
+  if(!btn)return;
+  var end={r:+btn.dataset.r,c:+btn.dataset.c};
+  if(start.r===end.r&&start.c===end.c)return;
+  clearSelection();trySwap(start,end);
+}
+
+function startTimer(){
+  stopTimer();
+  if(state.mode!=='time')return;
+  state.timer=setInterval(function(){
+    if(state.status==='playing'&&!state.resolving){state.timeLeft--;if(state.timeLeft<=0){state.timeLeft=0;}
+      allowanceEl.textContent=fmtTime(state.timeLeft);
+      if(state.timeLeft<=0){status('Time up — ending wave...');if(!state.resolving)finishIfNeeded();}
+    }
+  },1000);
+}
+function stopTimer(){if(state.timer){clearInterval(state.timer);state.timer=null;}}
+
+function goalDefault(type){
+  if(type==='score')return 1200;
+  if(type==='collect')return 20;
+  if(type==='blocker')return 3;
+  return 2;
+}
+
+function startGame(){
+  stopTimer();
+  state.mode=$('levelMode').value;
+  state.n=+$('boardSize').value;
+  state.goalType=$('goalType').value;
+  state.collectType=+$('collectType').value;
+  state.target=Math.max(1,+$('targetValue').value||goalDefault(state.goalType));
+  var raw=+$('allowance').value;
+  state.allowance=Math.max(10,Math.min(600,raw||25));
+  state.remaining=state.allowance;state.timeLeft=state.mode==='time'?state.allowance:0;
+  state.score=0;state.cascade=0;state.progress=0;state.selected=null;state.boost=null;
+  state.boosts={row:2,col:2,clear:1};state.log=[];state.resolving=false;state.status='playing';
+  $('collectTypeField').style.display=state.goalType==='collect'?'':'none';
+  buildGrid();
+  log('Stage started: '+state.n+'×'+state.n+', mode '+(state.mode==='time'?'Time':'Moves'));
+  status('Stage in progress — good luck!');
+  boostHint.textContent='Choose a tool to activate.';
+  startTimer();render();
+}
+
+function restart(){
+  if(!state.initial)return;
+  stopTimer();state.grid=state.initial.map(function(row){return row.map(function(x){return makeCell(0,0,x.type,0,x.dest);});});
+  for(var r=0;r<state.n;r++)for(var c=0;c<state.n;c++){state.grid[r][c].r=r;state.grid[r][c].c=c;state.grid[r][c].blocker=state.initial[r][c].blocker;state.grid[r][c].special=state.initial[r][c].special;}
+  state.score=0;state.cascade=0;state.progress=0;state.remaining=state.allowance;state.timeLeft=state.mode==='time'?state.allowance:0;
+  state.selected=null;state.boost=null;state.boosts={row:2,col:2,clear:1};state.log=[];state.resolving=false;state.status='playing';
+  log('Stage restarted');status('Restarted.');startTimer();render();
+}
+
+startBtn.addEventListener('click',startGame);
+pauseBtn.addEventListener('click',function(){
+  if(state.status==='playing'){state.status='paused';stopTimer();status('Stage paused.');log('Pause');}
+  else if(state.status==='paused'){state.status='playing';status('Stage resumed.');log('Resume');startTimer();}
+  render();
+});
+restartBtn.addEventListener('click',restart);
+exitBtn.addEventListener('click',function(){stopTimer();state.status='abandoned';status('Stage exited.');log('Exit');render();});
+boostRowBtn.addEventListener('click',function(){useBoost('row');});
+boostColBtn.addEventListener('click',function(){useBoost('col');});
+boostClearBtn.addEventListener('click',function(){useBoost('clear');});
+boardEl.addEventListener('click',onCellClick);
+boardEl.addEventListener('mousedown',onDragStart);
+document.addEventListener('mouseup',onDragEnd);
+boardEl.addEventListener('touchstart',function(e){if(e.touches[0])onDragStart({target:e.touches[0].target});},{passive:true});
+boardEl.addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t)onDragEnd({clientX:t.clientX,clientY:t.clientY,target:t.target});},{passive:true});
+$('goalType').addEventListener('change',function(){
+  var t=this.value;$('targetValue').value=goalDefault(t);
+  $('collectTypeField').style.display=t==='collect'?'':'none';
+});
+$('levelMode').addEventListener('change',function(){
+  $('allowance').value=this.value==='time'?90:25;
+});
+
+(function init(){
+  state.n=+$('boardSize').value;
+  buildGrid();render();
+})();
+})();</script>
+</body>
+</html>
