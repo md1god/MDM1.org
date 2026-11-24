@@ -38,6 +38,7 @@ export class World {
     this.NX = Math.ceil((D.meta.x1 - D.meta.x0) / this.CELL);
     this.NZ = Math.ceil((D.meta.z1 - D.meta.z0) / this.CELL);
     this.quality = 'medium';
+    this.satOn = true;
     this.R = 3;
 
     const r = this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
@@ -187,6 +188,8 @@ export class World {
         col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
       }
     }
+    const uv = new Float32Array(W * W * 2);
+    for (let j = 0; j < W; j++) for (let i = 0; i < W; i++) { uv[(j * W + i) * 2] = i / n; uv[(j * W + i) * 2 + 1] = j / n; }
     const idx = new Uint32Array(n * n * 6);
     let q = 0;
     for (let j = 0; j < n; j++) {
@@ -200,6 +203,7 @@ export class World {
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     g.setIndex(new THREE.BufferAttribute(idx, 1));
     return g;
   }
@@ -270,6 +274,7 @@ export class World {
     if (this._acc >= 0.25 || !this._init) {
       this._acc = 0; this._init = true;
       const cx = Math.floor((px - this.X0) / this.CELL), cz = Math.floor((pz - this.Z0) / this.CELL), R = this.R;
+      this.pc = [cx, cz];
       const want = new Set();
       for (let dz = -R - 1; dz <= R + 1; dz++) {
         for (let dx = -R - 1; dx <= R + 1; dx++) {
@@ -305,11 +310,51 @@ export class World {
 
   get busy() { return this.queue.length > 0 || this.ready.length > 0 || this.pending.size > 0; }
 
+  // ---- صور الأقمار الصناعية (Esri World Imagery) تُفرش على أرض كل مربع، وتُحمَّل وقت التشغيل؛ عند الفشل تبقى الألوان العادية ----
+  _tile(z, x, y) {
+    this.tiles = this.tiles || new Map();
+    const key = z + '/' + x + '/' + y; let p = this.tiles.get(key);
+    if (!p) {
+      p = new Promise((res) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = () => res(null); im.src = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/' + z + '/' + y + '/' + x; });
+      this.tiles.set(key, p);
+      if (this.tiles.size > 400) this.tiles.delete(this.tiles.keys().next().value);
+    }
+    return p;
+  }
+  async _applySat(ch, mesh, cx, cz) {
+    try {
+      const { origin } = this.D.meta, R = 6371008.8, cos0 = Math.cos((origin.lat * Math.PI) / 180), Z = 17, N = 2 ** Z;
+      const x0 = this.X0 + cx * this.CELL, z0 = this.Z0 + cz * this.CELL, C = this.CELL;
+      const toLL = (x, z) => [origin.lat - (z / R) * (180 / Math.PI), origin.lon + (x / (R * cos0)) * (180 / Math.PI)];
+      const toXZ = (lat, lon) => [((lon - origin.lon) * Math.PI / 180) * R * cos0, -((lat - origin.lat) * Math.PI / 180) * R];
+      const tx = (lon) => ((lon + 180) / 360) * N, ty = (lat) => { const s = Math.sin((lat * Math.PI) / 180); return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * N; };
+      const tlon = (X) => (X / N) * 360 - 180, tlat = (Y) => (Math.atan(Math.sinh(Math.PI * (1 - (2 * Y) / N))) * 180) / Math.PI;
+      const [latA, lonA] = toLL(x0, z0), [latB, lonB] = toLL(x0 + C, z0 + C);
+      const ring = this.pc ? Math.max(Math.abs(cx - this.pc[0]), Math.abs(cz - this.pc[1])) : 0;
+      const size = ring <= 1 ? 512 : ring === 2 ? 256 : 128;
+      const ix0 = Math.floor(tx(lonA)), ix1 = Math.floor(tx(lonB)), iy0 = Math.floor(ty(latA)), iy1 = Math.floor(ty(latB));
+      const jobs = [];
+      for (let X = ix0; X <= ix1; X++) for (let Y = iy0; Y <= iy1; Y++) jobs.push(this._tile(Z, X, Y).then((im) => [X, Y, im]));
+      const got = await Promise.all(jobs);
+      if (ch.dead || !got.some((g) => g[2])) return;
+      const cv = document.createElement('canvas'); cv.width = cv.height = size; const g = cv.getContext('2d');
+      for (const [X, Y, im] of got) {
+        if (!im) continue;
+        const [xa, za] = toXZ(tlat(Y), tlon(X)), [xb, zb] = toXZ(tlat(Y + 1), tlon(X + 1));
+        const k = size / C;
+        g.drawImage(im, (xa - x0) * k, (za - z0) * k, (xb - xa) * k + 0.6, (zb - za) * k + 0.6);
+      }
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.flipY = false; t.anisotropy = 4;
+      t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+      const m = new THREE.MeshLambertMaterial({ map: t }); mesh.userData.sat = true; mesh.material = m;
+    } catch (e) { /* نبقى على الألوان */ }
+  }
   _dispose(k) {
     const ch = this.chunks.get(k);
     if (!ch) return;
     this.scene.remove(ch.group);
-    ch.group.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
+    ch.dead = true;
+    ch.group.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.userData.sat) { o.material.map && o.material.map.dispose(); o.material.dispose(); } });
     this.colliders.delete(k);
     this.chunks.delete(k);
   }
@@ -321,6 +366,7 @@ export class World {
     const tg = this._terrainGeometry(Math.round(cx * this.CELL / this.T.step), Math.round(cz * this.CELL / this.T.step), n, 1, 0);
     const tm = new THREE.Mesh(tg, this.terrainMat);
     group.add(tm);
+    if (this.satOn) this._applySat(ch, tm, cx, cz);
     const rg = this._roadGeometry(cx, cz);
     if (rg) group.add(new THREE.Mesh(rg, this.roadMat));
     this.scene.add(group);
