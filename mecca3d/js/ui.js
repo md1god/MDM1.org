@@ -328,10 +328,10 @@ export class Labels {
     const lms = [];
     for (const l of D.landmarks) {
       const d = Math.hypot(l.x - px, l.z - pz);
-      if (d < 1000) lms.push({ d, cls: 'lm', txt: l.n, x: l.x, z: l.z, up: 28 });
+      if (d < 1600) lms.push({ d, cls: 'lm', txt: l.n, x: l.x, z: l.z, up: 28 });
     }
     lms.sort((a, b) => a.d - b.d);
-    const all = hoods.concat(lms.slice(0, 14));
+    const all = hoods.concat(lms.slice(0, 24));
     all.push({ d: Math.hypot(px, pz), cls: 'lm kaaba', txt: '🕋 الكعبة المشرفة', x: 0, z: 0, up: 30 });
     this.layer.textContent = '';
     this.items = all.map((it) => {
@@ -344,7 +344,8 @@ export class Labels {
     if (this.t > 2 || !this.items.length) { this.t = 0; this.rebuild(px, pz); }
     for (const it of this.items) {
       const s = this.world.project(it.x, it.y, it.z);
-      if (s.z > 1 || s.x < -80 || s.x > innerWidth + 80 || s.y < 40 || s.y > innerHeight) { it.el.style.display = 'none'; continue; }
+      if (s.z > 1 || s.y < 40 || s.y > innerHeight) { it.el.style.display = 'none'; continue; }
+      if (s.x < 0 || s.x > innerWidth) { const w = it.el.offsetWidth / 2 + 4; s.x = clamp(s.x, w, innerWidth - w); }
       const d = Math.hypot(it.x - px, it.z - pz);
       if (this.skip && it.cls.startsWith('hood') && this.skip.has(it.txt)) { it.el.style.display = 'none'; continue; }
       it.el.style.display = 'block';
