@@ -742,10 +742,10 @@ export class LandmarkPhotos {
     for (const [lang, t] of tries) {
       try { // 1) واجهة REST الملخّص
         const r = await fetch('https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t));
-        if (r.ok) { const j = await r.json(), src = j.thumbnail && j.thumbnail.source; if (src) return { src: src.replace(/\/(\d+)px-/, '/640px-') }; }
+        if (r.ok) { const j = await r.json(), src = j.thumbnail && j.thumbnail.source; if (src) return { src: src.replace(/\/(\d+)px-/, '/500px-') }; }
       } catch (e) { /* جرّب الطريقة التالية */ }
       try { // 2) واجهة MediaWiki (pageimages) كاحتياط
-        const r = await fetch('https://' + lang + '.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=640&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(t));
+        const r = await fetch('https://' + lang + '.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=500&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(t));
         if (r.ok) { const j = await r.json(), pg = j.query && j.query.pages; for (const k in pg || {}) if (pg[k].thumbnail) return { src: pg[k].thumbnail.source }; }
       } catch (e) { /* التالي */ }
     }
