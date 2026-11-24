@@ -34,17 +34,37 @@ jobs:
       - name: Commit, deploy, notify search engines
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_JSON: ${{ inputs.app_json }}
         run: |
-          python3 scripts/related_links.py
-          python3 scripts/build_catalog.py
-          python3 scripts/build_catalog_pages.py
-          python3 scripts/descriptor_filter.py .
-          node scripts/check-page-quality.js
-          git add apps data sitemap-apps.xml robots.txt sitemap-catalog.xml catalog categories projects
-          if git diff --cached --quiet; then echo "nothing to publish"; exit 1; fi
+          set -e
+          gen() {
+            python3 scripts/related_links.py
+            python3 scripts/build_catalog.py
+            python3 scripts/build_catalog_pages.py
+            python3 scripts/descriptor_filter.py .
+            node scripts/check-page-quality.js
+            git add apps data sitemap-apps.xml robots.txt sitemap-catalog.xml catalog categories projects
+          }
           git config user.name "MD1 Bot"; git config user.email "action@github.com"
+          gen
+          if git diff --cached --quiet; then echo "nothing to publish"; exit 1; fi
           git commit -m "App from Scout: $(date -u +%F)"
           git checkout -- .   # drop unstaged side effects of the quality filters: they are not part of this commit and block the rebase
-          git pull --rebase origin main
-          git push origin HEAD:main
+          pushed=""
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then pushed=1; break; fi
+            # Another workflow published at the same time and touched the same generated indexes
+            # (apps/index.html, catalog/, data/apps.json). Never resolve those by hand: rebuild them on the newest main.
+            echo "::warning::publish attempt $attempt collided with a concurrent publish; regenerating on the latest main"
+            git rebase --abort 2>/dev/null || true
+            git fetch origin main
+            git reset -q --hard origin/main
+            python3 scripts/add_app.py
+            gen
+            if git diff --cached --quiet; then echo "app already present on main"; pushed=1; break; fi
+            git commit -m "App from Scout: $(date -u +%F)"
+            git checkout -- .
+            sleep $((attempt * 7))
+          done
+          [ -n "$pushed" ] || { echo "::error::could not publish after 4 attempts (concurrent publishes)"; exit 1; }
           gh workflow run deploy.yml
