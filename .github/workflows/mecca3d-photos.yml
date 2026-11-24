@@ -1,0 +1,24 @@
+name: Mecca 3D landmark photos
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: mecca3d-photos
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Download landmark photos from Wikipedia
+        run: python3 mecca3d/tools/fetch_landmark_photos.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mecca3d/img
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "mecca3d: landmark photos"
+          git push

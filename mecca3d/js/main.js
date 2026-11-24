@@ -342,7 +342,7 @@ async function boot() {
   // ---------- community contributions ----------
   const contrib = new Contrib(D);
   const pins = new Pins($('pins'), world, (it) => openPin(it));
-  contrib.init();
+  setTimeout(() => contrib.init(), 5000); // بعد أول عرض حتى لا يؤخّر التحميل
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const KIND = { rename: '✏️ اسم مقترح', note: '💬 ملاحظة', photo: '📷 صورة' }, STAT = { pending: '⏳ قيد المراجعة', approved: '✅ معتمدة', rejected: '⛔ مرفوضة' };
   function openPin(it) {
