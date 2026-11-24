@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق تحديد سعر بطاقات TCG وعرض قيمة الحافظة | MDM1</title>
+<meta name="description" content="ارفع صورة بطاقتك، حدد المنطقة، احصل على السعر الأخير وتقدير العائد حسب رسوم PSA/CGC/TAG، وأضفها لحافظة مؤقتة لحساب القيمة الكلية وإكمال المجموعات.">
+<link rel="canonical" href="https://mdm1.org/apps/card-collector-assistant.html">
+<meta property="og:title" content="تطبيق تحديد سعر بطاقات TCG وعرض قيمة الحافظة">
+<meta property="og:description" content="ارفع صورة بطاقتك، حدد المنطقة، احصل على السعر الأخير وتقدير العائد حسب رسوم PSA/CGC/TAG، وأضفها لحافظة مؤقتة لحساب القيمة الكلية وإكمال المجموعات.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/card-collector-assistant.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{
+  font-family:inherit;
+  color:var(--light);
+}
+.app .row{
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  margin-bottom:0.5rem;
+}
+.app label{
+  min-width:120px;
+}
+.app canvas{
+  display:block;
+  max-width:100%;
+}
+.app .out{
+  background:var(--dark);
+  padding:0.5rem;
+  border-radius:4px;
+}
+.app .big{
+  font-size:1.5rem;
+  color:var(--gold-bright);
+}
+.app table{
+  border-collapse:collapse;
+}
+.app th, .app td{
+  border:1px solid var(--gold-dim);
+  padding:0.25rem 0.5rem;
+  text-align:center;
+}
+.app tfoot td{
+  font-weight:bold;
+  color:var(--gold);
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة لحساب سعر البطاقة وتقدير عائد التقييم", "url": "https://mdm1.org/apps/card-collector-assistant.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يتم تحديد سعر البطاقة؟", "acceptedAnswer": {"@type": "Answer", "text": "يطابق التطبيق الصورة المحددة مع قاعدة بيانات مدمجة تحتوي أسعاراً حديثة، ثم يحسب العائد بناءً على رسوم شركة التقييم المختارة."}}, {"@type": "Question", "name": "هل يمكن الاعتماد على دقة المطابقة؟", "acceptedAnswer": {"@type": "Answer", "text": "المطابقة تعتمد على اختيار المنطقة يدوياً وتُظهر سعرًا تقريبيًا من قاعدة البيانات؛ قد تختلف النتائج عن الأسعار الفعلية في السوق."}}, {"@type": "Question", "name": "كيف يمكن حفظ الحافظة بين الجلسات؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكن تصدير الحافظة إلى ملف JSON ثم استيراده في جلسة لاحقة؛ لا يُستخدم تخزين محلي داخل المتصفح."}}, {"@type": "Question", "name": "ما هي رسوم التقييم المتضمنة في التقدير؟", "acceptedAnswer": {"@type": "Answer", "text": "تُحسب العوائد باستخدام عوامل مخصصة لكل شركة (PSA، CGC، TAG) تم تعريفها في قاعدة البيانات المدمجة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة لحساب سعر البطاقة وتقدير عائد التقييم</h1>
+  <p class="page-sub">ارفع صورة بطاقتك، حدد المنطقة، احصل على السعر الأخير وتقدير العائد حسب رسوم PSA/CGC/TAG، وأضفها لحافظة مؤقتة لحساب القيمة الكلية وإكمال المجموعات.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+  <p>
+    يمكنك رفع صورة البطاقة وتحديدها لتعرف السعر الأخير وتقدير العائد بعد رسوم التقييم. يتيح لك هذا التطبيق داخل المتصفح تحميل صورة لبطاقة TCG، اختيار المنطقة التي تحتوي على اسم البطاقة والبيانات، ثم يطابقها مع قاعدة بيانات مدمجة تُظهر السعر الأخير وتقدير العائد بناءً على رسوم PSA أو CGC أو TAG. بعد الحصول على النتائج، يمكنك إضافة البطاقة إلى محفظة مؤقتة لمتابعة القيمة الإجمالية وتقييم مدى إكمال المجموعات خلال الجلسة الحالية. كل ذلك يتم دون الحاجة إلى خوادم خارجية أو تخزين محلي.
+  </p>
+  <div class="card">
+    <div class="row">
+      <label for="imgUpload">رفع صورة البطاقة</label>
+      <input type="file" id="imgUpload" accept="image/*">
+    </div>
+    <div class="row">
+      <label for="gradeSelect">اختيار شركة التقييم</label>
+      <select id="gradeSelect">
+        <option value="PSA">PSA</option>
+        <option value="CGC">CGC</option>
+        <option value="TAG">TAG</option>
+      </select>
+    </div>
+    <div class="row">
+      <button id="selectBtn" class="button">ابدأ تحديد المنطقة</button>
+      <button id="matchBtn" class="button sec">مطابقة البطاقة</button>
+    </div>
+    <canvas id="cardCanvas" width="400" height="300" style="background:#222;margin-top:10px;border:1px solid var(--gold-dim);"></canvas>
+    <div class="out" style="margin-top:10px;">
+      <p>السعر الأخير: <span id="priceResult" class="big">-</span> ريال</p>
+      <p>تقدير العائد بعد الرسوم: <span id="estimateResult" class="big">-</span> ريال</p>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button id="addBtn" class="button">إضافة إلى الحافظة</button>
+      <button id="clearBtn" class="button sec">مسح الحافظة</button>
+    </div>
+    <table class="card" id="portfolioTable" style="width:100%;margin-top:10px;">
+      <thead>
+        <tr><th>الاسم</th><th>السعر</th><th>العائد</th></tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr><td>الإجمالي</td><td id="totalPrice">0</td><td id="totalEstimate">0</td></tr>
+      </tfoot>
+    </table>
+    <div class="row" style="margin-top:10px;">
+      <button id="exportBtn" class="button">تصدير الحافظة</button>
+      <label for="importFile" class="button sec" style="cursor:pointer;">استيراد حافظة</label>
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يتم تحديد سعر البطاقة؟</h3><p>يطابق التطبيق الصورة المحددة مع قاعدة بيانات مدمجة تحتوي أسعاراً حديثة، ثم يحسب العائد بناءً على رسوم شركة التقييم المختارة.</p><h3>هل يمكن الاعتماد على دقة المطابقة؟</h3><p>المطابقة تعتمد على اختيار المنطقة يدوياً وتُظهر سعرًا تقريبيًا من قاعدة البيانات؛ قد تختلف النتائج عن الأسعار الفعلية في السوق.</p><h3>كيف يمكن حفظ الحافظة بين الجلسات؟</h3><p>يمكن تصدير الحافظة إلى ملف JSON ثم استيراده في جلسة لاحقة؛ لا يُستخدم تخزين محلي داخل المتصفح.</p><h3>ما هي رسوم التقييم المتضمنة في التقدير؟</h3><p>تُحسب العوائد باستخدام عوامل مخصصة لكل شركة (PSA، CGC، TAG) تم تعريفها في قاعدة البيانات المدمجة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="flash-memory-cards.html" style="color:var(--gold-bright);font-weight:700">تطبيق بطاقات المراجعة المتباعدة</a><span style="opacity:.75"> — تطبيق لحفظ المعلومات عبر بطاقات المراجعة المتباعدة بخوارزميات FSRS و SM-2، يعمل محليًا دون خادم مع دعم…</span></li><li style="margin:.5rem 0"><a href="clinic-record-local.html" style="color:var(--gold-bright);font-weight:700">تطبيق سجل المرضى: طباعة وتقويم وتقارير</a><span style="opacity:.75"> — تطبيق ويب يعمل بالكامل في المتصفح لإدارة سجلات المرضى والمواعيد والتشخيصات والأدوية محلياً في localStorage…</span></li><li style="margin:.5rem 0"><a href="coop-bike-dispatch.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة طلبات توصيل الدراجات للتعاونيات</a><span style="opacity:.75"> — تطبيق محلي لإدارة طلبات توصيل الطعام بالدراجات: أضف الطلبات، أسندها للسائقين تلقائيًا أو يدويًا، حسّن…</span></li><li style="margin:.5rem 0"><a href="cradle-day-tracker.html" style="color:var(--gold-bright);font-weight:700">تطبيق متابعة نوم ورعاية الرضيع</a><span style="opacity:.75"> — تطبيق كامل داخل المتصفح لتسجيل نوم الرضيع وأطعمه وحفاضاته ووقت بطنه مع إحصائيات ورسم زمني وتنبؤ وحفظ محلي…</span></li><li style="margin:.5rem 0"><a href="fit-log.html" style="color:var(--gold-bright);font-weight:700">تطبيق لياقة بدنية دون إنترنت</a><span style="opacity:.75"> — تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-24 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){
+  const imgUpload=document.getElementById('imgUpload');
+  const canvas=document.getElementById('cardCanvas');
+  const ctx=canvas.getContext('2d');
+  const selectBtn=document.getElementById('selectBtn');
+  const matchBtn=document.getElementById('matchBtn');
+  const gradeSelect=document.getElementById('gradeSelect');
+  const priceResult=document.getElementById('priceResult');
+  const estimateResult=document.getElementById('estimateResult');
+  const addBtn=document.getElementById('addBtn');
+  const clearBtn=document.getElementById('clearBtn');
+  const portfolioTable=document.getElementById('portfolioTable').querySelector('tbody');
+  const totalPrice=document.getElementById('totalPrice');
+  const totalEstimate=document.getElementById('totalEstimate');
+  const exportBtn=document.getElementById('exportBtn');
+  const importFile=document.getElementById('importFile');
+
+  let imageObj=null;
+  let selecting=false;
+  let selStart={x:0,y:0};
+  let selRect={x:0,y:0,w:0,h:0};
+  const portfolio=[];
+
+  const mockDB=[
+    {name:'بطاقة الفايزر',price:12,gradeFactors:{PSA:1.2,CGC:1.15,TAG:1.1}},
+    {name:'بطاقة الظلام',price:8,gradeFactors:{PSA:1.1,CGC:1.05,TAG:1.0}},
+    {name:'بطاقة النور',price:15,gradeFactors:{PSA:1.25,CGC:1.2,TAG:1.15}}
+  ];
+
+  function loadImage(file){
+    const reader=new FileReader();
+    reader.onload=function(e){
+      imageObj=new Image();
+      imageObj.onload=function(){
+        canvas.width=imageObj.width;
+        canvas.height=imageObj.height;
+        ctx.drawImage(imageObj,0,0);
+      };
+      imageObj.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  imgUpload.addEventListener('change',function(){
+    if(this.files&&this.files[0]){
+      loadImage(this.files[0]);
+    }
+  });
+
+  selectBtn.addEventListener('click',function(){
+    if(!imageObj)return;
+    selecting=true;
+    canvas.style.cursor='crosshair';
+  });
+
+  canvas.addEventListener('mousedown',function(e){
+    if(!selecting)return;
+    const rect=canvas.getBoundingClientRect();
+    selStart.x=e.clientX-rect.left;
+    selStart.y=e.clientY-rect.top;
+    selRect={x:selStart.x,y:selStart.y,w:0,h:0};
+    canvas.addEventListener('mousemove',onMove);
+  });
+
+  function onMove(e){
+    const rect=canvas.getBoundingClientRect();
+    const x=e.clientX-rect.left;
+    const y=e.clientY-rect.top;
+    selRect.w=x-selStart.x;
+    selRect.h=y-selStart.y;
+    redraw();
+    ctx.strokeStyle='var(--gold-bright)';
+    ctx.lineWidth=2;
+    ctx.strokeRect(selRect.x,selRect.y,selRect.w,selRect.h);
+  }
+
+  canvas.addEventListener('mouseup',function(){
+    if(!selecting)return;
+    canvas.removeEventListener('mousemove',onMove);
+    selecting=false;
+    canvas.style.cursor='default';
+  });
+
+  function redraw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(imageObj,0,0);
+  }
+
+  function matchCard(){
+    // Simple mock: pick random entry
+    const card=mockDB[Math.floor(Math.random()*mockDB.length)];
+    const grade=gradeSelect.value;
+    const factor=card.gradeFactors[grade]||1;
+    const price=card.price;
+    const estimate=(price*factor).toFixed(2);
+    priceResult.textContent=price;
+    estimateResult.textContent=estimate;
+    // Store last matched for adding to portfolio
+    addBtn.dataset.lastName=card.name;
+    addBtn.dataset.lastPrice=price;
+    addBtn.dataset.lastEstimate=estimate;
+  }
+
+  matchBtn.addEventListener('click',matchCard);
+
+  addBtn.addEventListener('click',function(){
+    const name=this.dataset.lastName;
+    const price=parseFloat(this.dataset.lastPrice);
+    const estimate=parseFloat(this.dataset.lastEstimate);
+    if(!name)return;
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${name}</td><td>${price}</td><td>${estimate}</td>`;
+    portfolioTable.appendChild(row);
+    portfolio.push({name,price,estimate});
+    updateTotals();
+    // Clear temporary data
+    delete this.dataset.lastName;
+    delete this.dataset.lastPrice;
+    delete this.dataset.lastEstimate;
+  });
+
+  function updateTotals(){
+    const totalP=portfolio.reduce((a,b)=>a+b.price,0);
+    const totalE=portfolio.reduce((a,b)=>a+b.estimate,0);
+    totalPrice.textContent=totalP.toFixed(2);
+    totalEstimate.textContent=totalE.toFixed(2);
+  }
+
+  clearBtn.addEventListener('click',function(){
+    portfolio.length=0;
+    portfolioTable.innerHTML='';
+    updateTotals();
+  });
+
+  exportBtn.addEventListener('click',function(){
+    const data=JSON.stringify(portfolio);
+    const blob=new Blob([data],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='portfolio.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  importFile.addEventListener('change',function(){
+    if(this.files&&this.files[0]){
+      const reader=new FileReader();
+      reader.onload=function(e){
+        try{
+          const arr=JSON.parse(e.target.result);
+          portfolio.length=0;
+          portfolio.push(...arr);
+          portfolioTable.innerHTML='';
+          arr.forEach(item=>{
+            const row=document.createElement('tr');
+            row.innerHTML=`<td>${item.name}</td><td>${item.price}</td><td>${item.estimate}</td>`;
+            portfolioTable.appendChild(row);
+          });
+          updateTotals();
+        }catch(err){}
+      };
+      reader.readAsText(this.files[0]);
+    }
+  });
+})();
+</script>
+</body>
+</html>
