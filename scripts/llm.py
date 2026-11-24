@@ -8,8 +8,8 @@ Order of attack:
      prices Zen itself publishes in GET /zen/v1/models (input and output cost both zero). No model name is hard-coded anywhere, so a
      model that is added, renamed or withdrawn needs no code change.
   2. OpenRouter (OPENROUTER_API_KEY), optional: only when the secret reaches the job. Which models are FREE is decided live from the prices
-     published in GET /api/v1/models (prompt and completion both zero, text output, context >= 32k, biggest context first, at most 4);
-     OPENROUTER_MODELS (comma list) overrides that choice.
+     published in GET /api/v1/models (prompt and completion both zero, text output, context >= 32k, biggest context first, at most 4).
+     Never a paid model: there is no override list, and only entries whose catalogue price is exactly zero can be chosen.
   3. GitHub Models (GITHUB_TOKEN) as the fallback, exactly as the repo did before.
 
 chat(prompt, max_tokens, temperature, json_mode) -> text or None. Never raises. Prints ::warning:: / ::notice:: lines for the Actions log;
@@ -96,10 +96,10 @@ def free_models():
 
 
 def or_models():
-    """OpenRouter model ids to try (cached for the run): OPENROUTER_MODELS if set, else the free text models from the live catalogue."""
+    """OpenRouter model ids to try (cached for the run): only free text models (catalogue price zero), never a paid one."""
     if _cache["or_free"] is not None: return _cache["or_free"]
-    ids = [x.strip() for x in os.environ.get("OPENROUTER_MODELS", "").split(",") if x.strip()]
-    if not ids:
+    ids = []
+    if True:
         try:
             data = json.loads(_http(ORR + "/models", timeout=60))
             cand = []
