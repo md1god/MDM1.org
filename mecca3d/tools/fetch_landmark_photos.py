@@ -26,7 +26,7 @@ for fid, (en, ar) in FAMOUS.items():
             j = get(f'https://{lang}.wikipedia.org/api/rest_v1/page/summary/' + urllib.parse.quote(t))
             src = (j.get('thumbnail') or {}).get('source')
             if not src: continue
-            src = re.sub(r'/(\d+)px-', '/640px-', src)
+            src = re.sub(r'/(\d+)px-', '/500px-', src)
             data = get(src, True)
             with open(os.path.join(OUT, fid + '.jpg'), 'wb') as f: f.write(data)
             credits[fid] = {'page': j.get('content_urls', {}).get('desktop', {}).get('page', ''), 'title': j.get('title', t)}
