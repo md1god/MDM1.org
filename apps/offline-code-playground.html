@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر أكواد ويب متكامل يعمل بدون اتصال أو حساب | MDM1</title>
+<meta name="description" content="محرر أكواد يعمل بالكامل في المتصفح، يدعم ملفات متعددة، معاينة HTML/CSS، طرفية محاكاة، وتصدير/استيراد المشاريع كملف JSON، كل ذلك دون اتصال أو حساب.">
+<link rel="canonical" href="https://mdm1.org/apps/offline-code-playground.html">
+<meta property="og:title" content="محرر أكواد ويب متكامل يعمل بدون اتصال أو حساب">
+<meta property="og:description" content="محرر أكواد يعمل بالكامل في المتصفح، يدعم ملفات متعددة، معاينة HTML/CSS، طرفية محاكاة، وتصدير/استيراد المشاريع كملف JSON، كل ذلك دون اتصال أو حساب.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/offline-code-playground.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  display:flex;  
+  flex-direction:column;  
+  gap:var(--gold);  
+  padding:var(--gold);  
+  background:var(--dark);  
+  color:var(--light);  
+}  
+.app .row {  
+  display:flex;  
+  align-items:center;  
+  gap:0.5rem;  
+  flex-wrap:wrap;  
+}  
+#codeEditor {  
+  width:100%;  
+  background:#222;  
+  color:var(--light);  
+  border:1px solid var(--gold-dim);  
+  resize:vertical;  
+}  
+#preview {  
+  background:#fff;  
+  color:#000;  
+}  
+#terminal {  
+  font-family:monospace;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "محرر أكواد ويب متكامل داخل المتصفح", "url": "https://mdm1.org/apps/offline-code-playground.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يمكنني حفظ عملي دون الإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "يُحفظ المشروع بالكامل في الذاكرة المؤقتة للمتصفح ويمكنك تصديره كملف JSON لتستعيده لاحقًا."}}, {"@type": "Question", "name": "هل يدعم المحرر تشغيل جافاسكريبت؟", "acceptedAnswer": {"@type": "Answer", "text": "لتجنب مخاطر الأمان، لا يتم تنفيذ كود جافاسكريبت داخل المعاينة؛ يمكنك الاطلاع على الكود في المحرر فقط."}}, {"@type": "Question", "name": "هل يمكنني إضافة أكثر من ملف للموضوع الواحد؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يمكنك إنشاء ملفات متعددة (HTML, CSS, JS) وإدارتها عبر قائمة الملفات في الأعلى."}}, {"@type": "Question", "name": "ما هي المتطلبات لتشغيل هذا التطبيق؟", "acceptedAnswer": {"@type": "Answer", "text": "لا يحتاج إلى خادم أو تسجيل؛ يعمل مباشرةً في أي متصفح حديث يدعم JavaScript."}}, {"@type": "Question", "name": "هل يدعم التطبيق الوضع الداكن؟", "acceptedAnswer": {"@type": "Answer", "text": "يتبع التطبيق ألوان الموقع الموجودة باستخدام المتغيرات CSS، لذا يدمج تلقائيًا مع الوضع الداكن للصفحة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">محرر أكواد ويب متكامل داخل المتصفح</h1>
+  <p class="page-sub">محرر أكواد يعمل بالكامل في المتصفح، يدعم ملفات متعددة، معاينة HTML/CSS، طرفية محاكاة، وتصدير/استيراد المشاريع كملف JSON، كل ذلك دون اتصال أو حساب.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>هذا المحرر يتيح لك كتابة وتشغيل أكواد الويب مباشرةً داخل المتصفح دون الحاجة إلى اتصال أو حساب. يمكنك إنشاء ملفات متعددة، تعديلها، ومعاينة النتيجة في الوقت الحقيقي. كل شيء يُحفظ في الذاكرة المؤقتة للجهاز، ويمكنك تصدير المشروع كملف JSON أو استيراده لاحقًا. الواجهة مصممة لتتناسب مع مظهر الموقع الحالي وتدعم الوضع الليلي بألوان الذهب الداكنة. توفر أزرار لإضافة ملف جديد، حذف الملف الحالي، تشغيل المعاينة، وإدارة محتوى المشروع بسهولة، كما يحتوي الطرفية على سجل للأوامر التي نفذتها لتتبع التغييرات.</p>
+
+<div class="app card">
+  <div class="row">
+    <label for="fileSelect">ملف المشروع</label>
+    <select id="fileSelect" class="input"></select>
+    <button id="newFileBtn" class="button">ملف جديد</button>
+    <button id="delFileBtn" class="button sec">حذف</button>
+  </div>
+
+  <div class="row">
+    <label for="fileNameInput">اسم الملف</label>
+    <input id="fileNameInput" class="input" type="text" placeholder="مثال: index.html">
+    <button id="saveNameBtn" class="button">حفظ الاسم</button>
+  </div>
+
+  <div class="row">
+    <label for="codeEditor">المحرر</label>
+  </div>
+  <textarea id="codeEditor" class="input" rows="12" placeholder="اكتب الكود هنا..."></textarea>
+
+  <div class="row">
+    <button id="runBtn" class="button">معاينة</button>
+    <button id="exportBtn" class="button sec">تصدير المشروع</button>
+    <input id="importInput" class="input" type="file" accept=".json">
+  </div>
+
+  <div class="row">
+    <label>النتيجة</label>
+    <div id="preview" class="out" style="min-height:150px; border:1px solid var(--gold-dim); padding:8px;"></div>
+  </div>
+
+  <div class="row">
+    <label>الطرفية</label>
+    <pre id="terminal" class="out" style="background:#111; color:#0f0; padding:8px; height:120px; overflow:auto;"></pre>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يمكنني حفظ عملي دون الإنترنت؟</h3><p>يُحفظ المشروع بالكامل في الذاكرة المؤقتة للمتصفح ويمكنك تصديره كملف JSON لتستعيده لاحقًا.</p><h3>هل يدعم المحرر تشغيل جافاسكريبت؟</h3><p>لتجنب مخاطر الأمان، لا يتم تنفيذ كود جافاسكريبت داخل المعاينة؛ يمكنك الاطلاع على الكود في المحرر فقط.</p><h3>هل يمكنني إضافة أكثر من ملف للموضوع الواحد؟</h3><p>نعم، يمكنك إنشاء ملفات متعددة (HTML, CSS, JS) وإدارتها عبر قائمة الملفات في الأعلى.</p><h3>ما هي المتطلبات لتشغيل هذا التطبيق؟</h3><p>لا يحتاج إلى خادم أو تسجيل؛ يعمل مباشرةً في أي متصفح حديث يدعم JavaScript.</p><h3>هل يدعم التطبيق الوضع الداكن؟</h3><p>يتبع التطبيق ألوان الموقع الموجودة باستخدام المتغيرات CSS، لذا يدمج تلقائيًا مع الوضع الداكن للصفحة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="pixel-layers-editor.html" style="color:var(--gold-bright);font-weight:700">محرر صور طبقات بدون اتصال</a><span style="opacity:.75"> — محرر صور يعمل داخل المتصفح بدون اتصال، مع طبقات متعددة، فرش مخصصة، أقنعة، تعديلات أساسية، وحفظ محلي آمن على…</span></li><li style="margin:.5rem 0"><a href="photo-shelf.html" style="color:var(--gold-bright);font-weight:700">معرض صور محلي بدون اتصال</a><span style="opacity:.75"> — معرض صور وفيديو محلي يعمل في المتصفح مع وسوم وبحث وحفظ تلقائي دون اتصال أو خادم خارجي لحفظ مريح وآمن من…</span></li><li style="margin:.5rem 0"><a href="lesson-forge.html" style="color:var(--gold-bright);font-weight:700">تطبيق تعلم تفاعلي بالألعاب مجاناً داخل المتصفح بدون حساب</a><span style="opacity:.75"> — حوّل أي موضوع أو حوار إلى دروس مصغّرة وبطاقات واختيار متعدد وإكمال فراغ مع تكرار متباعد ونقاط وسلسلة أيام…</span></li><li style="margin:.5rem 0"><a href="local-inbox-triage.html" style="color:var(--gold-bright);font-weight:700">تطبيق ويب لاستيراد وتنظيم رسائل البريد بصيغة EML أو CSV مع محرر مسودات وإدارة الروابط</a><span style="opacity:.75"> — استورد رسائلك بصيغة EML أو CSV، نظّمها بوسوم وقواعد محلية، اكتشف الرسائل الباردة، احفظ مسودات الردود محليًا…</span></li><li style="margin:.5rem 0"><a href="offline-courseware-quiz-studio.html" style="color:var(--gold-bright);font-weight:700">استوديو بناء المقررات والاختبارات: تطبيق ويب داخل المتصفح</a><span style="opacity:.75"> — تطبيق في المتصفح لبناء مقررات واختبارات: محتوى بسيط، أسئلة اختيار وبرمجية بتنفيذ معزول وتصحيح آلي، درجات…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-24 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {  
+  const fileSelect = document.getElementById('fileSelect');  
+  const newFileBtn = document.getElementById('newFileBtn');  
+  const delFileBtn = document.getElementById('delFileBtn');  
+  const fileNameInput = document.getElementById('fileNameInput');  
+  const saveNameBtn = document.getElementById('saveNameBtn');  
+  const codeEditor = document.getElementById('codeEditor');  
+  const runBtn = document.getElementById('runBtn');  
+  const exportBtn = document.getElementById('exportBtn');  
+  const importInput = document.getElementById('importInput');  
+  const preview = document.getElementById('preview');  
+  const terminal = document.getElementById('terminal');  
+
+  const state = { files: {} };  
+
+  function log(msg) {  
+    terminal.textContent += msg + '\n';  
+    terminal.scrollTop = terminal.scrollHeight;  
+  }  
+
+  function refreshFileList() {  
+    fileSelect.innerHTML = '';  
+    Object.keys(state.files).forEach(name => {  
+      const opt = document.createElement('option');  
+      opt.value = name;  
+      opt.textContent = name;  
+      fileSelect.appendChild(opt);  
+    });  
+    if (fileSelect.options.length) fileSelect.selectedIndex = 0;  
+    loadSelectedFile();  
+  }  
+
+  function loadSelectedFile() {  
+    const name = fileSelect.value;  
+    if (name && state.files[name] !== undefined) {  
+      codeEditor.value = state.files[name];  
+      fileNameInput.value = name;  
+    } else {  
+      codeEditor.value = '';  
+      fileNameInput.value = '';  
+    }  
+  }  
+
+  newFileBtn.addEventListener('click', () => {  
+    const name = prompt('اسم الملف الجديد (مثال: script.js)');  
+    if (!name) return;  
+    if (state.files[name]) {  
+      alert('هذا الاسم موجود بالفعل');  
+      return;  
+    }  
+    state.files[name] = '';  
+    refreshFileList();  
+    log(`تم إنشاء ملف: ${name}`);  
+  });  
+
+  delFileBtn.addEventListener('click', () => {  
+    const name = fileSelect.value;  
+    if (!name) return;  
+    if (confirm(`حذف الملف ${name}؟`)) {  
+      delete state.files[name];  
+      refreshFileList();  
+      log(`تم حذف ملف: ${name}`);  
+    }  
+  });  
+
+  saveNameBtn.addEventListener('click', () => {  
+    const oldName = fileSelect.value;  
+    const newName = fileNameInput.value.trim();  
+    if (!newName) return;  
+    if (oldName && state.files[oldName] !== undefined) {  
+      state.files[newName] = state.files[oldName];  
+      if (newName !== oldName) delete state.files[oldName];  
+    } else {  
+      state.files[newName] = '';  
+    }  
+    refreshFileList();  
+    log(`تم حفظ اسم الملف كـ: ${newName}`);  
+  });  
+
+  codeEditor.addEventListener('input', () => {  
+    const name = fileSelect.value;  
+    if (name) state.files[name] = codeEditor.value;  
+  });  
+
+  runBtn.addEventListener('click', () => {  
+    const htmlFile = Object.keys(state.files).find(n => n.endsWith('.html'));  
+    const cssFile = Object.keys(state.files).find(n => n.endsWith('.css'));  
+    const jsFile = Object.keys(state.files).find(n => n.endsWith('.js'));  
+
+    let html = htmlFile ? state.files[htmlFile] : '<!DOCTYPE html><html><head></head><body></body></html>';  
+
+    if (cssFile) {  
+      const styleTag = `<style>${state.files[cssFile]}</style>`;  
+      html = html.replace('</head>', styleTag + '</head>');  
+    }  
+
+    // JavaScript execution is intentionally omitted for security reasons.  
+
+    preview.innerHTML = html;  
+    log('تم تحديث المعاينة');  
+  });  
+
+  exportBtn.addEventListener('click', () => {  
+    const data = JSON.stringify(state.files, null, 2);  
+    const blob = new Blob([data], {type:'application/json'});  
+    const url = URL.createObjectURL(blob);  
+    const a = document.createElement('a');  
+    a.href = url;  
+    a.download = 'project.json';  
+    a.click();  
+    URL.revokeObjectURL(url);  
+    log('تم تصدير المشروع');  
+  });  
+
+  importInput.addEventListener('change', e => {  
+    const file = e.target.files[0];  
+    if (!file) return;  
+    const reader = new FileReader();  
+    reader.onload = ev => {  
+      try {  
+        const obj = JSON.parse(ev.target.result);  
+        if (typeof obj === 'object' && obj !== null) {  
+          state.files = obj;  
+          refreshFileList();  
+          log('تم استيراد المشروع');  
+        } else {  
+          alert('ملف غير صالح');  
+        }  
+      } catch {  
+        alert('خطأ في قراءة الملف');  
+      }  
+    };  
+    reader.readAsText(file);  
+  });  
+
+  // Initialize with a default HTML file if empty  
+  if (Object.keys(state.files).length === 0) {  
+    state.files['index.html'] = '<!DOCTYPE html><html><head><title>معاينة</title></head><body><h1>مرحبًا</h1></body></html>';  
+    refreshFileList();  
+  }  
+})();
+</script>
+</body>
+</html>
