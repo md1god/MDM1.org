@@ -736,7 +736,7 @@ export const FAMOUS = [
 ];
 export class LandmarkPhotos {
   constructor(world) { this.world = world; this.st = new Map(); this.pool = []; this.enabled = true; this.t = 0;
-    for (let i = 0; i < 3; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false })); s.visible = false; s.renderOrder = 8; world.scene.add(s); this.pool.push(s); } }
+    for (let i = 0; i < 4; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false })); s.visible = false; s.renderOrder = 8; world.scene.add(s); this.pool.push(s); } }
   async _fetchInfo(f) {
     const tries = f.wiki.map((t) => ['en', t]).concat(f.ar.map((t) => ['ar', t]));
     for (const [lang, t] of tries) {
@@ -754,7 +754,8 @@ export class LandmarkPhotos {
   _load(f) {
     const st = { state: 'loading', tex: null }; this.st.set(f.id, st);
     (async () => {
-      const info = await this._fetchInfo(f);
+      let info = { src: 'img/landmarks/' + f.id + '.jpg', local: true }; // الصورة المحفوظة مع الموقع (سريعة وبلا اعتماد على ويكيبيديا)
+      if (!(await new Promise((ok) => { const t = new Image(); t.onload = () => ok(true); t.onerror = () => ok(false); t.src = info.src; }))) info = await this._fetchInfo(f);
       if (!info) { st.state = 'fail'; st.err = 'no-image'; setTimeout(() => this.st.delete(f.id), 120000); return; } // نعيد المحاولة بعد دقيقتين
       const img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = () => {
@@ -775,7 +776,7 @@ export class LandmarkPhotos {
   }
   update(px, pz) {
     const T = this.world.D.terrain, list = [];
-    if (this.enabled) for (const f of FAMOUS) { const d = Math.hypot(f.x - px, f.z - pz); if (d < 2500) list.push([d, f]); }
+    if (this.enabled) for (const f of FAMOUS) { const d = Math.hypot(f.x - px, f.z - pz); if (d < 9000) list.push([d, f]); }
     list.sort((a, b) => a[0] - b[0]);
     for (let i = 0; i < this.pool.length; i++) {
       const s = this.pool[i], it = list[i];
@@ -784,7 +785,7 @@ export class LandmarkPhotos {
       if (!st) { this._load(f); s.visible = false; continue; }
       if (st.state !== 'ok') { s.visible = false; continue; }
       if (s.material.map !== st.tex) { s.material.map = st.tex; s.material.needsUpdate = true; }
-      const w = clamp(22 + d * 0.06, 22, 70);
+      const w = clamp(22 + d * 0.05, 22, 110);
       s.scale.set(w, w * 420 / 640, 1);
       s.position.set(f.x, T.heightAt(f.x, f.z) + 34 + w * 0.3, f.z);
       s.visible = true;
