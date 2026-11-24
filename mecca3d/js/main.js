@@ -10,6 +10,8 @@ import { $, clamp, store, fmtDist, fmtDistFine, bearingDeg, angDiff, norm } from
 
 const stage = $('stage');
 if (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) document.body.classList.add('touch');
+const TOUCH = document.body.classList.contains('touch');
+const K = (key, touchText) => TOUCH ? touchText : 'اضغط ' + key;
 const settings = Object.assign({ hour: 14, quality: 'medium', mm: 1, signs: 1, hudn: 1, voice: 0 }, store.get('m3d_set', {}));
 const saveSet = () => store.set('m3d_set', settings);
 
@@ -90,7 +92,7 @@ async function boot() {
       if (prev === 'walk') {
         const d = Math.hypot(walker.x - car.x, walker.z - car.z);
         if (d > 40) { car.place(walker.x - Math.cos(walker.h) * 4, walker.z - Math.sin(walker.h) * 4, walker.h); toast('🚗 تم استدعاء السيارة'); }
-        else if (d > 9) { toast('اقترب من السيارة أو اضغط F مرة أخرى لاستدعائها'); S._call = true; return; }
+        else if (d > 9) { toast(TOUCH ? 'اقترب من السيارة أو اضغط زر «نزول / ركوب» مرة أخرى لاستدعائها' : 'اقترب من السيارة أو اضغط F مرة أخرى لاستدعائها'); S._call = true; return; }
         S._call = false;
       } else if (prev === 'fly') car.place(rig.fly.x, rig.fly.z, rig.fly.yaw);
     }
@@ -166,7 +168,7 @@ async function boot() {
   };
   function renderSteps() {
     const ul = $('steps'); ul.textContent = '';
-    if (!S.route) { $('gpsinfo').textContent = 'لا يوجد مسار. ابحث عن وجهة أو اضغط على الخريطة الكبيرة (M) ثم «اتجاهات».'; return; }
+    if (!S.route) { $('gpsinfo').textContent = 'لا يوجد مسار. ابحث عن وجهة أو اضغط على الخريطة الكبيرة' + (TOUCH ? '' : ' (M)') + ' ثم «اتجاهات».'; return; }
     $('gpsinfo').textContent = 'إلى ' + S.goalInfo.name + ' — ' + fmtDist(S.route.total);
     S.route.steps.forEach((st, i) => {
       const li = document.createElement('li'); li.className = i < S.rStep ? 'done' : i === S.rStep ? 'cur' : '';
@@ -448,7 +450,7 @@ async function boot() {
     return false;
   }
   function startTour() {
-    if (S.mode !== 'car') { toast('الجولة بالسيارة — اضغط F للركوب أولاً'); return; }
+    if (S.mode !== 'car') { toast('الجولة بالسيارة — ' + K('F', 'اضغط زر «نزول / ركوب»') + ' للركوب أولاً'); return; }
     const pool = learn.pool(scopeSel.value).filter((s) => { if (!s.drv || s.len < 150) return false; const e = streetEnds(s); return e && Math.hypot(e[0].x, e[0].z) < 9000 && Math.hypot(e[1].x, e[1].z) < 9000 && Math.hypot(e[0].x - e[1].x, e[0].z - e[1].z) < 7000; });
     if (!pool.length) { toast('لا توجد شوارع في هذا النطاق'); return; }
     const M = D.meta;
@@ -474,7 +476,7 @@ async function boot() {
     return false;
   }
   function setAuto(on) {
-    if (on && S.mode !== 'car') { toast('القيادة الآلية للسيارة فقط — اضغط F للركوب'); return; }
+    if (on && S.mode !== 'car') { toast('القيادة الآلية للسيارة فقط — ' + K('F', 'اضغط زر «نزول / ركوب»') + ' للركوب'); return; }
     if (on) ensureOnNetwork();
     S.auto = on; $('b_auto').classList.toggle('on', on); wake(on);
     if (on) {
