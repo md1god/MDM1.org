@@ -101,6 +101,8 @@ export class RoadIndex {
 
 export async function loadData(base, onProgress) {
   const get = async (p) => {
+    const pre = typeof window !== 'undefined' && window.__pre && window.__pre[p];
+    if (pre) { try { return await pre; } catch (e) { /* أعد المحاولة عادياً */ } }
     const r = await fetch(base + p);
     if (!r.ok) throw new Error(p + ' ' + r.status);
     return r.json();

@@ -12,6 +12,9 @@
   var V='__BUILD__'; if(V.indexOf('__')===0) V='dev'+Date.now();
   var mods=['names','util','data','nav','world','entities','learn','contrib','ui'], im={three:'./vendor/three.module.js?v='+V};
   mods.forEach(function(m){ im['./js/'+m+'.js']='./js/'+m+'.js?v='+V; });
+  /* تسريع: ابدأ تحميل البيانات والوحدات بالتوازي فوراً بدل التسلسل (main -> modules -> data) */
+  window.__pre = {}; ['meta','roads','places','landmarks','terrain'].forEach(function(n){ window.__pre[n+'.json'] = fetch('data/'+n+'.json').then(function(r){ if(!r.ok) throw new Error(n); return r.json(); }); window.__pre[n+'.json'].catch(function(){}); });
+  ['./vendor/three.module.js?v='+V].concat(mods.map(function(m){return './js/'+m+'.js?v='+V;}), ['./js/main.js?v='+V]).forEach(function(u){ var l=document.createElement('link'); l.rel='modulepreload'; l.href=u; document.head.appendChild(l); });
   var a=document.createElement('script'); a.type='importmap'; a.textContent=JSON.stringify({imports:im}); document.head.appendChild(a);
   var b=document.createElement('script'); b.type='module'; b.textContent="import './js/main.js?v="+V+"'"; document.head.appendChild(b);
 })();
@@ -96,7 +99,12 @@ body.touch #joy{display:block}body.touch #btns{display:flex}
 #attr{position:absolute;bottom:2px;left:6px;font-size:10px;color:#fff8;pointer-events:none}
 .thelp{display:none}body.touch .help{display:none}body.touch .thelp{display:table}
 .help td{padding:3px 8px;font-size:13px}.help kbd{background:#2d2713;border:1px solid var(--ln);border-radius:5px;padding:1px 6px;font-size:12px}
-@media(max-width:700px){#back{display:none}#mini{width:104px;height:104px}#mw{top:calc(max(8px,env(safe-area-inset-top)) + 62px)}#hud{max-width:50vw}#banner{width:calc(100vw - 16px);top:calc(max(8px,env(safe-area-inset-top)) + 176px);background:#1d3a66b3;padding:4px 10px;border-radius:12px;pointer-events:none}#banner b{font-size:14px}#banner small{font-size:12px}#banner .x{display:none}#tourbar{left:8px;right:auto;top:calc(max(8px,env(safe-area-inset-top)) + 234px);max-width:none;background:none;border:0;padding:0;display:none;flex-direction:row;gap:8px}#tourbar #tbt,#tourbar .tl{display:none}#tourbar button{margin:0;width:44px;height:44px;border-radius:50%;background:#00000055;border:1px solid #ffffff44;font-size:18px;padding:0}}
+@media(max-width:700px){#back{display:none}#mini{width:104px;height:104px}#mw{top:calc(max(8px,env(safe-area-inset-top)) + 80px)}#hud{max-width:44vw}
+#sw{display:none;position:fixed;top:calc(max(8px,env(safe-area-inset-top)) + 4px);left:8px;right:8px;z-index:30}#sw.open{display:block}#sw #q{box-shadow:0 4px 18px #000b;background:#17130c}#res{position:static;margin-top:6px;max-height:60vh}
+#banner{left:8px;transform:none;width:calc(56vw - 20px);top:calc(max(8px,env(safe-area-inset-top)) + 0px);background:#1d3a66cc;padding:4px 10px;border-radius:12px;pointer-events:none;z-index:4}#banner b{font-size:14px;line-height:1.3}#banner small{font-size:11px}#banner .x{display:none}
+#tourbar{display:none!important}}
+#b_tnext,#b_tstop{display:none}body.touring #b_tnext,body.touring #b_tstop{display:block}
+#help .hx{position:absolute;top:6px;left:8px;background:#2a2518;border:1px solid var(--ln);border-radius:50%;width:30px;height:30px;font-size:15px;color:var(--tx)}
 </style>
 </head>
 <body>
@@ -162,7 +170,7 @@ body.touch #joy{display:block}body.touch #btns{display:flex}
     <h3 style="margin-top:12px">قريب منك</h3><div id="ct_near" style="font-size:13px"></div>
   </div>
 
-  <div id="help" class="panel">
+  <div id="help" class="panel"><button class="hx" id="hx">✕</button>
     <h3>❓ أزرار التحكم</h3>
     <table class="help thelp"><tr><td>العصا (يسار)</td><td>قيادة / مشي</td></tr><tr><td>زر «فرامل»</td><td>فرملة</td></tr><tr><td>زر «نزول / ركوب»</td><td>النزول من السيارة / الركوب (يستدعيها إن كانت بعيدة)</td></tr><tr><td>اللمس والسحب</td><td>تدوير الكاميرا</td></tr><tr><td>الشريط السفلي</td><td>GPS · خريطة · علوي · كاميرا · جولة · آلي · مشي</td></tr></table>
     <table class="help"><tr><td><kbd>W A S D</kbd> / الأسهم</td><td>قيادة / مشي</td></tr><tr><td><kbd>Space</kbd></td><td>فرامل</td></tr><tr><td><kbd>Shift</kbd></td><td>جري (مشي) / سرعة (طيران)</td></tr><tr><td>الماوس / اللمس</td><td>تدوير الكاميرا</td></tr><tr><td><kbd>F</kbd></td><td>النزول من السيارة / الركوب (يستدعيها إن كانت بعيدة)</td></tr><tr><td><kbd>C</kbd></td><td>تبديل الكاميرا</td></tr><tr><td><kbd>V</kbd></td><td>طيران (نظرة علوية) — <kbd>Q</kbd>/<kbd>E</kbd> هبوط/صعود</td></tr><tr><td><kbd>M</kbd></td><td>الخريطة الكبيرة (اضغط أي مكان للانتقال/الاتجاهات)</td></tr><tr><td><kbd>P</kbd></td><td>قيادة آلية (جولة أو إلى وجهتك) — المس أي تحكم لإيقافها</td></tr><tr><td><kbd>G</kbd></td><td>GPS</td></tr><tr><td><kbd>L</kbd></td><td>التدريب</td></tr><tr><td><kbd>T</kbd></td><td>انتقال للكعبة</td></tr></table>
@@ -171,6 +179,9 @@ body.touch #joy{display:block}body.touch #btns{display:flex}
 
   <div id="bar">
     <button id="b_mode" title="F">🚗<small>سيارة</small></button>
+    <button id="b_search" title="/">🔍<small>بحث</small></button>
+    <button id="b_tnext">⏭<small>التالي</small></button>
+    <button id="b_tstop">⏹<small>إنهاء</small></button>
     <button id="b_auto" title="P">🤖<small>آلي</small></button>
     <button id="b_tour" title="O">🌍<small>جولة</small></button>
     <button id="b_cam" title="C">📷<small>كاميرا</small></button>

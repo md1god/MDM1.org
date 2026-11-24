@@ -401,8 +401,8 @@ async function boot() {
     const res = a ? [{ x: a[0], z: a[1] }, { x: b[0], z: b[1] }] : null;
     endsCache.set(st.key, res); return res;
   }
-  function stopTour() { S.tour = null; $('tourbar').style.display = 'none'; $('b_tour').classList.remove('on'); }
-  function tourBar() { const T = S.tour; if (!T) return; $('tourbar').style.display = matchMedia('(max-width:700px)').matches ? 'flex' : 'block'; $('tbt').textContent = '🌍 جولة شاملة: ' + T.done.size + ' / ' + T.total + ' شارع' + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '') + (T.cur ? ' — ' + T.cur.name : ''); }
+  function stopTour() { S.tour = null; document.body.classList.remove('touring'); $('tourbar').style.display = 'none'; $('b_tour').classList.remove('on'); }
+  function tourBar() { const T = S.tour; if (!T) return; document.body.classList.add('touring'); $('tourbar').style.display = matchMedia('(max-width:700px)').matches ? 'flex' : 'block'; $('tbt').textContent = '🌍 جولة شاملة: ' + T.done.size + ' / ' + T.total + ' شارع' + (S.hood ? ' — حي ' + S.hood.replace(/^حي\s+/, '') : '') + (T.cur ? ' — ' + T.cur.name : ''); }
   const inMap = (x, z, m) => x > D.meta.x0 + m && x < D.meta.x1 - m && z > D.meta.z0 + m && z < D.meta.z1 - m;
   function ensureOnNetwork() { // لو السيارة خارج الشبكة أو عند حافة الخريطة: أعدها لأقرب طريق داخل الخريطة (أو للحرم)
     if (S.mode !== 'car') return;
@@ -464,6 +464,15 @@ async function boot() {
   }
   $('b_tour').onclick = () => (S.tour ? setAuto(false) : startTour());
   $('l_tour').onclick = startTour; $('tbx').onclick = () => setAuto(false);
+  $('b_tstop').onclick = () => setAuto(false); $('b_tnext').onclick = () => $('tbs').click();
+  { // البحث على الشاشات الصغيرة: زر في الشريط السفلي يفتح خانة الكتابة
+    const sw = $('sw'), qq = $('q'), mq = matchMedia('(max-width:700px)');
+    $('b_search').onclick = () => { if (!mq.matches) { qq.focus(); return; } const o = sw.classList.toggle('open'); if (o) qq.focus(); else { qq.blur(); $('res').style.display = 'none'; } };
+    const closeSw = () => { if (mq.matches) { sw.classList.remove('open'); $('res').style.display = 'none'; } };
+    for (const id of ['res']) $(id).addEventListener('click', () => setTimeout(closeSw, 50));
+    stage.addEventListener('pointerdown', closeSw);
+  }
+  $('hx').onclick = (e) => { e.stopPropagation(); $('help').style.display = 'none'; };
   $('tbs').onclick = () => { const T = S.tour; if (!T) return; if (T.cur) { T.done.add(T.cur.key); T.cur = null; T.stage = 0; } clearRoute(); if (!pickCruise()) setAuto(false); };
   function pickCruise() {
     if (S.tour) return nextTourLeg();
@@ -553,6 +562,10 @@ async function boot() {
     }
     const camYaw = rig.mode === 'walk' ? rig.yaw : walker.h;
     car.update(dt, inp, S.mode === 'car');
+    if (S.mode === 'car') { // لا تبقى السيارة تائهة بين المباني خارج الطرق: أعدها لأقرب طريق
+      S._offT = car.offRoad ? (S._offT || 0) + dt : 0;
+      if (S._offT > (S.auto ? 2.5 : 8)) { S._offT = 0; const n = D.idx.nearest(car.x, car.z, 600, { drv: true }); if (n) { placeAll(n.x, n.z, roadHeading(n.x, n.z)); toast('🛣 أُعيدت السيارة إلى أقرب طريق'); } }
+    }
     { // حدود الخريطة: لا خروج إلى الفراغ
       const M = D.meta, m = 60, cx = clamp(car.x, M.x0 + m, M.x1 - m), cz = clamp(car.z, M.z0 + m, M.z1 - m);
       if (cx !== car.x || cz !== car.z) { car.x = cx; car.z = cz; car.v *= 0.5; if (now - (S._edgeT || 0) > 4000) { S._edgeT = now; toast('🚧 وصلت إلى حدود الخريطة'); } }
