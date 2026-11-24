@@ -55,14 +55,14 @@ LABELS = {
     "en": ("Privacy Policy", "Terms & Conditions", "Contact", "About", "Guides"),
 }
 
-RE_SCRIPT = re.compile(r"<script\b.*?</script>", re.S | re.I)
+RE_SCRIPT = re.compile(r"<script\b.*?</script\s*>", re.S | re.I)
 RE_STYLE = re.compile(r"<style\b.*?</style>", re.S | re.I)
 RE_NONCONTENT = re.compile(r"<(nav|footer|header|noscript|svg|select|button|audio|video)\b.*?</\1>", re.S | re.I)
 RE_TAG = re.compile(r"<[^>]+>")
 RE_WORD = re.compile(r"[^\W_]+", re.U)
-RE_AD_LOADER = re.compile(r'[ \t]*<script\b[^>]*googlesyndication\.com[^>]*>\s*</script>[ \t]*\n?', re.I)
+RE_AD_LOADER = re.compile(r'[ \t]*<script\b[^>]*src=["\']https://pagead2\.googlesyndication\.com/[^>]*>\s*</script\s*>[ \t]*\n?', re.I)
 RE_AD_SLOT = re.compile(r'<ins\b[^>]*\bclass="[^"]*adsbygoogle[^"]*"[^>]*>.*?</ins>', re.S | re.I)
-RE_AD_PUSH = re.compile(r'<script\b[^>]*>\s*\(adsbygoogle\s*=\s*window\.adsbygoogle\s*\|\|\s*\[\]\)\.push\(\{[^}]*\}\);?\s*</script>', re.S | re.I)
+RE_AD_PUSH = re.compile(r'<script\b[^>]*>\s*\(adsbygoogle\s*=\s*window\.adsbygoogle\s*\|\|\s*\[\]\)\.push\(\{[^}]*\}\);?\s*</script\s*>', re.S | re.I)
 RE_ROBOTS = re.compile(r'<meta\s+name=["\']robots["\'][^>]*>', re.I)
 RE_LANG = re.compile(r'<html[^>]*\blang=["\']([A-Za-z-]+)["\']', re.I)
 
@@ -121,7 +121,7 @@ def process(path: Path, root: Path, write: bool, stats: Counter, noindex_urls: s
     elif rel not in ADS_ALLOW and not rel.startswith("guides/"):
         reason = "not-allowlisted"
     new = html
-    has_ads = "googlesyndication.com" in html or "adsbygoogle" in html
+    has_ads = bool(RE_AD_LOADER.search(html) or "adsbygoogle" in html)
     if reason and has_ads:
         new = RE_AD_PUSH.sub("", RE_AD_SLOT.sub("", RE_AD_LOADER.sub("", new)))
         stats[f"ads_removed:{reason}"] += 1
