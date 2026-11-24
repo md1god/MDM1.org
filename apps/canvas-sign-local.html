@@ -137,10 +137,11 @@
     renderAudit();
     saveState();
   }
+  function escHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function renderAudit(){
     const el=$('auditLog');
     if(!state.audit.length){el.textContent='لا يوجد سجل تدقيق بعد.';return}
-    el.innerHTML=state.audit.map(e=>`<div class="audit-entry"><span class="audit-time">[${new Date(e.time).toLocaleString('ar-SA')}]</span> <span class="audit-action">${e.action}</span> ${JSON.stringify(e.details, null, 2)}</div>`).join('');
+    el.innerHTML=state.audit.map(e=>`<div class="audit-entry"><span class="audit-time">[${escHtml(new Date(e.time).toLocaleString('ar-SA'))}]</span> <span class="audit-action">${escHtml(e.action)}</span> ${escHtml(JSON.stringify(e.details, null, 2))}</div>`).join('');
     el.scrollTop=el.scrollHeight;
   }
   function saveState(){
@@ -155,7 +156,7 @@
   }
   function renderTemplates(){
     const sel=$('templateList');
-    sel.innerHTML='<option value="">— اختر قالباً —</option>'+state.templates.map((t,i)=>`<option value="${i}">${t.title||'بدون عنوان'}</option>`).join('');
+    sel.innerHTML='<option value="">— اختر قالباً —</option>'+state.templates.map((t,i)=>`<option value="${i}">${escHtml(t.title||'بدون عنوان')}</option>`).join('');
   }
   function addStroke(points){
     state.strokes.push({points,time:Date.now()});

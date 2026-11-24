@@ -85,7 +85,7 @@ export class Contrib {
       if (!file) return { error: 'اختر صورة أولاً' };
       const blob = await resizeImage(file);
       if (blob.size > 1000000) return { error: 'الصورة كبيرة، جرّب صورة أخرى' };
-      photo_path = s.user.id + '/' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '' + Math.random().toString(16).slice(2)) + '.jpg';
+      photo_path = s.user.id + '/' + (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')) + '.jpg';
       const up = await sb.storage.from(BUCKET).upload(photo_path, blob, { contentType: 'image/jpeg', upsert: false });
       if (up.error) return { error: 'تعذّر رفع الصورة' };
     }

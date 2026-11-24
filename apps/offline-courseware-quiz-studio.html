@@ -182,9 +182,9 @@ function renderCourseSelects(){
 }
 function renderStudents(){
   const box=$('studentList'); const sel=$('stuStudentSelect');
-  if(sel) sel.innerHTML=S.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')||'<option value="">لا طلاب</option>';
+  if(sel) sel.innerHTML=S.students.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join('')||'<option value="">لا طلاب</option>';
   if(!S.students.length){box.innerHTML='<div class="empty-state">لا طلاب بعد</div>';return;}
-  box.innerHTML=S.students.map(s=>`<div class="badge2">${s.name}</div>`).join('');
+  box.innerHTML=S.students.map(s=>`<div class="badge2">${escapeHtml(s.name)}</div>`).join('');
 }
 function newCourse(){
   const c={id:uid(),title:'مقرر جديد',content:'# مقرر جديد\n\n## درس\nنص الدرس هنا.\n\n## أسئلة\nQ: mcq\nPROMPT: 2+2=?\nOPTIONS:\n- 3\n- 4\n- 5\nANSWER: 1\nPOINTS: 1\n',version:1,publishedVersion:1,versions:[{v:1,content:'',at:Date.now()}],rules:{maxAttempts:3,timeLimit:0,allowLate:true},calendar:[],submissions:{}};
@@ -237,7 +237,7 @@ function renderCourseInfo(){
   const box=$('courseInfo');
   if(!c){box.innerHTML='<div class="empty-state">لا مقرر محدد</div>';return;}
   const qs=parseQuestions(c.content);
-  box.innerHTML=`<div><strong>${c.title}</strong></div><div class="small">النسخة: ${c.version} | المنشورة: ${c.publishedVersion} | أسئلة: ${qs.length} | إجابات: ${Object.keys(c.submissions||{}).length}</div>`;
+  box.innerHTML=`<div><strong>${escapeHtml(c.title)}</strong></div><div class="small">النسخة: ${c.version} | المنشورة: ${c.publishedVersion} | أسئلة: ${qs.length} | إجابات: ${Object.keys(c.submissions||{}).length}</div>`;
 }
 function parseQuestions(text){
   const qs=[]; const lines=(text||'').split('\n');
@@ -296,7 +296,7 @@ function renderStudentCourse(){
       `<textarea class="input codeAns" data-qi="${qi}" style="width:100%;min-height:120px;font-family:monospace;">${escapeHtml(q.starter||'')}</textarea></div>`;
   }).join('');
 }
-function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function runCodeP(code,input){
   return new Promise(resolve=>{
     const html='<!doctype html><html><body><script>(function(){const input='+JSON.stringify((input!==''&&!isNaN(input))?Number(input):input)+';let result;try{'+code.replace(/<\/script/gi,'<\\/script')+'\nresult=(typeof solve==="function")?solve(input):"NO_SOLVE";}catch(e){result="ERROR: "+e.message;}parent.postMessage({type:"cr",result:String(result)},"*");})();<\/script></body></html>';

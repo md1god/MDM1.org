@@ -13,12 +13,20 @@ let sb = null;
 function configured() {
   return ADS_SUPABASE_URL.indexOf('http') === 0 && ADS_SUPABASE_ANON_KEY.length > 40 && window.supabase;
 }
+// Cryptographically secure random id (never Math.random for identifiers/tokens).
+function secureRandomId() {
+  try {
+    const a = new Uint8Array(16);
+    crypto.getRandomValues(a);
+    return Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) { return Date.now().toString(36); }
+}
 function clientId() {
   try {
     let v = localStorage.getItem('mdm1_cid');
-    if (!v) { v = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); localStorage.setItem('mdm1_cid', v); }
+    if (!v) { v = (crypto.randomUUID ? crypto.randomUUID() : secureRandomId()); localStorage.setItem('mdm1_cid', v); }
     return v;
-  } catch (e) { return 'anon-' + Math.random().toString(36).slice(2, 12); }
+  } catch (e) { return 'anon-' + secureRandomId().slice(0, 10); }
 }
 async function sha256Hex(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -96,7 +104,7 @@ async function postAd(e) {
     const last = Number(localStorage.getItem('mdm1_last_post') || 0);
     if (Date.now() - last < 60000) return say(msg, 'انتظر دقيقة بين كل إعلان والذي بعده.', true);
   } catch (err) {}
-  const token = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2)) + '-' + Date.now();
+  const token = (crypto.randomUUID ? crypto.randomUUID() : secureRandomId()) + '-' + Date.now();
   const adId = (crypto.randomUUID ? crypto.randomUUID() : null);
   if (!adId) return say(msg, 'متصفحك قديم ولا يدعم النشر. حدّثه وحاول مرة أخرى.', true);
   const row = {

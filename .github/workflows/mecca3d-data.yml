@@ -23,12 +23,24 @@ jobs:
           python3 -m venv /tmp/venv
           /tmp/venv/bin/pip install --quiet pillow numpy
       - name: Build data from OpenStreetMap and terrain tiles
+        env:
+          # Inputs go through env vars, never straight into the script text (prevents shell/code injection).
+          IN_SOUTH: ${{ inputs.south }}
+          IN_WEST: ${{ inputs.west }}
+          IN_NORTH: ${{ inputs.north }}
+          IN_EAST: ${{ inputs.east }}
+          IN_TILE: ${{ inputs.tile }}
         run: |
+          for v in "$IN_SOUTH" "$IN_WEST" "$IN_NORTH" "$IN_EAST" "$IN_TILE"; do
+            case "$v" in
+              ''|*[!0-9.-]*) echo "Invalid numeric input: $v" >&2; exit 1 ;;
+            esac
+          done
           rm -rf mecca3d/data
           /tmp/venv/bin/python mecca3d/tools/build_data.py \
-            --south "${{ inputs.south }}" --west "${{ inputs.west }}" \
-            --north "${{ inputs.north }}" --east "${{ inputs.east }}" \
-            --tile "${{ inputs.tile }}" --out mecca3d/data
+            --south "$IN_SOUTH" --west "$IN_WEST" \
+            --north "$IN_NORTH" --east "$IN_EAST" \
+            --tile "$IN_TILE" --out mecca3d/data
           du -sh mecca3d/data
           find mecca3d/data -type f | wc -l
       - name: Commit data
