@@ -99,6 +99,7 @@ export class Nav {
 
   // Returns a Route or null.
   route(start, goal, foot) {
+    this._foot = !!foot;
     const S = this.snap(start.x, start.z, foot), T = this.snap(goal.x, goal.z, foot);
     if (!S || !T) return null;
     const D = this.D, edges = this.edges, G = this.G;
@@ -173,7 +174,7 @@ export class Nav {
       const a = [S.x, S.z];
       if (startMode === 'f') { if (T.si > S.si) addPts(a, rs, S.si + 1, T.si); }
       else if (T.si < S.si || (T.si === S.si)) { if (S.si > T.si) addPts(a, rs, S.si, T.si + 1); }
-      a.push(goal.x, goal.z);
+      if (this._foot) a.push(goal.x, goal.z); else a.push(T.x, T.z); // السيارة تنتهي على الطريق لا داخل المباني
       pieces.push({ ri: S.e.ri, pts: a });
     } else {
       const a = [S.x, S.z];
@@ -186,7 +187,7 @@ export class Nav {
       }
       const rt = roads[T.e.ri], b = [];
       if (goalMode === 'f') addPts(b, rt, T.e.i0, T.si); else addPts(b, rt, T.e.i1, T.si + 1);
-      b.push(goal.x, goal.z);
+      if (this._foot) b.push(goal.x, goal.z); else b.push(T.x, T.z);
       pieces.push({ ri: T.e.ri, pts: b });
     }
     return this._finish(pieces, goal);

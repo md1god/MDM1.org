@@ -732,9 +732,15 @@ export const FAMOUS = [
   { id: 'hira', n: 'غار حراء', x: 3415, z: -3877, wiki: ['Cave_of_Hira', 'Hira'], ar: ['غار_حراء'] },
   { id: 'thawr', n: 'جبل ثور وغار ثور', x: 2450, z: 5055, wiki: ['Jabal_Thawr', 'Thawr_Cave'], ar: ['جبل_ثور', 'غار_ثور'] },
   { id: 'jamarat', n: 'الجمرات (منى)', x: 4811, z: 191, wiki: ['Jamaraat_Bridge', 'Jamarat', 'Stoning_of_the_Devil'], ar: ['جسر_الجمرات', 'رمي_الجمرات'] },
-  { id: 'muala', n: 'مقبرة المعلاة', x: 705, z: -833, wiki: ["Jannat_al-Mu'alla"], ar: ['مقبرة_المعلاة'] },
-  { id: 'qubays', n: 'جبل أبي قبيس', x: 238, z: 228, wiki: ['Jabal_Abu_Qubays', 'Abu_Qubays'], ar: ['جبل_أبي_قبيس'] },
+  { id: 'muala', n: 'مقبرة المعلاة', x: 269, z: -1404, wiki: ["Jannat_al-Mu'alla"], ar: ['مقبرة_المعلاة'] },
+  { id: 'qubays', n: 'جبل أبي قبيس', x: 238, z: 330, wiki: ['Jabal_Abu_Qubays', 'Abu_Qubays'], ar: ['جبل_أبي_قبيس'] },
   { id: 'jinn', n: 'مسجد الجن', x: 186, z: -943, wiki: ['Masjid_al-Jinn'], ar: ['مسجد_الجن'] },
+  { id: 'library', n: 'مكتبة مكة المكرمة (مولد النبي ﷺ)', x: 386, z: -272, wiki: ["Makkah_Al-Mukarramah_Library", "Birthplace_of_Muhammad"], ar: ["مكتبة_مكة_المكرمة"] },
+  { id: 'omar', n: 'جبل عمر (أبراج جبل عمر)', x: -459, z: 187, wiki: ["Jabal_Omar_Development", "Jabal_Omar"], ar: ["مشروع_جبل_عمر"] },
+  { id: 'bayah', n: 'مسجد البيعة', x: 4274, z: -246, wiki: ["Masjid_al-Bay'ah", "Al-Bay'ah_Mosque"], ar: ["مسجد_البيعة"] },
+  { id: 'quranm', n: 'متحف القرآن الكريم', x: 4491, z: -3776, wiki: ["Museum_of_the_Holy_Quran"], ar: ["متحف_القرآن_الكريم"] },
+  { id: 'uqu', n: 'جامعة أم القرى', x: -1815, z: -1978, wiki: ["Umm_al-Qura_University"], ar: ["جامعة_أم_القرى"] },
+  { id: 'kudai', n: 'أبراج كدي', x: 271, z: 2312, wiki: ["Abraj_Kudai"], ar: ["أبراج_كدي"] },
   { id: 'haramain', n: 'قطار الحرمين السريع', x: -3899, z: 538, wiki: ['Haramain_high-speed_railway'], ar: ['قطار_الحرمين_السريع'] },
 ];
 export class LandmarkPhotos {

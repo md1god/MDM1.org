@@ -42,6 +42,26 @@ export class Car {
     g.add(this.spot, this.spot.target);
     world.scene.add(g);
     this.place(this.x, this.z, this.h);
+    this._loadModel();
+  }
+  // نموذج سيارة ثلاثي الأبعاد اختياري: ضع models/car.glb (وعند الحاجة models/car.json = {"rotY":180,"length":4.7,"y":0}) فيحلّ محل السيارة المكعّبة
+  async _loadModel() {
+    try {
+      const h = await fetch('models/car.glb', { method: 'HEAD' }); if (!h.ok) return;
+      let cfg = {}; try { const c = await fetch('models/car.json'); if (c.ok) cfg = await c.json(); } catch (e) { /* افتراضي */ }
+      const { GLTFLoader } = await import('../vendor/loaders/GLTFLoader.js');
+      const gltf = await new GLTFLoader().loadAsync('models/car.glb');
+      const m = gltf.scene, box = new THREE.Box3().setFromObject(m), sz = box.getSize(new THREE.Vector3());
+      const wrap = new THREE.Group(); wrap.add(m);
+      if (sz.x > sz.z) wrap.rotation.y = Math.PI / 2; // اجعل الطول على محور z
+      wrap.rotation.y += ((cfg.rotY || 0) * Math.PI) / 180;
+      const len = Math.max(sz.x, sz.z) || 1, k = (cfg.length || 4.7) / len;
+      m.scale.setScalar(k); const b2 = new THREE.Box3().setFromObject(m), c = b2.getCenter(new THREE.Vector3());
+      m.position.set(-c.x, -b2.min.y + (cfg.y || 0), -c.z);
+      for (const o of this.group.children.slice()) if (o !== this.spot && o !== this.spot.target) this.group.remove(o);
+      this.group.add(wrap); this.wheels = []; // العجلات المكعّبة أُزيلت
+      this.customModel = true;
+    } catch (e) { /* نبقى على السيارة الافتراضية */ }
   }
   place(x, z, h) {
     this.x = x; this.z = z; this.h = h; this.v = 0; this.steer = 0;
@@ -63,7 +83,7 @@ export class Car {
     g.rotation.set(0, 0, 0);
     g.rotation.order = 'YXZ';
     g.rotation.y = -this.h; g.rotation.x = this.pitch; g.rotation.z = this.roll;
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < this.wheels.length; i++) {
       this.wheels[i].rotation.x = this.wheelRot;
       if (i < 2) this.wheels[i].rotation.y = -Math.atan(Math.tan(this.steer * this.maxSt) * 0.9);
     }
