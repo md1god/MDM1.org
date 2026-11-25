@@ -507,7 +507,12 @@
         renderTable($('queryResult'),res);
         refreshChartAxes();
         status('تم تنفيذ الاستعلام: '+res.rows.length+' صف.');
-      }catch(err){$('queryResult').innerHTML='<div class="out">خطأ: '+err.message+'</div>';}
+      }catch(err){
+        const out=document.createElement('div');
+        out.className='out';
+        out.textContent='خطأ: '+(err&&err.message?err.message:'تعذر تنفيذ الاستعلام.');
+        $('queryResult').replaceChildren(out);
+      }
     });
     $('btnSaveQuery').addEventListener('click',()=>{
       const name=$('queryName').value.trim();
