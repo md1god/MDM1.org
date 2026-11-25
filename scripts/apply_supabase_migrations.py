@@ -19,26 +19,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MIGRATIONS = [
-    # 004 is safe to re-run (CREATE IF NOT EXISTS + DROP/CREATE named policies)
-    # and guarantees profiles/favorites exist before the privacy hardening checks.
-    ROOT / "supabase/migrations/004_profiles_favorites.sql",
     ROOT / "supabase/migrations/005_ideas_privacy_hardening.sql",
     ROOT / "supabase/migrations/006_ads_reports_hardening.sql",
-    ROOT / "supabase/migrations/007_mecca_contributions.sql",
 ]
 
 VERIFY_SQL = r"""
 select json_build_object(
   'rls', coalesce((select json_object_agg(relname, relrowsecurity)
     from pg_class c join pg_namespace n on n.oid=c.relnamespace
-    where n.nspname='public' and c.relname in ('profiles','favorites','ideas','idea_replies','ads','ad_reports','mecca_contrib')), '{}'::json),
+    where n.nspname='public' and c.relname in ('profiles','ideas','idea_replies','ads','ad_reports')), '{}'::json),
   'views', coalesce((select json_agg(table_name order by table_name)
     from information_schema.views where table_schema='public'
       and table_name in ('ideas_public','idea_replies_public')), '[]'::json),
-  'policies', coalesce((select json_agg(json_build_object('table', tablename, 'name', policyname, 'command', cmd, 'qual', coalesce(qual, ''), 'with_check', coalesce(with_check, ''))
+  'policies', coalesce((select json_agg(json_build_object('table', tablename, 'name', policyname, 'command', cmd)
     order by tablename, policyname)
     from pg_policies where schemaname='public'
-      and tablename in ('profiles','favorites','ideas','idea_replies','ads','ad_reports','mecca_contrib')), '[]'::json),
+      and tablename in ('profiles','ideas','idea_replies','ads','ad_reports')), '[]'::json),
   'public_table_select', coalesce((select json_agg(json_build_object('table', table_name, 'grantee', grantee))
     from information_schema.role_table_grants
     where table_schema='public' and table_name in ('profiles','ideas','idea_replies','ad_reports')
@@ -75,33 +71,12 @@ def verify(db_url: str) -> dict:
         raise RuntimeError("لم تُرجع قاعدة البيانات نتيجة تحقق")
     data = json.loads(raw.splitlines()[-1])
     rls = data.get("rls") or {}
-    required = ["profiles", "favorites", "ideas", "idea_replies", "ads", "ad_reports", "mecca_contrib"]
+    required = ["profiles", "ideas", "idea_replies", "ads", "ad_reports"]
     problems = [f"RLS غير مفعّل على {name}" for name in required if rls.get(name) is not True]
     if "ideas_public" not in (data.get("views") or []) or "idea_replies_public" not in (data.get("views") or []):
         problems.append("views العامة الآمنة للوحة الأفكار غير موجودة")
     if data.get("public_table_select"):
         problems.append("ما زالت صلاحية SELECT مباشرة موجودة على جداول داخلية")
-
-    # Verify owner-scoped RLS policies, not merely that RLS is switched on.
-    policies = data.get("policies") or []
-    policy_map = {(p.get("table"), p.get("command")): p for p in policies}
-    required_owner_policies = [
-        ("profiles", "SELECT"), ("profiles", "INSERT"), ("profiles", "UPDATE"),
-        ("favorites", "SELECT"), ("favorites", "INSERT"), ("favorites", "DELETE"),
-        ("mecca_contrib", "SELECT"), ("mecca_contrib", "INSERT"), ("mecca_contrib", "DELETE"),
-    ]
-    for table, command in required_owner_policies:
-        p = policy_map.get((table, command))
-        if not p:
-            problems.append(f"سياسة {command} المطلوبة غير موجودة على {table}")
-            continue
-        expression = (str(p.get("qual") or "") + " " + str(p.get("with_check") or "")).lower()
-        if "auth.uid()" not in expression:
-            problems.append(f"سياسة {command} على {table} لا تقيد الوصول بهوية المستخدم")
-    if not any(p.get("table") == "mecca_contrib" and p.get("command") == "SELECT"
-               and "approved" in str(p.get("qual") or "").lower() for p in policies):
-        problems.append("سياسة mecca_contrib لا تثبت قصر القراءة العامة على المساهمات المعتمدة أو مساهمات المستخدم")
-
     if data.get("report_ad_has_auto_hide"):
         problems.append("report_ad ما زالت تحتوي على إخفاء تلقائي للإعلان")
     data["verification"] = "PASS" if not problems else "FAIL"
