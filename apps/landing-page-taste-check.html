@@ -106,14 +106,7 @@ var vagueEn=['revolutionary','unlock','supercharge','unleash','cutting-edge','ga
 function textAll(h,c){return (h||'')+'\n'+(c||'')}
 function lowerAll(h,c){return textAll(h,c).toLowerCase()}
 function countOcc(s,pat){var m=s.match(pat);return m?m.length:0}
-function sanitize(html){
- if(!html)return '';
- var parsed=new DOMParser().parseFromString(String(html),'text/html');
- var allowed={A:1,ABBR:1,B:1,BLOCKQUOTE:1,BR:1,CODE:1,DD:1,DEL:1,DIV:1,DL:1,DT:1,EM:1,H1:1,H2:1,H3:1,H4:1,HR:1,I:1,IMG:1,LI:1,OL:1,P:1,PRE:1,S:1,SMALL:1,SPAN:1,STRONG:1,SUB:1,SUP:1,TABLE:1,TBODY:1,TD:1,TH:1,THEAD:1,TR:1,U:1,UL:1};
- var attrs={A:['href','title'],IMG:['src','alt','width','height'],TD:['colspan','rowspan'],TH:['colspan','rowspan']};
- function clean(node){Array.from(node.childNodes).forEach(function(child){if(child.nodeType!==1)return;if(!allowed[child.tagName]){child.replaceWith(document.createTextNode(child.textContent||''));return;}Array.from(child.attributes).forEach(function(attr){var name=attr.name.toLowerCase(),value=attr.value.trim();var safe=(attrs[child.tagName]||[]).indexOf(name)>=0;if(!safe||((name==='href'||name==='src')&&!/^(https?:|mailto:|\/|#)/i.test(value)))child.removeAttribute(attr.name);});clean(child);});}
- clean(parsed.body);return parsed.body.innerHTML;
-}
+function sanitize(html){return String(html||'');}
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function setStatus(t){el('statusBadge').textContent=t}
 function analyze(h,c,mult,radiusLimit,fontLimit){
@@ -185,9 +178,15 @@ function runAnalysis(isFix){
  renderResults(r);setStatus('الحالة: اكتمل التحليل');el('calibBadge').textContent='معايرة: '+el('calibSensitivity').selectedOptions[0].textContent;
 }
 function renderPreviews(){
- var h=el('htmlInput').value,c=el('cssInput').value;
- el('previewOriginal').innerHTML='<div class="previewBox">'+sanitize(h||'<p>لا يوجد محتوى لعرضه بعد.</p>')+'</div>';
- el('previewFixed').innerHTML='<div class="previewBox">'+sanitize(state.fixedHTML||h||'<p>لم تُطبق الإصلاحات بعد.</p>')+'</div>';
+ var h=el('htmlInput').value;
+ var original=document.createElement('div');original.className='previewBox';
+ original.style.whiteSpace='pre-wrap';original.style.overflowWrap='anywhere';
+ original.textContent=h||'لا يوجد محتوى لعرضه بعد.';
+ var fixed=document.createElement('div');fixed.className='previewBox';
+ fixed.style.whiteSpace='pre-wrap';fixed.style.overflowWrap='anywhere';
+ fixed.textContent=state.fixedHTML||h||'لم تُطبق الإصلاحات بعد.';
+ el('previewOriginal').replaceChildren(original);
+ el('previewFixed').replaceChildren(fixed);
 }
 function fixCSS(css){
  var s=css||'';
@@ -224,9 +223,18 @@ function buildJSON(){
 function getSaves(){try{var v=localStorage.getItem('landingCheckerSaves');return v?JSON.parse(v):[]}catch(e){return []}}
 function setSaves(a){try{localStorage.setItem('landingCheckerSaves',JSON.stringify(a))}catch(e){setStatus('الحالة: تعذر الحفظ محليًا')}}
 function renderSaves(){
- var a=getSaves();if(!a.length){el('savedList').textContent='لا توجد نتائج محفوظة بعد. احفظ نتيجة لمراجعتها لاحقًا.';return}
- el('savedList').innerHTML=a.map(function(s,i){return '<div class="savedItem"><span>درجة '+s.score+' • مشاكل '+s.count+' • '+new Date(s.t).toLocaleString('ar')+'</span><span><button id="loadSave'+i+'" class="sec small">استعادة</button> <button id="delSave'+i+'" class="sec small">حذف</button></span></div>'}).join('');
- a.forEach(function(s,i){el('loadSave'+i).addEventListener('click',function(){el('htmlInput').value=s.h;el('cssInput').value=s.c;renderPreviews();runAnalysis(false);setStatus('الحالة: استُعيد حفظ')});el('delSave'+i).addEventListener('click',function(){var b=getSaves();b.splice(i,1);setSaves(b);renderSaves()})});
+ var a=getSaves(),root=el('savedList');root.replaceChildren();
+ if(!a.length){root.textContent='لا توجد نتائج محفوظة بعد. احفظ نتيجة لمراجعتها لاحقًا.';return;}
+ a.forEach(function(s,i){
+  var row=document.createElement('div');row.className='savedItem';
+  var meta=document.createElement('span');meta.textContent='درجة '+Number(s.score||0)+' • مشاكل '+Number(s.count||0)+' • '+new Date(s.t).toLocaleString('ar');
+  var actions=document.createElement('span');
+  var load=document.createElement('button');load.id='loadSave'+i;load.className='sec small';load.textContent='استعادة';
+  var del=document.createElement('button');del.id='delSave'+i;del.className='sec small';del.textContent='حذف';
+  actions.append(load,document.createTextNode(' '),del);row.append(meta,actions);root.appendChild(row);
+  load.addEventListener('click',function(){el('htmlInput').value=String(s.h||'');el('cssInput').value=String(s.c||'');renderPreviews();runAnalysis(false);setStatus('الحالة: استُعيد حفظ')});
+  del.addEventListener('click',function(){var b=getSaves();b.splice(i,1);setSaves(b);renderSaves()});
+ });
 }
 el('analyzeBtn').addEventListener('click',function(){runAnalysis(false)});
 el('rerunBtn').addEventListener('click',function(){runAnalysis(false)});
