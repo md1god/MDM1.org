@@ -180,15 +180,17 @@
   }
 
   function highlightText(text, foundWeak) {
-    let result = text;
-    const sorted = [...foundWeak].sort((a, b) => b.index - a.index);
+    let result = '';
+    let cursor = 0;
+    const sorted = [...foundWeak].sort((a, b) => a.index - b.index);
     sorted.forEach(item => {
-      const before = result.slice(0, item.index);
-      const match = result.slice(item.index, item.index + item.length);
-      const after = result.slice(item.index + item.length);
-      result = before + '<mark class="ai" title="عبارة ركيكة شائعة - قد تبدو آلية">' + match + '</mark>' + after;
+      const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
+      const start = Math.max(cursor, item.index);
+      result += escapeHtml(text.slice(cursor, start));
+      result += '<mark class="ai" title="عبارة ركيكة شائعة - قد تبدو آلية">' + escapeHtml(text.slice(start, start + item.length)) + '</mark>';
+      cursor = start + item.length;
     });
-    return result;
+    return result + escapeHtml(text.slice(cursor));
   }
 
   function generateSuggestions(foundWeak) {

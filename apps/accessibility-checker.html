@@ -271,7 +271,10 @@
         try {
           const data = JSON.parse(content);
           if (data.statement) {
-            resultBox.innerHTML = `<pre>${data.statement}</pre>`;
+            resultBox.replaceChildren();
+            const pre = document.createElement('pre');
+            pre.textContent = data.statement;
+            resultBox.appendChild(pre);
           } else {
             resultBox.innerHTML = '<p>الملف لا يحتوي على بيان وصول صالح.</p>';
           }

@@ -169,7 +169,8 @@ function renderItemTable(){
   tbody.innerHTML='';  
   items.forEach((it,i)=>{  
     const tr=document.createElement('tr');  
-    tr.innerHTML=`<td>${it.desc}</td><td>${it.qty}</td><td>${fmtNum(it.price)}</td><td>${fmtNum(it.qty*it.price)}</td>`;  
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
+    tr.innerHTML=`<td>${escapeHtml(it.desc)}</td><td>${escapeHtml(it.qty)}</td><td>${fmtNum(it.price)}</td><td>${fmtNum(it.qty*it.price)}</td>`;
     const td=document.createElement('td');  
     const btn=document.createElement('button');  
     btn.className='button sec';  
@@ -198,13 +199,14 @@ function previewInvoice(){
   const due=document.getElementById('invoiceDueDateInput').value||'—';  
   const {sub, tax, disc, total}=calculateTotals();  
   const div=document.getElementById('invoicePreviewDiv');  
-  div.innerHTML=`<strong>العميل:</strong> ${client}<br>`+  
-    `<strong>العملة:</strong> ${currency}<br>`+  
-    `<strong>تاريخ الاستحقاق:</strong> ${due}<br>`+  
-    `<strong>المجموع الفرعي:</strong> ${fmtNum(sub)}<br>`+  
-    `<strong>الضريبة:</strong> ${fmtNum(tax)}<br>`+  
-    `<strong>الخصم:</strong> ${fmtNum(disc)}<br>`+  
-    `<strong>الإجمالي:</strong> ${fmtNum(total)}`;  
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
+  div.innerHTML=`<strong>العميل:</strong> ${escapeHtml(client)}<br>`+
+    `<strong>العملة:</strong> ${escapeHtml(currency)}<br>`+
+    `<strong>تاريخ الاستحقاق:</strong> ${escapeHtml(due)}<br>`+
+    `<strong>المجموع الفرعي:</strong> ${fmtNum(sub)}<br>`+
+    `<strong>الضريبة:</strong> ${fmtNum(tax)}<br>`+
+    `<strong>الخصم:</strong> ${fmtNum(disc)}<br>`+
+    `<strong>الإجمالي:</strong> ${fmtNum(total)}`;
 }  
   
 function addInvoice(){  
