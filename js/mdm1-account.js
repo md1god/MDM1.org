@@ -25,7 +25,15 @@
     const sb = remote(); if (!sb) return;
     try {
       const { data } = await sb.auth.getSession();
-      if (!data.session?.user) return;
+      if (!data.session?.user) {
+        if (state.profile?.mode === 'supabase') {
+          state.profile = null;
+          state.favorites = [];
+          save(state);
+          render();
+        }
+        return;
+      }
       const user = data.session.user;
       state.profile = { email: user.email || '', name: user.user_metadata?.name || user.email?.split('@')[0] || '', mode: 'supabase' };
       const result = await sb.from('favorites').select('resource_id').eq('user_id', user.id);
@@ -76,7 +84,7 @@
     if (event.target.closest('[data-account-close]')) { close(); return; }
     if (event.target.closest('[data-account-signout]')) {
       const sb = remote(); if (sb) sb.auth.signOut().catch(() => {});
-      state.profile = null; save(state); render(); close(); notify('تم تسجيل الخروج'); return;
+      state.profile = null; state.favorites = []; save(state); render(); close(); notify('تم تسجيل الخروج'); return;
     }
   });
   document.addEventListener('submit', async event => {
