@@ -12,16 +12,6 @@
   window.supabase = client;                                        // pages call supabase.from(...) / supabase.auth.* directly
   if (typeof client.createClient !== "function") client.createClient = lib.createClient;   // js/ads.js still calls supabase.createClient(...)
 
-  // Verify the one-time email code returned by signInWithOtp.
-  // Supabase establishes the authenticated session; never trust a browser-local profile as identity.
-  window.verifyEmailCode = function (email, token) {
-    return client.auth.verifyOtp({
-      email: String(email || "").trim().toLowerCase(),
-      token: String(token || "").replace(/\s+/g, ""),
-      type: "email"
-    });
-  };
-
   window.sendMagicLink = function (email, meta) {                     // passwordless sign-up / sign-in (join + ideas pages)
     meta = meta || {};
     var data = {};
