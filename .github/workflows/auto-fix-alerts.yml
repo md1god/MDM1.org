@@ -253,6 +253,18 @@ jobs:
             done
           fi
 
+      - name: Ask the MD-automation Telegram watcher to report now
+        # mdm1.org has no Telegram secrets; MD-automation does and already reports this repo every 30 minutes.
+        # This only makes it immediate. Needs a token that may run workflows there (secret MD1AUTOMATION); best effort.
+        if: steps.pr.outputs.merged == 'yes'
+        continue-on-error: true
+        env:
+          WATCH_TOKEN: ${{ secrets.MD1AUTOMATION }}
+        run: |
+          [ -n "$WATCH_TOKEN" ] || { echo "MD1AUTOMATION secret not set; the watcher will report within 30 minutes."; exit 0; }
+          GH_TOKEN="$WATCH_TOKEN" gh workflow run mdm1-watch.yml --repo md1god/MD-automation \
+            || echo "Could not start the watcher (token scope); it will report within 30 minutes."
+
       - name: Send the result and the reason
         if: always()
         run: |
