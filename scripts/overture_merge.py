@@ -32,7 +32,7 @@ def main():
     src = a.geojsonseq
     if not src:
         src = os.path.join(a.data, "_overture.geojsonseq")
-        subprocess.run(["overturemaps", "download", f"--bbox={bb['west']},{bb['south']},{bb['east']},{bb['north']}",
+        subprocess.run([os.path.join(os.path.dirname(sys.executable), "overturemaps"), "download", f"--bbox={bb['west']},{bb['south']},{bb['east']},{bb['north']}",
                         "-f", "geojsonseq", "--type=building", "-o", src], check=True)
 
     # ---- existing OSM buildings
