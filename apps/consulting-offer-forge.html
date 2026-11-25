@@ -160,10 +160,11 @@ function generate(){
 }
 function loadLib(){try{return JSON.parse(localStorage.getItem(LS)||'[]');}catch(e){return [];}}
 function saveLib(arr){try{localStorage.setItem(LS,JSON.stringify(arr));}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function refreshLib(){
-  var arr=loadLib();var html=arr.length?arr.map(function(x,i){return (i+1)+'. '+x.d.svc+' — '+x.d.aud+' — '+x.price+' '+x.d.cur;}).join('\n'):'لا توجد عروض محفوظة.';
-  setOut('libOut',html);
-  var opts=arr.map(function(x,i){return '<option value="'+i+'">'+x.d.svc+'</option>';}).join('');
+    var arr=loadLib();var html=arr.length?arr.map(function(x,i){return (i+1)+'. '+x.d.svc+' — '+x.d.aud+' — '+x.price+' '+x.d.cur;}).join('\n'):'لا توجد عروض محفوظة.';
+    setOut('libOut',html);
+    var opts=arr.map(function(x,i){return '<option value="'+i+'">'+esc(x.d.svc)+'</option>';}).join('');
   g('cmpA').innerHTML=opts; g('cmpB').innerHTML=opts;
 }
 function saveCurrent(){

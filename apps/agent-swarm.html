@@ -243,10 +243,10 @@
       return '<div class="app-item"><div class="app-meta">' +
         "<strong>" + esc(a.name) + "</strong>" +
         '<span class="badge">الدور: ' + esc(a.role || "عام") + "</span>" +
-        '<span class="badge">تكلفة الاستدعاء: ' + num(a.call) + "</span>" +
-        '<span class="badge">حد إعادة المحاولة: ' + a.retry + "</span>" +
-        '<span class="badge">تكلفة متراكمة: ' + num(a.acc) + "</span>" +
-        '</div><button type="button" class="button sec" id="agentDel' + a.id + '" data-aid="' + a.id + '">حذف الوكيل</button></div>';
+        '<span class="badge">تكلفة الاستدعاء: ' + esc(num(a.call)) + "</span>" +
+        '<span class="badge">حد إعادة المحاولة: ' + esc(a.retry) + "</span>" +
+        '<span class="badge">تكلفة متراكمة: ' + esc(num(a.acc)) + "</span>" +
+        '</div><button type="button" class="button sec" id="agentDel' + esc(a.id) + '" data-aid="' + esc(a.id) + '">حذف الوكيل</button></div>';
     }).join("");
     list.querySelectorAll("button[data-aid]").forEach(function (b) {
       b.addEventListener("click", function () { removeAgent(parseInt(b.getAttribute("data-aid"), 10)); });
@@ -262,15 +262,15 @@
       var a = findAgent(t.agentId);
       return '<div class="app-item"><div class="app-meta">' +
         "<strong>" + esc(t.name) + "</strong>" +
-        '<span class="badge ' + stateClass(t.status) + '">' + stateLabel(t.status) + "</span>" +
+        '<span class="badge ' + esc(stateClass(t.status)) + '">' + esc(stateLabel(t.status)) + "</span>" +
         '<span class="badge">الوكيل: ' + esc(a ? a.name : "غير محدد") + "</span>" +
-        '<span class="badge">الأولوية: ' + prioLabel(t.prio) + "</span>" +
-        '<span class="badge">التكلفة: ' + num(t.cost) + "</span>" +
-        '<span class="badge">الوحدات: ' + num(t.usedUnits, 0) + "/" + t.units + "</span>" +
-        '<span class="badge">إعادات التشغيل: ' + t.retries + "</span>" +
+        '<span class="badge">الأولوية: ' + esc(prioLabel(t.prio)) + "</span>" +
+        '<span class="badge">التكلفة: ' + esc(num(t.cost)) + "</span>" +
+        '<span class="badge">الوحدات: ' + esc(num(t.usedUnits, 0)) + "/" + esc(t.units) + "</span>" +
+        '<span class="badge">إعادات التشغيل: ' + esc(t.retries) + "</span>" +
         '<span class="badge">السياق المطلوب: ' + (t.requires.length ? esc(t.requires.join("، ")) : "لا شيء") + "</span>" +
         '<span class="badge">السياق الناتج: ' + (t.output ? esc(t.output) : "لا شيء") + "</span>" +
-        '</div><button type="button" class="button sec" id="taskDel' + t.id + '" data-tid="' + t.id + '">حذف المهمة</button></div>';
+        '</div><button type="button" class="button sec" id="taskDel' + esc(t.id) + '" data-tid="' + esc(t.id) + '">حذف المهمة</button></div>';
     }).join("");
     list.querySelectorAll("button[data-tid]").forEach(function (b) {
       b.addEventListener("click", function () { removeTask(parseInt(b.getAttribute("data-tid"), 10)); });

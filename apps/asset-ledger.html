@@ -153,13 +153,15 @@
   function num(v){ var n = parseFloat(v); return isNaN(n) ? NaN : n; }
   function fmt(n){ return (Math.round(n*100)/100).toFixed(2); }
 
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   function renderAssets(){
     var list = byId('asset_list'); list.innerHTML='';
     if(assets.length===0){ var p=document.createElement('p'); p.textContent='لا توجد أصول مسجلة بعد.'; list.appendChild(p); refreshTxAssetSelect(); return; }
     for(var i=0;i<assets.length;i++){
       var a=assets[i];
       var div=document.createElement('div'); div.className='item';
-      div.innerHTML='<div><strong>'+a.name+'</strong> <span class="badge">قيمة: '+fmt(a.init)+'</span></div>';
+      div.innerHTML='<div><strong>'+esc(a.name)+'</strong> <span class="badge">قيمة: '+esc(fmt(a.init))+'</span></div>';
       list.appendChild(div);
     }
     refreshTxAssetSelect();
@@ -184,7 +186,7 @@
       var typeMap={income:'دخل', expense:'مصروف', buy:'شراء أصل', sell:'بيع أصل'};
       var assetStr='';
       if(t.assetIndex!=='' && assets[parseInt(t.assetIndex)]){ assetStr=' | أصل: '+assets[parseInt(t.assetIndex)].name; }
-      div.innerHTML='<div><strong>'+typeMap[t.type]+'</strong> <span class="badge">مبلغ: '+fmt(t.amount)+'</span>'+assetStr+'</div><div>'+ (t.desc||'') +'</div>';
+      div.innerHTML='<div><strong>'+esc(typeMap[t.type])+'</strong> <span class="badge">مبلغ: '+esc(fmt(t.amount))+'</span>'+esc(assetStr)+'</div><div>'+ esc(t.desc||'') +'</div>';
       list.appendChild(div);
     }
   }

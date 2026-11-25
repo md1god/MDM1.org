@@ -184,6 +184,8 @@
     runAnalysis(rows, brand, competitors);
   }
 
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   function runAnalysis(rows, brand, competitors) {
     if (!brand) return alert('أدخل اسم العلامة التجارية');
     const allBrands = [brand, ...competitors];
@@ -251,13 +253,13 @@
     let compHtml = '';
     competitorMentions.forEach(([name, count], i) => {
       const isBrand = name === brand;
-      compHtml += `<div class="mention-row"><span>${i + 1}. ${name}${isBrand ? ' <span class="badge">علامتك</span>' : ''}</span><span class="big" style="font-size:1.2rem">${count}</span></div>`;
+      compHtml += `<div class="mention-row"><span>${i + 1}. ${esc(name)}${isBrand ? ' <span class="badge">علامتك</span>' : ''}</span><span class="big" style="font-size:1.2rem">${esc(count)}</span></div>`;
     });
 
     results.innerHTML = `
       <div class="stat-grid">
         <div class="stat-card"><div class="label">إجمالي الإجابات المحللة</div><div class="value big">${totalAnswers}</div></div>
-        <div class="stat-card"><div class="label">ذكر العلامة (${brand})</div><div class="value big">${brandMentions}</div></div>
+        <div class="stat-card"><div class="label">ذكر العلامة (${esc(brand)})</div><div class="value big">${brandMentions}</div></div>
         <div class="stat-card"><div class="label">نسبة الظهور</div><div class="value big">${brandPct}%</div></div>
         <div class="stat-card"><div class="label">متوسط ترتيب الذكر</div><div class="value big">#${avgRank}</div></div>
         <div class="stat-card"><div class="label">الاستشهادات</div><div class="value big">${citations}</div></div>
@@ -385,7 +387,7 @@
       card.style.display = 'block';
       list.innerHTML = history.map((s, i) => `
         <div class="history-item" data-index="${i}">
-          <strong>${s.brand}</strong> — ${s.competitors || 'بدون منافسين'}
+          <strong>${esc(s.brand)}</strong> — ${esc(s.competitors || 'بدون منافسين')}
           <div class="meta">${new Date(s.timestamp).toLocaleString('ar-SA')} • ${s.source === 'paste' ? 'نص ملصق' : 'ملف CSV'}</div>
         </div>
       `).join('');
