@@ -248,6 +248,12 @@
     });
   }
   
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
   function render() {
     const list = $('app-tasks-list');
     const empty = $('app-empty-state');
@@ -277,12 +283,12 @@
       else meta.push('غير مكتملة');
       item.innerHTML = '<div class="task-row">' +
         '<div style="flex:1; min-width:150px;">' +
-          '<div style="font-weight:bold;' + (t.done ? ' text-decoration: line-through; opacity: 0.7;' : '') + '">' + t.title + '</div>' +
-          '<div class="task-meta">' + meta.join(' | ') + '</div>' +
+          '<div style="font-weight:bold;' + (t.done ? ' text-decoration: line-through; opacity: 0.7;' : '') + '">' + escapeHtml(t.title) + '</div>' +
+          '<div class="task-meta">' + escapeHtml(meta.join(' | ')) + '</div>' +
         '</div>' +
         '<div class="row">' +
-          '<button id="btn-toggle-' + t.id + '" class="sec">' + (t.done ? 'إلغاء التحديد' : 'وضع علامة مكتملة') + '</button>' +
-          '<button id="btn-del-' + t.id + '" class="sec">حذف</button>' +
+          '<button id="btn-toggle-' + escapeHtml(t.id) + '" class="sec">' + (t.done ? 'إلغاء التحديد' : 'وضع علامة مكتملة') + '</button>' +
+          '<button id="btn-del-' + escapeHtml(t.id) + '" class="sec">حذف</button>' +
         '</div>' +
       '</div>';
       list.appendChild(item);

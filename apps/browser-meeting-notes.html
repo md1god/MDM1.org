@@ -167,6 +167,8 @@
     stopBtn.disabled = true;
   };
 
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
+
   const generateSummary = () => {
     const text = transcriptArea.value.trim();
     if (!text) {
@@ -176,9 +178,9 @@
     const sentences = text.split(/[.!?؛]/).filter(s => s.trim().length);
     const first = sentences[0] || '';
     const points = sentences.slice(1, 4);
-    let html = '<strong>النقطة الأساسية:</strong> ' + first + '<br><strong>نقاط رئيسية:</strong><ul>';
+    let html = '<strong>النقطة الأساسية:</strong> ' + escapeHtml(first) + '<br><strong>نقاط رئيسية:</strong><ul>';
     points.forEach(p => {
-      html += '<li>' + p.trim() + '</li>';
+      html += '<li>' + escapeHtml(p.trim()) + '</li>';
     });
     html += '</ul>';
     summaryOut.innerHTML = html;
