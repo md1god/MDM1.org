@@ -308,8 +308,25 @@
     if(!arr.length){var o=document.createElement('option');o.value='';o.textContent='— لا توجد مقالات —';libSel.appendChild(o);return;}
     arr.forEach(function(it){var o=document.createElement('option');o.value=it.id;o.textContent=it.title;libSel.appendChild(o);});
   }
+  function safeArticleHtml(html){
+    var doc=new DOMParser().parseFromString(String(html||''),'text/html');
+    var box=document.createElement('div');
+    Array.prototype.forEach.call(doc.body.childNodes,function(node){
+      if(node.nodeType===3){box.appendChild(document.createTextNode(node.nodeValue));return;}
+      if(node.nodeType!==1||node.tagName!=='P')return;
+      var p=document.createElement('p');
+      Array.prototype.forEach.call(node.childNodes,function(ch){
+        if(ch.nodeType===3){p.appendChild(document.createTextNode(ch.nodeValue));return;}
+        if(ch.nodeType===1&&ch.tagName==='SPAN'&&/^app-hl(?: app-hl-[a-z]+)?$/.test(ch.className||'')){
+          var s=document.createElement('span');s.className=ch.className;s.textContent=ch.textContent;p.appendChild(s);
+        }
+      });
+      box.appendChild(p);
+    });
+    return box.innerHTML;
+  }
   function loadItem(it){
-    reader.innerHTML=it.html;hasContent=true;title.value=it.title;curId=it.id;
+    reader.innerHTML=safeArticleHtml(it.html);hasContent=true;title.value=it.title;curId=it.id;
     updateStats();reader.scrollTop=0;updateProgress();
   }
   $('save').addEventListener('click',function(){

@@ -229,15 +229,18 @@
 
   function renderHighlighted(metrics) {
     const { sentences, sentenceRegularity } = metrics;
-    let html = '';
+    highlightedEl.textContent = '';
     sentences.forEach((s, i) => {
       const reg = sentenceRegularity[i];
       let cls = 'app-sentence-regular';
       if (reg.regularityScore > 0.85) cls = 'app-sentence-high';
       else if (reg.regularityScore < 0.4) cls = '';
-      html += `<span class="${cls}">${s}</span> `;
+      if (i) highlightedEl.appendChild(document.createTextNode(' '));
+      const span = document.createElement('span');
+      span.className = cls;
+      span.textContent = s;
+      highlightedEl.appendChild(span);
     });
-    highlightedEl.innerHTML = html.trim();
   }
 
   function renderDetails(metrics) {

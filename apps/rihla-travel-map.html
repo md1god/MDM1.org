@@ -383,7 +383,7 @@
     empty.style.display="none";
     places.slice().reverse().forEach(p=>{
       const d=document.createElement("div"); d.className="app-item";
-      d.innerHTML="<div style='display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap'><div><strong>"+esc(p.name)+"</strong><div class='app-meta'>"+esc(p.date||"بدون تاريخ")+" | "+esc(p.country||"-")+" / "+esc(p.region||"-")+" | "+esc(p.category||"-")+"</div><div class='app-meta'>وسوم: "+esc(p.tags||"-")+"</div><div class='app-meta'>ملاحظات: "+esc(p.notes||"-")+"</div></div><div class='app-actions'><button class='button sec' data-act='sel' data-id='"+p.id+"'>تحديد للتعديل</button><button class='button sec' data-act='show' data-id='"+p.id+"'>عرض على الخريطة</button></div></div>"+(p.img?"<img class='app-img' src='"+p.img+"' alt='"+esc(p.name)+"'>":"");
+      d.innerHTML="<div style='display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap'><div><strong>"+esc(p.name)+"</strong><div class='app-meta'>"+esc(p.date||"بدون تاريخ")+" | "+esc(p.country||"-")+" / "+esc(p.region||"-")+" | "+esc(p.category||"-")+"</div><div class='app-meta'>وسوم: "+esc(p.tags||"-")+"</div><div class='app-meta'>ملاحظات: "+esc(p.notes||"-")+"</div></div><div class='app-actions'><button class='button sec' data-act='sel' data-id='"+esc(p.id)+"'>تحديد للتعديل</button><button class='button sec' data-act='show' data-id='"+esc(p.id)+"'>عرض على الخريطة</button></div></div>"+(p.img?"<img class='app-img' src='"+esc(p.img)+"' alt='"+esc(p.name)+"'>":"");
       list.appendChild(d);
     });
     list.querySelectorAll("button").forEach(b=>{
@@ -407,7 +407,7 @@
     document.getElementById("placeTags").value=p.tags||"";
     document.getElementById("placeNotes").value=p.notes||"";
     document.getElementById("placeImage").value="";
-    const pv=document.getElementById("placeImagePreview"); pv.innerHTML=p.img?"<img class='app-img' src='"+p.img+"' alt='"+esc(p.name)+"'>":"";
+    const pv=document.getElementById("placeImagePreview"); pv.innerHTML=p.img?"<img class='app-img' src='"+esc(p.img)+"' alt='"+esc(p.name)+"'>":"";
     drawMap();
   }
 
@@ -470,7 +470,7 @@
     list.innerHTML=""; if(trips.length===0){ empty.style.display="block"; return; } empty.style.display="none";
     trips.forEach(t=>{
       const d=document.createElement("div"); d.className="app-item";
-      d.innerHTML="<div style='display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap'><div><strong>"+esc(t.title)+"</strong><div class='app-meta'>"+esc(t.start||"-")+" → "+esc(t.end||"-")+" | أيام: "+(t.days||1)+"</div><div class='app-meta'>"+esc(t.desc||"")+"</div></div><div class='app-actions'><button class='button sec' data-act='pick' data-id='"+t.id+"'>اختيار</button></div></div>";
+      d.innerHTML="<div style='display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap'><div><strong>"+esc(t.title)+"</strong><div class='app-meta'>"+esc(t.start||"-")+" → "+esc(t.end||"-")+" | أيام: "+esc(t.days||1)+"</div><div class='app-meta'>"+esc(t.desc||"")+"</div></div><div class='app-actions'><button class='button sec' data-act='pick' data-id='"+esc(t.id)+"'>اختيار</button></div></div>";
       list.appendChild(d);
     });
     list.querySelectorAll("button").forEach(b=>{
@@ -527,7 +527,7 @@
       cb.onchange=function(){ ts.done=cb.checked; save(); renderStats(); };
       const sp=document.createElement("span");
       let extra="";
-      if(ts.placeId){ const pp=places.find(x=>x.id===ts.placeId); if(pp) extra=" — مرتبط بـ: "+pp.name; }
+      if(ts.placeId){ const pp=places.find(x=>x.id===ts.placeId); if(pp) extra=" — مرتبط بـ: "+esc(pp.name); }
       sp.innerHTML="<strong>"+esc(ts.text)+"</strong><span class='app-meta'>"+extra+"</span>";
       row.appendChild(cb); row.appendChild(sp);
       list.appendChild(row);
@@ -555,7 +555,7 @@
     if(list.length===0){ empty.style.display="block"; return; } empty.style.display="none";
     list.forEach(p=>{
       const d=document.createElement("div"); d.className="app-gitem";
-      d.innerHTML=(p.img?"<img class='app-img' src='"+p.img+"' alt='"+esc(p.name)+"'>":"<div class='out'>لا توجد صورة</div>")+"<div><strong>"+esc(p.name)+"</strong><div class='app-meta'>"+esc(p.date||"-")+" | "+esc(p.country||"-")+"/"+esc(p.region||"-")+" | "+esc(p.category||"-")+"</div><div class='app-meta'>وسوم: "+esc(p.tags||"-")+"</div><div class='app-meta'>"+esc(p.notes||"-")+"</div></div>";
+      d.innerHTML=(p.img?"<img class='app-img' src='"+esc(p.img)+"' alt='"+esc(p.name)+"'>":"<div class='out'>لا توجد صورة</div>")+"<div><strong>"+esc(p.name)+"</strong><div class='app-meta'>"+esc(p.date||"-")+" | "+esc(p.country||"-")+"/"+esc(p.region||"-")+" | "+esc(p.category||"-")+"</div><div class='app-meta'>وسوم: "+esc(p.tags||"-")+"</div><div class='app-meta'>"+esc(p.notes||"-")+"</div></div>";
       wrap.appendChild(d);
     });
     fillGalFilters();
