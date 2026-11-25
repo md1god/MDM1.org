@@ -40,6 +40,7 @@
 <footer class="page-footer">✦ MDM1 · 2026-10-15 ✦</footer>
 <script src="../js/global.js"></script>
 <script>
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 document.getElementById('generateFields').addEventListener('click', function() {
   const count = parseInt(document.getElementById('subjectsCount').value);
   const container = document.getElementById('subjectsContainer');
@@ -101,7 +102,7 @@ document.getElementById('calculatePlan').addEventListener('click', function() {
     const dailyHours = allocatedHours / daysLeft;
     const diffText = s.weight === 1 ? 'سهلة' : (s.weight === 2 ? 'متوسطة' : 'صعبة');
     planHtml += '<tr>' +
-      '<td style="border:1px solid #ccc;padding:8px">' + s.name + '</td>' +
+      '<td style="border:1px solid #ccc;padding:8px">' + esc(s.name) + '</td>' +
       '<td style="border:1px solid #ccc;padding:8px">' + diffText + '</td>' +
       '<td style="border:1px solid #ccc;padding:8px">' + allocatedHours.toFixed(1) + ' ساعة</td>' +
       '<td style="border:1px solid #ccc;padding:8px">' + dailyHours.toFixed(2) + ' ساعة/يوم</td>' +
@@ -117,7 +118,7 @@ document.getElementById('calculatePlan').addEventListener('click', function() {
     planHtml += '<details><summary><b>اليوم ' + d + ' (' + dateStr + ')</b></summary><ul>';
     subjects.forEach(s => {
       const dailyHours = ((s.weight / totalWeight) * totalHours) / daysLeft;
-      planHtml += '<li>' + s.name + ': ' + dailyHours.toFixed(2) + ' ساعة</li>';
+      planHtml += '<li>' + esc(s.name) + ': ' + dailyHours.toFixed(2) + ' ساعة</li>';
     });
     planHtml += '</ul></details>';
   }
