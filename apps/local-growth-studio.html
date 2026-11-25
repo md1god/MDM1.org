@@ -342,7 +342,12 @@ function renderLeads(){
  const list=$('leadsList');list.innerHTML='';
  filtered.forEach(l=>{
   const div=document.createElement('div');div.className='card app-item';
-  div.innerHTML='<strong>'+escapeHtml(l.name)+'</strong><br>'+escapeHtml(l.phone||'')+' '+escapeHtml(l.email||'')+'<br>'+escapeHtml(l.interest||'')+'<br>'+escapeHtml(l.notes||'')+'<br><small>'+new Date(l.createdAt).toLocaleString('ar-SA')+'</small><div class="row"><button type="button" class="button sec" id="deleteLead-'+l.id+'">حذف</button></div>';
+  const strong=document.createElement('strong');strong.textContent=l.name||'';div.appendChild(strong);div.appendChild(document.createElement('br'));
+  div.appendChild(document.createTextNode((l.phone||'')+' '+(l.email||'')));div.appendChild(document.createElement('br'));
+  div.appendChild(document.createTextNode(l.interest||''));div.appendChild(document.createElement('br'));
+  div.appendChild(document.createTextNode(l.notes||''));div.appendChild(document.createElement('br'));
+  const small=document.createElement('small');small.textContent=new Date(l.createdAt).toLocaleString('ar-SA');div.appendChild(small);
+  const actions=document.createElement('div');actions.className='row';const del=document.createElement('button');del.type='button';del.className='button sec';del.id='deleteLead-'+String(l.id);del.textContent='حذف';actions.appendChild(del);div.appendChild(actions);
   list.appendChild(div);
   const btn=$('deleteLead-'+l.id);if(btn)btn.addEventListener('click',()=>deleteLead(l.id));
  });
@@ -389,7 +394,7 @@ function renderDayAppointments(){
  const dayItems=appts.filter(a=>a.date===selectedDate).sort((a,b)=>a.time.localeCompare(b.time));
  dayItems.forEach(a=>{
   const div=document.createElement('div');div.className='card app-item';
-  div.innerHTML='<strong>'+escapeHtml(a.title)+'</strong> — '+escapeHtml(a.time)+' ('+escapeHtml(a.duration)+'د)<br>'+escapeHtml(a.customer||'')+'<br>'+escapeHtml(a.notes||'')+'<div class="row"><button type="button" class="button sec" id="deleteAppt-'+a.id+'">حذف</button></div>';
+  const title=document.createElement('strong');title.textContent=a.title||'';div.appendChild(title);div.appendChild(document.createTextNode(' — '+(a.time||'')+' ('+(a.duration||'')+'د)'));div.appendChild(document.createElement('br'));div.appendChild(document.createTextNode(a.customer||''));div.appendChild(document.createElement('br'));div.appendChild(document.createTextNode(a.notes||''));const actions=document.createElement('div');actions.className='row';const del=document.createElement('button');del.type='button';del.className='button sec';del.id='deleteAppt-'+String(a.id);del.textContent='حذف';actions.appendChild(del);div.appendChild(actions);
   list.appendChild(div);
   const btn=$('deleteAppt-'+a.id);if(btn)btn.addEventListener('click',()=>deleteAppt(a.id));
  });
@@ -401,7 +406,7 @@ function renderUpcoming(){
  const list=$('upcomingAppointments');list.innerHTML='';
  items.forEach(a=>{
   const div=document.createElement('div');div.className='card app-item';
-  div.innerHTML='<strong>'+escapeHtml(a.title)+'</strong> — '+fmtDate(a.date)+' '+escapeHtml(a.time)+'<br>'+escapeHtml(a.customer||'');
+  const title=document.createElement('strong');title.textContent=a.title||'';div.appendChild(title);div.appendChild(document.createTextNode(' — '+fmtDate(a.date)+' '+(a.time||'')));div.appendChild(document.createElement('br'));div.appendChild(document.createTextNode(a.customer||''));
   list.appendChild(div);
  });
  $('upcomingEmpty').style.display=items.length?'none':'block';
