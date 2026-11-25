@@ -342,15 +342,27 @@ export class Labels {
   update(px, pz, dt) {
     this.t += dt;
     if (this.t > 2 || !this.items.length) { this.t = 0; this.rebuild(px, pz); }
+    const vis = [], px0 = px, pz0 = pz;
     for (const it of this.items) {
       const s = this.world.project(it.x, it.y, it.z);
       if (s.z > 1 || s.y < 40 || s.y > innerHeight) { it.el.style.display = 'none'; continue; }
-      if (s.x < 0 || s.x > innerWidth) { const w = it.el.offsetWidth / 2 + 4; s.x = clamp(s.x, w, innerWidth - w); }
-      const d = Math.hypot(it.x - px, it.z - pz);
       if (this.skip && it.cls.startsWith('hood') && this.skip.has(it.txt)) { it.el.style.display = 'none'; continue; }
+      // المعلم الذي تظهر صورته (وفيها اسمه) لا يُكرَّر نصه
+      if (this.photos && it.cls.startsWith('lm') && !it.cls.includes('kaaba') && this.photos.shownPos.some((p) => Math.hypot(p[0] - it.x, p[1] - it.z) < 150)) { it.el.style.display = 'none'; continue; }
+      if (s.x < 0 || s.x > innerWidth) { const w = it.el.offsetWidth / 2 + 4; s.x = clamp(s.x, w, innerWidth - w); }
+      it.s = s; it.dd = Math.hypot(it.x - px0, it.z - pz0); vis.push(it);
+    }
+    // منع التراكب: الأولوية للكعبة ثم المعالم الأقرب ثم الأحياء؛ ما يتراكب مع نص أعلى أولوية يُخفى
+    const pri = (it) => (it.cls.includes('kaaba') ? 0 : it.cls.startsWith('lm') ? 1 : 2);
+    vis.sort((a, b) => pri(a) - pri(b) || a.dd - b.dd);
+    const placed = [];
+    for (const it of vis) {
+      const w = it.el.offsetWidth || 80, h = it.el.offsetHeight || 20, x = it.s.x - w / 2 - 4, y = it.s.y - h / 2 - 2, W = w + 8, H = h + 4;
+      if (placed.some((r) => x < r[0] + r[2] && x + W > r[0] && y < r[1] + r[3] && y + H > r[1])) { it.el.style.display = 'none'; continue; }
+      placed.push([x, y, W, H]);
       it.el.style.display = 'block';
-      it.el.style.transform = `translate(${s.x}px,${s.y}px) translate(-50%,-50%)`;
-      it.el.style.opacity = it.cls.startsWith('hood') ? String(clamp(1.3 - d / 5000, 0.8, 1)) : String(clamp(1.3 - d / 900, 0.3, 1));
+      it.el.style.transform = `translate(${it.s.x}px,${it.s.y}px) translate(-50%,-50%)`;
+      it.el.style.opacity = it.cls.startsWith('hood') ? String(clamp(1.3 - it.dd / 5000, 0.8, 1)) : String(clamp(1.3 - it.dd / 900, 0.3, 1));
     }
   }
 }
