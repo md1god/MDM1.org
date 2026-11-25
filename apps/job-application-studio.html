@@ -244,10 +244,10 @@ function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){r
       var j=jobs[i]; if(f!=='all' && j.status!==f) continue;
       var miss=j.missing||[];
       var div=document.createElement('div'); div.className='card';
-      var html='<div><strong>'+ (j.title||'') +'</strong> - '+ (j.company||'') +' <span class="badge">'+statusLabel(j.status)+'</span></div>';
-      html+='<div>درجة التوافق: <span class="big">'+ (j.score||0) +'%</span></div>';
-      if(miss.length>0) html+='<div>المهارات الناقصة: '+ miss.join('، ') +'</div>';
-      html+='<div class="row"><button data-act="apply" data-id="'+j.id+'">تحديث لتم التقديم</button><button data-act="interview" data-id="'+j.id+'" class="sec">مقابلة</button><button data-act="remove" data-id="'+j.id+'" class="sec">حذف</button></div>';
+      var html='<div><strong>'+ mdm1Esc(j.title||'') +'</strong> - '+ mdm1Esc(j.company||'') +' <span class="badge">'+mdm1Esc(statusLabel(j.status))+'</span></div>';
+      html+='<div>درجة التوافق: <span class="big">'+ mdm1Esc(j.score||0) +'%</span></div>';
+      if(miss.length>0) html+='<div>المهارات الناقصة: '+ mdm1Esc(miss.join('، ')) +'</div>';
+      html+='<div class="row"><button data-act="apply" data-id="'+mdm1Esc(j.id)+'">تحديث لتم التقديم</button><button data-act="interview" data-id="'+mdm1Esc(j.id)+'" class="sec">مقابلة</button><button data-act="remove" data-id="'+mdm1Esc(j.id)+'" class="sec">حذف</button></div>';
       div.innerHTML=html; list.appendChild(div);
     }
     var tlist=document.getElementById('tplList'); tlist.innerHTML='';
