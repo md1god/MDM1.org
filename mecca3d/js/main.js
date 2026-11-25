@@ -26,6 +26,7 @@ const say = (txt) => {
 };
 
 async function boot() {
+  window.__bootStarted = true;
   const D = await loadData('data/', (t, f) => { $('lt').textContent = t; $('lb').value = f; });
   $('lt').textContent = 'بناء العالم ثلاثي الأبعاد…';
   await new Promise((r) => setTimeout(r, 30));
@@ -552,7 +553,7 @@ async function boot() {
   }
 
   // ---------- main loop ----------
-  $('load').style.display = 'none';
+  $('load').style.display = 'none'; window.__booted = true;
   let last = performance.now(), frame = 0, infoT = 0;
   const hdr = { street: $('st'), hood: $('hd'), sp: $('sp'), arrow: $('harrow'), hd: $('hdist') };
   function loop(now) {

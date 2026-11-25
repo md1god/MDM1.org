@@ -914,9 +914,13 @@ btn.addEventListener('click', () => {
 
 // pageshow يعمل عند التحميل الأول، وأيضاً عند العودة من صفحة أخرى (حتى عند استعادة الصفحة
 // من ذاكرة bfcache بدون تحميل فعلي) — يحل مشكلة توقف الموسيقى عند الرجوع من صفحة الورقة البيضاء
-window.addEventListener('pageshow', () => {
-  if (sessionStorage.getItem(MUSIC_KEY) === 'yes' && audio.paused) {
-    playMusic(1500);
+window.addEventListener('pageshow', (ev) => {
+  if (sessionStorage.getItem(MUSIC_KEY) !== 'yes') return;
+  if (audio.paused) playMusic(1500);
+  if (ev && ev.persisted) { // استعادة من bfcache: الصوت قد يبقى موقوفاً أو مكتوماً، أعد المحاولة بعد لحظة
+    [300, 1200].forEach(ms => setTimeout(() => {
+      if (sessionStorage.getItem(MUSIC_KEY) === 'yes' && (audio.paused || audio.muted)) { audio.muted = false; if (audio.paused) playMusic(1200); else { audio.volume = 0.45; btn.textContent = '🔊'; btn.classList.add('playing'); } }
+    }, ms));
   }
 });
 

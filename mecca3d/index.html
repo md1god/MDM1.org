@@ -15,6 +15,11 @@
   /* تسريع: ابدأ تحميل البيانات والوحدات بالتوازي فوراً بدل التسلسل (main -> modules -> data) */
   window.__pre = {}; ['meta','roads','places','landmarks','terrain'].forEach(function(n){ window.__pre[n+'.json'] = fetch('data/'+n+'.json').then(function(r){ if(!r.ok) throw new Error(n); return r.json(); }); window.__pre[n+'.json'].catch(function(){}); });
   ['./vendor/three.module.js?v='+V].concat(mods.map(function(m){return './js/'+m+'.js?v='+V;}), ['./js/main.js?v='+V]).forEach(function(u){ var l=document.createElement('link'); l.rel='modulepreload'; l.href=u; document.head.appendChild(l); });
+  /* حارس: لو لم تبدأ اللعبة خلال 20 ثانية أو حدث خطأ في تحميل الوحدات اعرض السبب بدل التجمّد على شاشة التحميل */
+  function fail(m){ var t=document.getElementById('lt'); if(t&&!window.__booted){ t.textContent='⚠️ تعذّر تشغيل الصفحة: '+m+' — اضغط لإعادة التحميل'; t.style.cursor='pointer'; t.onclick=function(){ location.reload(); }; } }
+  window.addEventListener('error',function(e){ fail((e&&e.message)||'خطأ'); });
+  window.addEventListener('unhandledrejection',function(e){ fail((e&&e.reason&&e.reason.message)||'خطأ'); });
+  setTimeout(function(){ if(!window.__booted) fail('بطء شديد في التحميل'); },20000);
   var a=document.createElement('script'); a.type='importmap'; a.textContent=JSON.stringify({imports:im}); document.head.appendChild(a);
   var b=document.createElement('script'); b.type='module'; b.textContent="import './js/main.js?v="+V+"'"; document.head.appendChild(b);
 })();

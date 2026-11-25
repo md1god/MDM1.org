@@ -142,7 +142,7 @@ export class World {
     this.wallMat = new THREE.MeshLambertMaterial({ map: tex, vertexColors: true, emissive: 0xffffff, emissiveMap: tex2, emissiveIntensity: 0, side: THREE.DoubleSide });
     this.roofMat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
     this.terrainMat = new THREE.MeshLambertMaterial({ vertexColors: true });
-    this.tunnelMat = new THREE.MeshLambertMaterial({ color: 0x3a3c42, side: THREE.DoubleSide, emissive: 0x15161a });
+    this.tunnelMat = new THREE.MeshLambertMaterial({ color: 0x3a3c42, side: THREE.DoubleSide, emissive: 0x15161a, transparent: true, opacity: 0.16, depthWrite: false });
     this.coarseMat = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: 3, polygonOffsetUnits: 3 });
     this.roadMat = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
   }
