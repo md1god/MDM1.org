@@ -428,7 +428,7 @@ async function boot() {
       if (attempt === 5 && car.offRoad) snapCarToRoad();
       if (T.stage === 1 && T.cur && T.cur.lm) { // وصلنا للمعلم: توقف قليلاً واعرض اسمه
         const L = T.cur; T.done.add(L.key); T.cur = null; T.stage = 0;
-        toast('🏛 ' + L.name, 4500); if (settings.voice) say(L.name); S.dwellUntil = S.simT + 6; tourBar(); return true;
+        toast('🏛 ' + L.name, 4500); if (settings.voice) say(L.name); S.dwellUntil = S.simT + 3; tourBar(); return true;
       }
       if (T.stage === 1 && T.cur) { T.stage = 2; T.legT = S.simT; if (routeTo({ x: T.leg[1].x, z: T.leg[1].z, name: T.cur.name })) { tourBar(); return true; } T.done.add(T.cur.key); T.cur = null; T.stage = 0; continue; }
       if (T.stage === 2 && T.cur) { T.done.add(T.cur.key); learn.markSeen(T.cur.key); big.discDirty = true; T.cur = null; T.stage = 0; }
