@@ -260,8 +260,49 @@
     function pad(x){var str=(x>>>0).toString(16);while(str.length<8)str="0"+str;return str;}
     return pad(h)+pad(h2);
   }
-  function loadCerts(){try{return JSON.parse(localStorage.getItem("md_app_certs")||"[]");}catch(e){return [];}}
-  function saveCerts(a){try{localStorage.setItem("md_app_certs",JSON.stringify(a));}catch(e){}}
+  var certCache = [], certKey = null;
+  function toBase64(buf){var b=new Uint8Array(buf),s="",i;for(i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+  function fromBase64(s){var b=atob(s),a=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+  function getCertKey(){
+    if(certKey)return Promise.resolve(certKey);
+    return new Promise(function(ok,no){
+      try{
+        var r=indexedDB.open("mdm1_cert.crypto",1);
+        r.onupgradeneeded=function(){r.result.createObjectStore("keys");};
+        r.onerror=function(){no(r.error);};
+        r.onsuccess=function(){
+          var st=r.result.transaction("keys","readwrite").objectStore("keys"),g=st.get("aes");
+          g.onsuccess=function(){
+            if(g.result){certKey=g.result;ok(certKey);return;}
+            crypto.subtle.generateKey({name:"AES-GCM",length:256},false,["encrypt","decrypt"]).then(function(k){st.put(k,"aes");certKey=k;ok(k);},no);
+          };
+          g.onerror=function(){no(g.error);};
+        };
+      }catch(e){no(e);}
+    });
+  }
+  function encryptCerts(a){
+    return getCertKey().then(function(k){
+      var iv=crypto.getRandomValues(new Uint8Array(12));
+      return crypto.subtle.encrypt({name:"AES-GCM",iv:iv},k,new TextEncoder().encode(JSON.stringify(a))).then(function(c){
+        return JSON.stringify({v:1,iv:toBase64(iv),ct:toBase64(c)});
+      });
+    });
+  }
+  function decryptCerts(raw){
+    return getCertKey().then(function(k){
+      var e=JSON.parse(raw);
+      return crypto.subtle.decrypt({name:"AES-GCM",iv:fromBase64(e.iv)},k,fromBase64(e.ct)).then(function(p){
+        var a=JSON.parse(new TextDecoder().decode(p));
+        return Array.isArray(a)?a:[];
+      });
+    });
+  }
+  function loadCerts(){return certCache.slice();}
+  function saveCerts(a){
+    certCache=a.slice();
+    encryptCerts(a).then(function(blob){try{localStorage.setItem("md_app_certs",blob);}catch(e){}}).catch(function(){});
+  }
   function fmtDate(iso){
     try{
       var d=new Date(iso);
@@ -341,6 +382,10 @@
     $("appCertOut").innerHTML='<span class="empty">تم حذف كل الشهادات المحفوظة.</span>';
   });
   renderCerts();
+  try{
+    var raw=localStorage.getItem("md_app_certs");
+    if(raw){decryptCerts(raw).then(function(a){certCache=a;renderCerts();}).catch(function(){});}
+  }catch(e){}
 })();
 </script>
 </body>
