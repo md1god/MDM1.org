@@ -55,8 +55,23 @@ def log(*a):
     print(*a, flush=True)
 
 
-def overpass(query, tries=8):
+CACHE_DIR = os.environ.get("OVERPASS_CACHE")
+
+
+def overpass(query, tries=int(os.environ.get("OVERPASS_TRIES", "8"))):
     last = None
+    cpath = None
+    if CACHE_DIR:
+        import hashlib
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        cpath = os.path.join(CACHE_DIR, hashlib.sha1(query.encode()).hexdigest() + ".json")
+        if os.path.exists(cpath):
+            try:
+                with open(cpath) as f:
+                    log("  (from cache)")
+                    return json.load(f)
+            except Exception:  # noqa
+                pass
     for attempt in range(tries):
         ep = ENDPOINTS[attempt % len(ENDPOINTS)]
         try:
@@ -67,6 +82,9 @@ def overpass(query, tries=8):
             data = json.loads(body)
             if "remark" in data and not data.get("elements") and "error" in data.get("remark", "").lower():
                 raise RuntimeError(data["remark"])
+            if cpath:
+                with open(cpath, "w") as f:
+                    json.dump(data, f)
             return data
         except Exception as e:  # noqa
             last = e
@@ -125,6 +143,9 @@ def poly_area(pts):
     return abs(a) / 2.0
 
 
+skipped = [0]
+
+
 def fetch_ways(kind, bbox, step):
     """Yield unique way elements for a query kind across tiles."""
     seen = set()
@@ -136,7 +157,14 @@ def fetch_ways(kind, bbox, step):
         else:
             q = f'[out:json][timeout:240];way["building"]({bb});out geom;'
         log(f"{kind} tile {i+1}: {bb}")
-        data = overpass(q)
+        try:
+            data = overpass(q)
+        except SystemExit as ex:
+            if not os.environ.get("ALLOW_SKIP_TILES"):
+                raise
+            skipped[0] += 1
+            log(f"   !! tile skipped: {ex}")
+            continue
         added = 0
         for el in data.get("elements", []):
             if el.get("type") != "way" or el["id"] in seen:
@@ -393,6 +421,8 @@ def main():
     else:
         road_els = list(fetch_ways("roads", bbox, a.tile))
         bld_els = list(fetch_ways("buildings", bbox, a.tile))
+        if skipped[0] and os.environ.get("SKIP_REPORT"):
+            open(os.environ["SKIP_REPORT"], "w").write(str(skipped[0]))
         places_data = overpass(f'[out:json][timeout:240];nwr["place"~"^(city|town|village|suburb|neighbourhood|quarter|hamlet|locality)$"]["name"]({bb_str});out center;')
         lm_q = (f'[out:json][timeout:240];('
                 f'nwr["name"]["wikidata"]({bb_str});'

@@ -24,8 +24,20 @@ jobs:
         run: |
           python3 -m venv /tmp/venv
           /tmp/venv/bin/pip install --quiet pillow numpy shapely overturemaps
+      - name: Restore Overpass tile cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/overpass-cache
+          key: overpass-giza-${{ github.run_id }}
+          restore-keys: overpass-giza-
       - name: Build data from OpenStreetMap and terrain tiles
+        id: build
+        continue-on-error: true
         env:
+          OVERPASS_CACHE: /tmp/overpass-cache
+          ALLOW_SKIP_TILES: '1'
+          OVERPASS_TRIES: '3'
+          SKIP_REPORT: /tmp/skipped.txt
           IN_SOUTH: ${{ inputs.south }}
           IN_WEST: ${{ inputs.west }}
           IN_NORTH: ${{ inputs.north }}
@@ -44,6 +56,16 @@ jobs:
             --tile "$IN_TILE" --out giza3d/data
           du -sh giza3d/data
           find giza3d/data -type f | wc -l
+      - name: Save Overpass tile cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/overpass-cache
+          key: overpass-giza-${{ github.run_id }}
+      - name: Fail if some tiles were skipped - re-run, finished tiles come from cache
+        run: |
+          if [ "${{ steps.build.outcome }}" != "success" ]; then echo "build failed"; exit 1; fi
+          if [ -s /tmp/skipped.txt ]; then echo "Skipped tiles: $(cat /tmp/skipped.txt) - re-run the workflow"; exit 1; fi
       - name: Landmark photos (Wikipedia, saved in the repo)
         continue-on-error: true
         run: /tmp/venv/bin/python scripts/landmark_photos_from_osm.py giza3d/data giza3d/img/landmarks
