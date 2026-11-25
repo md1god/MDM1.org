@@ -1,0 +1,29 @@
+name: Mecca 3D - Overture buildings
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: mecca3d-data
+  cancel-in-progress: false
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Install deps
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet shapely overturemaps
+      - name: Merge Overture Maps buildings into mecca3d/data
+        run: /tmp/venv/bin/python scripts/overture_merge.py mecca3d/data
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A mecca3d/data
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "mecca3d: merge Overture Maps buildings"
+          git pull --rebase origin main
+          git push origin HEAD:main

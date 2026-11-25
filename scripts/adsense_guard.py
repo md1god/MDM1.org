@@ -38,7 +38,7 @@ POLICY = {"privacy.html", "terms.html", "contact.html"}
 ALWAYS_INDEX = POLICY | {"index.html", "pages/about.html", "whitepaper.html", "pages/faq.html", "pages/roadmap.html",
                          "pages/tokenomics.html", "pages/sharia.html", "pages/community.html", "pages/md1usd.html"}
 # Interactive / third-party-content areas: the page is a widget, so no ads there.
-NO_ADS_PREFIX = ("apps/", "tools/", "mecca/", "mecca3d/", "spatial/", "assistant/", "discover/", "projects/")
+NO_ADS_PREFIX = ("apps/", "tools/", "mecca/", "mecca3d/", "giza3d/", "spatial/", "assistant/", "discover/", "projects/")
 NO_ADS_FILES = {"games.html", "fight.html", "chat.html", "hub.html", "md1robot.html",
                 "pages/game.html", "pages/quiz.html", "pages/ads.html", "pages/ATM.html", "pages/join.html",
                 "pages/ideas.html", "pages/dashboard.html"}

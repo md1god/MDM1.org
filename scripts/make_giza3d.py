@@ -37,7 +37,7 @@ def edit(rel, fn):
 # ---------------------------------------------------------------- 1) copy engine (keep existing giza3d/data)
 os.makedirs(DST, exist_ok=True)
 for item in os.listdir(SRC):
-    if item == "data":
+    if item in ("data", "img"):
         continue
     s, d = os.path.join(SRC, item), os.path.join(DST, item)
     if os.path.isdir(d):
@@ -45,6 +45,12 @@ for item in os.listdir(SRC):
     elif os.path.exists(d):
         os.remove(d)
     shutil.copytree(s, d) if os.path.isdir(s) else shutil.copy2(s, d)
+
+os.makedirs(os.path.join(DST, "img", "landmarks"), exist_ok=True)
+for junk in ("tools/fetch_landmark_photos.py", "models/README.md"):
+    jp = os.path.join(DST, junk)
+    if os.path.exists(jp):
+        os.remove(jp)
 
 # ---------------------------------------------------------------- 2) data pipeline
 def p_build(t, f):
@@ -199,7 +205,7 @@ def p_html(t, f):
     t = sub(t, "انتقال للكعبة", "انتقال للهرم الأكبر", f)
     t = sub(t, "شكل المباني تقريبي ومبني تلقائياً من الخريطة وليس تصويراً حقيقياً.",
             "شكل المباني تقريبي ومبني تلقائياً من الخريطة وليس تصويراً حقيقياً. الهرم يُرسم فوق بصمته وارتفاعه المسجّلين في OSM، والأرض مسطّحة عمداً.", f)
-    t = sub(t, "</style>", "#b_contrib{display:none!important}\n#banner{display:none!important}\n</style>", f)
+    t = sub(t, "</style>", "#b_contrib{display:none!important}\n</style>", f)
     return t
 
 
