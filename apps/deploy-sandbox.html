@@ -266,7 +266,7 @@ vs.value=app.versions.some(v=>v.id===pv)?pv:newest;
 sv.value=app.versions.some(v=>v.id===psv)?psv:newest;
 $("versionList").innerHTML=app.versions.slice().reverse().map(v=>{
 const c=v.config||{};
-return '<li class="app-item"><div><strong class="app-tag">'+esc(v.tag)+'</strong> <span class="app-meta">'+esc(c.image||"—")+' • نسخ: '+esc(c.replicas!=null?c.replicas:"—")+'</span><div class="app-meta">'+esc(v.notes||"")+'</div><div class="app-meta">'+esc(fmt(v.createdAt))+'</div></div><div class="row"><button class="sec" id="deployVer_'+v.id+'" data-act="deployVer" data-id="'+v.id+'">نشر '+esc(v.tag)+'</button></div></li>';
+return '<li class="app-item"><div><strong class="app-tag">'+esc(v.tag)+'</strong> <span class="app-meta">'+esc(c.image||"—")+' • نسخ: '+esc(c.replicas!=null?c.replicas:"—")+'</span><div class="app-meta">'+esc(v.notes||"")+'</div><div class="app-meta">'+esc(fmt(v.createdAt))+'</div></div><div class="row"><button class="sec" id="deployVer_'+esc(v.id)+'" data-act="deployVer" data-id="'+esc(v.id)+'">نشر '+esc(v.tag)+'</button></div></li>';
 }).join("");
 applyPerms();
 }
@@ -285,7 +285,7 @@ const el=$("testList");
 if(!ST.testEnvs.length){el.innerHTML='<li class="app-empty">لا توجد بيئات اختبار. أنشئ واحدة بمدة صلاحية قصيرة.</li>';return;}
 el.innerHTML=ST.testEnvs.slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).map(t=>{
 const st=t.status==="running"?"قيد التشغيل":t.status==="expired"?"منتهية":"—";
-return '<li class="app-item"><div><strong>'+esc(t.name)+'</strong> <span class="app-meta">'+esc(t.appName)+' • '+esc(t.tag)+' • '+st+'</span><div class="app-meta">المتبقي: <span id="exp_'+t.id+'">'+esc(t.status==="running"?remaining(t):"منتهية")+'</span></div></div><button class="sec" id="kill_'+t.id+'" data-act="killTest" data-id="'+t.id+'">حذف البيئة</button></li>';
+return '<li class="app-item"><div><strong>'+esc(t.name)+'</strong> <span class="app-meta">'+esc(t.appName)+' • '+esc(t.tag)+' • '+st+'</span><div class="app-meta">المتبقي: <span id="exp_'+esc(t.id)+'">'+esc(t.status==="running"?remaining(t):"منتهية")+'</span></div></div><button class="sec" id="kill_'+esc(t.id)+'" data-act="killTest" data-id="'+esc(t.id)+'">حذف البيئة</button></li>';
 }).join("");
 }
 
@@ -293,7 +293,7 @@ function renderSecrets(){
 $("vaultStatus").textContent=vaultPass?"الخزنة مفتوحة في هذه الجلسة؛ المفتاح في الذاكرة فقط.":"الخزنة مقفلة. أدخل كلمة المرور واضغط «فتح الخزنة».";
 const el=$("secretList");
 if(!ST.secrets.length){el.innerHTML='<li class="app-empty">لا أسرار محفوظة بعد. أضف اسمًا وقيمة لتشفيرها محليًا.</li>';return;}
-el.innerHTML=ST.secrets.map(s=>'<li class="app-item"><div><strong>'+esc(s.name)+'</strong><div class="app-meta">أُضيف '+esc(fmt(s.createdAt))+' • تشفير AES-GCM</div></div><div class="row"><button class="sec" id="show_'+s.id+'" data-act="showSecret" data-id="'+s.id+'">عرض القيمة</button><button class="sec" id="del_'+s.id+'" data-act="delSecret" data-id="'+s.id+'">حذف</button></div></li>').join("");
+el.innerHTML=ST.secrets.map(s=>'<li class="app-item"><div><strong>'+esc(s.name)+'</strong><div class="app-meta">أُضيف '+esc(fmt(s.createdAt))+' • تشفير AES-GCM</div></div><div class="row"><button class="sec" id="show_'+esc(s.id)+'" data-act="showSecret" data-id="'+esc(s.id)+'">عرض القيمة</button><button class="sec" id="del_'+esc(s.id)+'" data-act="delSecret" data-id="'+esc(s.id)+'">حذف</button></div></li>').join("");
 }
 
 function renderSchedules(){
@@ -301,7 +301,7 @@ const el=$("scheduleList");
 if(!ST.schedules.length){el.innerHTML='<li class="app-empty">لا عمليات مجدولة. اختر إصدارًا ووقتًا ثم اضغط «جدولة النشر».</li>';return;}
 el.innerHTML=ST.schedules.slice().sort((a,b)=>a.at.localeCompare(b.at)).map(s=>{
 const st=s.status==="pending"?"قيد الانتظار":s.status==="running"?"جارٍ التنفيذ":s.status==="done"?"منفّذ":s.status==="failed"?"فشل":"ملغى";
-const kill=s.status==="pending"?'<button class="sec" id="cancel_'+s.id+'" data-act="cancelSch" data-id="'+s.id+'">إلغاء</button>':"";
+const kill=s.status==="pending"?'<button class="sec" id="cancel_'+esc(s.id)+'" data-act="cancelSch" data-id="'+esc(s.id)+'">إلغاء</button>':"";
 return '<li class="app-item"><div><strong>'+esc(s.tag)+'</strong> <span class="app-meta">'+esc(s.env)+' • '+esc(fmt(s.at))+'</span><div class="app-meta">'+esc(st)+'</div></div>'+kill+'</li>';
 }).join("");
 }

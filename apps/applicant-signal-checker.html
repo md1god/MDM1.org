@@ -283,9 +283,9 @@ else{
 var html='<div class="app-hist">',i;
 for(i=0;i<savedList.length;i++){var it=savedList[i];
 html+='<div class="item"><h4>'+escapeHtml(it.name||"بدون اسم")+'</h4>';
-html+='<small>'+escapeHtml(it.role||"وظيفة غير محددة")+' • '+it.words+' كلمة • '+escapeHtml(fmtDate(it.at))+'</small>';
-html+='<button class="button sec" id="appLoad-'+it.id+'" type="button">تحميل في النموذج</button>';
-html+='<button class="button sec" id="appDel-'+it.id+'" type="button">حذف</button></div>';
+html+='<small>'+escapeHtml(it.role||"وظيفة غير محددة")+' • '+escapeHtml(it.words)+' كلمة • '+escapeHtml(fmtDate(it.at))+'</small>';
+html+='<button class="button sec" id="appLoad-'+escapeHtml(it.id)+'" type="button">تحميل في النموذج</button>';
+html+='<button class="button sec" id="appDel-'+escapeHtml(it.id)+'" type="button">حذف</button></div>';
 }
 html+='</div>';
 el.hist.innerHTML=html;
@@ -300,7 +300,7 @@ fillSelects();
 
 function fillSelects(){
 var a=el.cmpA.value,b=el.cmpB.value,opts='<option value="">— اختر متقدمًا —</option>',i;
-for(i=0;i<savedList.length;i++){var it=savedList[i];opts+='<option value="'+it.id+'">'+escapeHtml(it.name||"بدون اسم")+'</option>';}
+for(i=0;i<savedList.length;i++){var it=savedList[i];opts+='<option value="'+escapeHtml(it.id)+'">'+escapeHtml(it.name||"بدون اسم")+'</option>';}
 el.cmpA.innerHTML=opts;el.cmpB.innerHTML=opts;
 if(a&&el.cmpA.querySelector('option[value="'+a+'"]'))el.cmpA.value=a;
 if(b&&el.cmpB.querySelector('option[value="'+b+'"]'))el.cmpB.value=b;

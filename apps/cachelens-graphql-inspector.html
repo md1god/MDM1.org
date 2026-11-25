@@ -238,21 +238,23 @@
     return {dups: dups.size, n1};
   }
 
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   function renderTree(obj){
     function node(name,val){
       if(Array.isArray(val)){
         const id='n'+Math.random().toString(36).slice(2);
-        let html='<div class="node" data-id="'+id+'">▼ ['+name+']</div><ul id="'+id+'">';
+        let html='<div class="node" data-id="'+id+'">▼ ['+esc(name)+']</div><ul id="'+id+'">';
         val.forEach((v,idx)=>{ html+='<li>'+node(String(idx),v)+'</li>'; });
         html+='</ul>'; return html;
       }
       if(val&&typeof val==='object'){
         const id='n'+Math.random().toString(36).slice(2);
-        let html='<div class="node" data-id="'+id+'">▼ {'+name+'}</div><ul id="'+id+'">';
+        let html='<div class="node" data-id="'+id+'">▼ {'+esc(name)+'}</div><ul id="'+id+'">';
         Object.keys(val).forEach(k=>{ html+='<li>'+node(k,val[k])+'</li>'; });
         html+='</ul>'; return html;
       }
-      return '<span>'+name+': '+JSON.stringify(val)+'</span>';
+      return '<span>'+esc(name)+': '+esc(JSON.stringify(val))+'</span>';
     }
     return node('root',obj);
   }

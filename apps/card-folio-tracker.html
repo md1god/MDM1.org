@@ -144,6 +144,8 @@
     if(shown === 0){ list.textContent = "لا توجد بطاقات مطابقة لفلترة الكتالوج"; }
   }
 
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   function renderCol(){
     var sf = $("status_filter").value;
     var list = $("collection_list"); list.innerHTML="";
@@ -159,7 +161,7 @@
       if(c && typeof it.localPrice==="number" && it.localPrice !== c.ref) alert=true;
       var div = document.createElement("div"); div.className="card";
       var stxt = it.status==="have"?"موجودة":(it.status==="sell"?"معروضة للبيع":"مفقودة");
-      var p = document.createElement("p"); p.innerHTML = "<span class='badge'>"+it.code+"</span> "+(c?c.name:(it.name||"غير معروف"))+" — الحالة: "+stxt+" — السعر المستخدم: "+priceUse;
+      var p = document.createElement("p"); p.innerHTML = "<span class='badge'>"+esc(it.code)+"</span> "+esc(c?c.name:(it.name||"غير معروف"))+" — الحالة: "+esc(stxt)+" — السعر المستخدم: "+esc(priceUse);
       var r = document.createElement("div"); r.className="row";
       var sel = document.createElement("select");
       var o1=document.createElement("option"); o1.value="have"; o1.text="موجودة"; if(it.status==="have")o1.selected=true;

@@ -423,6 +423,8 @@
     renderModels();
   });
 
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   const renderModels = function() {
     if (models.length === 0) {
       modelsListEl.style.display = 'none';
@@ -430,7 +432,7 @@
     }
     let html = '<div class="model-item"><strong>قائمة النماذج المضافة للمقارنة:</strong></div>';
     for (let i = 0; i < models.length; i++) {
-      html += '<div class="model-item">• ' + models[i].name + ' | سعر إدخال: ' + models[i].inCost + ' لكل 1,000 رمز | سعر إخراج: ' + models[i].outCost + ' لكل 1,000 رمز</div>';
+      html += '<div class="model-item">• ' + esc(models[i].name) + ' | سعر إدخال: ' + esc(models[i].inCost) + ' لكل 1,000 رمز | سعر إخراج: ' + esc(models[i].outCost) + ' لكل 1,000 رمز</div>';
     }
     modelsListEl.innerHTML = html;
     modelsListEl.style.display = 'block';
@@ -462,11 +464,11 @@
     }
     let cheapest = null;
     let cheapestCostVal = Infinity;
-    let details = 'نتائج مقارنة التكاليف لـ: ' + (task || 'مهمة غير محددة') + ' | رموز إدخال متوقعة: ' + inTok + ' | رموز إخراج متوقعة: ' + outTok + '<br>';
+    let details = 'نتائج مقارنة التكاليف لـ: ' + esc(task || 'مهمة غير محددة') + ' | رموز إدخال متوقعة: ' + esc(inTok) + ' | رموز إخراج متوقعة: ' + esc(outTok) + '<br>';
     for (let i = 0; i < models.length; i++) {
       const m = models[i];
       const cost = (inTok * m.inCost / 1000) + (outTok * m.outCost / 1000);
-      details += '• ' + m.name + ': ' + formatNumber(cost) + ' ' + budget.currency + '<br>';
+      details += '• ' + esc(m.name) + ': ' + esc(formatNumber(cost)) + ' ' + esc(budget.currency) + '<br>';
       if (cost < cheapestCostVal) {
         cheapestCostVal = cost;
         cheapest = m;

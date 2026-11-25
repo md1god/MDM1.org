@@ -270,7 +270,7 @@
     }
     var bl=$('appBooksList'); bl.innerHTML='';
     for(var j=0;j<books.length;j++){
-      var d=document.createElement('div'); d.className='row'; d.innerHTML='<span>'+books[j]+'</span>'; bl.appendChild(d);
+      var d=document.createElement('div'); d.className='row'; d.innerHTML='<span>'+escapeHtml(books[j])+'</span>'; bl.appendChild(d);
     }
   }
   
@@ -287,8 +287,8 @@
       }
       var div=document.createElement('div'); div.className='card';
       div.innerHTML='<h4>'+escapeHtml(r.title)+'</h4>'+
-        '<div class="row"><span class="badge">'+escapeHtml(r.book)+'</span><span class="badge">'+escapeHtml(r.category)+'</span><span class="badge">تقييم: '+(r.rating||0)+'/5</span></div>'+
-        '<div class="row"><button data-view="'+r.id+'">عرض الوصفة</button></div>';
+        '<div class="row"><span class="badge">'+escapeHtml(r.book)+'</span><span class="badge">'+escapeHtml(r.category)+'</span><span class="badge">تقييم: '+escapeHtml(r.rating||0)+'/5</span></div>'+
+        '<div class="row"><button data-view="'+escapeHtml(r.id)+'">عرض الوصفة</button></div>';
       list.appendChild(div);
     }
     list.querySelectorAll('button[data-view]').forEach(function(b){

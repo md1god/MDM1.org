@@ -240,11 +240,13 @@
     ['sat','sun','mon','tue','wed','thu','fri'].forEach(d => project.hours[d] = $(`hours-${d}`).value.trim());
   }
 
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   function renderServices() {
     const el = $('svc-list'); el.innerHTML = '';
     project.services.forEach((s, i) => {
       const div = document.createElement('div'); div.className = 'row'; div.style.alignItems = 'center'; div.style.gap = '8px';
-      div.innerHTML = `<span class="badge">${i+1}</span><strong>${s.name}</strong><span>${s.desc}</span><span>${s.dur}د</span><span>${s.price}</span>`;
+      div.innerHTML = `<span class="badge">${i+1}</span><strong>${esc(s.name)}</strong><span>${esc(s.desc)}</span><span>${esc(s.dur)}د</span><span>${esc(s.price)}</span>`;
       const btn = document.createElement('button'); btn.className = 'button sec'; btn.textContent = 'حذف'; btn.onclick = () => { project.services.splice(i,1); renderServices(); updateServiceSelects(); save(); };
       div.appendChild(btn); el.appendChild(div);
     });
@@ -260,7 +262,7 @@
     const el = $('faq-list'); el.innerHTML = '';
     project.faqs.forEach((f, i) => {
       const div = document.createElement('div'); div.className = 'card'; div.style.marginBottom = '8px'; div.style.padding = '12px';
-      div.innerHTML = `<strong>س${i+1}:</strong> ${f.q}<br><strong>ج:</strong> ${f.a}<br><small>كلمات: ${f.tags.join(', ')}</small>`;
+      div.innerHTML = `<strong>س${i+1}:</strong> ${esc(f.q)}<br><strong>ج:</strong> ${esc(f.a)}<br><small>كلمات: ${esc(f.tags.join(', '))}</small>`;
       const btn = document.createElement('button'); btn.className = 'button sec'; btn.style.marginTop = '8px'; btn.textContent = 'حذف'; btn.onclick = () => { project.faqs.splice(i,1); renderFAQs(); save(); };
       div.appendChild(btn); el.appendChild(div);
     });
