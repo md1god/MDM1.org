@@ -23,7 +23,7 @@ jobs:
       - name: Install Python deps
         run: |
           python3 -m venv /tmp/venv
-          /tmp/venv/bin/pip install --quiet pillow numpy
+          /tmp/venv/bin/pip install --quiet pillow numpy shapely overturemaps
       - name: Build data from OpenStreetMap and terrain tiles
         env:
           IN_SOUTH: ${{ inputs.south }}
@@ -44,6 +44,12 @@ jobs:
             --tile "$IN_TILE" --out giza3d/data
           du -sh giza3d/data
           find giza3d/data -type f | wc -l
+      - name: Landmark photos (Wikipedia, saved in the repo)
+        continue-on-error: true
+        run: /tmp/venv/bin/python scripts/landmark_photos_from_osm.py giza3d/data giza3d/img/landmarks
+      - name: Merge Overture Maps buildings (heights + missing footprints)
+        continue-on-error: true
+        run: /tmp/venv/bin/python scripts/overture_merge.py giza3d/data
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
