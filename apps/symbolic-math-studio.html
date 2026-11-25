@@ -219,7 +219,7 @@
 
   function toLatex(s){
     if(!s) return '';
-    var t=s.replace(/\*/g,'\\cdot ').replace(/\^/g,'^').replace(/sqrt\(/g,'\\sqrt{').replace(/\)/g,'}');
+    var t=s.replace(/\*/g,'\\cdot ').replace(/sqrt\(/g,'\\sqrt{').replace(/\)/g,'}');
     // basic
     t = t.replace(/sqrt\{([^\}]+)\}/g,'\\sqrt{$1}');
     return t;
@@ -236,7 +236,7 @@
     // simple simplification
     var res = s.replace(/\s+/g,'');
     // combine like terms naive for x^2,x,nums
-    res = res.replace(/x\^2\+x\^2/g,'2x^2').replace(/x\^2\-x\^2/g,'0').replace(/\+x\+/g,'+x+').replace(/\-x\-/g,'-x-');
+    res = res.replace(/x\^2\+x\^2/g,'2x^2').replace(/x\^2\-x\^2/g,'0');
     res = res.replace(/([0-9]+)\*x/g,'$1x').replace(/x\*([0-9]+)/g,'$1x');
     if(res==='') res=s;
     exprOut.textContent = res;
@@ -301,7 +301,6 @@
     var s=(eqIn.value||'').replace(/\s+/g,'');
     if(s===''){eqOut.textContent='الرجاء إدخال معادلة صحيحة';return;}
     var t=s.indexOf('=')>=0?s.split('=')[0]+' - ('+s.split('=')[1]+')':s;
-    t=t.replace(/\+/g,'+').replace(/\-/g,'-');
     if(t.indexOf('x^2')>=0){
       if(t.indexOf('3x')>=0 && t.indexOf('+2')>=0){eqOut.textContent='x = -1 , x = -2';}
       else if(t.indexOf('-5x')>=0 && t.indexOf('+6')>=0){eqOut.textContent='x = 2 , x = 3';}
