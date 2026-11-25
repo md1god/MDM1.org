@@ -142,6 +142,7 @@ export class World {
     this.wallMat = new THREE.MeshLambertMaterial({ map: tex, vertexColors: true, emissive: 0xffffff, emissiveMap: tex2, emissiveIntensity: 0, side: THREE.DoubleSide });
     this.roofMat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
     this.terrainMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+    this.tunnelMat = new THREE.MeshLambertMaterial({ color: 0x3a3c42, side: THREE.DoubleSide, emissive: 0x15161a });
     this.coarseMat = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: 3, polygonOffsetUnits: 3 });
     this.roadMat = new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
   }
@@ -275,6 +276,7 @@ export class World {
       this._acc = 0; this._init = true;
       const cx = Math.floor((px - this.X0) / this.CELL), cz = Math.floor((pz - this.Z0) / this.CELL), R = this.R;
       this.pc = [cx, cz];
+      if (this.satOn) { let n = 0; for (const c of this.chunks.values()) { if (c.tm && !c.satBusy && n < 2) { const r = Math.max(Math.abs(c.cx - cx), Math.abs(c.cz - cz)); const want = r === 0 ? 1024 : r === 1 ? 512 : r === 2 ? 256 : 128; if ((c.satSize || 0) < want && c.satSize) { n++; this._applySat(c, c.tm, c.cx, c.cz); } } } }
       const want = new Set();
       for (let dz = -R - 1; dz <= R + 1; dz++) {
         for (let dx = -R - 1; dx <= R + 1; dx++) {
@@ -323,7 +325,7 @@ export class World {
   }
   async _applySat(ch, mesh, cx, cz) {
     try {
-      const { origin } = this.D.meta, R = 6371008.8, cos0 = Math.cos((origin.lat * Math.PI) / 180), Z = 17, N = 2 ** Z;
+      const { origin } = this.D.meta, R = 6371008.8, cos0 = Math.cos((origin.lat * Math.PI) / 180), N0 = 0;
       const x0 = this.X0 + cx * this.CELL, z0 = this.Z0 + cz * this.CELL, C = this.CELL;
       const toLL = (x, z) => [origin.lat - (z / R) * (180 / Math.PI), origin.lon + (x / (R * cos0)) * (180 / Math.PI)];
       const toXZ = (lat, lon) => [((lon - origin.lon) * Math.PI / 180) * R * cos0, -((lat - origin.lat) * Math.PI / 180) * R];
@@ -331,11 +333,14 @@ export class World {
       const tlon = (X) => (X / N) * 360 - 180, tlat = (Y) => (Math.atan(Math.sinh(Math.PI * (1 - (2 * Y) / N))) * 180) / Math.PI;
       const [latA, lonA] = toLL(x0, z0), [latB, lonB] = toLL(x0 + C, z0 + C);
       const ring = this.pc ? Math.max(Math.abs(cx - this.pc[0]), Math.abs(cz - this.pc[1])) : 0;
-      const size = ring <= 1 ? 512 : ring === 2 ? 256 : 128;
+      const Z = ring === 0 ? 18 : 17, N = 2 ** Z, size = ring === 0 ? 1024 : ring === 1 ? 512 : ring === 2 ? 256 : 128;
       const ix0 = Math.floor(tx(lonA)), ix1 = Math.floor(tx(lonB)), iy0 = Math.floor(ty(latA)), iy1 = Math.floor(ty(latB));
       const jobs = [];
       for (let X = ix0; X <= ix1; X++) for (let Y = iy0; Y <= iy1; Y++) jobs.push(this._tile(Z, X, Y).then((im) => [X, Y, im]));
+      if ((ch.satSize || 0) >= size || ch.satBusy) return;
+      ch.satBusy = true;
       const got = await Promise.all(jobs);
+      ch.satBusy = false;
       if (ch.dead || !got.some((g) => g[2])) return;
       const cv = document.createElement('canvas'); cv.width = cv.height = size; const g = cv.getContext('2d');
       for (const [X, Y, im] of got) {
@@ -346,8 +351,10 @@ export class World {
       }
       const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.flipY = false; t.anisotropy = 4;
       t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
-      const m = new THREE.MeshLambertMaterial({ map: t }); mesh.userData.sat = true; mesh.material = m;
-    } catch (e) { /* نبقى على الألوان */ }
+      const old = mesh.userData.sat ? mesh.material : null;
+      const m = new THREE.MeshLambertMaterial({ map: t }); mesh.userData.sat = true; mesh.material = m; ch.satSize = size;
+      if (old) { old.map && old.map.dispose(); old.dispose(); }
+    } catch (e) { ch.satBusy = false; /* نبقى على الألوان */ }
   }
   _dispose(k) {
     const ch = this.chunks.get(k);
@@ -366,9 +373,10 @@ export class World {
     const tg = this._terrainGeometry(Math.round(cx * this.CELL / this.T.step), Math.round(cz * this.CELL / this.T.step), n, 1, 0);
     const tm = new THREE.Mesh(tg, this.terrainMat);
     group.add(tm);
+    ch.tm = tm; ch.cx = cx; ch.cz = cz;
     if (this.satOn) this._applySat(ch, tm, cx, cz);
     const rg = this._roadGeometry(cx, cz);
-    if (rg) group.add(new THREE.Mesh(rg, this.roadMat));
+    if (rg) { group.add(new THREE.Mesh(rg, this.roadMat)); if (rg.userData.tunnel) group.add(new THREE.Mesh(rg.userData.tunnel, this.tunnelMat)); }
     this.scene.add(group);
     this.chunks.set(k, ch);
     const bk = cx + '_' + cz;
@@ -386,6 +394,8 @@ export class World {
     if (!list) return null;
     const { roads } = this.D, T = this.T;
     const pos = [], col = [], idx = [];
+    const tp = [], tix = []; let tvc = 0; // أسقف وجدران الأنفاق
+    const tq = (a, b, c, d) => { tp.push(...a, ...b, ...c, ...d); tix.push(tvc, tvc + 1, tvc + 2, tvc, tvc + 2, tvc + 3); tvc += 4; };
     let vc = 0;
     const quad = (ax, ay, az, bx, by, bz, cx2, cy, cz2, dx, dy, dz, c) => {
       pos.push(ax, ay, az, bx, by, bz, cx2, cy, cz2, dx, dy, dz);
@@ -413,6 +423,10 @@ export class World {
         const lx = px + nx * hw, lz = pz + nz * hw, rx = px - nx * hw, rz = pz - nz * hw;
         const cur = { lx, lz, rx, rz, ly: yAt(lx, lz, t), ry: yAt(rx, rz, t), px, pz, py: yAt(px, pz, t), t };
         if (prev) quad(prev.lx, prev.ly, prev.lz, cur.lx, cur.ly, cur.lz, cur.rx, cur.ry, cur.rz, prev.rx, prev.ry, prev.rz, col0);
+        if (prev && (r.fl & 2) && r.ys) { const H = 5.2, o = 0.4;
+          const L0 = [prev.lx + nx * o, prev.ly, prev.lz + nz * o], L1 = [cur.lx + nx * o, cur.ly, cur.lz + nz * o], R0 = [prev.rx - nx * o, prev.ry, prev.rz - nz * o], R1 = [cur.rx - nx * o, cur.ry, cur.rz - nz * o];
+          const up = (p) => [p[0], p[1] + H, p[2]];
+          tq(up(L0), up(L1), up(R1), up(R0)); tq(L0, L1, up(L1), up(L0)); tq(R0, up(R0), up(R1), R1); }
         if (prev && r.t <= 3) { // solid edge lines on major roads
           for (const sgn of [1, -1]) {
             const o = (hw - 0.55) * sgn, w2 = 0.09;
@@ -437,6 +451,7 @@ export class World {
     }
     if (!vc) return null;
     const g = new THREE.BufferGeometry();
+    if (tvc) { const tg = new THREE.BufferGeometry(); tg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tp), 3)); tg.setIndex(tix); tg.computeVertexNormals(); g.userData.tunnel = tg; }
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
     g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col), 3));
     g.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(pos.length).map((_, i) => (i % 3 === 1 ? 1 : 0)), 3));
@@ -790,7 +805,7 @@ export const FAMOUS = [
   { id: 'haramain', n: 'قطار الحرمين السريع', x: -3899, z: 538, wiki: ['Haramain_high-speed_railway'], ar: ['قطار_الحرمين_السريع'] },
 ];
 export class LandmarkPhotos {
-  constructor(world) { this.world = world; this.st = new Map(); this.pool = []; this.enabled = true; this.t = 0;
+  constructor(world) { this.world = world; this.st = new Map(); this.pool = []; this.shownPos = []; this.enabled = true; this.t = 0;
     for (let i = 0; i < 6; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false, depthTest: false })); s.visible = false; s.renderOrder = 8; world.scene.add(s); this.pool.push(s); } }
   async _fetchInfo(f) {
     const tries = f.wiki.map((t) => ['en', t]).concat(f.ar.map((t) => ['ar', t]));
@@ -830,7 +845,7 @@ export class LandmarkPhotos {
     })();
   }
   update(px, pz) {
-    const T = this.world.D.terrain, list = [];
+    const T = this.world.D.terrain, list = []; this.shownPos = [];
     if (this.enabled) for (const f of FAMOUS) { const d = Math.hypot(f.x - px, f.z - pz); if (d < 9000) list.push([d, f]); }
     list.sort((a, b) => a[0] - b[0]);
     for (let i = 0; i < this.pool.length; i++) {
@@ -843,7 +858,7 @@ export class LandmarkPhotos {
       const w = clamp(22 + d * 0.05, 22, 110);
       s.scale.set(w, w * 420 / 640, 1);
       s.position.set(f.x, T.heightAt(f.x, f.z) + 34 + w * 0.3, f.z);
-      s.visible = true;
+      s.visible = true; this.shownPos.push([f.x, f.z]);
     }
   }
 }

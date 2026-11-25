@@ -39,7 +39,7 @@ async function boot() {
   const rig = new CameraRig(world, car, walker);
   const learn = new Learn(D);
   const mini = new Minimap($('mini'), D);
-  const labels = new Labels($('labels'), world);
+  const labels = new Labels($('labels'), world); labels.photos = lmPhotos;
   const ctl = new Controls(stage, rig);
 
   // ---------- state ----------
@@ -577,6 +577,7 @@ async function boot() {
     const p = pos();
     world.update(p.x, p.z, dt);
     if (settings.signs && S.mode !== 'fly') signs.update(p.x, p.z);
+    world.tunnelMat.visible = S.mode !== 'fly';
     hoodSigns.enabled = !!settings.signs && S.mode !== 'fly'; hoodSigns.update(p.x, p.z); lmPhotos.enabled = !!settings.signs && S.mode !== 'fly'; lmPhotos.update(p.x, p.z); labels.skip = hoodSigns.near;
     labels.update(p.x, p.z, dt);
     if (contrib.ready) pins.update(contrib, p.x, p.z, dt);
