@@ -21,7 +21,7 @@ jobs:
       - name: Install Python deps
         run: |
           python3 -m venv /tmp/venv
-          /tmp/venv/bin/pip install --quiet pillow numpy
+          /tmp/venv/bin/pip install --quiet pillow numpy shapely overturemaps
       - name: Build data from OpenStreetMap and terrain tiles
         env:
           # Inputs go through env vars, never straight into the script text (prevents shell/code injection).
@@ -43,6 +43,9 @@ jobs:
             --tile "$IN_TILE" --out mecca3d/data
           du -sh mecca3d/data
           find mecca3d/data -type f | wc -l
+      - name: Merge Overture Maps buildings (a rebuild must not drop them)
+        continue-on-error: true
+        run: /tmp/venv/bin/python scripts/overture_merge.py mecca3d/data
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"
