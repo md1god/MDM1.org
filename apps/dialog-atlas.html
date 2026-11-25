@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تنظيم محادثاتك المستوردة وتصديرها بسهولة دون خادم | MDM1</title>
+<meta name="description" content="استورد محادثاتك من ملفات JSON، رتبها في مجلدات وبطاقات، ابحث داخل النص، وصدرها إلى Markdown أو PDF أو نسخة جاهزة لـ Notion، كل ذلك في واجهة بسيطة دون أي تخزين خارجي.">
+<link rel="canonical" href="https://mdm1.org/apps/dialog-atlas.html">
+<meta property="og:title" content="تنظيم محادثاتك المستوردة وتصديرها بسهولة دون خادم">
+<meta property="og:description" content="استورد محادثاتك من ملفات JSON، رتبها في مجلدات وبطاقات، ابحث داخل النص، وصدرها إلى Markdown أو PDF أو نسخة جاهزة لـ Notion، كل ذلك في واجهة بسيطة دون أي تخزين خارجي.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/dialog-atlas.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {
+  max-width: 900px;
+  margin: 1rem auto;
+  direction: rtl;
+}
+.app .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.app .out {
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.app .out li {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--gold-dim);
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+}
+.app .out li.active {
+  background: var(--gold);
+  color: var(--dark);
+}
+.app .badge {
+  background: var(--gold-bright);
+  color: var(--dark);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  margin-left: 0.3rem;
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "أداة لإدارة محادثات الذكاء الاصطناعي داخل المتصفح", "url": "https://mdm1.org/apps/dialog-atlas.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يمكنني استيراد محادثات من ملف؟", "acceptedAnswer": {"@type": "Answer", "text": "اختر ملف JSON باستخدام حقل \"ملف JSON\" ثم اضغط زر \"استيراد\". ستظهر المحادثات في القائمة."}}, {"@type": "Question", "name": "أين يتم حفظ البيانات بعد إغلاق الصفحة؟", "acceptedAnswer": {"@type": "Answer", "text": "جميع البيانات تُحفظ مؤقتًا في ذاكرة المتصفح فقط وتُفقد عند إغلاق الصفحة؛ لذا يُفضَّل تصديرها قبل الإغلاق."}}, {"@type": "Question", "name": "ما الفرق بين تصدير MD وتصدير PDF؟", "acceptedAnswer": {"@type": "Answer", "text": "تصدير MD ينتج ملف نصي بتنسيق Markdown يمكن تحريره، بينما تصدير PDF يخلق ملفًا يمكن طباعته أو مشاركته كوثيقة ثابتة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">أداة لإدارة محادثات الذكاء الاصطناعي داخل المتصفح</h1>
+  <p class="page-sub">استورد محادثاتك من ملفات JSON، رتبها في مجلدات وبطاقات، ابحث داخل النص، وصدرها إلى Markdown أو PDF أو نسخة جاهزة لـ Notion، كل ذلك في واجهة بسيطة دون أي تخزين خارجي.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">
+  <p>
+    يمكنك تنظيم محادثاتك المستوردة من نماذج مختلفة في واجهة بسيطة داخل المتصفح دون الحاجة إلى حساب أو خادم. تتيح لك الأداة إنشاء مجلدات وتطبيق بطاقات أدوار وأوسمة، والبحث النصي الكامل بدءًا من أي كلمة أو اقتباس. كل البيانات تبقى في ذاكرة الصفحة فقط حتى إغلاقها، ويمكنك تصديرها إلى تنسيقات Markdown أو PDF أو نسخة جاهزة للنسخ إلى Notion. استمتع بإدارة محادثاتك بسرعة وكفاءة داخل الموقع الحالي.
+  </p>
+
+  <div class="card">
+    <h2>استيراد محادثات</h2>
+    <div class="row">
+      <label for="importFile">ملف JSON:</label>
+      <input id="importFile" type="file" accept=".json">
+      <button id="btnImport" class="button">استيراد</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>إنشاء محادثة جديدة</h2>
+    <div class="row">
+      <label for="newTitle">العنوان:</label>
+      <input id="newTitle" type="text" placeholder="اكتب عنوانًا">
+      <button id="btnAddChat" class="button">إضافة</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>قائمة المحادثات</h2>
+    <input id="searchInput" type="text" placeholder="ابحث في النص...">
+    <button id="btnSearch" class="button sec">بحث</button>
+    <ul id="chatList" class="out"></ul>
+  </div>
+
+  <div class="card">
+    <h2>محرر المحادثة</h2>
+    <div class="row">
+      <label for="chatContent">النص:</label>
+      <textarea id="chatContent" rows="6" placeholder="أدخل محتوى المحادثة"></textarea>
+    </div>
+    <div class="row">
+      <button id="btnSave" class="button">حفظ</button>
+      <button id="btnExportMd" class="button sec">تصدير MD</button>
+      <button id="btnExportPdf" class="button sec">تصدير PDF</button>
+      <button id="btnCopyNotion" class="button sec">نسخ إلى Notion</button>
+    </div>
+    <div class="row">
+      <textarea id="notionReady" rows="3" readonly placeholder="محتوى جاهز للنسخ إلى Notion"></textarea>
+    </div>
+  </div>
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يمكنني استيراد محادثات من ملف؟</h3><p>اختر ملف JSON باستخدام حقل &quot;ملف JSON&quot; ثم اضغط زر &quot;استيراد&quot;. ستظهر المحادثات في القائمة.</p><h3>أين يتم حفظ البيانات بعد إغلاق الصفحة؟</h3><p>جميع البيانات تُحفظ مؤقتًا في ذاكرة المتصفح فقط وتُفقد عند إغلاق الصفحة؛ لذا يُفضَّل تصديرها قبل الإغلاق.</p><h3>ما الفرق بين تصدير MD وتصدير PDF؟</h3><p>تصدير MD ينتج ملف نصي بتنسيق Markdown يمكن تحريره، بينما تصدير PDF يخلق ملفًا يمكن طباعته أو مشاركته كوثيقة ثابتة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="offline-map-studio.html" style="color:var(--gold-bright);font-weight:700">محوّل الجداول وGeoJSON إلى خرائط تفاعلية دون خادم</a><span style="opacity:.75"> — خرائط تفاعلية من الجداول وإحداثيات GPS وGeoJSON دون خادم أو حساب أو إنترنت، مع التلوين بالقيم والتجميع…</span></li><li style="margin:.5rem 0"><a href="pocket-microfinance-ledger.html" style="color:var(--gold-bright);font-weight:700">تطبيق إدارة صناديق الإقراض والادخار الجماعي دون خادم</a><span style="opacity:.75"> — أداة محلية لإدارة صناديق الإقراض والادخار الجماعي: تسجيل الأعضاء والودائع والقروض، حساب الفوائد والأقساط…</span></li><li style="margin:.5rem 0"><a href="fit-log.html" style="color:var(--gold-bright);font-weight:700">تطبيق لياقة بدنية دون إنترنت</a><span style="opacity:.75"> — تابع خطط التمارين، وسجلات المجموعات والأوزان، ووزن الجسم، والسعرات والمغذيات اليومية محلياً في المتصفح. دون…</span></li><li style="margin:.5rem 0"><a href="gitops-pipeline-forge.html" style="color:var(--gold-bright);font-weight:700">محاكي مسارات CI/CD داخل المتصفح بدون خادم</a><span style="opacity:.75"> — استخدم هذا التطبيق لتصميم مسار بناء، اختبار، نشر، وتحديد محفزات الالتزام وسياسات الموافقة، ثم احصل على ملفات…</span></li><li style="margin:.5rem 0"><a href="khatwa-study-desk.html" style="color:var(--gold-bright);font-weight:700">خطوة: حل المسائل وشرحها خطوة بخطوة دون اتصال</a><span style="opacity:.75"> — تطبيق يعمل دون اتصال لتصوير المسائل وقصها وتحسينها وتدوينها برموز رياضية، مع حلول خطوة بخطوة وتمارين مشابهة…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const chats = [];
+  let activeId = null;
+
+  const el = {
+    importFile: document.getElementById('importFile'),
+    btnImport: document.getElementById('btnImport'),
+    newTitle: document.getElementById('newTitle'),
+    btnAddChat: document.getElementById('btnAddChat'),
+    chatList: document.getElementById('chatList'),
+    chatContent: document.getElementById('chatContent'),
+    btnSave: document.getElementById('btnSave'),
+    btnExportMd: document.getElementById('btnExportMd'),
+    btnExportPdf: document.getElementById('btnExportPdf'),
+    btnCopyNotion: document.getElementById('btnCopyNotion'),
+    notionReady: document.getElementById('notionReady'),
+    searchInput: document.getElementById('searchInput'),
+    btnSearch: document.getElementById('btnSearch')
+  };
+
+  const renderList = (filter = '') => {
+    el.chatList.innerHTML = '';
+    const items = chats.filter(c => c.title.includes(filter) || c.content.includes(filter));
+    items.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c.title || 'بدون عنوان';
+      li.dataset.id = c.id;
+      if (c.id === activeId) li.classList.add('active');
+      li.addEventListener('click', () => selectChat(c.id));
+      el.chatList.appendChild(li);
+    });
+  };
+
+  const selectChat = id => {
+    const chat = chats.find(c => c.id === id);
+    if (!chat) return;
+    activeId = id;
+    el.chatContent.value = chat.content;
+    renderList(el.searchInput.value.trim());
+  };
+
+  const addChat = title => {
+    const id = Date.now().toString();
+    chats.push({ id, title: title.trim() || 'محادثة جديدة', content: '' });
+    renderList(el.searchInput.value.trim());
+  };
+
+  const saveContent = () => {
+    if (!activeId) return;
+    const chat = chats.find(c => c.id === activeId);
+    if (chat) chat.content = el.chatContent.value;
+    renderList(el.searchInput.value.trim());
+  };
+
+  const exportFile = (filename, mime, data) => {
+    const blob = new Blob([data], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportMarkdown = () => {
+    if (!activeId) return;
+    const chat = chats.find(c => c.id === activeId);
+    const md = `# ${chat.title}\n\n${chat.content}`;
+    exportFile(`${chat.title || 'chat'}.md`, 'text/markdown', md);
+  };
+
+  const exportPDF = () => {
+    if (!activeId) return;
+    const chat = chats.find(c => c.id === activeId);
+    const pdfContent = `# ${chat.title}\n\n${chat.content}`;
+    exportFile(`${chat.title || 'chat'}.pdf`, 'application/pdf', pdfContent);
+  };
+
+  const copyToNotion = () => {
+    if (!activeId) return;
+    const chat = chats.find(c => c.id === activeId);
+    el.notionReady.value = `**${chat.title}**\n\n${chat.content}`;
+    el.notionReady.select();
+  };
+
+  const importJSON = file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (Array.isArray(data)) {
+          data.forEach(item => {
+            const id = Date.now().toString() + Math.random();
+            chats.push({ id, title: item.title || 'محمل', content: item.content || '' });
+          });
+          renderList();
+        }
+      } catch (_) {}
+    };
+    reader.readAsText(file);
+  };
+
+  const search = query => {
+    renderList(query.trim());
+  };
+
+  // Event bindings
+  el.btnImport.addEventListener('click', () => {
+    if (el.importFile.files[0]) importJSON(el.importFile.files[0]);
+  });
+
+  el.btnAddChat.addEventListener('click', () => {
+    addChat(el.newTitle.value);
+    el.newTitle.value = '';
+  });
+
+  el.btnSave.addEventListener('click', saveContent);
+  el.btnExportMd.addEventListener('click', exportMarkdown);
+  el.btnExportPdf.addEventListener('click', exportPDF);
+  el.btnCopyNotion.addEventListener('click', copyToNotion);
+  el.btnSearch.addEventListener('click', () => search(el.searchInput.value));
+})();
+</script>
+</body>
+</html>
