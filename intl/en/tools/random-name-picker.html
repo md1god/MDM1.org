@@ -108,11 +108,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       const teams = splitIntoTeams(items, teamNum);
-      let output = '';
+      resultP.replaceChildren();
       teams.forEach((team, idx) => {
-        output += '<b>Team ' + (idx + 1) + ':</b> ' + team.map(esc).join(', ') + '<br>';
+        const b = document.createElement('b');
+        b.textContent = 'Team ' + (idx + 1) + ':';
+        resultP.appendChild(b);
+        resultP.appendChild(document.createTextNode(' ' + team.join(', ')));
+        resultP.appendChild(document.createElement('br'));
       });
-      resultP.innerHTML = output;
     } else {
       const winNum = parseInt(winnerCount.value, 10) || 1;
       if (winNum < 1) {
@@ -124,7 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       const winners = pickWinners(items, winNum);
-      resultP.innerHTML = '<b>Winners:</b> ' + winners.map(esc).join(', ');
+      const b = document.createElement('b');
+      b.textContent = 'Winners:';
+      resultP.replaceChildren(b, document.createTextNode(' ' + winners.join(', ')));
     }
     outDiv.style.display = 'block';
   });

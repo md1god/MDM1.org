@@ -169,8 +169,8 @@
     var jsOnly = [];
     htmlFiles.forEach(function(f){
       var without = f.content, prevWithout;
-      do { prevWithout = without; without = without.replace(/<script[\s\S]*?<\/script[^>]*>/gi, ''); } while (without !== prevWithout);
-      var scripts = (f.content.match(/<script[\s\S]*?<\/script[^>]*>/gi) || []).join(' ');
+      do { prevWithout = without; without = without.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, ''); } while (without !== prevWithout);
+      var scripts = (f.content.match(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi) || []).join(' ');
       var inHtml = currencyRe.test(without);
       var inScript = currencyRe.test(scripts);
       if(inScript && !inHtml) jsOnly.push(f.name);
