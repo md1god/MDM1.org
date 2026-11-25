@@ -565,6 +565,11 @@ function parseTimecode(tc){
   var h=m[1]?parseInt(m[1],10):0,mi=parseInt(m[2],10),s=parseInt(m[3],10),ms=m[4].length===2?parseInt(m[4],10)*10:parseInt(m[4],10);
   return ((h*60+mi)*60+s)*1000+ms;
 }
+function cleanSubtitleText(text){
+  var s=String(text||""),prev;
+  do{prev=s;s=s.replace(/\\N/g," ").replace(/\\n/g," ").replace(/<[^>]*>/g,"");}while(s!==prev);
+  return s.trim();
+}
 function parseSubtitles(text,format){
   var clean=String(text||"").replace(/\r/g,"");
   if(!clean.trim())return [];
@@ -581,7 +586,7 @@ function parseSubtitles(text,format){
       var parts=line.slice(9).split(",");
       if(parts.length<10)return;
       var start=parseTimecode(parts[1]),end=parseTimecode(parts[2]);
-      var txt=parts.slice(9).join(",").replace(/\\N/g," ").replace(/\\n/g," ").replace(/<[^>]*>/g,"").trim();
+      var txt=cleanSubtitleText(parts.slice(9).join(","));
       if(txt)out.push({start:start,end:end,text:txt});
     });
   }else{
@@ -594,7 +599,7 @@ function parseSubtitles(text,format){
       if(ti<0)return;
       var mm=lines[ti].match(/(\d{1,2}:\d{2}:\d{2}[.,]\d{1,3}|\d{1,2}:\d{2}[.,]\d{1,3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[.,]\d{1,3}|\d{1,2}:\d{2}[.,]\d{1,3})/);
       if(!mm)return;
-      var txt2=lines.slice(ti+1).join(" ").replace(/<[^>]*>/g,"").trim();
+      var txt2=cleanSubtitleText(lines.slice(ti+1).join(" "));
       if(txt2)out.push({start:parseTimecode(mm[1]),end:parseTimecode(mm[2]),text:txt2});
     });
   }

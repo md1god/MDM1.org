@@ -106,7 +106,7 @@ var vagueEn=['revolutionary','unlock','supercharge','unleash','cutting-edge','ga
 function textAll(h,c){return (h||'')+'\n'+(c||'')}
 function lowerAll(h,c){return textAll(h,c).toLowerCase()}
 function countOcc(s,pat){var m=s.match(pat);return m?m.length:0}
-function sanitize(html){if(!html)return '';var s=html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'');s=s.replace(/\son\w+\s*=\s*("[^"]*"|'[^']*')/gi,'');return s}
+function sanitize(html){if(!html)return '';var s=html,prev;do{prev=s;s=s.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,'').replace(/<\/?(script|style)\b[^>]*>/gi,'').replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi,'');}while(s!==prev);return s}
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function setStatus(t){el('statusBadge').textContent=t}
 function analyze(h,c,mult,radiusLimit,fontLimit){

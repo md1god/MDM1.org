@@ -170,7 +170,7 @@ ${o.main}
 ${langNav(o.alts)}
 <footer class="page-footer">${o.footer}</footer>
 <script src="/js/global.js" defer></script>
-<script>document.getElementById('lang-select').addEventListener('change',function(){location.href=this.value})</script>
+<script>document.getElementById('lang-select').addEventListener('change',function(){var u=new URL(this.value,location.href);if(u.origin===location.origin)location.href=u.href})</script>
 </body>
 </html>
 `;

@@ -189,6 +189,11 @@ function toSec(t){
   return sec;
 }
 
+function stripTags(text){
+  var s=String(text||''),prev;
+  do{prev=s;s=s.replace(/<[^>]+>/g,'');}while(s!==prev);
+  return s;
+}
 function parseCues(text){
   text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   try {
@@ -213,7 +218,7 @@ function parseCues(text){
     const start = toSec(m[1]);
     const end = toSec(m[2]);
     const txt = blines.slice(timeLineIndex+1).join('\n').trim();
-    const clean = txt.replace(/<[^>]+>/g,'');
+    const clean = stripTags(txt);
     out.push({start,end,text:clean,translation:''});
   }
   return out;
