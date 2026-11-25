@@ -253,7 +253,7 @@ var selectedPatientId=null, selectedMedId=null, lastRxId=null;
 function $(id){return document.getElementById(id);}
 function load(){try{var raw=localStorage.getItem(KEY);if(raw){var d=JSON.parse(raw);Object.keys(state).forEach(function(k){if(Array.isArray(d[k]))state[k]=d[k];});}}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true;}catch(e){return false;}}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function uid(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Date.now().toString(36)+Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");}
 function todayStr(){var d=new Date();var m=('0'+(d.getMonth()+1)).slice(-2),day=('0'+d.getDate()).slice(-2);return d.getFullYear()+'-'+m+'-'+day;}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function msg(id,text,isErr){var el=$(id);if(!el)return;el.textContent=text;el.style.color=isErr?'#ff9b9b':'var(--gold-bright)';}

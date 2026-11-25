@@ -215,7 +215,7 @@
 "use strict";
 const $=id=>document.getElementById(id);
 const KEY="md_container_dash_v1";
-const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+const uid=()=>{const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("")+Date.now().toString(36).slice(-4);};
 const nowISO=()=>new Date().toISOString();
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=iso=>{if(!iso)return "—";try{return new Date(iso).toLocaleString("ar-EG",{dateStyle:"short",timeStyle:"short"});}catch(e){return iso;}};
@@ -478,7 +478,7 @@ const v=app&&app.versions.find(x=>x.id===$("versionSelect").value);
 if(!app||!v){$("testMsg").textContent="اختر تطبيقًا وإصدارًا أولًا.";return;}
 const ttl=parseInt($("testTtl").value,10);
 if(!ttl||ttl<1||ttl>1440){$("testMsg").textContent="المدة بالدقائق يجب أن تكون بين 1 و1440.";return;}
-const name=$("testName").value.trim()||("test-"+v.tag+"-"+Math.floor(Math.random()*900+100));
+const name=$("testName").value.trim()||("test-"+v.tag+"-"+Date.now().toString(36).slice(-6));
 ST.testEnvs.push({id:uid(),appId:app.id,appName:app.name,tag:v.tag,versionId:v.id,name:name,createdAt:nowISO(),expiresAt:Date.now()+ttl*60000,status:"running"});
 pushAudit("إنشاء بيئة اختبار",name+" • "+app.name+" "+v.tag+" • "+ttl+" دقيقة");
 save();$("testName").value="";$("testMsg").textContent="تم إنشاء البيئة «"+name+"» وتنتهي تلقائيًا بعد "+ttl+" دقيقة.";
