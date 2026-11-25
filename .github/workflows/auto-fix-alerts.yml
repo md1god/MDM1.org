@@ -1,7 +1,8 @@
 name: 🛡️ Auto-fix alerts and failures
 # Fixes CodeQL alerts and failed workflow runs on main by itself, opens a PR with the reason
-# for every change, and sends the result to Telegram. Merge stays manual unless the repository
-# variable AUTOFIX_AUTOMERGE is set to "true".
+# for every change, merges it by itself once the checks below pass, and sends the result to Telegram.
+# Opt-outs (repository variables): AUTOFIX_AUTOMERGE=false keeps PRs open, AUTOFIX_DISMISS=false keeps
+# false-positive alerts open in GitHub.
 on:
   schedule:
     - cron: '15 3,15 * * *'
@@ -19,6 +20,9 @@ on:
       - 🌍 Translate tools and apps (20 languages)
       - Trend tool pages
       - Fetch All Games Catalog Daily
+      # Code scanning of a push to main: fires right after CodeQL has (re)scanned, i.e. as soon as new alerts exist.
+      - CodeQL
+      - Push on main
     types: [completed]
   # Next batch right after an auto-fix PR is merged.
   pull_request:
@@ -28,7 +32,7 @@ permissions:
   contents: write
   pull-requests: write
   security-events: write
-  actions: read
+  actions: write
 concurrency:
   group: auto-fix-alerts
   cancel-in-progress: false
@@ -37,7 +41,7 @@ jobs:
     # A workflow_run event only matters when the run failed on main.
     if: >-
       (github.event_name != 'workflow_run' && github.event_name != 'pull_request') ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.name == 'CodeQL' || github.event.workflow_run.name == 'Push on main')) ||
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'autofix/'))
     runs-on: ubuntu-26.04
     timeout-minutes: 40
@@ -78,7 +82,10 @@ jobs:
             2> .autofix/alerts.err > .autofix/alerts-all.jsonl || true
           total=$(wc -l < .autofix/alerts-all.jsonl | tr -d ' ')
           # Alerts judged false positives by an earlier run are listed in .autofix-ignore and skipped.
-          jq -c --rawfile ign .autofix-ignore 'select(.number as $n | ($ign | split("\n") | map(select(length>0) | tonumber) | index($n)) | not)' \
+          touch .autofix-done
+          now=$(date +%s)
+          { cat .autofix-ignore; awk -v now="$now" '{c[$1]++; if ($2>l[$1]) l[$1]=$2} END {for (n in c) if (c[n]>=3 || now-l[n]<43200) print n}' .autofix-done; } > .autofix/skip.txt
+          jq -c --rawfile ign .autofix/skip.txt 'select(.number as $n | ($ign | split("\n") | map(select(length>0) | tonumber) | index($n)) | not)' \
             .autofix/alerts-all.jsonl > .autofix/alerts-todo.jsonl || cp .autofix/alerts-all.jsonl .autofix/alerts-todo.jsonl
           head -n "$MAX_ALERTS" .autofix/alerts-todo.jsonl > .autofix/alerts.jsonl
           todo=$(wc -l < .autofix/alerts-todo.jsonl | tr -d ' ')
@@ -133,6 +140,8 @@ jobs:
         id: verify
         if: steps.fix.outcome == 'success'
         run: |
+          now=$(date +%s)
+          jq -r '.number' .autofix/alerts.jsonl | sed "s/\$/ $now/" >> .autofix-done
           if [ -s .autofix/falsepositives.txt ]; then
             grep -E '^[0-9]+$' .autofix/falsepositives.txt >> .autofix-ignore || true
             sort -un .autofix-ignore -o .autofix-ignore
@@ -174,6 +183,29 @@ jobs:
           if [ "$bad" = "1" ]; then echo "changes=blocked" >> "$GITHUB_OUTPUT"; exit 0; fi
           echo "changes=yes" >> "$GITHUB_OUTPUT"
 
+      - name: Smoke-test the changed apps (gate for the automatic merge)
+        id: smoke
+        if: steps.verify.outputs.changes == 'yes'
+        run: |
+          apps=$(grep -E '^apps/[^/]+\.html$' .autofix/changed.txt | grep -v '^apps/index.html$' || true)
+          if [ -z "$apps" ]; then echo "result=skipped" >> "$GITHUB_OUTPUT"; exit 0; fi
+          (cd /tmp && npm init -y >/dev/null && npm i playwright@1.49.1 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1)
+          export NODE_PATH=/tmp/node_modules
+          bad=0
+          for f in $apps; do
+            [ -f "$f" ] || continue
+            if ! node scripts/smoke_app.js "$f" > /tmp/smoke.log 2>&1; then
+              mkdir -p /tmp/base; b="/tmp/base/$(basename "$f")"
+              git show "HEAD:$f" > "$b" 2>/dev/null || true
+              if [ -s "$b" ] && ! node scripts/smoke_app.js "$b" >/dev/null 2>&1; then
+                echo "$f was already failing before the change; not counted"
+              else
+                echo "SMOKE REGRESSION: $f"; cat /tmp/smoke.log; bad=1
+              fi
+            fi
+          done
+          if [ "$bad" = "0" ]; then echo "result=ok" >> "$GITHUB_OUTPUT"; else echo "result=failed" >> "$GITHUB_OUTPUT"; fi
+
       - name: Open a PR with the reason
         id: pr
         if: steps.verify.outputs.changes == 'yes'
@@ -199,11 +231,22 @@ jobs:
             echo "created=no" >> "$GITHUB_OUTPUT"
           else
             echo "created=yes" >> "$GITHUB_OUTPUT"
-            if [ "${{ vars.AUTOFIX_AUTOMERGE }}" = "true" ]; then gh pr merge --squash --auto "$url" || true; fi
           fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
+          # Merge by itself when the guard and the smoke test passed (AUTOFIX_AUTOMERGE=false opts out).
+          merged=no
+          if [ "$url" != "${url#*/pull/}" ] && [ "${{ vars.AUTOFIX_AUTOMERGE }}" != "false" ] && [ "${{ steps.smoke.outputs.result }}" != "failed" ]; then
+            if gh pr merge "$url" --squash --delete-branch; then
+              merged=yes
+              # Pushes made with GITHUB_TOKEN do not start other workflows, so start the deploy explicitly.
+              gh workflow run deploy.yml --ref main || true
+              rest=$(( ${{ steps.collect.outputs.todo }} - ${{ steps.collect.outputs.alerts }} ))
+              if [ "$rest" -gt 0 ]; then gh workflow run auto-fix-alerts.yml --ref main || true; fi
+            fi
+          fi
+          echo "merged=$merged" >> "$GITHUB_OUTPUT"
           # Optional: also close the false positives in GitHub (repo variable AUTOFIX_DISMISS=true).
-          if [ "${{ vars.AUTOFIX_DISMISS }}" = "true" ] && [ -s .autofix/falsepositives.txt ]; then
+          if [ "${{ vars.AUTOFIX_DISMISS }}" != "false" ] && [ -s .autofix/falsepositives.txt ]; then
             for n in $(grep -E '^[0-9]+$' .autofix/falsepositives.txt); do
               gh api -X PATCH "repos/$REPO/code-scanning/alerts/$n" -f state=dismissed -f dismissed_reason="false positive" \
                 -f dismissed_comment="Auto-fix agent: false positive, see $url" >/dev/null 2>&1 || echo "could not dismiss $n"
@@ -232,8 +275,10 @@ jobs:
               head = '🚫 الإصلاح التلقائي: التعديلات اتمنعت (ملفات ممنوعة أو خطأ syntax). ما اتفتحش PR.'
           elif out('verify', 'changes') == 'no':
               head = 'ℹ️ الإصلاح التلقائي: ما اتعدلش أي ملف.'
+          elif out('pr', 'merged') == 'yes':
+              head = '✅ الإصلاح التلقائي: تم الدمج في main والنشر شغال\n' + out('pr', 'url')
           elif out('pr', 'url'):
-              head = '🛡️ الإصلاح التلقائي: تم فتح PR\n' + out('pr', 'url')
+              head = '🛡️ الإصلاح التلقائي: PR مفتوح ومحتاج مراجعة (' + ('فشل اختبار الـ smoke' if out('smoke', 'result') == 'failed' else 'الدمج التلقائي ما تمش') + ')\n' + out('pr', 'url')
           else:
               head = '⚠️ الإصلاح التلقائي: انتهى بدون نتيجة واضحة.'
           src = g('EVENT') + (' - ' + g('RUN_NAME') if g('RUN_NAME') else '')
