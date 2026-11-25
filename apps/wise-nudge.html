@@ -107,6 +107,7 @@
 (function(){
   var STORAGE_KEY = 'nabbeh_events_v1';
   var events = [];
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 
   function loadEvents(){
     try {
@@ -190,7 +191,7 @@
         else if(a.diff === 1) msg = 'غدًا: '+ev2.type+' - '+ev2.title;
         else if(a.diff > 1) msg = 'خلال '+a.diff+' أيام: '+ev2.type+' - '+ev2.title;
         else msg = 'متأخر: '+ev2.type+' - '+ev2.title;
-        htmlA += '<div class="badge">'+msg+'</div> ';
+        htmlA += '<div class="badge">'+esc(msg)+'</div> ';
       }
       alertsBox.innerHTML = htmlA;
     }
@@ -209,7 +210,7 @@
       for(var p=0;p<list.length;p++){
         var ev3 = list[p];
         var st = ev3.status === 'done' ? 'منجز' : (ev3.status === 'snoozed' ? 'مؤجل' : 'قيد الانتظار');
-        htmlL += '<div class="row"><span class="badge">'+ev3.type+'</span> <span>'+ev3.title+'</span> <span>('+ev3.date+')</span> <span class="badge">'+st+'</span> <button class="sec" data-act="done" data-id="'+ev3.id+'">إتمام</button> <button class="sec" data-act="snooze" data-id="'+ev3.id+'">تأجيل</button> <button class="sec" data-act="del" data-id="'+ev3.id+'">حذف</button></div>';
+        htmlL += '<div class="row"><span class="badge">'+esc(ev3.type)+'</span> <span>'+esc(ev3.title)+'</span> <span>('+esc(ev3.date)+')</span> <span class="badge">'+esc(st)+'</span> <button class="sec" data-act="done" data-id="'+esc(ev3.id)+'">إتمام</button> <button class="sec" data-act="snooze" data-id="'+esc(ev3.id)+'">تأجيل</button> <button class="sec" data-act="del" data-id="'+esc(ev3.id)+'">حذف</button></div>';
       }
       eventsList.innerHTML = htmlL;
     }
@@ -223,7 +224,7 @@
       for(var q=0;q<events.length;q++){
         var ev4 = events[q];
         if(ev4.status === 'done') continue;
-        htmlS += '<div class="badge">'+ev4.type+': '+getSuggestion(ev4.type)+'</div> ';
+        htmlS += '<div class="badge">'+esc(ev4.type)+': '+esc(getSuggestion(ev4.type))+'</div> ';
       }
       if(htmlS === '') htmlS = '<div class="out">كل الأحداث منجزة.</div>';
       suggestBox.innerHTML = htmlS;

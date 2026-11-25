@@ -122,6 +122,7 @@
 <script>
 const canvas = document.getElementById('journeyCanvas');
 const ctx = canvas.getContext('2d');
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 let points = [];
 let lines = [];
 let steps = [];
@@ -195,7 +196,7 @@ function renderSteps() {
   steps.forEach((s, i) => {
     const div = document.createElement('div');
     div.className = 'stepItem';
-    div.innerHTML = '<strong>' + (s.title||'خطوة '+(i+1)) + '</strong><br>إجراء: ' + (s.action||'-') + '<br>ملاحظات: ' + (s.notes||'-');
+    div.innerHTML = '<strong>' + esc(s.title||'خطوة '+(i+1)) + '</strong><br>إجراء: ' + esc(s.action||'-') + '<br>ملاحظات: ' + esc(s.notes||'-');
     list.appendChild(div);
   });
 }
@@ -215,7 +216,7 @@ function renderCards() {
   cards.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'cardItem';
-    div.innerHTML = '<strong>بطاقة ' + (i+1) + '</strong> [' + c.emotion + ']<br>' + c.thought;
+    div.innerHTML = '<strong>بطاقة ' + esc(i+1) + '</strong> [' + esc(c.emotion) + ']<br>' + esc(c.thought);
     list.appendChild(div);
   });
 }

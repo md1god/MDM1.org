@@ -247,7 +247,7 @@
   function renderFlow(){
     const c=$('flow-canvas');
     if(!state.flow.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center;margin-top:3rem">لا توجد خطوات. أضف خطوات من الأعلى.</p>';return}
-    c.innerHTML=state.flow.map((n,i)=>`<div class="flow-node" draggable="true" data-id="${n.id}" data-idx="${i}"><span class="node-type">${nodeTypeLabel(n.type)}</span><span>${escapeHtml(n.name)}</span><button class="button btn-sm" onclick="deleteNode('${n.id}')">حذف</button></div>`).join('');
+    c.innerHTML=state.flow.map((n,i)=>`<div class="flow-node" draggable="true" data-id="${escapeHtml(n.id)}" data-idx="${i}"><span class="node-type">${escapeHtml(nodeTypeLabel(n.type))}</span><span>${escapeHtml(n.name)}</span><button class="button btn-sm" data-id="${escapeHtml(n.id)}" onclick="deleteNode(this.dataset.id)">حذف</button></div>`).join('');
     c.querySelectorAll('.flow-node').forEach(el=>{el.ondragstart=e=>{e.dataTransfer.setData('text/plain',el.dataset.idx);el.classList.add('dragging')};el.ondragend=e=>el.classList.remove('dragging')});
     c.ondragover=e=>e.preventDefault();
     c.ondrop=e=>{e.preventDefault();const from=e.dataTransfer.getData('text/plain'), to=[...c.querySelectorAll('.flow-node')].indexOf(e.target.closest('.flow-node'));if(from!==''&&to!==-1&&from!=to){const [m]=state.flow.splice(from,1);state.flow.splice(to,0,m);save();renderFlow()}};
@@ -259,7 +259,7 @@
   $('load-flow').onclick=()=>{renderFlow();alert('تم التحميل')};
   $('clear-flow').onclick=()=>{if(confirm('مسح كل الخطوات؟')){state.flow=[];save();renderFlow()}};
   function renderRespNodeSelect(){
-    const s=$('resp-node');s.innerHTML=state.flow.filter(n=>n.type!=='end').map(n=>`<option value="${n.id}">${escapeHtml(n.name)}</option>`).join('')||'<option value="">لا توجد خطوات</option>';
+    const s=$('resp-node');s.innerHTML=state.flow.filter(n=>n.type!=='end').map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join('')||'<option value="">لا توجد خطوات</option>';
   }
   function renderRespList(){
     const c=$('resp-list');const entries=Object.entries(state.responses);
@@ -273,7 +273,7 @@
   function renderCal(){
     const c=$('cal-list');const sorted=[...state.calendar].sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
     if(!sorted.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا توجد مواعيد محجوة</p>';return}
-    c.innerHTML=sorted.map(e=>`<div class="cal-item"><div class="cal-info"><strong>${escapeHtml(e.customer)}</strong><br><span class="badge">${e.date}</span><span class="badge">${e.time}</span>${e.notes?'<br><small>'+escapeHtml(e.notes)+'</small>':''}</div><div class="cal-actions"><button class="button btn-sm" style="background:#c00" onclick="deleteCal('${e.id}')">إلغاء</button></div></div>`).join('');
+    c.innerHTML=sorted.map(e=>`<div class="cal-item"><div class="cal-info"><strong>${escapeHtml(e.customer)}</strong><br><span class="badge">${escapeHtml(e.date)}</span><span class="badge">${escapeHtml(e.time)}</span>${e.notes?'<br><small>'+escapeHtml(e.notes)+'</small>':''}</div><div class="cal-actions"><button class="button btn-sm" style="background:#c00" data-id="${escapeHtml(e.id)}" onclick="deleteCal(this.dataset.id)">إلغاء</button></div></div>`).join('');
   }
   window.deleteCal=id=>{if(confirm('إلغاء هذا الموعد؟')){state.calendar=state.calendar.filter(c=>c.id!==id);save();renderCal()}};
   $('cal-add').onclick=()=>{const date=$('cal-date').value,time=$('cal-time').value,customer=$('cal-customer').value.trim(),notes=$('cal-notes').value.trim();if(!date||!time||!customer)return alert('أكمل الحقول المطلوبة');state.calendar.push({id:uid(),date,time,customer,notes});$('cal-date').value='';$('cal-time').value='';$('cal-customer').value='';$('cal-notes').value='';save();renderCal()};
@@ -282,7 +282,7 @@
     let list=state.customers.filter(c=>c.name.toLowerCase().includes(q)||c.phone.includes(q)||c.email.toLowerCase().includes(q));
     list.sort((a,b)=>b.score-a.score);
     if(!list.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا يوجد عملاء</p>';return}
-    c.innerHTML=list.map(u=>`<div class="cust-card"><div class="cust-info"><strong>${escapeHtml(u.name)}</strong><br><small>${escapeHtml(u.phone)}</small>${u.email?'<br><small>'+escapeHtml(u.email)+'</small>':''}<br><span class="badge">${u.status}</span></div><div style="text-align:center"><div class="cust-score">${u.score}</div><small>درجة التأهيل</small></div><div class="cust-actions"><button class="button btn-sm sec" onclick="editCust('${u.id}')">تعديل</button><button class="button btn-sm" style="background:#c00" onclick="deleteCust('${u.id}')">حذف</button></div></div>`).join('');
+    c.innerHTML=list.map(u=>`<div class="cust-card"><div class="cust-info"><strong>${escapeHtml(u.name)}</strong><br><small>${escapeHtml(u.phone)}</small>${u.email?'<br><small>'+escapeHtml(u.email)+'</small>':''}<br><span class="badge">${escapeHtml(u.status)}</span></div><div style="text-align:center"><div class="cust-score">${escapeHtml(u.score)}</div><small>درجة التأهيل</small></div><div class="cust-actions"><button class="button btn-sm sec" data-id="${escapeHtml(u.id)}" onclick="editCust(this.dataset.id)">تعديل</button><button class="button btn-sm" style="background:#c00" data-id="${escapeHtml(u.id)}" onclick="deleteCust(this.dataset.id)">حذف</button></div></div>`).join('');
   }
   window.editCust=id=>{const u=state.customers.find(c=>c.id===id);if(!u)return;$('cust-name').value=u.name;$('cust-phone').value=u.phone;$('cust-email').value=u.email;$('cust-status').value=u.status;state.customers=state.customers.filter(c=>c.id!==id);save();renderCustomers()};
   window.deleteCust=id=>{if(confirm('حذف هذا العميل؟')){state.customers=state.customers.filter(c=>c.id!==id);save();renderCustomers()}};
@@ -290,7 +290,7 @@
   $('cust-search').oninput=renderCustomers;
   function renderRules(){
     const c=$('rule-list');if(!state.rules.length){c.innerHTML='<p style="color:var(--gold-dim);text-align:center">لا توجد قواعد تحويل</p>';return}
-    c.innerHTML=state.rules.map((r,i)=>`<div class="rule-item"><div class="rule-info"><span class="badge">${ruleTriggerLabel(r.trigger)}</span> <strong>${escapeHtml(r.value)}</strong></div><div class="rule-actions"><button class="button btn-sm" style="background:#c00" onclick="deleteRule(${i})">حذف</button></div></div>`).join('');
+    c.innerHTML=state.rules.map((r,i)=>`<div class="rule-item"><div class="rule-info"><span class="badge">${escapeHtml(ruleTriggerLabel(r.trigger))}</span> <strong>${escapeHtml(r.value)}</strong></div><div class="rule-actions"><button class="button btn-sm" style="background:#c00" onclick="deleteRule(${i})">حذف</button></div></div>`).join('');
     $('transfer-msg').value=state.transferMsg||'';
   }
   function ruleTriggerLabel(t){const m={keyword:'كلمة مفتاحية',score_low:'درجة منخفضة',explicit:'طلب صريح',failed_attempts:'محاولات فاشلة'};return m[t]||t}

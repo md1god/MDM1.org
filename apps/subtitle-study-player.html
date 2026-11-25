@@ -133,6 +133,7 @@
 var K_V='lv_vocab_v1',K_P='lv_prog_v1',K_S='lv_set_v1',K_D='lv_dict_v1';
 function lsGet(k,f){try{var v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 var $=function(id){return document.getElementById(id);};
 var player=$('player'),statusBox=$('statusBox'),sub1=$('subLine1'),sub2=$('subLine2'),
 overlay=$('subOverlay'),panel1=$('cuePanel1'),panel2=$('cuePanel2'),lineInfo=$('lineInfo'),
@@ -211,7 +212,7 @@ function renderVocab(){
   var h='';
   for(var i=0;i<vocab.length;i++){
     var v=vocab[i];
-    h+='<li><span><strong>'+v.word+'</strong> — '+v.trans+(v.note?' <em>['+v.note+']</em>':'')+'</span><button type="button" class="sec" data-del="'+i+'">حذف</button></li>';
+    h+='<li><span><strong>'+esc(v.word)+'</strong> — '+esc(v.trans)+(v.note?' <em>['+esc(v.note)+']</em>':'')+'</span><button type="button" class="sec" data-del="'+esc(i)+'">حذف</button></li>';
   }
   vocabList.innerHTML=h;
 }
