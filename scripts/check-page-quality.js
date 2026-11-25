@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const excludedFile = path.join(root, 'data/excluded-pages.json');
 const excluded = new Set(fs.existsSync(excludedFile) ? JSON.parse(fs.readFileSync(excludedFile, 'utf8')).excluded.map(e => e.path) : []);
 const dirs = ['pages', 'apps', 'tools', 'learn'];
-const decode = s => s.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
+const decode = s => s.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
 let bad = 0, checked = 0;
 for (const d of dirs) {
   const dir = path.join(root, d);

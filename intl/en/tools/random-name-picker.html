@@ -45,7 +45,8 @@
 </main>
 <footer class="page-footer">✦ MDM1 · 2026-11-21 ✦</footer>
 <script src="/js/global.js"></script>
-<script>document.addEventListener('DOMContentLoaded', function() {
+<script>const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+document.addEventListener('DOMContentLoaded', function() {
   const listInput = document.getElementById('listInput');
   const winnerCount = document.getElementById('winnerCount');
   const teamMode = document.getElementById('teamMode');
@@ -109,7 +110,7 @@
       const teams = splitIntoTeams(items, teamNum);
       let output = '';
       teams.forEach((team, idx) => {
-        output += '<b>Team ' + (idx + 1) + ':</b> ' + team.join(', ') + '<br>';
+        output += '<b>Team ' + (idx + 1) + ':</b> ' + team.map(esc).join(', ') + '<br>';
       });
       resultP.innerHTML = output;
     } else {
@@ -123,7 +124,7 @@
         return;
       }
       const winners = pickWinners(items, winNum);
-      resultP.innerHTML = '<b>Winners:</b> ' + winners.join(', ');
+      resultP.innerHTML = '<b>Winners:</b> ' + winners.map(esc).join(', ');
     }
     outDiv.style.display = 'block';
   });
