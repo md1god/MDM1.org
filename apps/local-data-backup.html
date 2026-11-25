@@ -207,7 +207,15 @@
     var box=byId('itemsList');
     if(!workspace.length){ box.innerHTML='<p class="app-empty">لا توجد بيانات حالية. أضف عناصر من البطاقة الأولى.</p>'; }
     else {
-      box.replaceChildren();workspace.forEach(function(it){const row=document.createElement('div');row.className='app-item';const check=document.createElement('input');check.type='checkbox';check.className='app-check';check.id='pick-item-'+String(it.id);check.dataset.pick=String(it.id);const main=document.createElement('div');main.className='app-item-main';const title=document.createElement('strong');title.textContent=it.title||'';const badge=document.createElement('span');badge.className='badge';badge.textContent=typeLabel(it.type);const meta=document.createElement('div');meta.className='app-meta';meta.textContent=fmtDate(it.createdAt)+(it.fileName?' • ملف: '+it.fileName+' ('+bytes(it.fileSize)+')':'');const content=document.createElement('div');content.className='app-text';content.textContent=String(it.content||'').slice(0,180);main.append(title,badge,meta,content);const del=document.createElement('button');del.className='sec';del.id='del-item-'+String(it.id);del.dataset.del=String(it.id);del.textContent='حذف';row.append(check,main,del);box.appendChild(row);});
+      box.innerHTML=workspace.map(function(it){
+        return '<div class="app-item">'
+          +'<input type="checkbox" class="app-check" id="pick-item-'+it.id+'" data-pick="'+it.id+'" />'
+          +'<div class="app-item-main"><strong>'+esc(it.title)+'</strong><span class="badge">'+typeLabel(it.type)+'</span>'
+          +'<div class="app-meta">'+fmtDate(it.createdAt)+(it.fileName?' • ملف: '+esc(it.fileName)+' ('+bytes(it.fileSize)+')':'')+'</div>'
+          +'<div class="app-text">'+esc((it.content||'').slice(0,180))+'</div></div>'
+          +'<button class="sec" id="del-item-'+it.id+'" data-del="'+it.id+'">حذف</button>'
+          +'</div>';
+      }).join('');
     }
     byId('itemsCount').textContent=String(workspace.length);
   }
@@ -216,7 +224,15 @@
     var sorted=backups.slice().sort(function(a,b){ return b.createdAt-a.createdAt; });
     if(!sorted.length){ box.innerHTML='<p class="app-empty">لا توجد نسخ محفوظة بعد. أنشئ نسخة من البطاقة السابقة.</p>'; }
     else {
-      box.replaceChildren();sorted.forEach(function(b){const row=document.createElement('div');row.className='app-item';const main=document.createElement('div');main.className='app-item-main';const title=document.createElement('strong');title.textContent=b.name||'';const badge=document.createElement('span');badge.className='badge';badge.textContent=b.encrypted?'مشفّرة':'عادية';const meta=document.createElement('div');meta.className='app-meta';meta.textContent=fmtDate(b.createdAt)+' • '+Number(b.itemCount||0)+' عنصر • '+bytes(b.size);main.append(title,badge,meta);const actions=document.createElement('div');actions.className='app-actions';const dl=document.createElement('button');dl.className='sec';dl.id='dl-backup-'+String(b.id);dl.dataset.dl=String(b.id);dl.textContent='تنزيل ملف النسخة';const del=document.createElement('button');del.className='sec';del.id='del-backup-'+String(b.id);del.dataset.delbk=String(b.id);del.textContent='حذف النسخة';actions.append(dl,del);row.append(main,actions);box.appendChild(row);});
+      box.innerHTML=sorted.map(function(b){
+        return '<div class="app-item"><div class="app-item-main"><strong>'+esc(b.name)+'</strong> '
+          +(b.encrypted?'<span class="badge">مشفّرة</span>':'<span class="badge">عادية</span>')
+          +'<div class="app-meta">'+fmtDate(b.createdAt)+' • '+b.itemCount+' عنصر • '+bytes(b.size)+'</div></div>'
+          +'<div class="app-actions">'
+          +'<button class="sec" id="dl-backup-'+b.id+'" data-dl="'+b.id+'">تنزيل ملف النسخة</button>'
+          +'<button class="sec" id="del-backup-'+b.id+'" data-delbk="'+b.id+'">حذف النسخة</button>'
+          +'</div></div>';
+      }).join('');
     }
     var total=backups.reduce(function(s,b){ return s+(b.size||0); },0);
     byId('totalSize').textContent=bytes(total);
@@ -224,7 +240,10 @@
   }
   function updateRestoreSelect(){
     var sel=byId('restoreBackupSelect'), cur=sel.value;
-    sel.replaceChildren();const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='— اختر نسخة —';sel.appendChild(placeholder);backups.slice().sort(function(a,b){return b.createdAt-a.createdAt;}).forEach(function(b){const option=document.createElement('option');option.value=String(b.id);option.textContent=(b.name||'')+' — '+fmtDate(b.createdAt);sel.appendChild(option);});
+    var opts=backups.slice().sort(function(a,b){ return b.createdAt-a.createdAt; }).map(function(b){
+      return '<option value="'+b.id+'">'+esc(b.name)+' — '+fmtDate(b.createdAt)+'</option>';
+    }).join('');
+    sel.innerHTML='<option value="">— اختر نسخة —</option>'+opts;
     if(cur){ sel.value=cur; }
   }
   function addItem(){
@@ -305,7 +324,11 @@
     getBackupItems(b).then(function(items){
       if(items===null){ box.innerHTML=''; setOut('restoreStatus','كلمة المرور غير صحيحة أو فشل فك التشفير.',true); return; }
       if(!items.length){ box.innerHTML='<p class="app-empty">هذه النسخة لا تحتوي على عناصر.</p>'; setOut('restoreStatus','النسخة فارغة.'); return; }
-      box.replaceChildren();items.forEach(function(it){const label=document.createElement('label');label.className='app-item app-pick';const check=document.createElement('input');check.type='checkbox';check.className='app-check';check.id='pick-restore-'+String(it.id);check.dataset.ritem=String(it.id);const main=document.createElement('div');main.className='app-item-main';const title=document.createElement('strong');title.textContent=it.title||'';const badge=document.createElement('span');badge.className='badge';badge.textContent=typeLabel(it.type);const meta=document.createElement('div');meta.className='app-meta';meta.textContent=fmtDate(it.createdAt);main.append(title,badge,meta);label.append(check,main);box.appendChild(label);});
+      box.innerHTML=items.map(function(it){
+        return '<label class="app-item app-pick"><input type="checkbox" class="app-check" id="pick-restore-'+it.id+'" data-ritem="'+it.id+'" />'
+          +'<div class="app-item-main"><strong>'+esc(it.title)+'</strong><span class="badge">'+typeLabel(it.type)+'</span>'
+          +'<div class="app-meta">'+fmtDate(it.createdAt)+'</div></div></label>';
+      }).join('');
       setOut('restoreStatus','تم عرض '+items.length+' عنصر من النسخة. حدّد ما تريد ثم اضغط «استعادة العناصر المحددة فقط».');
     });
   }
