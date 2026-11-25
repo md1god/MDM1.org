@@ -181,14 +181,21 @@
         const div=document.createElement("div");
         div.className="candidate";
         const freq = (loadStats().freq||{})[c[0]]||0;
-        div.innerHTML = `
-          <div class="candidate-header">
-            <span class="hanzi">${c[0]}</span>
-            <span class="pinyin">${c[1]}</span>
-            <span class="freq-badge">${freq} مرة</span>
-          </div>
-          <div class="meaning${showMeanings?"":" hidden"}" data-lang="${currentLang}" data-meanings='${JSON.stringify(c.slice(2))}'>${c[2+langKeys.indexOf(currentLang)]||c[2]}</div>
-        `;
+        const header=document.createElement("div");
+        header.className="candidate-header";
+        const hanzi=document.createElement("span");
+        hanzi.className="hanzi"; hanzi.textContent=c[0];
+        const py=document.createElement("span");
+        py.className="pinyin"; py.textContent=c[1];
+        const badge=document.createElement("span");
+        badge.className="freq-badge"; badge.textContent=freq+" مرة";
+        header.appendChild(hanzi); header.appendChild(py); header.appendChild(badge);
+        const meaning=document.createElement("div");
+        meaning.className="meaning"+(showMeanings?"":" hidden");
+        meaning.setAttribute("data-lang",currentLang);
+        meaning.setAttribute("data-meanings",JSON.stringify(c.slice(2)));
+        meaning.textContent=c[2+langKeys.indexOf(currentLang)]||c[2];
+        div.appendChild(header); div.appendChild(meaning);
         out.appendChild(div);
       });
     });

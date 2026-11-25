@@ -332,9 +332,9 @@ return'<div class="item" data-id="'+it.id+'">'+
 '<h3>'+escapeHtml(it.title)+'</h3>'+
 '<div class="meta">'+
 '<span class="badge">'+(it.type==='movie'?'فيلم':'مسلسل')+'</span>'+
-'<span class="badge status-'+it.status+'">'+statusLabel(it.status)+'</span>'+
+'<span class="badge status-'+escapeHtml(it.status)+'">'+escapeHtml(statusLabel(it.status))+'</span>'+
 '<span class="badge">'+escapeHtml(it.genre)+'</span>'+
-(it.releaseDate?'<span class="badge">'+it.releaseDate+'</span>':'')+
+(it.releaseDate?'<span class="badge">'+escapeHtml(it.releaseDate)+'</span>':'')+
 '</div>'+
 '<div class="meta">التقييم: '+(it.rating?it.rating+'/10':'غير مقيّم')+'</div>'+
 '<div class="starRating">'+stars+'</div>'+
@@ -523,7 +523,7 @@ const c=$('calendarList');
 const upcoming=mediaItems.filter(function(it){return it.releaseDate;}).sort(function(a,b){return b.releaseDate.localeCompare(a.releaseDate);});
 if(upcoming.length===0){c.innerHTML='<div class="out">لا توجد أعمال مسجلة بتاريخ إصدار.</div>';return;}
 c.innerHTML=upcoming.slice(0,15).map(function(it){
-return'<div class="calItem"><strong>'+it.releaseDate+'</strong> - '+escapeHtml(it.title)+' ('+(it.type==='movie'?'فيلم':'مسلسل')+')</div>';
+return'<div class="calItem"><strong>'+escapeHtml(it.releaseDate)+'</strong> - '+escapeHtml(it.title)+' ('+(it.type==='movie'?'فيلم':'مسلسل')+')</div>';
 }).join('');
 }
 

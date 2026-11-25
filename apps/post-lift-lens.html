@@ -378,8 +378,14 @@
       const el = document.createElement('div');
       el.className = 'app-history-item';
       const date = new Date(item.timestamp || Date.now()).toLocaleString('ar-SA');
-      el.innerHTML = '<div class="app-history-date">' + date + '</div>' +
-        '<div class="app-history-preview">' + (item.platform || '') + ' | ' + (item.domain || '') + ' | انتشار: ' + (item.reachScore || '') + ' | تفاعل: ' + (item.engagementRate || '') + '%</div>';
+      const dateEl = document.createElement('div');
+      dateEl.className = 'app-history-date';
+      dateEl.textContent = date;
+      const preview = document.createElement('div');
+      preview.className = 'app-history-preview';
+      preview.textContent = (item.platform || '') + ' | ' + (item.domain || '') + ' | انتشار: ' + (item.reachScore || '') + ' | تفاعل: ' + (item.engagementRate || '') + '%';
+      el.appendChild(dateEl);
+      el.appendChild(preview);
       el.addEventListener('click', function () { restoreAnalysis(item); });
       historyList.appendChild(el);
     });
