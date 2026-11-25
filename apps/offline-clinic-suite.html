@@ -283,7 +283,7 @@ function fillPatientSelects(){
     var placeholder=(sel.id==='invPatient')?'<option value="">زبون عابر / بدون اسم</option>':'<option value="">اختر مريضًا</option>';
     var html=placeholder;
     state.patients.sort(function(a,b){return a.name.localeCompare(b.name,'ar');}).forEach(function(p){
-      html+='<option value="'+p.id+'">'+esc(p.name)+'</option>';
+      html+='<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>';
     });
     sel.innerHTML=html;
     if(keep)sel.value=keep;
@@ -299,12 +299,12 @@ function renderPatients(){
   if(!list.length){el.innerHTML='<div class="empty">لا يوجد مرضى مسجلون بعد. أضف أول مريض من النموذج أعلاه.</div>';return;}
   var html='';
   list.forEach(function(p){
-    html+='<div class="item'+(p.id===selectedPatientId?' selected':'')+'" data-id="'+p.id+'"><div class="meta"><strong>'+esc(p.name)+'</strong>';
+    html+='<div class="item'+(p.id===selectedPatientId?' selected':'')+'" data-id="'+esc(p.id)+'"><div class="meta"><strong>'+esc(p.name)+'</strong>';
     if(p.phone)html+=' — هاتف: '+esc(p.phone);
-    if(p.dob)html+=' — مولود: '+fmtDate(p.dob);
+    if(p.dob)html+=' — مولود: '+esc(fmtDate(p.dob));
     if(p.gender)html+=' — '+esc(p.gender);
     if(p.history)html+='<br><small>ملاحظات: '+esc(p.history)+'</small>';
-    html+='</div><div class="row"><button class="sec btnEditPatient" data-id="'+p.id+'">تعديل</button><button class="sec btnSelectPatient" data-id="'+p.id+'">تحديد</button></div></div>';
+    html+='</div><div class="row"><button class="sec btnEditPatient" data-id="'+esc(p.id)+'">تعديل</button><button class="sec btnSelectPatient" data-id="'+esc(p.id)+'">تحديد</button></div></div>';
   });
   el.innerHTML=html;
 }
@@ -329,7 +329,7 @@ function renderAppts(){
   var html='';
   list.forEach(function(a){
     var past=a.date<today;
-    html+='<div class="item" data-id="'+a.id+'"><div class="meta"><strong>'+esc(nameOf(a.patientId))+'</strong> — '+fmtDate(a.date)+' '+esc(a.time||'')+(a.reason?' — '+esc(a.reason):'')+' '+(past?'<span class="badge">منتهٍ</span>':'<span class="badge exp">قادم</span>')+'</div><div class="row"><button class="sec btnDelAppt" data-id="'+a.id+'">حذف</button></div></div>';
+    html+='<div class="item" data-id="'+esc(a.id)+'"><div class="meta"><strong>'+esc(nameOf(a.patientId))+'</strong> — '+esc(fmtDate(a.date))+' '+esc(a.time||'')+(a.reason?' — '+esc(a.reason):'')+' '+(past?'<span class="badge">منتهٍ</span>':'<span class="badge exp">قادم</span>')+'</div><div class="row"><button class="sec btnDelAppt" data-id="'+esc(a.id)+'">حذف</button></div></div>';
   });
   el.innerHTML=html;
 }
@@ -346,14 +346,14 @@ function renderRxList(){
   if(!arr.length){el.innerHTML='<div class="empty">'+(f==='rx'?'لا توجد وصفات محفوظة بعد.':'لا توجد طلبات تحاليل بعد.')+'</div>';return;}
   var html='';
   arr.slice().reverse().forEach(function(r){
-    html+='<div class="item" data-id="'+r.id+'"><div class="meta">';
+    html+='<div class="item" data-id="'+esc(r.id)+'"><div class="meta">';
     if(f==='rx'){
-      html+='<strong>وصفة</strong> — '+esc(nameOf(r.patientId))+' — '+fmtDate(r.date)+'<br>الأدوية:<br><small>'+esc((r.meds||[]).join(' / '))+'</small>';
+      html+='<strong>وصفة</strong> — '+esc(nameOf(r.patientId))+' — '+esc(fmtDate(r.date))+'<br>الأدوية:<br><small>'+esc((r.meds||[]).join(' / '))+'</small>';
       if(r.notes)html+='<br><small>إرشادات: '+esc(r.notes)+'</small>';
     }else{
-      html+='<strong>تحليل</strong> — '+esc(nameOf(r.patientId))+' — '+esc(r.type||'')+' — '+fmtDate(r.date)+' — '+esc(r.status||'');
+      html+='<strong>تحليل</strong> — '+esc(nameOf(r.patientId))+' — '+esc(r.type||'')+' — '+esc(fmtDate(r.date))+' — '+esc(r.status||'');
     }
-    html+='</div><div class="row"><button class="sec btnPrintItem" data-kind="'+f+'" data-id="'+r.id+'">طباعة</button><button class="sec btnDelRx" data-kind="'+f+'" data-id="'+r.id+'">حذف</button></div></div>';
+    html+='</div><div class="row"><button class="sec btnPrintItem" data-kind="'+esc(f)+'" data-id="'+esc(r.id)+'">طباعة</button><button class="sec btnDelRx" data-kind="'+esc(f)+'" data-id="'+esc(r.id)+'">حذف</button></div></div>';
   });
   el.innerHTML=html;
 }
@@ -379,15 +379,15 @@ function renderMeds(){
     var low=(m.min||0)>0&&(m.qty||0)<=m.min;
     var expired=du!==null&&du<0;
     var expiring=du!==null&&du>=0&&du<=30;
-    html+='<div class="item'+(m.id===selectedMedId?' selected':'')+'" data-id="'+m.id+'"><div class="meta"><strong>'+esc(m.name)+'</strong>';
+    html+='<div class="item'+(m.id===selectedMedId?' selected':'')+'" data-id="'+esc(m.id)+'"><div class="meta"><strong>'+esc(m.name)+'</strong>';
     if(m.category)html+=' — '+esc(m.category);
     html+=' — الكمية: '+esc(m.qty||0);
     if(low)html+=' <span class="badge low">مخزون منخفض</span>';
-    html+=' — السعر: '+money(m.price||0);
-    if(m.expiry)html+=' — الصلاحية: '+fmtDate(m.expiry);
+    html+=' — السعر: '+esc(money(m.price||0));
+    if(m.expiry)html+=' — الصلاحية: '+esc(fmtDate(m.expiry));
     if(expired)html+=' <span class="badge low">منتهي الصلاحية</span>';
-    else if(expiring)html+=' <span class="badge exp">ينتهي قريبًا ('+du+' يوم)</span>';
-    html+='</div><div class="row"><button class="sec btnEditMed" data-id="'+m.id+'">تعديل</button><button class="sec btnAddStock" data-id="'+m.id+'">إضافة 10</button><button class="sec btnSellStock" data-id="'+m.id+'">بيع 1</button></div></div>';
+    else if(expiring)html+=' <span class="badge exp">ينتهي قريبًا ('+esc(du)+' يوم)</span>';
+    html+='</div><div class="row"><button class="sec btnEditMed" data-id="'+esc(m.id)+'">تعديل</button><button class="sec btnAddStock" data-id="'+esc(m.id)+'">إضافة 10</button><button class="sec btnSellStock" data-id="'+esc(m.id)+'">بيع 1</button></div></div>';
   });
   el.innerHTML=html;
 }
@@ -420,15 +420,15 @@ function renderBills(){
   if(!arr.length){el.innerHTML='<div class="empty">'+(f==='invoices'?'لا توجد فواتير بعد.':'لا توجد مصروفات بعد.')+'</div>';return;}
   var html='';
   arr.slice().reverse().forEach(function(r){
-    html+='<div class="item" data-id="'+r.id+'"><div class="meta">';
+    html+='<div class="item" data-id="'+esc(r.id)+'"><div class="meta">';
     if(f==='invoices'){
-      html+='<strong>فاتورة #'+esc(r.id.slice(-5))+'</strong> — '+fmtDate(r.date)+' — '+(r.patientId?esc(nameOf(r.patientId)):'زبون عابر')+' — الإجمالي: <span class="big">'+money(r.net)+'</span>';
-      html+='<br><small>'+(r.items||[]).map(function(it){return esc(it.desc)+' ×'+it.qty+' = '+money(it.sum);}).join('، ')+'</small>';
-      if(r.discount)html+=' <span class="badge exp">خصم '+r.discount+'%</span>';
+      html+='<strong>فاتورة #'+esc(r.id.slice(-5))+'</strong> — '+esc(fmtDate(r.date))+' — '+(r.patientId?esc(nameOf(r.patientId)):'زبون عابر')+' — الإجمالي: <span class="big">'+esc(money(r.net))+'</span>';
+      html+='<br><small>'+(r.items||[]).map(function(it){return esc(it.desc)+' ×'+esc(it.qty)+' = '+esc(money(it.sum));}).join('، ')+'</small>';
+      if(r.discount)html+=' <span class="badge exp">خصم '+esc(r.discount)+'%</span>';
     }else{
-      html+='<strong>مصروف</strong> — '+fmtDate(r.date)+' — '+esc(r.desc||'')+' — <span class="big">'+money(r.amount)+'</span>';
+      html+='<strong>مصروف</strong> — '+esc(fmtDate(r.date))+' — '+esc(r.desc||'')+' — <span class="big">'+esc(money(r.amount))+'</span>';
     }
-    html+='</div><div class="row"><button class="sec btnDelBill" data-kind="'+f+'" data-id="'+r.id+'">حذف</button></div></div>';
+    html+='</div><div class="row"><button class="sec btnDelBill" data-kind="'+esc(f)+'" data-id="'+esc(r.id)+'">حذف</button></div></div>';
   });
   el.innerHTML=html;
 }
@@ -446,7 +446,7 @@ function buildReport(date){
   var profit=net-expTotal;
   var lowStock=state.meds.filter(function(m){var mn=m.min||0;return mn>0&&(m.qty||0)<=mn;});
   var expSoon=state.meds.filter(function(m){var du=daysUntil(m.expiry);return du!==null&&du<=30;});
-  var html='<h3 class="sectionTitle">ملخص يوم '+fmtDate(date)+'</h3><table><tr><th>البند</th><th>القيمة</th></tr>';
+  var html='<h3 class="sectionTitle">ملخص يوم '+esc(fmtDate(date))+'</h3><table><tr><th>البند</th><th>القيمة</th></tr>';
   html+='<tr><td>مرضى جدد</td><td>'+patsToday+'</td></tr>';
   html+='<tr><td>مواعيد اليوم</td><td>'+appts.length+' (منجزة: '+apptDone+')</td></tr>';
   html+='<tr><td>وصفات صادرة</td><td>'+rxs.length+'</td></tr>';
@@ -461,7 +461,7 @@ function buildReport(date){
   html+='<tr><td>أدوية تنتهي خلال 30 يومًا أو منتهية</td><td>'+expSoon.length+'</td></tr></table>';
   if(invs.length){
     html+='<h3 class="sectionTitle">تفاصيل الفواتير</h3><table><tr><th>رقم</th><th>المريض</th><th>الإجمالي</th></tr>';
-    invs.forEach(function(i){html+='<tr><td>'+esc(i.id.slice(-5))+'</td><td>'+(i.patientId?esc(nameOf(i.patientId)):'زبون عابر')+'</td><td>'+money(i.net)+'</td></tr>';});
+    invs.forEach(function(i){html+='<tr><td>'+esc(i.id.slice(-5))+'</td><td>'+(i.patientId?esc(nameOf(i.patientId)):'زبون عابر')+'</td><td>'+esc(money(i.net))+'</td></tr>';});
     html+='</table>';
   }
   if(appts.length){
@@ -473,7 +473,7 @@ function buildReport(date){
 }
 function printHTML(html){
   var area=$('printArea');
-  area.innerHTML='<h2>تقرير عيادة/صيدلية — '+todayStr()+'</h2>'+html;
+  area.innerHTML='<h2>تقرير عيادة/صيدلية — '+esc(todayStr())+'</h2>'+html;
   window.print();
 }
 function bind(){
@@ -547,7 +547,7 @@ function bind(){
   $('btnPrintRx').addEventListener('click',function(){
     var r=null;state.rx.forEach(function(x){if(x.id===lastRxId)r=x;});
     if(!r){msg('rxMsg','لا توجد وصفة حديثة للطباعة.',true);return;}
-    printHTML('<h3>وصفة طبية</h3><p>المريض: '+esc(nameOf(r.patientId))+' — التاريخ: '+fmtDate(r.date)+'</p><ul>'+r.meds.map(function(m){return '<li>'+esc(m)+'</li>';}).join('')+'</ul><p>إرشادات: '+esc(r.notes||'لا يوجد')+'</p>');
+    printHTML('<h3>وصفة طبية</h3><p>المريض: '+esc(nameOf(r.patientId))+' — التاريخ: '+esc(fmtDate(r.date))+'</p><ul>'+r.meds.map(function(m){return '<li>'+esc(m)+'</li>';}).join('')+'</ul><p>إرشادات: '+esc(r.notes||'لا يوجد')+'</p>');
   });
   $('btnSaveLab').addEventListener('click',function(){
     var pid=$('labPatient').value,ty=$('labType').value.trim();
@@ -571,8 +571,8 @@ function bind(){
       var r=null;var pool=kind==='rx'?state.rx:state.labs;
       pool.forEach(function(x){if(x.id===id)r=x;});
       if(!r)return;
-      if(kind==='rx')printHTML('<h3>وصفة طبية</h3><p>المريض: '+esc(nameOf(r.patientId))+' — التاريخ: '+fmtDate(r.date)+'</p><ul>'+r.meds.map(function(m){return '<li>'+esc(m)+'</li>';}).join('')+'</ul><p>إرشادات: '+esc(r.notes||'لا يوجد')+'</p>');
-      else printHTML('<h3>طلب تحليل مخبري</h3><p>المريض: '+esc(nameOf(r.patientId))+' — نوع التحليل: '+esc(r.type)+' — التاريخ: '+fmtDate(r.date)+'</p>');
+      if(kind==='rx')printHTML('<h3>وصفة طبية</h3><p>المريض: '+esc(nameOf(r.patientId))+' — التاريخ: '+esc(fmtDate(r.date))+'</p><ul>'+r.meds.map(function(m){return '<li>'+esc(m)+'</li>';}).join('')+'</ul><p>إرشادات: '+esc(r.notes||'لا يوجد')+'</p>');
+      else printHTML('<h3>طلب تحليل مخبري</h3><p>المريض: '+esc(nameOf(r.patientId))+' — نوع التحليل: '+esc(r.type)+' — التاريخ: '+esc(fmtDate(r.date))+'</p>');
     }
   });
   $('btnSaveMed').addEventListener('click',function(){

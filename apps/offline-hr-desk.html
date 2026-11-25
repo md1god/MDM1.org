@@ -223,6 +223,7 @@
   function nowDate(){ return new Date().toISOString().slice(0,10); }
   function toNum(v){ const n=Number(v||0); return isFinite(n)?n:0; }
   function fmt(n){ return Number(n).toFixed(2); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   let employees = get(LS_KEYS.emp, []);
   let contacts = get(LS_KEYS.ct, []);
   let attendance = get(LS_KEYS.att, []);
@@ -242,7 +243,7 @@
     out.textContent='إجمالي الموظفين: '+employees.length;
     employees.forEach(e=>{
       const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+e.id+'</td><td>'+e.name+'</td><td>'+e.dept+'</td><td>'+e.job+'</td><td>'+e.status+'</td><td>'+e.phone+'</td><td>'+e.hire+'</td><td>'+fmt(e.base)+'</td>';
+      tr.innerHTML='<td>'+esc(e.id)+'</td><td>'+esc(e.name)+'</td><td>'+esc(e.dept)+'</td><td>'+esc(e.job)+'</td><td>'+esc(e.status)+'</td><td>'+esc(e.phone)+'</td><td>'+esc(e.hire)+'</td><td>'+esc(fmt(e.base))+'</td>';
       tb.appendChild(tr);
     });
   }
@@ -272,7 +273,7 @@
     if(!out||!tb) return; tb.innerHTML='';
     if(contacts.length===0){ out.textContent='لا توجد جهات اتصال.'; return; }
     out.textContent='إجمالي جهات الاتصال: '+contacts.length;
-    contacts.forEach(c=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+c.name+'</td><td>'+c.org+'</td><td>'+c.role+'</td><td>'+c.phone+'</td><td>'+c.email+'</td>'; tb.appendChild(tr); });
+    contacts.forEach(c=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+esc(c.name)+'</td><td>'+esc(c.org)+'</td><td>'+esc(c.role)+'</td><td>'+esc(c.phone)+'</td><td>'+esc(c.email)+'</td>'; tb.appendChild(tr); });
   }
   document.getElementById('ctSave')&&document.getElementById('ctSave').addEventListener('click',function(){
     const name=document.getElementById('ctName').value.trim(); const org=document.getElementById('ctOrg').value.trim(); const role=document.getElementById('ctRole').value.trim(); const phone=document.getElementById('ctPhone').value.trim(); const email=document.getElementById('ctEmail').value.trim();
@@ -288,7 +289,7 @@
     if(!out||!tb) return; tb.innerHTML='';
     const list=attendance.filter(x=>x.date===d); if(list.length===0){ out.textContent='لا يوجد تسجيل حضور لهذا اليوم بعد.'; return; }
     out.textContent='عدد السجلات لليوم: '+list.length;
-    list.forEach(x=>{ const e=employees.find(em=>em.id===x.emp)||{name:x.emp}; const tr=document.createElement('tr'); tr.innerHTML='<td>'+e.name+' ('+x.emp+')</td><td>'+x.date+'</td><td>'+x.in+'</td><td>'+x.out+'</td><td>'+hoursDiff(x.in,x.out)+'</td><td>'+x.note+'</td>'; tb.appendChild(tr); });
+    list.forEach(x=>{ const e=employees.find(em=>em.id===x.emp)||{name:x.emp}; const tr=document.createElement('tr'); tr.innerHTML='<td>'+esc(e.name)+' ('+esc(x.emp)+')</td><td>'+esc(x.date)+'</td><td>'+esc(x.in)+'</td><td>'+esc(x.out)+'</td><td>'+esc(hoursDiff(x.in,x.out))+'</td><td>'+esc(x.note)+'</td>'; tb.appendChild(tr); });
   }
   document.getElementById('attSave')&&document.getElementById('attSave').addEventListener('click',function(){
     const emp=document.getElementById('attEmp').value; const date=document.getElementById('attDate').value; const inT=document.getElementById('attIn').value; const out=document.getElementById('attOut').value; const note=document.getElementById('attNote').value.trim();
@@ -308,7 +309,7 @@
     leaves.slice().reverse().forEach(l=>{
       const e=employees.find(em=>em.id===l.emp)||{name:l.emp};
       const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+e.name+' ('+l.emp+')</td><td>'+l.type+'</td><td>'+l.start+'</td><td>'+l.end+'</td><td>'+l.days+'</td><td>'+l.status+'</td><td>'+l.note+'</td>';
+      tr.innerHTML='<td>'+esc(e.name)+' ('+esc(l.emp)+')</td><td>'+esc(l.type)+'</td><td>'+esc(l.start)+'</td><td>'+esc(l.end)+'</td><td>'+esc(l.days)+'</td><td>'+esc(l.status)+'</td><td>'+esc(l.note)+'</td>';
       tb.appendChild(tr);
     });
   }
@@ -347,7 +348,7 @@
     tasks.slice().reverse().forEach(t=>{
       const e=employees.find(em=>em.id===t.emp)||{name:t.emp};
       const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+e.name+' ('+t.emp+')</td><td>'+t.type+'</td><td>'+t.item+'</td><td>'+t.ass+'</td><td>'+t.status+'</td>';
+      tr.innerHTML='<td>'+esc(e.name)+' ('+esc(t.emp)+')</td><td>'+esc(t.type)+'</td><td>'+esc(t.item)+'</td><td>'+esc(t.ass)+'</td><td>'+esc(t.status)+'</td>';
       tb.appendChild(tr);
     });
   }
@@ -371,7 +372,7 @@
     perf.slice().reverse().forEach(p=>{
       const e=employees.find(em=>em.id===p.emp)||{name:p.emp};
       const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+e.name+' ('+p.emp+')</td><td>'+p.date+'</td><td>'+p.eval+'</td><td>'+p.score+'</td><td>'+p.note+'</td>';
+      tr.innerHTML='<td>'+esc(e.name)+' ('+esc(p.emp)+')</td><td>'+esc(p.date)+'</td><td>'+esc(p.eval)+'</td><td>'+esc(p.score)+'</td><td>'+esc(p.note)+'</td>';
       tb.appendChild(tr);
     });
   }
@@ -391,7 +392,7 @@
     assets.forEach(a=>{
       const e=employees.find(em=>em.id===a.emp)||{name:a.emp||'غير محدد'};
       const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+a.id+'</td><td>'+a.name+'</td><td>'+a.cat+'</td><td>'+a.loc+'</td><td>'+e.name+'</td><td>'+a.stat+'</td><td>'+a.date+'</td>';
+      tr.innerHTML='<td>'+esc(a.id)+'</td><td>'+esc(a.name)+'</td><td>'+esc(a.cat)+'</td><td>'+esc(a.loc)+'</td><td>'+esc(e.name)+'</td><td>'+esc(a.stat)+'</td><td>'+esc(a.date)+'</td>';
       tb.appendChild(tr);
     });
   }

@@ -247,7 +247,7 @@
     if(name==='Visits'){fillPatientSelect('vPatient');renderVisits();}
   }
   tabs.forEach(t=>{const btn=$('tab'+t);if(btn)btn.addEventListener('click',()=>activateTab(t));});
-  function fillPatientSelect(id){const sel=$(id);if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">اختر مريضاً</option>'+patients.map(p=>'<option value="'+p.id+'">'+escapeHtml(p.name)+'</option>').join('');if(cur)sel.value=cur;}
+  function fillPatientSelect(id){const sel=$(id);if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">اختر مريضاً</option>'+patients.map(p=>'<option value="'+escapeHtml(p.id)+'">'+escapeHtml(p.name)+'</option>').join('');if(cur)sel.value=cur;}
   // Patients
   function clearPatientForm(){['pName','pAge','pGender','pPhone','pBlood','pAddress','pAllergies','pConditions'].forEach(i=>{const e=$(i);if(e)e.value='';});$('pEditingId').value='';}
   $('pSave').addEventListener('click',()=>{
@@ -264,7 +264,7 @@
     const list=$('pList'),empty=$('pEmpty');if(!list)return;
     if(!patients.length){list.innerHTML='';empty.classList.remove('hidden');return;}
     empty.classList.add('hidden');
-    list.innerHTML=patients.map(p=>'<div class="item"><h4>'+escapeHtml(p.name)+'</h4><div class="meta">العمر: '+escapeHtml(p.age||'-')+' | الجنس: '+escapeHtml(p.gender||'-')+' | الهاتف: '+escapeHtml(p.phone||'-')+' | فصيلة: '+escapeHtml(p.blood||'-')+'</div><div class="meta">الحالات: '+escapeHtml(p.conditions||'-')+'</div><div class="row mt"><button type="button" class="sec" data-edit="'+p.id+'">تعديل</button><button type="button" class="sec" data-del="'+p.id+'">حذف</button></div></div>').join('');
+    list.innerHTML=patients.map(p=>'<div class="item"><h4>'+escapeHtml(p.name)+'</h4><div class="meta">العمر: '+escapeHtml(p.age||'-')+' | الجنس: '+escapeHtml(p.gender||'-')+' | الهاتف: '+escapeHtml(p.phone||'-')+' | فصيلة: '+escapeHtml(p.blood||'-')+'</div><div class="meta">الحالات: '+escapeHtml(p.conditions||'-')+'</div><div class="row mt"><button type="button" class="sec" data-edit="'+escapeHtml(p.id)+'">تعديل</button><button type="button" class="sec" data-del="'+escapeHtml(p.id)+'">حذف</button></div></div>').join('');
     list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{
       const p=patients.find(x=>x.id===b.dataset.edit);if(!p)return;
       editingPatient=p.id;
@@ -330,7 +330,7 @@
     const list=[...visits].sort((a,b)=>b.date.localeCompare(a.date));
     if(!list.length){container.innerHTML='';empty.classList.remove('hidden');return;}
     empty.classList.add('hidden');
-    container.innerHTML=list.map(v=>'<div class="item"><h4>'+escapeHtml(patientName(v.patientId))+' — '+escapeHtml(v.date)+'</h4><div class="meta">الشكوى: '+escapeHtml(v.complaint||'-')+'</div><div class="meta">التشخيص: '+escapeHtml(v.diagnosis||'-')+'</div><div class="meta">الخطة: '+escapeHtml(v.treatment||'-')+'</div>'+(v.medications&&v.medications.length?'<div class="meta">الأدوية: '+v.medications.map(m=>escapeHtml(m.name)+' ('+escapeHtml(m.dose)+', '+escapeHtml(m.freq)+')').join('، ')+'</div>':'')+'<div class="row mt"><button type="button" class="sec" data-editv="'+v.id+'">تعديل</button><button type="button" class="sec" data-delv="'+v.id+'">حذف</button></div></div>').join('');
+    container.innerHTML=list.map(v=>'<div class="item"><h4>'+escapeHtml(patientName(v.patientId))+' — '+escapeHtml(v.date)+'</h4><div class="meta">الشكوى: '+escapeHtml(v.complaint||'-')+'</div><div class="meta">التشخيص: '+escapeHtml(v.diagnosis||'-')+'</div><div class="meta">الخطة: '+escapeHtml(v.treatment||'-')+'</div>'+(v.medications&&v.medications.length?'<div class="meta">الأدوية: '+v.medications.map(m=>escapeHtml(m.name)+' ('+escapeHtml(m.dose)+', '+escapeHtml(m.freq)+')').join('، ')+'</div>':'')+'<div class="row mt"><button type="button" class="sec" data-editv="'+escapeHtml(v.id)+'">تعديل</button><button type="button" class="sec" data-delv="'+escapeHtml(v.id)+'">حذف</button></div></div>').join('');
     container.querySelectorAll('[data-editv]').forEach(b=>b.addEventListener('click',()=>{
       const v=visits.find(x=>x.id===b.dataset.editv);if(!v)return;
       editingVisit=v.id;fillPatientSelect('vPatient');$('vPatient').value=v.patientId;$('vDate').value=v.date;$('vComplaint').value=v.complaint;$('vDiagnosis').value=v.diagnosis;$('vTreatment').value=v.treatment;$('vNotes').value=v.notes;$('vEditingId').value=v.id;currentMeds=[...v.medications];renderMeds();
