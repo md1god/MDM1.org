@@ -4,10 +4,10 @@ name: 🛡️ Auto-fix alerts and failures
 # variable AUTOFIX_AUTOMERGE is set to "true".
 on:
   schedule:
-    - cron: '15 3 * * *'
+    - cron: '15 3,15 * * *'
   workflow_dispatch:
-  code_scanning_alert:
-    types: [created, reopened]
+  # (code_scanning_alert is not a valid workflow trigger: it made this file invalid and every push showed a failed run;
+  #  new alerts are picked up by the schedule below and by failed-run follow-ups.)
   workflow_run:
     workflows:
       - 🚀 Deploy to GitHub Pages
