@@ -253,13 +253,12 @@
       var out=p.qty<=0;
       var card=document.createElement('div');
       card.className='card app-prod';
-      var title=document.createElement('h3');title.textContent=String(p.name||'');
-      var producer=document.createElement('p');producer.className='app-meta';producer.textContent='المُنتِج: '+String(p.producer||'');
-      var category=document.createElement('p');category.className='app-meta';category.textContent='الفئة: '+String(p.category||'')+' • الموسم: '+String(p.season||'');
-      var price=document.createElement('p');price.className='app-price';price.textContent=money(p.price)+' / '+String(p.unit||'');
-      var available=document.createElement('p');available.className='app-meta';available.textContent='المتاح: '+Number(p.qty||0)+' '+String(p.unit||'');
-      var add=document.createElement('button');add.id='add_'+String(p.id);add.className='button';add.dataset.act='add';add.dataset.id=String(p.id);add.disabled=out;add.textContent=out?'نفدت الكمية':'أضف إلى السلة';
-      card.append(title,producer,category,price,available,add);
+      card.innerHTML='<h3>'+esc(p.name)+'</h3>'+
+        '<p class="app-meta">المُنتِج: '+esc(p.producer)+'</p>'+
+        '<p class="app-meta">الفئة: '+esc(p.category)+' • الموسم: '+esc(p.season)+'</p>'+
+        '<p class="app-price">'+money(p.price)+' / '+esc(p.unit)+'</p>'+
+        '<p class="app-meta">المتاح: '+p.qty+' '+esc(p.unit)+'</p>'+
+        '<button id="add_'+p.id+'" class="button" data-act="add" data-id="'+p.id+'"'+(out?' disabled':'')+'>'+(out?'نفدت الكمية':'أضف إلى السلة')+'</button>';
       g.appendChild(card);
     });
   }
@@ -291,13 +290,10 @@
       var line=p.price*c.qty; total+=line;
       var row=document.createElement('div');
       row.className='app-cart-item';
-      var info=document.createElement('span');info.appendChild(document.createTextNode(String(p.name||'')+' '));
-      var meta=document.createElement('span');meta.className='app-meta';meta.textContent='('+money(p.price)+' / '+String(p.unit||'')+')';info.appendChild(meta);
-      var actions=document.createElement('span');
-      var qty=document.createElement('input');qty.id='qty_'+String(p.id);qty.className='input app-qty';qty.dataset.act='qty';qty.dataset.id=String(p.id);qty.type='number';qty.min='1';qty.max=String(p.qty);qty.value=String(c.qty);
-      var totalEl=document.createElement('span');totalEl.id='line_'+String(p.id);totalEl.className='app-total';totalEl.textContent=money(line);
-      var remove=document.createElement('button');remove.id='rm_'+String(p.id);remove.className='button sec';remove.dataset.act='rm';remove.dataset.id=String(p.id);remove.textContent='إزالة';
-      actions.append(qty,document.createTextNode(' '),totalEl,document.createTextNode(' '),remove);row.append(info,actions);
+      row.innerHTML='<span>'+esc(p.name)+' <span class="app-meta">('+money(p.price)+' / '+esc(p.unit)+')</span></span>'+
+        '<span><input id="qty_'+p.id+'" class="input app-qty" data-act="qty" data-id="'+p.id+'" type="number" min="1" max="'+p.qty+'" value="'+c.qty+'"> '+
+        '<span id="line_'+p.id+'" class="app-total">'+money(line)+'</span> '+
+        '<button id="rm_'+p.id+'" class="button sec" data-act="rm" data-id="'+p.id+'">إزالة</button></span>';
       box.appendChild(row);
     });
     $('cartTotal').textContent=money(total);

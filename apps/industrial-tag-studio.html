@@ -209,7 +209,7 @@ function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){r
 
   function renderTags(){
     const el=$('tag-list'); if(!state.tags.length){ el.textContent='لا توجد وسوم.'; return; }
-    el.replaceChildren();state.tags.forEach((t,i)=>{const row=document.createElement('div');row.className='row';row.style.justifyContent='space-between';row.style.borderBottom='1px solid var(--gold-dim)';row.style.padding='4px 0';const label=document.createElement('span');label.textContent=[t.name,'@'+t.addr,t.type,t.dtype,'x'+t.scale,t.unit].join(' ');const del=document.createElement('button');del.className='button sec';del.dataset.del=String(i);del.textContent='حذف';row.append(label,del);el.appendChild(row);});
+    el.innerHTML = state.tags.map((t,i)=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--gold-dim);padding:4px 0"><span>${t.name} @${t.addr} ${t.type} ${t.dtype} x${t.scale} ${t.unit}</span><button class="button sec" data-del="${i}">حذف</button></div>`).join('');
     el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ state.tags.splice(+b.dataset.del,1); saveTags(); renderTags(); log('حذف وسم','info'); }));
   }
 
@@ -285,7 +285,7 @@ function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){r
   }
   function renderBoard(){
     const el=$('sim-board'); if(!state.tags.length){ el.innerHTML='<div class="out">لا توجد وسوم.</div>'; return; }
-    el.replaceChildren();state.tags.forEach(t=>{const card=document.createElement('div');card.className='app-card';const name=document.createElement('div');name.textContent=t.name||'';const value=document.createElement('div');value.className='app-val';value.id='simv-'+String(t.name||'');value.textContent='--';const unit=document.createElement('div');unit.textContent=t.unit||'';card.append(name,value,unit);el.appendChild(card);});
+    el.innerHTML=state.tags.map(t=>`<div class="app-card"><div>${t.name}</div><div class="app-val" id="simv-${t.name}">--</div><div>${t.unit}</div></div>`).join('');
   }
   function tick(){
     const readings=[];
@@ -340,7 +340,7 @@ function mdm1Esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){r
 
   function renderLog(){
     const el=$('log-list'); if(!state.logs.length){ el.textContent='لا أخطاء.'; return; }
-    el.replaceChildren();state.logs.forEach(l=>{const row=document.createElement('div');row.className=l.level==='error'?'app-err':'app-ok';row.textContent=String(l.t||'')+' ['+String(l.level||'info')+'] '+String(l.msg||'');el.appendChild(row);});
+    el.innerHTML=state.logs.map(l=>`<div class="${l.level==='error'?'app-err':'app-ok'}">${l.t} [${l.level}] ${l.msg}</div>`).join('');
   }
 
   // tabs
