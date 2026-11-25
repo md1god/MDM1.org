@@ -6,10 +6,24 @@
 <title>مكة 3D — تجوّل حر وتعلّم الشوارع | MDM1</title>
 <meta name="description" content="عالم ثلاثي الأبعاد مفتوح لمدينة مكة المكرمة من بيانات OpenStreetMap: قُد سيارة أو امشِ على قدميك، مع GPS وخريطة وتدريب لحفظ أسماء الشوارع والأحياء.">
 <meta name="theme-color" content="#0f0d09">
+<script type="importmap">
+{"imports":{
+  "three": "./vendor/three.module.js?v=__BUILD__",
+  "./js/names.js": "./js/names.js?v=__BUILD__",
+  "./js/util.js": "./js/util.js?v=__BUILD__",
+  "./js/data.js": "./js/data.js?v=__BUILD__",
+  "./js/nav.js": "./js/nav.js?v=__BUILD__",
+  "./js/world.js": "./js/world.js?v=__BUILD__",
+  "./js/entities.js": "./js/entities.js?v=__BUILD__",
+  "./js/learn.js": "./js/learn.js?v=__BUILD__",
+  "./js/contrib.js": "./js/contrib.js?v=__BUILD__",
+  "./js/ui.js": "./js/ui.js?v=__BUILD__"
+}}
+</script>
 <script>
 /* كسر الكاش تلقائياً: كل ملفات الجافاسكربت تُحمَّل برقم إصدار (يُستبدل وقت النشر) فلا يحتاج المستخدم لمسح الكاش */
 (function(){
-  var V='__BUILD__'; if(V.indexOf('__')===0) V='dev'+Date.now();
+  var V='__BUILD__';
   var mods=['names','util','data','nav','world','entities','learn','contrib','ui'], im={three:'./vendor/three.module.js?v='+V};
   mods.forEach(function(m){ im['./js/'+m+'.js']='./js/'+m+'.js?v='+V; });
   /* تسريع: ابدأ تحميل البيانات والوحدات بالتوازي فوراً بدل التسلسل (main -> modules -> data) */
@@ -20,8 +34,7 @@
   window.addEventListener('error',function(e){ fail((e&&e.message)||'خطأ'); });
   window.addEventListener('unhandledrejection',function(e){ fail((e&&e.reason&&e.reason.message)||'خطأ'); });
   setTimeout(function(){ if(!window.__booted) fail('بطء شديد في التحميل'); },20000);
-  var a=document.createElement('script'); a.type='importmap'; a.textContent=JSON.stringify({imports:im}); document.head.appendChild(a);
-  var b=document.createElement('script'); b.type='module'; b.textContent="import './js/main.js?v="+V+"'"; document.head.appendChild(b);
+    var b=document.createElement('script'); b.type='module'; b.textContent="import './js/main.js?v="+V+"'"; document.head.appendChild(b);
 })();
 </script>
 <style>

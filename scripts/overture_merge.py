@@ -123,6 +123,9 @@ def main():
                 break
         if cov > 0.25 * poly.area:
             continue
+        # لا نضيف مجمّعات ضخمة (الحرم/المطاف) ولا شيئاً قرب الكعبة: تغطي الكعبة وتثقل المشهد
+        if poly.area > 15000 or math.hypot(poly.centroid.x, poly.centroid.y) < 350:
+            continue
         added.append((poly, h))
         if len(added) >= a.max_add:
             break
