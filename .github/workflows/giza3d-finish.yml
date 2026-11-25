@@ -1,0 +1,43 @@
+name: Giza 3D - refresh engine, photos, Overture (keeps OSM data)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: giza3d-data
+  cancel-in-progress: false
+jobs:
+  finish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Require existing Giza OSM data
+        run: |
+          if [ ! -f giza3d/data/meta.json ]; then
+            echo "giza3d/data is missing - run the workflow Giza 3D (code + data) first" >&2
+            exit 1
+          fi
+      - name: Regenerate giza3d engine from mecca3d
+        run: |
+          python3 scripts/make_giza3d.py
+          rm -f giza3d/img/landmarks/*.jpg
+      - name: Install deps
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet shapely overturemaps
+      - name: Landmark photos (Wikipedia, saved in the repo)
+        continue-on-error: true
+        run: /tmp/venv/bin/python scripts/landmark_photos_from_osm.py giza3d/data giza3d/img/landmarks
+      - name: Merge Overture Maps buildings
+        continue-on-error: true
+        run: /tmp/venv/bin/python scripts/overture_merge.py giza3d/data
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A giza3d
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "Update Giza 3D (engine, photos, Overture buildings)"
+          git pull --rebase origin main
+          git push origin HEAD:main
