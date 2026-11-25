@@ -1,0 +1,55 @@
+name: Giza 3D (code + data)
+on:
+  workflow_dispatch:
+    inputs:
+      south: { description: 'South latitude', default: '29.935' }
+      west:  { description: 'West longitude', default: '31.085' }
+      north: { description: 'North latitude', default: '30.025' }
+      east:  { description: 'East longitude', default: '31.185' }
+      tile:  { description: 'Overpass tile size (degrees)', default: '0.03' }
+permissions:
+  contents: write
+concurrency:
+  group: giza3d-data
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Generate giza3d from the mecca3d engine
+        run: python3 scripts/make_giza3d.py
+      - name: Install Python deps
+        run: |
+          python3 -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet pillow numpy
+      - name: Build data from OpenStreetMap and terrain tiles
+        env:
+          IN_SOUTH: ${{ inputs.south }}
+          IN_WEST: ${{ inputs.west }}
+          IN_NORTH: ${{ inputs.north }}
+          IN_EAST: ${{ inputs.east }}
+          IN_TILE: ${{ inputs.tile }}
+        run: |
+          for v in "$IN_SOUTH" "$IN_WEST" "$IN_NORTH" "$IN_EAST" "$IN_TILE"; do
+            case "$v" in
+              ''|*[!0-9.-]*) echo "Invalid numeric input: $v" >&2; exit 1 ;;
+            esac
+          done
+          rm -rf giza3d/data
+          /tmp/venv/bin/python giza3d/tools/build_data.py \
+            --south "$IN_SOUTH" --west "$IN_WEST" \
+            --north "$IN_NORTH" --east "$IN_EAST" \
+            --tile "$IN_TILE" --out giza3d/data
+          du -sh giza3d/data
+          find giza3d/data -type f | wc -l
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A giza3d
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Update Giza 3D (engine + OpenStreetMap data)"
+          git pull --rebase origin main
+          git push origin HEAD:main
