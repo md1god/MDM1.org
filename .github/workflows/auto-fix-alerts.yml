@@ -1,0 +1,223 @@
+name: 🛡️ Auto-fix alerts and failures
+# Fixes CodeQL alerts and failed workflow runs on main by itself, opens a PR with the reason
+# for every change, and sends the result to Telegram. Merge stays manual unless the repository
+# variable AUTOFIX_AUTOMERGE is set to "true".
+on:
+  schedule:
+    - cron: '15 3 * * *'
+  workflow_dispatch:
+  code_scanning_alert:
+    types: [created, reopened]
+  workflow_run:
+    workflows:
+      - 🚀 Deploy to GitHub Pages
+      - Daily Content and Site Check
+      - Automated SEO and Site Builder
+      - Smoke test all apps
+      - 🔄 Generate Pages Automatically
+      - 🌍 Publish multilingual pages
+      - 🌍 Translate tools and apps (20 languages)
+      - Trend tool pages
+      - Fetch All Games Catalog Daily
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+  security-events: read
+  actions: read
+concurrency:
+  group: auto-fix-alerts
+  cancel-in-progress: false
+jobs:
+  autofix:
+    # A workflow_run event only matters when the run failed on main.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-26.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      REPO: ${{ github.repository }}
+      EVENT: ${{ github.event_name }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_NAME: ${{ github.event.workflow_run.name }}
+      MAX_ALERTS: '25'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '22'
+
+      - name: Skip while an earlier auto-fix PR is still open
+        id: gate
+        run: |
+          n=$(gh pr list --repo "$REPO" --state open --label autofix --json number --jq 'length' 2>/dev/null || echo 0)
+          echo "open=$n" >> "$GITHUB_OUTPUT"
+          [ "$n" = "0" ] || echo "An auto-fix PR is already open; not stacking another one."
+
+      - name: Collect open alerts and the failed run log
+        id: collect
+        if: steps.gate.outputs.open == '0'
+        run: |
+          mkdir -p .autofix
+          gh api --paginate "repos/$REPO/code-scanning/alerts?state=open&ref=refs/heads/main&per_page=100" \
+            --jq '.[] | {number, rule: .rule.id, severity: (.rule.security_severity_level // .rule.severity), description: .rule.description, path: .most_recent_instance.location.path, line: .most_recent_instance.location.start_line, message: .most_recent_instance.message.text}' \
+            2> .autofix/alerts.err | head -n "$MAX_ALERTS" > .autofix/alerts.jsonl || true
+          if [ "$EVENT" = "workflow_run" ] && [ -n "$RUN_ID" ]; then
+            gh run view "$RUN_ID" --repo "$REPO" --log-failed 2>&1 | tail -c 12000 > .autofix/failure.log || true
+            echo "Failed workflow: $RUN_NAME" > .autofix/failure.header
+          fi
+          alerts=$(wc -l < .autofix/alerts.jsonl | tr -d ' ')
+          failed=0; [ -s .autofix/failure.log ] && failed=1
+          echo "alerts=$alerts" >> "$GITHUB_OUTPUT"
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+          if [ "$alerts" = "0" ] && [ "$failed" = "0" ]; then
+            echo "work=no" >> "$GITHUB_OUTPUT"
+            [ -s .autofix/alerts.err ] && { echo "Alert API said:"; cat .autofix/alerts.err; }
+          else
+            echo "work=yes" >> "$GITHUB_OUTPUT"
+          fi
+          echo "alerts=$alerts failed_run=$failed"
+
+      - name: Let the agent fix the root causes
+        id: fix
+        if: steps.collect.outputs.work == 'yes'
+        continue-on-error: true
+        run: |
+          npm install -g opencode-ai@1.19.4 >/tmp/npm.log 2>&1 || { tail -5 /tmp/npm.log; exit 1; }
+          cat > .autofix/prompt.md <<'EOF'
+          You maintain this static website repository (HTML/JS pages, Node and Python scripts).
+          Inputs, all inside .autofix/:
+            - alerts.jsonl : open CodeQL alerts on main (one JSON object per line: rule, path, line, message)
+            - failure.header and failure.log : a workflow run that failed on main, if present
+          Task:
+            1. Find the root cause of each alert / failure and fix it with the smallest correct edit.
+               For XSS and HTML-injection alerts: escape user-controlled text, or build DOM nodes with
+               textContent instead of assigning HTML strings. Keep behaviour and UI strings unchanged.
+            2. If an alert is a false positive, or a failure comes from something outside this repository
+               (network, third-party outage, missing secret), do not edit code for it; explain why in the report.
+            3. Never edit anything under .github/, never touch secrets, never disable or delete tests,
+               never suppress CodeQL, never add dependencies.
+            4. Write .autofix/report.md in Arabic. For every item: الملف، السبب، الإصلاح (or why none).
+               The last line must be exactly one of: STATUS: fixed | STATUS: partial | STATUS: none
+          Do not run shell commands. Only read and edit files.
+          EOF
+          OPENCODE_CONFIG_CONTENT='{"permission":{"edit":"allow","bash":"deny","webfetch":"deny"}}' \
+            timeout 1500 opencode run -m opencode/big-pickle "$(cat .autofix/prompt.md)" 2>&1 | tail -40
+          test -s .autofix/report.md
+
+      - name: Guard and verify the changes
+        id: verify
+        if: steps.fix.outcome == 'success'
+        run: |
+          changed=$(git status --porcelain --untracked-files=all -- . ':!.autofix' | awk '{ $1=""; sub(/^ /,""); print }')
+          if [ -z "$changed" ]; then echo "changes=no" >> "$GITHUB_OUTPUT"; echo "No file changes."; exit 0; fi
+          n=$(echo "$changed" | wc -l | tr -d ' ')
+          bad=0
+          [ "$n" -le 40 ] || { echo "BLOCKED: $n files changed (limit 40)"; bad=1; }
+          while IFS= read -r p; do
+            case "$p" in
+              .github/*|*.env|*secret*|*.pem|*.key) echo "BLOCKED: $p"; bad=1 ;;
+            esac
+          done <<< "$changed"
+          # Syntax check: JS files, inline scripts of HTML files, Python files.
+          printf '%s\n' "$changed" > .autofix/changed.txt
+          node - <<'EOF' || bad=1
+          const fs = require('fs'), cp = require('child_process'), os = require('os'), path = require('path');
+          let failed = false;
+          const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'af-'));
+          const check = (code, label) => {
+            const f = path.join(tmp, 'c.js'); fs.writeFileSync(f, code);
+            const r = cp.spawnSync('node', ['--check', f], { encoding: 'utf8' });
+            if (r.status !== 0) { console.log('SYNTAX ERROR in ' + label + '\n' + r.stderr.split('\n').slice(0, 6).join('\n')); failed = true; }
+          };
+          for (const p of fs.readFileSync('.autofix/changed.txt', 'utf8').split('\n').filter(Boolean)) {
+            if (!fs.existsSync(p)) continue;
+            if (/\.(c|m)?js$/.test(p)) check(fs.readFileSync(p, 'utf8').replace(/^#!.*/, ''), p);
+            else if (/\.html$/.test(p)) {
+              const s = fs.readFileSync(p, 'utf8');
+              for (const m of s.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type=["'](?!text\/javascript|module)[^"']*["'])[^>]*>([\s\S]*?)<\/script>/gi)) check(m[1], p);
+            } else if (/\.py$/.test(p)) {
+              const r = cp.spawnSync('python3', ['-m', 'py_compile', p], { encoding: 'utf8' });
+              if (r.status !== 0) { console.log('SYNTAX ERROR in ' + p + '\n' + r.stderr); failed = true; }
+            }
+          }
+          process.exit(failed ? 1 : 0);
+          EOF
+          if [ "$bad" = "1" ]; then echo "changes=blocked" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "changes=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Open a PR with the reason
+        id: pr
+        if: steps.verify.outputs.changes == 'yes'
+        run: |
+          gh label create autofix --color 0E8A16 --description "Opened by the auto-fix workflow" 2>/dev/null || true
+          branch="autofix/$(date -u +%Y%m%d-%H%M%S)"
+          git config user.name "MD1 Bot"
+          git config user.email "action@github.com"
+          git checkout -b "$branch"
+          git add -A -- . ':!.autofix'
+          git commit -q -m "🛡️ Auto-fix: ${EVENT} (${RUN_NAME:-code scanning})"
+          git push -q origin "$branch"
+          {
+            echo "تم إنشاء هذا الـ PR تلقائياً بواسطة workflow الإصلاح التلقائي (الحدث: $EVENT)."
+            echo
+            cat .autofix/report.md
+          } > .autofix/pr-body.md
+          url=$(gh pr create --base main --head "$branch" --label autofix \
+                  --title "🛡️ Auto-fix: ${RUN_NAME:-code scanning alerts}" --body-file .autofix/pr-body.md 2>.autofix/pr.err) || url=""
+          if [ -z "$url" ]; then
+            cat .autofix/pr.err
+            url="https://github.com/$REPO/compare/main...$branch"
+            echo "created=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "created=yes" >> "$GITHUB_OUTPUT"
+            if [ "${{ vars.AUTOFIX_AUTOMERGE }}" = "true" ]; then gh pr merge --squash --auto "$url" || true; fi
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Send the result and the reason
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import os, json, urllib.request, urllib.parse
+          g = lambda k: os.environ.get(k, '')
+          tok, chat = g('TELEGRAM_BOT_TOKEN'), g('TELEGRAM_CHAT_ID')
+          read = lambda p: open(p, encoding='utf-8', errors='replace').read() if os.path.exists(p) else ''
+          report = read('.autofix/report.md').strip()
+          steps = json.loads('''${{ toJSON(steps) }}''')
+          out = lambda s, k: (steps.get(s, {}).get('outputs') or {}).get(k, '')
+          concl = lambda s: steps.get(s, {}).get('outcome', '')
+          if out('gate', 'open') not in ('', '0'):
+              head = '⏸️ الإصلاح التلقائي: فيه PR مفتوح قبل كده، مش هعمل واحد جديد.'
+          elif out('collect', 'work') == 'no':
+              head = '✅ الإصلاح التلقائي: مفيش تنبيهات مفتوحة ولا أخطاء.'
+          elif concl('fix') == 'failure':
+              head = '⚠️ الإصلاح التلقائي: الوكيل فشل أو ما كتبش تقرير. لازم مراجعة يدوية.'
+          elif out('verify', 'changes') == 'blocked':
+              head = '🚫 الإصلاح التلقائي: التعديلات اتمنعت (ملفات ممنوعة أو خطأ syntax). ما اتفتحش PR.'
+          elif out('verify', 'changes') == 'no':
+              head = 'ℹ️ الإصلاح التلقائي: ما اتعدلش أي ملف.'
+          elif out('pr', 'url'):
+              head = '🛡️ الإصلاح التلقائي: تم فتح PR\n' + out('pr', 'url')
+          else:
+              head = '⚠️ الإصلاح التلقائي: انتهى بدون نتيجة واضحة.'
+          src = g('EVENT') + (' - ' + g('RUN_NAME') if g('RUN_NAME') else '')
+          reason = report[:2200] + ('…' if len(report) > 2200 else '')
+          text = head + '\nالمصدر: ' + src + '\nالتنبيهات: ' + out('collect', 'alerts') + '\n\n' + reason
+          open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8').write('## ' + head + '\n\n' + report + '\n')
+          print(text)
+          if tok and chat:
+              body = urllib.parse.urlencode({'chat_id': chat, 'text': text[:4000], 'disable_web_page_preview': 'true'}).encode()
+              try:
+                  urllib.request.urlopen('https://api.telegram.org/bot%s/sendMessage' % tok, body, timeout=30).read()
+              except Exception as e:
+                  print('Telegram failed:', e)
+          EOF
