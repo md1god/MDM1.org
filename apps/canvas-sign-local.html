@@ -252,9 +252,10 @@
   };
 
   function exportHTML(doc){
+    const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     const strokesHtml=doc.strokes.map((stroke,i)=>`<polyline points="${stroke.map(p=>`${p.x},${p.y}`).join(' ')}" fill="none" stroke="#fff" stroke-width="2.5"/>`).join('');
-    const auditHtml=doc.audit.map(a=>`<div style="margin:4px 0;font-family:monospace;font-size:12px"><span style="color:#ffd700">[${new Date(a.time).toLocaleString('ar-SA')}]</span> <span style="color:#ffd700">${a.action}</span> ${JSON.stringify(a.details)}</div>`).join('');
-    return `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${doc.title}</title><style>body{font-family:system-ui,sans-serif;background:#111;color:#fff;padding:20px;max-width:800px;margin:auto}.sig-canvas{background:#000;border:2px solid #b8860b;border-radius:8px}.meta{margin-bottom:20px}.field{margin:8px 0}.label{color:#ffd700;font-weight:600}</style></head><body><div class="meta"><h1>${doc.title}</h1><div class="field"><span class="label">الموقّع:</span> ${doc.signer}</div><div class="field"><span class="label">البريد:</span> ${doc.email||'—'}</div><div class="field"><span class="label">تاريخ التوقيع:</span> ${new Date(doc.signedAt).toLocaleString('ar-SA')}</div></div><div style="margin:20px 0"><strong>محتوى المستند:</strong><pre style="white-space:pre-wrap;background:#1a1a1a;padding:15px;border-radius:8px">${doc.content||'—'}</pre></div><div><strong>التوقيع:</strong><svg class="sig-canvas" width="600" height="200" viewBox="0 0 600 200">${strokesHtml}</svg></div><hr style="border-color:#333;margin:20px 0"><div><strong>أثر التدقيق:</strong>${auditHtml}</div></body></html>`;
+    const auditHtml=doc.audit.map(a=>`<div style="margin:4px 0;font-family:monospace;font-size:12px"><span style="color:#ffd700">[${new Date(a.time).toLocaleString('ar-SA')}]</span> <span style="color:#ffd700">${esc(a.action)}</span> ${esc(JSON.stringify(a.details))}</div>`).join('');
+    return `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${esc(doc.title)}</title><style>body{font-family:system-ui,sans-serif;background:#111;color:#fff;padding:20px;max-width:800px;margin:auto}.sig-canvas{background:#000;border:2px solid #b8860b;border-radius:8px}.meta{margin-bottom:20px}.field{margin:8px 0}.label{color:#ffd700;font-weight:600}</style></head><body><div class="meta"><h1>${esc(doc.title)}</h1><div class="field"><span class="label">الموقّع:</span> ${esc(doc.signer)}</div><div class="field"><span class="label">البريد:</span> ${esc(doc.email||'—')}</div><div class="field"><span class="label">تاريخ التوقيع:</span> ${new Date(doc.signedAt).toLocaleString('ar-SA')}</div></div><div style="margin:20px 0"><strong>محتوى المستند:</strong><pre style="white-space:pre-wrap;background:#1a1a1a;padding:15px;border-radius:8px">${esc(doc.content||'—')}</pre></div><div><strong>التوقيع:</strong><svg class="sig-canvas" width="600" height="200" viewBox="0 0 600 200">${strokesHtml}</svg></div><hr style="border-color:#333;margin:20px 0"><div><strong>أثر التدقيق:</strong>${auditHtml}</div></body></html>`;
   }
 
   $('btnExportHTML').onclick=()=>{
@@ -275,12 +276,12 @@
     try{
       const html=exportHTML(state.signedDoc);
       const iframe=document.createElement('iframe');
+      iframe.setAttribute('sandbox','allow-same-origin allow-modals');
       iframe.style.position='absolute';
       iframe.style.left='-9999px';
+      iframe.srcdoc=html;
       document.body.appendChild(iframe);
-      iframe.contentDocument.write(html);
-      iframe.contentDocument.close();
-      await new Promise(r=>setTimeout(r,300));
+      await new Promise(r=>{iframe.onload=r;setTimeout(r,1500)});
       iframe.contentWindow.print();
       setTimeout(()=>{document.body.removeChild(iframe)},1000);
       logAudit('EXPORT_PDF');

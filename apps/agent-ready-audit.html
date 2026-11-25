@@ -168,8 +168,8 @@
     var currencyRe = /(\$|€|£|¥|ر\.س|ريال|د\.إ|درهم|د\.ك|دينار)/i;
     var jsOnly = [];
     htmlFiles.forEach(function(f){
-      var without = f.content.replace(/<script[\s\S]*?<\/script>/gi, '');
-      var scripts = (f.content.match(/<script[\s\S]*?<\/script>/gi) || []).join(' ');
+      var without = f.content.replace(/<script[\s\S]*?<\/script[^>]*>/gi, '');
+      var scripts = (f.content.match(/<script[\s\S]*?<\/script[^>]*>/gi) || []).join(' ');
       var inHtml = currencyRe.test(without);
       var inScript = currencyRe.test(scripts);
       if(inScript && !inHtml) jsOnly.push(f.name);
