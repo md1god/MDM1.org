@@ -206,8 +206,8 @@
     var box=$("appRoutineList"); if(!box) return;
     if(!state.routine.length){box.innerHTML='<p class="app-empty">لم تُضف أي تمرين بعد.</p>'; return;}
     box.innerHTML=state.routine.map(function(r,i){
-      return '<div class="app-item"><span><b>'+esc(r.name)+'</b> — '+r.sets+'×'+r.reps+' @ '+r.weight+' كغ، تقدّم +'+r.step+' كغ</span>'+
-      '<button type="button" class="sec" data-act="delRoutine" data-i="'+i+'">حذف</button></div>';
+      return '<div class="app-item"><span><b>'+esc(r.name)+'</b> — '+esc(r.sets)+'×'+esc(r.reps)+' @ '+esc(r.weight)+' كغ، تقدّم +'+esc(r.step)+' كغ</span>'+
+      '<button type="button" class="sec" data-act="delRoutine" data-i="'+esc(i)+'">حذف</button></div>';
     }).join("");
   }
 
@@ -216,10 +216,10 @@
     var s=state.session;
     if(!s||!s.active){area.innerHTML='<p class="app-empty">لا توجد جلسة نشطة. اضغط «بدء جلسة اليوم».</p>'; setText("appWorkoutStatus","لا توجد جلسة نشطة"); return;}
     area.innerHTML=s.items.map(function(it,i){
-      return '<div class="app-item"><span><b>'+esc(it.name)+'</b><br><small>الهدف: '+it.sets+' مجموعات × '+it.reps+' تكرار بوزن '+it.weight+' كغ</small></span>'+
-      '<span class="app-inline"><label for="sessRep_'+i+'">تكرارات منجزة</label>'+
-      '<input id="sessRep_'+i+'" data-i="'+i+'" type="number" min="0" max="99" value="'+it.achieved+'">'+
-      '<button type="button" data-act="done" data-i="'+i+'">'+(it.done?'تم ✔':'إتمام')+'</button></span></div>';
+      return '<div class="app-item"><span><b>'+esc(it.name)+'</b><br><small>الهدف: '+esc(it.sets)+' مجموعات × '+esc(it.reps)+' تكرار بوزن '+esc(it.weight)+' كغ</small></span>'+
+      '<span class="app-inline"><label for="sessRep_'+esc(i)+'">تكرارات منجزة</label>'+
+      '<input id="sessRep_'+esc(i)+'" data-i="'+esc(i)+'" type="number" min="0" max="99" value="'+esc(it.achieved)+'">'+
+      '<button type="button" data-act="done" data-i="'+esc(i)+'">'+(it.done?'تم ✔':'إتمام')+'</button></span></div>';
     }).join("")+'<div class="row"><button id="btnFinishSession" type="button">إنهاء الجلسة وتطبيق التقدّم</button></div>';
     setText("appWorkoutStatus","جلسة نشطة: "+s.items.length+" تمرين");
   }
@@ -247,8 +247,8 @@
     setText("outFat",Math.round(tot.f));
     if(!state.log.length){box.innerHTML='<p class="app-empty">سجل الطعام فارغ.</p>';}
     else box.innerHTML=state.log.map(function(x,i){
-      return '<div class="app-item"><span>'+esc(x.name)+' — '+x.grams+' غ، '+x.kcal+' سعرة</span>'+
-      '<button type="button" class="sec" data-act="delFood" data-i="'+i+'">حذف</button></div>';
+      return '<div class="app-item"><span>'+esc(x.name)+' — '+esc(x.grams)+' غ، '+esc(x.kcal)+' سعرة</span>'+
+      '<button type="button" class="sec" data-act="delFood" data-i="'+esc(i)+'">حذف</button></div>';
     }).join("");
     var t=state.target||2300;
     setText("outTargetMsg","الهدف: "+t+" سعرة — المتبقي: "+(t-Math.round(tot.kcal)));
@@ -295,8 +295,8 @@
     var box=$("appMeasList"); if(!box) return;
     if(!state.meas.length){box.innerHTML='<p class="app-empty">لا توجد قياسات بعد.</p>'; return;}
     box.innerHTML=state.meas.map(function(m,i){
-      return '<div class="app-item"><span>'+m.d+' — خصر '+m.waist+'، صدر '+m.chest+'، ذراع '+m.arm+'</span>'+
-      '<button type="button" class="sec" data-act="delMeas" data-i="'+i+'">حذف</button></div>';
+      return '<div class="app-item"><span>'+esc(m.d)+' — خصر '+esc(m.waist)+'، صدر '+esc(m.chest)+'، ذراع '+esc(m.arm)+'</span>'+
+      '<button type="button" class="sec" data-act="delMeas" data-i="'+esc(i)+'">حذف</button></div>';
     }).join("");
   }
 
@@ -304,8 +304,8 @@
     var box=$("appPhotoGallery"); if(!box) return;
     if(!state.photos.length){box.innerHTML='<p class="app-empty">لا توجد صور بعد.</p>'; return;}
     box.innerHTML=state.photos.map(function(p,i){
-      return '<figure class="app-photo"><img alt="صورة تقدّم" src="'+p.data+'"><figcaption>'+p.d+
-      ' <button type="button" class="sec" data-act="delPhoto" data-i="'+i+'">حذف</button></figcaption></figure>';
+      return '<figure class="app-photo"><img alt="صورة تقدّم" src="'+esc(p.data)+'"><figcaption>'+esc(p.d)+
+      ' <button type="button" class="sec" data-act="delPhoto" data-i="'+esc(i)+'">حذف</button></figcaption></figure>';
     }).join("");
   }
 

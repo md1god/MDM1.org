@@ -183,6 +183,7 @@
   var live={running:false,paused:false,elapsedMs:0,lastTick:0,timer:null,deviceWatts:0};
   var history=[];
   var $=function(id){return document.getElementById(id);};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   var tabs=[['tabHardware','panelHardware'],['tabLive','panelLive'],['tabBudget','panelBudget'],['tabResults','panelResults']];
   tabs.forEach(function(t){
     $(t[0]).addEventListener('click',function(){
@@ -209,7 +210,7 @@
     if(!devices.length){box.innerHTML='<span class="empty">لا توجد أجهزة مضافة بعد.</span>';refreshDeviceSelect();return;}
     var html='';
     devices.forEach(function(d,i){
-      html+='<div class="device-item" role="listitem"><span>'+d.name+' — '+fmt(d.watts,1)+' W — '+fmt(d.hours,1)+' س/يوم</span><button class="button sec" data-idx="'+i+'" data-act="del">حذف</button></div>';
+      html+='<div class="device-item" role="listitem"><span>'+esc(d.name)+' — '+esc(fmt(d.watts,1))+' W — '+esc(fmt(d.hours,1))+' س/يوم</span><button class="button sec" data-idx="'+esc(i)+'" data-act="del">حذف</button></div>';
     });
     box.innerHTML=html;
     refreshDeviceSelect();
