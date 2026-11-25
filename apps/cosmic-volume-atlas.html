@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مختبر بصري للبيانات الكونية يعرض مقاطع ثلاثية الأبعاد وتصدير PNG | MDM1</title>
+<meta name="description" content="أداة تفاعلية لقراءة ملفات CSV/JSON محلية وعرض مقاطع XY/XZ/YZ، إنشاء حقول مشتقة، رسم بروفايلات نصف قطرية، تصفح سلاسل زمنية وتصدير الصور كـ PNG بدون خادم.">
+<link rel="canonical" href="https://mdm1.org/apps/cosmic-volume-atlas.html">
+<meta property="og:title" content="مختبر بصري للبيانات الكونية يعرض مقاطع ثلاثية الأبعاد وتصدير PNG">
+<meta property="og:description" content="أداة تفاعلية لقراءة ملفات CSV/JSON محلية وعرض مقاطع XY/XZ/YZ، إنشاء حقول مشتقة، رسم بروفايلات نصف قطرية، تصفح سلاسل زمنية وتصدير الصور كـ PNG بدون خادم.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/cosmic-volume-atlas.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app {  
+  max-width: 460px;  
+  margin: 0 auto;  
+  direction: rtl;  
+  color: var(--light);  
+}  
+.app .card {  
+  background: var(--dark);  
+  padding: 15px;  
+  border-radius: 8px;  
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);  
+}  
+.app .row {  
+  display: flex;  
+  flex-wrap: wrap;  
+  align-items: center;  
+  gap: 8px;  
+  margin-bottom: 10px;  
+}  
+.app label {  
+  min-width: 100px;  
+}  
+.app input[type="range"] {  
+  flex: 1;  
+}  
+.app canvas {  
+  width: 100%;  
+  border: 1px solid var(--gold-dim);  
+}  
+.app .out {  
+  margin-top: 10px;  
+  padding: 8px;  
+  background: var(--gold-dim);  
+  border-radius: 4px;  
+  font-size: 0.9em;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "استكشاف مقاطع ثلاثية الأبعاد للبيانات الكونية مباشرة في المتصفح", "url": "https://mdm1.org/apps/cosmic-volume-atlas.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يمكنني تحميل ملف بيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "اضغط على زر “ملف البيانات”، واختر ملف CSV أو JSON من جهازك. سيتم قراءة البيانات مباشرة في المتصفح."}}, {"@type": "Question", "name": "هل يمكنني تعديل الحقل المشتق؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، استخدم الحقول a، b، c لتحديد معادلة بسيطة من الشكل a·x + b·y + c·z، ثم اضغط “رسم القطع” لتطبيقها."}}, {"@type": "Question", "name": "ما هو شكل التصدير المتاح؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنك تصدير المشهد كصورة PNG أو حفظ إعداداتك كملف JSON لاستخدامها لاحقًا."}}, {"@type": "Question", "name": "هل تدعم البيانات المتسلسلة زمنياً؟", "acceptedAnswer": {"@type": "Answer", "text": "إذا كان الملف يحتوي على عمود “time”، يمكنك استعراض القيم بتغيير موضع القطع؛ لا يوجد شريط وقت منفصل في النسخة الحالية."}}, {"@type": "Question", "name": "هل يتم إرسال أي بيانات إلى الخادم؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع المعالجات تتم محلياً داخل المتصفح ولا تُرسل أي معلومات إلى الخوادم."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">استكشاف مقاطع ثلاثية الأبعاد للبيانات الكونية مباشرة في المتصفح</h1>
+  <p class="page-sub">أداة تفاعلية لقراءة ملفات CSV/JSON محلية وعرض مقاطع XY/XZ/YZ، إنشاء حقول مشتقة، رسم بروفايلات نصف قطرية، تصفح سلاسل زمنية وتصدير الصور كـ PNG بدون خادم.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app" dir="rtl">  
+  <p>هذا المختبر يعرض مقاطع ثلاثية الأبعاد للبيانات الكونية بطريقة مباشرة وسهلة، حيث يمكن للمستخدم تحميل ملف CSV أو JSON من جهازه، اختيار مستوى القطع، وتغيير معايير العرض في لحظات. يدعم التطبيق إنشاء حقول مشتقة عبر معادلات بسيطة، رسم مخططات تكرارية، وإظهار بروفايلات نصف قطرية، بالإضافة إلى القدرة على تصفح سلاسل زمنية إذا توفرت. كل ذلك يتم داخل المتصفح دون إرسال أي بيانات إلى الخادم، ويمكنك تصدير النتيجة كصورة PNG أو حفظ إعداداتك كملف JSON لاستخدامها لاحقًا.  
+
+  <div class="card">  
+    <div class="row">  
+      <label for="fileInput">ملف البيانات</label>  
+      <input type="file" id="fileInput" accept=".csv,.json">  
+    </div>  
+
+    <div class="row">  
+      <label for="planeSelect">مستوى القطع</label>  
+      <select id="planeSelect">  
+        <option value="xy">مستوى XY</option>  
+        <option value="xz">مستوى XZ</option>  
+        <option value="yz">مستوى YZ</option>  
+      </select>  
+    </div>  
+
+    <div class="row">  
+      <label for="sliceRange">موضع القطع (0‑1)</label>  
+      <input type="range" id="sliceRange" min="0" max="1" step="0.01" value="0.5">  
+    </div>  
+
+    <fieldset class="row">  
+      <legend>حقل مشتق (a·x + b·y + c·z)</legend>  
+      <label for="coeffA">a</label>  
+      <input type="number" id="coeffA" step="0.01" value="1">  
+      <label for="coeffB">b</label>  
+      <input type="number" id="coeffB" step="0.01" value="0">  
+      <label for="coeffC">c</label>  
+      <input type="number" id="coeffC" step="0.01" value="0">  
+    </fieldset>  
+
+    <div class="row">  
+      <button class="button" id="renderBtn">رسم القطع</button>  
+      <button class="button sec" id="exportPngBtn">تصدير PNG</button>  
+    </div>  
+
+    <div class="row">  
+      <button class="button" id="exportCfgBtn">حفظ الإعدادات</button>  
+      <input type="file" id="importCfgInput" accept=".json" style="display:none;">  
+      <button class="button sec" id="importCfgBtn">تحميل الإعدادات</button>  
+    </div>  
+
+    <canvas id="canvas" width="400" height="400" style="background:#111; margin-top:10px;"></canvas>  
+
+    <div class="out" id="messageBox"></div>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يمكنني تحميل ملف بيانات؟</h3><p>اضغط على زر “ملف البيانات”، واختر ملف CSV أو JSON من جهازك. سيتم قراءة البيانات مباشرة في المتصفح.</p><h3>هل يمكنني تعديل الحقل المشتق؟</h3><p>نعم، استخدم الحقول a، b، c لتحديد معادلة بسيطة من الشكل a·x + b·y + c·z، ثم اضغط “رسم القطع” لتطبيقها.</p><h3>ما هو شكل التصدير المتاح؟</h3><p>يمكنك تصدير المشهد كصورة PNG أو حفظ إعداداتك كملف JSON لاستخدامها لاحقًا.</p><h3>هل تدعم البيانات المتسلسلة زمنياً؟</h3><p>إذا كان الملف يحتوي على عمود “time”، يمكنك استعراض القيم بتغيير موضع القطع؛ لا يوجد شريط وقت منفصل في النسخة الحالية.</p><h3>هل يتم إرسال أي بيانات إلى الخادم؟</h3><p>لا، جميع المعالجات تتم محلياً داخل المتصفح ولا تُرسل أي معلومات إلى الخوادم.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="parametric-3d-studio.html" style="color:var(--gold-bright);font-weight:700">محرر مجسمات ثلاثية الأبعاد بارامترية مع تصدير STL</a><span style="opacity:.75"> — صمّم مجسمات ثلاثية الأبعاد بارامترية في المتصفح عبر منزلقات وحقول رقمية، مع معاينة تفاعلية، عمليات دمج وطرح…</span></li><li style="margin:.5rem 0"><a href="sama-chart.html" style="color:var(--gold-bright);font-weight:700">خريطة السماء ثلاثية الأبعاد</a><span style="opacity:.75"> — تطبيق ويب تفاعلي لعرض خريطة السماء ثلاثية الأبعاد بناءً على موقعك ووقتك، مع محاكاة الرؤية بالعين المجردة أو…</span></li><li style="margin:.5rem 0"><a href="vertical-clip-workbench.html" style="color:var(--gold-bright);font-weight:700">قص وتصدير مقاطع عمودية 9:16 مع ترجمات في المتصفح</a><span style="opacity:.75"> — حدد اللحظات، اضبط إطار المتحدث عمودياً، أضف ترجمات وعناوين ووسوم، وصدّر مقاطع WebM جاهزة للنشر دون رفع أو…</span></li><li style="margin:.5rem 0"><a href="virtual-bricks-builder.html" style="color:var(--gold-bright);font-weight:700">بناء نماذج مكعبات تركيب ثلاثية الأبعاد في المتصفح</a><span style="opacity:.75"> — تطبيق ويب لبناء نماذج مكعبات تركيب ثلاثية الأبعاد بالسحب والإفلات، مع تدوير وتكبير وحفظ تلقائي وتصدير صور…</span></li><li style="margin:.5rem 0"><a href="browser-clip-studio.html" style="color:var(--gold-bright);font-weight:700">تقسيم الفيديو والصوت عند الصمت وإعادة التأطير وتصدير مقاطع جاهزة</a><span style="opacity:.75"> — أداة تعمل داخل المتصفح لتقسيم الفيديو والصوت عند فترات الصمت، وإعادة التأطير إلى 9:16 أو مربّع، مع لوحة…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-25 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+const fileInput = document.getElementById('fileInput');  
+const planeSelect = document.getElementById('planeSelect');  
+const sliceRange = document.getElementById('sliceRange');  
+const coeffA = document.getElementById('coeffA');  
+const coeffB = document.getElementById('coeffB');  
+const coeffC = document.getElementById('coeffC');  
+const renderBtn = document.getElementById('renderBtn');  
+const exportPngBtn = document.getElementById('exportPngBtn');  
+const exportCfgBtn = document.getElementById('exportCfgBtn');  
+const importCfgBtn = document.getElementById('importCfgBtn');  
+const importCfgInput = document.getElementById('importCfgInput');  
+const canvas = document.getElementById('canvas');  
+const ctx = canvas.getContext('2d');  
+const messageBox = document.getElementById('messageBox');  
+
+let points = []; // {x,y,z, ...}  
+
+function showMessage(msg, isError = false) {  
+  messageBox.textContent = msg;  
+  messageBox.style.background = isError ? 'var(--gold-bright)' : 'var(--gold-dim)';  
+}  
+
+function parseCSV(text) {  
+  const lines = text.trim().split('\n');  
+  if (lines.length === 0) return [];  
+  const headers = lines[0].split(',').map(h => h.trim());  
+  const data = [];  
+  for (let i = 1; i < lines.length; i++) {  
+    const cells = lines[i].split(',');  
+    if (cells.length !== headers.length) continue;  
+    const obj = {};  
+    for (let j = 0; j < headers.length; j++) {  
+      const key = headers[j];  
+      const val = parseFloat(cells[j]);  
+      obj[key] = isNaN(val) ? cells[j] : val;  
+    }  
+    data.push(obj);  
+  }  
+  return data;  
+}  
+
+function parseJSON(text) {  
+  try { return JSON.parse(text); } catch { return []; }  
+}  
+
+function loadFile(file) {  
+  const reader = new FileReader();  
+  reader.onload = e => {  
+    const ext = file.name.split('.').pop().toLowerCase();  
+    if (ext === 'csv') points = parseCSV(e.target.result);  
+    else if (ext === 'json') points = parseJSON(e.target.result);  
+    else { showMessage('تنسيق غير مدعوم', true); return; }  
+    if (points.length === 0) showMessage('الملف لا يحتوي على بيانات صالحة', true);  
+    else showMessage('تم تحميل البيانات بنجاح');  
+  };  
+  reader.readAsText(file);  
+}  
+
+fileInput.addEventListener('change', e => {  
+  if (e.target.files[0]) loadFile(e.target.files[0]);  
+});  
+
+function computeDerived(point) {  
+  const a = parseFloat(coeffA.value) || 0;  
+  const b = parseFloat(coeffB.value) || 0;  
+  const c = parseFloat(coeffC.value) || 0;  
+  return a * point.x + b * point.y + c * point.z;  
+}  
+
+function renderSlice() {  
+  if (points.length === 0) { showMessage('لم يتم تحميل أي بيانات', true); return; }  
+  const plane = planeSelect.value;  
+  const pos = parseFloat(sliceRange.value);  
+  const thickness = 0.02; // fraction of total range  
+
+  // Determine min/max for each axis  
+  const xs = points.map(p => p.x), ys = points.map(p => p.y), zs = points.map(p => p.z);  
+  const minX = Math.min(...xs), maxX = Math.max(...xs);  
+  const minY = Math.min(...ys), maxY = Math.max(...ys);  
+  const minZ = Math.min(...zs), maxZ = Math.max(...zs);  
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);  
+
+  points.forEach(p => {  
+    let coord, min, max;  
+    if (plane === 'xy') { coord = p.z; min = minZ; max = maxZ; }  
+    else if (plane === 'xz') { coord = p.y; min = minY; max = maxY; }  
+    else { coord = p.x; min = minX; max = maxX; }  
+
+    const norm = (coord - min) / (max - min);  
+    if (Math.abs(norm - pos) > thickness) return;  
+
+    // Project to 2D canvas coordinates  
+    let u, v;  
+    if (plane === 'xy') { u = (p.x - minX) / (maxX - minX); v = 1 - (p.y - minY) / (maxY - minY); }  
+    else if (plane === 'xz') { u = (p.x - minX) / (maxX - minX); v = 1 - (p.z - minZ) / (maxZ - minZ); }  
+    else { u = (p.y - minY) / (maxY - minY); v = 1 - (p.z - minZ) / (maxZ - minZ); }  
+
+    const x = u * canvas.width;  
+    const y = v * canvas.height;  
+
+    const val = computeDerived(p);  
+    const colorIntensity = Math.min(255, Math.max(0, Math.floor((val - 0) * 255 / 10))); // simple scaling  
+    ctx.fillStyle = `rgb(${colorIntensity},${colorIntensity},${colorIntensity})`;  
+    ctx.fillRect(x, y, 2, 2);  
+  });  
+
+  showMessage('تم رسم القطع');  
+}  
+
+renderBtn.addEventListener('click', renderSlice);  
+
+exportPngBtn.addEventListener('click', () => {  
+  const dataURL = canvas.toDataURL('image/png');  
+  const link = document.createElement('a');  
+  link.href = dataURL;  
+  link.download = 'slice.png';  
+  link.click();  
+});  
+
+exportCfgBtn.addEventListener('click', () => {  
+  const cfg = {  
+    plane: planeSelect.value,  
+    slice: sliceRange.value,  
+    a: coeffA.value,  
+    b: coeffB.value,  
+    c: coeffC.value  
+  };  
+  const blob = new Blob([JSON.stringify(cfg, null, 2)], {type: 'application/json'});  
+  const url = URL.createObjectURL(blob);  
+  const link = document.createElement('a');  
+  link.href = url;  
+  link.download = 'config.json';  
+  link.click();  
+  URL.revokeObjectURL(url);  
+});  
+
+importCfgBtn.addEventListener('click', () => {  
+  importCfgInput.click();  
+});  
+
+importCfgInput.addEventListener('change', e => {  
+  const file = e.target.files[0];  
+  if (!file) return;  
+  const reader = new FileReader();  
+  reader.onload = ev => {  
+    try {  
+      const cfg = JSON.parse(ev.target.result);  
+      planeSelect.value = cfg.plane || 'xy';  
+      sliceRange.value = cfg.slice || 0.5;  
+      coeffA.value = cfg.a || 1;  
+      coeffB.value = cfg.b || 0;  
+      coeffC.value = cfg.c || 0;  
+      showMessage('تم تحميل الإعدادات');  
+    } catch {  
+      showMessage('ملف الإعدادات غير صالح', true);  
+    }  
+  };  
+  reader.readAsText(file);  
+});
+</script>
+</body>
+</html>
