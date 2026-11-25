@@ -177,7 +177,7 @@ function switchTab(name){
   const btn=$('tab'+name.charAt(0).toUpperCase()+name.slice(1)); if(btn) btn.classList.add('tab-active');
 }
 function renderCourseSelects(){
-  const opts=S.courses.map(c=>`<option value="${c.id}">${c.title||'مقرر'} (v${c.publishedVersion||1})</option>`).join('');
+  const opts=S.courses.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.title||'مقرر')} (v${escapeHtml(c.publishedVersion||1)})</option>`).join('');
   ['courseSelect','stuCourseSelect','gbCourseSelect','liveCourseSelect'].forEach(id=>{const el=$(id); if(el){el.innerHTML=opts||'<option value="">لا مقررات</option>'; if(S.currentId) el.value=S.currentId;}});
 }
 function renderStudents(){
@@ -202,7 +202,7 @@ function loadEditor(){
   const c=curCourse(); if(!c){$('contentEditor').value='';return;}
   $('contentEditor').value=c.content||'';
   const vs=$('versionSelect');
-  vs.innerHTML=c.versions.map(v=>`<option value="${v.v}">v${v.v}</option>`).join('');
+  vs.innerHTML=c.versions.map(v=>`<option value="${escapeHtml(v.v)}">v${escapeHtml(v.v)}</option>`).join('');
   vs.value=c.version;
   $('ruleAttempts').value=c.rules.maxAttempts;
   $('ruleTime').value=c.rules.timeLimit;
@@ -379,7 +379,7 @@ function renderCalendar(){
   S.courses.forEach(c=>(c.calendar||[]).forEach(e=>events.push({course:c.title,...e})));
   events.sort((a,b)=>a.date.localeCompare(b.date));
   if(!events.length){box.innerHTML='<div class="empty-state">لا أحداث</div>';return;}
-  box.innerHTML=events.map(e=>`<div style="padding:6px;border-bottom:1px solid var(--gold-dim);"><strong>${e.date}</strong> — ${escapeHtml(e.title)} <span class="small">(${escapeHtml(e.course)})</span></div>`).join('');
+  box.innerHTML=events.map(e=>`<div style="padding:6px;border-bottom:1px solid var(--gold-dim);"><strong>${escapeHtml(e.date)}</strong> — ${escapeHtml(e.title)} <span class="small">(${escapeHtml(e.course)})</span></div>`).join('');
 }
 let liveSession=null;
 function startLive(){

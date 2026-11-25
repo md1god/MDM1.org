@@ -194,15 +194,15 @@
     if(!list.length){box.innerHTML='<p class="empty">لا توجد نتائج مطابقة للبحث أو الفئة المحددة.</p>';return;}
     box.innerHTML=list.map(function(p){
       var i=products.indexOf(p);
-      var st=(p.stock===null||p.stock===""||isNaN(p.stock))?"":" · متوفر: "+p.stock;
+      var st=(p.stock===null||p.stock===""||isNaN(p.stock))?"":" · متوفر: "+esc(p.stock);
       return '<div class="prod">'
         +'<h3>'+esc(p.name)+'</h3>'
-        +'<span class="price">'+money(p.price)+'</span>'
+        +'<span class="price">'+esc(money(p.price))+'</span>'
         +'<span class="muted">'+esc(p.cat||"بدون فئة")+st+'</span>'
         +'<div class="row">'
-          +'<button id="addToCart'+i+'" data-act="cart" data-i="'+i+'">إضافة للسلة</button>'
-          +'<button id="editProd'+i+'" class="sec" data-act="edit" data-i="'+i+'">تعديل</button>'
-          +'<button id="delProd'+i+'" class="sec" data-act="del" data-i="'+i+'">حذف</button>'
+          +'<button id="addToCart'+esc(i)+'" data-act="cart" data-i="'+esc(i)+'">إضافة للسلة</button>'
+          +'<button id="editProd'+esc(i)+'" class="sec" data-act="edit" data-i="'+esc(i)+'">تعديل</button>'
+          +'<button id="delProd'+esc(i)+'" class="sec" data-act="del" data-i="'+esc(i)+'">حذف</button>'
         +'</div></div>';
     }).join("");
   }
@@ -224,14 +224,14 @@
     if(!cart.length){box.innerHTML='<p class="empty">السلة فارغة. اضغط «إضافة للسلة» على أي منتج.</p>';recalc();return;}
     box.innerHTML=cart.map(function(it,i){
       return '<div class="cart-item">'
-        +'<span>'+esc(it.name)+' <span class="muted">('+money(it.price)+')</span></span>'
+        +'<span>'+esc(it.name)+' <span class="muted">('+esc(money(it.price))+')</span></span>'
         +'<span class="qty">'
-          +'<button id="dec'+i+'" class="sec" data-act="dec" data-i="'+i+'">−</button>'
-          +'<span id="qtyv'+i+'">'+it.qty+'</span>'
-          +'<button id="inc'+i+'" class="sec" data-act="inc" data-i="'+i+'">+</button>'
+          +'<button id="dec'+esc(i)+'" class="sec" data-act="dec" data-i="'+esc(i)+'">−</button>'
+          +'<span id="qtyv'+esc(i)+'">'+esc(it.qty)+'</span>'
+          +'<button id="inc'+esc(i)+'" class="sec" data-act="inc" data-i="'+esc(i)+'">+</button>'
         +'</span>'
-        +'<span id="line'+i+'">'+money(it.price*it.qty)+'</span>'
-        +'<button id="rm'+i+'" class="sec" data-act="rm" data-i="'+i+'">إزالة</button>'
+        +'<span id="line'+esc(i)+'">'+esc(money(it.price*it.qty))+'</span>'
+        +'<button id="rm'+esc(i)+'" class="sec" data-act="rm" data-i="'+esc(i)+'">إزالة</button>'
       +'</div>';
     }).join("");
     recalc();
