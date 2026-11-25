@@ -342,13 +342,13 @@ function renderLeads(){
  const list=$('leadsList');list.innerHTML='';
  filtered.forEach(l=>{
   const div=document.createElement('div');div.className='card app-item';
-  div.innerHTML='<strong>'+escapeHtml(l.name)+'</strong><br>'+escapeHtml(l.phone||'')+' '+escapeHtml(l.email||'')+'<br>'+escapeHtml(l.interest||'')+'<br>'+escapeHtml(l.notes||'')+'<br><small>'+new Date(l.createdAt).toLocaleString('ar-SA')+'</small><div class="row"><button type="button" class="button sec" id="deleteLead-'+l.id+'">حذف</button></div>';
+  div.innerHTML='<strong>'+escapeHtml(l.name)+'</strong><br>'+escapeHtml(l.phone||'')+' '+escapeHtml(l.email||'')+'<br>'+escapeHtml(l.interest||'')+'<br>'+escapeHtml(l.notes||'')+'<br><small>'+escapeHtml(new Date(l.createdAt).toLocaleString('ar-SA'))+'</small><div class="row"><button type="button" class="button sec" id="deleteLead-'+escapeHtml(l.id)+'">حذف</button></div>';
   list.appendChild(div);
   const btn=$('deleteLead-'+l.id);if(btn)btn.addEventListener('click',()=>deleteLead(l.id));
  });
  $('leadsEmpty').style.display=filtered.length?'none':'block';
 }
-function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function saveLead(){
  const name=($('leadName').value||'').trim();if(!name){status($('leadStatus'),'أدخل اسم العميل');return;}
  const email=($('leadEmail').value||'').trim();if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status($('leadStatus'),'بريد إلكتروني غير صالح');return;}
@@ -389,7 +389,7 @@ function renderDayAppointments(){
  const dayItems=appts.filter(a=>a.date===selectedDate).sort((a,b)=>a.time.localeCompare(b.time));
  dayItems.forEach(a=>{
   const div=document.createElement('div');div.className='card app-item';
-  div.innerHTML='<strong>'+escapeHtml(a.title)+'</strong> — '+escapeHtml(a.time)+' ('+escapeHtml(a.duration)+'د)<br>'+escapeHtml(a.customer||'')+'<br>'+escapeHtml(a.notes||'')+'<div class="row"><button type="button" class="button sec" id="deleteAppt-'+a.id+'">حذف</button></div>';
+  div.innerHTML='<strong>'+escapeHtml(a.title)+'</strong> — '+escapeHtml(a.time)+' ('+escapeHtml(a.duration)+'د)<br>'+escapeHtml(a.customer||'')+'<br>'+escapeHtml(a.notes||'')+'<div class="row"><button type="button" class="button sec" id="deleteAppt-'+escapeHtml(a.id)+'">حذف</button></div>';
   list.appendChild(div);
   const btn=$('deleteAppt-'+a.id);if(btn)btn.addEventListener('click',()=>deleteAppt(a.id));
  });

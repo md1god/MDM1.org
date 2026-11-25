@@ -247,7 +247,7 @@
     if(name==='Visits'){fillPatientSelect('vPatient');renderVisits();}
   }
   tabs.forEach(t=>{const btn=$('tab'+t);if(btn)btn.addEventListener('click',()=>activateTab(t));});
-  function fillPatientSelect(id){const sel=$(id);if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">اختر مريضاً</option>'+patients.map(p=>'<option value="'+escapeHtml(p.id)+'">'+escapeHtml(p.name)+'</option>').join('');if(cur)sel.value=cur;}
+  function fillPatientSelect(id){const sel=$(id);if(!sel)return;const cur=sel.value;sel.textContent='';const ph=document.createElement('option');ph.value='';ph.textContent='اختر مريضاً';sel.appendChild(ph);patients.forEach(function(p){const o=document.createElement('option');o.value=p.id;o.textContent=p.name;sel.appendChild(o);});if(cur)sel.value=cur;}
   // Patients
   function clearPatientForm(){['pName','pAge','pGender','pPhone','pBlood','pAddress','pAllergies','pConditions'].forEach(i=>{const e=$(i);if(e)e.value='';});$('pEditingId').value='';}
   $('pSave').addEventListener('click',()=>{
@@ -298,7 +298,7 @@
     empty.classList.add('hidden');
     const groups={};
     list.forEach(a=>{if(!groups[a.date])groups[a.date]=[];groups[a.date].push(a);});
-    container.innerHTML=Object.keys(groups).sort().map(d=>'<div class="timeline-day"><h4>'+escapeHtml(d)+'</h4>'+groups[d].map(a=>'<div class="item"><div class="meta">'+escapeHtml(a.time||'--:--')+' | '+escapeHtml(patientName(a.patientId))+' | '+escapeHtml(a.type)+' | '+escapeHtml(a.status)+'</div><div>'+escapeHtml(a.notes||'')+'</div><div class="row mt"><button type="button" class="sec" data-edita="'+a.id+'">تعديل</button><button type="button" class="sec" data-dela="'+a.id+'">حذف</button></div></div>').join('')+'</div>').join('');
+    container.innerHTML=Object.keys(groups).sort().map(d=>'<div class="timeline-day"><h4>'+escapeHtml(d)+'</h4>'+groups[d].map(a=>'<div class="item"><div class="meta">'+escapeHtml(a.time||'--:--')+' | '+escapeHtml(patientName(a.patientId))+' | '+escapeHtml(a.type)+' | '+escapeHtml(a.status)+'</div><div>'+escapeHtml(a.notes||'')+'</div><div class="row mt"><button type="button" class="sec" data-edita="'+escapeHtml(a.id)+'">تعديل</button><button type="button" class="sec" data-dela="'+escapeHtml(a.id)+'">حذف</button></div></div>').join('')+'</div>').join('');
     container.querySelectorAll('[data-edita]').forEach(b=>b.addEventListener('click',()=>{
       const a=appts.find(x=>x.id===b.dataset.edita);if(!a)return;
       editingAppt=a.id;fillPatientSelect('aPatient');$('aPatient').value=a.patientId;$('aDate').value=a.date;$('aTime').value=a.time;$('aType').value=a.type;$('aStatus').value=a.status;$('aNotes').value=a.notes;$('aEditingId').value=a.id;

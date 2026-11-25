@@ -209,11 +209,11 @@
     else {
       box.innerHTML=workspace.map(function(it){
         return '<div class="app-item">'
-          +'<input type="checkbox" class="app-check" id="pick-item-'+it.id+'" data-pick="'+it.id+'" />'
-          +'<div class="app-item-main"><strong>'+esc(it.title)+'</strong><span class="badge">'+typeLabel(it.type)+'</span>'
-          +'<div class="app-meta">'+fmtDate(it.createdAt)+(it.fileName?' • ملف: '+esc(it.fileName)+' ('+bytes(it.fileSize)+')':'')+'</div>'
+          +'<input type="checkbox" class="app-check" id="pick-item-'+esc(it.id)+'" data-pick="'+esc(it.id)+'" />'
+          +'<div class="app-item-main"><strong>'+esc(it.title)+'</strong><span class="badge">'+esc(typeLabel(it.type))+'</span>'
+          +'<div class="app-meta">'+esc(fmtDate(it.createdAt))+(it.fileName?' • ملف: '+esc(it.fileName)+' ('+esc(bytes(it.fileSize))+')':'')+'</div>'
           +'<div class="app-text">'+esc((it.content||'').slice(0,180))+'</div></div>'
-          +'<button class="sec" id="del-item-'+it.id+'" data-del="'+it.id+'">حذف</button>'
+          +'<button class="sec" id="del-item-'+esc(it.id)+'" data-del="'+esc(it.id)+'">حذف</button>'
           +'</div>';
       }).join('');
     }
@@ -227,10 +227,10 @@
       box.innerHTML=sorted.map(function(b){
         return '<div class="app-item"><div class="app-item-main"><strong>'+esc(b.name)+'</strong> '
           +(b.encrypted?'<span class="badge">مشفّرة</span>':'<span class="badge">عادية</span>')
-          +'<div class="app-meta">'+fmtDate(b.createdAt)+' • '+b.itemCount+' عنصر • '+bytes(b.size)+'</div></div>'
+          +'<div class="app-meta">'+esc(fmtDate(b.createdAt))+' • '+esc(b.itemCount)+' عنصر • '+esc(bytes(b.size))+'</div></div>'
           +'<div class="app-actions">'
-          +'<button class="sec" id="dl-backup-'+b.id+'" data-dl="'+b.id+'">تنزيل ملف النسخة</button>'
-          +'<button class="sec" id="del-backup-'+b.id+'" data-delbk="'+b.id+'">حذف النسخة</button>'
+          +'<button class="sec" id="dl-backup-'+esc(b.id)+'" data-dl="'+esc(b.id)+'">تنزيل ملف النسخة</button>'
+          +'<button class="sec" id="del-backup-'+esc(b.id)+'" data-delbk="'+esc(b.id)+'">حذف النسخة</button>'
           +'</div></div>';
       }).join('');
     }
@@ -241,7 +241,7 @@
   function updateRestoreSelect(){
     var sel=byId('restoreBackupSelect'), cur=sel.value;
     var opts=backups.slice().sort(function(a,b){ return b.createdAt-a.createdAt; }).map(function(b){
-      return '<option value="'+b.id+'">'+esc(b.name)+' — '+fmtDate(b.createdAt)+'</option>';
+      return '<option value="'+esc(b.id)+'">'+esc(b.name)+' — '+esc(fmtDate(b.createdAt))+'</option>';
     }).join('');
     sel.innerHTML='<option value="">— اختر نسخة —</option>'+opts;
     if(cur){ sel.value=cur; }

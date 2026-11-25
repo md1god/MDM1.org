@@ -153,8 +153,9 @@ function download(filename, content) {
 }  
   
 /* Simple markdown to HTML (very limited) */  
-function simpleRender(md) {  
-  return md  
+function simpleRender(md) {
+  const safe = String(md==null?'':md).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return safe
     .replace(/^### (.*)$/gm, '<h3>$1</h3>')  
     .replace(/^## (.*)$/gm, '<h2>$1</h2>')  
     .replace(/^# (.*)$/gm, '<h1>$1</h1>')  

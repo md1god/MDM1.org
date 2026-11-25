@@ -233,6 +233,7 @@
   function getRoutine(){ return load().routine||[]; }
   function setRoutine(r){ const d=load(); d.routine=r; save(d); }
 
+  function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function renderRoutine(){
     const r=getRoutine();
     routineList.innerHTML='';
@@ -241,7 +242,7 @@
       const item=library.find(x=>x.id===it.id)||{name:it.id,ing:[]};
       const div=document.createElement('div');
       div.className='card';
-      div.innerHTML='<div><strong>'+item.name+'</strong> - '+it.period+' - '+it.days.join('، ')+'</div><button data-idx="'+idx+'" class="sec del">إزالة</button>';
+      div.innerHTML='<div><strong>'+escapeHtml(item.name)+'</strong> - '+escapeHtml(it.period)+' - '+escapeHtml(it.days.join('، '))+'</div><button data-idx="'+escapeHtml(idx)+'" class="sec del">إزالة</button>';
       routineList.appendChild(div);
     });
     routineList.querySelectorAll('.del').forEach(btn=>{

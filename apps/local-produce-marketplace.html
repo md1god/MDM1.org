@@ -256,9 +256,9 @@
       card.innerHTML='<h3>'+esc(p.name)+'</h3>'+
         '<p class="app-meta">المُنتِج: '+esc(p.producer)+'</p>'+
         '<p class="app-meta">الفئة: '+esc(p.category)+' • الموسم: '+esc(p.season)+'</p>'+
-        '<p class="app-price">'+money(p.price)+' / '+esc(p.unit)+'</p>'+
-        '<p class="app-meta">المتاح: '+p.qty+' '+esc(p.unit)+'</p>'+
-        '<button id="add_'+p.id+'" class="button" data-act="add" data-id="'+p.id+'"'+(out?' disabled':'')+'>'+(out?'نفدت الكمية':'أضف إلى السلة')+'</button>';
+        '<p class="app-price">'+esc(money(p.price))+' / '+esc(p.unit)+'</p>'+
+        '<p class="app-meta">المتاح: '+esc(p.qty)+' '+esc(p.unit)+'</p>'+
+        '<button id="add_'+esc(p.id)+'" class="button" data-act="add" data-id="'+esc(p.id)+'"'+(out?' disabled':'')+'>'+(out?'نفدت الكمية':'أضف إلى السلة')+'</button>';
       g.appendChild(card);
     });
   }
@@ -290,10 +290,10 @@
       var line=p.price*c.qty; total+=line;
       var row=document.createElement('div');
       row.className='app-cart-item';
-      row.innerHTML='<span>'+esc(p.name)+' <span class="app-meta">('+money(p.price)+' / '+esc(p.unit)+')</span></span>'+
-        '<span><input id="qty_'+p.id+'" class="input app-qty" data-act="qty" data-id="'+p.id+'" type="number" min="1" max="'+p.qty+'" value="'+c.qty+'"> '+
-        '<span id="line_'+p.id+'" class="app-total">'+money(line)+'</span> '+
-        '<button id="rm_'+p.id+'" class="button sec" data-act="rm" data-id="'+p.id+'">إزالة</button></span>';
+      row.innerHTML='<span>'+esc(p.name)+' <span class="app-meta">('+esc(money(p.price))+' / '+esc(p.unit)+')</span></span>'+
+        '<span><input id="qty_'+esc(p.id)+'" class="input app-qty" data-act="qty" data-id="'+esc(p.id)+'" type="number" min="1" max="'+esc(p.qty)+'" value="'+esc(c.qty)+'"> '+
+        '<span id="line_'+esc(p.id)+'" class="app-total">'+esc(money(line))+'</span> '+
+        '<button id="rm_'+esc(p.id)+'" class="button sec" data-act="rm" data-id="'+esc(p.id)+'">إزالة</button></span>';
       box.appendChild(row);
     });
     $('cartTotal').textContent=money(total);
