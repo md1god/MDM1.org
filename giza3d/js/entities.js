@@ -214,9 +214,12 @@ export class CameraRig {
         tx = c.x + fx * 0.2; ty = c.y + 1.25; tz = c.z + fz * 0.2;
         lx = tx + fx * 10; ly = ty + Math.tan(c.pitch - (this.pitch - 0.18)) * 10; lz = tz + fz * 10;
       } else {
-        const dist = this.view === 2 ? 20 : 9.5, hgt = (this.view === 2 ? 9 : 3.7) + this.pitch * 6;
+        // قرب معلم ضخم (الهرم): ابتعد وارتفع وارفع نظر الكاميرا ليظهر كاملاً
+        let bs = 0; for (const b of (this.bigs || [])) bs = Math.max(bs, clamp(1 - (Math.hypot(c.x - b.x, c.z - b.z) - b.r) / (b.r * 3.5), 0, 1));
+        this.bigS = lerp(this.bigS || 0, bs, 1 - Math.exp(-1.5 * dt)); const q = this.bigS;
+        const dist = (this.view === 2 ? 20 : 9.5) * (1 + q * 3.2), hgt = (this.view === 2 ? 9 : 3.7) + this.pitch * 6 + q * 9;
         tx = c.x - fx * dist; ty = c.y + hgt; tz = c.z - fz * dist;
-        lx = c.x + fx * 4; ly = c.y + 1.3; lz = c.z + fz * 4;
+        lx = c.x + fx * (4 + q * 25); ly = c.y + 1.3 + q * 7; lz = c.z + fz * (4 + q * 25);
       }
     } else if (this.mode === 'walk') {
       this.car.group.visible = true;

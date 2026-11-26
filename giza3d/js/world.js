@@ -524,8 +524,7 @@ export class World {
       const cxm = (minX + maxX) / 2, czm = (minZ + maxZ) / 2, rnd = hash2(cxm, czm);
       if (!(h > 0)) {
         const dc = Math.hypot(cxm, czm);
-        h = dc < 1500 ? 9 + rnd * rnd * 38 : 5 + rnd * 12;
-        if (dc < 450) h += 10 + rnd * 25;
+        h = 6 + rnd * rnd * 12; // dc unused
       }
       h = clamp(h, 3, 620);
       const base = gmin - 1.5, top = gmax + h;
