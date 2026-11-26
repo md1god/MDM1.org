@@ -390,10 +390,19 @@ def sample_terrain(X0, Z0, X1, Z1, step, flat):
     return w, h, grid.astype(np.float32)
 
 
+BANNED = [(r"\s*و?السيسي\b|\s*و?السيسى", ""), (r"\s*(?:and\s+)?Al[- ]?Sisi\b|\s*Sisi\b|\s*El[- ]?Sisi\b", "")]
+
+
+def clean_text(t):
+    for pat, rep in BANNED:
+        t = re.sub(pat, rep, t, flags=re.I)
+    return t
+
+
 def write_json(path, obj):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
+        f.write(clean_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":"))))
     log(f"wrote {path} ({os.path.getsize(path)/1024:.0f} KB)")
 
 
