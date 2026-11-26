@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Daily queue: turns the project PLANS in pages-registry.json into client-side apps, a few per day.
+"""Daily queue: turns the project PLANS in pages-registry.json into client-side apps, 10 per day.
 
 - Plans = registry entries whose title contains "خطة مشروع كاملة"; their text is read from pages/<number>.html.
 - Position in the queue lives in data/plan-queue.json (done / skipped / failed, with reasons). Nothing is built twice.
 - For each plan: the model writes an app spec (or says it cannot be a client-side app), the spec goes through the SAME gates as
   every other app (scripts/add_app.py validate), then is handed to .github/workflows/add-app.yml (which tests it in a browser and publishes).
-- Environment: PLAN_PER_DAY (default 3), PLAN_DRY=1 (no dispatch, no state write), PLAN_MOCK=<json file> (offline test of the model answer).
+- Environment: PLAN_PER_DAY (default 10), PLAN_DRY=1 (no dispatch, no state write), PLAN_MOCK=<json file> (offline test of the model answer).
 """
 import contextlib, datetime as dt, io, json, os, re, subprocess, sys, urllib.request
 
@@ -16,7 +16,7 @@ import trend_pages as T
 
 REG, STATE = os.path.join(ROOT, "pages-registry.json"), os.path.join(ROOT, "data", "plan-queue.json")
 MARK = "خطة مشروع كاملة"
-PER_DAY = int(os.environ.get("PLAN_PER_DAY", "3"))
+PER_DAY = int(os.environ.get("PLAN_PER_DAY", "10"))
 MAX_FAILS = 3          # a plan that failed this many runs in a row is parked; a model outage never marks plans as finished
 LIMIT = 55000          # GitHub caps workflow_dispatch inputs at ~65k characters
 ATTEMPTS = 2           # model tries per plan before it is marked failed
@@ -114,11 +114,30 @@ def build_one(num, title):
     return "failed", last[:200]
 
 
+def wait_add_app(max_wait=600):
+    """add-app.yml keeps ONE pending run per concurrency group (a newer dispatch cancels an older pending one), so with 10 plans a
+    day wait until the run just dispatched has finished before the next plan is sent. Best effort: any gh error just continues."""
+    if os.environ.get("PLAN_DRY"): return
+    import time
+    time.sleep(25)   # the run needs a moment to appear in the list
+    waited = 25
+    while waited < max_wait:
+        try:
+            out = subprocess.run(["gh", "run", "list", "--workflow", "add-app.yml", "--limit", "5", "--json", "status"],
+                                 capture_output=True, text=True, timeout=60, check=True).stdout
+            if not any(r.get("status") in ("queued", "in_progress", "waiting", "pending", "requested") for r in json.loads(out)): return
+        except (subprocess.SubprocessError, OSError, ValueError):
+            return
+        time.sleep(20); waited += 20
+    print("::warning::add-app still running after %ds, moving on" % max_wait)
+
+
 def dispatch(app):
     """True when add-app.yml was handed the spec. A failure is logged and the plan is not marked built."""
     if os.environ.get("PLAN_DRY"): print("dry run, would dispatch", app["slug"]); return True
     try:
         subprocess.run(["gh", "workflow", "run", "add-app.yml", "-f", "app_json=" + json.dumps(app, ensure_ascii=False)], check=True, timeout=120)
+        wait_add_app()
         return True
     except (subprocess.SubprocessError, OSError) as e:
         print("::warning::dispatch failed:", type(e).__name__); return False
