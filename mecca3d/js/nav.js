@@ -99,7 +99,7 @@ export class Nav {
 
   // Returns a Route or null.
   route(start, goal, foot) {
-    this._foot = !!foot;
+    this._foot = !!foot || !!this.freeRoam;
     const S = this.snap(start.x, start.z, foot), T = this.snap(goal.x, goal.z, foot);
     if (!S || !T) return null;
     const D = this.D, edges = this.edges, G = this.G;

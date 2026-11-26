@@ -146,7 +146,22 @@ def p_world(t, f):
     t = sub(t, "      let h = b.h;\n", PYRAMID_BRANCH + "      let h = b.h;\n", f)
     t = sub(t, "export class World {", PYRAMID_FN.strip("\n") + "\n\nexport class World {", f)
     t = rsub(t, r"export const FAMOUS = \[.*?\n\];", FAMOUS_NEW, f, re.S)
+    # الجيزة: مبانٍ منخفضة افتراضياً (طوابق قليلة) كي لا تحجب الأهرام — كل مبنى له ارتفاع في البيانات يبقى كما هو
+    t = sub(t, "h = dc < 1500 ? 9 + rnd * rnd * 38 : 5 + rnd * 12;\n        if (dc < 450) h += 10 + rnd * 25;", "h = 6 + rnd * rnd * 12; // dc unused", f)
     return t
+
+
+GIZA_TOUR = """const TOUR_CFG = { // مسار الجولة: الأهرام وأبو الهول أولاً ثم الأحياء والشوارع الرئيسية، ويتكرر
+    wps: [
+      { n: '🏛 هرم خوفو', x: 4, z: 0, lm: 1 }, { n: '🏛 أبو الهول', x: 582, z: 410, lm: 1 }, { n: '🏛 هرم خفرع', x: -331, z: 354, lm: 1 },
+      { n: '🏛 هرم منكاورع', x: -569, z: 741, lm: 1 }, { n: '🏛 نقطة بانوراما الأهرام', x: -883, z: 1255, lm: 1 },
+      { n: 'حي نزلة السمان', x: 1049, z: 943 }, { n: 'مساكن الأهرام', x: 1018, z: 2116 }, { n: 'كفر الجبل', x: 1663, z: 1454 },
+      { n: 'كوم الأخضر', x: 1525, z: -463 }, { n: 'شارع الهرم', x: 4198, z: -26 }, { n: 'الطالبية — شارع الملك فيصل', x: 4305, z: -1502 },
+      { n: 'مستشفى الهرم', x: 1633, z: -1350 }, { n: 'قسم شرطة الأهرام', x: -41, z: -530 }, { n: 'ميدان الرماية', x: -524, z: -1086 },
+      { n: 'مساكن الضباط بهضبة الأهرام', x: -1663, z: -915 },
+    ],
+    bigs: [{ x: 4, z: 0, r: 120 }, { x: -331, z: 354, r: 120 }, { x: -569, z: 741, r: 55 }],
+  };"""
 
 
 def p_main(t, f):
@@ -158,8 +173,8 @@ def p_main(t, f):
     t = sub(t, "Math.hypot(r.pts[k] - 150, r.pts[k + 1] - 350)", "Math.hypot(r.pts[k], r.pts[k + 1])", f)
     t = sub(t, "nav.route({ x: 0, z: 60 }, ", "nav.route({ x: 0, z: 0 }, ", f)
     t = sub(t, "teleport(0, 200); toast('🕋 الكعبة المشرفة');", "teleport(0, 0); toast('🔺 الهرم الأكبر');", f)
-    t = sub(t, "x.key === 'lm:kaaba'", "x.key === 'lm:pyramid'", f)
-    t = sub(t, " && f.id !== 'hira' && f.id !== 'haram'", "", f)
+    t = sub(t, "  const FREE = false;", "  const FREE = true;", f)
+    t = sub(t, "const TOUR_CFG = { wps: null, bigs: [] };", GIZA_TOUR, f)
     t = sub(t, "'الكعبة ' + fmtDist(", "'الهرم الأكبر ' + fmtDist(", f)
     t = sub(t, "else if (k === 'k') openPanel('contrib'); ", "", f)
     return t
