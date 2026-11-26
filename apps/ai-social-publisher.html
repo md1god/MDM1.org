@@ -74,6 +74,7 @@ details{border-top:1px solid var(--gold-dim);padding:.5rem 0}summary{cursor:poin
 <div><label for="pubTone">الأسلوب</label><select id="pubTone"><option value="ودّي وبسيط">ودّي وبسيط</option><option value="احترافي ورسمي">احترافي ورسمي</option><option value="حماسي وتسويقي">حماسي وتسويقي</option><option value="تعليمي ومختصر">تعليمي ومختصر</option><option value="فكاهي خفيف">فكاهي خفيف</option></select></div>
 <div><label for="pubLang">اللغة</label><select id="pubLang"><option value=""></option><option value="English">English</option><option value="لغتين معًا">+ English</option></select></div>
 </div>
+<label class="pub-check"><input id="pubAttr" type="checkbox" checked> أضف سطر «عبر mdm1.org» في آخر كل منشور (يساعد الأداة على الانتشار، ويمكنك إلغاؤه)</label>
 <fieldset class="pub-plats"><legend>المنصات</legend><div id="pubPlats"></div></fieldset>
 <div class="pub-row"><button id="pubGen" type="button">ولّد المنشورات بالمفتاح</button><button id="pubManual" class="sec" type="button">جهّز بطاقات للكتابة اليدوية</button></div><div class="pub-row"><button id="pubPrompt" class="sec" type="button">انسخ طلبًا جاهزًا لأي ذكاء اصطناعي</button><button id="pubAll" class="sec" type="button">انشر الكل (المتصل مباشرة)</button></div><label for="pubPaste">الصق هنا رد الذكاء الاصطناعي (بعد نسخ الطلب)</label><textarea id="pubPaste" rows="4" placeholder="### x&#10;نص المنشور...&#10;### linkedin&#10;نص المنشور..."></textarea><div class="pub-row"><button id="pubSplit" class="sec" type="button">وزّع الرد على البطاقات</button></div>
 <div id="pubGenOut" class="pub-status" role="status"></div>
@@ -264,6 +265,14 @@ function copy(text){
  return new Promise(function(res,rej){var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();try{document.execCommand('copy')?res():rej();}catch(e){rej(e);}document.body.removeChild(t);});
 }
 
+
+var ATTR='— عبر mdm1.org/apps/ai-social-publisher.html';
+function outText(plat,text){
+ var t=String(text||'').trim();
+ if(!$('pubAttr')||!$('pubAttr').checked||!t||/mdm1\.org/i.test(t)||['bluesky','mastodon','telegram','discord','x','linkedin','facebook','whatsapp','threads'].indexOf(plat.id)<0&&plat.id!=='reddit'&&plat.id!=='webhook')return t;
+ if(plat.id==='reddit'||plat.id==='hackernews'||plat.id==='youtube'||plat.id==='website')return t;
+ var r=t+'\n\n'+ATTR;return glen(r)<=plat.limit?r:t;
+}
 /* ---------- UI ---------- */
 function makeBtn(label,cls,fn){var b=document.createElement('button');b.type='button';b.textContent=label;if(cls)b.className=cls;b.addEventListener('click',fn);return b;}
 function renderCard(plat){
@@ -275,10 +284,10 @@ function renderCard(plat){
  var acts=document.createElement('div');acts.className='pub-acts';
  function upd(){var l=glen(ta.value);n.textContent=l+' / '+plat.limit;n.className='pub-count'+(l>plat.limit?' over':'');}
  ta.addEventListener('input',upd);
- acts.appendChild(makeBtn('نسخ','sec',function(){copy(ta.value).then(function(){say2(st,'تم النسخ.','pub-ok');},function(){say2(st,'تعذّر النسخ، حدّد النص ونسخه يدويًا.','pub-err');});}));
+ acts.appendChild(makeBtn('نسخ','sec',function(){copy(outText(plat,ta.value)).then(function(){say2(st,'تم النسخ.','pub-ok');},function(){say2(st,'تعذّر النسخ، حدّد النص ونسخه يدويًا.','pub-err');});}));
  if(plat.share)acts.appendChild(makeBtn(plat.copyFirst?'انسخ وافتح المنصة':'افتح نافذة النشر','sec',function(){
-  var l=val('pubLink'),u=plat.share(ta.value,l);
-  if(plat.copyFirst)copy(ta.value).catch(function(){});
+  var l=val('pubLink'),ot=outText(plat,ta.value),u=plat.share(ot,l);
+  if(plat.copyFirst)copy(ot).catch(function(){});
   window.open(u,'_blank','noopener');say2(st,plat.copyFirst?'نُسخ النص. الصقه في المنصة.':'فُتحت نافذة النشر الرسمية.','pub-ok');
  }));
  if(plat.post)acts.appendChild(makeBtn('نشر مباشر','',function(){doPublish(plat,ta,st);}));
@@ -293,7 +302,7 @@ function doPublish(plat,ta,st){
  if(glen(ta.value)>plat.limit)return say2(st,'النص أطول من الحد المسموح ('+plat.limit+').','pub-err');
  if(!connected(plat.post))return say2(st,'اربط الحساب أولًا من القسم ٣.','pub-err');
  say2(st,'جارٍ النشر...');
- return publish(plat,ta.value,val('pubLink')).then(function(m){say2(st,m,'pub-ok');},function(e){say2(st,netErr(e),'pub-err');});
+ return publish(plat,outText(plat,ta.value),val('pubLink')).then(function(m){say2(st,m,'pub-ok');},function(e){say2(st,netErr(e),'pub-err');});
 }
 function regen(plat,ta,st,upd){
  say2(st,'جارٍ التوليد...');
@@ -372,8 +381,8 @@ function seqRender(){
  var o=SEQ.list[SEQ.i];
  var info=document.createElement('div');info.textContent='الخطوة '+(SEQ.i+1)+' من '+SEQ.list.length+': '+o.plat.name;
  var go=makeBtn('افتح '+o.plat.name+' بالنص جاهزًا','',function(){
-  var l=val('pubLink');if(o.plat.copyFirst)copy(o.ta.value).catch(function(){});
-  window.open(o.plat.share(o.ta.value,l),'_blank','noopener');say2(o.st,'فُتحت المنصة'+(o.plat.copyFirst?' ونُسخ النص، الصقه هناك.':'.'),'pub-ok');
+  var l=val('pubLink'),ot=outText(o.plat,o.ta.value);if(o.plat.copyFirst)copy(ot).catch(function(){});
+  window.open(o.plat.share(ot,l),'_blank','noopener');say2(o.st,'فُتحت المنصة'+(o.plat.copyFirst?' ونُسخ النص، الصقه هناك.':'.'),'pub-ok');
   SEQ.i++;seqRender();
  });
  var skip=makeBtn('تخطَّ','sec',function(){SEQ.i++;seqRender();});
