@@ -328,7 +328,8 @@ const progress=it.type==='series'&&it.totalEpisodes>0?Math.round((it.watchedEpis
 const stars='';
 for(let i=1;i<=10;i++){stars+='<span class="'+(it.rating&&i<=Math.round(it.rating)?'active':'')+'">★</span>';}
 const listNames=customLists.filter(function(l){return l.itemIds.indexOf(it.id)!==-1;}).map(function(l){return l.name;}).join('، ');
-return'<div class="item" data-id="'+it.id+'">'+
+const safeId=escapeHtml(JSON.stringify(String(it.id)));
+return'<div class="item" data-id="'+escapeHtml(it.id)+'">'+
 '<h3>'+escapeHtml(it.title)+'</h3>'+
 '<div class="meta">'+
 '<span class="badge">'+(it.type==='movie'?'فيلم':'مسلسل')+'</span>'+
@@ -336,18 +337,18 @@ return'<div class="item" data-id="'+it.id+'">'+
 '<span class="badge">'+escapeHtml(it.genre)+'</span>'+
 (it.releaseDate?'<span class="badge">'+escapeHtml(it.releaseDate)+'</span>':'')+
 '</div>'+
-'<div class="meta">التقييم: '+(it.rating?it.rating+'/10':'غير مقيّم')+'</div>'+
+'<div class="meta">التقييم: '+escapeHtml(it.rating?String(it.rating)+'/10':'غير مقيّم')+'</div>'+
 '<div class="starRating">'+stars+'</div>'+
-(it.type==='series'?'<div class="meta">الحلقات: '+it.watchedEpisodes+' / '+it.totalEpisodes+'</div><div class="progressBar"><div style="width:'+progress+'%"></div></div>':'')+
-'<div class="meta">إعادة المشاهدة: '+(it.rewatchCount||0)+'</div>'+
+(it.type==='series'?'<div class="meta">الحلقات: '+escapeHtml(String(it.watchedEpisodes))+' / '+escapeHtml(String(it.totalEpisodes))+'</div><div class="progressBar"><div style="width:'+escapeHtml(String(progress))+'%"></div></div>':'')+
+'<div class="meta">إعادة المشاهدة: '+escapeHtml(String(it.rewatchCount||0))+'</div>'+
 (it.review?'<div class="meta">المراجعة: '+escapeHtml(it.review)+'</div>':'')+
 (listNames?'<div class="meta">القوائم: '+escapeHtml(listNames)+'</div>':'')+
 '<div class="actions">'+
-'<button onclick="window.__editItem(\''+it.id+'\')">تعديل</button>'+
-'<button onclick="window.__deleteItem(\''+it.id+'\')">حذف</button>'+
-(it.type==='series'?'<button onclick="window.__addEpisode(\''+it.id+'\')">إضافة حلقة</button>':'')+
-'<button onclick="window.__markWatched(\''+it.id+'\')">تعليم كمكتمل</button>'+
-'<button onclick="window.__rewatch(\''+it.id+'\')">إعادة مشاهدة</button>'+
+'<button onclick="window.__editItem('+safeId+')">تعديل</button>'+
+'<button onclick="window.__deleteItem('+safeId+')">حذف</button>'+
+(it.type==='series'?'<button onclick="window.__addEpisode('+safeId+')">إضافة حلقة</button>':'')+
+'<button onclick="window.__markWatched('+safeId+')">تعليم كمكتمل</button>'+
+'<button onclick="window.__rewatch('+safeId+')">إعادة مشاهدة</button>'+
 '</div>'+
 '</div>';
 }).join('');
