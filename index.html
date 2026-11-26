@@ -248,5 +248,93 @@
   </div>
 </footer>
 
+<!-- ════════════════════════════════════════════════════════
+      MDM1 — قائمة التنقل العائمة (Drop-in، لا تلمس أي كود موجود)
+           الصق هذا الكتلة بالكامل مباشرة قبل </body> في:
+                index.html / hub.html / whitepaper.html (الثلاثة في جذر المستودع)
+                     نفس المسارات النسبية تعمل في الثلاثة لأنهم بنفس المستوى.
+                          ════════════════════════════════════════════════════════ -->
+<style>
+#mdm1m-btn{
+  position:fixed; bottom:1.5rem; right:1.5rem; z-index:998;
+  width:48px; height:48px; border-radius:50%;
+  border:1px solid rgba(201,168,76,0.5);
+  background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(8px);
+  color:#c9a84c; font-size:1.3rem;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:border-color .3s, box-shadow .3s, transform .2s;
+  box-shadow:0 0 15px rgba(201,168,76,0.1);
+}
+#mdm1m-btn:hover{ border-color:#c9a84c; box-shadow:0 0 25px rgba(201,168,76,.35); transform:scale(1.08); }
+#mdm1m-panel{
+  position:fixed; bottom:5.5rem; right:1.5rem; z-index:998;
+  width:min(78vw, 260px);
+  max-height:70vh; overflow-y:auto;
+  background:rgba(5,4,3,0.96);
+  border:1px solid rgba(201,168,76,0.35);
+  border-radius:12px;
+  padding:.75rem;
+  backdrop-filter:blur(10px);
+  opacity:0; transform:translateY(12px);
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+}
+#mdm1m-panel.is-open{ opacity:1; transform:translateY(0); pointer-events:auto; }
+#mdm1m-panel a{
+  display:block; padding:.55rem .6rem; border-radius:6px;
+  color:#e8d5a3; text-decoration:none; font-family:'Tajawal',sans-serif;
+  font-size:.9rem; text-align:right; transition:background .2s, color .2s;
+}
+#mdm1m-panel a:hover{ background:rgba(201,168,76,.1); color:#f0c060; }
+#mdm1m-panel .mdm1m-sep{
+  border-top:1px solid rgba(201,168,76,.15); margin:.4rem 0;
+}
+</style>
+<button id="mdm1m-btn" title="القائمة" aria-label="فتح قائمة الصفحات">🏛️</button>
+<nav id="mdm1m-panel">
+  <a href="index.html">🏠 الرئيسية</a>
+  <a href="discover/">🌍 ديسكفري — اكتشف كل شيء</a>
+  <a href="assistant/">✦ المساعد الشخصي — ابدأ بسهولة</a>
+  <a href="whitepaper.html">📃 الورقة البيضاء</a>
+  <div class="mdm1m-sep"></div>
+  <a href="pages/ideas.html">💡 الأفكار</a>
+  <a href="pages/quiz.html">🧩 اختبار الجانب</a>
+  <a href="pages/join.html">🔑 الانضمام</a>
+  <a href="pages/community.html">🤝 المجتمع</a>
+  <a href="pages/faq.html">❓ الأسئلة الشائعة</a>
+  <a href="pages/sharia.html">☪️ التوافق الشرعي</a>
+  <a href="pages/roadmap.html">🗺️ خارطة الطريق</a>
+  <a href="pages/blog.html">📰 المدونة</a>
+  <a href="pages/tokenomics.html">💰 التوكنوميكس</a>
+  <a href="pages/game.html">🎮 بوابة الفراعنة</a>
+  <a href="games.html" style="color:#f0d08b;border:1px solid rgba(224,166,64,.7);padding:7px 11px;margin-inline:4px;background:rgba(224,166,64,.08);font-weight:700;letter-spacing:.08em">●Games 🎮 Portal</a>
+  <div class="mdm1m-sep"></div>
+  <a href="pages/ATM.html">ATM 🏧</a>
+  <a href="pages/md1usd.html">💲 الدولار الرقمي MD1$ </a>
+  <a href="hub.html">⛩️ المنصة (Hub)</a>
+  <a href="pages/hub-services.html">🧰 أدوات وخدمات MDM1</a>
+  <a href="tools/">🛠️ أدوات مجانية</a>
+  <a href="apps/">🧩 تطبيقات مجانية</a>
+  <a href="pages/dashboard.html">📊 لوحة التحكم</a>
+  <a href="pages/about.html">ℹ️ من نحن</a>
+  <a href="chat.html">power chatting</a>
+  <a href="pages/18.html">👈يوميا🙈صفحة🙊تولد🙉تلقائيا👉</a>
+</nav>
+<script>
+(function(){
+  var mBtn = document.getElementById('mdm1m-btn');
+  var mPanel = document.getElementById('mdm1m-panel');
+  if(!mBtn || !mPanel) return;
+  mBtn.addEventListener('click', function(){
+    mPanel.classList.toggle('is-open');
+  });
+  document.addEventListener('click', function(e){
+    if(!mPanel.contains(e.target) && e.target !== mBtn){
+      mPanel.classList.remove('is-open');
+    }
+  });
+})();
+</script>
 </body>
 </html>
