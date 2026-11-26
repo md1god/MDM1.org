@@ -88,9 +88,13 @@ def load():
     d.setdefault("enabled", True); d.setdefault("tools", []); d.setdefault("seen", [])
     return d
 
-def publish_files(d):
-    cards = "".join(f'<div class="card"><span class="card-icon">🧰</span><div class="card-title"><a href="{t["slug"]}.html" class="glow-gold">{E(t["h1"] if "h1" in t else t["title"])}</a></div><div class="card-text">{E(t["description"])}</div></div>' for t in reversed(d["tools"]))
+def write_tools_index(d):
+    cards = "".join(f'<div class="card"><span class="card-icon">🧰</span><div class="card-title"><a href="{t["slug"]}.html" class="glow-gold">{E(t["h1"] if "h1" in t else t["title"])}</a></div><div class="card-text">{E(t["description"])}</div></div>' for t in __import__("app_meta").ordered(d["tools"], "tools"))
     wr("tools/index.html", shell("أدوات مجانية مفيدة", "أدوات مجانية تعمل في متصفحك بدون تسجيل.", f"{SITE}/tools/", "أدوات مجانية", "MDM1 · الأدوات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(d['tools'])} أداة"))
+
+
+def publish_files(d):
+    write_tools_index(d)
     urls = [("/tools/", D)] + [(f"/tools/{t['slug']}.html", t["date"]) for t in d["tools"]]
     wr("sitemap-tools.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{m}</lastmod></url>\n" for u, m in urls) + "</urlset>\n")
     wr(f"{KEY}.txt", KEY)

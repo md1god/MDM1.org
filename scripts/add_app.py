@@ -12,6 +12,7 @@ from html.parser import HTMLParser
 
 sys.path.insert(0, os.path.dirname(__file__))
 import trend_pages as T   # shared shell / helpers (main() is guarded)
+import app_meta as M      # importance order + Pro badge
 
 SITE = T.SITE
 E = T.E
@@ -179,6 +180,12 @@ APP_CSS = """.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;bo
 .app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}"""
 
 
+def write_index(data):
+    cards = "".join(f'<div class="card"><span class="card-icon">🧩</span><div class="card-title"><a href="{x["slug"]}.html" class="glow-gold">{E(x["h1"])}</a>{M.badge(x["slug"])}</div><div class="card-text">{E(x["description"])}</div></div>' for x in M.ordered(data["apps"]))
+    T.wr("apps/index.html", T.shell("تطبيقات مجانية تعمل في متصفحك", "تطبيقات ويب مجانية تعمل داخل متصفحك بدون تسجيل: محررات ومنظمات وأدوات إنتاجية.",
+         f"{SITE}/apps/", "تطبيقات مجانية", "MDM1 · التطبيقات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(data['apps'])} تطبيق", back=BACK))
+
+
 def main():
     raw = os.environ.get("APP_JSON", "").strip()
     if not raw: return print("no APP_JSON")
@@ -190,9 +197,7 @@ def main():
     data["apps"].append({"slug": a["slug"], "title": a["title"], "h1": a["h1"], "description": a["description"], "date": D})
     os.makedirs("data", exist_ok=True)
     json.dump(data, open("data/apps.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    cards = "".join(f'<div class="card"><span class="card-icon">🧩</span><div class="card-title"><a href="{x["slug"]}.html" class="glow-gold">{E(x["h1"])}</a></div><div class="card-text">{E(x["description"])}</div></div>' for x in reversed(data["apps"]))
-    T.wr("apps/index.html", T.shell("تطبيقات مجانية تعمل في متصفحك", "تطبيقات ويب مجانية تعمل داخل متصفحك بدون تسجيل: محررات ومنظمات وأدوات إنتاجية.",
-         f"{SITE}/apps/", "تطبيقات مجانية", "MDM1 · التطبيقات", f'<div class="card-grid">{cards}</div>', foot=f" · {len(data['apps'])} تطبيق", back=BACK))
+    write_index(data)
     urls = [("/apps/", D)] + [(f"/apps/{x['slug']}.html", x["date"]) for x in data["apps"]]
     T.wr("sitemap-apps.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
          + "".join(f"  <url><loc>{SITE}{u}</loc><lastmod>{m}</lastmod></url>\n" for u, m in urls) + "</urlset>\n")
@@ -201,4 +206,5 @@ def main():
     print("PUBLISHED apps/%s.html" % a["slug"])
 
 
-main()
+if __name__ == "__main__":
+    main()
