@@ -41,7 +41,9 @@
 :root{--bg:#0f0d09;--pan:rgba(22,19,13,.92);--ln:rgba(255,255,255,.12);--gold:#e8b84a;--blue:#4da3ff;--ok:#3ddc97;--bad:#ff6b6b;--tx:#f4efe4;--mu:#a79f8c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:Tajawal,"Segoe UI",Tahoma,sans-serif;overflow:hidden;overscroll-behavior:none}
-body>*:not(#app):not(script):not(style):not(link){display:none!important}
+body>*:not(#app):not(script):not(style):not(link):not(#mdm1m-btn):not(#mdm1m-panel):not(#mdm1-lang-btn):not(#mdm1-lang-panel):not(#music-btn):not(#music-prompt):not(#bg-music){display:none!important}
+/* أزرار الموقع العائمة (القائمة/اللغة/الموسيقى) فوق شريط الأزرار السفلي، وقابلة للسحب كباقي صفحات الموقع */
+html #mdm1m-btn{right:1rem;bottom:6.6rem}html #mdm1-lang-btn{left:1rem!important;bottom:6.6rem!important}html #music-btn{left:4.6rem!important;bottom:6.6rem!important}
 #app{position:fixed;inset:0}
 #stage{position:absolute;inset:0;touch-action:none}
 #stage canvas{display:block;width:100%;height:100%}
@@ -231,26 +233,5 @@ body.touch #joy{display:block}body.touch #btns{display:flex}
     <p>عالم مفتوح مبني من خرائط OpenStreetMap بأسماء الشوارع الحقيقية — تجوّل بالسيارة أو مشياً، واستخدم GPS والتدريب لحفظ الشوارع والأحياء كأنك هناك.</p></div>
 </div>
 
-<style>
-#music-btn{display:none!important}
-#m3d-music{position:fixed;left:5.2rem;bottom:9.5rem;z-index:99989;width:48px;height:48px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(201,168,76,.55);background:radial-gradient(circle at 35% 30%,rgba(201,168,76,.35),rgba(0,0,0,.82) 70%);color:#e8c96a;font-size:1.3rem;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(201,168,76,.25);touch-action:manipulation}
-#m3d-music.playing{border-color:#e8c96a;box-shadow:0 0 20px rgba(201,168,76,.5)}
-</style>
-<button id="m3d-music" style="display:flex!important" type="button" title="تشغيل / إيقاف الموسيقى" aria-label="تشغيل / إيقاف الموسيقى">🔇</button>
-<script>
-/* زر الموسيقى بجوار زر تسجيل الدخول: يحرّك زر الموسيقى العام (global.js) ويعكس حالته، ويظهر دائماً حتى بعد الريفريش */
-(function(){
-  var b=document.getElementById('m3d-music');
-  function src(){ return document.getElementById('music-btn'); }
-  function sync(){ var o=src(), a=document.getElementById('bg-music'); var on=a?(!a.paused&&!a.muted):(o&&o.classList.contains('playing')); b.textContent=on?'🔊':'🔇'; b.classList.toggle('playing',!!on); }
-  b.addEventListener('click',function(e){
-    e.stopPropagation(); var o=src(), a=document.getElementById('bg-music');
-    if(o){ o.click(); }
-    else if(a){ if(a.paused){ a.volume=.45; a.play().catch(function(){}); } else a.pause(); }
-    setTimeout(sync,250); setTimeout(sync,1200);
-  });
-  setInterval(function(){ sync(); var a=document.getElementById('bg-music'); if(a&&!a._m3d){ a._m3d=1; ['play','playing','pause','ended','volumechange'].forEach(function(ev){ a.addEventListener(ev,sync); }); } },400); sync();
-})();
-</script>
 </body>
 </html>
