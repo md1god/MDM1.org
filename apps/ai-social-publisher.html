@@ -391,7 +391,41 @@ function seqRender(){
 }
 function rnd(n){var a=new Uint8Array(n);crypto.getRandomValues(a);return Array.from(a).map(function(x){return ('0'+x.toString(16)).slice(-2);}).join('');}
 function b64u(buf){var s='',b=new Uint8Array(buf);for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var r=atob(s),b=new Uint8Array(r.length);for(var i=0;i<r.length;i++)b[i]=r.charCodeAt(i);return b;}
 function mRedirect(){return location.origin+location.pathname;}
+/* sealed OAuth record: AES-GCM with a non-extractable key kept in IndexedDB, so no secret is ever stored as clear text */
+function sealDB(){return new Promise(function(ok,no){var r=indexedDB.open('mdm1_seal',1);r.onupgradeneeded=function(){r.result.createObjectStore('k');};r.onsuccess=function(){ok(r.result);};r.onerror=function(){no(r.error);};});}
+function sealKey(create){
+ return sealDB().then(function(db){
+  return new Promise(function(ok,no){
+   var t=db.transaction('k','readwrite'),s=t.objectStore('k'),g=s.get('oauth');
+   g.onsuccess=function(){
+    if(g.result)return ok(g.result);
+    if(!create)return ok(null);
+    crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']).then(function(k){
+     var t2=db.transaction('k','readwrite');t2.objectStore('k').put(k,'oauth');
+     t2.oncomplete=function(){ok(k);};t2.onerror=function(){no(t2.error);};
+    },no);
+   };
+   g.onerror=function(){no(g.error);};
+  });
+ });
+}
+function sealDrop(){return sealDB().then(function(db){var t=db.transaction('k','readwrite');t.objectStore('k').delete('oauth');}).catch(function(){});}
+function seal(obj){
+ return sealKey(true).then(function(k){
+  var iv=crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},k,new TextEncoder().encode(JSON.stringify(obj))).then(function(ct){return b64u(iv)+'.'+b64u(ct);});
+ });
+}
+function unseal(blob){
+ var p=String(blob||'').split('.');
+ if(p.length!==2)return Promise.resolve(null);
+ return sealKey(false).then(function(k){
+  if(!k)return null;
+  return crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(p[0])},k,b64d(p[1])).then(function(pt){return JSON.parse(new TextDecoder().decode(pt));});
+ }).catch(function(){return null;});
+}
 function mLoginStart(){
  var host=val('mLoginHost').replace(/^https?:\/\//i,'').replace(/\/+.*$/,'');
  if(!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(host))return say('mLoginOut','اكتب عنوان الخادم مثل mastodon.social','pub-err');
@@ -401,17 +435,25 @@ function mLoginStart(){
  .then(function(app){
   var state=rnd(16),ver=rnd(32);
   return crypto.subtle.digest('SHA-256',new TextEncoder().encode(ver)).then(function(h){
-   try{sessionStorage.setItem('mdm1_masto_oauth',JSON.stringify({host:host,id:app.client_id,secret:app.client_secret,state:state,ver:ver,topic:val('pubTopic'),link:val('pubLink')}));}catch(e){throw new Error('المتصفح يمنع حفظ جلسة الدخول المؤقتة.');}
-   location.href=host+'/oauth/authorize?'+new URLSearchParams({response_type:'code',client_id:app.client_id,redirect_uri:mRedirect(),scope:'write:statuses',state:state,code_challenge:b64u(h),code_challenge_method:'S256'});
+   return seal({host:host,id:app.client_id,secret:app.client_secret,state:state,ver:ver,topic:val('pubTopic'),link:val('pubLink')}).then(function(blob){
+    try{sessionStorage.setItem('mdm1_masto_oauth',blob);}catch(e){throw new Error('المتصفح يمنع حفظ جلسة الدخول المؤقتة.');}
+    location.href=host+'/oauth/authorize?'+new URLSearchParams({response_type:'code',client_id:app.client_id,redirect_uri:mRedirect(),scope:'write:statuses',state:state,code_challenge:b64u(h),code_challenge_method:'S256'});
+   },function(){throw new Error('المتصفح يمنع حفظ جلسة الدخول المؤقتة.');});
   });
  }).catch(function(e){say('mLoginOut',netErr(e),'pub-err');});
 }
 function mLoginFinish(){
- var q=new URLSearchParams(location.search),code=q.get('code'),st=q.get('state'),rec=null;
+ var q=new URLSearchParams(location.search),code=q.get('code'),st=q.get('state'),blob=null;
  if(!code||!st)return;
- try{rec=JSON.parse(sessionStorage.getItem('mdm1_masto_oauth')||'null');sessionStorage.removeItem('mdm1_masto_oauth');}catch(e){}
+ try{blob=sessionStorage.getItem('mdm1_masto_oauth');sessionStorage.removeItem('mdm1_masto_oauth');}catch(e){}
  try{history.replaceState(null,'',location.pathname);}catch(e){}
- if(!rec||rec.state!==st)return say('mLoginOut','جلسة دخول غير صالحة. أعد المحاولة.','pub-err');
+ unseal(blob).then(function(rec){
+  sealDrop();
+  if(!rec||rec.state!==st)return say('mLoginOut','جلسة دخول غير صالحة. أعد المحاولة.','pub-err');
+  mLoginExchange(rec,code);
+ });
+}
+function mLoginExchange(rec,code){
  if(rec.topic&&!val('pubTopic'))$('pubTopic').value=rec.topic;if(rec.link&&!val('pubLink'))$('pubLink').value=rec.link;
  say('mLoginOut','جارٍ إكمال الدخول...');
  fetch(rec.host+'/oauth/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grant_type:'authorization_code',code:code,client_id:rec.id,client_secret:rec.secret,redirect_uri:mRedirect(),code_verifier:rec.ver,scope:'write:statuses'})})
