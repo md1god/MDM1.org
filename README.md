@@ -7,13 +7,7 @@
 
 MDM1.org is a multilingual discovery platform for software, apps, tools, games and buildable project ideas. Its free personal assistant runs a fast catalog mode in the browser and can optionally load a small local language model through WebGPU. The assistant also generates starter code for HTML/CSS, JavaScript, Python and SQL without a paid server.
 
-[Open the assistant](https://mdm1.org/assistant/) · [Explore Discovery](https://mdm1.org/discover/) · [Browse the catalog](https://mdm1.org/catalog/) · [Show HN kit](docs/SHOW-HN-LAUNCH.md)
-
-## Scope — please read first
-
-**This repository and mdm1.org are not cryptocurrency, token or stablecoin projects.** They contain no wallet integration, no token contracts, no token sales and no financial product. MDM1.org is a non-commercial, open-source discovery site with a browser-local assistant.
-
-The separate digital-dollar project lives at **[md1usd.com](https://md1usd.com/)** and is maintained independently. Its topics and branding should not be used to describe this repository. If you are looking for that project, please use its own site and repository.
+[Open the assistant](https://mdm1.org/assistant/) · [Explore Discovery](https://mdm1.org/discover/) · [Browse the catalog](https://mdm1.org/catalog/) · [Read the launch kit](docs/PRODUCT-HUNT-LAUNCH.md)
 
 ## لماذا يهم المشروع؟ | Why it matters
 
@@ -26,7 +20,6 @@ The separate digital-dollar project lives at **[md1usd.com](https://md1usd.com/)
 - **Code Lab:** generate editable starter files for HTML/CSS, JavaScript, Python and SQL, then copy or download them.
 - **Global discovery:** static, indexable pages, multilingual routes, sitemaps, `hreflang` and IndexNow workflows.
 - **Open contribution path:** add tools, apps, project plans, translations, accessibility improvements and bug reports.
-- **No commercial backend:** there is no paid API, no account requirement and no hosted inference in this repository.
 
 ## Try it in 60 seconds
 
@@ -52,7 +45,7 @@ The optional local model is loaded from the official WebLLM CDN only after the v
 
 Every page gets a WebGL layer at deploy time (`scripts/inject_menu_and_card.py` adds `/css/mdm1-3d.css` and `/js/mdm1-3d.js`; source files stay untouched):
 
-- **Ambient scene:** a 3D golden galaxy and a rotating MDM1 mark that follow the pointer / device tilt and travel with the scroll.
+- **Ambient scene:** a 3D golden galaxy and a spinning MDM1 mark that follow the pointer / device tilt and travel with the scroll.
 - **Gateways:** on the home page of every language, an orbit of planets built from the page's own links. Drag to rotate, click a planet to enter. A plain link list is always rendered below it.
 - **Cards and reveal:** 3D tilt on hover and 3D scroll reveal.
 - **Safety:** a `3D` toggle button (remembered), plus automatic fallbacks for reduced-motion, data-saver, low-memory devices, no WebGL, and the local-LLM assistant page.
@@ -61,7 +54,7 @@ The bundle (`js/mdm1-3d.js`, three.js included) is committed so CI stays a plain
 
 ## Contributing
 
-See [docs/REPO-STRUCTURE.md](docs/REPO-STRUCTURE.md) for the folder layout and how publishing works, and [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the catalog, assistant, translations and accessibility. For a launch-oriented overview, see [the global growth playbook](docs/GLOBAL-GROWTH-PLAYBOOK.md). For a rule-compliant Hacker News submission, see [docs/SHOW-HN-LAUNCH.md](docs/SHOW-HN-LAUNCH.md).
+See [docs/REPO-STRUCTURE.md](docs/REPO-STRUCTURE.md) for the folder layout and how publishing works, and [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the catalog, assistant, translations and accessibility. For a launch-oriented overview, see [the global growth playbook](docs/GLOBAL-GROWTH-PLAYBOOK.md).
 
 ## Main routes
 
@@ -74,10 +67,11 @@ See [docs/REPO-STRUCTURE.md](docs/REPO-STRUCTURE.md) for the folder layout and h
 | Apps | https://mdm1.org/apps/ |
 | Projects and catalog | https://mdm1.org/catalog/ |
 | Platform | https://mdm1.org/hub.html |
+| White paper | https://mdm1.org/whitepaper.html |
 
 ##
 
-MDM1.org بوابة عالمية لاكتشاف البرمجيات والتطبيقات والأدوات والألعاب والمشاريع. تحتوي على مساعد شخصي مجاني يعمل داخل المتصفح، ووضع ذكاء اصطناعي محلي اختياري عبر WebGPU، ومختبر لتوليد أكواد HTML وJavaScript وPython وSQL. نرحب بإضافات الأدوات، الترجمات، تحسينات سهولة الاستخدام، والإبلاغ عن الأخطاء. هذا المشروع غير ربحي ولا علاقة له بأي عملة رقمية.
+MDM1.org بوابة عالمية لاكتشاف البرمجيات والتطبيقات والأدوات والألعاب والمشاريع. تحتوي على مساعد شخصي مجاني يعمل داخل المتصفح، ووضع ذكاء اصطناعي محلي اختياري عبر WebGPU، ومختبر لتوليد أكواد HTML وJavaScript وPython وSQL. نرحب بإضافات الأدوات، الترجمات، تحسينات سهولة الاستخدام، والإبلاغ عن الأخطاء.
 
 ## Credits and transparency
 
