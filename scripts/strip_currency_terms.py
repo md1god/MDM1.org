@@ -32,7 +32,9 @@ REPLACEMENTS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r'\bUSDT\b|\bUSDC\b|\bLUSD\b|\bDAI\b|\bMATIC\b', re.I), 'قيمة'),
     (re.compile(r'التوكنوميكس|اقتصاد الرمز|Tokenomics|tokenomics', re.I), 'دليل المنصة'),
     (re.compile(r'الدولار الرقمي|دولار رقمي|الدرع المستقر', re.I), 'المنصة الرقمية'),
-    (re.compile(r'ماكينة الصراف|الصراف|صراف', re.I), 'مركز الخدمات'),
+    (re.compile(r'ماكينة الصراف|ماكينة صرافة|الصراف|صرافة|صراف', re.I), 'مركز الخدمات'),
+    (re.compile(r'ماكينة مركز الخدمات|مركز الخدماتة', re.I), 'مركز الخدمات'),
+    (re.compile(r'المنصة الرقمية مفتوح المصدر', re.I), 'منصة رقمية مفتوحة المصدر'),
     (re.compile(r'تبادل MDM1 بين الأفراد|تبادل العملة بين الأفراد|تبادل MDM1', re.I), 'خدمات MDM1'),
     (re.compile(r'عملة MDM1|العملة بين الأفراد', re.I), 'أداة MDM1'),
     (re.compile(r'الاستثمار|استثمار', re.I), 'المشاركة'),
@@ -51,13 +53,28 @@ DEAD_SCRIPT_RE = re.compile(
     re.I,
 )
 
+# Pages whose whole subject used to be currencies/tokens need a deeper wording pass.
+# Other pages (prices in calculators, general banking tools) keep their normal vocabulary.
+CRYPTO_PAGE_RE = re.compile(
+    r'(?:^|/)(?:whitepaper\.html|pages/(?:ATM|md1usd|\d+)\.html|languages/[^/]+/pages/\d+\.html)$',
+    re.I,
+)
+CRYPTO_PAGE_REPLACEMENTS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r'دولار(?:اً|ا)?', re.I), 'وحدة'),
+    (re.compile(r'عملة', re.I), 'أداة'),
+    (re.compile(r'تبادل', re.I), 'تنسيق'),
+]
+
 TEXT_SUFFIXES = {'.html', '.js', '.json', '.xml', '.txt'}
 
 
-def clean(text: str) -> str:
+def clean(text: str, rel: str = '') -> str:
     text = DEAD_SCRIPT_RE.sub('', text)
     for pattern, replacement in REPLACEMENTS:
         text = pattern.sub(replacement, text)
+    if CRYPTO_PAGE_RE.search(rel.replace('\\', '/')):
+        for pattern, replacement in CRYPTO_PAGE_REPLACEMENTS:
+            text = pattern.sub(replacement, text)
     return text
 
 
@@ -72,7 +89,7 @@ def main() -> int:
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
         original = path.read_text(encoding='utf-8', errors='ignore')
-        updated = clean(original)
+        updated = clean(original, str(path.relative_to(root)))
         if updated != original:
             changed += 1
             if args.write:
