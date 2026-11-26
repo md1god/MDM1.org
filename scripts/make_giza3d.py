@@ -205,7 +205,7 @@ def p_html(t, f):
     t = sub(t, "انتقال للكعبة", "انتقال للهرم الأكبر", f)
     t = sub(t, "شكل المباني تقريبي ومبني تلقائياً من الخريطة وليس تصويراً حقيقياً.",
             "شكل المباني تقريبي ومبني تلقائياً من الخريطة وليس تصويراً حقيقياً. الهرم يُرسم فوق بصمته وارتفاعه المسجّلين في OSM، والأرض مسطّحة عمداً.", f)
-    t = sub(t, "</style>", "#b_contrib{display:none!important}\n</style>", f)
+    t = sub(t, "#app{position:fixed;inset:0}", "#app{position:fixed;inset:0}\n#b_contrib{display:none!important}", f)
     return t
 
 
