@@ -412,20 +412,74 @@
     }
   }
 
+  var savedLetters = [];
+  var letterKey = null;
+
+  function toBase64(buf) {
+    var bytes = new Uint8Array(buf), s = '', i;
+    for (i = 0; i < bytes.length; i++) { s += String.fromCharCode(bytes[i]); }
+    return btoa(s);
+  }
+
+  function fromBase64(s) {
+    var bin = atob(s), bytes = new Uint8Array(bin.length), i;
+    for (i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+    return bytes;
+  }
+
+  function getLetterKey() {
+    if (letterKey) { return Promise.resolve(letterKey); }
+    return new Promise(function (resolve, reject) {
+      try {
+        var req = indexedDB.open('mdm1.letter.crypto', 1);
+        req.onupgradeneeded = function () { req.result.createObjectStore('keys'); };
+        req.onerror = function () { reject(req.error); };
+        req.onsuccess = function () {
+          var store = req.result.transaction('keys', 'readwrite').objectStore('keys');
+          var get = store.get('aes');
+          get.onsuccess = function () {
+            if (get.result) { letterKey = get.result; resolve(letterKey); return; }
+            crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']).then(function (key) {
+              store.put(key, 'aes');
+              letterKey = key;
+              resolve(key);
+            }, reject);
+          };
+          get.onerror = function () { reject(get.error); };
+        };
+      } catch (e) { reject(e); }
+    });
+  }
+
+  function encryptLetters(arr) {
+    return getLetterKey().then(function (key) {
+      var iv = crypto.getRandomValues(new Uint8Array(12));
+      return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(arr))).then(function (ct) {
+        return JSON.stringify({ v: 1, iv: toBase64(iv), ct: toBase64(ct) });
+      });
+    });
+  }
+
+  function decryptLetters(raw) {
+    return getLetterKey().then(function (key) {
+      var env = JSON.parse(raw);
+      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: fromBase64(env.iv) }, key, fromBase64(env.ct)).then(function (pt) {
+        var arr = JSON.parse(new TextDecoder().decode(pt));
+        return Array.isArray(arr) ? arr : [];
+      });
+    });
+  }
+
   function loadSaved() {
-    try {
-      var raw = localStorage.getItem('app.insurance.letters.v1');
-      if (!raw) { return []; }
-      var arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : [];
-    } catch (e) { return []; }
+    return savedLetters.slice();
   }
 
   function persist(arr) {
-    try {
-      localStorage.setItem('app.insurance.letters.v1', JSON.stringify(arr));
-      return true;
-    } catch (e) { return false; }
+    savedLetters = arr.slice();
+    encryptLetters(arr).then(function (blob) {
+      try { localStorage.setItem('app.insurance.letters.v1', blob); } catch (e) {}
+    }).catch(function () {});
+    return true;
   }
 
   function renderSaved() {
@@ -523,6 +577,12 @@
   fillCodes();
   updateCodeInfo();
   renderSaved();
+  try {
+    var savedRaw = localStorage.getItem('app.insurance.letters.v1');
+    if (savedRaw) {
+      decryptLetters(savedRaw).then(function (arr) { savedLetters = arr; renderSaved(); }).catch(function () {});
+    }
+  } catch (e) {}
   toggleOther();
 })();
 </script>
