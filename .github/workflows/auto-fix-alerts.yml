@@ -67,9 +67,9 @@ jobs:
       - name: Skip while an earlier auto-fix PR is still open
         id: gate
         run: |
-          n=$(gh pr list --repo "$REPO" --state open --label autofix --json number --jq 'length' 2>/dev/null || echo 0)
+          n=$(gh pr list --repo "$REPO" --state open --label autofix --json createdAt --jq '[.[] | select(.createdAt > (now - 21600 | todate))] | length' 2>/dev/null || echo 0)
           echo "open=$n" >> "$GITHUB_OUTPUT"
-          [ "$n" = "0" ] || echo "An auto-fix PR is already open; not stacking another one."
+          [ "$n" = "0" ] || echo "A recent auto-fix PR (under 6 h old) is still open; not stacking another one."
 
       - name: Collect open alerts and the failed run log
         id: collect
@@ -82,9 +82,9 @@ jobs:
             2> .autofix/alerts.err > .autofix/alerts-all.jsonl || true
           total=$(wc -l < .autofix/alerts-all.jsonl | tr -d ' ')
           # Alerts judged false positives by an earlier run are listed in .autofix-ignore and skipped.
-          touch .autofix-done
+          touch .autofix-done .autofix-manual
           now=$(date +%s)
-          { cat .autofix-ignore; awk -v now="$now" '{c[$1]++; if ($2>l[$1]) l[$1]=$2} END {for (n in c) if (c[n]>=3 || now-l[n]<43200) print n}' .autofix-done; } > .autofix/skip.txt
+          { cat .autofix-ignore .autofix-manual; awk -v now="$now" '{c[$1]++; if ($2>l[$1]) l[$1]=$2} END {for (n in c) if (c[n]>=3 || now-l[n]<43200) print n}' .autofix-done; } > .autofix/skip.txt
           jq -c --rawfile ign .autofix/skip.txt 'select(.number as $n | ($ign | split("\n") | map(select(length>0) | tonumber) | index($n)) | not)' \
             .autofix/alerts-all.jsonl > .autofix/alerts-todo.jsonl || cp .autofix/alerts-all.jsonl .autofix/alerts-todo.jsonl
           head -n "$MAX_ALERTS" .autofix/alerts-todo.jsonl > .autofix/alerts.jsonl
@@ -128,7 +128,11 @@ jobs:
                never suppress CodeQL, never add dependencies.
             4. List the number of every alert you judged a false positive (no code change needed), one per line,
                in .autofix/falsepositives.txt (leave it empty or absent if there are none).
-            5. Write .autofix/report.md in Arabic. For every item: الملف، السبب، الإصلاح (or why none).
+            5. Do NOT change how data is stored or its format (localStorage, IndexedDB, files, encryption of stored data):
+               existing users would lose their saved data. For alerts that can only be fixed that way (for example
+               clear-text storage of sensitive data) make no code change; list their numbers one per line in
+               .autofix/manual.txt and explain in the report why a person must decide.
+            6. Write .autofix/report.md in Arabic. For every item: الملف، السبب، الإصلاح (or why none).
                The last line must be exactly one of: STATUS: fixed | STATUS: partial | STATUS: none
           Do not run shell commands. Only read and edit files.
           EOF
@@ -145,6 +149,10 @@ jobs:
           if [ -s .autofix/falsepositives.txt ]; then
             grep -E '^[0-9]+$' .autofix/falsepositives.txt >> .autofix-ignore || true
             sort -un .autofix-ignore -o .autofix-ignore
+          fi
+          if [ -s .autofix/manual.txt ]; then
+            grep -E '^[0-9]+$' .autofix/manual.txt >> .autofix-manual || true
+            sort -un .autofix-manual -o .autofix-manual
           fi
           changed=$(git status --porcelain --untracked-files=all -- . ':!.autofix' | awk '{ $1=""; sub(/^ /,""); print }')
           if [ -z "$changed" ]; then echo "changes=no" >> "$GITHUB_OUTPUT"; echo "No file changes."; exit 0; fi
@@ -191,7 +199,7 @@ jobs:
           if [ -z "$apps" ]; then echo "result=skipped" >> "$GITHUB_OUTPUT"; exit 0; fi
           (cd /tmp && npm init -y >/dev/null && npm i playwright@1.49.1 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1)
           export NODE_PATH=/tmp/node_modules
-          bad=0
+          reverted=""
           for f in $apps; do
             [ -f "$f" ] || continue
             if ! node scripts/smoke_app.js "$f" > /tmp/smoke.log 2>&1; then
@@ -200,11 +208,16 @@ jobs:
               if [ -s "$b" ] && ! node scripts/smoke_app.js "$b" >/dev/null 2>&1; then
                 echo "$f was already failing before the change; not counted"
               else
-                echo "SMOKE REGRESSION: $f"; cat /tmp/smoke.log; bad=1
+                echo "SMOKE REGRESSION: $f"; cat /tmp/smoke.log
+                # Undo only this app, hand its alerts to a person, keep merging the rest.
+                git checkout -q HEAD -- "$f"
+                jq -r --arg p "$f" 'select(.path == $p) | .number' .autofix/alerts.jsonl >> .autofix-manual
+                reverted="$reverted $f"
               fi
             fi
           done
-          if [ "$bad" = "0" ]; then echo "result=ok" >> "$GITHUB_OUTPUT"; else echo "result=failed" >> "$GITHUB_OUTPUT"; fi
+          sort -un .autofix-manual -o .autofix-manual
+          if [ -z "$reverted" ]; then echo "result=ok" >> "$GITHUB_OUTPUT"; else echo "result=reverted" >> "$GITHUB_OUTPUT"; echo "reverted=$(echo $reverted)" >> "$GITHUB_OUTPUT"; fi
 
       - name: Open a PR with the reason
         id: pr
@@ -295,6 +308,8 @@ jobs:
               head = '⚠️ الإصلاح التلقائي: انتهى بدون نتيجة واضحة.'
           src = g('EVENT') + (' - ' + g('RUN_NAME') if g('RUN_NAME') else '')
           reason = report[:2200] + ('…' if len(report) > 2200 else '')
+          if out('smoke', 'result') == 'reverted':
+              head += '\n⚠️ تراجعت عن تعديل فشل في اختبار smoke وتحتاج قرار منك: ' + out('smoke', 'reverted')
           text = head + '\nالمصدر: ' + src + '\nالتنبيهات المفتوحة: ' + out('collect', 'total') + ' | المتبقي للمعالجة بعد تجاهل الإيجابيات الكاذبة: ' + out('collect', 'todo') + ' | في هذه الدفعة: ' + out('collect', 'alerts') + '\n\n' + reason
           open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8').write('## ' + head + '\n\n' + report + '\n')
           print(text)
