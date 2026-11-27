@@ -141,6 +141,18 @@ create table if not exists public.office_portal_links (
 );
 comment on table public.office_portal_links is
   'Portal links keyed by SHA-256(token). summary must be non-sensitive only.';
+-- Earlier deployments already had a simpler portal-links table. Upgrade it in
+-- place instead of dropping customer links: add the columns the relay expects
+-- and relax legacy NOT NULL columns that the new summary-only flow does not use.
+alter table public.office_portal_links
+  add column if not exists summary jsonb not null default '{}'::jsonb;
+alter table public.office_portal_links
+  add column if not exists created_by uuid;
+alter table public.office_portal_links
+  alter column customer_id drop not null;
+alter table public.office_portal_links
+  alter column label drop not null;
+
 create index if not exists office_portal_links_expiry_idx
   on public.office_portal_links (expires_at);
 
