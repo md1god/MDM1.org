@@ -1986,27 +1986,28 @@
     var original = String(raw || '').trim();
     var d = normalizeDialect(original);
     var norm = String(d.normalized || '').trim();
-    var parts = original.split(/[.!?؟؛;\n]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
+    var parts = original.split(/[.!?؟؛;\n،,]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
     if (!parts.length) parts = [original];
     var items = [];
     var constraints = [];
     parts.forEach(function (part) {
-      var nd = normalizeDialect(part).normalized.replace(/^(?:ثم|بس|لكن|أو|او|فـ|ف)\s+/u, '').trim();
+      var nd = normalizeDialect(part).normalized.replace(/^(?:و|ثم|بس|لكن|أو|او|فـ|ف)\s+/u, '').trim();
       var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
-      var clarification = !actionable && REQUEST_NEGATION_RX.test(nd);
-      var text = nd.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || nd;
+      var context = /^(?:يا|أيها|ايها)\s+/u.test(nd);
+      var clarification = !actionable && (REQUEST_NEGATION_RX.test(nd) || context);
+      var text = nd.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|لازم|لازمه|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || nd;
       var riskText = stripNegated(nd);
-      if (clarification) constraints.push('توضيح: ' + String(text).slice(0, 120));
+      if (clarification) constraints.push((context ? 'السياق: ' : 'توضيح: ') + String(text).slice(0, 120));
       items.push({
         id: 'ri-' + uuid().slice(0, 6),
         text: String(text).slice(0, 240),
         status: actionable || clarification ? 'understood' : 'unclear',
-        reason: clarification ? 'توضيح/قيد — لا يحتاج مهمة منفصلة.' : (actionable ? '' : 'لم أحدد فعلاً أو مخرجاً واضحاً في هذا الجزء.'),
+        reason: clarification ? 'توضيح/سياق — لا يحتاج مهمة منفصلة.' : (actionable ? '' : 'لم أحدد فعلاً أو مخرجاً واضحاً في هذا الجزء.'),
         agentId: routeRequestAgent(nd),
         risk: REQUEST_HIGH_RX.test(riskText) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(riskText) ? 'medium' : 'low'),
         taskId: null,
         approvalId: null,
-        result: clarification ? 'توضيح مفهوم — لا يُنفَّذ كأمر منفصل' : null,
+        result: clarification ? (context ? 'سياق مفهوم — لا يُنفَّذ كأمر منفصل' : 'توضيح مفهوم — لا يُنفَّذ كأمر منفصل') : null,
         clarification: clarification === true
       });
     });
