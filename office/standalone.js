@@ -3116,7 +3116,7 @@
       if (b.decision === 'approved') {
         var execResult = '✅ تم الاعتماد والتنفيذ في المكتب السحابي.';
         if (item.actionType === 'hire_agent' && item.payload) {
-          var newId = item.payload.id || ('agent-' + uuid().slice(0, 6));
+          var newId = String(item.payload.id || ('agent-' + uuid().slice(0, 6))).toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40) || ('agent-' + uuid().slice(0, 6));
           if (!getAgent(newId)) {
             state.customAgents.push({
               id: newId, name: item.payload.name || 'موظف جديد', englishName: newId, avatar: item.payload.avatar || '🤖',
