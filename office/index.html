@@ -14,10 +14,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261127pwa20" />
-  <link rel="icon" type="image/png" href="icon-192.png?v=20261127pwa20" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261127pwa20" />
-  <link rel="stylesheet" href="styles.css?v=20261127pwa20" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261127pwa21" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261127pwa21" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261127pwa21" />
+  <link rel="stylesheet" href="styles.css?v=20261127pwa21" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +25,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <img class="brand-logo" src="app-logo.png?v=20261127pwa20" alt="MD1&#117;sd Company" />
+        <img class="brand-logo" src="app-logo.webp?v=20261127pwa21" alt="MD1&#117;sd Company" />
         <div>
           <h1>MD1&#117;sd Company</h1>
           <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -95,7 +95,7 @@
         <section id="tab-office" class="tab-panel active">
           <div class="panel-header">
             <div><h2>MD1&#117;sd Company</h2><p>غرف حقيقية، فقاعات حوار حية، ذاكرة RAG، ورتب الموظفين</p></div>
-            <div class="legend"><span><i class="dot available"></i> متاح</span><span><i class="dot working"></i> يعمل</span><span><i class="dot waiting_approval"></i> ينتظر</span></div>
+            <div class="office-filter"><input id="staffSearchInput" type="search" placeholder="🔎 بحث بالاسم أو القسم أو الرقم" aria-label="بحث في الموظفين" autocomplete="off" /><div class="legend"><span><i class="dot available"></i> متاح</span><span><i class="dot working"></i> يعمل</span><span><i class="dot waiting_approval"></i> ينتظر</span></div></div>
           </div>
           <div class="office-stage">
             <div id="meetingRoomBox" class="meeting-room hidden"><div class="meeting-room-header"><span>🏛️ غرفة الاجتماعات الزجاجية — اجتماع جارٍ</span><button class="btn btn-secondary" onclick="endMeeting()">إنهاء الاجتماع</button></div><div id="meetingAvatars" class="meeting-avatars"></div></div>
@@ -383,18 +383,20 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261127pwa20"></script>
-  <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261127pwa20"></script>
-  <script src="office-auth.js?v=20261127pwa20"></script>
-  <script src="pwa.js?v=20261127pwa20"></script>
-  <script src="standalone.js?v=20261127pwa20"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261127pwa21"></script>
+  <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
+  <script src="office-config.js?v=20261127pwa21"></script>
+  <script src="office-auth.js?v=20261127pwa21"></script>
+  <script src="pwa.js?v=20261127pwa21"></script>
+  <script src="standalone.js?v=20261127pwa21"></script>
   <script>
     // Start the UI only after company data is loaded and the private gate is passed.
-    (window.MDM1Office && window.MDM1Office.ready || Promise.resolve()).then(function () {
+    (window.MDM1OfficeReady || (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve()).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261127pwa20';
+      s.src = 'app.js?v=20261127pwa21';
       document.body.appendChild(s);
+    }).catch(function (error) {
+      console.error('MDM1 Office could not start:', error);
     });
   </script>
 </body>

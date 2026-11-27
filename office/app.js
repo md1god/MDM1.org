@@ -6,6 +6,9 @@ let D = {
 let selectedAgentId = null;
 let assistantSession = null;
 let auditSearchTimer = null;
+let staffQuery = '';
+let lastPendingApprovalIds = null;
+const BASE_TITLE = document.title;
 const SL = { available:'متاح', working:'يعمل', waiting_approval:'ينتظر موافقة', offline:'غير متصل' };
 const ROOMS = [
   { id:'exec-hr', title:'👑 الإدارة التنفيذية والموارد البشرية', zones:['executive','hr-training'] },
@@ -17,20 +20,49 @@ const ROOMS = [
 const VP = { 'hr-manager':{pitch:1.15,rate:1}, 'ai-trainer':{pitch:1.1,rate:1.05}, 'executive-assistant':{pitch:1.2,rate:1.08}, 'accountant':{pitch:1.05,rate:.96}, 'marketing-lead':{pitch:.95,rate:1.08}, 'security-officer':{pitch:.8,rate:.94}, 'web-research-team':{pitch:1,rate:1.05}, 'auditors-experts-devs':{pitch:.88,rate:1}, 'legal-accountant':{pitch:1,rate:.95}, 'legal-advisor':{pitch:.9,rate:1} };
 
 async function api(u,o={}){const r=await fetch(u,{headers:{'Content-Type':'application/json'},...o});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+const escAttr=esc;
+const activeTab=()=>document.querySelector('.nav-item.active')?.dataset.tab||'office';
 
 async function bootstrap(){
+  const prevIds=lastPendingApprovalIds||new Set((D.state.approvals||[]).filter(a=>a.status==='pending').map(a=>a.id));
   D=await api('/api/bootstrap');
   if(!selectedAgentId&&D.agents.length)selectedAgentId=D.agents[0].id;
-  renderAll();
-  try{const s=await api('/api/assistant/session');if(s.session){assistantSession=s.session;renderAssistantChat();}}catch(e){}
+  notifyNewApprovals(prevIds);
+  renderGlobal();renderActiveTab(activeTab());
+  try{const s=await api('/api/assistant/session');if(s.session){assistantSession=s.session;if(activeTab()==='chat')renderAssistantChat();}}catch(e){}
 }
 
-function renderAll(){
-  renderTopBadges();renderStats();renderOfficeRooms();renderTasks();renderWorkingTeam();renderChatAgentsList();renderDirectChat();renderTeamChat();
-  renderApprovals();renderHighRiskApprovals();renderVotes();renderCRM();renderKPI();renderAgentBenchmarks();renderMemos();renderKnowledge();renderPnL();renderSchedules();renderSandbox();
-  renderOrgChart();renderAuditCost();renderIntegrations();renderSimulations();renderPlaybooks();renderSnapshots();renderIncidents();renderAssistantChat();renderRequestLedger();populateSelects();
+function notifyNewApprovals(prevIds){
+  const pending=(D.state.approvals||[]).filter(a=>a.status==='pending');
+  const fresh=pending.filter(a=>lastPendingApprovalIds&&!prevIds.has(a.id));
+  lastPendingApprovalIds=new Set(pending.map(a=>a.id));
+  if(fresh.length){
+    document.title=`(${fresh.length}) ⏳ ${BASE_TITLE}`;
+    try{window.MDM1Office?.showToast?.(`⏳ ${fresh.length} موافقة جديدة`,'info')}catch(e){}
+    if('Notification' in window&&Notification.permission==='granted'){
+      fresh.forEach(a=>{try{new Notification('⏳ موافقة جديدة',{body:String(a.agentName||'')+' — '+String(a.title||'')})}catch(e){}});
+    }
+  }else if(document.visibilityState==='visible')document.title=BASE_TITLE;
 }
+
+function renderGlobal(){
+  renderTopBadges();renderStats();populateSelects();
+  const input=document.getElementById('staffSearchInput');if(input&&input.value!==staffQuery)input.value=staffQuery;
+}
+
+const TAB_RENDERERS={
+  office:[renderOfficeRooms,renderTasks,renderWorkingTeam],
+  chat:[renderChatAgentsList,renderDirectChat,renderTeamChat,renderAssistantChat],
+  approvals:[renderApprovals,renderHighRiskApprovals],
+  votes:[renderVotes],crm:[renderCRM],kpi:[renderKPI,renderAgentBenchmarks],memos:[renderMemos],
+  pnl:[renderPnL],scheduler:[renderSchedules],knowledge:[renderKnowledge],sandbox:[renderSandbox],
+  org:[renderOrgChart],audit:[renderAuditCost],integrations:[renderIntegrations],simulator:[renderSimulations],
+  playbooks:[renderPlaybooks],snapshots:[renderSnapshots],incident:[renderIncidents],assistant:[renderAssistantChat]
+};
+function renderActiveTab(t){(TAB_RENDERERS[t]||[]).forEach(fn=>{try{fn()}catch(e){console.warn('render '+t,e)}})}
+
+function renderAll(){renderGlobal();Object.keys(TAB_RENDERERS).forEach(renderActiveTab)}
 
 function renderTopBadges(){
   const c=D.providerConfig||{}, st=D.providerStatus||{}, b=document.getElementById('providerBadge');
@@ -70,14 +102,16 @@ function renderStats(){
 
 function renderOfficeRooms(){
   const mb=document.getElementById('meetingRoomBox'), ma=document.getElementById('meetingAvatars'), att=D.state.meetingAttendees||[];
-  if(D.state.meetingActive&&att.length){mb.classList.remove('hidden');ma.innerHTML=att.map(id=>D.agents.find(a=>a.id===id)).filter(Boolean).map(a=>`<div class="meeting-seat" onclick="openAgentChat('${a.id}')"><span style="font-size:20px">${a.avatar}</span><div><strong style="font-size:12px">${a.name}</strong><div style="font-size:10px;color:#67e8f9">في الاجتماع...</div></div></div>`).join('');}
+  const q=staffQuery.trim().toLowerCase();
+  const hit=a=>!q||(String(a.name||'')+' '+String(a.department||'')+' '+String(a.id||'')+' '+String(a.zone||'')).toLowerCase().includes(q);
+  if(D.state.meetingActive&&att.length){mb.classList.remove('hidden');ma.innerHTML=att.map(id=>D.agents.find(a=>a.id===id)).filter(Boolean).filter(hit).map(a=>`<div class="meeting-seat" data-agent-id="${escAttr(a.id)}"><span style="font-size:20px">${esc(a.avatar)}</span><div><strong style="font-size:12px">${esc(a.name)}</strong><div style="font-size:10px;color:#67e8f9">في الاجتماع...</div></div></div>`).join('');}
   else mb.classList.add('hidden');
   document.getElementById('officeRooms').innerHTML=ROOMS.map(room=>{
-    const ag=D.agents.filter(a=>room.zones.includes(a.zone));
-    return `<div class="office-room"><div class="room-title">${room.title}</div><div class="room-desks">${ag.map(a=>{
+    const ag=D.agents.filter(a=>room.zones.includes(a.zone)&&hit(a));
+    return `<div class="office-room"><div class="room-title">${esc(room.title)}</div><div class="room-desks">${ag.map(a=>{
       const g=a.gamification||{points:0,rankTitle:'موظف تنفيذي'};
-      return `<div class="desk-card" onclick="openAgentChat('${a.id}')"><div class="desk-top"><div class="desk-avatar">${a.avatar}</div><span class="status-pill"><i class="dot ${a.status}"></i> ${SL[a.status]||a.status}</span></div><strong style="font-size:13px">${a.name}</strong><div style="font-size:11px;color:var(--cyan)">${a.department}</div><div class="rank-badge">🏆 ${g.rankTitle} (${g.points}ن) • 🧠 ${a.memoryCount||0}</div>${a.bubble?`<div class="speech-bubble">💬 ${esc(a.bubble)}</div>`:''}</div>`;
-    }).join('')}</div></div>`;
+      return `<div class="desk-card" data-agent-id="${escAttr(a.id)}"><div class="desk-top"><div class="desk-avatar">${esc(a.avatar)}</div><span class="status-pill"><i class="dot ${escAttr(a.status)}"></i> ${esc(SL[a.status]||a.status)}</span></div><strong style="font-size:13px">${esc(a.name)}</strong><div style="font-size:11px;color:var(--cyan)">${esc(a.department||'')}</div><div class="rank-badge">🏆 ${esc(g.rankTitle)} (${esc(g.points)}ن) • 🧠 ${esc(a.memoryCount||0)}</div>${a.bubble?`<div class="speech-bubble">💬 ${esc(a.bubble)}</div>`:''}</div>`;
+    }).join('')||'<div class="approval-card">لا يوجد موظفون مطابقون للبحث.</div>'}</div></div>`;
   }).join('');
 }
 
@@ -85,7 +119,7 @@ async function endMeeting(){await api('/api/meeting/end',{method:'POST'});await 
 
 function renderTasks(){
   const g=document.getElementById('tasksGrid'), t=D.state.tasks||[];
-  g.innerHTML=t.slice(0,6).map(t=>{const a=D.agents.find(x=>x.id===t.agentId);return `<div class="task-card" tabindex="0" role="button" title="اضغط لعرض النص كاملاً" onclick="this.classList.toggle('expanded')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('expanded')}"><strong>${a?a.avatar+' '+a.name:t.agentId}</strong><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small></div>`;}).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
+  g.innerHTML=t.slice(0,6).map(t=>{const a=D.agents.find(x=>x.id===t.agentId);return `<div class="task-card"><strong>${a?esc(a.avatar)+' '+esc(a.name):esc(t.agentId)}</strong><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small></div>`;}).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
 }
 
 function renderWorkingTeam(){
@@ -345,7 +379,7 @@ function populateSelects(){
 function speakText(t,id){if(!document.getElementById('ttsToggle').checked||!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.slice(0,350));u.lang='ar-SA';const p=VP[id]||{pitch:1,rate:1};u.pitch=p.pitch;u.rate=p.rate;window.speechSynthesis.speak(u)}
 function startMic(inputId){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return alert('متصفحك لا يدعم التعرف على الصوت.');const r=new S();r.lang='ar-SA';r.onresult=e=>{document.getElementById(inputId).value=e.results[0][0].transcript};r.start()}
 
-function switchTab(t){const ca=document.querySelector('.content-area');if(ca)ca.scrollTop=0;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`))}
+function switchTab(t){document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`));renderActiveTab(t)}
 function switchChatMode(m){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.chatmode===m));
   document.getElementById('directChatView').classList.toggle('hidden',m!=='direct');
@@ -434,7 +468,18 @@ async function assistantExecute(){
 }
 
 // Listeners
-document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>{switchTab(b.dataset.tab);if(b.dataset.tab==='memos')markAllMemosRead();}));
+document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>{
+  if('Notification' in window&&Notification.permission==='default'){try{Notification.requestPermission()}catch(e){}}
+  switchTab(b.dataset.tab);if(b.dataset.tab==='memos')markAllMemosRead();
+}));
+document.getElementById('staffSearchInput')?.addEventListener('input',e=>{staffQuery=e.target.value||'';renderOfficeRooms()});
+document.getElementById('officeRooms')?.addEventListener('click',e=>{const card=e.target.closest?.('[data-agent-id]');if(card)openAgentChat(card.dataset.agentId)});
+const TAB_HOTKEYS={'1':'office','2':'chat','3':'approvals','4':'votes','5':'crm','6':'kpi','7':'memos','8':'pnl','9':'scheduler','0':'org','q':'knowledge','w':'sandbox','e':'audit','r':'integrations','t':'simulator','y':'playbooks','u':'snapshots','i':'incident'};
+document.addEventListener('keydown',e=>{
+  if(!e.altKey||e.ctrlKey||e.metaKey)return;
+  const t=TAB_HOTKEYS[String(e.key).toLowerCase()];if(!t)return;
+  e.preventDefault();switchTab(t);
+});
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>switchChatMode(b.dataset.chatmode)));
 document.getElementById('directMicBtn').onclick=()=>startMic('directChatInput');
 document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');

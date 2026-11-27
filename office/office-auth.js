@@ -1,10 +1,13 @@
 /* ============================================================================
    MDM1 AI Office — browser identity layer (public, no secrets)
    ----------------------------------------------------------------------------
-   Google / email sign-in and optional TOTP through Supabase Auth REST.
+   Google-only sign-in plus optional phone-channel OTP linking through the
+   office-relay. Sign-in sessions come from Supabase Auth REST; OTP/identity
+   calls go to OFFICE_CONFIG.messaging.relayUrl with the access token.
    This is an EXTRA layer: the private office passphrase is still required to
    open the page. Supabase publishable key and function URL are public by
-   design; no service-role key, Google client secret or bot token is here.
+   design; no service-role key, Google client secret, bot token or model key
+   belongs here (model keys stay on the user's device only).
    ========================================================================== */
 (function () {
   'use strict';
@@ -117,12 +120,50 @@
     });
   }
 
+  /* Supabase Edge relay calls. The access token is always verified server-side;
+     this browser never sends or stores an owner model key. */
+  function relay(action, payload, opts) {
+    if (!nativeFetch) return Promise.reject(new Error('هذا المتصفح لا يدعم fetch.'));
+    var url = String((CFG.messaging && CFG.messaging.relayUrl) || '').replace(/\/+$/, '');
+    if (!url) return Promise.reject(new Error('Relay URL غير مهيّأ.'));
+    opts = opts || {};
+    var tokenPromise = opts.publicAction ? Promise.resolve('') : ensureToken();
+    return tokenPromise.then(function (token) {
+      var headers = {
+        apikey: String((CFG.messaging && CFG.messaging.anonKey) || AUTH.publishableKey || ''),
+        'content-type': 'application/json'
+      };
+      if (token) headers.Authorization = 'Bearer ' + token;
+      if (opts.queueSecret) headers['x-office-queue-secret'] = String(opts.queueSecret);
+      return nativeFetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(Object.assign({ action: action }, payload || {}))
+      });
+    }).then(function (r) {
+      return r.text().then(function (text) {
+        var data = safeJson(text, {});
+        if (!r.ok) {
+          var err = new Error(String(data.error || data.message || data.msg || ('HTTP ' + r.status)));
+          err.status = r.status;
+          err.data = data;
+          throw err;
+        }
+        return data;
+      });
+    });
+  }
+
   function computeAal() {
     var payload = jwtPayload(state.session && state.session.access_token) || {};
     state.aal = payload.aal || 'aal1';
     var verified = state.factors.filter(function (f) { return f.status === 'verified'; });
     state.nextLevel = verified.length ? 'aal2' : 'aal1';
     state.requiresTotp = state.nextLevel === 'aal2' && state.aal !== 'aal2';
+  }
+  function currentUserId() {
+    var payload = jwtPayload(state.session && state.session.access_token) || {};
+    return String(payload.sub || (state.user && state.user.id) || '');
   }
   function loadUser() {
     if (!state.session || !state.session.access_token) return Promise.resolve(null);
@@ -276,42 +317,6 @@
       return { redirecting: true };
     });
   }
-  function sendMagicLink(email) {
-    if (!enabled) return Promise.reject(new Error('تسجيل الدخول غير مفعّل في هذا النشر.'));
-    var address = String(email || '').trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) return Promise.reject(new Error('أدخل بريداً إلكترونياً صالحاً.'));
-    var verifier = randomVerifier();
-    localStorage.setItem(pkceKey, verifier);
-    return challengeOf(verifier).then(function (challenge) {
-      var url = '/otp?' + new URLSearchParams({ redirect_to: redirectTo() }).toString();
-      return api(url, {
-        method: 'POST',
-        body: {
-          email: address,
-          create_user: true,
-          code_challenge: challenge,
-          code_challenge_method: 's256'
-        }
-      });
-    }).then(function () {
-      return { sent: true, message: 'أُرسل رابط الدخول إلى بريدك. افتحه على هذا الجهاز لإكمال الدخول.' };
-    });
-  }
-  function signInWithPassword(email, password) {
-    return api('/token?grant_type=password', {
-      method: 'POST',
-      body: { email: String(email || '').trim(), password: String(password || '') }
-    }).then(function (s) { return adoptSession(s); });
-  }
-  function signUpWithPassword(email, password) {
-    return api('/signup', {
-      method: 'POST',
-      body: { email: String(email || '').trim(), password: String(password || '') }
-    }).then(function (data) {
-      if (data && data.session) return adoptSession(data.session);
-      return { needsConfirmation: true, message: 'أنشأنا الحساب — أكّد بريدك ثم سجّل الدخول بكلمة المرور.' };
-    });
-  }
   function signOut() {
     var token = state.session && state.session.access_token;
     clearSession();
@@ -367,18 +372,26 @@
   }
 
   function status() {
+    var provider = ((state.user && state.user.app_metadata && state.user.app_metadata.provider) || 'email');
+    var signedIn = Boolean(state.session && state.session.access_token);
+    var googleReady = signedIn && provider === 'google' && Boolean(state.user && state.user.email);
+    var userId = currentUserId();
     return {
       configured: enabled,
       loading: Boolean(state.loading),
-      signedIn: Boolean(state.session && state.session.access_token),
+      signedIn: signedIn,
+      googleReady: googleReady,
+      officeReady: enabled ? googleReady : true,
+      sub: userId,
+      userId: userId,
       email: (state.user && state.user.email) || '',
-      provider: ((state.user && state.user.app_metadata && state.user.app_metadata.provider) || 'email'),
+      provider: provider,
       aal: state.aal,
       nextLevel: state.nextLevel,
       requiresTotp: Boolean(state.requiresTotp),
       factors: state.factors.length,
       verifiedFactors: state.factors.filter(function (f) { return f.status === 'verified'; }).length,
-      messagingReady: enabled ? (Boolean(state.session && state.session.access_token) && !state.requiresTotp) : true,
+      messagingReady: googleReady && !state.requiresTotp,
       error: state.error || ''
     };
   }
@@ -395,7 +408,11 @@
       '.auth-qr{display:flex;justify-content:center;margin:10px 0;}',
       '.auth-qr img{width:168px;height:168px;background:#fff;border-radius:10px;padding:6px;box-sizing:border-box;}',
       '.auth-secret{direction:ltr;display:inline-block;font-family:ui-monospace,monospace;font-size:12px;color:#e8c96a;background:#0b0b0e;border:1px solid #2a2a33;border-radius:7px;padding:5px 8px;}',
-      '.auth-provider{display:flex;align-items:center;justify-content:center;gap:8px;}'
+      '.auth-provider{display:flex;align-items:center;justify-content:center;gap:8px;}',
+      '.auth-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;}',
+      '.auth-grid label{font-size:11px;color:#9aa3b2;display:block;margin:0 0 4px;}',
+      '.auth-grid input,.auth-grid select{width:100%;box-sizing:border-box;background:#0b0b0e;border:1px solid #2a2a33;border-radius:9px;padding:9px 10px;color:#eef2ff;font-family:inherit;font-size:13px;}',
+      '.auth-linked{font-size:11.5px;color:#9ad7bd;line-height:1.9;direction:ltr;text-align:right;}'
     ].join('\n');
     document.head.appendChild(css);
   }
@@ -404,16 +421,40 @@
     if (!s.configured) return '⚠️ تسجيل الدخول غير مهيّأ في هذا النشر.';
     if (s.loading) return '⏳ جارٍ استعادة جلسة الحساب...';
     if (s.error) return '⚠️ ' + s.error;
-    if (!s.signedIn) return 'لا يوجد حساب مرتبط على هذا الجهاز.';
+    if (!s.signedIn) return '🔒 المكتب مقفل — تسجيل الدخول بحساب Google إلزامي لقراءة بياناتك من Supabase.';
+    if (!s.googleReady) return '⚠️ الحساب الحالي (' + esc(s.provider) + ') غير مسموح به داخل المكتب. سجّل الدخول بحساب Google.';
     if (s.requiresTotp) return '🔐 الحساب مرتبط (' + esc(s.email) + ') — مطلوب رمز المصادقة الثنائية لتفعيل الإرسال.';
-    return '✅ الحساب مرتبط' + (s.email ? ' — ' + esc(s.email) : '') +
+    return '✅ هوية Google مؤكدة' + (s.email ? ' — ' + esc(s.email) : '') +
       (s.verifiedFactors ? ' · حماية ثنائية مفعّلة' : ' · حماية ثنائية غير مفعّلة');
   }
   function updatePanelStatus() {
     var el = document.getElementById('mdm1AuthStatus');
     if (!el) return;
     el.textContent = statusText();
-    el.className = 'office-status' + (status().messagingReady && status().signedIn ? ' ok' : '');
+    el.className = 'office-status' + (status().officeReady && !status().requiresTotp ? ' ok' : '');
+  }
+  /* identity_get returns { ok, identities, telegram, whatsapp, google_email }. */
+  function fetchLinked(el) {
+    if (!el) return Promise.resolve(null);
+    return relay('identity_get', {}).then(function (r) {
+      var i = (r && r.identities) || r || {};
+      var parts = [];
+      if (i.telegram) parts.push('تيليجرام: ' + i.telegram);
+      if (i.whatsapp) parts.push('واتساب: ' + i.whatsapp);
+      if (i.google_email) parts.push('Google: ' + i.google_email);
+      if (i.updated_at) parts.push('آخر تحديث: ' + i.updated_at);
+      el.textContent = parts.length ? parts.join(' · ') : 'لا توجد قنوات مرتبطة بعد.';
+      return i;
+    }).catch(function (e) {
+      el.textContent = 'تعذّر قراءة القنوات: ' + e.message;
+      return null;
+    });
+  }
+  function relayMessage(r) {
+    if (r && r.handled === false) return r.message || 'استخدم تسجيل الدخول عبر Google — لا يلزم رمز OTP.';
+    if (r && r.linked) return 'تم ربط القناة بنجاح.';
+    if (r && r.expires_at) return 'أُرسل الرمز — صالح حتى ' + r.expires_at + '.';
+    return (r && r.message) || 'تمت العملية بنجاح.';
   }
   function openPanel() {
     if (!enabled) {
@@ -434,31 +475,42 @@
     modal.innerHTML =
       '<div class="office-modal-card auth-card">' +
       '<h2>👤 الحساب والهوية</h2>' +
-      '<div class="auth-note">هذه طبقة هوية إضافية لتفعيل إرسال واتساب/تيليجرام والمزامنة. ' +
-      'ما زالت كلمة سر المكتب مطلوبة لفتح الصفحة. الجلسة والرموز تبقى في هذا المتصفح فقط.</div>' +
+      '<div class="auth-note">تسجيل الدخول بحساب Google إلزامي: الخادم يتحقق من JWT قبل السماح بقراءة بيانات المكتب من Supabase. ' +
+      'مفاتيح النماذج تبقى على جهازك فقط ولا يستخدم المكتب مفاتيح المالك أبداً. كلمة سر المكتب ما زالت مطلوبة لفتح الصفحة.</div>' +
       '<div id="mdm1AuthStatus" class="office-status">' + statusText() + '</div>' +
-      '<label style="margin-top:14px;">الدخول بحساب Google</label>' +
-      '<button class="office-btn primary auth-provider" id="mdm1AuthGoogle" type="button">🔵 متابعة عبر Google</button>' +
-      '<label>أو بالبريد الإلكتروني</label>' +
-      '<input id="mdm1AuthEmail" type="email" placeholder="name@example.com" autocomplete="email" />' +
-      '<input id="mdm1AuthPass" type="password" placeholder="كلمة المرور (اختياري)" autocomplete="current-password" style="margin-top:7px;" />' +
-      '<div class="office-actions">' +
-      '<button class="office-btn" id="mdm1AuthMagic" type="button">✉️ إرسال رابط سحري</button>' +
-      '<button class="office-btn" id="mdm1AuthLogin" type="button">🔑 دخول بكلمة المرور</button>' +
-      '<button class="office-btn" id="mdm1AuthSignup" type="button">➕ إنشاء حساب</button>' +
-      '</div>' +
-      '<div id="mdm1AuthFormMsg" class="office-status quota">استخدم الرابط السحري إن لم يكن لديك حساب بكلمة مرور.</div>' +
-      (s.signedIn ?
+      '<label style="margin-top:14px;">🔵 الحساب المسموح</label>' +
+      '<button class="office-btn primary auth-provider" id="mdm1AuthGoogle" type="button">' +
+      (s.googleReady ? '✅ Google مرتبط — ' + esc(s.email) : 'متابعة عبر Google') + '</button>' +
+      (!s.signedIn ? '' : !s.googleReady ?
+        '<div id="mdm1AuthFormMsg" class="office-status err">هذا الحساب غير مسموح به داخل المكتب. سجّل الخروج ثم أدخل بحساب Google.</div>' +
+        '<div class="office-actions"><button class="office-btn" id="mdm1AuthSignout" type="button">تسجيل الخروج</button></div>' :
+        '<div id="mdm1AuthFormMsg" class="office-status quota">أدخل كود الدولة والرقم المحلي لتيليجرام/واتساب، أو اختر Google لربط بريدك عبر تسجيل الدخول.</div>' +
+        '<label style="margin-top:16px;">📲 ربط القنوات برمز OTP</label>' +
+        '<div class="auth-grid">' +
+        '<div><label>كود الدولة</label><select id="mdm1OtpDial">' +
+        ['+20', '+966', '+971', '+1', '+44', '+49', '+90', '+92', '+234', '+27']
+          .map(function (d) { return '<option value="' + d + '"' + (d === '+20' ? ' selected' : '') + '>' + d + '</option>'; }).join('') +
+        '</select></div>' +
+        '<div><label>رقم الهاتف (بدون رمز الدولة)</label><input id="mdm1OtpPhone" type="tel" inputmode="tel" dir="ltr" placeholder="1xxxxxxxxx" autocomplete="tel-national" /></div>' +
+        '<div><label>القناة</label><select id="mdm1OtpChannel">' +
+        '<option value="telegram">تيليجرام</option><option value="whatsapp">واتساب</option><option value="google">Google</option>' +
+        '</select></div></div>' +
+        '<div class="office-actions">' +
+        '<button class="office-btn" id="mdm1OtpSend" type="button">📤 إرسال الكود</button>' +
+        '<button class="office-btn" id="mdm1OtpVerify" type="button">✅ تحقق وربط</button>' +
+        '</div>' +
+        '<input id="mdm1OtpCode" type="text" inputmode="numeric" maxlength="6" placeholder="الكود المكوّن من 6 أرقام" style="margin-top:7px;" />' +
+        '<div id="mdm1LinkedChannels" class="auth-linked">جارٍ قراءة القنوات المرتبطة...</div>' +
         '<label style="margin-top:16px;">🔐 المصادقة الثنائية (اختيارية — TOTP)</label>' +
-        '<p>يمكنك تفعيل تطبيق مصادقة مثل Google Authenticator أو Authy. إن كان العامل مفعّلاً مسبقاً سيُطلب الرمز عند كل جلسة جديدة.</p>' +
+        '<p>تطبيق مصادقة مثل Google Authenticator أو Authy. إن كان العامل مفعّلاً سيُطلب الرمز عند كل جلسة جديدة.</p>' +
         (qr ? '<div class="auth-qr"><img src="data:image/svg+xml;utf-8,' + encodeURIComponent(qr) + '" alt="QR" /></div>' +
           '<p>أو أدخل المفتاح يدوياً: <span class="auth-secret">' + esc(secret || '') + '</span></p>' : '') +
-        '<input id="mdm1AuthCode" type="text" inputmode="numeric" maxlength="6" placeholder="رمز من 6 أرقام" />' +
+        '<input id="mdm1TotpCode" type="text" inputmode="numeric" maxlength="6" placeholder="رمز TOTP من 6 أرقام" />' +
         '<div class="office-actions">' +
         '<button class="office-btn" id="mdm1AuthEnroll" type="button">' + (verified ? '✅ ثنائي مفعّل' : 'تفعيل TOTP') + '</button>' +
-        '<button class="office-btn" id="mdm1AuthVerify" type="button">تحقق من الرمز</button>' +
+        '<button class="office-btn" id="mdm1AuthVerify" type="button">تحقق من TOTP</button>' +
         '<button class="office-btn" id="mdm1AuthSignout" type="button">تسجيل الخروج</button>' +
-        '</div>' : '') +
+        '</div>') +
       '<div class="office-actions"><button class="office-btn primary" id="mdm1AuthClose" type="button">إغلاق</button></div>' +
       '</div>';
     document.body.appendChild(modal);
@@ -470,32 +522,73 @@
       el.textContent = text;
       el.className = 'office-status quota ' + (cls || '');
     }
-    function run(promise, doing) {
+    function run(promise, doing, onDone) {
       formMsg(doing || 'جارٍ التنفيذ...', '');
-      Promise.resolve(promise).then(function (r) {
-        formMsg((r && r.message) || 'تمت العملية بنجاح.', 'ok');
-        render();
-      }).catch(function (e) { formMsg('❌ ' + e.message, 'err'); });
+      return Promise.resolve(promise).then(function (r) {
+        formMsg(relayMessage(r), 'ok');
+        if (typeof onDone === 'function') onDone(r);
+        else render();
+        return r;
+      }).catch(function (e) {
+        var left = e && e.data && e.data.attempts_left != null ?
+          ' (المحاولات المتبقية: ' + e.data.attempts_left + ')' : '';
+        formMsg('❌ ' + e.message + left, 'err');
+        return null;
+      });
     }
     q('mdm1AuthGoogle').onclick = function () {
+      if (status().googleReady) { formMsg('حساب Google مرتبط بالفعل.', 'ok'); return; }
       run(signInWithGoogle(), 'جارٍ التحويل إلى Google...');
     };
-    q('mdm1AuthMagic').onclick = function () {
-      run(sendMagicLink(q('mdm1AuthEmail').value), 'جارٍ إرسال الرابط...');
-    };
-    q('mdm1AuthLogin').onclick = function () {
-      run(signInWithPassword(q('mdm1AuthEmail').value, q('mdm1AuthPass').value), 'جارٍ الدخول...');
-    };
-    q('mdm1AuthSignup').onclick = function () {
-      run(signUpWithPassword(q('mdm1AuthEmail').value, q('mdm1AuthPass').value), 'جارٍ إنشاء الحساب...');
-    };
+    /* The relay normalizes with dialCode (E.164), so send the national number
+       and the dial code separately for both otp_send and otp_verify. */
+    function otpFields() {
+      var channel = q('mdm1OtpChannel') ? q('mdm1OtpChannel').value : 'google';
+      if (channel === 'google') return { channel: 'google', target: status().email || '', dialCode: '' };
+      var dial = q('mdm1OtpDial') ? q('mdm1OtpDial').value : '+20';
+      var local = String(q('mdm1OtpPhone') ? q('mdm1OtpPhone').value : '')
+        .replace(/\D/g, '').replace(/^0+/, '').slice(0, 15);
+      if (!local) throw new Error('أدخل كود الدولة ورقم الهاتف.');
+      return { channel: channel, target: local, dialCode: dial };
+    }
+    function refreshLinked() { return fetchLinked(q('mdm1LinkedChannels')); }
+    if (q('mdm1OtpSend')) {
+      refreshLinked();
+      q('mdm1OtpChannel').onchange = function () {
+        if (this.value === 'google') formMsg('Google يستخدم تسجيل الدخول المصادق عليه — لا يُرسل رمز OTP.', '');
+      };
+      q('mdm1OtpSend').onclick = function () {
+        try {
+          var fields = otpFields();
+          if (fields.channel === 'google') {
+            formMsg('Google مرتبط عبر تسجيل الدخول — لا حاجة لإرسال رمز.', 'ok');
+            return;
+          }
+          run(relay('otp_send', Object.assign({ purpose: 'link' }, fields)),
+            'جارٍ إرسال الكود...', refreshLinked);
+        } catch (e) { formMsg('❌ ' + e.message, 'err'); }
+      };
+      q('mdm1OtpVerify').onclick = function () {
+        try {
+          var fields = otpFields();
+          if (fields.channel === 'google') {
+            formMsg('Google مرتبط عبر تسجيل الدخول — لا يوجد رمز للتحقق.', 'ok');
+            return;
+          }
+          var code = String(q('mdm1OtpCode').value || '').replace(/\D/g, '').slice(0, 6);
+          if (code.length !== 6) throw new Error('أدخل كوداً مكوّناً من 6 أرقام.');
+          run(relay('otp_verify', Object.assign({ code: code }, fields)),
+            'جارٍ التحقق من الكود...', refreshLinked);
+        } catch (e) { formMsg('❌ ' + e.message, 'err'); }
+      };
+    }
     if (q('mdm1AuthEnroll')) {
       q('mdm1AuthEnroll').onclick = function () {
         if (status().verifiedFactors) { formMsg('المصادقة الثنائية مفعّلة بالفعل.', ''); return; }
         run(enrollTotp(), 'جارٍ إنشاء سر المصادقة...');
       };
       q('mdm1AuthVerify').onclick = function () {
-        run(verifyTotp(q('mdm1AuthCode').value), 'جارٍ التحقق من الرمز...');
+        run(verifyTotp(q('mdm1TotpCode').value), 'جارٍ التحقق من TOTP...');
       };
       q('mdm1AuthSignout').onclick = function () {
         run(signOut(), 'جارٍ تسجيل الخروج...');
@@ -505,16 +598,18 @@
     modal.addEventListener('click', function (e) { if (e.target === modal) modal.remove(); });
     function render() {
       var scroll = modal.querySelector('.office-modal-card').scrollTop;
-      var code = q('mdm1AuthCode') ? q('mdm1AuthCode').value : '';
-      var email = q('mdm1AuthEmail') ? q('mdm1AuthEmail').value : '';
+      var keep = {};
+      ['mdm1TotpCode', 'mdm1OtpCode', 'mdm1OtpPhone', 'mdm1OtpDial', 'mdm1OtpChannel'].forEach(function (id) {
+        if (q(id)) keep[id] = q(id).value;
+      });
       openPanel();
       var next = document.getElementById('mdm1AuthModal');
       if (!next) return;
       var card = next.querySelector('.office-modal-card');
       var nq = function (id) { return next.querySelector('#' + id); };
-      if (nq('mdm1AuthCode')) nq('mdm1AuthCode').value = code;
-      if (nq('mdm1AuthEmail')) nq('mdm1AuthEmail').value = email;
+      Object.keys(keep).forEach(function (id) { if (nq(id)) nq(id).value = keep[id]; });
       card.scrollTop = scroll;
+      if (nq('mdm1LinkedChannels')) fetchLinked(nq('mdm1LinkedChannels'));
     }
   }
 
@@ -561,13 +656,23 @@
     onChange: onChange,
     openPanel: openPanel,
     signInWithGoogle: signInWithGoogle,
-    sendMagicLink: sendMagicLink,
-    signInWithPassword: signInWithPassword,
-    signUpWithPassword: signUpWithPassword,
     signOut: signOut,
     enrollTotp: enrollTotp,
     verifyTotp: verifyTotp,
-    canSend: function () { return enabled ? Boolean(state.session && !state.requiresTotp) : true; }
+    /* Both names are public: standalone.js may use either accessor. */
+    accessToken: ensureToken,
+    getToken: ensureToken,
+    relay: relay,
+    requireGoogle: function () {
+      if (!enabled) return Promise.resolve(null);
+      if (!status().googleReady) {
+        var err = new Error('سجّل الدخول بحساب Google أولاً لفتح المكتب وقراءة بياناتك.');
+        err.code = 'GOOGLE_REQUIRED';
+        return Promise.reject(err);
+      }
+      return ensureToken();
+    },
+    canSend: function () { return status().messagingReady; }
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

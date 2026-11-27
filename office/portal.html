@@ -7,7 +7,6 @@
   <meta property="og:image" content="https://mdm1.org/images/og-card.jpg" />
   <title>بوابة العميل | MDM1</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <!-- /js/mdm1-auth-button.js — private portal, public sign-in intentionally disabled. -->
   <style>
     body{margin:0;background:#08090d;color:#e8ecf5;font-family:Cairo,system-ui,sans-serif;direction:rtl;}
     .wrap{max-width:860px;margin:0 auto;padding:36px 18px 60px;}
@@ -32,62 +31,59 @@
   <div class="wrap">
     <div class="card">
       <h1>🏢 بوابة العميل — MDM1</h1>
-      <div class="sub">هذه الصفحة تعرض ملخص مشروعك من MD1&#117;sd Company. البيانات محفوظة محلياً في متصفحك.</div>
+      <div class="sub">ملخص المشروع محفوظ في Supabase عبر رابط عشوائي طويل تنتهي صلاحيته تلقائياً. لا تحتوي البوابة على بيانات حساسة.</div>
     </div>
-    <div id="content"></div>
+    <div id="content"><div class="card"><div class="sub">جارٍ التحقق من الرابط...</div></div></div>
   </div>
-  <!-- Private portal: suppress deploy-time site shell injections. -->
   <button id="mdm1m-btn" hidden aria-hidden="true"></button>
   <audio id="bg-music" hidden></audio>
   <nav class="mdm1-policy-links" hidden aria-hidden="true"></nav>
-  <!-- /js/global.js /js/lang.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
-  <script src="office-config.js?v=20261127pwa20"></script>
+  <script src="office-config.js?v=20261127pwa21"></script>
   <script>
     (function () {
-      var token = new URLSearchParams(location.search).get('t') || '';
-      var key = window.OFFICE_CONFIG && window.OFFICE_CONFIG.storageKey || 'mdm1_office_v2';
-      var state = {};
-      try { state = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) {}
-      var c = (state.customers || []).find(function (x) { return x.portalToken === token; });
       var out = document.getElementById('content');
-      if (!c) {
-        out.innerHTML = '<div class="card"><h2>🔒 رابط غير صالح</h2><div class="sub">لم يتم العثور على هذا الرابط. افتح بوابة العميل من داخل MD1&#117;sd Company.</div><p><a href="index.html">← العودة</a></p></div>';
-        return;
-      }
-      var pct = c.totalValueUsd > 0 ? Math.min(100, Math.round(c.paidUsd / c.totalValueUsd * 100)) : 0;
-      var tasks = (state.tasks || []).filter(function (t) {
-        return t.agentId === c.assignedTo || String(t.title || '').indexOf(c.name) !== -1;
-      }).slice(0, 10);
-      var ledger = (state.financialLedger || []).filter(function (x) {
-        return String(x.title || '').indexOf(c.name) !== -1;
-      }).slice(0, 10);
-      out.innerHTML =
-        '<div class="card">' +
-          '<h2>' + esc(c.name) + ' <span class="tag">' + esc(c.stage) + '</span></h2>' +
-          '<div class="sub">المشروع: <strong>' + esc(c.projectTitle) + '</strong><br>' +
-          'جهة الاتصال: ' + esc(c.contactName) + ' • ' + esc(c.email) + ' • ' + esc(c.phone) + '</div>' +
-          '<div class="grid">' +
-            '<div class="kpi"><span>قيمة العقد</span><strong>$' + num(c.totalValueUsd) + '</strong></div>' +
-            '<div class="kpi"><span>المحصّل</span><strong>$' + num(c.paidUsd) + '</strong></div>' +
-            '<div class="kpi"><span>المتبقي</span><strong>$' + num(c.totalValueUsd - c.paidUsd) + '</strong></div>' +
-          '</div>' +
-          '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
-          '<div class="sub">نسبة الإنجاز المالي: ' + pct + '%</div>' +
-        '</div>' +
-        '<div class="card"><h2>📋 المهام المرتبطة</h2>' +
-          (tasks.length ? '<table><tr><th>المهمة</th><th>الحالة</th></tr>' + tasks.map(function (t) {
-            return '<tr><td>' + esc(t.title) + '</td><td>' + esc(t.status) + '</td></tr>';
-          }).join('') + '</table>' : '<div class="sub">لا توجد مهام مرتبطة حالياً.</div>') +
-        '</div>' +
-        '<div class="card"><h2>💰 الدفعات</h2>' +
-          (ledger.length ? '<table><tr><th>البيان</th><th>التاريخ</th><th>المبلغ</th></tr>' + ledger.map(function (x) {
-            return '<tr><td>' + esc(x.title) + '</td><td>' + esc(x.date) + '</td><td>$' + num(x.amountUsd) + '</td></tr>';
-          }).join('') + '</table>' : '<div class="sub">لا توجد دفعات مسجلة بعد.</div>') +
-        '</div>' +
-        '<p><a href="index.html">← العودة إلى المكتب</a></p>';
-      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+      var token = new URLSearchParams(location.search).get('t') || '';
+      var cfg = window.OFFICE_CONFIG || {};
+      var url = String((cfg.messaging && cfg.messaging.relayUrl) || '').replace(/\/+$/, '');
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
       function num(n) { return Number(n || 0).toFixed(2); }
+      function fail(title, msg) {
+        out.innerHTML = '<div class="card"><h2>🔒 ' + esc(title) + '</h2><div class="sub">' + esc(msg) + '</div><p><a href="index.html">← العودة</a></p></div>';
+      }
+      if (!token || !url || !fetch) { fail('رابط غير صالح', 'افتح بوابة العميل من داخل MDM1 Office.'); return; }
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          apikey: String((cfg.auth && cfg.auth.publishableKey) || (cfg.messaging && cfg.messaging.anonKey) || '')
+        },
+        body: JSON.stringify({ action: 'portal_get', token: token })
+      }).then(function (r) { return r.text().then(function (t) { return { ok: r.ok, status: r.status, data: JSON.parse(t || '{}') }; }); })
+        .then(function (r) {
+          if (!r.ok || !r.data.ok) return fail('رابط غير صالح أو منتهي', (r.data.error || 'انتهت صلاحية هذا الرابط أو تم إلغاؤه.'));
+          var c = r.data.summary || {};
+          var pct = c.totalValueUsd > 0 ? Math.min(100, Math.round(c.paidUsd / c.totalValueUsd * 100)) : 0;
+          var tasks = Array.isArray(c.tasks) ? c.tasks.slice(0, 10) : [];
+          out.innerHTML =
+            '<div class="card">' +
+              '<h2>' + esc(c.name) + ' <span class="tag">' + esc(c.stage) + '</span></h2>' +
+              '<div class="sub">المشروع: <strong>' + esc(c.projectTitle) + '</strong></div>' +
+              '<div class="grid">' +
+                '<div class="kpi"><span>قيمة العقد</span><strong>$' + num(c.totalValueUsd) + '</strong></div>' +
+                '<div class="kpi"><span>المحصّل</span><strong>$' + num(c.paidUsd) + '</strong></div>' +
+                '<div class="kpi"><span>المتبقي</span><strong>$' + num(c.totalValueUsd - c.paidUsd) + '</strong></div>' +
+              '</div>' +
+              '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+              '<div class="sub">نسبة الإنجاز المالي: ' + pct + '%</div>' +
+            '</div>' +
+            '<div class="card"><h2>📋 المهام المرتبطة</h2>' +
+              (tasks.length ? '<table><tr><th>المهمة</th><th>الحالة</th></tr>' + tasks.map(function (t) {
+                return '<tr><td>' + esc(t.title) + '</td><td>' + esc(t.status) + '</td></tr>';
+              }).join('') + '</table>' : '<div class="sub">لا توجد مهام مرتبطة حالياً.</div>') +
+            '</div>' +
+            '<p><a href="index.html">← العودة إلى المكتب</a></p>';
+        }).catch(function (e) { fail('تعذّر قراءة البوابة', e.message); });
     })();
   </script>
 </body>
