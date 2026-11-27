@@ -404,8 +404,8 @@
     if (s.loading) return '⏳ جارٍ استعادة جلسة الحساب...';
     if (s.error) return '⚠️ ' + s.error;
     if (!s.signedIn) return 'لا يوجد حساب مرتبط على هذا الجهاز.';
-    if (s.requiresTotp) return '🔐 الحساب مرتبط (' + esc(s.email) + ') — مطلوب رمز المصادقة الثنائية لتفعيل الإرسال.';
-    return '✅ الحساب مرتبط' + (s.email ? ' — ' + esc(s.email) : '') +
+    if (s.requiresTotp) return '🔐 الحساب مرتبط (' + s.email + ') — مطلوب رمز المصادقة الثنائية لتفعيل الإرسال.';
+    return '✅ الحساب مرتبط' + (s.email ? ' — ' + s.email : '') +
       (s.verifiedFactors ? ' · حماية ثنائية مفعّلة' : ' · حماية ثنائية غير مفعّلة');
   }
   function updatePanelStatus() {
@@ -435,7 +435,7 @@
       '<h2>👤 الحساب والهوية</h2>' +
       '<div class="auth-note">هذه طبقة هوية إضافية لتفعيل إرسال واتساب/تيليجرام والمزامنة. ' +
       'ما زالت كلمة سر المكتب مطلوبة لفتح الصفحة. الجلسة والرموز تبقى في هذا المتصفح فقط.</div>' +
-      '<div id="mdm1AuthStatus" class="office-status">' + statusText() + '</div>' +
+      '<div id="mdm1AuthStatus" class="office-status"></div>' +
       '<label style="margin-top:14px;">الدخول بحساب Google</label>' +
       '<button class="office-btn primary auth-provider" id="mdm1AuthGoogle" type="button">🔵 متابعة عبر Google</button>' +
       '<label>أو بالبريد الإلكتروني</label>' +
@@ -461,6 +461,7 @@
       '<div class="office-actions"><button class="office-btn primary" id="mdm1AuthClose" type="button">إغلاق</button></div>' +
       '</div>';
     document.body.appendChild(modal);
+    modal.querySelector('#mdm1AuthStatus').textContent = statusText();
 
     var q = function (id) { return modal.querySelector('#' + id); };
     function formMsg(text, cls) {
