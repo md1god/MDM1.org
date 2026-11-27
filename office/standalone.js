@@ -1134,10 +1134,22 @@
     if (mode === 'cloud') {
       return listCloudModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error || 'Supabase Relay غير متصل.');
-        var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
+        /* Cloud is free-tier only and must fail over across providers: Zen's
+           free models often hit their quota while Groq/OpenRouter still work. */
+        var pool = (listing.free && listing.free.length) ? listing.free : listing.models.map(function (m) { return m.id; });
         if (!pool.length) return fallback('لا توجد نماذج مجانية عبر Supabase Relay حالياً.');
-        var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'cloud');
-        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'cloud').slice(0, 3);
+        var first = pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'cloud');
+        var mp = listing.modelProviders || {};
+        var groqPool = pool.filter(function (id) { return mp[id] === 'groq'; });
+        var orPool = pool.filter(function (id) { return mp[id] === 'openrouter'; });
+        var zenPool = pool.filter(function (id) { return mp[id] === 'zen'; });
+        var ordered = groqPool.concat(orPool).concat(zenPool);
+        ordered.forEach(function (id) { if (pool.indexOf(id) === -1) ordered.push(id); });
+        if (first && ordered.indexOf(first) !== -1 && mp[first] === 'groq') {
+          ordered = [first].concat(ordered.filter(function (id) { return id !== first; }));
+        }
+        var chain = forcedModel ? [forcedModel] : ordered.filter(function (id) { return !isModelLimited('cloud', id); }).slice(0, 10);
+        if (!chain.length) chain = ordered.slice(0, 10);
         var errors = [];
         function attempt(i) {
           if (i >= chain.length) return fallback(errors.join('\n'));
@@ -1163,10 +1175,12 @@
             var msg = e.message || String(e);
             errors.push(id + ': ' + msg);
             if (/429|rate limit|free usage limit/i.test(msg)) {
+              /* One model/provider being out of free quota must not abort the
+                 whole cloud chain: another free provider (e.g. Groq) may work. */
               markRateLimit('cloud', id, retryMsFrom(null, {}), msg);
-              throw new Error('RATE_LIMIT');
+              return attempt(i + 1);
             }
-            if (/402|insufficient balance|insufficient_quota/i.test(msg)) throw new Error('NO_BALANCE');
+            if (/402|insufficient balance|insufficient_quota/i.test(msg)) return attempt(i + 1);
             markModelError('cloud', id, msg);
             return attempt(i + 1);
           });
@@ -3250,6 +3264,7 @@
     getUsage: getUsage,
     markRateLimit: markRateLimit,
     /* model lab / governance / security helpers */
+    listCloudModels: listCloudModels,
     listGroqModels: listGroqModels,
     listOpenRouterModels: listOpenRouterModels,
     runBenchmark: runBenchmark,
