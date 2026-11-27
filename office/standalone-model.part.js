@@ -129,7 +129,7 @@
   function listCloudModels(force) {
     return Promise.resolve({ connected: false, models: [], free: [], providers: {}, modelProviders: {}, defaultProvider: '',
       userKeysRequired: true,
-      error: 'المكتب لا يستخدم مفاتيح المالك. أدخل مفتاحك أنت في 🔌 الاتصال: OpenCode المحلي أو Zen أو Groq أو OpenRouter.' });
+      error: 'المكتب يستخدم مفاتيحك أنت فقط. أدخل مفتاحك في 🔌 الاتصال: OpenCode المحلي أو Zen أو Groq أو OpenRouter.' });
     if (!force && providerCache.cloud && Date.now() - providerCache.cloudAt < 30000) return Promise.resolve(providerCache.cloud);
     return relayApi('models', { refresh: Boolean(force) }).then(function (j) {
       var free = (j.free || []).map(String);
@@ -265,8 +265,8 @@
     }
 
     if (mode === 'cloud') {
-      return Promise.resolve(fallback('المكتب لا يستخدم مفاتيح المالك — استخدم مفتاحك الخاص من 🔌 الاتصال.'));
-      /* legacy owner-key relay path intentionally disabled */
+      return Promise.resolve(fallback('المكتب يستخدم مفاتيحك أنت فقط — استخدم مفتاحك الخاص من 🔌 الاتصال.'));
+      /* legacy shared-key relay path intentionally disabled */
       return listCloudModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error || 'Supabase Relay غير متصل.');
         /* Cloud is free-tier only and must fail over across providers: Zen's

@@ -1366,7 +1366,7 @@
         '🔐 الخزنة: ' + (vault.enabled ? 'مفعّلة' : 'غير مفعّلة') + (vault.locked === false ? ' — مفتوحة' : ''),
         '🛡️ فحص الأمان: ' + (sec && Array.isArray(sec.findings) ? sec.findings.length + ' ملاحظة' : 'تم'),
         '📊 الحصة: ' + (q && q.requests != null ? q.requests + ' طلب' : 'لا توجد بيانات'),
-        '☁️ السحابة: معطّلة (مفاتيح المالك غير مستخدمة)',
+        '☁️ السحابة: معطّلة (مفاتيحك أنت فقط)',
         '🏠 المحلي: ' + (providers.local.connected ? 'متصل' : 'غير متصل') + (providers.local.error ? ' — ' + providers.local.error : ''),
         '🔄 المزامنة: ' + (settings.syncEnabled && syncConfigured() ? 'مفعّلة' : 'معطّلة')
       ];

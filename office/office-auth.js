@@ -130,7 +130,7 @@
     var tokenPromise = opts.publicAction ? Promise.resolve('') : ensureToken();
     return tokenPromise.then(function (token) {
       var headers = {
-        apikey: String((CFG.messaging && CFG.messaging.anonKey) || AUTH.publishableKey || ''),
+        apikey: String(AUTH.publishableKey || (CFG.messaging && CFG.messaging.anonKey) || ''),
         'content-type': 'application/json'
       };
       if (token) headers.Authorization = 'Bearer ' + token;
@@ -476,7 +476,7 @@
       '<div class="office-modal-card auth-card">' +
       '<h2>👤 الحساب والهوية</h2>' +
       '<div class="auth-note">تسجيل الدخول بحساب Google إلزامي: الخادم يتحقق من JWT قبل السماح بقراءة بيانات المكتب من Supabase. ' +
-      'مفاتيح النماذج تبقى على جهازك فقط ولا يستخدم المكتب مفاتيح المالك أبداً. كلمة سر المكتب ما زالت مطلوبة لفتح الصفحة.</div>' +
+      'مفاتيح النماذج تبقى على جهازك فقط؛ لا تُستخدم مفاتيح مشتركة. كلمة سر المكتب ما زالت مطلوبة لفتح الصفحة.</div>' +
       '<div id="mdm1AuthStatus" class="office-status">' + statusText() + '</div>' +
       '<label style="margin-top:14px;">🔵 الحساب المسموح</label>' +
       '<button class="office-btn primary auth-provider" id="mdm1AuthGoogle" type="button">' +

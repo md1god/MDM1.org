@@ -78,7 +78,7 @@
       '<div class="office-lock-card">' +
       (CFG.brandImage ? '<img class="office-brand-logo" src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" />' : '<div class="office-lock-logo">🏢</div>') +
       '<h1>MD1&#117;sd Company — دخول خاص</h1>' +
-      '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر الخاصة بك أو بحساب Google؛ لا تُستخدم مفاتيح المالك.</p>' +
+      '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر الخاصة بك أو بحساب Google؛ لا تُستخدم مفاتيح مشتركة.</p>' +
       '<label>كلمة السر</label><input id="officePassInput" type="password" placeholder="كلمة سر المكتب..." autocomplete="current-password" />' +
       '<button id="officePassBtn" class="office-btn primary">دخول</button>' +
       '<button id="officeGoogleBtn" class="office-btn" type="button">🔵 متابعة عبر Google</button>' +
@@ -283,7 +283,7 @@
         var mode = currentMode();
         var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
-        var providerLine = 'Cloud: معطّل (مفاتيح المالك غير مستخدمة)' +
+        var providerLine = 'Cloud: معطّل (مفاتيحك أنت فقط)' +
           ' · OpenCode: ' + (r[0].connected ? 'متصل' : 'غير متصل') +
           ' · Zen: ' + (r[1].connected ? 'متصل' : 'غير متصل') +
           ' · Groq: ' + (r[2].connected ? 'متصل (' + r[2].free.length + ' مجاني)' : 'غير متصل') +
