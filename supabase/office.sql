@@ -324,6 +324,8 @@ $$;
 
 -- Atomic quota reserve. Returns used request count and the caller-supplied limit.
 -- ar: حجز ذري للحصة؛ الحد يأتي من إعدادات السيرفر وليس من المتصفح.
+drop function if exists public.office_quota_reserve(uuid, text, numeric, int);
+drop function if exists public.office_quota_release(uuid, text, numeric);
 create or replace function public.office_quota_reserve(
   p_user_id uuid,
   p_provider text,
