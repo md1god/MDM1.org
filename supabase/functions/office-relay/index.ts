@@ -13,7 +13,9 @@
 //
 // Secrets / env (Supabase Edge Function secrets):
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
-//   SUPABASE_PUBLISHABLE_KEY (or SUPABASE_ANON_KEY) — pinned public key,
+//   OFFICE_PUBLISHABLE_KEY, SUPABASE_ANON_KEY or SUPABASE_PUBLISHABLE_KEYS —
+//     pinned public keys (the dashboard reserves the SUPABASE_ prefix for
+//     custom secrets, so OFFICE_PUBLISHABLE_KEY is the configurable one),
 //   OFFICE_RELAY_SECRET            — legacy `message` shared secret only,
 //   OFFICE_QUEUE_SECRET            — required for `queue_run` (Actions runner),
 //   OFFICE_OTP_SALT                — server salt for SHA-256(code + salt),
@@ -30,6 +32,27 @@ const MAX_OTP_ATTEMPTS = 5;
 type AuthUser = { id: string; email: string };
 
 const env = (name: string): string => (Deno.env.get(name) || '').trim();
+
+// Supabase exposes publishable keys as a JSON dictionary under the default
+// SUPABASE_PUBLISHABLE_KEYS secret. The dashboard does not allow custom secrets
+// beginning with SUPABASE_, so OFFICE_PUBLISHABLE_KEY is the explicit override.
+function acceptedPublicKeys(): string[] {
+  const keys = new Set<string>();
+  for (const value of [env('OFFICE_PUBLISHABLE_KEY'), env('SUPABASE_ANON_KEY')]) {
+    if (value) keys.add(value);
+  }
+  const raw = env('SUPABASE_PUBLISHABLE_KEYS');
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      const values = Array.isArray(parsed) ? parsed : Object.values(parsed || {});
+      for (const value of values) {
+        if (typeof value === 'string' && value.trim()) keys.add(value.trim());
+      }
+    } catch (_) { /* malformed default secret: rely on explicit keys */ }
+  }
+  return [...keys];
+}
 
 function cors(req: Request) {
   const origin = req.headers.get('origin') || '';
@@ -111,7 +134,7 @@ function sanitizeSummary(input: any, depth = 0): any {
 // Both values are public; the service-role key is never accepted here.
 // ar: منع رموز مشاريع أخرى عبر تثبيت المفاتيح العامة في إعدادات السيرفر.
 function checkApiKey(req: Request): { ok: true; key: string } | { ok: false; status: number; error: string } {
-  const expected = [env('SUPABASE_PUBLISHABLE_KEY'), env('SUPABASE_ANON_KEY')].filter(Boolean);
+  const expected = acceptedPublicKeys();
   if (!expected.length) return { ok: false, status: 503, error: 'publishable key not configured' };
   const supplied = req.headers.get('apikey') || '';
   if (!supplied) return { ok: false, status: 401, error: 'apikey required' };
