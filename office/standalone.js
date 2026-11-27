@@ -2272,15 +2272,21 @@
     }));
   }
 
-  function distributeRoles(u, research) {
+  function distributeRoles(u, research, ledgerItems) {
     var byAgent = {};
     var riskFlag = REQUEST_HIGH_RX.test([u.goal, u.deliverables, (u.risks || []).join(' ')].join(' '));
     var title = String(u.deliverables || u.goal || 'مهمة جديدة').split(/[،,]/)[0].trim().slice(0, 110) || 'تنفيذ طلب المدير';
     var researchLine = (research || []).map(function (r) { return r.task + ' (' + r.engine + ')'; }).slice(0, 3).join('؛ ');
+    var itemTitles = {};
+    (ledgerItems || []).forEach(function (it) {
+      if (it && it.status === 'understood' && it.clarification !== true && it.agentId && !itemTitles[it.agentId]) {
+        itemTitles[it.agentId] = String(it.text || '').slice(0, 110);
+      }
+    });
 
     function add(agentId, reason, risk, suffix) {
       var ag = getAgent(agentId); if (!ag) return;
-      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: title, details: [], reason: reason, risk: risk || 'medium' };
+      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: itemTitles[agentId] || title, details: [], reason: reason, risk: risk || 'medium' };
       if (suffix && byAgent[agentId].details.indexOf(suffix) === -1) byAgent[agentId].details.push(suffix);
     }
 
@@ -2375,7 +2381,7 @@
     if (s.status !== 'awaiting_confirmation') return Promise.resolve(clone(s));
     return researchHardTasks(hardTasksFor(s.understanding, s.original)).then(function (research) {
       s.research = research;
-      s.plan = distributeRoles(s.understanding, research);
+      s.plan = distributeRoles(s.understanding, research, s.items);
       s.status = 'awaiting_execution';
       s.updatedAt = nowIso();
       var led = findLedgerEntry(s.ledgerId);

@@ -7,7 +7,7 @@
 window.OFFICE_CONFIG = {
   officeName: 'MD1\u0075sd Company',
   /* Local brand image copied into office/ (public, no secrets). */
-  brandImage: 'app-logo.png?v=20261127ui19',
+  brandImage: 'app-logo.png?v=20261127pwa19',
 
   /* Private page gate. The passphrase itself is never stored — only its hash. */
   requireUnlock: true,
