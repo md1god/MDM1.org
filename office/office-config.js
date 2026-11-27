@@ -7,7 +7,7 @@
 window.OFFICE_CONFIG = {
   officeName: 'المكتب الافتراضي للذكاء الاصطناعي',
   /* Local brand image copied into office/ (public, no secrets). */
-  brandImage: 'md1usd-logo.jfif?v=20261127pwa2',
+  brandImage: 'md1\u0075sd-logo.jfif?v=20261127pwa3',
 
   /* Private page gate. The passphrase itself is never stored — only its hash. */
   requireUnlock: true,

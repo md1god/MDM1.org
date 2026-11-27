@@ -3,11 +3,11 @@
    are never cached and are always fetched from the network. */
 (function () {
   'use strict';
-  var CACHE = 'mdm1-office-pwa-20261127pwa2';
+  var CACHE = 'mdm1-office-pwa-20261127pwa3';
   var CORE = [
     './', './index.html', './styles.css', './app.js', './office-config.js',
     './standalone.js', './pwa.js', './manifest.webmanifest',
-    './data.json', './md1usd-logo.jfif', './icon-192.png', './icon-512.png',
+    './data.json', './md1\u0075sd-logo.jfif', './icon-192.png', './icon-512.png',
     './apple-touch-icon.png'
   ];
   var STATIC = /\.(?:css|js|json|webmanifest|png|jfif|jpe?g|svg|html)$/i;

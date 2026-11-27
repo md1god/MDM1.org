@@ -33,7 +33,7 @@
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function safeJson(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
   function num(v, d) { var n = Number(v); return isFinite(n) ? n : (d || 0); }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function words(s) { return String(s || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(function (w) { return w.length > 2; }); }
 
@@ -2532,7 +2532,7 @@
     overlay.id = 'officeLock';
     overlay.innerHTML =
       '<div class="office-lock-card">' +
-      (CFG.brandImage ? '<img class="office-brand-logo" src="' + esc(CFG.brandImage) + '" alt="MD1usd Company" />' : '<div class="office-lock-logo">🏢</div>') +
+      (CFG.brandImage ? '<img class="office-brand-logo" src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" />' : '<div class="office-lock-logo">🏢</div>') +
       '<h1>المكتب الافتراضي — دخول خاص</h1>' +
       '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر أو بالرمز الموقّع من بوت تيليجرام.</p>' +
       '<label>كلمة السر</label><input id="officePassInput" type="password" placeholder="كلمة سر المكتب..." autocomplete="current-password" />' +
@@ -2644,7 +2644,7 @@
     modal.innerHTML =
       '<div class="office-modal-card">' +
       '<h2>🔌 الاتصال بالنماذج وبوت تيليجرام</h2>' +
-      (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1usd Company" /><div><strong>MD1usd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
+      (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" /><div><strong>MD1&#117;sd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
       '<p>اختر مزود النموذج. لا تُحفظ أي مفاتيح على أي سيرفر: تبقى في متصفحك فقط وتُرسل مباشرة إلى المزود. النماذج المجانية فقط هي المسموح بها.</p>' +
       '<div class="office-grid2">' +
       '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (الأفضل المتاح)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (سحابي)</option><option value="groq">Groq (مجاني/محدود الحصة)</option><option value="openrouter">OpenRouter (المجاني فقط)</option><option value="demo">تجريبي بدون نموذج</option></select></div>' +
