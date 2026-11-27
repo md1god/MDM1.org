@@ -5,7 +5,7 @@
 //   apikey: <public Supabase publishable/anon key>   (pinned to server env)
 //   Authorization: Bearer <Supabase access_token>    (verified via auth/v1/user)
 // The scheduled Actions runner uses x-office-queue-secret instead of a JWT.
-// Legacy outbound messaging uses x-office-secret (OFFICE_RELAY_SECRET).
+// No owner/shared secret is accepted anywhere.
 //
 // SECURITY: model keys are NEVER read here. `chat` and `models` tell the client
 // to use keys it supplies in the browser. Only deterministic, no-model work
@@ -16,7 +16,6 @@
 //   OFFICE_PUBLISHABLE_KEY, SUPABASE_ANON_KEY or SUPABASE_PUBLISHABLE_KEYS —
 //     pinned public keys (the dashboard reserves the SUPABASE_ prefix for
 //     custom secrets, so OFFICE_PUBLISHABLE_KEY is the configurable one),
-//   OFFICE_RELAY_SECRET            — legacy `message` shared secret only,
 //   OFFICE_QUEUE_SECRET            — required for `queue_run` (Actions runner),
 //   OFFICE_OTP_SALT                — server salt for SHA-256(code + salt),
 //   GROQ_DAILY_LIMIT (default 200), OPENROUTER_DAILY_LIMIT (default 200),
@@ -62,7 +61,7 @@ function cors(req: Request) {
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://mdm1.org',
     'Access-Control-Allow-Headers':
-      'authorization, apikey, x-client-info, content-type, x-office-secret, x-office-queue-secret',
+      'authorization, apikey, x-client-info, content-type, x-office-queue-secret',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     Vary: 'Origin'
   };
@@ -822,19 +821,11 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'message') {
-      /* Preferred path: the signed-in Google user's JWT. The legacy shared
-         relay secret remains only as a fallback for already-configured bots;
-         no user needs to know or enter the owner's secret. */
+      // Messaging always requires the signed-in Google user's JWT; no owner key.
       const api = checkApiKey(req);
       if (!api.ok) return send({ ok: false, error: api.error }, api.status);
       const auth = await verifyGoogleJwt(req, api.key);
-      if (!auth.ok) {
-        const expected = env('OFFICE_RELAY_SECRET');
-        const supplied = req.headers.get('x-office-secret') || String(body.secret || '');
-        if (!expected || !secretEquals(supplied, expected)) {
-          return send({ ok: false, error: 'Google sign-in required for messaging' }, 401);
-        }
-      }
+      if (!auth.ok) return send({ ok: false, error: 'Google sign-in required for messaging' }, 401);
       if (!backend()) return send({ ok: false, error: 'relay backend not configured' }, 503);
       return await handleLegacyMessage(send, body, req);
     }
