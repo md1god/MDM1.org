@@ -9,9 +9,10 @@ const ROOMS = [
   { id:'exec-hr', title:'👑 الإدارة التنفيذية والموارد البشرية', zones:['executive','hr-training'] },
   { id:'fin-sec', title:'💰 قسم المالية والأمان', zones:['finance-security'] },
   { id:'mkt', title:'📣 ركن التسويق والنمو', zones:['marketing'] },
-  { id:'res-eng', title:'🌐 مختبر البحث والخبراء والمطورين', zones:['research-lab','engineering-audit'] }
+  { id:'res-eng', title:'🌐 مختبر البحث والخبراء والمطورين', zones:['research-lab','engineering-audit'] },
+  { id:'legal', title:'⚖️ الشؤون القانونية والامتثال', zones:['legal'] }
 ];
-const VP = { 'hr-manager':{pitch:1.15,rate:1}, 'ai-trainer':{pitch:1.1,rate:1.05}, 'executive-assistant':{pitch:1.2,rate:1.08}, 'accountant':{pitch:1.05,rate:.96}, 'marketing-lead':{pitch:.95,rate:1.08}, 'security-officer':{pitch:.8,rate:.94}, 'web-research-team':{pitch:1,rate:1.05}, 'auditors-experts-devs':{pitch:.88,rate:1} };
+const VP = { 'hr-manager':{pitch:1.15,rate:1}, 'ai-trainer':{pitch:1.1,rate:1.05}, 'executive-assistant':{pitch:1.2,rate:1.08}, 'accountant':{pitch:1.05,rate:.96}, 'marketing-lead':{pitch:.95,rate:1.08}, 'security-officer':{pitch:.8,rate:.94}, 'web-research-team':{pitch:1,rate:1.05}, 'auditors-experts-devs':{pitch:.88,rate:1}, 'legal-accountant':{pitch:1,rate:.95}, 'legal-advisor':{pitch:.9,rate:1} };
 
 async function api(u,o={}){const r=await fetch(u,{headers:{'Content-Type':'application/json'},...o});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}

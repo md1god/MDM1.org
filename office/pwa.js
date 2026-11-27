@@ -3,7 +3,7 @@
   'use strict';
   var deferredPrompt = null;
   var installed = false;
-  var VERSION = '20261127pwa5';
+  var VERSION = '20261127pwa10';
   var standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
 
   function secureContext() {
@@ -52,7 +52,7 @@
         label = '💻 تثبيت التطبيق';
         title = 'ثبّت MD1\u0075sd Company على جهازك';
       } else {
-        label = '⬇️ تحميل التطبيق';
+        label = '💻 تثبيت التطبيق';
         title = 'إضافة MD1\u0075sd Company إلى الشاشة الرئيسية/التطبيقات';
       }
       /* Guard is essential: assigning textContent creates a childList mutation,
@@ -60,6 +60,38 @@
       if (btn.textContent !== label) btn.textContent = label;
       if (btn.getAttribute('title') !== title) btn.setAttribute('title', title);
     });
+  }
+
+  function showInstallHelp() {
+    var old = document.getElementById('pwaInstallModal');
+    if (old) old.remove();
+    var modal = document.createElement('div');
+    modal.id = 'pwaInstallModal';
+    modal.className = 'pwa-install-modal';
+    modal.innerHTML =
+      '<div class="pwa-install-card" role="dialog" aria-modal="true" aria-label="تثبيت التطبيق">' +
+      '<h2>💻 تثبيت مكتب MD1\u0075sd</h2>' +
+      '<p>هذا التطبيق يُثبَّت من المتصفح (PWA) ولا يوجد ملف تحميل بصيغة APK أو EXE. اتبع الخطوات حسب متصفحك:</p>' +
+      '<ol>' +
+      '<li><strong>Chrome / Edge على الكمبيوتر:</strong> القائمة ⋮ ← «تثبيت التطبيق» أو «حفظ وتثبيت».</li>' +
+      '<li><strong>iPhone Safari:</strong> زر المشاركة ← «إضافة إلى الشاشة الرئيسية».</li>' +
+      '<li><strong>Android Chrome:</strong> القائمة ⋮ ← «تثبيت التطبيق» / «إضافة إلى الشاشة الرئيسية».</li>' +
+      '<li><strong>Firefox:</strong> القائمة ← «تطبيق» ← «تثبيت الموقع كتطبيق».</li>' +
+      '</ol>' +
+      '<p class="pwa-install-note">يجب فتح الرابط على <code>https://mdm1.org/office/</code> — لا يعمل التثبيت من ملف محلي أو نافذة خاصة.</p>' +
+      '<div class="pwa-install-actions">' +
+      (deferredPrompt && typeof deferredPrompt.prompt === 'function' ? '<button type="button" class="office-btn primary" id="pwaPromptBtn">طلب تثبيت التطبيق</button>' : '') +
+      '<button type="button" class="office-btn" id="pwaCloseBtn">إغلاق</button>' +
+      '</div></div>';
+    document.body.appendChild(modal);
+    var close = function () { if (modal.parentNode) modal.remove(); };
+    modal.querySelector('#pwaCloseBtn').onclick = close;
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    var promptBtn = modal.querySelector('#pwaPromptBtn');
+    if (promptBtn) promptBtn.onclick = function () {
+      close();
+      install();
+    };
   }
 
   function install() {
@@ -79,7 +111,7 @@
       }).catch(function () { deferredPrompt = null; updateButtons(); });
       return;
     }
-    toast('للتثبيت يدوياً: Chrome / Edge → القائمة ⋮ ← «تثبيت التطبيق» · iPhone Safari ← «مشاركة» ثم «إضافة إلى الشاشة الرئيسية» · Firefox ← القائمة ← «تطبيق».\nالصفحة يجب أن تكون على https://mdm1.org/office/ أو localhost حتى يظهر خيار التثبيت.', 12000);
+    showInstallHelp();
   }
 
   function bind() {
@@ -92,7 +124,7 @@
     updateButtons();
   }
 
-  window.MDM1PWA = { install: install, toast: toast, isStandalone: standalone };
+  window.MDM1PWA = { install: install, showHelp: showInstallHelp, toast: toast, isStandalone: standalone };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
   else bind();
   if (window.MutationObserver) {

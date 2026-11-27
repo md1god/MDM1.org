@@ -615,6 +615,8 @@
     'auditors-experts-devs': ['deepseek-v4.1-flash-free', 'flint-40b-free', 'big-pickle'],
     'dev-auto': ['deepseek-v4.1-flash-free', 'big-pickle', 'flint-40b-free'],
     'sec-scout': ['iceman-free', 'deepseek-v4.1-flash-free', 'flint-40b-free'],
+    'legal-accountant': ['flint-40b-free', 'deepseek-v4.1-flash-free', 'big-pickle'],
+    'legal-advisor': ['deepseek-v4.1-flash-free', 'iceman-free', 'big-pickle'],
     'qa-exec-monitor': ['iceman-free', 'deepseek-v4.1-flash-free'],
     'qa-fin-auditor': ['flint-40b-free', 'deepseek-v4.1-flash-free'],
     'qa-mkt-corrector': ['big-pickle', 'nemotron-3.5-lightning-free']
@@ -680,7 +682,10 @@
     qaAgent('qa-mkt-corrector', 'marketing', 'التسويق والنمو', 'corrector', 'المحتوى والإعلانات والعملاء'),
     qaAgent('qa-res-monitor', 'research-lab', 'البحث والابتكار', 'monitor', 'مصادر البحث والفرص والتوصيات'),
     qaAgent('qa-res-auditor', 'research-lab', 'البحث والابتكار', 'auditor', 'مصادر البحث والفرص والتوصيات'),
-    qaAgent('qa-res-corrector', 'research-lab', 'البحث والابتكار', 'corrector', 'مصادر البحث والفرص والتوصيات')
+    qaAgent('qa-res-corrector', 'research-lab', 'البحث والابتكار', 'corrector', 'مصادر البحث والفرص والتوصيات'),
+    qaAgent('qa-legal-monitor', 'legal', 'الشؤون القانونية والامتثال', 'monitor', 'العقود والامتثال والضرائب'),
+    qaAgent('qa-legal-auditor', 'legal', 'الشؤون القانونية والامتثال', 'auditor', 'العقود والامتثال والضرائب'),
+    qaAgent('qa-legal-corrector', 'legal', 'الشؤون القانونية والامتثال', 'corrector', 'العقود والامتثال والضرائب')
   ];
   /* The core experts/auditors team (engineering-audit) is already the final
      authority for its own department, so it has no extra quality trio. */
@@ -689,7 +694,8 @@
     'finance-security': { monitor: 'qa-fin-monitor', auditor: 'qa-fin-auditor', corrector: 'qa-fin-corrector' },
     'hr-training': { monitor: 'qa-hr-monitor', auditor: 'qa-hr-auditor', corrector: 'qa-hr-corrector' },
     marketing: { monitor: 'qa-mkt-monitor', auditor: 'qa-mkt-auditor', corrector: 'qa-mkt-corrector' },
-    'research-lab': { monitor: 'qa-res-monitor', auditor: 'qa-res-auditor', corrector: 'qa-res-corrector' }
+    'research-lab': { monitor: 'qa-res-monitor', auditor: 'qa-res-auditor', corrector: 'qa-res-corrector' },
+    legal: { monitor: 'qa-legal-monitor', auditor: 'qa-legal-auditor', corrector: 'qa-legal-corrector' }
   };
   function getQaTeam(agentId) {
     var ag = getAgent(agentId);
@@ -720,6 +726,29 @@
         'القواعد الذهبية: لا تعرض السر كاملاً أبداً، اذكر آخر 4 أحرف فقط، صنّف الخطورة، وأوصِ بتشفير AES-256-GCM في خزنة محلية بكلمة مرور يدخلها المدير وحده.\n' +
         'أخرج النتائج بصيغة [SEC_FINDING severity="high|medium|low" where="المكان" kind="نوع السر"]وصف مختصر[/SEC_FINDING].',
       skillsMd: '- كشف المفاتيح المكشوفة\n- تعتيم الأسرار (redaction)\n- تقييم الثغرات\n- تشفير AES-256-GCM\n- تخزين آمن في المتصفح'
+    },
+    {
+      id: 'legal-accountant', name: 'المحاسب القانوني', englishName: 'Legal Accountant', avatar: '🧾',
+      department: 'الشؤون القانونية والامتثال', zone: 'legal', reportsTo: 'ceo', status: 'available',
+      requiresApprovalFor: ['approve_tax_filing', 'sign_financial_statement', 'submit_zakat'],
+      allowedTools: ['analyze_financials', 'tax_compliance', 'audit_invoices', 'generate_pnl_report', 'priority_execution'],
+      externalAccess: [], rankTitle: 'محاسب قانوني معتمد ⚖️', level: 4,
+      roleMd: 'أنت **المحاسب القانوني** في قسم الشؤون القانونية والامتثال. تجمع بين الدقة المحاسبية والالتزام القانوني والضريبي.\n' +
+        'المسؤوليات: مراجعة الفواتير والعقود المالية، حساب الضرائب والزكاة، تجهيز القوائم المالية الجاهزة للاعتماد، والتنبيه لأي بند يحتاج موافقة قانونية قبل الدفع أو الإفصاح.\n' +
+        'القواعد: لا توقّع ولا تقدّم أي إقرار ضريبي دون موافقة المدير؛ اذكر دائماً الأساس النظامي أو الافتراض المستخدم، وصنّف أي مخاطرة إلى high|medium|low.\n' +
+        'الإخراج المفضل: جدول مختصر + [COMPLIANCE risk="high|medium|low"]ملخص[/COMPLIANCE].',
+      skillsMd: '- المحاسبة القانونية والضريبية\n- مراجعة العقود المالية\n- إعداد القوائم المالية والتدفقات النقدية\n- الزكاة والضرائب\n- إدارة مخاطر الامتثال'
+    },
+    {
+      id: 'legal-advisor', name: 'المستشار القانوني', englishName: 'Legal Advisor', avatar: '⚖️',
+      department: 'الشؤون القانونية والامتثال', zone: 'legal', reportsTo: 'ceo', status: 'available',
+      requiresApprovalFor: ['sign_contract', 'external_legal_submission', 'publish_policy'],
+      allowedTools: ['review_contract', 'risk_assessment', 'policy_drafting', 'priority_execution'],
+      externalAccess: [], rankTitle: 'مستشار قانوني معتمد ⚖️', level: 4,
+      roleMd: 'أنت **المستشار القانوني** في المكتب. مهمتك حماية الشركة من المخاطر القانونية في العقود والسياسات والإعلانات والتعامل مع العملاء.\n' +
+        'المسؤوليات: مراجعة العقود و بنود الخدمة وسياسة الخصوصية، تحذير من الالتزامات غير المتوازنة، صياغة مسودات سياسات، وتصنيف المخاطر القانونية قبل أي نشر أو توقيع.\n' +
+        'القواعد: تقديم استشارة عامة لا تُعدّ رأياً قانونياً رسمياً، ولا توقع عن الشركة، ولا تفتح اتصالاً خارجياً دون موافقة. ارفع أي قرار عالي المخاطر بصيغة [LEGAL_RISK level="high"]السبب والتوصية[/LEGAL_RISK].',
+      skillsMd: '- مراجعة العقود واتفاقيات الخدمة\n- سياسات الخصوصية والإعلانات\n- تقييم المخاطر القانونية\n- صياغة مسودات السياسات\n- التنسيق مع المحاسب القانوني'
     }
   ];
 
@@ -804,7 +833,9 @@
     'marketing-lead': ['llama-3.1-8b-instant', 'openai/gpt-oss-20b'],
     'security-officer': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
     'web-research-team': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
-    'auditors-experts-devs': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile']
+    'auditors-experts-devs': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
+    'legal-accountant': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
+    'legal-advisor': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile']
   };
   var OPENROUTER_ROLE_MODELS = {
     'executive-assistant': ['baidu/ernie-5.5-flash-preview:free', 'liquid/lfm-3-1.7b:free'],
@@ -814,7 +845,9 @@
     'marketing-lead': ['liquid/lfm-3-1.7b:free', 'nvidia/nemotron-3.5-lightning:free'],
     'security-officer': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free'],
     'web-research-team': ['nvidia/nemotron-3.5-super-vl:free', 'baidu/ernie-5.5-flash-preview:free'],
-    'auditors-experts-devs': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free']
+    'auditors-experts-devs': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free'],
+    'legal-accountant': ['baidu/ernie-5.5-flash-preview:free', 'recursive/flint-v1.0:free'],
+    'legal-advisor': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free']
   };
   function rolePreferenceMap(provider) {
     if (provider === 'groq') return GROQ_ROLE_MODELS;
@@ -2726,7 +2759,7 @@
       '<div class="office-lock-or">أو</div>' +
       '<label>رمز تيليجرام (Secret Token)</label><input id="officeTokenInput" type="text" placeholder="الصق الرمز الذي أرسله البوت..." />' +
       '<button id="officeTokenBtn" class="office-btn">تحقق من الرمز</button>' +
-      '<button id="officeInstallBtn" class="office-btn install-app-btn" type="button">⬇️ تحميل التطبيق على الجهاز</button>' +
+      '<button id="officeInstallBtn" class="office-btn install-app-btn" type="button">💻 تثبيت التطبيق على الجهاز</button>' +
       '<div id="officeLockMsg" class="office-lock-msg"></div>' +
       '<div class="office-lock-links"><a id="officeBotLink" href="#" target="_blank" rel="noopener">افتح بوت تيليجرام</a><span>•</span><a href="https://mdm1.org/" target="_blank" rel="noopener">mdm1.org</a></div>' +
       '</div>';
