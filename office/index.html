@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>المكتب الافتراضي للذكاء الاصطناعي | AI Virtual Office</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta property="og:image" content="https://mdm1.org/images/og-card.jpg" />
+  <meta name="description" content="MDM1 AI Virtual Office — private workspace" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A2%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- MDM1 site-wide auth script: present for the deploy checker, disabled on this private page. -->
+  <script src="/js/mdm1-auth-button.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">🏢</div>
+        <div>
+          <h1>المكتب الافتراضي للذكاء الاصطناعي</h1>
+          <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div id="ragBadge" class="cost-badge" title="الذاكرة المتجهة RAG">🧠 0 ذكرى</div>
+        <div id="costBadge" class="cost-badge" title="مراقب التوكنز والتكلفة">🪙 0 tok | $0.00</div>
+        <div id="providerBadge" class="provider-badge">جاري التحميل...</div>
+        <button class="btn btn-danger" id="killSwitchTopBtn" onclick="triggerKillSwitchQuick()">🚨 زر الطوارئ</button>
+        <button class="btn btn-secondary" id="dailyBriefBtn">☀️ النشرة الصباحية</button>
+        <button class="btn btn-cyan" id="openWorkflowModalBtn">🚀 مسار مشروع تلقائي</button>
+        <button class="btn btn-secondary" id="openTaskModalBtn">+ إسناد مهمة</button>
+        <button class="btn btn-primary" id="openHireModalBtn">+ تعيين (HR)</button>
+      </div>
+    </header>
+    <div id="emergencyBanner" class="emergency-banner hidden">
+      <span>🚨 <strong>وضع الطوارئ وإدارة الأزمات نشط!</strong> تم تجميد جميع الـ Webhooks والمهام المجدولة والحملات التسويقية المعلقة.</span>
+      <button class="btn btn-approve" onclick="recoverEmergency()">✓ استعادة التشغيل الطبيعي</button>
+    </div>
+
+    <div class="main-layout">
+      <aside class="sidebar">
+        <nav class="nav-list">
+          <button class="nav-item active" data-tab="office"><span class="nav-icon">🖥️</span><span>المكتب المرئي</span></button>
+          <button class="nav-item" data-tab="chat"><span class="nav-icon">💬</span><span>المحادثات والصوت</span></button>
+          <button class="nav-item" data-tab="approvals"><span class="nav-icon">⏳</span><span>بانتظار الموافقة</span><span id="pendingCountBadge" class="count-badge">0</span></button>
+          <button class="nav-item" data-tab="votes"><span class="nav-icon">🗳️</span><span>التصويت الديمقراطي</span></button>
+          <button class="nav-item" data-tab="crm"><span class="nav-icon">💼</span><span>العملاء (CRM)</span></button>
+          <button class="nav-item" data-tab="kpi"><span class="nav-icon">🏆</span><span>الترقيات و KPI</span></button>
+          <button class="nav-item" data-tab="memos"><span class="nav-icon">📨</span><span>البريد الداخلي</span><span id="memoCountBadge" class="count-badge memo-badge">0</span></button>
+          <button class="nav-item" data-tab="pnl"><span class="nav-icon">📊</span><span>الأرباح والخسائر</span></button>
+          <button class="nav-item" data-tab="simulator"><span class="nav-icon">🔮</span><span>المحاكاة المالية</span></button>
+          <button class="nav-item" data-tab="playbooks"><span class="nav-icon">📖</span><span>قوالب المشاريع</span></button>
+          <button class="nav-item" data-tab="snapshots"><span class="nav-icon">🔐</span><span>النسخ الاحتياطي</span></button>
+          <button class="nav-item" data-tab="incident"><span class="nav-icon">🚨</span><span>إدارة الأزمات</span></button>
+          <button class="nav-item" data-tab="scheduler"><span class="nav-icon">🕐</span><span>المُجدول والتوسع</span></button>
+          <button class="nav-item" data-tab="knowledge"><span class="nav-icon">📚</span><span>المعرفة والملفات</span></button>
+          <button class="nav-item" data-tab="sandbox"><span class="nav-icon">💻</span><span>بيئة المطورين</span></button>
+          <button class="nav-item" data-tab="org"><span class="nav-icon">🌳</span><span>هيكل الشركة</span></button>
+          <button class="nav-item" data-tab="audit"><span class="nav-icon">📜</span><span>سجل التدقيق</span></button>
+          <button class="nav-item" data-tab="integrations"><span class="nav-icon">🔌</span><span>التكاملات</span></button>
+        </nav>
+        <div class="sidebar-stats">
+          <h4>حالة الفريق</h4>
+          <div class="stat-row"><span class="dot available"></span> متاح: <strong id="statAvailable">0</strong></div>
+          <div class="stat-row"><span class="dot working"></span> يعمل: <strong id="statWorking">0</strong></div>
+          <div class="stat-row"><span class="dot waiting_approval"></span> ينتظر: <strong id="statWaiting">0</strong></div>
+        </div>
+      </aside>
+
+      <main class="content-area">
+        <!-- OFFICE -->
+        <section id="tab-office" class="tab-panel active">
+          <div class="panel-header">
+            <div><h2>المكتب الافتراضي التفاعلي (2.5D)</h2><p>غرف حقيقية، فقاعات حوار حية، ذاكرة RAG، ورتب الموظفين</p></div>
+            <div class="legend"><span><i class="dot available"></i> متاح</span><span><i class="dot working"></i> يعمل</span><span><i class="dot waiting_approval"></i> ينتظر</span></div>
+          </div>
+          <div class="office-stage">
+            <div id="meetingRoomBox" class="meeting-room hidden"><div class="meeting-room-header"><span>🏛️ غرفة الاجتماعات الزجاجية — اجتماع جارٍ</span><button class="btn btn-secondary" onclick="endMeeting()">إنهاء الاجتماع</button></div><div id="meetingAvatars" class="meeting-avatars"></div></div>
+            <div id="officeRooms" class="office-rooms"></div>
+          </div>
+          <div class="tasks-strip"><h3>📌 المهام الجارية</h3><div id="tasksGrid" class="tasks-grid"></div></div>
+        </section>
+
+        <!-- CHAT -->
+        <section id="tab-chat" class="tab-panel">
+          <div class="chat-toolbar">
+            <div class="chat-mode-switcher"><button class="mode-btn active" data-chatmode="direct">👤 شات فردي (مع ذاكرة RAG)</button><button class="mode-btn" data-chatmode="team">👥 اجتماع جماعي</button></div>
+            <label class="voice-toggle"><input type="checkbox" id="ttsToggle" /><span>🔊 تفعيل الرد الصوتي (TTS)</span></label>
+          </div>
+          <div id="directChatView" class="chat-container">
+            <div class="chat-agents-list" id="chatAgentsList"></div>
+            <div class="chat-main">
+              <div class="chat-header" id="directChatHeader"><span>اختر موظفاً</span></div>
+              <div class="chat-messages" id="directChatMessages"></div>
+              <form class="chat-input-bar" id="directChatForm">
+                <button type="button" class="btn btn-secondary" id="directMicBtn" title="تحدث بالمايكروفون">🎤</button>
+                <input type="text" id="directChatInput" placeholder="اكتب رسالتك (يتذكر الموظف المحادثات السابقة تلقائياً عبر RAG)..." autocomplete="off" />
+                <button type="submit" class="btn btn-primary" id="directSendBtn">إرسال</button>
+              </form>
+            </div>
+            <div class="agent-inspector" id="agentInspector"><h4>ملف الموظف</h4><div class="inspector-empty">اختر موظفاً لعرض ملفاته.</div></div>
+          </div>
+          <div id="teamChatView" class="team-chat-container hidden">
+            <div class="team-attendees-bar"><span>الحضور:</span><div id="attendeeCheckboxes" class="attendee-pills"></div></div>
+            <div class="chat-messages" id="teamChatMessages"></div>
+            <form class="chat-input-bar" id="teamChatForm">
+              <button type="button" class="btn btn-secondary" id="teamMicBtn" title="تحدث بالمايكروفون">🎤</button>
+              <input type="text" id="teamChatInput" placeholder="وجّه أمراً للفريق..." autocomplete="off" />
+              <button type="submit" class="btn btn-primary" id="teamSendBtn">إرسال للفريق</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- APPROVALS -->
+        <section id="tab-approvals" class="tab-panel">
+          <div class="panel-header"><div><h2>بانتظار الموافقة</h2><p>الموافقة تنفّذ الإجراء فعلياً (تعيين، توسع تلقائي، تحديث مهارات، نشر تسويقي، تصدير مالي)</p></div></div>
+          <div id="approvalsList" class="approvals-list"></div>
+        </section>
+
+        <!-- DEMOCRATIC VOTING -->
+        <section id="tab-votes" class="tab-panel">
+          <div class="panel-header">
+            <div><h2>🗳️ نظام التصويت الديمقراطي للقرارات الكبرى</h2><p>اطرح القرار على 3 أقسام أو أكثر لتصوّت وتعرض أسبابها قبل اعتمادك النهائي.</p></div>
+          </div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <h3>طرح تصويت جديد على الأقسام</h3>
+            <form id="voteForm" style="display:grid;gap:9px;margin-top:8px;">
+              <input type="text" id="voteTopicInput" placeholder="موضوع القرار (مثال: اختيار أفضل منصة أتمتة للشركة)" required />
+              <input type="text" id="voteOptionsInput" placeholder="الخيارات مفصولة بفاصلة (مثال: n8n, Make, تطوير مخصص بـ Node.js)" required />
+              <div style="font-size:12px;color:var(--muted);">الأقسام المصوّتة:</div>
+              <div id="voterCheckboxes" class="attendee-pills"></div>
+              <div><button type="submit" class="btn btn-primary" id="runVoteBtn">🗳️ بدء التصويت الآن</button></div>
+            </form>
+          </div>
+          <div id="votesList" class="approvals-list"></div>
+        </section>
+
+        <!-- CRM MODULE -->
+        <section id="tab-crm" class="tab-panel">
+          <div class="panel-header">
+            <div><h2>💼 لوحة العملاء (CRM)</h2><p>ربط كل عميل بمشروعه ومدفوعاته — يتعامل معه مسؤول التسويق والمحاسبة مباشرة.</p></div>
+            <button class="btn btn-primary" onclick="document.getElementById('customerModal').classList.remove('hidden')">+ إضافة عميل جديد</button>
+          </div>
+          <div id="crmSummary" class="pnl-summary" style="margin-bottom:14px;"></div>
+          <div id="customersList" class="approvals-list"></div>
+        </section>
+
+        <!-- GAMIFICATION & KPI -->
+        <section id="tab-kpi" class="tab-panel">
+          <div class="panel-header">
+            <div><h2>🏆 نظام المكافآت والترقيات وتقييم الأداء (KPI)</h2><p>نقاط الأداء تتحول تلقائياً لترقيات وظيفية وتوسيع صلاحيات في permissions.json.</p></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary" onclick="document.getElementById('awardModal').classList.remove('hidden')">⭐ منح مكافأة</button>
+              <button class="btn btn-primary" onclick="triggerSchedule('weekly-trainer-kpi')">▶️ تشغيل تقييم المدربة الآن</button>
+            </div>
+          </div>
+          <div id="leaderboardGrid" class="tasks-grid" style="margin-bottom:16px;"></div>
+          <h3 style="font-size:15px;margin-bottom:10px;">📈 تقارير تقييم المدربة</h3>
+          <div id="kpiList" class="approvals-list"></div>
+        </section>
+
+        <!-- INTERNAL MEMOS -->
+        <section id="tab-memos" class="tab-panel">
+          <div class="panel-header"><div><h2>📨 البريد الداخلي بين الموظفين</h2><p>مذكرات داخلية يرسلها الموظفون لبعضهم تلقائياً أو يدوياً.</p></div>
+            <button class="btn btn-secondary" onclick="document.getElementById('memoModal').classList.remove('hidden')">+ إرسال مذكرة يدوية</button>
+          </div>
+          <div id="memosList" class="approvals-list"></div>
+        </section>
+
+        <!-- P&L Dashboard -->
+        <section id="tab-pnl" class="tab-panel">
+          <div class="panel-header"><div><h2>📊 لوحة الأرباح والخسائر الحية (P&L)</h2><p>مدفوعات العملاء + تكاليف APIs + المصروفات = صافي الربح.</p></div>
+            <button class="btn btn-secondary" onclick="document.getElementById('ledgerModal').classList.remove('hidden')">+ إضافة قيد مالي</button>
+          </div>
+          <div id="pnlSummary" class="pnl-summary"></div>
+          <canvas id="pnlChart" width="700" height="220" style="margin-top:16px;"></canvas>
+          <div id="ledgerList" class="approvals-list" style="margin-top:16px;"></div>
+        </section>
+
+        <!-- SCHEDULER & SELF-EXPANDING HR -->
+        <section id="tab-scheduler" class="tab-panel">
+          <div class="panel-header">
+            <div><h2>🕐 المُجدول التلقائي ومراقبة ضغط العمل (Self-Expanding HR)</h2><p>تشغيل المهام الدورية في الخلفية ومراقبة HR التلقائية لاقتراح تعيين مساعدين عند الضغط.</p></div>
+            <button class="btn btn-cyan" onclick="runHrWorkloadCheckNow()">🤖 فحص ضغط العمل الآن (HR)</button>
+          </div>
+          <div id="schedulesList" class="approvals-list"></div>
+        </section>
+
+        <!-- KNOWLEDGE -->
+        <section id="tab-knowledge" class="tab-panel">
+          <div class="panel-header"><div><h2>ذاكرة الشركة المشتركة والمخرجات</h2><p>يقرأ جميع الموظفين ملفات المعرفة تلقائياً قبل الرد.</p></div></div>
+          <div class="split-grid">
+            <div class="card-box"><h3>📚 ملفات المعرفة (knowledge/)</h3><div id="knowledgeEditorList"></div></div>
+            <div class="card-box"><h3>📁 المخرجات المصدّرة (exports/)</h3><div id="exportsList"></div></div>
+          </div>
+        </section>
+
+        <!-- SANDBOX -->
+        <section id="tab-sandbox" class="tab-panel">
+          <div class="panel-header"><div><h2>💻 بيئة المطورين (Sandbox & Git)</h2><p>كتابة كود تجريبي وإدارة فروع Git.</p></div></div>
+          <div class="split-grid">
+            <div class="card-box">
+              <h3>🔀 معلومات Git</h3>
+              <div id="gitInfo"></div>
+              <form id="branchForm" class="chat-input-bar" style="border:none;padding:10px 0 0;"><input type="text" id="branchNameInput" placeholder="اسم الفرع الجديد..." /><button type="submit" class="btn btn-primary">إنشاء فرع</button></form>
+            </div>
+            <div class="card-box">
+              <h3>📝 ملفات بيئة الاختبار (sandbox/)</h3>
+              <div id="sandboxFilesList"></div>
+              <form id="sandboxFileForm" style="margin-top:10px;">
+                <input type="text" id="sandboxFilename" placeholder="اسم الملف (مثل: test.py)" style="width:100%;margin-bottom:6px;" />
+                <textarea id="sandboxContent" rows="4" placeholder="محتوى الملف..." style="width:100%;margin-bottom:6px;"></textarea>
+                <button type="submit" class="btn btn-primary">حفظ الملف</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ORG -->
+        <section id="tab-org" class="tab-panel">
+          <div class="panel-header"><div><h2>الهيكل التنظيمي للشركة</h2></div></div>
+          <div id="orgChartContainer" class="org-chart"></div>
+        </section>
+
+        <!-- AUDIT -->
+        <section id="tab-audit" class="tab-panel">
+          <div class="panel-header"><div><h2>📜 سجل التدقيق الكامل ومراقب التكلفة</h2></div></div>
+          <div id="costBreakdown" class="tasks-grid" style="margin-bottom:16px;"></div>
+          <div id="auditLogList" class="approvals-list"></div>
+        </section>
+
+        <!-- INTEGRATIONS -->
+        <section id="tab-integrations" class="tab-panel">
+          <div class="panel-header"><div><h2>التكاملات الخارجية والبحث على الويب</h2></div></div>
+          <div id="integrationsStatus" class="webhooks-grid" style="margin-bottom:16px;"></div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <h3>🌐 اختبار البحث الحي على الويب</h3>
+            <form id="webSearchTestForm" class="chat-input-bar" style="border:none;padding:10px 0 0;"><input type="text" id="webSearchQueryInput" placeholder="AI SaaS tools 2026..." /><button type="submit" class="btn btn-primary">بحث</button></form>
+            <div id="webSearchResults" style="margin-top:10px;font-size:13px;"></div>
+          </div>
+          <div id="webhooksGrid" class="webhooks-grid"></div>
+        </section>
+
+        <!-- WHAT-IF SIMULATOR -->
+        <section id="tab-simulator" class="tab-panel">
+          <div class="panel-header"><div><h2>🔮 وضع المحاكاة المالية والتسويقية (What-If Simulator)</h2><p>اختبر 3 سيناريوهات (متحفظ / واقعي / متفائل) واحسب نقطة التعادل بمشاركة المحاسبة والتسويق قبل إطلاق أي مشروع.</p></div></div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <form id="simulatorForm" class="sim-form-grid">
+              <div><label>اسم المشروع</label><input type="text" id="simName" value="باقة الأتمتة للشركات" required /></div>
+              <div><label>التكاليف الثابتة ($)</label><input type="number" id="simFixed" value="120" step="0.01" required /></div>
+              <div><label>ميزانية الإعلانات ($)</label><input type="number" id="simAd" value="150" step="0.01" required /></div>
+              <div><label>سعر الاشتراك للعميل ($)</label><input type="number" id="simPrice" value="49" step="0.01" required /></div>
+              <div><label>تكلفة API للعميل ($)</label><input type="number" id="simApi" value="5" step="0.01" required /></div>
+              <div><label>نسبة التحويل المتوقعة (%)</label><input type="number" id="simConv" value="3" step="0.1" required /></div>
+              <div><label>تكلفة النقرة CPC ($)</label><input type="number" id="simCpc" value="0.7" step="0.05" required /></div>
+              <div style="display:flex;align-items:flex-end;"><button type="submit" class="btn btn-primary" id="runSimBtn" style="width:100%">🔮 تشغيل المحاكاة الآن</button></div>
+            </form>
+          </div>
+          <div id="simulationsList" class="approvals-list"></div>
+        </section>
+
+        <!-- COMPANY PLAYBOOKS -->
+        <section id="tab-playbooks" class="tab-panel">
+          <div class="panel-header"><div><h2>📖 مكتبة قوالب المشاريع (Company Playbooks / SOPs)</h2><p>إجراءات قياسية جاهزة تطلق سلسلة مهام ومذكرات مترابطة بين الأقسام بضغطة زر.</p></div></div>
+          <div style="margin-bottom:12px;"><input type="text" id="playbookProjectTitle" placeholder="اسم المشروع المرتبط بالقالب (اختياري، مثال: تطبيق متجر النخبة)" style="width:min(450px,100%);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:inherit;" /></div>
+          <div id="playbooksGrid" class="webhooks-grid"></div>
+        </section>
+
+        <!-- ENCRYPTED SNAPSHOTS & TIME-TRAVEL -->
+        <section id="tab-snapshots" class="tab-panel">
+          <div class="panel-header"><div><h2>🔐 النسخ الاحتياطية المشفرة والاستعادة (AES-256-GCM)</h2><p>احفظ كامل ملفات الشركة (agents/, knowledge/, data/) في حزمة مشفرة مع إمكانية العودة بالزمن (Time-Travel Rollback).</p></div></div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <form id="snapshotForm" class="sim-form-grid">
+              <div><label>تسمية النسخة</label><input type="text" id="snapLabel" placeholder="قبل إطلاق الحملة الكبرى" required /></div>
+              <div><label>كلمة مرور التشفير (اختياري — يستخدم WEBHOOK_SECRET افتراضياً)</label><input type="password" id="snapPass" placeholder="كلمة سر قوية..." /></div>
+              <div style="display:flex;align-items:flex-end;"><button type="submit" class="btn btn-primary" style="width:100%">💾 إنشاء نسخة مشفرة الآن</button></div>
+            </form>
+          </div>
+          <div id="snapshotsList" class="approvals-list"></div>
+        </section>
+
+        <!-- INCIDENT & RECOVERY MODE -->
+        <section id="tab-incident" class="tab-panel">
+          <div class="panel-header"><div><h2>🚨 مركز إدارة الأزمات والطوارئ (Incident & Recovery)</h2><p>إيقاف فوري لجميع الـ Webhooks والمهام المجدولة والحملات التسويقية وتكليف مسؤول الأمان بتقرير الحادثة.</p></div></div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <form id="incidentForm" class="chat-input-bar" style="border:none;padding:0;">
+              <input type="text" id="incidentReasonInput" placeholder="سبب تفعيل حالة الطوارئ (مثال: اشتباه نشاط غير مصرح في Webhook)..." />
+              <button type="submit" class="btn btn-danger" id="triggerIncidentBtn">🚨 تفعيل زر الطوارئ (Kill Switch)</button>
+              <button type="button" class="btn btn-approve" onclick="recoverEmergency()">✓ استعادة التشغيل الطبيعي</button>
+            </form>
+          </div>
+          <div id="incidentsList" class="approvals-list"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="workflowModal" class="modal hidden"><div class="modal-card"><h3>🚀 مسار مشروع تلقائي بين الأقسام</h3><p style="font-size:12px;color:var(--muted);margin-bottom:10px;">بحث ← خبراء ← محاسبة ← أمان ← قرار نهائي</p><form id="workflowForm"><label>فكرة المشروع</label><textarea id="workflowIdeaInput" rows="3" required></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeWorkflowModalBtn">إلغاء</button><button type="submit" class="btn btn-cyan" id="runWorkflowBtn">تشغيل المسار</button></div></form></div></div>
+
+  <div id="taskModal" class="modal hidden"><div class="modal-card"><h3>📌 إسناد مهمة</h3><form id="taskForm"><label>الموظف</label><select id="taskAgentSelect" required></select><label>عنوان المهمة</label><input type="text" id="taskTitleInput" required /><label>التفاصيل</label><textarea id="taskDescInput" rows="3"></textarea><label class="checkbox-row"><input type="checkbox" id="taskApprovalCheck" /><span>تتطلب موافقتي</span></label><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeTaskModalBtn">إلغاء</button><button type="submit" class="btn btn-primary">إسناد</button></div></form></div></div>
+
+  <div id="hireModal" class="modal hidden"><div class="modal-card"><h3>👩‍💼 تعيين موظف جديد</h3><form id="hireForm"><label>المعرّف (en)</label><input type="text" id="hireIdInput" required /><label>الاسم (عربي)</label><input type="text" id="hireNameInput" required /><label>القسم</label><input type="text" id="hireDeptInput" required /><label>أيقونة</label><input type="text" id="hireAvatarInput" value="🤖" maxlength="4" /><label>الوصف</label><textarea id="hireRoleInput" rows="2"></textarea><label>المهارات</label><textarea id="hireSkillsInput" rows="2"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeHireModalBtn">إلغاء</button><button type="submit" class="btn btn-primary">إنشاء</button></div></form></div></div>
+
+  <div id="memoModal" class="modal hidden"><div class="modal-card"><h3>📨 إرسال مذكرة داخلية</h3><form id="memoForm"><label>من</label><select id="memoFromSelect"></select><label>إلى</label><select id="memoToSelect"></select><label>الموضوع</label><input type="text" id="memoSubjectInput" required /><label>المحتوى</label><textarea id="memoBodyInput" rows="3"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('memoModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">إرسال المذكرة</button></div></form></div></div>
+
+  <div id="ledgerModal" class="modal hidden"><div class="modal-card"><h3>📊 إضافة قيد مالي</h3><form id="ledgerForm"><label>النوع</label><select id="ledgerTypeSelect"><option value="revenue">إيراد (Revenue)</option><option value="expense">مصروف (Expense)</option></select><label>الوصف</label><input type="text" id="ledgerTitleInput" required /><label>المبلغ بالدولار</label><input type="number" id="ledgerAmountInput" step="0.01" required /><label>ملاحظات</label><input type="text" id="ledgerNotesInput" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('ledgerModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">إضافة</button></div></form></div></div>
+
+  <div id="customerModal" class="modal hidden"><div class="modal-card"><h3>💼 إضافة عميل جديد (CRM)</h3><form id="customerForm"><label>اسم العميل / الشركة</label><input type="text" id="custNameInput" required /><label>اسم جهة الاتصال</label><input type="text" id="custContactInput" /><label>البريد الإلكتروني</label><input type="email" id="custEmailInput" /><label>اسم المشروع</label><input type="text" id="custProjectInput" required /><label>قيمة العقد ($)</label><input type="number" id="custValueInput" step="0.01" value="200" /><label>المرحلة</label><select id="custStageSelect"><option value="عميل محتمل">عميل محتمل</option><option value="قيد التفاوض">قيد التفاوض</option><option value="نشط">نشط</option></select><label>ملاحظات</label><textarea id="custNotesInput" rows="2"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('customerModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">حفظ العميل</button></div></form></div></div>
+
+  <div id="awardModal" class="modal hidden"><div class="modal-card"><h3>⭐ منح نقاط مكافأة لموظف</h3><form id="awardForm"><label>الموظف</label><select id="awardAgentSelect"></select><label>عدد النقاط</label><input type="number" id="awardPointsInput" value="50" required /><label>السبب</label><input type="text" id="awardReasonInput" placeholder="أداء متميز في المشروع" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('awardModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">منح النقاط</button></div></form></div></div>
+
+  <!-- Keeps the injected site-wide sign-in button from appearing on this hidden page. -->
+  <div id="account-panel" hidden></div>
+  <!-- Standalone runtime must load first: it installs the /api/* shim before the UI boots. -->
+  <script src="office-config.js"></script>
+  <script src="standalone.js"></script>
+  <script>
+    // Start the UI only after company data is loaded and the private gate is passed.
+    (window.MDM1Office && window.MDM1Office.ready || Promise.resolve()).then(function () {
+      var s = document.createElement('script');
+      s.src = 'app.js';
+      document.body.appendChild(s);
+    });
+  </script>
+</body>
+</html>

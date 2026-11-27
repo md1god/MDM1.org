@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta property="og:image" content="https://mdm1.org/images/og-card.jpg" />
+  <title>بوابة العميل | MDM1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="/js/mdm1-auth-button.js" defer></script>
+  <style>
+    body{margin:0;background:#08090d;color:#e8ecf5;font-family:Cairo,system-ui,sans-serif;direction:rtl;}
+    .wrap{max-width:860px;margin:0 auto;padding:36px 18px 60px;}
+    .card{background:linear-gradient(160deg,#14161d,#0d0e13);border:1px solid #262a35;border-radius:18px;padding:24px;margin-bottom:16px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+    h1{font-size:24px;margin:0 0 6px;color:#e8c96a}
+    h2{font-size:16px;margin:0 0 12px;color:#c9a84c}
+    .sub{color:#8e97a8;font-size:13px;line-height:1.8}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}
+    .kpi{background:#0b0d12;border:1px solid #242833;border-radius:12px;padding:14px}
+    .kpi span{display:block;color:#8e97a8;font-size:12px}
+    .kpi strong{display:block;font-size:22px;margin-top:4px;color:#6ee7b7}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:10px 8px;border-bottom:1px solid #222632;text-align:right}
+    th{color:#c9a84c;font-size:12px}
+    .tag{display:inline-block;padding:3px 9px;border-radius:20px;background:#172033;color:#7dd3fc;font-size:11px}
+    .bar{height:9px;background:#222632;border-radius:20px;overflow:hidden;margin-top:8px}
+    .bar i{display:block;height:100%;background:linear-gradient(90deg,#c9a84c,#6ee7b7)}
+    a{color:#c9a84c;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>🏢 بوابة العميل — MDM1</h1>
+      <div class="sub">هذه الصفحة تعرض ملخص مشروعك من المكتب الافتراضي. البيانات محفوظة محلياً في متصفحك.</div>
+    </div>
+    <div id="content"></div>
+  </div>
+  <div id="account-panel" hidden></div>
+  <script src="office-config.js"></script>
+  <script>
+    (function () {
+      var token = new URLSearchParams(location.search).get('t') || '';
+      var key = window.OFFICE_CONFIG && window.OFFICE_CONFIG.storageKey || 'mdm1_office_v2';
+      var state = {};
+      try { state = JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) {}
+      var c = (state.customers || []).find(function (x) { return x.portalToken === token; });
+      var out = document.getElementById('content');
+      if (!c) {
+        out.innerHTML = '<div class="card"><h2>🔒 رابط غير صالح</h2><div class="sub">لم يتم العثور على هذا الرابط. افتح بوابة العميل من داخل المكتب الافتراضي.</div><p><a href="index.html">← العودة</a></p></div>';
+        return;
+      }
+      var pct = c.totalValueUsd > 0 ? Math.min(100, Math.round(c.paidUsd / c.totalValueUsd * 100)) : 0;
+      var tasks = (state.tasks || []).filter(function (t) {
+        return t.agentId === c.assignedTo || String(t.title || '').indexOf(c.name) !== -1;
+      }).slice(0, 10);
+      var ledger = (state.financialLedger || []).filter(function (x) {
+        return String(x.title || '').indexOf(c.name) !== -1;
+      }).slice(0, 10);
+      out.innerHTML =
+        '<div class="card">' +
+          '<h2>' + esc(c.name) + ' <span class="tag">' + esc(c.stage) + '</span></h2>' +
+          '<div class="sub">المشروع: <strong>' + esc(c.projectTitle) + '</strong><br>' +
+          'جهة الاتصال: ' + esc(c.contactName) + ' • ' + esc(c.email) + ' • ' + esc(c.phone) + '</div>' +
+          '<div class="grid">' +
+            '<div class="kpi"><span>قيمة العقد</span><strong>$' + num(c.totalValueUsd) + '</strong></div>' +
+            '<div class="kpi"><span>المحصّل</span><strong>$' + num(c.paidUsd) + '</strong></div>' +
+            '<div class="kpi"><span>المتبقي</span><strong>$' + num(c.totalValueUsd - c.paidUsd) + '</strong></div>' +
+          '</div>' +
+          '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+          '<div class="sub">نسبة الإنجاز المالي: ' + pct + '%</div>' +
+        '</div>' +
+        '<div class="card"><h2>📋 المهام المرتبطة</h2>' +
+          (tasks.length ? '<table><tr><th>المهمة</th><th>الحالة</th></tr>' + tasks.map(function (t) {
+            return '<tr><td>' + esc(t.title) + '</td><td>' + esc(t.status) + '</td></tr>';
+          }).join('') + '</table>' : '<div class="sub">لا توجد مهام مرتبطة حالياً.</div>') +
+        '</div>' +
+        '<div class="card"><h2>💰 الدفعات</h2>' +
+          (ledger.length ? '<table><tr><th>البيان</th><th>التاريخ</th><th>المبلغ</th></tr>' + ledger.map(function (x) {
+            return '<tr><td>' + esc(x.title) + '</td><td>' + esc(x.date) + '</td><td>$' + num(x.amountUsd) + '</td></tr>';
+          }).join('') + '</table>' : '<div class="sub">لا توجد دفعات مسجلة بعد.</div>') +
+        '</div>' +
+        '<p><a href="index.html">← العودة إلى المكتب</a></p>';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+      function num(n) { return Number(n || 0).toFixed(2); }
+    })();
+  </script>
+</body>
+</html>
