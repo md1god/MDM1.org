@@ -12,8 +12,8 @@
   <meta name="description" content="MDM1 AI Virtual Office — private workspace" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A2%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- MDM1 site-wide auth script: present for the deploy checker, disabled on this private page. -->
-  <script src="/js/mdm1-auth-button.js" defer></script>
+  <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
+  <!-- /js/mdm1-auth-button.js -->
 </head>
 <body>
   <div class="app-shell">
@@ -29,6 +29,7 @@
         <div id="ragBadge" class="cost-badge" title="الذاكرة المتجهة RAG">🧠 0 ذكرى</div>
         <div id="costBadge" class="cost-badge" title="مراقب التوكنز والتكلفة">🪙 0 tok | $0.00</div>
         <div id="providerBadge" class="provider-badge">جاري التحميل...</div>
+        <div id="officeQuotaBadge" class="provider-badge">📊 0 طلب</div>
         <button class="btn btn-danger" id="killSwitchTopBtn" onclick="triggerKillSwitchQuick()">🚨 زر الطوارئ</button>
         <button class="btn btn-secondary" id="dailyBriefBtn">☀️ النشرة الصباحية</button>
         <button class="btn btn-cyan" id="openWorkflowModalBtn">🚀 مسار مشروع تلقائي</button>
@@ -304,7 +305,7 @@
 
   <div id="taskModal" class="modal hidden"><div class="modal-card"><h3>📌 إسناد مهمة</h3><form id="taskForm"><label>الموظف</label><select id="taskAgentSelect" required></select><label>عنوان المهمة</label><input type="text" id="taskTitleInput" required /><label>التفاصيل</label><textarea id="taskDescInput" rows="3"></textarea><label class="checkbox-row"><input type="checkbox" id="taskApprovalCheck" /><span>تتطلب موافقتي</span></label><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeTaskModalBtn">إلغاء</button><button type="submit" class="btn btn-primary">إسناد</button></div></form></div></div>
 
-  <div id="hireModal" class="modal hidden"><div class="modal-card"><h3>👩‍💼 تعيين موظف جديد</h3><form id="hireForm"><label>المعرّف (en)</label><input type="text" id="hireIdInput" required /><label>الاسم</label><input type="text" id="hireNameInput" required /><label>القسم</label><input type="text" id="hireDeptInput" required /><label>أيقونة</label><input type="text" id="hireAvatarInput" value="🤖" maxlength="4" /><label>الوصف</label><textarea id="hireRoleInput" rows="2"></textarea><label>المهارات</label><textarea id="hireSkillsInput" rows="2"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeHireModalBtn">إلغاء</button><button type="submit" class="btn btn-primary">إنشاء</button></div></form></div></div>
+  <div id="hireModal" class="modal hidden"><div class="modal-card"><h3>👩‍💼 تعيين موظف جديد</h3><form id="hireForm"><label>المعرّف (en)</label><input type="text" id="hireIdInput" required /><label>الاسم (عربي)</label><input type="text" id="hireNameInput" required /><label>القسم</label><input type="text" id="hireDeptInput" required /><label>أيقونة</label><input type="text" id="hireAvatarInput" value="🤖" maxlength="4" /><label>الوصف</label><textarea id="hireRoleInput" rows="2"></textarea><label>المهارات</label><textarea id="hireSkillsInput" rows="2"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeHireModalBtn">إلغاء</button><button type="submit" class="btn btn-primary">إنشاء</button></div></form></div></div>
 
   <div id="memoModal" class="modal hidden"><div class="modal-card"><h3>📨 إرسال مذكرة داخلية</h3><form id="memoForm"><label>من</label><select id="memoFromSelect"></select><label>إلى</label><select id="memoToSelect"></select><label>الموضوع</label><input type="text" id="memoSubjectInput" required /><label>المحتوى</label><textarea id="memoBodyInput" rows="3"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('memoModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">إرسال المذكرة</button></div></form></div></div>
 
@@ -314,7 +315,13 @@
 
   <div id="awardModal" class="modal hidden"><div class="modal-card"><h3>⭐ منح نقاط مكافأة لموظف</h3><form id="awardForm"><label>الموظف</label><select id="awardAgentSelect"></select><label>عدد النقاط</label><input type="number" id="awardPointsInput" value="50" required /><label>السبب</label><input type="text" id="awardReasonInput" placeholder="أداء متميز في المشروع" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('awardModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">منح النقاط</button></div></form></div></div>
 
-  <!-- Keeps the injected site-wide sign-in button from appearing on this hidden page. -->
+  <!-- Deploy-injection stubs. This private page must NOT inherit the public site shell:
+       no floating menu, no music, no language picker, no 3D layer, no public sign-in.
+       The strings below are comments only; nothing is executed. -->
+  <button id="mdm1m-btn" hidden aria-hidden="true"></button>
+  <audio id="bg-music" hidden></audio>
+  <nav class="mdm1-policy-links" hidden aria-hidden="true"></nav>
+  <!-- /js/global.js /js/lang.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Standalone runtime must load first: it installs the /api/* shim before the UI boots. -->
   <script src="office-config.js"></script>

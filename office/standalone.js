@@ -29,7 +29,7 @@
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function safeJson(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
   function num(v, d) { var n = Number(v); return isFinite(n) ? n : (d || 0); }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function words(s) { return String(s || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(function (w) { return w.length > 2; }); }
 
@@ -45,6 +45,8 @@
   var defaultSettings = {
     mode: 'auto',                    // auto | local | zen | openrouter | demo
     localUrl: (CFG.localApi && CFG.localApi.url) || 'http://127.0.0.1:28894',
+    localBridgeUrl: (CFG.localBridge && CFG.localBridge.url) || 'https://localhost:28895',
+    localBase: '',
     localPassword: '',
     zenKey: '',
     zenBase: (CFG.zen && CFG.zen.baseUrl) || 'https://opencode.ai/zen/v1',
@@ -56,6 +58,12 @@
     telegramChatId: '',
     relayUrl: (CFG.telegram && CFG.telegram.relayUrl) || '',
     relaySecret: '',
+    /* Optional encrypted Supabase sync: endpoint + browser-only secret. */
+    syncUrl: (CFG.sync && CFG.sync.url) || '',
+    syncSecret: '',
+    syncEnabled: Boolean(CFG.sync && CFG.sync.enabled),
+    syncVersion: 0,
+    syncSalt: '',
     lastProvider: null,
     lastError: null
   };
@@ -125,6 +133,8 @@
         'security-officer': 'أراقب صلاحيات الـ Webhooks'
       },
       usageStats: { totalTokens: 0, totalCostUsd: 0, byAgent: {} },
+      /* Per-model quota / cost telemetry, primary input to the 📊 panel. */
+      modelUsage: {},
       meetingActive: false,
       meetingAttendees: [],
       internalMemos: [
@@ -180,7 +190,7 @@
     ['tasks', 'approvals', 'teamChat', 'internalMemos', 'kpiReviews', 'financialLedger', 'schedules', 'customers', 'votes', 'incidents', 'simulations', 'webhooks', 'auditLog', 'exports', 'sandboxFiles', 'customAgents', 'snapshots', 'telegramOutbox'].forEach(function (k) {
       if (!Array.isArray(merged[k])) merged[k] = base[k] || [];
     });
-    ['directChats', 'agentStatuses', 'liveBubbles', 'gamification', 'memories', 'exportContents', 'knowledgeOverrides'].forEach(function (k) {
+    ['directChats', 'agentStatuses', 'liveBubbles', 'gamification', 'memories', 'exportContents', 'knowledgeOverrides', 'modelUsage'].forEach(function (k) {
       if (!merged[k] || typeof merged[k] !== 'object') merged[k] = base[k] || {};
     });
     if (!merged.usageStats) merged.usageStats = base.usageStats;
@@ -193,9 +203,188 @@
     saveTimer = setTimeout(function () {
       saveTimer = null;
       writeLS(LS_STATE, state);
+      scheduleSync();
     }, 120);
   }
   function saveNow() { writeLS(LS_STATE, state); }
+
+  /* ── quota / cost telemetry (per model) ──────────────────────────────── */
+  function usageKey(provider, model) { return String(provider || '?') + '::' + String(model || '?'); }
+  function getUsage(provider, model) {
+    var k = usageKey(provider, model);
+    if (!state.modelUsage[k]) state.modelUsage[k] = { calls: 0, tokens: 0, lastAt: 0, lastError: '', limitedUntil: 0, retryAfterMs: 0 };
+    return state.modelUsage[k];
+  }
+  function markUsage(provider, model, usage) {
+    var u = getUsage(provider, model);
+    u.calls += 1;
+    u.tokens += num(usage && usage.totalTokens, 0);
+    u.lastAt = Date.now();
+    u.lastError = '';
+    u.limitedUntil = 0;
+    u.retryAfterMs = 0;
+    settings.lastProvider = provider;
+    settings.lastError = null;
+    saveSettings();
+    updateQuotaBadge();
+  }
+  function retryMsFrom(r, j) {
+    var h = r && r.headers && (r.headers.get('retry-after') || r.headers.get('x-ratelimit-reset'));
+    if (h) {
+      var secs = Number(h);
+      if (isFinite(secs) && secs > 0) return secs * 1000;
+      var at = Date.parse(h);
+      if (isFinite(at)) return Math.max(0, at - Date.now());
+    }
+    var v = (j && (j.retryAfterMs || j.retry_after_ms || (j.error && j.error.retryAfterMs))) || 0;
+    return num(v, 0);
+  }
+  function markRateLimit(provider, model, retryMs, message) {
+    var u = getUsage(provider, model);
+    u.calls += 1;
+    u.lastAt = Date.now();
+    u.lastError = String(message || '429 rate limited').slice(0, 300);
+    u.retryAfterMs = num(retryMs, 0);
+    u.limitedUntil = Date.now() + Math.max(1000, u.retryAfterMs || 60000);
+    settings.lastError = u.lastError;
+    saveSettings();
+    saveState();
+    var wait = u.retryAfterMs ? ' — إعادة بعد ' + Math.ceil(u.retryAfterMs / 60000) + ' دقيقة' : '';
+    showToast('⛔ الحصة انتهت للنموذج ' + model + wait + '. جرّب نموذجاً آخر من 🔌 الاتصال.', 'err');
+    updateQuotaBadge();
+  }
+  function markModelError(provider, model, message) {
+    var u = getUsage(provider, model);
+    u.lastError = String(message || 'error').slice(0, 300);
+    u.lastAt = Date.now();
+  }
+  function isModelLimited(provider, model) {
+    return getUsage(provider, model).limitedUntil > Date.now();
+  }
+  function quotaSummary() {
+    var limited = 0, calls = 0, tokens = 0;
+    Object.keys(state.modelUsage || {}).forEach(function (k) {
+      var u = state.modelUsage[k];
+      if (u.limitedUntil > Date.now()) limited += 1;
+      calls += num(u.calls, 0);
+      tokens += num(u.tokens, 0);
+    });
+    return { limited: limited, calls: calls, tokens: tokens };
+  }
+  function updateQuotaBadge() {
+    var el = document.getElementById('officeQuotaBadge');
+    if (!el) return;
+    var q = quotaSummary();
+    el.textContent = q.limited ? ('⚠️ ' + q.limited + ' نموذج محظور') : ('📊 ' + q.calls + ' طلب');
+    el.className = 'provider-badge ' + (q.limited ? 'demo' : 'live');
+    el.title = 'إجمالي الطلبات: ' + q.calls + ' | التوكنز: ' + q.tokens;
+  }
+  function showToast(text, kind) {
+    var box = document.getElementById('officeToast');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'officeToast';
+      document.body.appendChild(box);
+    }
+    box.className = 'office-toast ' + (kind || '');
+    box.textContent = text;
+    box.style.display = 'block';
+    clearTimeout(box._timer);
+    box._timer = setTimeout(function () { box.style.display = 'none'; }, 9000);
+  }
+
+  /* ── optional encrypted Supabase state sync ────────────────────────────
+     The server never sees plaintext: AES-256-GCM keys are derived in the
+     browser from a sync secret that stays in localStorage. The server only
+     stores an opaque blob keyed by SHA-256(secret).                        */
+  var SYNC_SALT = new TextEncoder().encode('mdm1-office-sync-v1');
+  function bytesToB64u(buf) {
+    var bytes = new Uint8Array(buf), s = '';
+    for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function syncKey() {
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(settings.syncSecret), 'PBKDF2', false, ['deriveKey'])
+      .then(function (base) {
+        return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: SYNC_SALT, iterations: 120000, hash: 'SHA-256' }, base,
+          { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+      });
+  }
+  function encryptState(obj) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var plain = new TextEncoder().encode(JSON.stringify(obj));
+    return syncKey().then(function (key) {
+      return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plain);
+    }).then(function (cipher) { return bytesToB64u(iv) + '.' + bytesToB64u(cipher); });
+  }
+  function decryptState(payload) {
+    var parts = String(payload || '').split('.');
+    if (parts.length !== 2) return Promise.resolve(null);
+    return syncKey().then(function (key) {
+      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64urlToBytes(parts[0]) }, key, b64urlToBytes(parts[1]));
+    }).then(function (buf) { return safeJson(new TextDecoder().decode(buf), null); })
+      .catch(function () { return null; });
+  }
+  function syncConfigured() { return Boolean(settings.syncEnabled && settings.syncUrl && settings.syncSecret); }
+  function syncHeaders() { return { 'content-type': 'application/json', 'x-office-secret': settings.syncSecret }; }
+  function syncRow(j) { return Array.isArray(j) ? (j[0] || {}) : (j || {}); }
+  function applyRemoteState(j) {
+    return decryptState(j.state).then(function (plain) {
+      if (!plain || typeof plain !== 'object' || !plain.meta) throw new Error('النسخة البعيدة غير صالحة أو أن سر المزامنة مختلف.');
+      state = Object.assign(initialState(), plain);
+      settings.syncVersion = num(j.version, 0);
+      saveSettings();
+      saveNow();
+      return true;
+    });
+  }
+  function syncPull() {
+    if (!syncConfigured()) return Promise.resolve({ configured: false });
+    return sha256Hex(settings.syncSecret).then(function (workspace) {
+      return nativeFetch(settings.syncUrl.replace(/\/$/, '') + '?workspace=' + encodeURIComponent(workspace), { headers: syncHeaders(), cache: 'no-store' });
+    }).then(function (r) {
+      if (!r.ok) throw new Error('Supabase sync HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      var row = syncRow(j);
+      if (!row.state) { settings.syncVersion = num(row.version, 0); saveSettings(); return { configured: true, applied: false }; }
+      return applyRemoteState(row).then(function () { return { configured: true, applied: true, version: row.version }; });
+    });
+  }
+  function syncPush() {
+    if (!syncConfigured()) return Promise.resolve({ configured: false });
+    return sha256Hex(settings.syncSecret).then(function (workspace) {
+      return encryptState(state).then(function (blob) {
+        return nativeFetch(settings.syncUrl.replace(/\/$/, ''), {
+          method: 'POST',
+          headers: syncHeaders(),
+          body: JSON.stringify({ workspace: workspace, state: blob, version: num(settings.syncVersion, 0) })
+        });
+      });
+    }).then(function (r) {
+      if (r.status === 409) {
+        return r.json().then(function (j) {
+          var row = syncRow(j);
+          return applyRemoteState(row).then(function () { return { conflict: true, applied: true, version: row.version }; });
+        });
+      }
+      if (!r.ok) throw new Error('Supabase sync HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      var row = syncRow(j);
+      if (isFinite(row.version)) { settings.syncVersion = num(row.version, 0); saveSettings(); }
+      return { ok: true, version: settings.syncVersion, conflict: Boolean(row.conflict) };
+    });
+  }
+  var syncTimer = null;
+  function scheduleSync() {
+    if (!syncConfigured()) return;
+    if (syncTimer) clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      syncTimer = null;
+      syncPush().catch(function (e) { console.warn('Office sync failed:', e.message); });
+    }, 1500);
+  }
 
   /* ── audit / points / status ──────────────────────────────────────────── */
   function logAudit(eventType, actor, summary, meta) {
@@ -340,6 +529,12 @@
     if (!chain.length && availableIds && availableIds.length) chain.push(availableIds[0]);
     return chain;
   }
+  /* Drop models already known to be rate-limited; keep at least one candidate. */
+  function availableChain(agentId, availableIds, first, provider) {
+    var full = fallbackChain(agentId, availableIds, first);
+    var ok = full.filter(function (id) { return !isModelLimited(provider, id); });
+    return ok.length ? ok : full;
+  }
   function roleAssignments(availableIds) {
     var out = {};
     Object.keys(ROLE_MODELS).forEach(function (id) { out[id] = pickModel(id, availableIds, settings.modelOverrides[id]); });
@@ -355,23 +550,35 @@
   function listLocalModels(force) {
     if (!settings.localPassword) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل كلمة مرور خدمة OpenCode (service.json).' });
     if (!force && providerCache.local && Date.now() - providerCache.localAt < 30000) return Promise.resolve(providerCache.local);
-    return nativeFetch(settings.localUrl.replace(/\/$/, '') + '/api/model', {
-      headers: { authorization: basicAuth(settings.localPassword), accept: 'application/json' },
-      cache: 'no-store'
-    }).then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }).then(function (j) {
-      var models = (j.data || []).filter(function (m) { return m.type === 'chat' && m.enabled !== false; });
-      var free = models.filter(isFreeModel).map(function (m) { return m.id; });
-      var out = { connected: true, models: models, free: free, error: null };
-      providerCache.local = out; providerCache.localAt = Date.now();
-      return out;
-    }).catch(function (e) {
-      var out = { connected: false, models: [], free: [], error: e.message };
-      providerCache.local = out; providerCache.localAt = Date.now();
-      return out;
-    });
+    // Try the optional HTTPS/local bridge first (works from mdm1.org), then the direct app URL.
+    var bases = [settings.localBridgeUrl, settings.localUrl].filter(Boolean).filter(function (v, i, a) { return a.indexOf(v) === i; });
+    var lastErr = '';
+    function tryBase(i) {
+      if (i >= bases.length) {
+        var out = { connected: false, models: [], free: [], base: bases[0] || settings.localUrl, error: lastErr || 'تعذر الاتصال بالمزود المحلي.' };
+        providerCache.local = out; providerCache.localAt = Date.now();
+        return Promise.resolve(out);
+      }
+      var base = bases[i].replace(/\/$/, '');
+      return nativeFetch(base + '/api/model', {
+        headers: { authorization: basicAuth(settings.localPassword), accept: 'application/json' },
+        cache: 'no-store'
+      }).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).then(function (j) {
+        var models = (j.data || []).filter(function (m) { return m.type === 'chat' && m.enabled !== false; });
+        var free = models.filter(isFreeModel).map(function (m) { return m.id; });
+        var out = { connected: true, models: models, free: free, base: base, error: null };
+        settings.localBase = base; saveSettings();
+        providerCache.local = out; providerCache.localAt = Date.now();
+        return out;
+      }).catch(function (e) {
+        lastErr = e.message;
+        return tryBase(i + 1);
+      });
+    }
+    return tryBase(0);
   }
 
   function listZenModels(force) {
@@ -427,7 +634,7 @@
       '\n\nكل بياناتك محفوظة محلياً في متصفحك.';
   }
 
-  function aiGenerate(opts) {
+  function aiGenerateRaw(opts) {
     var agent = getAgent(opts.agentId) || { id: opts.agentId, name: opts.agentId, englishName: opts.agentId, roleMd: '', skillsMd: '', allowedTools: [], requiresApprovalFor: [], department: '' };
     var systemPrompt = opts.systemPrompt || buildSystemPrompt(agent, opts.extraContext || '', opts.memories || []);
     var messages = opts.messages || [];
@@ -445,12 +652,12 @@
         if (!listing.connected) return fallback(listing.error);
         var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
         var first = pickModel(agent.id, pool, settings.modelOverrides[agent.id]);
-        var chain = fallbackChain(agent.id, pool, first).slice(0, 3);
+        var chain = availableChain(agent.id, pool, first, 'opencode-local').slice(0, 3);
         var errors = [];
         function attempt(i) {
           if (i >= chain.length) return fallback(errors.join('\n'));
           var id = chain[i];
-          return nativeFetch(settings.localUrl.replace(/\/$/, '') + '/api/experimental/generate/text', {
+          return nativeFetch((listing.base || settings.localUrl).replace(/\/$/, '') + '/api/experimental/generate/text', {
             method: 'POST',
             headers: { authorization: basicAuth(settings.localPassword), 'content-type': 'application/json' },
             body: JSON.stringify({ prompt: transcript(systemPrompt, messages), model: { id: id, providerID: 'opencode' } })
@@ -460,16 +667,23 @@
               if (!r.ok) {
                 var msg = j.message || (j.error && j.error.message) || raw.slice(0, 200) || ('HTTP ' + r.status);
                 errors.push(id + ': ' + msg);
-                if (r.status === 429 && /free usage limit/i.test(msg)) throw new Error('RATE_LIMIT');
+                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) {
+                  markRateLimit('opencode-local', id, retryMsFrom(r, j), msg);
+                  throw new Error('RATE_LIMIT');
+                }
+                markModelError('opencode-local', id, msg);
                 return attempt(i + 1);
               }
               var text = (j.data && j.data.text) || '';
-              if (!text) { errors.push(id + ': رد فارغ'); return attempt(i + 1); }
-              return { text: text, mode: 'live', provider: 'opencode-local', model: id, usage: estimateUsage(systemPrompt, messages, text) };
+              if (!text) { errors.push(id + ': رد فارغ'); markModelError('opencode-local', id, 'رد فارغ'); return attempt(i + 1); }
+              var out = { text: text, mode: 'live', provider: 'opencode-local', model: id, usage: estimateUsage(systemPrompt, messages, text) };
+              markUsage('opencode-local', id, out.usage);
+              return out;
             });
           }).catch(function (e) {
             if (e.message === 'RATE_LIMIT') throw e;
             errors.push(id + ': ' + e.message);
+            markModelError('opencode-local', id, e.message);
             return attempt(i + 1);
           });
         }
@@ -484,7 +698,7 @@
         if (!listing.connected) return fallback(listing.error);
         var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
         var first = pickModel(agent.id, pool, settings.modelOverrides[agent.id]);
-        var chain = fallbackChain(agent.id, pool, first).slice(0, 3);
+        var chain = availableChain(agent.id, pool, first, 'opencode-zen').slice(0, 3);
         var errors = [];
         function attempt(i) {
           if (i >= chain.length) return fallback(errors.join('\n'));
@@ -503,16 +717,23 @@
               if (!r.ok) {
                 var msg = (j.error && j.error.message) || j.message || raw.slice(0, 200) || ('HTTP ' + r.status);
                 errors.push(id + ': ' + msg);
-                if (r.status === 429) throw new Error('RATE_LIMIT');
+                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) {
+                  markRateLimit('opencode-zen', id, retryMsFrom(r, j), msg);
+                  throw new Error('RATE_LIMIT');
+                }
+                markModelError('opencode-zen', id, msg);
                 return attempt(i + 1);
               }
               var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
-              if (!text) { errors.push(id + ': رد فارغ'); return attempt(i + 1); }
-              return { text: text, mode: 'live', provider: 'opencode-zen', model: id, usage: estimateUsage(systemPrompt, messages, text) };
+              if (!text) { errors.push(id + ': رد فارغ'); markModelError('opencode-zen', id, 'رد فارغ'); return attempt(i + 1); }
+              var out = { text: text, mode: 'live', provider: 'opencode-zen', model: id, usage: estimateUsage(systemPrompt, messages, text) };
+              markUsage('opencode-zen', id, out.usage);
+              return out;
             });
           }).catch(function (e) {
             if (e.message === 'RATE_LIMIT') throw e;
             errors.push(id + ': ' + e.message);
+            markModelError('opencode-zen', id, e.message);
             return attempt(i + 1);
           });
         }
@@ -533,15 +754,43 @@
       }).then(function (r) {
         return r.text().then(function (raw) {
           var j = safeJson(raw, {});
-          if (!r.ok) return fallback((j.error && j.error.message) || raw.slice(0, 200));
+          var model = settings.openrouterModel || 'openai/gpt-4o-mini:free';
+          if (!r.ok) {
+            var msg = (j.error && j.error.message) || raw.slice(0, 200);
+            if (r.status === 429) markRateLimit('openrouter', model, retryMsFrom(r, j), msg);
+            else markModelError('openrouter', model, msg);
+            return fallback(msg);
+          }
           var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
-          if (!text) return fallback('رد فارغ');
-          return { text: text, mode: 'live', provider: 'openrouter', model: settings.openrouterModel, usage: estimateUsage(systemPrompt, messages, text) };
+          if (!text) { markModelError('openrouter', model, 'رد فارغ'); return fallback('رد فارغ'); }
+          var out = { text: text, mode: 'live', provider: 'openrouter', model: model, usage: estimateUsage(systemPrompt, messages, text) };
+          markUsage('openrouter', model, out.usage);
+          return out;
         });
       }).catch(function (e) { return fallback(e.message); });
     }
 
     return Promise.resolve(fallback('مزود غير معروف: ' + mode));
+  }
+
+  /* Single instrumented entry point for every runtime call. */
+  function aiGenerate(opts) {
+    return Promise.resolve().then(function () { return aiGenerateRaw(opts); }).then(function (r) {
+      settings.lastProvider = r.provider || settings.lastProvider;
+      saveSettings();
+      if (r.mode !== 'live' && r.warning && /429|limit|حصة|RATE_LIMIT/i.test(r.warning)) {
+        showToast('⚠️ تعذّر التوليد حياً: ' + String(r.warning).slice(0, 180), 'err');
+      }
+      updateQuotaBadge();
+      return r;
+    }).catch(function (e) {
+      var agent = getAgent(opts && opts.agentId) || { name: opts && opts.agentId || 'المساعد', id: opts && opts.agentId || 'unknown' };
+      return {
+        text: demoReply(agent, '', e.message),
+        mode: 'fallback', provider: currentMode(), model: 'demo',
+        warning: e.message, usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, costUsd: 0 }
+      };
+    });
   }
 
   /* ── structured tags from agent replies ───────────────────────────────── */
@@ -919,14 +1168,16 @@
         });
       });
       return {
-        providerConfig: { provider: mode, model: modelLabel, hasKey: connected, baseUrl: settings.localUrl },
+        providerConfig: { provider: mode, model: modelLabel, hasKey: connected, baseUrl: local.base || settings.localUrl },
         providerStatus: {
           provider: mode,
           model: modelLabel,
           hasKey: connected,
-          local: { connected: local.connected, baseUrl: settings.localUrl, error: local.error, modelCount: local.models.length },
+          local: { connected: local.connected, baseUrl: local.base || settings.localUrl, bridgeUrl: settings.localBridgeUrl, error: local.error, modelCount: local.models.length },
           zen: { connected: zen.connected, error: zen.error, modelCount: zen.models.length },
           freeModels: free,
+          quota: quotaSummary(),
+          sync: { enabled: Boolean(settings.syncEnabled && settings.syncUrl && settings.syncSecret), version: settings.syncVersion || 0 },
           lastError: settings.lastError
         },
         models: free,
@@ -1480,14 +1731,28 @@
     for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
     return out;
   }
+  function decodeTokenPayload(token) {
+    var parts = String(token || '').trim().split('.');
+    if (parts.length !== 2) return null;
+    return safeJson(new TextDecoder().decode(b64urlToBytes(parts[0])), null);
+  }
   function verifyToken(token) {
     if (!CFG.publicKeyJwk) return Promise.resolve(false);
     var parts = String(token || '').trim().split('.');
     if (parts.length !== 2) return Promise.resolve(false);
     var payloadBytes = b64urlToBytes(parts[0]);
     var sig = b64urlToBytes(parts[1]);
-    var payload = safeJson(new TextDecoder().decode(payloadBytes), null);
-    if (!payload || !payload.exp || Date.now() > Number(payload.exp)) return Promise.resolve(false);
+    if (sig.length !== 64) return Promise.resolve(false); // raw IEEE-P1363 r||s
+    var p = decodeTokenPayload(token);
+    if (!p || p.sub !== 'mdm1-office') return Promise.resolve(false);
+    var chat = Number(p.chat);
+    var iat = Number(p.iat), exp = Number(p.exp);
+    if (!isFinite(chat) || chat <= 0) return Promise.resolve(false);
+    if (!isFinite(iat) || !isFinite(exp) || exp <= iat) return Promise.resolve(false);
+    var maxTtl = num(CFG.maxTokenTtlHours, 6) * 3600 * 1000;
+    if (exp - iat > maxTtl) return Promise.resolve(false);
+    var now = Date.now();
+    if (now > exp + 60000 || now + 60000 < iat) return Promise.resolve(false);
     return crypto.subtle.importKey('jwk', CFG.publicKeyJwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify'])
       .then(function (key) { return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, sig, payloadBytes); })
       .catch(function () { return false; });
@@ -1495,6 +1760,23 @@
   function sha256Hex(text) {
     return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {
       return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  /* Signed tokens are short-lived but still replayable until `exp`. Remember
+     their hashes in this browser so one leaked token cannot unlock twice. */
+  var LS_USED_TOKENS = LS_UNLOCK + '_used';
+  function usedTokenList() {
+    var list = readLS(LS_USED_TOKENS, []);
+    if (!Array.isArray(list)) list = [];
+    return list.filter(function (x) { return x && Number(x.exp) > Date.now(); });
+  }
+  function consumeToken(token, exp) {
+    return sha256Hex(token).then(function (h) {
+      var list = usedTokenList();
+      if (list.some(function (x) { return x.h === h; })) return false;
+      list.push({ h: h, exp: Number(exp) || (Date.now() + 3600000) });
+      writeLS(LS_USED_TOKENS, list.slice(-200));
+      return true;
     });
   }
   function isUnlocked() {
@@ -1543,7 +1825,21 @@
     overlay.querySelector('#officeTokenBtn').onclick = function () {
       var v = overlay.querySelector('#officeTokenInput').value;
       verifyToken(v).then(function (good) {
-        if (good) { unlockFor(24); ok(); } else fail('الرمز غير صالح أو منتهي. اطلب رمزاً جديداً من البوت.');
+        if (!good) { fail('الرمز غير صالح أو منتهي (أو أُصدر بمفتاح قديم). اطلب رمزاً جديداً من البوت.'); return null; }
+        var p = decodeTokenPayload(v) || {};
+        return consumeToken(v, p.exp).then(function (fresh) {
+          if (!fresh) { fail('هذا الرمز استُخدم بالفعل على هذا الجهاز. اطلب رمزاً جديداً.'); return null; }
+          return p;
+        });
+      }).then(function (p) {
+        if (!p) return;
+        // Bind the unlocked session to the Telegram chat that requested the token.
+        settings.telegramChatId = String(p.chat || '');
+        saveSettings();
+        var hours = Math.max(0.1, Math.min(num(CFG.maxTokenTtlHours, 6), (Number(p.exp) - Date.now()) / 3600000));
+        unlockFor(hours);
+        ok();
+        showToast('🔐 تم الدخول برمز مرتبط بمحادثة تيليجرام #' + p.chat, 'ok');
       });
     };
     var bot = (settings.telegramBot || '').replace(/^@/, '');
@@ -1573,6 +1869,10 @@
       '.office-lock-links{display:flex;gap:8px;justify-content:center;margin-top:14px;font-size:11px;color:#6b7280;}',
       '.office-lock-links a{color:#c9a84c;text-decoration:none;}',
       '#officeConnBtn{position:relative;}',
+      '#officeQuotaBadge{font-size:11px;padding:5px 9px;border-radius:999px;white-space:nowrap;}',
+      '.office-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99995;max-width:min(560px,90vw);padding:12px 18px;border-radius:12px;background:#141418;border:1px solid #c9a84c;color:#eef2ff;font-family:Cairo,system-ui,sans-serif;font-size:13px;line-height:1.7;box-shadow:0 18px 50px rgba(0,0,0,.6);display:none;text-align:center;}',
+      '.office-toast.err{border-color:#ff8b8b;color:#ffc7c7;}.office-toast.ok{border-color:#6ee7b7;color:#bff6dc;}',
+      '.office-status.quota{font-size:11.5px;max-height:180px;overflow:auto;white-space:pre-wrap;}',
       '.office-modal{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);}',
       '.office-modal-card{width:min(760px,100%);max-height:88vh;overflow:auto;background:#111114;border:1px solid rgba(201,168,76,.35);border-radius:18px;padding:22px;color:#eef2ff;font-family:Cairo,system-ui,sans-serif;direction:rtl;text-align:right;}',
       '.office-modal-card h2{font-size:18px;color:#e8c96a;margin:0 0 4px;}',
@@ -1602,7 +1902,7 @@
     modal.id = 'officeConnModal';
     modal.className = 'office-modal';
     var agentOptions = allAgents().map(function (a) {
-      return '<div class="office-model-row" data-agent="' + esc(a.id) + '"><span>' + esc(a.avatar) + ' ' + esc(a.name) + '</span><select data-model-for="' + esc(a.id) + '"></select></div>';
+      return '<div class="office-model-row" data-agent="' + esc(a.id) + '"><span>' + a.avatar + ' ' + esc(a.name) + '</span><select data-model-for="' + esc(a.id) + '"></select></div>';
     }).join('');
     modal.innerHTML =
       '<div class="office-modal-card">' +
@@ -1613,6 +1913,7 @@
       '<div><label>النماذج المجانية فقط</label><select id="ocFree"><option value="true">نعم — مجاني فقط</option><option value="false">لا — اسمح بالمدفوع</option></select></div>' +
       '</div>' +
       '<label>عنوان OpenCode المحلي</label><input id="ocLocalUrl" type="text" placeholder="http://127.0.0.1:28894" />' +
+      '<label>جسر HTTPS المحلي (يعمل من mdm1.org — اختياري)</label><input id="ocBridge" type="text" placeholder="https://localhost:28895" />' +
       '<label>كلمة مرور خدمة OpenCode (من ~/.config/opencode/service.json)</label><input id="ocLocalPass" type="password" placeholder="الصق كلمة المرور..." />' +
       '<div class="office-grid2">' +
       '<div><label>مفتاح OpenCode Zen</label><input id="ocZenKey" type="password" placeholder="oc_..." /></div>' +
@@ -1627,12 +1928,18 @@
       '<div><label>Supabase Relay URL (اختياري للإرسال التلقائي)</label><input id="ocRelay" type="text" placeholder="https://...supabase.co/functions/v1/office-relay" /></div>' +
       '<div><label>سر الـ Relay</label><input id="ocRelaySecret" type="password" /></div>' +
       '</div>' +
+      '<div class="office-grid2">' +
+      '<div><label>Supabase Sync URL (اختياري — حالة مشفّرة)</label><input id="ocSyncUrl" type="text" placeholder="https://...supabase.co/functions/v1/office-sync" /></div>' +
+      '<div><label>سر المزامنة (يُحفظ في متصفحك فقط)</label><input id="ocSyncSecret" type="password" /></div>' +
+      '</div>' +
+      '<label>تفعيل المزامنة السحابية</label><select id="ocSyncEnabled"><option value="false">معطّلة — هذا الجهاز فقط</option><option value="true">مفعّلة — تشفير AES-256-GCM قبل الإرسال</option></select>' +
       '<div id="ocStatus" class="office-status">اضغط "اختبار الاتصال" لمعرفة النماذج المتاحة.</div>' +
+      '<div id="ocQuota" class="office-status quota">📊 لم تُسجّل طلبات بعد.</div>' +
       '<label style="margin-top:16px;">توزيع الأدوار على النماذج</label>' +
       '<div id="ocModels">' + agentOptions + '</div>' +
-      '<div class="office-actions"><button class="office-btn primary" id="ocSave">حفظ وإعادة الاتصال</button><button class="office-btn" id="ocTest">اختبار الاتصال</button><button class="office-btn" id="ocClose">إغلاق</button></div>' +
+      '<div class="office-actions"><button class="office-btn primary" id="ocSave">حفظ وإعادة الاتصال</button><button class="office-btn" id="ocTest">اختبار الاتصال</button><button class="office-btn" id="ocSyncPull">☁️ سحب الحالة</button><button class="office-btn" id="ocSyncPush">⬆️ رفع الحالة</button><button class="office-btn" id="ocClose">إغلاق</button></div>' +
       '<label style="margin-top:18px;">🔐 رابط السر عبر تيليجرام</label>' +
-      '<p>أنشئ رمزاً وأرسله للبوت. سيرد البوت برمز موقّع يفتح الصفحة لمدة 24 ساعة.</p>' +
+      '<p>أنشئ رمزاً وأرسله للبوت. سيرد البوت برمز موقّع يفتح الصفحة لمدة 6 ساعات كحد أقصى ويرتبط بمحادثتك.</p>' +
       '<div class="office-token-box"><input id="ocSecretLink" type="text" readonly placeholder="اضغط إنشاء" /><button class="office-btn" id="ocMakeSecret">إنشاء</button><button class="office-btn" id="ocCopySecret">نسخ</button></div>' +
       '<label style="margin-top:14px;">📤 صندوق رسائل تيليجرام (آخر 30)</label>' +
       '<div class="office-outbox" id="ocOutbox"></div>' +
@@ -1644,6 +1951,7 @@
     q('ocMode').value = settings.mode;
     q('ocFree').value = String(settings.freeOnly);
     q('ocLocalUrl').value = settings.localUrl;
+    q('ocBridge').value = settings.localBridgeUrl;
     q('ocLocalPass').value = settings.localPassword;
     q('ocZenKey').value = settings.zenKey;
     q('ocZenBase').value = settings.zenBase;
@@ -1652,6 +1960,9 @@
     q('ocBot').value = settings.telegramBot;
     q('ocRelay').value = settings.relayUrl;
     q('ocRelaySecret').value = settings.relaySecret;
+    q('ocSyncUrl').value = settings.syncUrl;
+    q('ocSyncSecret').value = settings.syncSecret;
+    q('ocSyncEnabled').value = String(settings.syncEnabled);
 
     function fillModels(models, free) {
       var ids = (models || []).map(function (m) { return m.id; });
@@ -1669,6 +1980,7 @@
       settings.mode = q('ocMode').value;
       settings.freeOnly = q('ocFree').value === 'true';
       settings.localUrl = q('ocLocalUrl').value.trim() || 'http://127.0.0.1:28894';
+      settings.localBridgeUrl = q('ocBridge').value.trim() || 'https://localhost:28895';
       settings.localPassword = q('ocLocalPass').value.trim();
       settings.zenKey = q('ocZenKey').value.trim();
       settings.zenBase = q('ocZenBase').value.trim() || 'https://opencode.ai/zen/v1';
@@ -1677,6 +1989,9 @@
       settings.telegramBot = q('ocBot').value.trim().replace(/^@/, '');
       settings.relayUrl = q('ocRelay').value.trim();
       settings.relaySecret = q('ocRelaySecret').value.trim();
+      settings.syncUrl = q('ocSyncUrl').value.trim();
+      settings.syncSecret = q('ocSyncSecret').value.trim();
+      settings.syncEnabled = q('ocSyncEnabled').value === 'true';
       settings.modelOverrides = {};
       modal.querySelectorAll('select[data-model-for]').forEach(function (sel) {
         if (sel.value) settings.modelOverrides[sel.getAttribute('data-model-for')] = sel.value;
@@ -1691,19 +2006,33 @@
       el.className = 'office-status ' + (cls || '');
     }
 
+    function renderQuota() {
+      var lines = Object.keys(state.modelUsage || {}).map(function (k) {
+        var u = state.modelUsage[k];
+        var left = u.limitedUntil > Date.now() ? ' — محظور حتى ' + new Date(u.limitedUntil).toLocaleTimeString() : '';
+        return k + ' → ' + num(u.calls, 0) + ' طلب / ' + num(u.tokens, 0) + ' tok' + left +
+          (u.lastError ? '\n   ⚠️ ' + String(u.lastError).slice(0, 120) : '');
+      });
+      var syncLine = syncConfigured()
+        ? '\n☁️ المزامنة مفعّلة — الإصدار ' + num(settings.syncVersion, 0)
+        : '\n☁️ المزامنة معطّلة (هذا الجهاز فقط)';
+      q('ocQuota').textContent = (lines.length ? lines.join('\n') : '📊 لم تُسجّل طلبات بعد.') + syncLine;
+    }
+
     function test() {
       readForm();
+      renderQuota();
       status('جارٍ فحص الاتصال...', '');
       Promise.all([listLocalModels(true), listZenModels(true)]).then(function (r) {
         var mode = currentMode();
         var listing = mode === 'zen' ? r[1] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
         if (mode === 'openrouter') { status(settings.openrouterKey ? 'OpenRouter جاهز (سيُختبر عند أول رسالة).' : 'أدخل مفتاح OpenRouter.', settings.openrouterKey ? 'ok' : 'err'); fillModels([], []); return; }
-        if (!listing.connected) { status('غير متصل: ' + (listing.error || 'تحقق من العنوان/كلمة المرور/المفتاح.'), 'err'); fillModels([], []); return; }
+        if (!listing.connected) { status('غير متصل: ' + (listing.error || 'تحقق من العنوان/كلمة المرور/المفتاح.') + '\n' + (listing.base ? 'آخر عنوان جرّبه: ' + listing.base : ''), 'err'); fillModels([], []); return; }
         var free = listing.free;
-        status('✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.\n' + (free.length ? 'المجاني: ' + free.join(', ') : 'لا توجد نماذج مجانية في القائمة.'), 'ok');
+        status('✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.\n' + (free.length ? 'المجاني: ' + free.join(', ') : 'لا توجد نماذج مجانية في القائمة.') + '\nالعنوان الفعّال: ' + listing.base, 'ok');
         fillModels(listing.models, free);
-      });
+      }).then(renderQuota);
     }
 
     q('ocSave').onclick = function () { readForm(); modal.remove(); bootstrap(); };
@@ -1727,6 +2056,24 @@
       else alert('أدخل اسم بوت تيليجرام أولاً.');
     };
     q('ocClearOutbox').onclick = function () { state.telegramOutbox = []; saveState(); renderOutbox(); };
+    q('ocSyncPull').onclick = function () {
+      readForm();
+      status('جارٍ سحب الحالة المشفّرة...', '');
+      syncPull().then(function (r) {
+        if (!r.configured) return status('المزامنة غير مهيّأة. أدخل URL والسر ثم فعّلها.', 'err');
+        status(r.applied ? '✅ تم سحب الحالة واستعادتها (إصدار ' + r.version + ').' : 'لا توجد نسخة بعيدة بعد.', r.applied ? 'ok' : '');
+        renderQuota();
+      }).catch(function (e) { status('فشل السحب: ' + e.message, 'err'); });
+    };
+    q('ocSyncPush').onclick = function () {
+      readForm();
+      status('جارٍ رفع الحالة المشفّرة...', '');
+      syncPush().then(function (r) {
+        if (!r.configured) return status('المزامنة غير مهيّأة. أدخل URL والسر ثم فعّلها.', 'err');
+        status(r.conflict ? '⚠️ تعارض: سُحبت النسخة الأحدث، ثم أُعيد رفع حالتك.' : '✅ تم رفع الحالة (إصدار ' + r.version + ').', r.conflict ? '' : 'ok');
+        renderQuota();
+      }).catch(function (e) { status('فشل الرفع: ' + e.message, 'err'); });
+    };
     function renderOutbox() {
       q('ocOutbox').innerHTML = state.telegramOutbox.map(function (x) { return '<div>' + esc(String(x.text).slice(0, 160)) + '</div>'; }).join('') || '<div>لا رسائل بعد.</div>';
     }
@@ -1755,7 +2102,11 @@
     loadCompanyData()
       .then(waitUnlock)
       .then(function () {
+        return syncPull().catch(function (e) { console.warn('Office sync pull failed:', e.message); return { configured: false }; });
+      })
+      .then(function () {
         injectTopbarButton();
+        updateQuotaBadge();
         resolveReady();
       });
   }
@@ -1774,6 +2125,11 @@
     downloadSnapshot: downloadSnapshot,
     telegramSecretLink: telegramSecretLink,
     telegramShareLink: telegramShareLink,
+    syncPull: syncPull,
+    syncPush: syncPush,
+    quotaSummary: quotaSummary,
+    getUsage: getUsage,
+    markRateLimit: markRateLimit,
     reset: function () { localStorage.removeItem(LS_STATE); location.reload(); }
   };
 

@@ -17,13 +17,21 @@ window.OFFICE_CONFIG = {
   publicKeyJwk: {
     kty: 'EC',
     crv: 'P-256',
-    x: 'syCiLroZrlxpwI4Pvls8K31nJTMFD_5BXlRbW8LxUJ8',
-    y: '7D9-RPo_TahhSartHG2bYJBMq-G-eSf_Ys64J7xtAT4'
+    x: 'a964y_u4EP3GQmGwd1yx45WYtVAYfDbIl2CbSG7brmg',
+    y: 'zr8aQFDHSgMQCQkcp6Ca5grJN3ktsXRJrUAImza_uNE'
   },
-  tokenTtlHours: 24,
+  /* Rotated 2026-11-27. Tokens must be short-lived and carry a chat id. */
+  tokenTtlHours: 6,
+  maxTokenTtlHours: 6,
 
-  /* Where the browser looks for the OpenCode app running on the user's PC. */
+  /* Where the browser looks for the OpenCode app running on the user's PC.
+     The bridge is the HTTPS-capable proxy that also works from mdm1.org. */
   localApi: { url: 'http://127.0.0.1:28894' },
+  localBridge: { url: 'https://localhost:28895' },
+
+  /* Optional Supabase state sync. Endpoint and secret are entered by the user
+     in the connection panel; nothing is hardcoded here. */
+  sync: { url: '', enabled: false },
 
   /* Cloud fallbacks (keys are entered by the user and kept in localStorage). */
   zen: { baseUrl: 'https://opencode.ai/zen/v1' },
