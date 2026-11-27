@@ -329,7 +329,7 @@ create or replace function public.office_quota_reserve(
   p_provider text,
   p_cost numeric,
   p_limit int
-) returns table (allowed boolean, used int, daily_limit int, day date)
+) returns table (allowed boolean, used int, daily_limit int, quota_day date)
 language plpgsql
 security definer
 set search_path = public
@@ -342,7 +342,7 @@ begin
     raise exception 'invalid quota request';
   end if;
 
-  day := v_day;
+  quota_day := v_day;
   daily_limit := greatest(coalesce(p_limit, 0), 0);
 
   if daily_limit <= 0 then
@@ -380,7 +380,7 @@ create or replace function public.office_quota_release(
   p_user_id uuid,
   p_provider text,
   p_cost numeric
-) returns table (used int, cost numeric, day date)
+) returns table (used int, cost numeric, quota_day date)
 language plpgsql
 security definer
 set search_path = public
@@ -392,7 +392,7 @@ begin
     raise exception 'invalid quota request';
   end if;
 
-  day := v_day;
+  quota_day := v_day;
   update public.office_quota_daily q
      set requests = greatest(q.requests - 1, 0),
          cost = greatest(q.cost - greatest(coalesce(p_cost, 0), 0), 0)
