@@ -1894,7 +1894,7 @@
     var q = String(query || '').trim();
     if (!q) return Promise.resolve({ engine: 'none', results: [] });
     var queries = [];
-    [shortSearchQuery(q), englishSearchQuery(q), q].forEach(function (x) {
+    [englishSearchQuery(q), shortSearchQuery(q), q].forEach(function (x) {
       x = String(x || '').trim();
       if (x && queries.indexOf(x) === -1) queries.push(x);
     });
@@ -1903,8 +1903,9 @@
     function next() {
       if (i >= queries.length) return Promise.resolve({ engine: 'knowledge', results: [], suggestions: localSolutions(q) });
       var query = queries[i++];
-      return wikiSearch('ar', query).then(function (r) {
-        return r.results.length ? r : wikiSearch('en', englishSearchQuery(query) || query);
+      var latin = /^[a-z0-9\s-]+$/i.test(query);
+      return wikiSearch(latin ? 'en' : 'ar', query).then(function (r) {
+        return r.results.length ? r : wikiSearch(latin ? 'ar' : 'en', englishSearchQuery(query) || query);
       }).then(function (r) {
         return r.results.length ? r : ddgSearch(query);
       }).then(function (r) {
