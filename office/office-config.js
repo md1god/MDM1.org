@@ -7,7 +7,7 @@
 window.OFFICE_CONFIG = {
   officeName: 'MD1\u0075sd Company',
   /* Local brand image copied into office/ (public, no secrets). */
-  brandImage: 'app-logo.png?v=20261127pwa5',
+  brandImage: 'app-logo.png?v=20261127pwa6',
 
   /* Private page gate. The passphrase itself is never stored — only its hash. */
   requireUnlock: true,
@@ -49,7 +49,10 @@ window.OFFICE_CONFIG = {
   /* Optional outbound messaging through the Supabase Edge relay. Tokens stay
      in Edge Function secrets; only the public function URL is stored here. */
   messaging: {
-    relayUrl: 'https://fksjltytevcmpjxzamhp.supabase.co/functions/v1/office-relay'
+    relayUrl: 'https://fksjltytevcmpjxzamhp.supabase.co/functions/v1/office-relay',
+    /* Public anon JWT: required by the Supabase function gateway, not a secret.
+       It only grants the anon role; model keys stay in Edge Function secrets. */
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2psdHl0ZXZjbXBqeHphbWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxMTgxMTEsImV4cCI6MjA5NzY5NDExMX0.nSgcMvEI4fjtKArc-1y7DkX_04kvclg8LCm3PahsiII'
   },
 
   /* Cloud fallbacks (keys are entered by the user and kept in localStorage). */

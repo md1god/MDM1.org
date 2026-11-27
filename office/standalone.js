@@ -47,7 +47,7 @@
 
   /* ── settings (connection, models, telegram) ──────────────────────────── */
   var defaultSettings = {
-    mode: 'auto',                    // auto | local | zen | groq | openrouter | demo
+    mode: 'auto',                    // auto | cloud | local | zen | groq | openrouter | demo
     localUrl: (CFG.localApi && CFG.localApi.url) || 'http://127.0.0.1:28894',
     localBridgeUrl: (CFG.localBridge && CFG.localBridge.url) || 'https://localhost:28895',
     localBase: '',
@@ -822,6 +822,7 @@
     return ROLE_MODELS;
   }
   function providerFallbacks(provider) {
+    if (provider === 'cloud') return (providerCache.cloud && providerCache.cloud.free || []).concat(FALLBACK_MODELS);
     if (provider === 'groq') return GROQ_FREE_TIER_MODELS;
     if (provider === 'openrouter') return ['baidu/ernie-5.5-flash-preview:free', 'liquid/lfm-3-1.7b:free', 'nvidia/nemotron-3.5-lightning:free', 'google/gemma-4-26b-a4b-it:free'];
     return FALLBACK_MODELS;
@@ -864,7 +865,7 @@
   }
 
   /* ── provider layer ───────────────────────────────────────────────────── */
-  var providerCache = { local: null, localAt: 0, zen: null, zenAt: 0, groq: null, groqAt: 0, openrouter: null, openrouterAt: 0 };
+  var providerCache = { cloud: null, cloudAt: 0, local: null, localAt: 0, zen: null, zenAt: 0, groq: null, groqAt: 0, openrouter: null, openrouterAt: 0 };
   function basicAuth(password) {
     return 'Basic ' + btoa('opencode:' + password);
   }
@@ -971,7 +972,51 @@
       });
   }
 
+  function relayApi(action, payload) {
+    if (!settings.relayUrl) return Promise.reject(new Error('أدخل Supabase Relay URL في لوحة الاتصال.'));
+    if (!secret('relaySecret')) return Promise.reject(new Error('أدخل سر الـ Relay في لوحة الاتصال.'));
+    var headers = { 'content-type': 'application/json', 'x-office-secret': secret('relaySecret') };
+    var anon = (CFG.messaging && CFG.messaging.anonKey) || '';
+    if (anon) { headers.authorization = 'Bearer ' + anon; headers.apikey = anon; }
+    return nativeFetch(settings.relayUrl, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(Object.assign({ action: action }, payload || {})),
+      cache: 'no-store'
+    }).then(function (r) {
+      return r.text().then(function (raw) {
+        var j = safeJson(raw, {});
+        if (!r.ok) throw new Error(j.error || j.message || ('HTTP ' + r.status));
+        return j;
+      });
+    });
+  }
+  function cloudConfigured() { return Boolean(settings.relayUrl && secret('relaySecret')); }
+  function listCloudModels(force) {
+    if (!cloudConfigured()) return Promise.resolve({ connected: false, models: [], free: [], providers: {}, modelProviders: {}, defaultProvider: '', error: 'أدخل Supabase Relay URL وسر الـ Relay في لوحة الاتصال.' });
+    if (!force && providerCache.cloud && Date.now() - providerCache.cloudAt < 30000) return Promise.resolve(providerCache.cloud);
+    return relayApi('models', { refresh: Boolean(force) }).then(function (j) {
+      var free = (j.free || []).map(String);
+      var models = (j.models || []).map(function (id) {
+        id = String(id);
+        return { id: id, name: id, free: free.indexOf(id) !== -1 };
+      });
+      var out = {
+        connected: Boolean(j.connected), models: models, free: free,
+        providers: j.providers || {}, modelProviders: j.modelProviders || {},
+        defaultProvider: j.defaultProvider || '', base: settings.relayUrl, error: null, raw: j
+      };
+      providerCache.cloud = out; providerCache.cloudAt = Date.now();
+      return out;
+    }).catch(function (e) {
+      var out = { connected: false, models: [], free: [], providers: {}, modelProviders: {}, defaultProvider: '', base: settings.relayUrl, error: e.message };
+      providerCache.cloud = out; providerCache.cloudAt = Date.now();
+      return out;
+    });
+  }
   function providerConfigured(mode) {
+    if (mode === 'supabase') mode = 'cloud';
+    if (mode === 'cloud') return cloudConfigured();
     if (mode === 'local') return Boolean(secret('localPassword'));
     if (mode === 'zen') return Boolean(secret('zenKey'));
     if (mode === 'groq') return Boolean(secret('groqKey'));
@@ -979,11 +1024,12 @@
     return false;
   }
   function currentMode() {
-    if (settings.mode !== 'auto') return settings.mode;
+    var mode = settings.mode === 'supabase' ? 'cloud' : settings.mode;
+    if (mode !== 'auto') return mode;
     /* Prefer a provider that is both configured AND reachable. This stops the
        UI from reporting "available" while chat falls back because the first
        configured provider (often localhost) is not reachable from the site. */
-    var order = ['local', 'zen', 'groq', 'openrouter'];
+    var order = ['cloud', 'local', 'zen', 'groq', 'openrouter'];
     var i, mode;
     for (i = 0; i < order.length; i++) {
       mode = order[i];
@@ -1082,6 +1128,52 @@
       }
       return attempt(0).catch(function (e) {
         return fallback(errors.join('\n') || (e.message === 'NO_BALANCE' ? 'الرصيد غير كافٍ — استخدم النماذج المجانية فقط.' : e.message));
+      });
+    }
+
+    if (mode === 'cloud') {
+      return listCloudModels().then(function (listing) {
+        if (!listing.connected) return fallback(listing.error || 'Supabase Relay غير متصل.');
+        var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
+        if (!pool.length) return fallback('لا توجد نماذج مجانية عبر Supabase Relay حالياً.');
+        var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'cloud');
+        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'cloud').slice(0, 3);
+        var errors = [];
+        function attempt(i) {
+          if (i >= chain.length) return fallback(errors.join('\n'));
+          var id = chain[i];
+          return relayApi('chat', {
+            model: id,
+            provider: 'auto',
+            temperature: 0.7,
+            messages: [{ role: 'system', content: systemPrompt }].concat(messages.map(function (m) {
+              return { role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text };
+            }))
+          }).then(function (j) {
+            var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
+            if (!text) { errors.push(id + ': رد فارغ'); markModelError('cloud', id, 'رد فارغ'); return attempt(i + 1); }
+            var out = {
+              text: text, mode: 'live', provider: 'cloud', model: id,
+              upstreamProvider: j.provider || '',
+              usage: estimateUsage(systemPrompt, messages, text)
+            };
+            markUsage('cloud', id, out.usage);
+            return out;
+          }).catch(function (e) {
+            var msg = e.message || String(e);
+            errors.push(id + ': ' + msg);
+            if (/429|rate limit|free usage limit/i.test(msg)) {
+              markRateLimit('cloud', id, retryMsFrom(null, {}), msg);
+              throw new Error('RATE_LIMIT');
+            }
+            if (/402|insufficient balance|insufficient_quota/i.test(msg)) throw new Error('NO_BALANCE');
+            markModelError('cloud', id, msg);
+            return attempt(i + 1);
+          });
+        }
+        return attempt(0).catch(function (e) {
+          return fallback(errors.join('\n') || (e.message === 'NO_BALANCE' ? 'الرصيد غير كافٍ — استخدم النماذج المجانية فقط.' : e.message));
+        });
       });
     }
 
@@ -1605,9 +1697,12 @@
     if (!body.text) return Promise.resolve({ ok: false, error: 'الرسالة فارغة.' });
     if (!settings.relayUrl) return Promise.resolve({ ok: false, error: 'أدخل Supabase Relay URL في لوحة الاتصال.' });
     if (!messagingAuthOk()) { authRequiredNotice(); return Promise.resolve({ ok: false, error: 'identity required' }); }
+    var relayHeaders = { 'content-type': 'application/json', 'x-office-secret': secret('relaySecret') || '' };
+    var relayAnon = (CFG.messaging && CFG.messaging.anonKey) || '';
+    if (relayAnon) { relayHeaders.authorization = 'Bearer ' + relayAnon; relayHeaders.apikey = relayAnon; }
     return nativeFetch(settings.relayUrl, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-office-secret': secret('relaySecret') || '' },
+      headers: relayHeaders,
       body: JSON.stringify(body)
     }).then(function (r) {
       return r.text().then(function (t) { return safeJson(t, {}); }).then(function (j) {
@@ -1899,14 +1994,14 @@
   /* ── bootstrap payload ────────────────────────────────────────────────── */
   function buildBootstrap() {
     var assignments = roleAssignments([]);
-    return Promise.all([listLocalModels(), listZenModels(), listGroqModels(), listOpenRouterModels()]).then(function (results) {
-      var local = results[0], zen = results[1], groq = results[2], or = results[3];
+    return Promise.all([listLocalModels(), listZenModels(), listGroqModels(), listOpenRouterModels(), listCloudModels()]).then(function (results) {
+      var local = results[0], zen = results[1], groq = results[2], or = results[3], cloud = results[4];
       var mode = currentMode();
-      var listing = mode === 'zen' ? zen : mode === 'groq' ? groq : mode === 'openrouter' ? or : local;
+      var listing = mode === 'cloud' ? cloud : mode === 'zen' ? zen : mode === 'groq' ? groq : mode === 'openrouter' ? or : local;
       var free = listing.free || [];
       var allIds = (listing.models || []).map(function (m) { return m.id; });
       if (!allIds.length && (mode === 'local' || mode === 'zen')) allIds = providerFallbacks(mode).slice();
-      assignments = roleAssignments(allIds.length ? allIds : providerFallbacks(mode), mode === 'groq' ? 'groq' : mode === 'openrouter' ? 'openrouter' : mode);
+      assignments = roleAssignments(allIds.length ? allIds : providerFallbacks(mode), mode === 'cloud' ? 'cloud' : mode === 'groq' ? 'groq' : mode === 'openrouter' ? 'openrouter' : mode);
       /* A public model listing (OpenRouter works without a key) is NOT the
          same as a usable chat connection. Require credentials before showing
          agents as connected; otherwise the bulbs lie about live replies. */
@@ -1923,11 +2018,12 @@
         });
       });
       return {
-        providerConfig: { provider: mode, model: modelLabel, hasKey: connected, baseUrl: local.base || settings.localUrl },
+        providerConfig: { provider: mode, model: modelLabel, hasKey: connected, baseUrl: mode === 'cloud' ? settings.relayUrl : (local.base || settings.localUrl) },
         providerStatus: {
           provider: mode,
           model: modelLabel,
           hasKey: connected,
+          cloud: { connected: cloud.connected, baseUrl: settings.relayUrl, error: cloud.error, freeModels: cloud.free.length, defaultProvider: cloud.defaultProvider, providers: cloud.providers },
           local: { connected: local.connected, baseUrl: local.base || settings.localUrl, bridgeUrl: settings.localBridgeUrl, error: local.error, modelCount: local.models.length },
           zen: { connected: zen.connected, error: zen.error, modelCount: zen.models.length },
           groq: { connected: groq.connected, error: groq.error, freeModels: groq.free.length },
@@ -1970,9 +2066,9 @@
       return buildBootstrap().then(function (d) { return jsonResponse(d); });
     }
     if (method === 'GET' && path === '/api/models') {
-      return Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true)]).then(function (r) {
+      return Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true), listCloudModels(true)]).then(function (r) {
         var mode = currentMode();
-        var listing = mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
+        var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         var ids = (listing.models || []).map(function (x) { return x.id; });
         return jsonResponse({
           connected: listing.connected,
@@ -1981,6 +2077,7 @@
           models: listing.models,
           freeModels: listing.free,
           providers: {
+            cloud: { connected: r[4].connected, freeModels: r[4].free.length, error: r[4].error, defaultProvider: r[4].defaultProvider },
             local: { connected: r[0].connected, freeModels: r[0].free.length },
             zen: { connected: r[1].connected, freeModels: r[1].free.length },
             groq: { connected: r[2].connected, freeModels: r[2].free.length, error: r[2].error },
@@ -2717,9 +2814,9 @@
       '<div class="office-modal-card">' +
       '<h2>🔌 الاتصال بالنماذج وبوت تيليجرام</h2>' +
       (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" /><div><strong>MD1&#117;sd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
-      '<p>اختر مزود النموذج. لا تُحفظ أي مفاتيح على أي سيرفر: تبقى في متصفحك فقط وتُرسل مباشرة إلى المزود. النماذج المجانية فقط هي المسموح بها.</p>' +
+      '<p>اختر مزود النموذج. في الوضع السحابي تبقى مفاتيح النماذج في أسرار Supabase Edge ولا تُرسل إلى المتصفح؛ المتصفح يحتفظ فقط بسر الـ relay. النماذج المجانية فقط هي المسموح بها.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (الأفضل المتاح)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (سحابي)</option><option value="groq">Groq (مجاني/محدود الحصة)</option><option value="openrouter">OpenRouter (المجاني فقط)</option><option value="demo">تجريبي بدون نموذج</option></select></div>' +
+      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (الأفضل المتاح)</option><option value="cloud">Supabase Cloud (مفاتيح على السيرفر)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (سحابي)</option><option value="groq">Groq (مجاني/محدود الحصة)</option><option value="openrouter">OpenRouter (المجاني فقط)</option><option value="demo">تجريبي بدون نموذج</option></select></div>' +
       '<div><label>النماذج المجانية فقط</label><select id="ocFree"><option value="true">نعم — مجاني فقط</option><option value="false">لا — اسمح بالمدفوع</option></select></div>' +
       '</div>' +
       '<label>عنوان OpenCode المحلي</label><input id="ocLocalUrl" type="text" placeholder="http://127.0.0.1:28894" />' +
@@ -2752,7 +2849,7 @@
       '<label style="margin-top:16px;">🧪 مختبر النماذج — اختبار وتدريب قبل التعيين</label>' +
       '<p>اختبر النموذج على مهمة الدور، ثم درّبه بـ 3 تمارين ضبط توجيه (prompt calibration). النماذج التي تجتاز الاختبار فقط هي التي تُعيَّن تلقائياً. هذا لا يغيّر أوزان النموذج، بل يضبط طريقة توجيهه.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="local">OpenCode المحلي</option><option value="zen">OpenCode Zen</option><option value="groq">Groq (مجاني)</option><option value="openrouter">OpenRouter (مجاني)</option></select></div>' +
+      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="cloud">Supabase Cloud (سحابي)</option><option value="local">OpenCode المحلي</option><option value="zen">OpenCode Zen</option><option value="groq">Groq (مجاني)</option><option value="openrouter">OpenRouter (مجاني)</option></select></div>' +
       '<div><label>الدور</label><select id="ocLabRole">' + allAgents().map(function (a) { return '<option value="' + esc(a.id) + '">' + a.avatar + ' ' + esc(a.name) + '</option>'; }).join('') + '</select></div>' +
       '</div>' +
       '<label>النموذج بالضبط</label><input id="ocLabModel" type="text" placeholder="اختر مزوداً لملء النموذج تلقائياً" />' +
@@ -2843,7 +2940,7 @@
         if (sel.value) settings.modelOverrides[sel.getAttribute('data-model-for')] = sel.value;
       });
       saveSettings();
-      providerCache.local = null; providerCache.zen = null;
+      providerCache.cloud = null; providerCache.local = null; providerCache.zen = null;
       providerCache.groq = null; providerCache.openrouter = null;
     }
 
@@ -2870,11 +2967,12 @@
       readForm();
       renderQuota();
       status('جارٍ فحص الاتصال...', '');
-      Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true)]).then(function (r) {
+      Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true), listCloudModels(true)]).then(function (r) {
         var mode = currentMode();
-        var listing = mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
+        var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
-        var providerLine = 'OpenCode: ' + (r[0].connected ? 'متصل' : 'غير متصل') +
+        var providerLine = 'Supabase Cloud: ' + (r[4].connected ? 'متصل (' + r[4].free.length + ' مجاني)' : 'غير متصل') +
+          ' · OpenCode: ' + (r[0].connected ? 'متصل' : 'غير متصل') +
           ' · Zen: ' + (r[1].connected ? 'متصل' : 'غير متصل') +
           ' · Groq: ' + (r[2].connected ? 'متصل (' + r[2].free.length + ' مجاني)' : 'غير متصل') +
           ' · OpenRouter: ' + (r[3].connected ? 'متصل (' + r[3].free.length + ' مجاني)' : 'غير متصل');
@@ -2888,6 +2986,7 @@
     }
 
     function labDefaultModel(provider) {
+      if (provider === 'cloud') return (providerCache.cloud && providerCache.cloud.free && providerCache.cloud.free[0]) || 'openai/gpt-oss-20b';
       if (provider === 'groq') return settings.groqModel || GROQ_FREE_TIER_MODELS[0];
       if (provider === 'openrouter') return settings.openrouterModel || 'baidu/ernie-5.5-flash-preview:free';
       if (provider === 'zen') return (providerCache.zen && providerCache.zen.free && providerCache.zen.free[0]) || 'auto';
