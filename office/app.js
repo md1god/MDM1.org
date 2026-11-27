@@ -85,7 +85,7 @@ async function endMeeting(){await api('/api/meeting/end',{method:'POST'});await 
 
 function renderTasks(){
   const g=document.getElementById('tasksGrid'), t=D.state.tasks||[];
-  g.innerHTML=t.slice(0,6).map(t=>{const a=D.agents.find(x=>x.id===t.agentId);return `<div class="task-card"><strong>${a?a.avatar+' '+a.name:t.agentId}</strong><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small></div>`;}).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
+  g.innerHTML=t.slice(0,6).map(t=>{const a=D.agents.find(x=>x.id===t.agentId);return `<div class="task-card" tabindex="0" role="button" title="اضغط لعرض النص كاملاً" onclick="this.classList.toggle('expanded')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('expanded')}"><strong>${a?a.avatar+' '+a.name:t.agentId}</strong><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small></div>`;}).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
 }
 
 function renderWorkingTeam(){
@@ -345,7 +345,7 @@ function populateSelects(){
 function speakText(t,id){if(!document.getElementById('ttsToggle').checked||!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.slice(0,350));u.lang='ar-SA';const p=VP[id]||{pitch:1,rate:1};u.pitch=p.pitch;u.rate=p.rate;window.speechSynthesis.speak(u)}
 function startMic(inputId){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return alert('متصفحك لا يدعم التعرف على الصوت.');const r=new S();r.lang='ar-SA';r.onresult=e=>{document.getElementById(inputId).value=e.results[0][0].transcript};r.start()}
 
-function switchTab(t){document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`))}
+function switchTab(t){const ca=document.querySelector('.content-area');if(ca)ca.scrollTop=0;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`))}
 function switchChatMode(m){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.chatmode===m));
   document.getElementById('directChatView').classList.toggle('hidden',m!=='direct');
