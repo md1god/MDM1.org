@@ -4,7 +4,7 @@ let D = {
   state:{ directChats:{}, teamChat:[], tasks:[], approvals:[], webhooks:[], usageStats:{totalTokens:0,totalCostUsd:0,byAgent:{}}, meetingActive:false, meetingAttendees:[], internalMemos:[], kpiReviews:[], financialLedger:[], schedules:[], gamification:{}, customers:[], votes:[], emergencyMode:false, incidents:[], simulations:[] }
 };
 let selectedAgentId = null;
-const SL = { available:'متاح', working:'يعمل', waiting_approval:'ينتظر موافقة' };
+const SL = { available:'متاح', working:'يعمل', waiting_approval:'ينتظر موافقة', offline:'غير متصل' };
 const ROOMS = [
   { id:'exec-hr', title:'👑 الإدارة التنفيذية والموارد البشرية', zones:['executive','hr-training'] },
   { id:'fin-sec', title:'💰 قسم المالية والأمان', zones:['finance-security'] },
@@ -25,13 +25,28 @@ function renderAll(){
 }
 
 function renderTopBadges(){
-  const c=D.providerConfig, b=document.getElementById('providerBadge');
-  b.className='provider-badge '+(c.hasKey?'live':'demo');
-  b.textContent=c.hasKey?`🟢 ${c.provider.toUpperCase()} (${c.model})`:`🟡 تجريبي (${c.provider.toUpperCase()})`;
+  const c=D.providerConfig||{}, st=D.providerStatus||{}, b=document.getElementById('providerBadge');
+  const live=Boolean(st.hasKey||c.hasKey);
+  b.className='provider-badge '+(live?'live':'offline');
+  b.textContent=live?`🟢 ${String(c.provider||st.provider||'model').toUpperCase()} (${c.model||st.model||'auto'})`:'🔴 غير متصل — أضف API';
+  b.title=live
+    ? `المزود: ${c.provider||st.provider||'-'}\nالنموذج: ${c.model||st.model||'-'}\nاضغط لفتح إعدادات الاتصال.`
+    : (st.lastError||'لا يوجد اتصال حي بنموذج. اضغط لفتح 🔑 إضافة API.');
+  b.onclick=()=>window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});
   const u=D.state.usageStats||{totalTokens:0,totalCostUsd:0};
   document.getElementById('costBadge').textContent=`🪙 ${u.totalTokens} tok | $${Number(u.totalCostUsd||0).toFixed(4)}`;
   document.getElementById('ragBadge').textContent=`🧠 ${(D.memoryStats&&D.memoryStats.totalMemories)||0} ذكرى`;
   document.getElementById('emergencyBanner').classList.toggle('hidden', !D.state.emergencyMode);
+  renderProviderNotice(live, st);
+}
+
+function renderProviderNotice(live, st){
+  const el=document.getElementById('providerNotice'); if(!el)return;
+  if(live){el.classList.add('hidden');el.innerHTML='';return;}
+  el.classList.remove('hidden');
+  el.innerHTML='<span>⚠️ الردود الحالية تجريبية لأنه لا يوجد اتصال حي بنموذج. حالة الموظفين تظهر «غير متصل» إلى أن تُدخل مفتاح API أو تشغّل OpenCode محلياً.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة API الآن</button>';
+  const btn=document.getElementById('noticeApiBtn');
+  if(btn)btn.onclick=()=>window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});
 }
 
 function renderStats(){
@@ -40,6 +55,7 @@ function renderStats(){
   document.getElementById('statAvailable').textContent=c.available;
   document.getElementById('statWorking').textContent=c.working;
   document.getElementById('statWaiting').textContent=c.waiting_approval;
+  document.getElementById('statOffline').textContent=c.offline||0;
   document.getElementById('pendingCountBadge').textContent=D.state.approvals.filter(a=>a.status==='pending').length;
   document.getElementById('memoCountBadge').textContent=(D.state.internalMemos||[]).length;
 }
@@ -74,7 +90,8 @@ function renderDirectChat(){
   const g=a.gamification||{points:0,level:1,rankTitle:'موظف تنفيذي'};
   document.getElementById('directChatHeader').innerHTML=`${a.avatar} ${a.name} <small style="color:var(--muted);font-weight:400">(${a.department} | 🏆 ${g.rankTitle} • 🧠 ${a.memoryCount||0} ذكرى)</small>`;
   const h=D.state.directChats[a.id]||[], el=document.getElementById('directChatMessages');
-  el.innerHTML=h.length===0?`<div class="msg assistant"><div class="msg-meta">${a.name}</div>مرحباً سيادة المدير! أنا جاهز لتلقي توجيهاتك.</div>`:h.map(m=>`<div class="msg ${m.role}"><div class="msg-meta">${m.role==='user'?'أنت (CEO)':a.name}${m.ragUsed?` • 🧠 استرجاع ${m.ragUsed} ذكرى`:''}</div>${esc(m.text)}</div>`).join('');
+  const fem=a.id==='executive-assistant';
+  el.innerHTML=h.length===0?`<div class="msg assistant"><div class="msg-meta">${a.name}</div>مرحباً سيادة المدير! أنا ${a.name}، ${fem?'جاهزة':'جاهز'} لتلقي توجيهاتك.</div>`:h.map(m=>`<div class="msg ${m.role}"><div class="msg-meta">${m.role==='user'?'أنت (CEO)':a.name}${m.ragUsed?` • 🧠 استرجاع ${m.ragUsed} ذكرى`:''}${m.mode&&m.mode!=='live'?` • ⚠️ ${SL[m.mode]||'رد تجريبي'}`:''}</div>${esc(m.text)}</div>`).join('');
   el.scrollTop=el.scrollHeight;
   document.getElementById('agentInspector').innerHTML=`<h4>ملف الموظف (${a.id})</h4><div class="inspector-block"><strong>الرتبة والنقاط (Gamification)</strong>المستوى: ${g.level} — ${g.rankTitle}\nالنقاط: ${g.points}\nالذاكرة المتجهة: ${a.memoryCount||0} ذكرى</div><div class="inspector-block"><strong>الصلاحيات</strong>الأدوات: ${a.allowedTools.join(', ')||'-'}\nموافقة: ${a.requiresApprovalFor.join(', ')||'-'}</div><div class="inspector-block"><strong>الدور</strong>${esc(a.roleMd.slice(0,320))}...</div><div class="inspector-block"><strong>المهارات</strong>${esc(a.skillsMd.slice(0,280))}...</div>`;
 }
@@ -252,7 +269,7 @@ document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=
 document.getElementById('directMicBtn').onclick=()=>startMic('directChatInput');
 document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');
 
-document.getElementById('directChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('directChatInput'),btn=document.getElementById('directSendBtn'),t=inp.value.trim();if(!t||!selectedAgentId)return;inp.value='';btn.disabled=true;btn.textContent='...';try{const r=await api('/api/chat/direct',{method:'POST',body:JSON.stringify({agentId:selectedAgentId,message:t})});await bootstrap();if(r.reply?.text)speakText(r.reply.text,selectedAgentId);}catch(e){alert(e.message)}finally{btn.disabled=false;btn.textContent='إرسال'}});
+document.getElementById('directChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('directChatInput'),btn=document.getElementById('directSendBtn'),t=inp.value.trim();if(!t||!selectedAgentId)return;inp.value='';btn.disabled=true;btn.textContent='...';try{const r=await api('/api/chat/direct',{method:'POST',body:JSON.stringify({agentId:selectedAgentId,message:t})});await bootstrap();if(r.reply?.mode&&r.reply.mode!=='live'&&r.warning){window.MDM1Office?.showToast?.('⚠️ '+String(r.warning).slice(0,180),'err');}if(r.reply?.text)speakText(r.reply.text,selectedAgentId);}catch(e){alert(e.message)}finally{btn.disabled=false;btn.textContent='إرسال'}});
 document.getElementById('teamChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('teamChatInput'),btn=document.getElementById('teamSendBtn'),t=inp.value.trim();if(!t)return;const att=Array.from(document.querySelectorAll('.attendee-check:checked')).map(el=>el.value);inp.value='';btn.disabled=true;btn.textContent='جاري الاجتماع...';try{await api('/api/chat/team',{method:'POST',body:JSON.stringify({message:t,attendeeIds:att})});await bootstrap();}catch(e){alert(e.message)}finally{btn.disabled=false;btn.textContent='إرسال للفريق'}});
 document.getElementById('dailyBriefBtn').onclick=async()=>{const b=document.getElementById('dailyBriefBtn');b.disabled=true;b.textContent='⏳...';try{const r=await api('/api/workflows/daily-brief',{method:'POST'});await bootstrap();switchTab('chat');switchChatMode('team');if(r.brief)speakText(r.brief,'executive-assistant');}finally{b.disabled=false;b.textContent='☀️ النشرة الصباحية'}};
 

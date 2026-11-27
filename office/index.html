@@ -14,10 +14,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261127pwa4" />
-  <link rel="icon" type="image/png" href="icon-192.png?v=20261127pwa4" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261127pwa4" />
-  <link rel="stylesheet" href="styles.css?v=20261127pwa4" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261127pwa5" />
+  <link rel="icon" type="image/png" href="icon-192.png?v=20261127pwa5" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261127pwa5" />
+  <link rel="stylesheet" href="styles.css?v=20261127pwa5" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +25,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <img class="brand-logo" src="app-logo.png?v=20261127pwa4" alt="MD1&#117;sd Company" />
+        <img class="brand-logo" src="app-logo.png?v=20261127pwa5" alt="MD1&#117;sd Company" />
         <div>
           <h1>MD1&#117;sd Company</h1>
           <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -36,7 +36,13 @@
         <div id="costBadge" class="cost-badge" title="مراقب التوكنز والتكلفة">🪙 0 tok | $0.00</div>
         <div id="providerBadge" class="provider-badge">جاري التحميل...</div>
         <div id="officeQuotaBadge" class="provider-badge">📊 0 طلب</div>
-        <button class="btn btn-install install-app-btn" id="installAppBtn" type="button">⬇️ تحميل التطبيق</button>
+        <div class="quick-actions" id="officeQuickActions" aria-label="إجراءات سريعة">
+          <button type="button" class="quick-btn quick-api" id="quickApiBtn">🔑 إضافة API</button>
+          <button type="button" class="quick-btn quick-google" id="quickGoogleBtn">👤 جوجل</button>
+          <button type="button" class="quick-btn quick-whatsapp" id="quickWhatsappBtn">🟢 واتساب</button>
+          <button type="button" class="quick-btn quick-telegram" id="quickTelegramBtn">✈️ تليجرام</button>
+          <button type="button" class="quick-btn quick-install install-app-btn" id="installAppBtn">💻 تثبيت التطبيق</button>
+        </div>
         <button class="btn btn-danger" id="killSwitchTopBtn" onclick="triggerKillSwitchQuick()">🚨 زر الطوارئ</button>
         <button class="btn btn-secondary" id="dailyBriefBtn">☀️ النشرة الصباحية</button>
         <button class="btn btn-cyan" id="openWorkflowModalBtn">🚀 مسار مشروع تلقائي</button>
@@ -48,6 +54,7 @@
       <span>🚨 <strong>وضع الطوارئ وإدارة الأزمات نشط!</strong> تم تجميد جميع الـ Webhooks والمهام المجدولة والحملات التسويقية المعلقة.</span>
       <button class="btn btn-approve" onclick="recoverEmergency()">✓ استعادة التشغيل الطبيعي</button>
     </div>
+    <div id="providerNotice" class="provider-notice hidden"></div>
 
     <div class="main-layout">
       <aside class="sidebar">
@@ -76,6 +83,7 @@
           <div class="stat-row"><span class="dot available"></span> متاح: <strong id="statAvailable">0</strong></div>
           <div class="stat-row"><span class="dot working"></span> يعمل: <strong id="statWorking">0</strong></div>
           <div class="stat-row"><span class="dot waiting_approval"></span> ينتظر: <strong id="statWaiting">0</strong></div>
+          <div class="stat-row"><span class="dot offline"></span> غير متصل: <strong id="statOffline">0</strong></div>
         </div>
       </aside>
 
@@ -83,7 +91,7 @@
         <!-- OFFICE -->
         <section id="tab-office" class="tab-panel active">
           <div class="panel-header">
-            <div><h2>المكتب الافتراضي التفاعلي (2.5D)</h2><p>غرف حقيقية، فقاعات حوار حية، ذاكرة RAG، ورتب الموظفين</p></div>
+            <div><h2>MD1&#117;sd Company</h2><p>غرف حقيقية، فقاعات حوار حية، ذاكرة RAG، ورتب الموظفين</p></div>
             <div class="legend"><span><i class="dot available"></i> متاح</span><span><i class="dot working"></i> يعمل</span><span><i class="dot waiting_approval"></i> ينتظر</span></div>
           </div>
           <div class="office-stage">
@@ -330,16 +338,16 @@
   <nav class="mdm1-policy-links" hidden aria-hidden="true"></nav>
   <!-- /js/global.js /js/lang.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
-  <!-- Standalone runtime must load first: it installs the /api/* shim before the UI boots. -->
-  <script src="office-config.js?v=20261127pwa4"></script>
-  <script src="office-auth.js?v=20261127pwa4"></script>
-  <script src="pwa.js?v=20261127pwa4"></script>
-  <script src="standalone.js?v=20261127pwa4"></script>
+  <!-- pwa.js only registers the service worker; standalone.js installs the /api/* shim before app.js boots. -->
+  <script src="office-config.js?v=20261127pwa5"></script>
+  <script src="office-auth.js?v=20261127pwa5"></script>
+  <script src="pwa.js?v=20261127pwa5"></script>
+  <script src="standalone.js?v=20261127pwa5"></script>
   <script>
     // Start the UI only after company data is loaded and the private gate is passed.
     (window.MDM1Office && window.MDM1Office.ready || Promise.resolve()).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261127pwa4';
+      s.src = 'app.js?v=20261127pwa5';
       document.body.appendChild(s);
     });
   </script>

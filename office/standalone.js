@@ -129,7 +129,7 @@
       directChats: {},
       teamChat: [{
         id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية', senderAvatar: '📋',
-        role: 'assistant', text: 'صباح الخير سيادة المدير! جميع الأقسام متصلة وجاهزة. يمكنك بدء اجتماع جماعي أو إطلاق مسار مشروع تلقائي بين الأقسام.',
+        role: 'assistant', text: 'صباح الخير سيادة المدير! أنا السكرتيرة التنفيذية وجاهزة لتلقي توجيهاتك. حالة الاتصال الفعلية بالنموذج تظهر أعلى الصفحة، ويمكنك بدء اجتماع جماعي أو مسار مشروع تلقائي.',
         timestamp: now
       }],
       tasks: [
@@ -584,8 +584,12 @@
     var rag = (ragMemories && ragMemories.length)
       ? '\n=== ذاكرة محادثات ذات صلة ===\n' + ragMemories.map(function (m) { return '- [' + String(m.timestamp || '').slice(0, 10) + '] (' + (m.role === 'user' ? 'المدير' : agent.name) + '): ' + m.text; }).join('\n') + '\n'
       : '';
-    return 'أنت تعمل داخل "المكتب الافتراضي للذكاء الاصطناعي" (AI Virtual Office).\n' +
-      'المستخدم هو المدير التنفيذي (CEO) وصاحب الشركة. أجب بالعربية الواضحة والعملية.\n\n' +
+    var feminine = agent.id === 'executive-assistant' || agent.feminine === true;
+    var genderLine = feminine
+      ? '\nأنتِ السكرتيرة التنفيذية: تحدثي دائماً بصيغة الأنثى (أنتِ، جاهزة، سأجهّز، سأتابع، سأرسل). لا تستخدمي صيغة المذكر.\n'
+      : '';
+    return 'أنت تعمل داخل "MD1\u0075sd Company" (AI Virtual Office).\n' +
+      'المستخدم هو المدير التنفيذي (CEO) وصاحب الشركة. أجب بالعربية الواضحة والعملية.' + genderLine + '\n\n' +
       '=== قاعدة معرفة الشركة ===\n' + (knowledgeContext() || 'لا توجد ملفات معرفة إضافية حالياً.') + '\n' + rag +
       '\n=== الدور ===\n' + (agent.roleMd || '') + '\n\n=== المهارات ===\n' + (agent.skillsMd || '') + '\n\n' +
       '=== الصلاحيات ===\n- القسم: ' + (agent.department || '') + '\n- الأدوات: ' + ((agent.allowedTools || []).join(', ') || 'لا يوجد') + '\n' +
@@ -739,10 +743,10 @@
 
   /* ── model lab: benchmark → calibration → assignment ─────────────────── */
   var BENCHMARK_TASKS = {
-    'executive-assistant': { prompt: 'لديك ثلاث مهام متزاحمة: عرض عميل، تقرير مالي، وموافقة أمنية. ضع جدولاً تنفيذياً بأولوياتك وحدد ما يحتاج موافقة المدير.', keywords: ['أولوية', 'جدول', 'موافقة', 'مدير'], minLen: 100 },
-    'hr-manager': { prompt: 'فريقك يعمل فوق طاقته أسبوعين متتاليين. اقترح خطة توظيف أو إعادة توزيع مع مؤشرات قياس ومخاطر.', keywords: ['توظيف', 'مؤشر', 'مخاطر', 'فريق'], minLen: 100 },
-    'ai-trainer': { prompt: 'صمم خطة تدريب أسبوعية لوكيل ضعيف في الرد على العملاء مع KPI واضح وطريقة قياس.', keywords: ['تدريب', 'مؤشر', 'قياس', 'أسبوع'], minLen: 100 },
-    'accountant': { prompt: 'احسب هامش ربح منتج سعره $99 وتكلفته $41 مع تكلفة API $6، واذكر الافتراضات والمخاطر المالية.', keywords: ['هامش', 'تكلفة', 'ربح', 'افتراض'], minLen: 90 },
+    'executive-assistant': { prompt: 'لديكِ ثلاث مهام متزاحمة: عرض عميل، تقرير مالي، وموافقة أمنية. ضعي جدولاً تنفيذياً بأولوياتكِ وحددّي ما يحتاج موافقة المدير.', keywords: ['أولوية', 'جدول', 'موافقة', 'مدير'], minLen: 100 },
+    'hr-manager': { prompt: 'فريقك يعمل فوق طاقته أسبوعين متتاليين. اقترحي خطة توظيف أو إعادة توزيع مع مؤشرات قياس ومخاطر.', keywords: ['توظيف', 'مؤشر', 'مخاطر', 'فريق'], minLen: 100 },
+    'ai-trainer': { prompt: 'صمّمي خطة تدريب أسبوعية لوكيل ضعيف في الرد على العملاء مع KPI واضح وطريقة قياس.', keywords: ['تدريب', 'مؤشر', 'قياس', 'أسبوع'], minLen: 100 },
+    'accountant': { prompt: 'احسبي هامش ربح منتج سعره $99 وتكلفته $41 مع تكلفة API $6، واذكري الافتراضات والمخاطر المالية.', keywords: ['هامش', 'تكلفة', 'ربح', 'افتراض'], minLen: 90 },
     'marketing-lead': { prompt: 'اكتب إعلاناً عربياً مختصراً لمنتج أتمتة مع دعوة لاتخاذ إجراء، وحدد جمهوراً وقناة نشر ومقياس نجاح.', keywords: ['جمهور', 'قناة', 'قياس', 'إعلان'], minLen: 90 },
     'security-officer': { prompt: 'راجع ربط webhook خارجي بمفتاح سري. صنّف الخطر واذكر الضوابط المطلوبة قبل الموافقة.', keywords: ['خطر', 'ضوابط', 'مفتاح', 'موافقة'], minLen: 90 },
     'web-research-team': { prompt: 'ابحث عن فرصة SaaS جديدة واذكر مصدراً ومعايير اختيار ومخاطرة واحدة على الأقل.', keywords: ['مصدر', 'معايير', 'فرصة', 'مخاطرة'], minLen: 90 },
@@ -967,12 +971,27 @@
       });
   }
 
+  function providerConfigured(mode) {
+    if (mode === 'local') return Boolean(secret('localPassword'));
+    if (mode === 'zen') return Boolean(secret('zenKey'));
+    if (mode === 'groq') return Boolean(secret('groqKey'));
+    if (mode === 'openrouter') return Boolean(secret('openrouterKey'));
+    return false;
+  }
   function currentMode() {
     if (settings.mode !== 'auto') return settings.mode;
-    if (secret('localPassword')) return 'local';
-    if (secret('zenKey')) return 'zen';
-    if (secret('groqKey')) return 'groq';
-    if (secret('openrouterKey')) return 'openrouter';
+    /* Prefer a provider that is both configured AND reachable. This stops the
+       UI from reporting "available" while chat falls back because the first
+       configured provider (often localhost) is not reachable from the site. */
+    var order = ['local', 'zen', 'groq', 'openrouter'];
+    var i, mode;
+    for (i = 0; i < order.length; i++) {
+      mode = order[i];
+      if (providerConfigured(mode) && providerCache[mode] && providerCache[mode].connected) return mode;
+    }
+    for (i = 0; i < order.length; i++) {
+      if (providerConfigured(order[i])) return order[i];
+    }
     return 'demo';
   }
 
@@ -991,12 +1010,16 @@
   }
 
   function demoReply(agent, userMessage, warning) {
+    var feminine = agent.id === 'executive-assistant' || agent.feminine === true;
+    var ready = feminine ? 'جاهزة' : 'جاهز';
+    var address = feminine ? 'سعادتك' : 'سيادتك';
+    var youCan = feminine ? 'يمكنكِ' : 'يمكنك';
     return 'مرحباً سيادة المدير! أنا **' + agent.name + '** (' + (agent.englishName || agent.id) + ').\n\n' +
       'استلمت توجيهك: "' + String(userMessage || '').slice(0, 160) + '"\n\n' +
       (warning
-        ? '⚠️ **تعذر الوصول إلى النموذج الآن:**\n' + warning + '\n\nيمكنك تغيير المزود أو النموذج من زر **🔌 الاتصال** أعلى الصفحة.'
-        : '⚠️ **الوضع التجريبي:** لم يتم توصيل نموذج بعد. افتح **🔌 الاتصال** وأدخل كلمة مرور تطبيق OpenCode أو مفتاح OpenCode Zen.') +
-      '\n\nكل بياناتك محفوظة محلياً في متصفحك.';
+        ? '⚠️ **تعذر الوصول إلى النموذج الآن:**\n' + warning + '\n\n' + youCan + ' تغيير المزود أو النموذج من زر **🔑 إضافة API** / **🔌 الاتصال** أعلى الصفحة.'
+        : '⚠️ **الوضع التجريبي:** لم يتم توصيل نموذج بعد. افتح **🔑 إضافة API** أو **🔌 الاتصال** وأدخل كلمة مرور تطبيق OpenCode أو مفتاح OpenCode Zen.') +
+      '\n\nأنا ' + ready + ' لخدمة ' + address + '. كل بياناتك محفوظة محلياً في متصفحك.';
   }
 
   function aiGenerateRaw(opts) {
@@ -1884,12 +1907,15 @@
       var allIds = (listing.models || []).map(function (m) { return m.id; });
       if (!allIds.length && (mode === 'local' || mode === 'zen')) allIds = providerFallbacks(mode).slice();
       assignments = roleAssignments(allIds.length ? allIds : providerFallbacks(mode), mode === 'groq' ? 'groq' : mode === 'openrouter' ? 'openrouter' : mode);
-      var connected = mode === 'demo' ? false : listing.connected;
+      /* A public model listing (OpenRouter works without a key) is NOT the
+         same as a usable chat connection. Require credentials before showing
+         agents as connected; otherwise the bulbs lie about live replies. */
+      var connected = mode === 'demo' ? false : (listing.connected && providerConfigured(mode));
       var modelLabel = settings.modelOverrides['*'] || (free[0] || (mode === 'groq' ? settings.groqModel : mode === 'openrouter' ? settings.openrouterModel : 'demo'));
       var agents = allAgents().map(function (a) {
         var g = ensureProfile(a.id);
         return Object.assign({}, a, {
-          status: state.agentStatuses[a.id] || a.status || 'available',
+          status: !connected ? 'offline' : (state.agentStatuses[a.id] || a.status || 'available'),
           bubble: state.liveBubbles[a.id] || '',
           gamification: g,
           memoryCount: (state.memories[a.id] || []).length,
@@ -2676,8 +2702,11 @@
     document.head.appendChild(css);
   }
 
-  function openConnectionPanel() {
-    if (document.getElementById('officeConnModal')) return;
+  function openConnectionPanel(options) {
+    if (document.getElementById('officeConnModal')) {
+      applyConnectionFocus(options);
+      return;
+    }
     var modal = document.createElement('div');
     modal.id = 'officeConnModal';
     modal.className = 'office-modal';
@@ -3001,6 +3030,55 @@
     renderAuthStatus();
     watchAuth();
     test();
+    applyConnectionFocus(options);
+  }
+
+  /* Lets the quick buttons jump straight to the API fields or the selected
+     WhatsApp/Telegram messaging channel instead of dumping users at the top. */
+  function applyConnectionFocus(options) {
+    var modal = document.getElementById('officeConnModal');
+    if (!modal) return;
+    var o = typeof options === 'string' ? { focus: options } : (options || {});
+    if (o.channel) {
+      var channel = modal.querySelector('#ocMsgChannel');
+      if (channel) channel.value = o.channel;
+    }
+    var targetId = o.focus === 'api' ? 'ocZenKey' : o.focus === 'messaging' ? 'ocMsgText' : '';
+    if (!targetId) return;
+    var target = modal.querySelector('#' + targetId);
+    if (!target) return;
+    window.setTimeout(function () {
+      if (target.scrollIntoView) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
+    }, 60);
+  }
+
+  function openMessaging(channel) {
+    var st = window.MDM1Auth && typeof window.MDM1Auth.status === 'function' ? window.MDM1Auth.status() : null;
+    if (st && !st.messagingReady) {
+      showToast('سجّل الدخول بحساب Google أو الإيميل أولاً لتفعيل المراسلة.', 'err');
+      if (window.MDM1Auth) window.MDM1Auth.openPanel();
+      return;
+    }
+    openConnectionPanel({ channel: channel || 'telegram', focus: 'messaging' });
+  }
+
+  function bindQuickButtons() {
+    var api = document.getElementById('quickApiBtn');
+    if (api) api.onclick = function () { openConnectionPanel({ focus: 'api' }); };
+    var google = document.getElementById('quickGoogleBtn');
+    if (google) google.onclick = function () {
+      if (!window.MDM1Auth) { showToast('وحدة الحساب غير محمّلة في هذه الصفحة.', 'err'); return; }
+      var st = typeof window.MDM1Auth.status === 'function' ? window.MDM1Auth.status() : {};
+      if (st.signedIn) { window.MDM1Auth.openPanel(); return; }
+      Promise.resolve(window.MDM1Auth.signInWithGoogle()).catch(function (e) {
+        showToast('تعذر فتح Google: ' + e.message, 'err');
+      });
+    };
+    var wa = document.getElementById('quickWhatsappBtn');
+    if (wa) wa.onclick = function () { openMessaging('whatsapp'); };
+    var tg = document.getElementById('quickTelegramBtn');
+    if (tg) tg.onclick = function () { openMessaging('telegram'); };
   }
 
   function injectTopbarButton() {
@@ -3043,6 +3121,7 @@
       })
       .then(function () {
         injectTopbarButton();
+        bindQuickButtons();
         updateQuotaBadge();
         resolveReady();
       });
@@ -3056,7 +3135,9 @@
     settings: settings,
     saveSettings: saveSettings,
     aiGenerate: aiGenerate,
+    showToast: showToast,
     openConnectionPanel: openConnectionPanel,
+    openMessaging: openMessaging,
     createSnapshot: createSnapshot,
     restoreSnapshot: restoreSnapshot,
     downloadSnapshot: downloadSnapshot,

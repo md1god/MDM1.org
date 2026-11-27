@@ -3,7 +3,7 @@
   'use strict';
   var deferredPrompt = null;
   var installed = false;
-  var VERSION = '20261127pwa4';
+  var VERSION = '20261127pwa5';
   var standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
 
   function secureContext() {
@@ -49,11 +49,11 @@
         title = 'يعمل التطبيق الآن كنافذة مستقلة';
         btn.disabled = true;
       } else if (deferredPrompt) {
-        label = '⬇️ تثبيت التطبيق';
-        title = 'ثبّت المكتب الافتراضي على جهازك';
+        label = '💻 تثبيت التطبيق';
+        title = 'ثبّت MD1\u0075sd Company على جهازك';
       } else {
         label = '⬇️ تحميل التطبيق';
-        title = 'إضافة المكتب الافتراضي إلى الشاشة الرئيسية/التطبيقات';
+        title = 'إضافة MD1\u0075sd Company إلى الشاشة الرئيسية/التطبيقات';
       }
       /* Guard is essential: assigning textContent creates a childList mutation,
          which would otherwise re-trigger the observer forever. */
@@ -72,7 +72,7 @@
       deferredPrompt.userChoice.then(function (choice) {
         if (choice && choice.outcome === 'accepted') {
           installed = true;
-          toast('✅ جارٍ تثبيت المكتب الافتراضي على جهازك...');
+          toast('✅ جارٍ تثبيت MD1\u0075sd Company على جهازك...');
         }
         deferredPrompt = null;
         updateButtons();
