@@ -151,9 +151,9 @@
       '<div class="office-modal-card">' +
       '<h2>🔌 الاتصال بالنماذج وبوت تيليجرام</h2>' +
       (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" /><div><strong>MD1&#117;sd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
-      '<p>اختر مزود النموذج. في الوضع السحابي تبقى مفاتيح النماذج في أسرار Supabase Edge ولا تُرسل إلى المتصفح؛ المتصفح يحتفظ فقط بسر الـ relay. النماذج المجانية فقط هي المسموح بها.</p>' +
+      '<p>مفاتيح المالك غير مستخدمة إطلاقاً. أدخل مفتاحك أنت واختر مزوداً من: تطبيق OpenCode المحلي، جسر HTTPS المحلي، OpenCode Zen، Groq، OpenRouter، ثم تجريبي موسوم بوضوح. النماذج المجانية فقط هي المسموح بها.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (الأفضل المتاح)</option><option value="cloud">Supabase Cloud (مفاتيح على السيرفر)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (سحابي)</option><option value="groq">Groq (مجاني/محدود الحصة)</option><option value="openrouter">OpenRouter (المجاني فقط)</option><option value="demo">تجريبي بدون نموذج</option></select></div>' +
+      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (مفاتيحك أنت فقط)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (مفتاحك أنت)</option><option value="groq">Groq (مفتاحك أنت — مجاني)</option><option value="openrouter">OpenRouter (مفتاحك أنت — المجاني فقط)</option><option value="demo">تجريبي موسوم — بدون نموذج حي</option></select></div>' +
       '<div><label>النماذج المجانية فقط</label><select id="ocFree"><option value="true">نعم — مجاني فقط</option><option value="false">لا — اسمح بالمدفوع</option></select></div>' +
       '</div>' +
       '<label>عنوان OpenCode المحلي</label><input id="ocLocalUrl" type="text" placeholder="http://127.0.0.1:28894" />' +
@@ -174,7 +174,7 @@
       '<label>اسم بوت تيليجرام (بدون @)</label><input id="ocBot" type="text" placeholder="MD1_Office_bot" />' +
       '<div class="office-grid2">' +
       '<div><label>Supabase Relay URL (اختياري للإرسال التلقائي)</label><input id="ocRelay" type="text" placeholder="https://...supabase.co/functions/v1/office-relay" /></div>' +
-      '<div><label>سر الـ Relay</label><input id="ocRelaySecret" type="password" /></div>' +
+      '<div><label>سر المالك</label><div class="office-status">غير مطلوب ولا يُستخدم؛ الدخول بحساب Google والمفاتيح تبقى على جهازك.</div></div>' +
       '</div>' +
       '<div class="office-grid2">' +
       '<div><label>Supabase Sync URL (اختياري — حالة مشفّرة)</label><input id="ocSyncUrl" type="text" placeholder="https://...supabase.co/functions/v1/office-sync" /></div>' +
@@ -186,7 +186,7 @@
       '<label style="margin-top:16px;">🧪 مختبر النماذج — اختبار وتدريب قبل التعيين</label>' +
       '<p>اختبر النموذج على مهمة الدور، ثم درّبه بـ 3 تمارين ضبط توجيه (prompt calibration). النماذج التي تجتاز الاختبار فقط هي التي تُعيَّن تلقائياً. هذا لا يغيّر أوزان النموذج، بل يضبط طريقة توجيهه.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="cloud">Supabase Cloud (سحابي)</option><option value="local">OpenCode المحلي</option><option value="zen">OpenCode Zen</option><option value="groq">Groq (مجاني)</option><option value="openrouter">OpenRouter (مجاني)</option></select></div>' +
+      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="local">OpenCode المحلي</option><option value="zen">OpenCode Zen (مفتاحك)</option><option value="groq">Groq (مفتاحك — مجاني)</option><option value="openrouter">OpenRouter (مفتاحك — مجاني)</option></select></div>' +
       '<div><label>الدور</label><select id="ocLabRole">' + allAgents().map(function (a) { return '<option value="' + esc(a.id) + '">' + a.avatar + ' ' + esc(a.name) + '</option>'; }).join('') + '</select></div>' +
       '</div>' +
       '<label>النموذج بالضبط</label><input id="ocLabModel" type="text" placeholder="اختر مزوداً لملء النموذج تلقائياً" />' +
@@ -220,6 +220,7 @@
     document.body.appendChild(modal);
 
     var q = function (id) { return modal.querySelector('#' + id); };
+    if (settings.mode === 'cloud' || settings.mode === 'supabase') settings.mode = 'auto';
     q('ocMode').value = settings.mode;
     q('ocFree').value = String(settings.freeOnly);
     q('ocLocalUrl').value = settings.localUrl;
@@ -234,7 +235,7 @@
     q('ocOrModel').value = settings.openrouterModel;
     q('ocBot').value = settings.telegramBot;
     q('ocRelay').value = settings.relayUrl;
-    q('ocRelaySecret').value = secret('relaySecret');
+    runtimeVault.data.relaySecret = '';
     q('ocWaTo').value = settings.whatsappTo || '';
     q('ocSyncUrl').value = settings.syncUrl;
     q('ocSyncSecret').value = secret('syncSecret');
@@ -267,7 +268,7 @@
       settings.openrouterModel = q('ocOrModel').value.trim() || 'baidu/ernie-5.5-flash-preview:free';
       settings.telegramBot = q('ocBot').value.trim().replace(/^@/, '');
       settings.relayUrl = q('ocRelay').value.trim();
-      runtimeVault.data.relaySecret = q('ocRelaySecret').value.trim();
+      runtimeVault.data.relaySecret = '';
       settings.whatsappTo = q('ocWaTo').value.trim();
       settings.syncUrl = q('ocSyncUrl').value.trim();
       runtimeVault.data.syncSecret = q('ocSyncSecret').value.trim();

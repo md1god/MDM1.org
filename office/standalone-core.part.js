@@ -392,8 +392,8 @@
         apikey: String((CFG.auth && CFG.auth.publishableKey) || (CFG.messaging && CFG.messaging.anonKey) || ''),
         authorization: 'Bearer ' + token
       };
-      var relaySecret = secret('relaySecret');
-      if (relaySecret) headers['x-office-secret'] = relaySecret;
+      // No owner/shared secret is ever sent by users; the Google JWT is the only
+      // credential for protected actions on this device.
       return nativeFetch(settings.relayUrl, {
         method: 'POST', headers: headers, cache: 'no-store',
         body: JSON.stringify(Object.assign({ action: action }, payload || {}))
