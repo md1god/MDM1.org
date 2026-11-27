@@ -309,7 +309,7 @@
         var mode = currentMode();
         var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
-        var providerLine = 'Supabase Cloud: ' + (r[4].connected ? 'متصل (' + r[4].free.length + ' مجاني)' : 'غير متصل') +
+        var providerLine = 'Cloud: معطّل (مفاتيح المالك غير مستخدمة)' +
           ' · OpenCode: ' + (r[0].connected ? 'متصل' : 'غير متصل') +
           ' · Zen: ' + (r[1].connected ? 'متصل' : 'غير متصل') +
           ' · Groq: ' + (r[2].connected ? 'متصل (' + r[2].free.length + ' مجاني)' : 'غير متصل') +

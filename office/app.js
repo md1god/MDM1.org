@@ -84,7 +84,7 @@ function renderProviderNotice(live, st){
   const el=document.getElementById('providerNotice'); if(!el)return;
   if(live){el.classList.add('hidden');el.innerHTML='';return;}
   el.classList.remove('hidden');
-  el.innerHTML='<span>⚠️ الردود الحالية تجريبية لأنه لا يوجد اتصال حي بنموذج. حالة الموظفين تظهر «غير متصل» إلى أن تُفعّل Supabase Cloud أو تُدخل مفتاح API أو تشغّل OpenCode محلياً.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة API الآن</button>';
+  el.innerHTML='<span>⚠️ الردود الحالية تجريبية لأنه لا يوجد اتصال حي بنموذج. حالة الموظفين تظهر «غير متصل» إلى أن تُدخل مفتاحك أنت (Groq / OpenRouter / Zen) أو تشغّل OpenCode محلياً. مفاتيح المالك غير مستخدمة.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة مفتاحي الآن</button>';
   const btn=document.getElementById('noticeApiBtn');
   if(btn)btn.onclick=()=>window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});
 }
