@@ -2284,10 +2284,12 @@
       }
     });
 
+    function riskRank(r) { return r === 'high' ? 3 : (r === 'medium' ? 2 : 1); }
     function add(agentId, reason, risk, suffix) {
       var ag = getAgent(agentId); if (!ag) return;
       if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: itemTitles[agentId] || title, details: [], reason: reason, risk: risk || 'medium' };
-      if (suffix && byAgent[agentId].details.indexOf(suffix) === -1) byAgent[agentId].details.push(suffix);
+      if (risk && riskRank(risk) > riskRank(byAgent[agentId].risk)) byAgent[agentId].risk = risk;
+      if (suffix && byAgent[agentId].details.indexOf(suffix) === -1 && suffix !== byAgent[agentId].taskTitle) byAgent[agentId].details.push(suffix);
     }
 
     var text = [u.goal, u.scope, u.deliverables, (u.keywords || []).join(' ')].join(' ').toLowerCase();
@@ -2303,6 +2305,14 @@
     if (/امان|امن|صلاحيه|بيانات/.test(text)) add('security-officer', 'مراجعة المخاطر والصلاحيات', riskFlag ? 'high' : 'medium', 'إصدار رأي أمني قبل أي نشر أو ربط خارجي.');
     if (/توظيف|فريق|تدريب|kpi|ضغط/.test(text)) add('hr-manager', 'توزيع العمل ومراقبة الضغط', 'low', 'التحقق من جاهزية الفريق.');
     if (researchLine) add('web-research-team', 'دعم البحث الحي', 'low', 'مصادر البحث: ' + researchLine);
+    /* Every understood item from the CEO's own words must appear in the plan,
+       even when the live model's summary did not mention that department. */
+    (ledgerItems || []).forEach(function (it) {
+      if (!it || it.status !== 'understood' || it.clarification === true || !it.agentId) return;
+      var t = stripNegated(String(it.text || ''));
+      var itemRisk = REQUEST_HIGH_RX.test(t) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(t) ? 'medium' : 'low');
+      add(it.agentId, 'مهمة طلبها المدير صراحةً', itemRisk, String(it.text || '').slice(0, 110));
+    });
 
     /* Keep the working team small and explainable. QA trios review approvals
        rather than appearing as extra "working" employees on every request. */

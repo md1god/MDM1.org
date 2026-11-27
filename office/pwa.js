@@ -3,7 +3,7 @@
   'use strict';
   var deferredPrompt = null;
   var installed = false;
-  var VERSION = '20261127pwa19';
+  var VERSION = '20261127pwa20';
   var MANIFEST_URL = '../downloads/packages.json?v=' + VERSION;
   var manifestCache = null;
   var standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
