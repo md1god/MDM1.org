@@ -327,7 +327,7 @@ async function handleQuotaReserve(send: Send, body: any, user: AuthUser) {
     allowed: Boolean(row.allowed),
     used: Number(row.used || 0),
     limit: Number(row.daily_limit || 0),
-    day: row.day
+    day: row.quota_day || row.day
   });
 }
 
@@ -344,7 +344,7 @@ async function handleQuotaRelease(send: Send, body: any, user: AuthUser) {
     return send({ ok: false, error: 'quota release failed', detail: out.error }, 502);
   }
   const row = out.data[0];
-  return send({ ok: true, used: Number(row.used || 0), cost: Number(row.cost || 0), day: row.day });
+  return send({ ok: true, used: Number(row.used || 0), cost: Number(row.cost || 0), day: row.quota_day || row.day });
 }
 
 /* ── 7/8/9. OTP + identities ─────────────────────────────────────────────── */
