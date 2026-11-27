@@ -1,78 +1,210 @@
-# MDM1.org — Global digital discovery and local AI assistant
+# المكتب الافتراضي للذكاء الاصطناعي — نسخة mdm1.org الخاصة
 
-[![Live site](https://img.shields.io/badge/live-mdm1.org-f0c060?style=flat-square)](https://mdm1.org/)
-[![Assistant](https://img.shields.io/badge/try-Local%20AI%20Assistant-8b6cff?style=flat-square)](https://mdm1.org/assistant/)
-[![GitHub Pages](https://github.com/md1god/MDM1.org/actions/workflows/deploy.yml/badge.svg)](https://github.com/md1god/MDM1.org/actions/workflows/deploy.yml)
-[![Static site](https://img.shields.io/badge/site-static%20HTML%2FCSS%2FJS-555?style=flat-square)](https://mdm1.org/)
+نسخة **ثابتة بالكامل** من المكتب الافتراضي: لا يوجد سيرفر تطبيق، كل الحالة تُحفظ في متصفح المستخدم،
+والاتصال بنماذج OpenCode يتم مباشرة من المتصفح. الصفحة **غير مرتبطة بقائمة الموقع** وغير مفهرسة.
 
-MDM1.org is a multilingual discovery platform for software, apps, tools, games and buildable project ideas. Its free personal assistant runs a fast catalog mode in the browser and can optionally load a small local language model through WebGPU. The assistant also generates starter code for HTML/CSS, JavaScript, Python and SQL without a paid server.
+## 1) الملفات
 
-[Open the assistant](https://mdm1.org/assistant/) · [Explore Discovery](https://mdm1.org/discover/) · [Browse the catalog](https://mdm1.org/catalog/) · [Read the launch kit](docs/PRODUCT-HUNT-LAUNCH.md)
+| المسار | الغرض |
+|---|---|
+| `office/index.html` | الصفحة الرئيسية (واجهة المكتب) — انسخها كـ `office/index.html` في مستودع `md1god/MDM1.org` |
+| `office/app.js`, `office/styles.css` | الواجهة الأصلية كما هي، مع رابطي بوابة العميل والتنزيل المعدّلين |
+| `office/standalone.js` | طبقة API في المتصفح + مزودو النماذج + التوزيع التلقائي + القفل + لوحة الاتصال |
+| `office/office-config.js` | إعدادات عامة (بدون أسرار): التجزئة، المفتاح العام، Supabase Auth، عناوين المزودين |
+| `office/office-auth.js` | طبقة هوية المتصفح: Google/Email عبر Supabase Auth + TOTP اختياري |
+| `office/app-logo.png` | شعار التطبيق المعروض بجوار العنوان وفي شاشة القفل |
+| `office/manifest.webmanifest`, `office/sw.js`, `office/pwa.js` | ملفات PWA والتحديث بدون اتصال |
+| `office/data.json` | الوكلاء/المعرفة/قوالب الإجراءات (مُولّد من المشروع الأصلي) |
+| `office/portal.html` | بوابة العميل المخصصة (تقرأ من localStorage) |
+| `supabase/office.sql` | جداول الرسائل/Audit مع RLS |
+| `supabase/functions/*` | وظائف Edge: استقبال تيليجرام + إرسال الرسائل |
+| `scripts/office-bot.py` | بوت تيليجرام احتياطي — خيار عند غياب Supabase |
+| `.github/workflows/office-bot.yml` | استطلاع البوت كل 5 دقائق عبر GitHub Actions |
+| `office-signing-key.local.json` | **سري** — المفتاح الخاص لتوقيع رموز الدخول. لا ترفعه لأي مستودع |
 
-## لماذا يهم المشروع؟ | Why it matters
+## 2) التشغيل محلياً للتجربة
 
-العثور على الأداة المناسبة لا ينبغي أن يبدأ بقائمة إعلانات طويلة. MDM1 يحول الهدف الذي يكتبه الزائر إلى اقتراحات عملية وروابط مباشرة وخطوة أولى واضحة. The project is designed for people who want to discover, compare and start using useful digital resources with less friction.
+من جذر المشروع الأصلي:
 
-## Highlights
-
-- **Browser-first personal assistant:** catalog recommendations work without account or paid API.
-- **Optional Local AI:** WebLLM loads `Qwen2.5-0.5B-Instruct-q4f16_1-MLC` on compatible WebGPU browsers; the first download is opt-in and cached by the browser.
-- **Code Lab:** generate editable starter files for HTML/CSS, JavaScript, Python and SQL, then copy or download them.
-- **Global discovery:** static, indexable pages, multilingual routes, sitemaps, `hreflang` and IndexNow workflows.
-- **Open contribution path:** add tools, apps, project plans, translations, accessibility improvements and bug reports.
-
-## Try it in 60 seconds
-
-1. Open [mdm1.org/assistant](https://mdm1.org/assistant/).
-2. Describe a goal such as “I need a free privacy tool” or “build a landing page for a task app”.
-3. Use the catalog recommendations or open **Code Lab** to generate a starter file.
-4. If your browser supports WebGPU, choose **تشغيل النموذج المحلي / Run local model** for more flexible private answers.
-
-## Local development
-
-This is a static HTML/CSS/JavaScript site. No build step is required for the assistant page:
-
-```bash
-git clone https://github.com/md1god/MDM1.org.git
-cd MDM1.org
-python3 -m http.server 4174
-# open http://127.0.0.1:4174/assistant/
+```powershell
+node server.js
+# افتح http://localhost:3000/office/
 ```
 
-The optional local model is loaded from the official WebLLM CDN only after the visitor clicks the model button. Do not add API keys or private credentials to this repository.
+> `:3000` هنا مجرد سيرفر ملفات ثابت. تطبيق OpenCode المحلي يسمح بـ CORS فقط للأصول المحلية.
+> للعمل من `https://mdm1.org` مع نفس النماذج المحلية، شغّل جسر HTTPS الاختياري مرة واحدة:
+> ```powershell
+> npm run office:cert     # ينشئ local-bridge.pfx (لا ترفعه لأي مستودع)
+> npm run office:bridge   # https://localhost:28895 -> http://127.0.0.1:28894
+> ```
+> ثم افتح 🔌 الاتصال واضبط «جسر HTTPS المحلي» على `https://localhost:28895`،
+> واقبل شهادة localhost ذات التوقيع الذاتي عند أول زيارة. إن لم تستخدم الجسر،
+> استخدم Zen / OpenRouter من النسخة المنشورة، أو افتح النسخة المحلية على `localhost`.
 
-## Interactive 3D layer
+## 3) النشر على mdm1.org
 
-Every page gets a WebGL layer at deploy time (`scripts/inject_menu_and_card.py` adds `/css/mdm1-3d.css` and `/js/mdm1-3d.js`; source files stay untouched):
+1. انسخ محتويات `office/` إلى `md1god/MDM1.org/office/` (بدون إضافة أي رابط في القائمة).
+2. احتفظ بـ `og:image = https://mdm1.org/images/og-card.jpg` وسلسلة `js/mdm1-auth-button.js`
+   (موجودة كتعليق) حتى يمر فحص deploy. أضفنا `<div id="account-panel" hidden>` لتعطيل زر الدخول العام.
+3. أضفنا عناصر مخفية (`#mdm1m-btn`، `#bg-music` وتعليقات لمسارات `global.js` و`lang.js`
+   و`music-resume.js` و`mdm1-3d.js`) حتى لا يحقن Deploy قائمة الموقع وموسيقاه وطبقة 3D داخل الصفحة الخاصة.
+4. الرابط سيكون: `https://mdm1.org/office/` — لا يظهر في القائمة ولا في خريطة الموقع.
 
-- **Ambient scene:** a 3D golden galaxy and a spinning MDM1 mark that follow the pointer / device tilt and travel with the scroll.
-- **Gateways:** on the home page of every language, an orbit of planets built from the page's own links. Drag to rotate, click a planet to enter. A plain link list is always rendered below it.
-- **Cards and reveal:** 3D tilt on hover and 3D scroll reveal.
-- **Safety:** a `3D` toggle button (remembered), plus automatic fallbacks for reduced-motion, data-saver, low-memory devices, no WebGL, and the local-LLM assistant page.
+## 4) تلقائياً: النماذج المجانية
 
-The bundle (`js/mdm1-3d.js`, three.js included) is committed so CI stays a plain static publish. To change it, edit `scripts/3d/mdm1-3d.src.js` and run `cd scripts/3d && npm install && npm run build`. To preview locally with the layer, copy the repo to a scratch folder, run `python3 scripts/inject_menu_and_card.py --root <copy> --write`, then serve that copy.
+تُكتشف النماذج من كتالوج OpenCode وتُوزّع على الأدوار:
 
-## Contributing
-
-See [docs/REPO-STRUCTURE.md](docs/REPO-STRUCTURE.md) for the folder layout and how publishing works, and [CONTRIBUTING.md](CONTRIBUTING.md) for the quickest ways to improve the catalog, assistant, translations and accessibility. For a launch-oriented overview, see [the global growth playbook](docs/GLOBAL-GROWTH-PLAYBOOK.md).
-
-## Main routes
-
-| Area | URL |
+| الموظف | النموذج المفضل |
 |---|---|
-| Home | https://mdm1.org/ |
-| Personal assistant | https://mdm1.org/assistant/ |
-| Discovery portal | https://mdm1.org/discover/ |
-| Tools | https://mdm1.org/tools/ |
-| Apps | https://mdm1.org/apps/ |
-| Projects and catalog | https://mdm1.org/catalog/ |
-| Platform | https://mdm1.org/hub.html |
-| White paper | https://mdm1.org/whitepaper.html |
+| السكرتيرة التنفيذية | `big-pickle` |
+| الموارد البشرية | `mimo-v2.6-flash-free` |
+| المدربة | `beam-free` |
+| المحاسبة | `flint-40b-free` |
+| التسويق | `nemotron-3.5-lightning-free` |
+| الأمان | `iceman-free` |
+| البحث والتطوير | `seaglass-alpha-free` |
+| المدققون/المطورون | `deepseek-v4.1-flash-free` |
 
-##
+يمكن تغيير أي دور من زر **🔌 الاتصال** أعلى الصفحة. إذا تعذّر نموذج (429/402) يتحول المكتب تلقائياً
+إلى البديل التالي، ثم إلى رد تجريبي واضح لا يدّعي أنه رد حي.
 
-MDM1.org بوابة عالمية لاكتشاف البرمجيات والتطبيقات والأدوات والألعاب والمشاريع. تحتوي على مساعد شخصي مجاني يعمل داخل المتصفح، ووضع ذكاء اصطناعي محلي اختياري عبر WebGPU، ومختبر لتوليد أكواد HTML وJavaScript وPython وSQL. نرحب بإضافات الأدوات، الترجمات، تحسينات سهولة الاستخدام، والإبلاغ عن الأخطاء.
+أُضيفت طبقة قياس حصص/تكلفة لكل نموذج (`state.modelUsage`) تظهر في شارة 📊 أعلى الصفحة وفي لوحة
+الاتصال. عند 429 تُقرأ `retry-after` ويُستبعد النموذج من سلسلة البدائل حتى انتهاء الحصة، مع إشعار
+واضح بالدقائق المتبقية. لا يُعاد محاولة نموذج محظور في كل رسالة.
 
-## Credits and transparency
+### مزودا Groq و OpenRouter (المجاني فقط)
 
-The browser-local model integration uses [WebLLM](https://github.com/mlc-ai/web-llm). The model is downloaded only when the visitor opts in. MDM1 does not promise that any third-party listing, search ranking or generated code is perfect; verify important outputs before production use.
+- في **🔌 الاتصال** اختر `Groq` أو `OpenRouter` وأدخل المفتاح. المفتاح يُحفظ في متصفحك فقط ويُرسل
+  مباشرة إلى المزود؛ الصفحة لا تحتوي أي مفتاح ولا تقرأ أسرار GitHub (الموجودة كـ Secrets مقنّعة).
+- Groq: تُقرأ قائمة `/openai/v1/models`، ثم تُقيَّد النماذج بقائمة بيضاء من معرّفات الطبقة المجانية
+  (`llama-3.3-70b-versatile`, `openai/gpt-oss-120b/20b`, ...). لا تُرسل الواجهة إلى نموذج مدفوع.
+- OpenRouter: تُقرأ `/api/v1/models` (381 نموذجاً وقت الكتابة) ويُسمح فقط بالمعرفات المنتهية بـ `:free`
+  أو ذات السعر صفر. استُبعدت `:batch`. توزيع الأدوار يستخدم نماذج مجانية محدّثة (مثل
+  `baidu/ernie-5.5-flash-preview:free` و`nvidia/nemotron-3.5-lightning:free`).
+- ترتيب الاختيار التلقائي: OpenCode المحلي → Zen → Groq → OpenRouter → تجريبي موسوم.
+
+### مختبر النماذج (اختبار وتدريب قبل التعيين)
+
+زر **🧪 مختبر النماذج** في لوحة الاتصال:
+
+1. `🧪 اختبار الكفاءة` يرسل مهمة قياسية للدور ويقيّم الرد (كلمات مفتاحية، طول، تنظيم، خلو من الرد التجريبي)
+   من 100. الرد غير الحي يُحتسب صفراً ولا يُعيَّن.
+2. `🎓 تدريب/ضبط` يمرّر 3 تمارين ويحفظ أمثلة ضبط التوجيه في `state.modelTraining`، ثم يحدّث درجة الاختبار
+   إذا تحسّنت. هذا **ضبط توجيه (prompt calibration)** داخل المتصفح، وليس تدريب أوزان.
+3. `✅ تعيين المؤهلين` يضبط `modelOverrides` لأعلى النماذج اجتيازاً فقط. النماذج غير المختبرة تُترك على
+   التوزيع الافتراضي حتى لا تتعطل الواجهة.
+
+### حلقة الجودة لكل قسم
+
+لكل قسم (ما عدا فريق الخبراء والمدققين الأساسي) ثلاثة وكلاء مستقلين: **👁️ المراقب → 🧾 المدقق → 🛠️ المصحح**.
+أي مقترح يمر عليهم قبل دخول قائمة الموافقات. إن رفضوه (FAIL) يُرفع إلى خطورة عالية ويُمنع تنفيذه إلا
+بتأكيد صريح من المدير (`override=true`). في النهاية تُوزَّع نقاط: مكافأة عندPASS، وخصم نقاط وتخفيض رتبة
+إذا ثبت خطأ، مع سجل `qualityReports` و audit. إذا كانت الردود تجريبية/غير حية فلا مكافآت ولا عقوبات.
+
+### المطور التلقائي وباحث الأسرار
+
+- `🧑‍💻 المطور التلقائي` يحلل سجل الأخطاء والحصص ونتائج المختبر ويقترح إصلاحات مسموحة للإعدادات فقط
+  (`freeOnly`, `useBenchmarks`, `qualityGate`, `benchmarkThreshold`, `mode`, `groqModel`, `openrouterModel`)
+  ولا يمكنه كتابة شفرة أو لمس الأسرار.
+- `🕵️ باحث الثغرات والمفاتيح` يفحص الإعدادات والتخزين المحلي عن أنماط (`gsk_`, `sk-or-`, `sk-`, `ghp_`,
+  رموز تيليجرام، المفتاح الخاص `d`) ويعرضها **مُعمّاة** فقط. زر `🔒 تشفير المفاتيح` ينقلها إلى خزنة
+  AES-256-GCM/PBKDF2 في المتصفح ويمحو النسخة المقروءة من localStorage؛ كلمة المرور لا تُحفظ، وتُطلب
+  مرة أخرى عبر `🔓 فتح الخزنة` بعد إعادة التحميل.
+- صورة العلامة `office/md1usd-logo.jfif` (منسوخة من `MD1usd Company.jfif` في جذر المشروع) تظهر كشعار
+  في شاشة الدخول وكبطاقة تعريف داخل لوحة الاتصال.
+
+### تثبيت التطبيق (PWA) — خفيف وسريع
+
+- زر **⬇️ تحميل التطبيق** موجود أعلى الصفحة، وأيضاً داخل شاشة القفل قبل الدخول. يفتح نافذة تثبيت المتصفح
+  مباشرة في Chrome/Edge عند توفر `beforeinstallprompt`، وإلا يعرض تعليمات يدوية موجزة
+  (قائمة ⋮ ← تثبيت التطبيق / iPhone: مشاركة ← إضافة إلى الشاشة الرئيسية).
+- الملفات: `office/manifest.webmanifest`، `office/sw.js`، `office/pwa.js`، وأيقونات
+  `icon-192.png` و`icon-512.png` وصيغة `maskable` و`apple-touch-icon.png` — كلها مولّدة من صورة العلامة.
+- التطبيق يعمل كنافذة مستقلة (`display: standalone`) بالألوان الرسمية للموقع: الذهبي `#c9a84c`،
+  الذهبي الساطع `#f0c060`، والخلفية الداكنة `#070605` (نفس هوية `css/global.css` في الموقع).
+- الـ service worker يخزّن **الملفات الثابتة العامة فقط** (HTML/CSS/JS/صور/مانيفست) ولا يعترض أي طلب
+  `/api/*`، لذلك لا تُخزَّن الحالة ولا المفاتيح ولا الرموز أبداً. لا يُخزَّن أي طلب إلى Groq/OpenRouter.
+- التحديث يتم تلقائياً: عند فتح نسخة أحدث يُحدَّث كاش `mdm1-office-pwa-*` القديم ويُحذف.
+- ملاحظة للمعاينة المحلية: غيّرنا `server.js` ليخدم `.webmanifest` و`.jfif` بنوع MIME صحيح؛
+  أعد تشغيل `node server.js` مرة واحدة بعد سحب التغييرات.
+- ملاحظة نشر مهمة: سكربت `scripts/strip_currency_terms.py` في المستودع يستبدل نص `md1usd` بـ `MDM1`
+  في ملفات HTML/JS/JSON أثناء بناء Pages. لذلك كُتبت العلامة بصيغة `MD1&#117;sd` في HTML وبصيغة
+  `MD1\u0075sd` في JS/JSON، وكُتب اسم ملف الشعار الجديد `app-logo.png` خالياً من العلامة حتى لا يُعدّل.
+  المتصفح يفكّ الترميز فتظهر «MD1usd Company» في العنوان بجوار الشعار وفي شاشة القفل والmanifest.
+
+## 5) تيليجرام (الرسائل السرية) — الطريق الموصى به (Supabase)
+
+1. أنشئ بوتاً عبر `@BotFather`، وخذ الـ token.
+2. في Supabase: شغّل `supabase/office.sql`، ثم انشر الدوال الثلاث:
+   ```powershell
+   supabase functions deploy office-relay
+   supabase functions deploy telegram-webhook
+   supabase functions deploy office-sync
+   ```
+3. أضف أسرار الدوال (Edge Function secrets):
+   - `TELEGRAM_BOT_TOKEN`
+   - `TELEGRAM_WEBHOOK_SECRET` = سلسلة عشوائية قوية
+   - `OFFICE_RELAY_SECRET` = سلسلة عشوائية أخرى (يُدخلها المستخدم في لوحة الاتصال)
+   - `OFFICE_PRIVATE_JWK` = محتوى `privateJwk` من `office-signing-key.local.json`
+     (رُوّج المفتاح في 2026-11-27؛ الرموز القديمة لم تعد صالحة)
+   - `OFFICE_TOKEN_TTL_HOURS=6` (الحد الأقصى 6 ساعات في الواجهة والبوت معاً)
+   - `OFFICE_SYNC_SECRET` = سلسلة عشوائية أخرى لمزامنة الحالة المشفّرة
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+   - `OFFICE_PAGE_URL=https://mdm1.org/office/`
+   - `OFFICE_TELEGRAM_CHAT_ID` (اختياري — الدردشة الافتراضية)
+4. اربط الـ webhook بسر:
+   ```
+   https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<project>.supabase.co/functions/v1/telegram-webhook&secret_token=<TELEGRAM_WEBHOOK_SECRET>
+   ```
+5. في `office-config.js` ضع `telegram.botUsername` و`telegram.relayUrl`.
+6. اطلب من البوت `/start` ليُرسل رمزاً موقّعاً. الصق الرمز في شاشة دخول المكتب (صالح 6 ساعات،
+   ويرتبط بمعرّف محادثتك، ولا يمكن إعادة استخدامه على نفس الجهاز). الواجهة لا تعرف الـ token ولا المفتاح الخاص أبداً.
+7. للمزامنة بين الأجهزة: في 🔌 الاتصال أدخل `office-sync` URL و`OFFICE_SYNC_SECRET` وفعّل المزامنة.
+   الحالة تُشفّر في المتصفح بـ AES-256-GCM قبل الإرسال، فلا يرى السيرفر بياناتك plaintext، بل blob
+   مبهمًا فقط؛ ومعرّف الصف في قاعدة البيانات هو `SHA-256(secret)` وليس السر نفسه. زرّا ☁️ سحب / ⬆️ رفع
+   متاحان، وتُحلّ التعارضات تلقائياً بأخذ الإصدار الأحدث.
+
+### 5.1) طبقة الهوية الإضافية (Google / الإيميل + TOTP اختياري)
+
+- في `office-config.js` قسم `auth` يحوي Supabase URL والمفتاح **المنشور** (`sb_publishable_...`) فقط.
+  هذا المفتاح آمن في صفحة ثابتة، ولا يوجد أي service-role key أو Google client secret في المستودع.
+- في لوحة Supabase: فعّل موفر Google في Authentication → Providers، وأضف
+  `https://mdm1.org/office/` إلى Site URL / Redirect allowlist. فعّل TOTP من Authentication → MFA إن أردت.
+- زر «👤 الحساب» أعلى الصفحة يفتح نافذة الدخول: متابعة عبر Google (PKCE)، أو رابط سحري / كلمة مرور
+  عبر الإيميل. الجلسة تُحفظ في هذا المتصفح فقط وتُجدَّد تلقائياً عند انتهاء صلاحيتها.
+- بعد تفعيل TOTP من نافذة الحساب يُطلب رمز من 6 أرقام مع كل جلسة جديدة **قبل** تفعيل الإرسال والمزامنة.
+  هذه طبقة إضافية: كلمة سر المكتب `MDM1-Office#2026-Gold` ما زالت مطلوبة لفتح الصفحة نفسها.
+- الإرسال والمزامنة السحابية مغلقان حتى يوجد حساب مرتبط (وحتى يُحلّ تحدي TOTP إن كان مفعّلاً).
+
+### 5.2) واتساب عبر الـ relay
+
+- أضف أسرار الدوال: `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`,
+  و`OFFICE_WHATSAPP_TO` (مستلم افتراضي اختياري) و`WHATSAPP_API_VERSION` (اختياري، الافتراضي `v21.0`).
+- في 🔌 الاتصال اختر القناة: تيليجرام / واتساب / الاثنان، وأدخل رقم المستلم مع رمز الدولة، ثم اضغط إرسال.
+  الرسالة تُحفظ أولاً في `office_messages` مع `meta.channel`، ثم تُرسل فقط إن كانت بيانات القناة مكتملة.
+- `office-relay` يقرأ السر من `OFFICE_RELAY_SECRET`؛ الصفحة لا تعرف رموز واتساب أو تيليجرام أبداً.
+
+### البديل بدون Supabase
+شغّل `scripts/office-bot.py --long` محلياً أو استخدم `.github/workflows/office-bot.yml` مع الأسرار:
+`TELEGRAM_BOT_TOKEN`، `OFFICE_PRIVATE_JWK`. الرسائل تُحفظ في `office-inbox.jsonl`.
+
+## 6) كلمة سر الدخول
+
+كلمة السر الافتراضية: **`MDM1-Office#2026-Gold`**
+غيّرها بتوليد hash جديد:
+
+```powershell
+node -e "const c=require('crypto');console.log(c.createHash('sha256').update('كلمة-جديدة|mdm1-office-v1').digest('hex'))"
+```
+
+ضع الناتج في `office-config.js` → `passphraseHash`.
+
+## 7) ملاحظات مهمة
+
+- النماذج المجانية على حساب OpenCode الحالي **محدودة معدل الاستخدام حالياً (429 ~11 ساعة)**؛
+  الواجهة تُظهر رسالة واضحة وتعمل بالوضع التجريبي حتى تنتهي الفترة أو تُضاف مفاتيح/Zen مدفوع.
+- بيانات الشركة محفوظة في متصفح المستخدم فقط. النسخ الاحتياطي مشفر AES-256-GCM بكلمة مرور،
+  ويمكن تنزيله/استعادته من تبويب «🔐 النسخ الاحتياطي».
+- لمشاركة الحالة بين أجهزة متعددة، استخدم `office-sync` (مشفّر طرفياً) أو تصدير/استيراد النسخة المشفرة.
+- سكربتات النشر في المستودع تحقن قائمة الموقع والموسيقى والـ 3D في كل صفحة؛ أضفنا عناصر مخفية وتعليقات
+  مسارات في `index.html` و`portal.html` لمنع ذلك دون تعديل سكربتات الموقع العامة.
