@@ -125,7 +125,7 @@
       '<div class="office-modal-card">' +
       '<h2>🔌 الاتصال بالنماذج وبوت تيليجرام</h2>' +
       (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" /><div><strong>MD1&#117;sd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
-      '<p>مفاتيح المالك غير مستخدمة إطلاقاً. أدخل مفتاحك أنت واختر مزوداً من: تطبيق OpenCode المحلي، جسر HTTPS المحلي، OpenCode Zen، Groq، OpenRouter، ثم تجريبي موسوم بوضوح. النماذج المجانية فقط هي المسموح بها.</p>' +
+      '<p>مفاتيحك أنت فقط هي التي تُستخدم. أدخل مفتاحك واختر مزوداً من: تطبيق OpenCode المحلي، جسر HTTPS المحلي، OpenCode Zen، Groq، OpenRouter، ثم تجريبي موسوم بوضوح. النماذج المجانية فقط هي المسموح بها.</p>' +
       '<div class="office-grid2">' +
       '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (مفاتيحك أنت فقط)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (مفتاحك أنت)</option><option value="groq">Groq (مفتاحك أنت — مجاني)</option><option value="openrouter">OpenRouter (مفتاحك أنت — المجاني فقط)</option><option value="demo">تجريبي موسوم — بدون نموذج حي</option></select></div>' +
       '<div><label>النماذج المجانية فقط</label><select id="ocFree"><option value="true">نعم — مجاني فقط</option><option value="false">لا — اسمح بالمدفوع</option></select></div>' +
@@ -148,7 +148,7 @@
       '<label>اسم بوت تيليجرام (بدون @)</label><input id="ocBot" type="text" placeholder="MD1_Office_bot" />' +
       '<div class="office-grid2">' +
       '<div><label>Supabase Relay URL (اختياري للإرسال التلقائي)</label><input id="ocRelay" type="text" placeholder="https://...supabase.co/functions/v1/office-relay" /></div>' +
-      '<div><label>سر المالك</label><div class="office-status">غير مطلوب ولا يُستخدم؛ الدخول بحساب Google والمفاتيح تبقى على جهازك.</div></div>' +
+      '<div><label>هوية الإرسال</label><div class="office-status">تسجيل الدخول بحساب Google يفعّل الإرسال والمزامنة؛ لا تُدخل أي سر مشترك.</div></div>' +
       '</div>' +
       '<div class="office-grid2">' +
       '<div><label>Supabase Sync URL (اختياري — حالة مشفّرة)</label><input id="ocSyncUrl" type="text" placeholder="https://...supabase.co/functions/v1/office-sync" /></div>' +
@@ -181,7 +181,7 @@
       '<div class="office-outbox" id="ocOutbox"></div>' +
       '<div class="office-actions"><button class="office-btn" id="ocShareLast">إرسال آخر رسالة عبر تيليجرام</button><button class="office-btn" id="ocClearOutbox">تفريغ الصندوق</button></div>' +
       '<label style="margin-top:18px;">📨 إرسال رسالة (واتساب / تيليجرام)</label>' +
-      '<p>يُرسل عبر Supabase Edge Relay. المطلوب: تسجيل الدخول بحساب Google أو الإيميل، وتفعيل TOTP اختيارياً، ثم إدخال سر الـ relay في الأعلى.</p>' +
+      '<p>يُرسل عبر Supabase Edge Relay بهويتك ومفاتيحك أنت فقط. المطلوب: تسجيل الدخول بحساب Google؛ لا يُطلب أي سر مشترك.</p>' +
       '<div id="ocAuthStatus" class="office-status">جارٍ قراءة حالة الحساب...</div>' +
       '<div class="office-grid2">' +
       '<div><label>القناة</label><select id="ocMsgChannel"><option value="telegram">تيليجرام</option><option value="whatsapp">واتساب</option><option value="both">الاثنان معاً</option></select></div>' +
