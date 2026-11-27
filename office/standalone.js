@@ -33,7 +33,7 @@
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function safeJson(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
   function num(v, d) { var n = Number(v); return isFinite(n) ? n : (d || 0); }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function words(s) { return String(s || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(function (w) { return w.length > 2; }); }
 
