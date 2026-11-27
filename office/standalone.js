@@ -974,8 +974,13 @@
 
   function relayApi(action, payload) {
     if (!settings.relayUrl) return Promise.reject(new Error('أدخل Supabase Relay URL في لوحة الاتصال.'));
-    if (!secret('relaySecret')) return Promise.reject(new Error('أدخل سر الـ Relay في لوحة الاتصال.'));
-    var headers = { 'content-type': 'application/json', 'x-office-secret': secret('relaySecret') };
+    var headers = { 'content-type': 'application/json' };
+    var relaySecret = secret('relaySecret');
+    /* The relay is reachable with the public Supabase anon JWT. An optional
+       browser-entered relay secret is still sent when present, but it is no
+       longer required for model listing/chat — a fresh visitor must be able to
+       see connected models without hunting for a secret. */
+    if (relaySecret) headers['x-office-secret'] = relaySecret;
     var anon = (CFG.messaging && CFG.messaging.anonKey) || '';
     if (anon) { headers.authorization = 'Bearer ' + anon; headers.apikey = anon; }
     return nativeFetch(settings.relayUrl, {
@@ -991,9 +996,9 @@
       });
     });
   }
-  function cloudConfigured() { return Boolean(settings.relayUrl && secret('relaySecret')); }
+  function cloudConfigured() { return Boolean(settings.relayUrl && ((CFG.messaging && CFG.messaging.anonKey) || secret('relaySecret'))); }
   function listCloudModels(force) {
-    if (!cloudConfigured()) return Promise.resolve({ connected: false, models: [], free: [], providers: {}, modelProviders: {}, defaultProvider: '', error: 'أدخل Supabase Relay URL وسر الـ Relay في لوحة الاتصال.' });
+    if (!cloudConfigured()) return Promise.resolve({ connected: false, models: [], free: [], providers: {}, modelProviders: {}, defaultProvider: '', error: 'أدخل Supabase Relay URL في لوحة الاتصال.' });
     if (!force && providerCache.cloud && Date.now() - providerCache.cloudAt < 30000) return Promise.resolve(providerCache.cloud);
     return relayApi('models', { refresh: Boolean(force) }).then(function (j) {
       var free = (j.free || []).map(String);
@@ -2717,6 +2722,7 @@
       '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر أو بالرمز الموقّع من بوت تيليجرام.</p>' +
       '<label>كلمة السر</label><input id="officePassInput" type="password" placeholder="كلمة سر المكتب..." autocomplete="current-password" />' +
       '<button id="officePassBtn" class="office-btn primary">دخول</button>' +
+      '<button id="officeGoogleBtn" class="office-btn" type="button">🔵 متابعة عبر Google</button>' +
       '<div class="office-lock-or">أو</div>' +
       '<label>رمز تيليجرام (Secret Token)</label><input id="officeTokenInput" type="text" placeholder="الصق الرمز الذي أرسله البوت..." />' +
       '<button id="officeTokenBtn" class="office-btn">تحقق من الرمز</button>' +
@@ -2732,6 +2738,13 @@
       var v = overlay.querySelector('#officePassInput').value;
       sha256Hex(v + '|' + (CFG.passphraseSalt || '')).then(function (h) {
         if (h === CFG.passphraseHash) { unlockFor(24); ok(); } else fail('كلمة السر غير صحيحة.');
+      });
+    };
+    var lockGoogle = overlay.querySelector('#officeGoogleBtn');
+    if (lockGoogle) lockGoogle.onclick = function () {
+      if (!window.MDM1Auth || !window.MDM1Auth.signInWithGoogle) { fail('وحدة الحساب غير محمّلة في هذه الصفحة.'); return; }
+      Promise.resolve(window.MDM1Auth.signInWithGoogle()).catch(function (e) {
+        fail('تعذر فتح Google: ' + e.message);
       });
     };
     overlay.querySelector('#officeTokenBtn').onclick = function () {

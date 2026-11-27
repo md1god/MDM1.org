@@ -269,7 +269,8 @@
         provider: 'google',
         redirect_to: redirectTo(),
         code_challenge: challenge,
-        code_challenge_method: 's256'
+        code_challenge_method: 's256',
+        apikey: String(AUTH.publishableKey || '')
       });
       location.assign(authBase + '/authorize?' + params.toString());
       return { redirecting: true };
