@@ -160,8 +160,8 @@
       meetingActive: false,
       meetingAttendees: [],
       internalMemos: [
-        { id: 'memo-1', fromId: 'web-research-team', fromName: 'فريق البحث والتطوير', fromAvatar: '🌐', toId: 'accountant', toName: 'المحاسبة', toAvatar: '💰', subject: 'دراسة تكلفة أداة أتمتة مقترحة', body: 'تم رصد أداة أتمتة خدمة عملاء بتكلفة ترخيص $29/شهر وإمكانية بيعها بـ $99/شهر. يرجى مراجعة هامش الربح.', timestamp: now },
-        { id: 'memo-2', fromId: 'auditors-experts-devs', fromName: 'المدققون والخبراء والمطورون', fromAvatar: '⚙️', toId: 'hr-manager', toName: 'مديرة الموارد البشرية', toAvatar: '👩‍💼', subject: 'توصية بتعيين مختص تكاملات API', body: 'مع توسع مشاريع n8n والربط الخارجي، نقترح تجهيز وصف وظيفي لمطور تكاملات عند الحاجة.', timestamp: now }
+        { id: 'memo-1', fromId: 'web-research-team', fromName: 'فريق البحث والتطوير', fromAvatar: '🌐', toId: 'accountant', toName: 'المحاسبة', toAvatar: '💰', subject: 'دراسة تكلفة أداة أتمتة مقترحة', body: 'تم رصد أداة أتمتة خدمة عملاء بتكلفة ترخيص $29/شهر وإمكانية بيعها بـ $99/شهر. يرجى مراجعة هامش الربح.', timestamp: now, read: false },
+        { id: 'memo-2', fromId: 'auditors-experts-devs', fromName: 'المدققون والخبراء والمطورون', fromAvatar: '⚙️', toId: 'hr-manager', toName: 'مديرة الموارد البشرية', toAvatar: '👩‍💼', subject: 'توصية بتعيين مختص تكاملات API', body: 'مع توسع مشاريع n8n والربط الخارجي، نقترح تجهيز وصف وظيفي لمطور تكاملات عند الحاجة.', timestamp: now, read: false }
       ],
       kpiReviews: [],
       financialLedger: [
@@ -197,6 +197,7 @@
       knowledgeOverrides: {},
       snapshots: [],
       telegramOutbox: [],
+      requestLedger: [],
       meta: { createdAt: now, version: '2.0.0' }
     };
   }
@@ -209,13 +210,22 @@
     if (!saved || typeof saved !== 'object') return base;
     var merged = Object.assign(base, saved);
     // Ensure arrays/objects that older saves may miss.
-    ['tasks', 'approvals', 'teamChat', 'internalMemos', 'kpiReviews', 'financialLedger', 'schedules', 'customers', 'votes', 'incidents', 'simulations', 'webhooks', 'auditLog', 'exports', 'sandboxFiles', 'customAgents', 'snapshots', 'telegramOutbox', 'qualityReports'].forEach(function (k) {
+    ['tasks', 'approvals', 'teamChat', 'internalMemos', 'kpiReviews', 'financialLedger', 'schedules', 'customers', 'votes', 'incidents', 'simulations', 'webhooks', 'auditLog', 'exports', 'sandboxFiles', 'customAgents', 'snapshots', 'telegramOutbox', 'qualityReports', 'requestLedger'].forEach(function (k) {
       if (!Array.isArray(merged[k])) merged[k] = base[k] || [];
     });
     ['directChats', 'agentStatuses', 'liveBubbles', 'gamification', 'memories', 'exportContents', 'knowledgeOverrides', 'modelUsage', 'modelBenchmarks', 'modelTraining'].forEach(function (k) {
       if (!merged[k] || typeof merged[k] !== 'object') merged[k] = base[k] || {};
     });
     if (!merged.usageStats) merged.usageStats = base.usageStats;
+    /* Clean up old approvals that were escalated to high only because the
+       quality trio objected, even though the action itself was routine. */
+    (merged.approvals || []).forEach(function (a) {
+      var serious = /دفع\s|تحويل\s|توقيع\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|بيانات\s+سرية|حذف\s+بيانات|webhook|api\s*key/i.test(String(a.title || '') + ' ' + String(a.details || ''));
+      if (a.risk === 'high' && !serious) {
+        a.risk = 'medium';
+        a.securityNote = '🔎 تمت إعادة تصنيف هذا الطلب إلى متوسط الخطورة — المراجعة لا تعني أنه عالي الخطورة.';
+      }
+    });
     return merged;
   }
 
@@ -548,6 +558,18 @@
     state.agentStatuses[agentId] = state.tasks.some(function (t) { return t.agentId === agentId && t.status === 'working'; }) ? 'working' : 'available';
   }
 
+  function unreadMemoCount() {
+    return (state.internalMemos || []).filter(function (m) { return m.read !== true; }).length;
+  }
+
+  function markMemosRead(ids) {
+    var wanted = {};
+    (ids || []).forEach(function (id) { wanted[String(id)] = true; });
+    (state.internalMemos || []).forEach(function (m) { if (wanted[m.id]) m.read = true; });
+    saveState();
+    return unreadMemoCount();
+  }
+
   /* ── memory (lightweight RAG) ─────────────────────────────────────────── */
   function indexMemory(agentId, role, text, source) {
     if (!state.memories[agentId]) state.memories[agentId] = [];
@@ -594,9 +616,12 @@
       '\n=== الدور ===\n' + (agent.roleMd || '') + '\n\n=== المهارات ===\n' + (agent.skillsMd || '') + '\n\n' +
       '=== الصلاحيات ===\n- القسم: ' + (agent.department || '') + '\n- الأدوات: ' + ((agent.allowedTools || []).join(', ') || 'لا يوجد') + '\n' +
       '- تتطلب موافقة المدير: ' + ((agent.requiresApprovalFor || []).join(', ') || 'لا يوجد') + '\n\n' +
-      'تعليمات:\n' +
-      '1. التزم بدورك وشخصيتك المهنية.\n' +
-      '2. إذا اقترحت إجراءً يتطلب موافقة المدير، أضف في نهاية ردك:\n' +
+      'تعليمات صارمة:\n' +
+      '1. ابدأ ردك بالنتيجة أو بالخطوات العملية، ولا تكرر التحية أو عبارة "جاهز للخدمة" أبداً.\n' +
+      '2. فكّك طلب المدير إلى عناصر واضحة وصف ما سيفعله كل عنصر؛ النظام ينشئ المهام تلقائياً بعد ردك، فلا تقل "لا أستطيع التنفيذ".\n' +
+      '3. إن وجد عنصر غامض اكتب سطراً مستقلاً: "ما لم أفهمه: ..." واسأل سؤالاً محدداً، ولا تخترع معلومات.\n' +
+      '4. لا تعدّد الردود النمطية ولا تكرر ما سبق أن قلته في نفس المحادثة.\n' +
+      '5. إذا اقترحت إجراءً يتطلب موافقة المدير، أضف في نهاية ردك:\n' +
       '[APPROVAL_REQUEST title="عنوان مختصر" risk="medium" action="publish_marketing"]\nوصف القرار المطلوب اعتماده.\n[/APPROVAL_REQUEST]\n' +
       '- مديرة الموارد البشرية: [HIRE_AGENT id="agent-id" name="الاسم" department="القسم" avatar="🤖"]وصف الدور[/HIRE_AGENT]\n' +
       '- المدربة: [UPDATE_SKILLS target="agent-id" title="تحديث المهارات"]- مهارة[/UPDATE_SKILLS]\n' +
@@ -1094,16 +1119,15 @@
   }
 
   function demoReply(agent, userMessage, warning) {
-    var feminine = agent.id === 'executive-assistant' || agent.feminine === true;
-    var ready = feminine ? 'جاهزة' : 'جاهز';
-    var address = feminine ? 'سعادتك' : 'سيادتك';
-    var youCan = feminine ? 'يمكنكِ' : 'يمكنك';
-    return 'مرحباً سيادة المدير! أنا **' + agent.name + '** (' + (agent.englishName || agent.id) + ').\n\n' +
-      'استلمت توجيهك: "' + String(userMessage || '').slice(0, 160) + '"\n\n' +
-      (warning
-        ? '⚠️ **تعذر الوصول إلى النموذج الآن:**\n' + warning + '\n\n' + youCan + ' تغيير المزود أو النموذج من زر **🔑 إضافة API** / **🔌 الاتصال** أعلى الصفحة.'
-        : '⚠️ **الوضع التجريبي:** لم يتم توصيل نموذج بعد. افتح **🔑 إضافة API** أو **🔌 الاتصال** وأدخل كلمة مرور تطبيق OpenCode أو مفتاح OpenCode Zen.') +
-      '\n\nأنا ' + ready + ' لخدمة ' + address + '. كل بياناتك محفوظة محلياً في متصفحك.';
+    var parsed = parseRequestItems(userMessage || '');
+    var items = (parsed.items || []).slice(0, 4).map(function (x) {
+      return '• ' + x.text + ' [' + (x.status === 'understood' ? 'مفهوم' : 'غير واضح') + ']';
+    }).join('\n');
+    var unclear = (parsed.unresolved || []).slice(0, 3).map(function (x) { return '• ' + x; }).join('\n');
+    return '⚠️ **رد غير حي — ليس من نموذج متصل** — ' + (warning || 'لا يوجد اتصال حي حالياً') + '\n\n' +
+      '📝 **كل ما فهمته من طلبك:**\n' + (items || '• لم أستخرج طلباً قابلاً للتنفيذ بعد.') + '\n\n' +
+      '❓ **ما لم أفهمه بعد:**\n' + (unclear || '• لا توجد أسئلة توضيحية عاجلة.') + '\n\n' +
+      '🔧 افتح **🔌 الاتصال** أو **🔑 إضافة API** لتفعيل الرد الحي. المهام الواضحة أُنشئت تلقائياً في لوحة المهام حتى في هذا الوضع.';
   }
 
   function aiGenerateRaw(opts) {
@@ -1678,8 +1702,14 @@
       qualityGate(item.agentId, item).then(function (qa) {
         item.quality = qa;
         if (qa.status === 'flagged') {
-          item.risk = 'high';
-          item.securityNote = '🚫 حلقة الجودة رفضت هذا المقترح — لا يُنفَّذ إلا بتأكيد صريح من المدير.';
+          /* A quality objection is a review note, not automatically a
+             high-risk action. Only genuinely sensitive actions get the gate. */
+          if (item.risk === 'high') {
+            item.securityNote = '🚫 حلقة الجودة رفضت هذا المقترح — لا يُنفَّذ إلا بتأكيد صريح من المدير.';
+          } else {
+            item.risk = 'medium';
+            item.securityNote = '🔎 حلقة الجودة طلبت مراجعة إضافية — المقترح متوسط الخطورة وليس عالي الخطورة.';
+          }
         }
         saveState();
       }).catch(function () { /* gate failure is recorded in qualityReports */ });
@@ -1693,7 +1723,7 @@
     return Promise.all((requests || []).map(function (r) {
       if (r._type === 'memo') {
         var target = getAgent(r.toId);
-        state.internalMemos.push({ id: 'memo-' + uuid().slice(0, 8), fromId: agentId, fromName: agentName, fromAvatar: agentAvatar, toId: r.toId, toName: target ? target.name : r.toId, toAvatar: target ? target.avatar : '🤖', subject: r.subject, body: r.body, timestamp: nowIso() });
+        state.internalMemos.push({ id: 'memo-' + uuid().slice(0, 8), fromId: agentId, fromName: agentName, fromAvatar: agentAvatar, toId: r.toId, toName: target ? target.name : r.toId, toAvatar: target ? target.avatar : '🤖', subject: r.subject, body: r.body, timestamp: nowIso(), read: false });
         logAudit('internal_memo', agentId, 'Memo to ' + r.toId + ': ' + r.subject);
         return Promise.resolve(null);
       }
@@ -1701,12 +1731,14 @@
         var payload = Object.assign({ agentId: agentId, agentName: agentName }, r, { _skipQuality: true });
         var corrected = qa.correction ? qa.correction : (qa.findings && qa.findings[0] ? qa.findings[0] : '');
         if (corrected) payload.details = String(payload.details || '') + '\n\n🔎 تقرير الجودة:\n' + String(corrected).slice(0, 700);
-        if (qa.status === 'flagged') payload.risk = 'high';
+        if (qa.status === 'flagged' && payload.risk === 'high') payload.risk = 'high';
         var item = addApproval(payload);
         item.quality = qa;
         if (qa.status === 'flagged') {
-          item.securityNote = '🚫 حلقة الجودة رفضت هذا المقترح — لا يُنفَّذ إلا بتأكيد صريح من المدير.';
-          telegramNotify('🚫 *حلقة الجودة ترفض مقترحاً*\n' + item.title + '\n' + String(corrected).slice(0, 300));
+          item.securityNote = item.risk === 'high'
+            ? '🚫 حلقة الجودة رفضت هذا المقترح — لا يُنفَّذ إلا بتأكيد صريح من المدير.'
+            : '🔎 حلقة الجودة طلبت مراجعة إضافية — المقترح متوسط الخطورة وليس عالي الخطورة.';
+          if (item.risk === 'high') telegramNotify('🚫 *حلقة الجودة ترفض مقترحاً*\n' + item.title + '\n' + String(corrected).slice(0, 300));
         }
         return item;
       });
@@ -1915,6 +1947,164 @@
     return next();
   }
 
+  /* ── request ledger: every ask, understood or not, with real execution ── */
+  var REQUEST_ACTION_RX = /(أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي|جهّز|جاهز|اكتب|حلّل|حلل|ابحث|دوّر|دور|فتّش|فتش|أنشئ|انشئ|أطلق|اطلق|أرسل|ارسل|انشر|ادفع|راجع|افحص|قارن|لخّص|لخص|عدّل|عدل|حدّث|حدث|أضف|أزل|احذف|استخرج|صدّر|احسب|خطّط|خطط|افهم|فهم)/iu;
+  var REQUEST_OUTPUT_RX = /(تقرير|خطة|مخطط|منتج|تطبيق|موقع|صفحة|حملة|إعلان|عقد|اتفاقية|جدول|ميزانية|بحث|دراسة|تحليل|مراجعة|تقييم|مسودة|اقتراح|قائمة|نموذج|نظام|بوت|محتوى|رسالة|إشعار|تذكرة|حل|خطوات)/iu;
+  var REQUEST_HIGH_RX = /(دفع\s|تحويل\s|مصروف|توقيع\s+عقد|إبرام\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|صلاحيات\s+جديدة|بيانات\s+سرية|حذف\s+بيانات|ربط\s+خارجي|webhook|api\s*key)/iu;
+
+  function uniqueStrings(list) {
+    var out = [];
+    (list || []).forEach(function (x) {
+      x = String(x || '').trim();
+      if (x && out.indexOf(x) === -1) out.push(x);
+    });
+    return out;
+  }
+
+  function routeRequestAgent(text) {
+    var t = normalizeDialect(text).normalized.toLowerCase();
+    if (/قانون|عقد|ضريبه|ضريبة|امتثال|خصوصيه|خصوصية/.test(t)) return 'legal-advisor';
+    if (/مال|ميزانيه|ميزانية|فاتوره|فاتورة|تكلفه|تكلفة|سعر|ربح|دفع/.test(t)) return 'accountant';
+    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm/.test(t)) return 'marketing-lead';
+    if (/بحث|سوق|منافس|فرص|مصادر/.test(t)) return 'web-research-team';
+    if (/امان|امن|صلاحيه|صلاحية|بيانات|حمايه|حماية/.test(t)) return 'security-officer';
+    if (/توظيف|فريق|تدريب|kpi|ضغط/.test(t)) return 'hr-manager';
+    if (/كود|تطبيق|موقع|منصه|منصة|api|ساندبوكس|تطوير/.test(t)) return 'auditors-experts-devs';
+    return 'executive-assistant';
+  }
+
+  function parseRequestItems(raw) {
+    var original = String(raw || '').trim();
+    var d = normalizeDialect(original);
+    var norm = String(d.normalized || '').trim();
+    var parts = original.split(/[.!?؟؛;\n]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
+    if (!parts.length) parts = [original];
+    var items = [];
+    parts.forEach(function (part) {
+      var nd = normalizeDialect(part).normalized.replace(/^(?:ثم|بس|لكن|أو|او|فـ|ف)\s+/u, '').trim();
+      var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
+      var text = nd.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || nd;
+      items.push({
+        id: 'ri-' + uuid().slice(0, 6),
+        text: String(text).slice(0, 240),
+        status: actionable ? 'understood' : 'unclear',
+        reason: actionable ? '' : 'لم أحدد فعلاً أو مخرجاً واضحاً في هذا الجزء.',
+        agentId: routeRequestAgent(nd),
+        risk: REQUEST_HIGH_RX.test(nd) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(nd) ? 'medium' : 'low'),
+        taskId: null,
+        approvalId: null,
+        result: null
+      });
+    });
+    var constraints = [];
+    var money = original.match(/(?:\$|usd|دولار|جنيه|ريال)\s*([0-9]+(?:[.,][0-9]+)?)/iu);
+    if (money) constraints.push('الميزانية/الرقم: ' + money[0]);
+    var time = original.match(/(خلال\s+[0-9]+\s*(يوم|ايام|أسبوع|اسابيع|شهر|اشهر)|بكره|بكرا|غدا|الآن|دلوقتي)/iu);
+    if (time) constraints.push('الإطار الزمني: ' + time[0]);
+    var audience = original.match(/(للشركات|للعملاء|للأفراد|b2b|b2c|للموظفين)/iu);
+    if (audience) constraints.push('الجمهور: ' + audience[0]);
+
+    var unresolved = [];
+    if (!items.some(function (x) { return x.status === 'understood'; })) unresolved.push('ما المخرج أو الإجراء المطلوب بالضبط؟');
+    items.filter(function (x) { return x.status === 'unclear'; }).slice(0, 3).forEach(function (x) { unresolved.push('ماذا تريد من «' + x.text + '» تحديداً؟'); });
+    if (/(ميزانيه|ميزانية|تكلفه|تكلفة|سعر|دفع)/iu.test(norm) && !money) unresolved.push('ما الميزانية القصوى أو الرقم المعتمد؟');
+    if (/(خلال|بكره|بكرا|غدا|موعد|جدول)/iu.test(norm) && !time) unresolved.push('ما الموعد النهائي المطلوب؟');
+    if (/(منتج|تطبيق|موقع|حمله|حملة)/iu.test(norm) && !audience) unresolved.push('من هو الجمهور المستهدف؟');
+    if (/(هذا|كده|كذا|هيك|ذلك|اللي|التي|المادة|الشيء)/iu.test(norm)) unresolved.push('ما المقصود بالإشارة في الطلب؟');
+
+    return { original: original, normalized: norm, items: items.slice(0, 10), constraints: constraints, unresolved: uniqueStrings(unresolved).slice(0, 5) };
+  }
+
+  function findLedgerEntry(id) {
+    var found = null;
+    (state.requestLedger || []).some(function (x) {
+      if (x.id === id) { found = x; return true; }
+      return false;
+    });
+    return found;
+  }
+
+  function recordRequestLedger(source, raw, opts) {
+    opts = opts || {};
+    var parsed = parseRequestItems(raw);
+    var entry = {
+      id: 'req-' + uuid().slice(0, 8),
+      source: source,
+      agentId: opts.agentId || null,
+      agentName: opts.agentName || '',
+      original: parsed.original,
+      normalized: parsed.normalized,
+      items: parsed.items,
+      constraints: parsed.constraints,
+      unresolved: parsed.unresolved,
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+      executed: false,
+      executionSummary: '',
+      mode: opts.mode || null,
+      model: opts.model || null,
+      warning: opts.warning || null,
+      acknowledged: false
+    };
+    if (!Array.isArray(state.requestLedger)) state.requestLedger = [];
+    state.requestLedger.unshift(entry);
+    state.requestLedger = state.requestLedger.slice(0, 40);
+    logAudit('request_understood', opts.agentId || 'ceo', 'Parsed ' + entry.items.length + ' request item(s) (' + source + ')', { id: entry.id, unclear: entry.unresolved.length });
+    saveState();
+    return entry;
+  }
+
+  function executeLedgerEntry(id) {
+    var e = findLedgerEntry(id);
+    if (!e) return Promise.resolve('');
+    if (e.executed) return Promise.resolve(e.executionSummary || '');
+    var done = [], approvals = [], unclear = [];
+    (e.items || []).forEach(function (item) {
+      if (item.status !== 'understood') { unclear.push(item.text); return; }
+      var ag = getAgent(item.agentId) || getAgent('executive-assistant');
+      if (!ag) return;
+      if (item.risk === 'high') {
+        var ap = addApproval({
+          agentId: ag.id, agentName: ag.name, title: String(item.text).slice(0, 110),
+          details: String(item.text) + '\n\nطلب صريح من المدير عبر الشات.',
+          risk: 'high', actionType: 'request_execution',
+          payload: { ledgerId: e.id, ledgerItemId: item.id }, _skipQuality: true
+        });
+        item.status = 'needs_approval';
+        item.approvalId = ap.id;
+        item.result = 'بانتظار موافقة صريحة (override)';
+        approvals.push(ag.name + ': ' + String(item.text).slice(0, 70));
+      } else {
+        var task = {
+          id: 'tsk-' + uuid().slice(0, 8), agentId: ag.id,
+          title: String(item.text).slice(0, 110),
+          description: String(item.text) + '\n\nمصدر الطلب: ' + e.source,
+          status: 'working', createdAt: nowIso(),
+          ledgerId: e.id, ledgerItemId: item.id
+        };
+        state.tasks.unshift(task);
+        state.liveBubbles[ag.id] = 'مهمة جديدة: ' + String(item.text).slice(0, 34);
+        recomputeStatus(ag.id);
+        awardPoints(ag.id, 5, 'تنفيذ طلب المدير من الشات');
+        item.status = 'executed';
+        item.taskId = task.id;
+        item.result = 'تم إنشاء مهمة لدى ' + ag.name;
+        done.push(ag.name + ': ' + String(item.text).slice(0, 70));
+      }
+    });
+    var lines = [];
+    if (done.length) lines.push('✅ تم التنفيذ فعلياً: ' + done.join('؛ '));
+    if (approvals.length) lines.push('🛡️ حوّلت للوحة المخاطر العالية (لا تُنفَّذ بلا تجاوز صريح): ' + approvals.join('؛ '));
+    if (unclear.length) lines.push('❓ لم أفهم هذه الطلبات بعد: ' + unclear.join('؛ '));
+    if ((e.unresolved || []).length) lines.push('❓ أسئلة توضيحية: ' + e.unresolved.slice(0, 3).join('؛ '));
+    e.executionSummary = lines.join('\n');
+    e.executed = true;
+    e.updatedAt = nowIso();
+    logAudit('request_executed', e.agentId || 'ceo', 'Executed ' + done.length + ' request item(s), ' + approvals.length + ' approval(s)', { id: e.id });
+    saveState();
+    return Promise.resolve(e.executionSummary);
+  }
+
   /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
   var assistantSession = null;
 
@@ -2069,7 +2259,7 @@
 
   function distributeRoles(u, research) {
     var byAgent = {};
-    var riskFlag = /دفع|تحويل|نشر|عقد|قانون|ضريبه|امتثال|امان|بيانات/i.test([u.goal, u.deliverables, (u.risks || []).join(' ')].join(' '));
+    var riskFlag = REQUEST_HIGH_RX.test([u.goal, u.deliverables, (u.risks || []).join(' ')].join(' '));
     var title = String(u.deliverables || u.goal || 'مهمة جديدة').split(/[،,]/)[0].trim().slice(0, 110) || 'تنفيذ طلب المدير';
     var researchLine = (research || []).map(function (r) { return r.task + ' (' + r.engine + ')'; }).slice(0, 3).join('؛ ');
 
@@ -2082,24 +2272,40 @@
     var text = [u.goal, u.scope, u.deliverables, (u.keywords || []).join(' ')].join(' ').toLowerCase();
     add('executive-assistant', 'تنسيق عام ومتابعة التنفيذ', 'low', 'إعداد جدول متابعة وتلخيص الحالة للمدير.');
     if (/قانون|عقد|امتثال|خصوصيه|ضرائب/.test(text)) {
-      add('legal-advisor', 'مراجعة العقود والامتثال', 'high', 'مراجعة البنود القانونية وسياسة الخصوصية.');
-      add('legal-accountant', 'الأثر الضريبي والمحاسبي', 'high', 'مراجعة الضرائب والفواتير وتصنيف الإيرادات.');
-      var legalQa = getQaTeam('legal-advisor');
-      if (legalQa) Object.keys(legalQa).forEach(function (k) { add(legalQa[k], 'حلقة جودة قانونية', 'low', 'مراجعة مستقلة قبل أي نشر أو توقيع.'); });
+      add('legal-advisor', 'مراجعة العقود والامتثال', riskFlag ? 'high' : 'medium', 'مراجعة البنود القانونية وسياسة الخصوصية.');
+      add('legal-accountant', 'الأثر الضريبي والمحاسبي', 'medium', 'مراجعة الضرائب والفواتير وتصنيف الإيرادات.');
     }
     if (/مالي|محاسب|فاتوره|تكلفه|ربح|ميزانيه/.test(text)) add('accountant', 'مراجعة التكاليف والعائد', 'medium', 'إعداد ميزانية وتقرير تكلفة/عائد.');
     if (/تسويق|اعلان|حمله|عميل|نمو/.test(text)) add('marketing-lead', 'بناء الحملة ورسائل العملاء', riskFlag ? 'high' : 'medium', 'جهّز خطة خطاب تسويقي قابلة للمراجعة.');
     if (/بحث|سوق|منافس|فرص|saas/.test(text)) add('web-research-team', 'بحث السوق والفرص', 'low', 'جمع مصادر حية وتلخيص 3 فرص قابلة للتنفيذ.');
     if (/تقني|تطبيق|موقع|منصه|api|ساندبوكس|كود/.test(text)) add('auditors-experts-devs', 'الجدوى والتنفيذ التقني', 'medium', 'تدقيق معماري وتنفيذ آمن ضمن بيئة الاختبار.');
-    if (/امان|امن|صلاحيه|بيانات/.test(text)) add('security-officer', 'مراجعة المخاطر والصلاحيات', 'high', 'إصدار رأي أمني قبل أي نشر أو ربط خارجي.');
+    if (/امان|امن|صلاحيه|بيانات/.test(text)) add('security-officer', 'مراجعة المخاطر والصلاحيات', riskFlag ? 'high' : 'medium', 'إصدار رأي أمني قبل أي نشر أو ربط خارجي.');
     if (/توظيف|فريق|تدريب|kpi|ضغط/.test(text)) add('hr-manager', 'توزيع العمل ومراقبة الضغط', 'low', 'التحقق من جاهزية الفريق.');
     if (researchLine) add('web-research-team', 'دعم البحث الحي', 'low', 'مصادر البحث: ' + researchLine);
 
-    return Object.keys(byAgent).map(function (id) {
+    /* Keep the working team small and explainable. QA trios review approvals
+       rather than appearing as extra "working" employees on every request. */
+    var priority = ['executive-assistant'];
+    if (/تقني|تطبيق|موقع|منصه|منصة|api|ساندبوكس|كود|saas/.test(text)) priority.push('auditors-experts-devs');
+    if (/بحث|سوق|منافس|فرص/.test(text) || researchLine) priority.push('web-research-team');
+    if (/مالي|محاسب|فاتوره|تكلفه|ربح|ميزانيه/.test(text)) priority.push('accountant');
+    if (/تسويق|اعلان|حمله|عميل|نمو/.test(text)) priority.push('marketing-lead');
+    if (/قانون|عقد|امتثال|خصوصيه|ضرائب/.test(text)) priority.push('legal-advisor');
+    if (/امان|امن|صلاحيه|بيانات/.test(text)) priority.push('security-officer');
+    if (/توظيف|فريق|تدريب|kpi|ضغط/.test(text)) priority.push('hr-manager');
+    var ordered = [];
+    priority.forEach(function (id) { if (byAgent[id] && ordered.indexOf(id) === -1) ordered.push(id); });
+    Object.keys(byAgent).forEach(function (id) { if (ordered.indexOf(id) === -1) ordered.push(id); });
+
+    return ordered.slice(0, 5).map(function (id) {
       var x = byAgent[id];
+      var qa = getQaTeam(id);
+      var reviewers = qa ? Object.keys(qa).map(function (k) { return qa[k]; }) : [];
       return {
         agentId: x.agentId, agentName: x.agentName, avatar: x.avatar,
-        taskTitle: x.taskTitle, details: x.details.join(' '), reason: x.reason, risk: x.risk
+        taskTitle: x.taskTitle,
+        details: x.details.join(' ') + (reviewers.length ? ' مراجعة الجودة: ' + reviewers.join('، ') + '.' : ''),
+        reason: x.reason, risk: x.risk, reviewers: reviewers
       };
     });
   }
@@ -2109,9 +2315,14 @@
     if (!raw) return Promise.reject(new Error('اكتب طلباً أولاً'));
     return understandRequest(raw).then(function (res) {
       var u = res.understanding;
-      var questions = (u.ambiguities || []).slice(0, 4);
+      var ledger = recordRequestLedger('assistant', raw, { agentName: 'المساعد الذكي' });
+      ledger.unresolved = uniqueStrings((ledger.unresolved || []).concat(u.ambiguities || [])).slice(0, 6);
+      ledger.mode = res.mode;
+      ledger.normalized = res.normalized;
+      saveState();
+      var questions = ledger.unresolved.slice(0, 4);
       if (!questions.length) questions = ['هل تريد تنفيذ الخطة فور اعتمادك أم مراجعة إضافية؟'];
-      var confidence = Math.max(35, Math.min(98, (res.live ? 86 : 63) - (u.ambiguities || []).length * 7 + (u.goal ? 5 : 0)));
+      var confidence = Math.max(35, Math.min(98, (res.live ? 86 : 63) - ledger.unresolved.length * 7 + (u.goal ? 5 : 0)));
       var session = {
         id: 'asst-' + uuid().slice(0, 8),
         original: raw,
@@ -2120,6 +2331,9 @@
         confidence: confidence,
         mode: res.mode,
         status: 'awaiting_confirmation',
+        ledgerId: ledger.id,
+        items: ledger.items,
+        unresolved: ledger.unresolved,
         questions: questions,
         confirmationText: 'هذا ما فهمته من طلبك. أؤكد أنني فهمت المطلوب قبل أي تنفيذ.',
         research: [],
@@ -2149,6 +2363,14 @@
       s.plan = distributeRoles(s.understanding, research);
       s.status = 'awaiting_execution';
       s.updatedAt = nowIso();
+      var led = findLedgerEntry(s.ledgerId);
+      if (led) {
+        led.acknowledged = true;
+        led.items.forEach(function (x) {
+          if (x.status === 'unclear') { x.status = 'understood'; x.result = 'أقرّ المدير بالفهم رغم الغموض.'; }
+        });
+        led.updatedAt = nowIso();
+      }
       assistantSession = s;
       logAudit('assistant_plan_ready', 'ceo', 'Assistant distributed ' + s.plan.length + ' roles after confirmation', { sessionId: s.id });
       saveState();
@@ -2160,6 +2382,8 @@
     if (!assistantSession || assistantSession.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
     assistantSession.status = 'cancelled';
     assistantSession.updatedAt = nowIso();
+    var cancelledLedger = findLedgerEntry(assistantSession.ledgerId);
+    if (cancelledLedger) { cancelledLedger.executionSummary = 'تم إلغاء الجلسة — لم تُنفَّذ المهام.'; cancelledLedger.updatedAt = nowIso(); }
     logAudit('assistant_cancelled', 'ceo', 'Assistant session cancelled', { sessionId: id });
     saveState();
     return Promise.resolve(clone(assistantSession));
@@ -2170,7 +2394,7 @@
     if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
     if (s.status !== 'awaiting_execution') return Promise.reject(new Error('يجب تأكيد الفهم أولاً قبل التنفيذ'));
     (s.plan || []).forEach(function (p) {
-      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'working', createdAt: nowIso() });
+      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'working', createdAt: nowIso(), ledgerId: s.ledgerId });
       state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
       recomputeStatus(p.agentId);
       awardPoints(p.agentId, 8, 'تنفيذ خطة المساعد الذكي');
@@ -2178,15 +2402,26 @@
         var item = addApproval({
           agentId: p.agentId, agentName: p.agentName, title: 'موافقة صريحة: ' + p.taskTitle,
           details: p.details || p.reason, risk: 'high', actionType: 'assistant_plan',
-          payload: { assistantSessionId: s.id }, _skipQuality: true
+          payload: { assistantSessionId: s.id, ledgerId: s.ledgerId }
         });
         item.securityNote = '🛡️ مهمة عالية الخطورة من خطة المساعد — لا تُنفّذ إلا بتأكيد تجاوز صريح من لوحة المخاطر العالية.';
       }
     });
-    state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠', role: 'assistant', text: 'تم اعتماد خطة المساعد وتوزيع ' + s.plan.length + ' مهمة على الأقسام بعد تأكيد فهم الطلب.' + (s.research.length ? ' تم استخدام بحث حي في ' + s.research.length + ' مهمة صعبة.' : ''), timestamp: nowIso() });
+    var teamNames = (s.plan || []).map(function (p) { return p.agentName + ' (' + p.taskTitle + ')'; }).join('؛ ');
+    state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠', role: 'assistant', text: 'تم اعتماد خطة المساعد وتوزيع ' + s.plan.length + ' مهمة على الأقسام بعد تأكيد فهم الطلب.\nالفريق العامل الآن: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة صعبة.' : ''), timestamp: nowIso() });
     s.status = 'done';
-    s.result = '✅ تم إنشاء ' + s.plan.length + ' مهمة وتوزيعها على ' + s.plan.length + ' دور. أي مهمة عالية الخطورة انتقلت للوحة الموافقات الصريحة.';
+    s.result = '✅ تم إنشاء ' + s.plan.length + ' مهمة وتوزيعها على ' + s.plan.length + ' دور.\nالفريق العامل الآن: ' + teamNames + '\nحلقة الجودة تراجع أي موافقة قبل تنفيذها، والمهام عالية الخطورة تنتقل للوحة الموافقات الصريحة.';
     s.updatedAt = nowIso();
+    var doneLedger = findLedgerEntry(s.ledgerId);
+    if (doneLedger) {
+      doneLedger.executed = true;
+      doneLedger.executionSummary = s.result;
+      doneLedger.updatedAt = nowIso();
+      (doneLedger.items || []).forEach(function (x) {
+        x.status = 'executed';
+        x.result = 'دخل في خطة المساعد الذكي';
+      });
+    }
     assistantSession = s;
     logAudit('assistant_plan_executed', 'ceo', 'Assistant plan executed: ' + s.plan.length + ' tasks', { sessionId: s.id });
     saveState();
@@ -2635,26 +2870,33 @@
       var userMsg = String(b.message || '').trim();
       if (!userMsg) return Promise.resolve(jsonResponse({ error: 'message required' }, 400));
       var memories = retrieveMemories(agent.id, userMsg, 4);
+      var ledger = recordRequestLedger('direct', userMsg, { agentId: agent.id, agentName: agent.name });
       state.directChats[agent.id].push({ id: uuid(), role: 'user', text: userMsg, timestamp: nowIso() });
       indexMemory(agent.id, 'user', userMsg, 'direct');
       var memos = state.internalMemos.filter(function (x) { return x.toId === agent.id; }).slice(-3);
       var extra = memos.length ? 'مذكرات داخلية:\n' + memos.map(function (x) { return 'من ' + x.fromName + ': ' + x.subject + ' — ' + x.body; }).join('\n') : '';
+      extra += '\n=== ما سيُنفَّذ تلقائياً بعد ردك ===\n' +
+        (ledger.items || []).map(function (x) { return '- ' + x.text + ' → ' + x.agentId + ' (' + x.risk + ')'; }).join('\n') +
+        '\nما لم يفهمه النظام: ' + ((ledger.unresolved || []).join('؛ ') || 'لا يوجد');
       var history = state.directChats[agent.id].slice(-12);
       return aiGenerate({ agentId: agent.id, messages: history, memories: memories, extraContext: extra }).then(function (r) {
-        recordUsage(agent.id, r.usage);
-        var ex = extractProposals(r.text);
-        var replyText = ex.cleanText || r.text;
-        var assistantMsg = { id: uuid(), role: 'assistant', text: replyText, mode: r.mode, model: r.model, ragUsed: memories.length, timestamp: nowIso() };
-        state.directChats[agent.id].push(assistantMsg);
-        indexMemory(agent.id, 'assistant', replyText, 'direct');
-        state.liveBubbles[agent.id] = replyText.slice(0, 42) + '...';
-        awardPoints(agent.id, 5, 'إنجاز محادثة');
-        processProposals(agent.id, agent.name, agent.avatar, ex.requests);
-        recomputeStatus(agent.id);
-        hrWorkloadCheck();
-        logAudit('direct_chat', agent.id, 'Chat (' + (r.usage ? r.usage.totalTokens : 0) + ' tok)', { mode: r.mode, model: r.model });
-        saveState();
-        return jsonResponse({ reply: assistantMsg, ragUsed: memories.length, warning: r.warning || null });
+        return executeLedgerEntry(ledger.id).then(function (summary) {
+          ledger.mode = r.mode; ledger.model = r.model; ledger.warning = r.warning || null;
+          recordUsage(agent.id, r.usage);
+          var ex = extractProposals(r.text);
+          var replyText = String(ex.cleanText || r.text || '').trim() + (summary ? '\n\n' + summary : '');
+          var assistantMsg = { id: uuid(), role: 'assistant', text: replyText, mode: r.mode, model: r.model, ragUsed: memories.length, ledgerId: ledger.id, timestamp: nowIso() };
+          state.directChats[agent.id].push(assistantMsg);
+          indexMemory(agent.id, 'assistant', replyText, 'direct');
+          state.liveBubbles[agent.id] = replyText.slice(0, 42) + '...';
+          awardPoints(agent.id, 5, 'إنجاز محادثة');
+          processProposals(agent.id, agent.name, agent.avatar, ex.requests);
+          recomputeStatus(agent.id);
+          hrWorkloadCheck();
+          logAudit('direct_chat', agent.id, 'Chat (' + (r.usage ? r.usage.totalTokens : 0) + ' tok)', { mode: r.mode, model: r.model, ledgerId: ledger.id });
+          saveState();
+          return jsonResponse({ reply: assistantMsg, ragUsed: memories.length, warning: r.warning || null, ledger: clone(ledger) });
+        });
       });
     }
 
@@ -2663,12 +2905,17 @@
       if (!message) return Promise.resolve(jsonResponse({ error: 'message required' }, 400));
       var ids = Array.isArray(b.attendeeIds) && b.attendeeIds.length ? b.attendeeIds : ['executive-assistant', 'hr-manager', 'auditors-experts-devs'];
       var attendees = allAgents().filter(function (a) { return ids.indexOf(a.id) !== -1; });
+      var ledger = recordRequestLedger('team', message, { agentName: 'الاجتماع الجماعي' });
       state.meetingActive = true;
       state.meetingAttendees = attendees.map(function (a) { return a.id; });
       state.teamChat.push({ id: uuid(), senderId: 'ceo', senderName: 'المدير التنفيذي (أنت)', senderAvatar: '👑', role: 'user', text: message, timestamp: nowIso() });
       var recent = state.teamChat.slice(-8).map(function (x) { return x.senderName + ': ' + x.text; }).join('\n');
+      var teamContext = 'أنت في اجتماع جماعي (Stand-up). أجب باختصار (2-4 أسطر). لا تكرر التحية، وابدأ بمساهمة عملية محددة.\n' +
+        '=== ما سيُنفَّذ تلقائياً ===\n' +
+        (ledger.items || []).map(function (x) { return '- ' + x.text + ' → ' + x.agentId + ' (' + x.risk + ')'; }).join('\n') +
+        '\nما لم يفهمه النظام: ' + ((ledger.unresolved || []).join('؛ ') || 'لا يوجد');
       return Promise.all(attendees.map(function (a) {
-        return aiGenerate({ agentId: a.id, extraContext: 'أنت في اجتماع جماعي (Stand-up). أجب باختصار (2-4 أسطر).', messages: [{ role: 'user', text: 'سياق:\n' + recent + '\n\nتوجيه المدير: ' + message }] }).then(function (r) { return { agent: a, r: r }; });
+        return aiGenerate({ agentId: a.id, extraContext: teamContext, messages: [{ role: 'user', text: 'سياق:\n' + recent + '\n\nتوجيه المدير: ' + message }] }).then(function (r) { return { agent: a, r: r }; });
       })).then(function (replies) {
         replies.forEach(function (x) {
           var ex = extractProposals(x.r.text);
@@ -2680,9 +2927,12 @@
           processProposals(x.agent.id, x.agent.name, x.agent.avatar, ex.requests);
           recomputeStatus(x.agent.id);
         });
-        logAudit('team_meeting', 'ceo', 'Stand-up with ' + attendees.length + ' agents');
-        saveState();
-        return jsonResponse({ ok: true });
+        return executeLedgerEntry(ledger.id).then(function (summary) {
+          if (summary) state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'المساعد الذكي 🧠', senderAvatar: '🧠', role: 'assistant', text: summary, timestamp: nowIso() });
+          logAudit('team_meeting', 'ceo', 'Stand-up with ' + attendees.length + ' agents', { ledgerId: ledger.id });
+          saveState();
+          return jsonResponse({ ok: true, ledger: clone(ledger) });
+        });
       });
     }
 
@@ -2857,7 +3107,7 @@
       if (['approved', 'rejected'].indexOf(b.decision) === -1) return Promise.resolve(jsonResponse({ error: 'decision must be approved or rejected' }, 400));
       var item = state.approvals.find(function (a) { return a.id === m[1]; });
       if (!item) return Promise.resolve(jsonResponse({ error: 'Not found' }, 404));
-      var needsOverride = item.risk === 'high' || Boolean(item.quality && item.quality.status === 'flagged');
+      var needsOverride = item.risk === 'high';
       if (b.decision === 'approved' && needsOverride && b.override !== true) {
         return Promise.resolve(jsonResponse({ error: 'هذا الإجراء عالي الخطورة أو مرفوض من حلقة الجودة. أرسل override=true من لوحة المخاطر العالية لتنفيذه على مسؤوليتك.', risk: item.risk, quality: item.quality }, 409));
       }
@@ -2928,10 +3178,16 @@
       return Promise.resolve(jsonResponse({ filename: fn }));
     }
 
+    if (method === 'POST' && path === '/api/memos/read') {
+      var ids = Array.isArray(b.ids) && b.ids.length ? b.ids : (b.id ? [b.id] : (b.all ? (state.internalMemos || []).map(function (m) { return m.id; }) : []));
+      if (!ids.length) return Promise.resolve(jsonResponse({ error: 'id, ids or all required' }, 400));
+      return Promise.resolve(jsonResponse({ ok: true, unread: markMemosRead(ids) }));
+    }
+
     if (method === 'POST' && path === '/api/memos') {
       var from = getAgent(b.fromId), to = getAgent(b.toId);
       if (!from || !to || !b.subject) return Promise.resolve(jsonResponse({ error: 'fromId, toId, subject required' }, 400));
-      var memo = { id: 'memo-' + uuid().slice(0, 8), fromId: from.id, fromName: from.name, fromAvatar: from.avatar, toId: to.id, toName: to.name, toAvatar: to.avatar, subject: String(b.subject).trim(), body: String(b.body || '').trim(), timestamp: nowIso() };
+      var memo = { id: 'memo-' + uuid().slice(0, 8), fromId: from.id, fromName: from.name, fromAvatar: from.avatar, toId: to.id, toName: to.name, toAvatar: to.avatar, subject: String(b.subject).trim(), body: String(b.body || '').trim(), timestamp: nowIso(), read: false };
       state.internalMemos.push(memo);
       awardPoints(from.id, 5, 'إرسال مذكرة تنسيق');
       logAudit('internal_memo', from.id, 'Memo to ' + to.id + ': ' + b.subject);
@@ -3098,7 +3354,7 @@
         awardPoints(ag2.id, 10, 'تنفيذ قالب: ' + pb.title);
         if (step.memoTo) {
           var tgt = getAgent(step.memoTo);
-          state.internalMemos.push({ id: 'memo-' + uuid().slice(0, 8), fromId: ag2.id, fromName: ag2.name, fromAvatar: ag2.avatar, toId: step.memoTo, toName: tgt ? tgt.name : step.memoTo, toAvatar: tgt ? tgt.avatar : '🤖', subject: prefix + (step.memoSubject || step.taskTitle), body: 'تم جدولة الخطوة ضمن قالب (' + pb.title + '): ' + (step.taskDesc || step.taskTitle), timestamp: nowIso() });
+          state.internalMemos.push({ id: 'memo-' + uuid().slice(0, 8), fromId: ag2.id, fromName: ag2.name, fromAvatar: ag2.avatar, toId: step.memoTo, toName: tgt ? tgt.name : step.memoTo, toAvatar: tgt ? tgt.avatar : '🤖', subject: prefix + (step.memoSubject || step.taskTitle), body: 'تم جدولة الخطوة ضمن قالب (' + pb.title + '): ' + (step.taskDesc || step.taskTitle), timestamp: nowIso(), read: false });
         }
       });
       state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (Playbooks 📚)', senderAvatar: pb.icon || '📚', role: 'assistant', text: 'تم تشغيل قالب الإجراءات القياسية "' + pb.title + '" ' + prefix + 'وتوزيع ' + (pb.steps || []).length + ' مهام ومذكرات مترابطة بين الأقسام!', timestamp: nowIso() });

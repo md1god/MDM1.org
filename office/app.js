@@ -1,7 +1,7 @@
 let D = {
   agents:[], providerConfig:{}, knowledgeFiles:[], exports:[], auditLog:[], sandboxFiles:[], playbooks:[], snapshots:[], memoryStats:{totalMemories:0,byAgent:{}},
   outgoingWebhooks:{}, telegramEnabled:false,
-  state:{ directChats:{}, teamChat:[], tasks:[], approvals:[], webhooks:[], usageStats:{totalTokens:0,totalCostUsd:0,byAgent:{}}, meetingActive:false, meetingAttendees:[], internalMemos:[], kpiReviews:[], financialLedger:[], schedules:[], gamification:{}, customers:[], votes:[], emergencyMode:false, incidents:[], simulations:[] }
+  state:{ directChats:{}, teamChat:[], tasks:[], approvals:[], webhooks:[], usageStats:{totalTokens:0,totalCostUsd:0,byAgent:{}}, meetingActive:false, meetingAttendees:[], internalMemos:[], kpiReviews:[], financialLedger:[], schedules:[], gamification:{}, customers:[], votes:[], emergencyMode:false, incidents:[], simulations:[], requestLedger:[] }
 };
 let selectedAgentId = null;
 let assistantSession = null;
@@ -27,9 +27,9 @@ async function bootstrap(){
 }
 
 function renderAll(){
-  renderTopBadges();renderStats();renderOfficeRooms();renderTasks();renderChatAgentsList();renderDirectChat();renderTeamChat();
+  renderTopBadges();renderStats();renderOfficeRooms();renderTasks();renderWorkingTeam();renderChatAgentsList();renderDirectChat();renderTeamChat();
   renderApprovals();renderHighRiskApprovals();renderVotes();renderCRM();renderKPI();renderAgentBenchmarks();renderMemos();renderKnowledge();renderPnL();renderSchedules();renderSandbox();
-  renderOrgChart();renderAuditCost();renderIntegrations();renderSimulations();renderPlaybooks();renderSnapshots();renderIncidents();renderAssistantChat();populateSelects();
+  renderOrgChart();renderAuditCost();renderIntegrations();renderSimulations();renderPlaybooks();renderSnapshots();renderIncidents();renderAssistantChat();renderRequestLedger();populateSelects();
 }
 
 function renderTopBadges(){
@@ -65,7 +65,7 @@ function renderStats(){
   document.getElementById('statWaiting').textContent=c.waiting_approval;
   document.getElementById('statOffline').textContent=c.offline||0;
   document.getElementById('pendingCountBadge').textContent=D.state.approvals.filter(a=>a.status==='pending').length;
-  document.getElementById('memoCountBadge').textContent=(D.state.internalMemos||[]).length;
+  document.getElementById('memoCountBadge').textContent=(D.state.internalMemos||[]).filter(m=>m.read!==true).length;
 }
 
 function renderOfficeRooms(){
@@ -86,6 +86,18 @@ async function endMeeting(){await api('/api/meeting/end',{method:'POST'});await 
 function renderTasks(){
   const g=document.getElementById('tasksGrid'), t=D.state.tasks||[];
   g.innerHTML=t.slice(0,6).map(t=>{const a=D.agents.find(x=>x.id===t.agentId);return `<div class="task-card"><strong>${a?a.avatar+' '+a.name:t.agentId}</strong><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small></div>`;}).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
+}
+
+function renderWorkingTeam(){
+  const el=document.getElementById('workingTeamList'); if(!el)return;
+  const active=(D.agents||[]).filter(a=>a.status==='working'||a.status==='waiting_approval');
+  const tasks=D.state.tasks||[];
+  if(!active.length){el.innerHTML='<div class="approval-card">لا يوجد فريق يعمل حالياً. كل الموظفين متاحون أو غير متصلين.</div>';return;}
+  el.innerHTML=active.map(a=>{
+    const mine=tasks.filter(t=>t.agentId===a.id&&t.status==='working').slice(0,3);
+    const what=mine.length?mine.map(t=>esc(t.title)).join('؛ '):(a.status==='waiting_approval'?'بانتظار موافقتك على مقترح':esc(a.bubble||'لم يُسند إليه عمل محدد بعد'));
+    return `<div class="working-team-card"><div class="working-team-head"><span>${a.avatar} <strong>${esc(a.name)}</strong></span><span class="status-pill"><i class="dot ${a.status}"></i> ${SL[a.status]||a.status}</span></div><div class="working-team-dept">${esc(a.department||'')}</div><div class="working-team-work">${what}</div></div>`;
+  }).join('');
 }
 
 function openAgentChat(id){selectedAgentId=id;switchTab('chat');switchChatMode('direct');renderChatAgentsList();renderDirectChat()}
@@ -209,7 +221,28 @@ function renderAgentBenchmarks(){
 
 function renderMemos(){
   const c=document.getElementById('memosList'), l=(D.state.internalMemos||[]).slice().reverse();
-  c.innerHTML=l.map(m=>`<div class="approval-card"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${m.fromAvatar} ${m.fromName} ← إلى → ${m.toAvatar} ${m.toName} • ${m.timestamp?.slice(0,10)||''}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
+  c.innerHTML=l.map(m=>`<div class="approval-card ${m.read?'read':''}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${m.fromAvatar} ${m.fromName} ← إلى → ${m.toAvatar} ${m.toName} • ${m.timestamp?.slice(0,10)||''} • ${m.read?'✅ مقروء':'🔵 غير مقروء'}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div><div class="approval-actions"><button class="btn btn-secondary" onclick="forwardMemoToAssistant('${m.id}')">🧠 أرسل للمساعد</button>${m.read?'':'<button class="btn btn-secondary" onclick="markMemoRead(\''+m.id+'\')">✓ مقروء</button>'}</div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
+}
+
+async function markMemoRead(id){
+  try{await api('/api/memos/read',{method:'POST',body:JSON.stringify({id:id})});const m=(D.state.internalMemos||[]).find(x=>x.id===id);if(m)m.read=true;renderStats();renderMemos();}
+  catch(e){alert('❌ '+e.message)}
+}
+
+async function markAllMemosRead(){
+  const ids=(D.state.internalMemos||[]).filter(m=>m.read!==true).map(m=>m.id);
+  if(!ids.length)return;
+  try{await api('/api/memos/read',{method:'POST',body:JSON.stringify({ids:ids})});ids.forEach(id=>{const m=(D.state.internalMemos||[]).find(x=>x.id===id);if(m)m.read=true;});renderStats();renderMemos();}
+  catch(e){alert('❌ '+e.message)}
+}
+
+async function forwardMemoToAssistant(id){
+  const m=(D.state.internalMemos||[]).find(x=>x.id===id); if(!m)return;
+  if(m.read!==true){try{await api('/api/memos/read',{method:'POST',body:JSON.stringify({id:id})});m.read=true;renderStats();renderMemos();}catch(e){}}
+  const text='مذكرة داخلية من '+m.fromName+' إلى '+m.toName+' — الموضوع: '+m.subject+'\nالمحتوى: '+(m.body||'');
+  switchTab('chat');switchChatMode('assistant');
+  const inp=document.getElementById('assistantChatInput'); if(inp)inp.value='';
+  await assistantSend(text);
 }
 
 function renderKnowledge(){
@@ -341,6 +374,11 @@ function renderAssistantChat(){
     `\n<strong>القيود:</strong>${assistantList(u.constraints,'لا توجد قيود صريحة')}`+
     `\n<strong>المخاطر:</strong>${assistantList(u.risks,'لم تُذكر مخاطر')}`+
     `\n<strong>ما اقترحه:</strong>${assistantList(u.suggestions,'لا توجد مقترحات إضافية')}</div>`;
+  const led=(D.state.requestLedger||[]).find(x=>x.id===s.ledgerId);
+  if(led){
+    html+=`<div class="msg assistant"><div class="msg-meta">📒 كل ما طلبته — عناصر الطلب</div><ul>${(led.items||[]).map(i=>`<li>${esc(i.text)} <small>(${esc(i.status==='executed'?'تم التنفيذ':i.status==='needs_approval'?'بانتظار موافقة':i.status==='unclear'?'غير واضح':'مفهوم')})</small></li>`).join('')||'<li>—</li>'}</ul></div>`;
+    html+=`<div class="msg assistant"><div class="msg-meta">🚫 ما لم أفهمه${s.status!=='awaiting_confirmation'?' (قبل التأكيد)':''}</div>${assistantList(s.unresolved||led.unresolved,'لا يوجد — الطلب كان واضحاً.')}</div>`;
+  }
   if(s.status==='awaiting_confirmation'){
     html+=`<div class="msg assistant"><div class="msg-meta">❓ أسئلة توضيحية قبل التنفيذ</div>${assistantList(s.questions,'لا توجد أسئلة — الطلب واضح بما يكفي.')}<div class="msg-actions"><button class="btn btn-approve" onclick="assistantConfirm()">✅ فهمت صح — أكمل البحث والتوزيع</button><button class="btn btn-secondary" onclick="assistantCancel()">✕ ألغِ الجلسة</button></div></div>`;
   }
@@ -355,6 +393,21 @@ function renderAssistantChat(){
   if(s.status==='cancelled')html+=`<div class="msg assistant"><div class="msg-meta">تم الإلغاء</div>ألغيت الجلسة. اكتب طلباً جديداً متى شئت.</div>`;
   box.innerHTML=html; box.scrollTop=box.scrollHeight;
   if(send)send.textContent=s.status==='awaiting_confirmation'?'أضف تعديلاً':'افهم الطلب';
+}
+
+function renderRequestLedger(){
+  const box=document.getElementById('requestLedger'); if(!box)return;
+  const list=(D.state.requestLedger||[]);
+  if(!list.length){box.innerHTML='<div class="approval-card">لم تصدر أي طلبات بعد. اكتب للموظف أو للفريق أو للمساعد وسيظهر هنا كل ما فهمته وما لم أفهمه.</div>';return;}
+  const label=s=>s==='executed'?'تم التنفيذ':s==='needs_approval'?'بانتظار موافقة':s==='unclear'?'غير واضح':'مفهوم';
+  box.innerHTML=list.slice(0,25).map(e=>{
+    const items=(e.items||[]).map(i=>`<li class="ledger-${esc(i.status)}">${esc(i.text)} <small>(${esc(label(i.status))}${i.taskId?' • '+esc(i.taskId):''}${i.approvalId?' • '+esc(i.approvalId):''})</small></li>`).join('')||'<li>—</li>';
+    const unclear=(e.unresolved||[]).map(x=>`<li>${esc(x)}</li>`).join('')||'<li>لا يوجد</li>';
+    return `<div class="ledger-entry"><div class="ledger-head"><strong>${esc(e.source)} • ${esc((e.createdAt||'').slice(0,19).replace('T',' '))}</strong><span>${e.executed?'✅ منفّذ':e.acknowledged?'⏳ أُقرّ بالفهم':'⏳ قيد المعالجة'}</span></div>`+
+      `<div class="ledger-original">📝 ${esc(e.original||'')}</div>`+
+      `<div class="ledger-cols"><div><strong>ما فهمته</strong><ul>${items}</ul></div><div><strong>ما لم أفهمه</strong><ul>${unclear}</ul></div></div>`+
+      `${e.executionSummary?`<div class="ledger-result">${esc(e.executionSummary)}</div>`:''}</div>`;
+  }).join('');
 }
 
 async function assistantSend(message){
@@ -380,7 +433,7 @@ async function assistantExecute(){
 }
 
 // Listeners
-document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>{switchTab(b.dataset.tab);if(b.dataset.tab==='memos')markAllMemosRead();}));
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>switchChatMode(b.dataset.chatmode)));
 document.getElementById('directMicBtn').onclick=()=>startMic('directChatInput');
 document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');
