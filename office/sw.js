@@ -5,16 +5,12 @@
   'use strict';
   var CACHE = 'mdm1-office-pwa-20261127pwa15';
   var CORE = [
-    './', './index.html', './portal.html', './styles.css', './app.js', './office-config.js',
+    './', './index.html', './styles.css', './app.js', './office-config.js',
     './office-auth.js', './standalone.js', './pwa.js', './manifest.webmanifest',
-    './data.json', './app-logo.png', './icon-192.png', './icon-512.png',
-    './icon-maskable-192.png', './icon-maskable-512.png', './apple-touch-icon.png',
-    './fonts/cairo-arabic-400-normal.woff2', './fonts/cairo-arabic-600-normal.woff2',
-    './fonts/cairo-arabic-700-normal.woff2', './fonts/cairo-arabic-800-normal.woff2',
-    './fonts/cairo-latin-400-normal.woff2', './fonts/cairo-latin-600-normal.woff2',
-    './fonts/cairo-latin-700-normal.woff2', './fonts/cairo-latin-800-normal.woff2'
+    './data.json', './app-logo.png', './md1\u0075sd-logo.jfif', './icon-192.png', './icon-512.png',
+    './apple-touch-icon.png'
   ];
-  var STATIC = /\.(?:css|js|json|webmanifest|png|jfif|jpe?g|svg|woff2?|html)$/i;
+  var STATIC = /\.(?:css|js|json|webmanifest|png|jfif|jpe?g|svg|html)$/i;
 
   self.addEventListener('install', function (event) {
     event.waitUntil(
@@ -45,19 +41,15 @@
     if (url.pathname.indexOf('/api/') !== -1) return; // Dynamic state, tokens and secrets.
 
     if (req.mode === 'navigate') {
-      // Cache each page under its own URL (query stripped) so portal.html never overwrites index.html.
-      var pageKey = url.origin + url.pathname;
       event.respondWith(
         fetch(req).then(function (res) {
           if (res && res.status === 200) {
             var copy = res.clone();
-            caches.open(CACHE).then(function (cache) { cache.put(pageKey, copy); });
+            caches.open(CACHE).then(function (cache) { cache.put('./index.html', copy); });
           }
           return res;
         }).catch(function () {
-          return caches.match(pageKey).then(function (hit) {
-            return hit || caches.match('./index.html');
-          }).then(function (hit) { return hit || Response.error(); });
+          return caches.match('./index.html').then(function (hit) { return hit || Response.error(); });
         })
       );
       return;
@@ -72,11 +64,7 @@
             caches.open(CACHE).then(function (cache) { cache.put(req, copy); });
           }
           return res;
-        }).catch(function () {
-          if (hit) return hit;
-          // Offline fallback: use the pre-cached copy even if the ?v= query differs.
-          return caches.match(req, { ignoreSearch: true }).then(function (r) { return r || Response.error(); });
-        });
+        }).catch(function () { return hit || Response.error(); });
         return hit || network;
       })
     );

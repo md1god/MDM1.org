@@ -220,7 +220,7 @@
     /* Clean up old approvals that were escalated to high only because the
        quality trio objected, even though the action itself was routine. */
     (merged.approvals || []).forEach(function (a) {
-      var serious = /دفع\s|تحويل\s|توقيع\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|بيانات\s+سرية|حذف\s+بيانات|webhook|api\s*key/i.test(String(a.title || '') + ' ' + String(a.details || ''));
+      var serious = /دفع\s|تحويل\s|توقيع\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|بيانات\s+سرية|حذف\s+بيانات|webhook|api\s*key/i.test(stripNegated(String(a.title || '') + ' ' + String(a.details || '')));
       if (a.risk === 'high' && !serious) {
         a.risk = 'medium';
         a.securityNote = '🔎 تمت إعادة تصنيف هذا الطلب إلى متوسط الخطورة — المراجعة لا تعني أنه عالي الخطورة.';
@@ -1951,6 +1951,15 @@
   var REQUEST_ACTION_RX = /(أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي|جهّز|جاهز|اكتب|حلّل|حلل|ابحث|دوّر|دور|فتّش|فتش|أنشئ|انشئ|أطلق|اطلق|أرسل|ارسل|انشر|ادفع|راجع|افحص|قارن|لخّص|لخص|عدّل|عدل|حدّث|حدث|أضف|أزل|احذف|استخرج|صدّر|احسب|خطّط|خطط|افهم|فهم)/iu;
   var REQUEST_OUTPUT_RX = /(تقرير|خطة|مخطط|منتج|تطبيق|موقع|صفحة|حملة|إعلان|عقد|اتفاقية|جدول|ميزانية|بحث|دراسة|تحليل|مراجعة|تقييم|مسودة|اقتراح|قائمة|نموذج|نظام|بوت|محتوى|رسالة|إشعار|تذكرة|حل|خطوات)/iu;
   var REQUEST_HIGH_RX = /(دفع\s|تحويل\s|مصروف|توقيع\s+عقد|إبرام\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|صلاحيات\s+جديدة|بيانات\s+سرية|حذف\s+بيانات|ربط\s+خارجي|webhook|api\s*key)/iu;
+  var REQUEST_NEGATION_RX = /(?:مش|مو|ليس|لا|غير|بدون|عادي|مجرد)/iu;
+
+  /* A phrase like "مش حملة نشر عام" is a clarification, not a dangerous
+     order. Remove negated clauses before risk classification. */
+  function stripNegated(text) {
+    return String(text || '')
+      .replace(/(?:مش|مو|ليس|لا|غير|بدون)\s+[^.؛;،,!?؟\n]+/giu, ' ')
+      .trim();
+  }
 
   function uniqueStrings(list) {
     var out = [];
@@ -1980,26 +1989,30 @@
     var parts = original.split(/[.!?؟؛;\n]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
     if (!parts.length) parts = [original];
     var items = [];
+    var constraints = [];
     parts.forEach(function (part) {
       var nd = normalizeDialect(part).normalized.replace(/^(?:ثم|بس|لكن|أو|او|فـ|ف)\s+/u, '').trim();
       var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
+      var clarification = !actionable && REQUEST_NEGATION_RX.test(nd);
       var text = nd.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || nd;
+      var riskText = stripNegated(nd);
+      if (clarification) constraints.push('توضيح: ' + String(text).slice(0, 120));
       items.push({
         id: 'ri-' + uuid().slice(0, 6),
         text: String(text).slice(0, 240),
-        status: actionable ? 'understood' : 'unclear',
-        reason: actionable ? '' : 'لم أحدد فعلاً أو مخرجاً واضحاً في هذا الجزء.',
+        status: actionable || clarification ? 'understood' : 'unclear',
+        reason: clarification ? 'توضيح/قيد — لا يحتاج مهمة منفصلة.' : (actionable ? '' : 'لم أحدد فعلاً أو مخرجاً واضحاً في هذا الجزء.'),
         agentId: routeRequestAgent(nd),
-        risk: REQUEST_HIGH_RX.test(nd) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(nd) ? 'medium' : 'low'),
+        risk: REQUEST_HIGH_RX.test(riskText) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(riskText) ? 'medium' : 'low'),
         taskId: null,
         approvalId: null,
-        result: null
+        result: clarification ? 'توضيح مفهوم — لا يُنفَّذ كأمر منفصل' : null,
+        clarification: clarification === true
       });
     });
-    var constraints = [];
     var money = original.match(/(?:\$|usd|دولار|جنيه|ريال)\s*([0-9]+(?:[.,][0-9]+)?)/iu);
     if (money) constraints.push('الميزانية/الرقم: ' + money[0]);
-    var time = original.match(/(خلال\s+[0-9]+\s*(يوم|ايام|أسبوع|اسابيع|شهر|اشهر)|بكره|بكرا|غدا|الآن|دلوقتي)/iu);
+    var time = original.match(/(خلال\s+(?:[0-9]+\s*)?(?:يوم|ايام|أسبوع|اسابيع|اسبوع|شهر|اشهر|شهور)|بكره|بكرا|غدا|الآن|دلوقتي)/iu);
     if (time) constraints.push('الإطار الزمني: ' + time[0]);
     var audience = original.match(/(للشركات|للعملاء|للأفراد|b2b|b2c|للموظفين)/iu);
     if (audience) constraints.push('الجمهور: ' + audience[0]);
@@ -2060,6 +2073,7 @@
     if (e.executed) return Promise.resolve(e.executionSummary || '');
     var done = [], approvals = [], unclear = [];
     (e.items || []).forEach(function (item) {
+      if (item.clarification === true) { return; }
       if (item.status !== 'understood') { unclear.push(item.text); return; }
       var ag = getAgent(item.agentId) || getAgent('executive-assistant');
       if (!ag) return;
@@ -3116,7 +3130,7 @@
       if (b.decision === 'approved') {
         var execResult = '✅ تم الاعتماد والتنفيذ في المكتب السحابي.';
         if (item.actionType === 'hire_agent' && item.payload) {
-          var newId = String(item.payload.id || ('agent-' + uuid().slice(0, 6))).toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 40) || ('agent-' + uuid().slice(0, 6));
+          var newId = item.payload.id || ('agent-' + uuid().slice(0, 6));
           if (!getAgent(newId)) {
             state.customAgents.push({
               id: newId, name: item.payload.name || 'موظف جديد', englishName: newId, avatar: item.payload.avatar || '🤖',
