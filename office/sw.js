@@ -3,14 +3,14 @@
    are never cached and are always fetched from the network. */
 (function () {
   'use strict';
-  var CACHE = 'mdm1-office-pwa-20261127pwa18';
+  var CACHE = 'mdm1-office-pwa-20261127ui19';
   var CORE = [
     './', './index.html', './styles.css', './app.js', './office-config.js',
     './office-auth.js', './standalone.js', './pwa.js', './manifest.webmanifest',
     './data.json', './app-logo.png', './md1\u0075sd-logo.jfif', './icon-192.png', './icon-512.png',
     './apple-touch-icon.png'
   ];
-  var STATIC = /\.(?:css|js|json|webmanifest|png|jfif|jpe?g|svg|html)$/i;
+  var STATIC = /\.(?:css|js|json|webmanifest|png|jfif|jpe?g|svg|html|woff2)$/i;
 
   self.addEventListener('install', function (event) {
     event.waitUntil(
