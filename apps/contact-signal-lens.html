@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة فحص قوائم الهواتف والبريد وعناوين IP مباشرة في المتصفح | MDM1</title>
+<meta name="description" content="حمّل ملف CSV أو الصق البيانات لتصنيف أرقام الهواتف، عناوين البريد، وعناوين IP. يحدد الخصوصية، الحجز، الأنماط المشبوهة، مع رصيد فحص مشترك وتصدير النتائج كملف CSV.">
+<link rel="canonical" href="https://mdm1.org/apps/contact-signal-lens.html">
+<meta property="og:title" content="أداة فحص قوائم الهواتف والبريد وعناوين IP مباشرة في المتصفح">
+<meta property="og:description" content="حمّل ملف CSV أو الصق البيانات لتصنيف أرقام الهواتف، عناوين البريد، وعناوين IP. يحدد الخصوصية، الحجز، الأنماط المشبوهة، مع رصيد فحص مشترك وتصدير النتائج كملف CSV.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/contact-signal-lens.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app .card {  
+  background: var(--dark);  
+  color: var(--light);  
+  padding: 1rem;  
+  margin: 1rem 0;  
+  border-radius: 0.5rem;  
+}  
+.app .row {  
+  display: flex;  
+  flex-wrap: wrap;  
+  align-items: center;  
+  margin-bottom: 0.75rem;  
+}  
+.app .row > .label {  
+  flex: 0 0 150px;  
+  margin-right: 0.5rem;  
+}  
+.app .row > .input, .app .row > .select, .app .row > textarea {  
+  flex: 1 1 auto;  
+}  
+.app .divider {  
+  border-top: 1px solid var(--gold-dim);  
+  margin: 0.75rem 0;  
+}  
+.app .out table {  
+  width: 100%;  
+  border-collapse: collapse;  
+}  
+.app .out th, .app .out td {  
+  border: 1px solid var(--gold-dim);  
+  padding: 0.4rem;  
+  text-align: left;  
+}  
+.app .big {  
+  color: var(--gold-bright);  
+  font-size: 1.2rem;  
+}  
+.app .badge {  
+  background: var(--gold);  
+  color: var(--dark);  
+  padding: 0.2rem 0.4rem;  
+  border-radius: 0.3rem;  
+  font-size: 0.9rem;  
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "فحص قوائم الهواتف، البريد، وعناوين IP داخل المتصفح", "url": "https://mdm1.org/apps/contact-signal-lens.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "كيف يتم معالجة البيانات؟", "acceptedAnswer": {"@type": "Answer", "text": "جميع التحليلات تُجرى محليًا في المتصفح، لا تُرسل أي معلومة إلى الخادم، وبالتالي تبقى خصوصيتك محمية."}}, {"@type": "Question", "name": "ماذا يحدث عندما ينتهي رصيد الفحص؟", "acceptedAnswer": {"@type": "Answer", "text": "يتوقف زر الفحص عن العمل ويظهر الرصيد المتبقي صفرًا؛ يمكن استعادة الرصيد إما بإعادة تعيين التطبيق أو باستيراد ملف JSON يحتوي على رصيد مخزن."}}, {"@type": "Question", "name": "أي أنواع الملفات المدعومة؟", "acceptedAnswer": {"@type": "Answer", "text": "يدعم رفع ملفات CSV التي تحتوي على سطر واحد لكل عنصر، كما يمكن نسخ البيانات مباشرةً في حقل النصوص."}}, {"@type": "Question", "name": "هل يمكن تصدير النتائج؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، يوجد زر \"تنزيل CSV\" لتوليد ملف CSV يحتوي على جميع النتائج، ويمكن أيضًا استيراد ملف JSON لاستعادة الرصيد والنتائج السابقة."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">فحص قوائم الهواتف، البريد، وعناوين IP داخل المتصفح</h1>
+  <p class="page-sub">حمّل ملف CSV أو الصق البيانات لتصنيف أرقام الهواتف، عناوين البريد، وعناوين IP. يحدد الخصوصية، الحجز، الأنماط المشبوهة، مع رصيد فحص مشترك وتصدير النتائج كملف CSV.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><p>يمكنك فحص قوائم أرقام الهواتف وعناوين البريد الإلكتروني وعناوين IP مباشرةً في المتصفح دون إرسال أي بيانات إلى الخادم. أضف ملف CSV أو الصق النص في الحقل المخصص، ثم اختر نوع الفحص إذا رغبت في توجيه التحليل، واضغط زر الفحص لتظهر النتائج في جدول مفصل يوضح التصنيف، الحالة، وأي نمط مشبوه تم اكتشافه. التطبيق يحتفظ برصيد فحص مشترك في الذاكرة، كل عملية فحص تستهلك جزءًا من هذا الرصيد، ويمكنك تصدير النتائج كملف CSV أو استيراد ملف JSON لاستعادة الرصيد. الواجهة مصممة لتتكامل بسهولة مع الصفحة الحالية وتستجيب للنداءات البرمجية من كود الصفحة دون الحاجة إلى شبكة.</p>  
+<div class="card app">  
+  <div class="row">  
+    <label class="label" for="fileInput">رفع ملف CSV</label>  
+    <input class="input" type="file" id="fileInput" accept=".csv">  
+  </div>  
+  <div class="row divider"></div>  
+  <div class="row">  
+    <label class="label" for="pasteArea">أو الصق البيانات هنا</label>  
+    <textarea class="input" id="pasteArea" rows="4" placeholder="اكتب أو الصق القوائم، كل عنصر في سطر جديد"></textarea>  
+  </div>  
+  <div class="row">  
+    <label class="label" for="dataTypeSelect">نوع البيانات (اختياري)</label>  
+    <select class="select" id="dataTypeSelect">  
+      <option value="">اكتشاف تلقائي</option>  
+      <option value="phone">أرقام هواتف</option>  
+      <option value="email">عناوين بريد</option>  
+      <option value="ip">عناوين IP</option>  
+    </select>  
+  </div>  
+  <div class="row">  
+    <button class="button" id="scanButton">ابدأ الفحص</button>  
+    <button class="button sec" id="resetButton">إعادة تعيين</button>  
+  </div>  
+  <div class="row">  
+    <span>رصيد الفحص المتبقي: <strong class="big" id="creditDisplay">1000</strong></span>  
+  </div>  
+  <div class="row divider"></div>  
+  <div class="out" id="resultContainer">  
+    <table class="out">  
+      <thead>  
+        <tr><th>العنصر</th><th>الفئة</th><th>الحالة</th><th>ملاحظات</th></tr>  
+      </thead>  
+      <tbody id="resultBody"></tbody>  
+    </table>  
+  </div>  
+  <div class="row">  
+    <button class="button" id="exportCsvButton">تنزيل CSV</button>  
+    <input class="input" type="file" id="importJsonInput" accept=".json">  
+    <button class="button sec" id="importJsonButton">استيراد JSON</button>  
+  </div>  
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>كيف يتم معالجة البيانات؟</h3><p>جميع التحليلات تُجرى محليًا في المتصفح، لا تُرسل أي معلومة إلى الخادم، وبالتالي تبقى خصوصيتك محمية.</p><h3>ماذا يحدث عندما ينتهي رصيد الفحص؟</h3><p>يتوقف زر الفحص عن العمل ويظهر الرصيد المتبقي صفرًا؛ يمكن استعادة الرصيد إما بإعادة تعيين التطبيق أو باستيراد ملف JSON يحتوي على رصيد مخزن.</p><h3>أي أنواع الملفات المدعومة؟</h3><p>يدعم رفع ملفات CSV التي تحتوي على سطر واحد لكل عنصر، كما يمكن نسخ البيانات مباشرةً في حقل النصوص.</p><h3>هل يمكن تصدير النتائج؟</h3><p>نعم، يوجد زر &quot;تنزيل CSV&quot; لتوليد ملف CSV يحتوي على جميع النتائج، ويمكن أيضًا استيراد ملف JSON لاستعادة الرصيد والنتائج السابقة.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="local-code-security-scanner.html" style="color:var(--gold-bright);font-weight:700">أداة فحص الشفرة المحلية في المتصفح</a><span style="opacity:.75"> — افحص الشفرة المرفوعة دون رفعها لأي خادم. كشف الأسرار والدوال الخطرة وحقن SQL وXSS، مع تصنيف الخطورة وإزالة…</span></li><li style="margin:.5rem 0"><a href="offline-map-style-studio.html" style="color:var(--gold-bright);font-weight:700">أداة تصميم خرائط مخصصة من GeoJSON وOSM داخل المتصفح</a><span style="opacity:.75"> — صمم خرائط مخصصة داخل متصفحك من ملفات GeoJSON وOSM XML المحلية، مع سحب وتكبير وتخصيص ألوان الطرق والمياه…</span></li><li style="margin:.5rem 0"><a href="daylight-rhythm-tuner.html" style="color:var(--gold-bright);font-weight:700">أداة موقع الشمس وحرارة لون ضوء النهار بالعرض والوقت</a><span style="opacity:.75"> — احسب ارتفاع الشمس وحرارة لون ضوء النهار (CCT) والسطوع (lx) لحظة بلحظة حسب خط العرض والوقت المحلي مع رسوم…</span></li><li style="margin:.5rem 0"><a href="diff-risk-compass.html" style="color:var(--gold-bright);font-weight:700">أداة تحليل الفروقات وتقييم المخاطر للطلبات البرمجية</a><span style="opacity:.75"> — أداة داخل المتصفح تحلل الفروقات المُلصقة أو وصف طلب سحب يدوي، وتُعطي درجة مخاطر من 0 إلى 100 وتُظهر الملفات…</span></li><li style="margin:.5rem 0"><a href="dual-voice-canvas.html" style="color:var(--gold-bright);font-weight:700">محرر ترجمات الفيديو والدبلجة في المتصفح</a><span style="opacity:.75"> — استورد فيديو وترجمة SRT أو VTT، عدل الأسطر جنباً إلى جنب، اعرض ترجمة ثنائية فوق Canvas، عاين الدبلجة بمحرك…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-27 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(function(){  
+  const creditStart = 1000;  
+  let credit = creditStart;  
+  const fileInput = document.getElementById('fileInput');  
+  const pasteArea = document.getElementById('pasteArea');  
+  const dataTypeSelect = document.getElementById('dataTypeSelect');  
+  const scanButton = document.getElementById('scanButton');  
+  const resetButton = document.getElementById('resetButton');  
+  const creditDisplay = document.getElementById('creditDisplay');  
+  const resultBody = document.getElementById('resultBody');  
+  const exportCsvButton = document.getElementById('exportCsvButton');  
+  const importJsonInput = document.getElementById('importJsonInput');  
+  const importJsonButton = document.getElementById('importJsonButton');  
+  
+  function updateCreditDisplay(){  
+    creditDisplay.textContent = credit;  
+    scanButton.disabled = credit <= 0;  
+  }  
+  
+  function resetApp(){  
+    credit = creditStart;  
+    resultBody.innerHTML = '';  
+    updateCreditDisplay();  
+  }  
+  
+  function parseCSV(text){  
+    return text.split(/\r?\n/).map(line=>line.trim()).filter(l=>l.length>0);  
+  }  
+  
+  function detectType(value){  
+    if(/^[0-9]{7,15}$/.test(value)) return 'phone';  
+    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'email';  
+    if(/^(\d{1,3}\.){3}\d{1,3}$/.test(value)) return 'ip';  
+    return 'unknown';  
+  }  
+  
+  function classifyIP(ip){  
+    const parts = ip.split('.').map(Number);  
+    const [a,b,c,d] = parts;  
+    if(a===10 || (a===172 && b>=16 && b<=31) || (a===192 && b===168)) return 'خاص';  
+    if(a===127) return 'محجوز';  
+    if(a===0) return 'محجوز';  
+    if(a===255) return 'محجوز';  
+    return 'عام';  
+  }  
+  
+  function checkSuspicious(value, type){  
+    const notes=[];  
+    if(type==='phone' && value.length<8) notes.push('رقم غير مكتمل');  
+    if(type==='email' && /\.(tk|ml|ga|cf|gq)$/.test(value.split('@')[1])) notes.push('نطاق مؤقت');  
+    if(type==='ip' && !/^(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])(\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])){3}$/.test(value)) notes.push('IP غير صالح');  
+    return notes.join('؛ ');  
+  }  
+  
+  function addResult(item, category, status, notes){  
+    const tr=document.createElement('tr');  
+    tr.innerHTML=`<td>${item}</td><td>${category}</td><td>${status}</td><td>${notes}</td>`;  
+    resultBody.appendChild(tr);  
+  }  
+  
+  function processData(lines){  
+    const forcedType = dataTypeSelect.value;  
+    lines.forEach(line=>{  
+      if(credit<=0) return;  
+      const type = forcedType || detectType(line);  
+      let category='غير معروف', status='-', notes='-';  
+      if(type==='ip'){  
+        category='IP';  
+        status=classifyIP(line);  
+        notes=checkSuspicious(line,'ip')||'-';  
+      } else if(type==='email'){  
+        category='بريد';  
+        status='صحيح';  
+        notes=checkSuspicious(line,'email')||'-';  
+      } else if(type==='phone'){  
+        category='هاتف';  
+        status='صحيح';  
+        notes=checkSuspicious(line,'phone')||'-';  
+      } else {  
+        category='غير معروف';  
+        status='غير محدد';  
+        notes='لم يتم التعرف على النوع';  
+      }  
+      addResult(line,category,status,notes);  
+      credit--;  
+    });  
+    updateCreditDisplay();  
+  }  
+  
+  fileInput.addEventListener('change', e=>{  
+    const file=e.target.files[0];  
+    if(!file) return;  
+    const reader=new FileReader();  
+    reader.onload=function(ev){  
+      const lines=parseCSV(ev.target.result);  
+      processData(lines);  
+    };  
+    reader.readAsText(file);  
+  });  
+  
+  scanButton.addEventListener('click',()=>{  
+    const text=pasteArea.value;  
+    const lines=parseCSV(text);  
+    if(lines.length===0){alert('الرجاء إدخال بيانات أو رفع ملف.');return;}  
+    processData(lines);  
+  });  
+  
+  resetButton.addEventListener('click',()=>{  
+    if(confirm('هل تريد إعادة الضبط؟ سيُفقد جميع النتائج.')) resetApp();  
+  });  
+  
+  exportCsvButton.addEventListener('click',()=>{  
+    let csv='العنصر,الفئة,الحالة,ملاحظات\\n';  
+    resultBody.querySelectorAll('tr').forEach(tr=>{  
+      const cells=Array.from(tr.children).map(td=>td.textContent.replace(/,/g,';'));  
+      csv+=cells.join(',')+'\\n';  
+    });  
+    const blob=new Blob([csv],{type:'text/csv'});  
+    const url=URL.createObjectURL(blob);  
+    const a=document.createElement('a');  
+    a.href=url; a.download='results.csv'; a.click();  
+    URL.revokeObjectURL(url);  
+  });  
+  
+  importJsonButton.addEventListener('click',()=>{  
+    const file=importJsonInput.files[0];  
+    if(!file) return;  
+    const reader=new FileReader();  
+    reader.onload=function(ev){  
+      try{  
+        const data=JSON.parse(ev.target.result);  
+        if(typeof data.credit==='number'){credit=data.credit;}  
+        if(Array.isArray(data.results)){  
+          resultBody.innerHTML='';  
+          data.results.forEach(r=>addResult(r.item,r.category,r.status,r.notes));  
+        }  
+        updateCreditDisplay();  
+      }catch(e){alert('ملف JSON غير صالح.');}  
+    };  
+    reader.readAsText(file);  
+  });  
+  
+  // expose simple API for host page  
+  window.myScanner={  
+    scanData: function(csvText){  
+      const lines=parseCSV(csvText);  
+      processData(lines);  
+    },  
+    getCredit: function(){ return credit; },  
+    reset: resetApp  
+  };  
+  
+  // initialize display  
+  updateCreditDisplay();  
+})();
+</script>
+</body>
+</html>
