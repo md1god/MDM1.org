@@ -1852,6 +1852,276 @@
     });
   }
 
+  /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
+  var assistantSession = null;
+
+  var DIALECT_RULES = [
+    [/\b(أبغى|ابغى|عايز|عيز|أريد|اريد|بغيت|ودّي|ودي|أبغاك|ابغاك)\b/gu, 'أريد'],
+    [/\b(شيف|شوف|إعمل|اعمل|سوي|سوّي|نفّذ|نفذ)\b/gu, 'أنفّذ'],
+    [/\b(بكره|بكرا|غدا)\b/gu, 'غداً'],
+    [/\b(دلوقتي|دلوقت|هلوقتي|الآن)\b/gu, 'الآن'],
+    [/\b(مزبون|زبون|عميل|كليانت)\b/gu, 'عميل'],
+    [/\b(فلوس|فلاوس|مال|مصاريف)\b/gu, 'ميزانية'],
+    [/\b(شغل|وظيفة|مهمة|task)\b/gu, 'مهمة'],
+    [/\b(مفيش|مافي|ما عندي|مش عندي)\b/gu, 'لا يوجد'],
+    [/\b(كده|كذا|هيك|هكذا)\b/gu, 'هكذا'],
+    [/\b(قريب|قريبا|سريع|بسرعة|بالسرعة)\b/gu, 'بسرعة'],
+    [/\b(اتصل|اتصلت|تواصل|راسل)\b/gu, 'تواصل'],
+    [/\b(دوّر|دور|ابحث|ابحت|فتّش)\b/gu, 'ابحث']
+  ];
+
+  function normalizeDialect(message) {
+    var raw = String(message || '').trim();
+    var out = raw;
+    var changes = [];
+    DIALECT_RULES.forEach(function (rule) {
+      if (rule[0].test(out)) { out = out.replace(rule[0], rule[1]); changes.push(rule[1]); }
+    });
+    out = out.replace(/[أإآ]/gu, 'ا').replace(/ة(?=\s|$)/gu, 'ه');
+    return { raw: raw, normalized: out, changes: changes };
+  }
+
+  function jsonFromText(text) {
+    var s = String(text || '').replace(/```(?:json)?/gi, '').trim();
+    var start = s.indexOf('{'), end = s.lastIndexOf('}');
+    if (start < 0 || end <= start) return null;
+    return safeJson(s.slice(start, end + 1), null);
+  }
+
+  function fallbackUnderstanding(raw, norm) {
+    var lower = String(norm || '').toLowerCase();
+    var scope = 'عام — يحتاج تحديد نطاق أدق';
+    if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
+    else if (/تسويق|حمله|اعلان|إعلان|عميل|crm/i.test(lower)) scope = 'تسويق ونمو العملاء';
+    else if (/مالي|محاسب|فاتوره|تكلفه|ربح|ضريبه/i.test(lower)) scope = 'مالية ومحاسبة';
+    else if (/قانون|عقد|امتثال|خصوصيه|ضرائب/i.test(lower)) scope = 'الشؤون القانونية والامتثال';
+    else if (/امان|امن|صلاحيه|بيانات/i.test(lower)) scope = 'الأمان وحماية البيانات';
+
+    var deliverables = [];
+    [/تقرير/g, /خطه|خطة/g, /منتج|تطبيق|موقع|صفحه/g, /حمله|حملة/g, /عقد|اتفاقيه/g, /جدول/g, /ميزانيه|ميزانية/g].forEach(function (rx) {
+      var m = lower.match(rx); if (m && deliverables.indexOf(m[0]) === -1) deliverables.push(m[0]);
+    });
+    if (!deliverables.length) deliverables = ['مخرج قابل للمراجعة'];
+
+    var constraints = [];
+    var money = raw.match(/(?:\$|usd|دولار|جنيه|ريال)\s*([0-9]+(?:[.,][0-9]+)?)/i);
+    if (money) constraints.push('ميزانية أو رقم مذكور: ' + money[0]);
+    var time = raw.match(/(خلال\s+[0-9]+\s*(يوم|ايام|أسبوع|اسابيع|شهر|اشهر)|بكره|بكرا|غدا|الآن)/i);
+    if (time) constraints.push('الإطار الزمني: ' + time[0]);
+
+    var risks = [];
+    if (/دفع|جات|تحويل|مصروف/i.test(lower)) risks.push('أي دفع مالي يحتاج موافقة صريحة');
+    if (/نشر|اعلان|حمله/i.test(lower)) risks.push('النشر الخارجي يحتاج مراجعة مالية وقانونية');
+    if (/عقد|قانون|ضريبه|خصوصيه/i.test(lower)) risks.push('مراجعة المستشار القانوني والمحاسب القانوني إلزامية');
+    if (/بيانات|صلاحيه|امان/i.test(lower)) risks.push('مراجعة مسؤول الأمان قبل منح صلاحيات جديدة');
+
+    var ambiguities = [];
+    if (!money) ambiguities.push('ما هي الميزانية القصوى المسموح بها؟');
+    if (!time) ambiguities.push('ما الموعد النهائي أو الإطار الزمني المتوقع؟');
+    if (/منتج|تطبيق|موقع|حمله/i.test(lower) && !/للشركات|للعملاء|للأفراد|b2b|b2c/i.test(lower)) ambiguities.push('من هو الجمهور المستهدف بالضبط؟');
+
+    return {
+      goal: String(raw).slice(0, 240) || 'لم يُحدد الهدف بوضوح',
+      scope: scope,
+      deliverables: deliverables.join('، '),
+      constraints: constraints,
+      risks: risks,
+      ambiguities: ambiguities,
+      suggestions: [
+        'أقترح benchmark مجاني لكل نموذج قبل تعيينه على الدور.',
+        'أقترح تمرير كل مقترح عبر حلقة الجودة (مراقب ← مدقق ← مصحح).',
+        'أقترح عرض خطة الأدوار عليك قبل إنشاء أي مهمة.'
+      ],
+      judgment: ambiguities.length ? 'الطلب مفهوم جزئياً؛ الأسئلة أعلاه ترفع دقة التنفيذ.' : 'الطلب واضح بما يكفي للانتقال لمرحلة البحث والتوزيع.',
+      keywords: words(lower).slice(0, 18)
+    };
+  }
+
+  function understandRequest(message) {
+    var d = normalizeDialect(message);
+    var prompt = 'الطلب الأصلي:\n' + d.raw + '\n\nالصيغة الموحّدة للهجة:\n' + d.normalized +
+      '\n\nالتعليمات: افهم اللهجة العربية جيداً (مصرية، خليجية، شامية، مغربية، فصحى). لا تُنفّذ أي شيء الآن. أعد JSON صالحاً فقط بالشكل:' +
+      '\n{"goal":"...","scope":"...","deliverables":"...","constraints":["..."],"risks":["..."],"ambiguities":["..."],"suggestions":["..."],"judgment":"..."}' +
+      '\nاجعل الأسئلة في ambiguities عملية ومحددة، وأضف اقتراحاً واحداً على الأقل.';
+    return aiGenerate({
+      agentId: 'executive-assistant',
+      systemPrompt: 'أنت محلل طلبات تنفيذي لشركة AI. تفهم اللهجات العربية وتعرض ما فهمته قبل أي تنفيذ. لا تستخدم أدوات ولا تنفذ أوامر. أعد JSON فقط.',
+      messages: [{ role: 'user', text: prompt }]
+    }).then(function (r) {
+      var parsed = jsonFromText(r.text);
+      var fb = fallbackUnderstanding(d.raw, d.normalized);
+      if (!parsed) return { understanding: fb, mode: r.mode, normalized: d.normalized, changes: d.changes, live: r.mode === 'live' };
+      var arr = function (k) { return Array.isArray(parsed[k]) ? parsed[k].map(String).slice(0, 6) : fb[k]; };
+      var u = {
+        goal: String(parsed.goal || fb.goal).slice(0, 400),
+        scope: String(parsed.scope || fb.scope).slice(0, 300),
+        deliverables: String(parsed.deliverables || fb.deliverables).slice(0, 400),
+        constraints: arr('constraints'),
+        risks: arr('risks'),
+        ambiguities: arr('ambiguities'),
+        suggestions: arr('suggestions'),
+        judgment: String(parsed.judgment || fb.judgment).slice(0, 400),
+        keywords: words(d.normalized).slice(0, 18)
+      };
+      if (!u.ambiguities.length && d.changes.length === 0) u.ambiguities = ['هل هناك قيد مالي أو زمني يجب أن ألتزم به؟'];
+      return { understanding: u, mode: r.mode, normalized: d.normalized, changes: d.changes, live: r.mode === 'live' };
+    });
+  }
+
+  function hardTasksFor(u, raw) {
+    var text = [u.goal, u.scope, u.deliverables, raw].filter(Boolean).join('، ');
+    var parts = String(text).split(/[،,؛;\n]+|\s+و\s+/).map(function (x) { return String(x).trim(); }).filter(function (x) { return x.length > 8; });
+    var hardRx = /(بحث|دراسه|دراسة|منافس|تسعير|سعر|قانون|ضريبه|ضريبة|امتثال|امان|امن|تقني|api|منصه|منصة|سوق|تكلفه|تكلفة|ميزانيه|ميزانية|عقد|حمايه|حماية)/i;
+    var picks = parts.filter(function (x) { return hardRx.test(x); }).slice(0, 4);
+    if (!picks.length && hardRx.test(String(raw || ''))) picks = [String(raw).slice(0, 180)];
+    return picks;
+  }
+
+  function researchHardTasks(tasks) {
+    if (!tasks || !tasks.length) return Promise.resolve([]);
+    return Promise.all(tasks.map(function (t) {
+      return webSearch(t).then(function (r) {
+        var engine = r && r.engine ? r.engine : 'unavailable';
+        return {
+          task: t,
+          engine: engine,
+          note: engine === 'unavailable' ? 'تعذّر البحث الحي؛ أعددت مسار تحقق يدوي بدلاً من ادّعاء نتيجة.' : 'بحث حي',
+          results: (r && r.results ? r.results : []).slice(0, 4).map(function (x) {
+            return { title: String(x.title || ''), url: String(x.url || ''), snippet: String(x.snippet || '').slice(0, 160) };
+          })
+        };
+      }).catch(function (e) {
+        return { task: t, engine: 'unavailable', note: e.message, results: [] };
+      });
+    }));
+  }
+
+  function distributeRoles(u, research) {
+    var byAgent = {};
+    var riskFlag = /دفع|تحويل|نشر|عقد|قانون|ضريبه|امتثال|امان|بيانات/i.test([u.goal, u.deliverables, (u.risks || []).join(' ')].join(' '));
+    var title = String(u.deliverables || u.goal || 'مهمة جديدة').split(/[،,]/)[0].trim().slice(0, 110) || 'تنفيذ طلب المدير';
+    var researchLine = (research || []).map(function (r) { return r.task + ' (' + r.engine + ')'; }).slice(0, 3).join('؛ ');
+
+    function add(agentId, reason, risk, suffix) {
+      var ag = getAgent(agentId); if (!ag) return;
+      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: title, details: [], reason: reason, risk: risk || 'medium' };
+      if (suffix && byAgent[agentId].details.indexOf(suffix) === -1) byAgent[agentId].details.push(suffix);
+    }
+
+    var text = [u.goal, u.scope, u.deliverables, (u.keywords || []).join(' ')].join(' ').toLowerCase();
+    add('executive-assistant', 'تنسيق عام ومتابعة التنفيذ', 'low', 'إعداد جدول متابعة وتلخيص الحالة للمدير.');
+    if (/قانون|عقد|امتثال|خصوصيه|ضرائب/.test(text)) {
+      add('legal-advisor', 'مراجعة العقود والامتثال', 'high', 'مراجعة البنود القانونية وسياسة الخصوصية.');
+      add('legal-accountant', 'الأثر الضريبي والمحاسبي', 'high', 'مراجعة الضرائب والفواتير وتصنيف الإيرادات.');
+      var legalQa = getQaTeam('legal-advisor');
+      if (legalQa) Object.keys(legalQa).forEach(function (k) { add(legalQa[k], 'حلقة جودة قانونية', 'low', 'مراجعة مستقلة قبل أي نشر أو توقيع.'); });
+    }
+    if (/مالي|محاسب|فاتوره|تكلفه|ربح|ميزانيه/.test(text)) add('accountant', 'مراجعة التكاليف والعائد', 'medium', 'إعداد ميزانية وتقرير تكلفة/عائد.');
+    if (/تسويق|اعلان|حمله|عميل|نمو/.test(text)) add('marketing-lead', 'بناء الحملة ورسائل العملاء', riskFlag ? 'high' : 'medium', 'جهّز خطة خطاب تسويقي قابلة للمراجعة.');
+    if (/بحث|سوق|منافس|فرص|saas/.test(text)) add('web-research-team', 'بحث السوق والفرص', 'low', 'جمع مصادر حية وتلخيص 3 فرص قابلة للتنفيذ.');
+    if (/تقني|تطبيق|موقع|منصه|api|ساندبوكس|كود/.test(text)) add('auditors-experts-devs', 'الجدوى والتنفيذ التقني', 'medium', 'تدقيق معماري وتنفيذ آمن ضمن بيئة الاختبار.');
+    if (/امان|امن|صلاحيه|بيانات/.test(text)) add('security-officer', 'مراجعة المخاطر والصلاحيات', 'high', 'إصدار رأي أمني قبل أي نشر أو ربط خارجي.');
+    if (/توظيف|فريق|تدريب|kpi|ضغط/.test(text)) add('hr-manager', 'توزيع العمل ومراقبة الضغط', 'low', 'التحقق من جاهزية الفريق.');
+    if (researchLine) add('web-research-team', 'دعم البحث الحي', 'low', 'مصادر البحث: ' + researchLine);
+
+    return Object.keys(byAgent).map(function (id) {
+      var x = byAgent[id];
+      return {
+        agentId: x.agentId, agentName: x.agentName, avatar: x.avatar,
+        taskTitle: x.taskTitle, details: x.details.join(' '), reason: x.reason, risk: x.risk
+      };
+    });
+  }
+
+  function createAssistantSession(message) {
+    var raw = String(message || '').trim();
+    if (!raw) return Promise.reject(new Error('اكتب طلباً أولاً'));
+    return understandRequest(raw).then(function (res) {
+      var u = res.understanding;
+      var questions = (u.ambiguities || []).slice(0, 4);
+      if (!questions.length) questions = ['هل تريد تنفيذ الخطة فور اعتمادك أم مراجعة إضافية؟'];
+      var confidence = Math.max(35, Math.min(98, (res.live ? 86 : 63) - (u.ambiguities || []).length * 7 + (u.goal ? 5 : 0)));
+      var session = {
+        id: 'asst-' + uuid().slice(0, 8),
+        original: raw,
+        normalized: res.normalized,
+        understanding: u,
+        confidence: confidence,
+        mode: res.mode,
+        status: 'awaiting_confirmation',
+        questions: questions,
+        confirmationText: 'هذا ما فهمته من طلبك. أؤكد أنني فهمت المطلوب قبل أي تنفيذ.',
+        research: [],
+        plan: [],
+        result: '',
+        createdAt: nowIso(),
+        updatedAt: nowIso()
+      };
+      assistantSession = session;
+      logAudit('assistant_understanding', 'ceo', 'Assistant understood request (' + res.mode + '): ' + raw.slice(0, 80), { sessionId: session.id });
+      saveState();
+      return clone(session);
+    });
+  }
+
+  function confirmAssistant(id, confirmed, answer) {
+    var s = assistantSession;
+    if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
+    if (!confirmed) {
+      var extra = String(answer || '').trim();
+      if (!extra) return Promise.resolve(clone(s));
+      return createAssistantSession(s.original + '\n\nتعديل المدير: ' + extra);
+    }
+    if (s.status !== 'awaiting_confirmation') return Promise.resolve(clone(s));
+    return researchHardTasks(hardTasksFor(s.understanding, s.original)).then(function (research) {
+      s.research = research;
+      s.plan = distributeRoles(s.understanding, research);
+      s.status = 'awaiting_execution';
+      s.updatedAt = nowIso();
+      assistantSession = s;
+      logAudit('assistant_plan_ready', 'ceo', 'Assistant distributed ' + s.plan.length + ' roles after confirmation', { sessionId: s.id });
+      saveState();
+      return clone(s);
+    });
+  }
+
+  function cancelAssistant(id) {
+    if (!assistantSession || assistantSession.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
+    assistantSession.status = 'cancelled';
+    assistantSession.updatedAt = nowIso();
+    logAudit('assistant_cancelled', 'ceo', 'Assistant session cancelled', { sessionId: id });
+    saveState();
+    return Promise.resolve(clone(assistantSession));
+  }
+
+  function executeAssistant(id) {
+    var s = assistantSession;
+    if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
+    if (s.status !== 'awaiting_execution') return Promise.reject(new Error('يجب تأكيد الفهم أولاً قبل التنفيذ'));
+    (s.plan || []).forEach(function (p) {
+      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'working', createdAt: nowIso() });
+      state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
+      recomputeStatus(p.agentId);
+      awardPoints(p.agentId, 8, 'تنفيذ خطة المساعد الذكي');
+      if (p.risk === 'high') {
+        var item = addApproval({
+          agentId: p.agentId, agentName: p.agentName, title: 'موافقة صريحة: ' + p.taskTitle,
+          details: p.details || p.reason, risk: 'high', actionType: 'assistant_plan',
+          payload: { assistantSessionId: s.id }, _skipQuality: true
+        });
+        item.securityNote = '🛡️ مهمة عالية الخطورة من خطة المساعد — لا تُنفّذ إلا بتأكيد تجاوز صريح من لوحة المخاطر العالية.';
+      }
+    });
+    state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠', role: 'assistant', text: 'تم اعتماد خطة المساعد وتوزيع ' + s.plan.length + ' مهمة على الأقسام بعد تأكيد فهم الطلب.' + (s.research.length ? ' تم استخدام بحث حي في ' + s.research.length + ' مهمة صعبة.' : ''), timestamp: nowIso() });
+    s.status = 'done';
+    s.result = '✅ تم إنشاء ' + s.plan.length + ' مهمة وتوزيعها على ' + s.plan.length + ' دور. أي مهمة عالية الخطورة انتقلت للوحة الموافقات الصريحة.';
+    s.updatedAt = nowIso();
+    assistantSession = s;
+    logAudit('assistant_plan_executed', 'ceo', 'Assistant plan executed: ' + s.plan.length + ' tasks', { sessionId: s.id });
+    saveState();
+    return Promise.resolve(clone(s));
+  }
+
   /* ── snapshots (AES-GCM, browser only) ────────────────────────────────── */
   function b64(buf) {
     var bytes = new Uint8Array(buf);
@@ -1933,6 +2203,36 @@
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
     return Promise.resolve(rec);
+  }
+
+  function importSnapshot(record, passphrase) {
+    if (!record || !record.iv || !record.data || record.alg !== 'AES-256-GCM') {
+      return Promise.reject(new Error('ملف النسخة غير صالح أو غير مشفّر بـ AES-256-GCM'));
+    }
+    return deriveKey(passphrase).then(function (key) {
+      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(record.iv) }, key, unb64(record.data));
+    }).then(function (plain) {
+      var payload = JSON.parse(new TextDecoder().decode(plain));
+      if (!payload || typeof payload !== 'object') throw new Error('محتوى النسخة غير مقروء');
+      var rec = {
+        id: record.id && /^snap-[A-Za-z0-9-]+$/.test(record.id) ? record.id : 'snap-' + uuid().slice(0, 8),
+        label: String(record.label || (payload.__snapshot && payload.__snapshot.label) || 'نسخة مستوردة'),
+        alg: 'AES-256-GCM',
+        fileCount: num(record.fileCount, 1),
+        size: num(record.size, 0) || String(record.data || '').length,
+        createdAt: record.createdAt || nowIso(),
+        iv: record.iv,
+        data: record.data
+      };
+      var snaps = readLS(LS_SNAPS, []);
+      if (!snaps.some(function (s) { return s.id === rec.id; })) snaps.unshift(rec);
+      snaps = snaps.slice(0, 5);
+      writeLS(LS_SNAPS, snaps);
+      state.snapshots = snaps.map(function (s) { return { id: s.id, label: s.label, alg: s.alg, fileCount: s.fileCount, size: s.size, createdAt: s.createdAt }; });
+      logAudit('snapshot_imported', 'ceo', 'Imported and verified encrypted snapshot ' + rec.id);
+      saveState();
+      return rec;
+    }).catch(function (e) { throw new Error('فشل التحقق من كلمة المرور أو الملف: ' + e.message); });
   }
 
   /* ── exports / knowledge ──────────────────────────────────────────────── */
@@ -2083,7 +2383,7 @@
           freeModels: free,
           quota: quotaSummary(),
           quality: { enabled: settings.qualityGate, reports: num(state.qualityReports && state.qualityReports.length, 0), lastStatus: (state.qualityReports && state.qualityReports[0] && state.qualityReports[0].status) || null },
-          benchmarks: benchmarkReport().slice(0, 10),
+          benchmarks: benchmarkReport().slice(0, 200),
           vault: vaultStatus(),
           sync: { enabled: syncConfigured(), version: settings.syncVersion || 0 },
           lastError: settings.lastError
@@ -2105,6 +2405,47 @@
     });
   }
 
+  function healthCheck() {
+    return Promise.all([
+      listCloudModels(true), listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true)
+    ]).then(function (r) {
+      var mode = currentMode();
+      var listing = mode === 'cloud' ? r[0] : mode === 'local' ? r[1] : mode === 'zen' ? r[2] : mode === 'groq' ? r[3] : mode === 'openrouter' ? r[4] : null;
+      var connected = mode === 'demo' ? false : Boolean(listing && listing.connected && providerConfigured(mode));
+      var auth = window.MDM1Auth && typeof window.MDM1Auth.status === 'function' ? window.MDM1Auth.status() : { signedIn: false };
+      var vault = vaultStatus();
+      var sec = securityScan();
+      var q = quotaSummary();
+      var providers = {
+        cloud: { connected: Boolean(r[0].connected), error: r[0].error || null, freeModels: (r[0].free || []).length },
+        local: { connected: Boolean(r[1].connected), error: r[1].error || null, models: (r[1].models || []).length },
+        zen: { connected: Boolean(r[2].connected), error: r[2].error || null, models: (r[2].models || []).length },
+        groq: { connected: Boolean(r[3].connected), error: r[3].error || null, freeModels: (r[3].free || []).length },
+        openrouter: { connected: Boolean(r[4].connected), error: r[4].error || null, freeModels: (r[4].free || []).length }
+      };
+      var lines = [
+        connected ? '🟢 النموذج الحي: متصل (' + mode + ')' : '🔴 النموذج الحي: غير متصل — الردود ستكون تجريبية/بديلة ومُسمّدة بوضوح.',
+        '👤 الحساب: ' + authStatusLine(),
+        '🔐 الخزنة: ' + (vault.enabled ? 'مفعّلة' : 'غير مفعّلة') + (vault.locked === false ? ' — مفتوحة' : ''),
+        '🛡️ فحص الأمان: ' + (sec && Array.isArray(sec.findings) ? sec.findings.length + ' ملاحظة' : 'تم'),
+        '📊 الحصة: ' + (q && q.requests != null ? q.requests + ' طلب' : 'لا توجد بيانات'),
+        '☁️ السحابة: ' + (providers.cloud.connected ? 'متصلة' : 'غير متصلة') + (providers.cloud.error ? ' — ' + providers.cloud.error : ''),
+        '🏠 المحلي: ' + (providers.local.connected ? 'متصل' : 'غير متصل') + (providers.local.error ? ' — ' + providers.local.error : ''),
+        '🔄 المزامنة: ' + (settings.syncEnabled && syncConfigured() ? 'مفعّلة' : 'معطّلة')
+      ];
+      return {
+        connected: connected,
+        mode: mode,
+        providers: providers,
+        auth: auth,
+        vault: vault,
+        security: sec,
+        quota: q,
+        report: lines.join('\n')
+      };
+    });
+  }
+
   /* ── API router ───────────────────────────────────────────────────────── */
   function jsonResponse(data, status) {
     return new Response(JSON.stringify(data), { status: status || 200, headers: { 'content-type': 'application/json; charset=utf-8' } });
@@ -2113,6 +2454,14 @@
   function handleApi(method, path, body) {
     var b = body || {};
     var m;
+    var qi = path.indexOf('?');
+    if (qi >= 0) {
+      try {
+        var params = new URLSearchParams(path.slice(qi + 1));
+        if (params.has('q')) b.q = params.get('q');
+      } catch (e) { /* ignore malformed query */ }
+      path = path.slice(0, qi);
+    }
 
     if (method === 'GET' && path === '/api/bootstrap') {
       return buildBootstrap().then(function (d) { return jsonResponse(d); });
@@ -2168,6 +2517,41 @@
     }
     if (method === 'POST' && path === '/api/security/unlock') {
       return unlockVault(b.passphrase).then(function (r) { return jsonResponse(r); });
+    }
+
+    if (method === 'POST' && path === '/api/health/check') {
+      return healthCheck().then(function (r) { return jsonResponse(r); }).catch(function (e) { return jsonResponse({ error: e.message }, 500); });
+    }
+    if (method === 'GET' && path === '/api/audit/search') {
+      var q = String(b.q || '').trim().toLowerCase();
+      var entries = !q ? state.auditLog.slice(0, 250) : state.auditLog.filter(function (e) {
+        return [e.eventType, e.actor, e.summary, JSON.stringify(e.meta || {})].join(' ').toLowerCase().indexOf(q) !== -1;
+      }).slice(0, 250);
+      return Promise.resolve(jsonResponse({ query: q, count: entries.length, entries: entries }));
+    }
+    if (method === 'POST' && path === '/api/snapshots/import') {
+      return importSnapshot(b.record, b.passphrase).then(function (rec) {
+        return jsonResponse({ message: 'تم استيراد النسخة ' + rec.id + ' والتحقق من تشفيرها.', snapshot: { id: rec.id, label: rec.label, alg: rec.alg, createdAt: rec.createdAt } }, 201);
+      }).catch(function (e) { return jsonResponse({ error: e.message }, 400); });
+    }
+
+    if (method === 'GET' && path === '/api/assistant/session') {
+      return Promise.resolve(jsonResponse({ session: assistantSession ? clone(assistantSession) : null }));
+    }
+    if (method === 'POST' && path === '/api/assistant/start') {
+      return createAssistantSession(b.message).then(function (s) { return jsonResponse({ session: s }); }).catch(function (e) { return jsonResponse({ error: e.message }, 400); });
+    }
+    if (method === 'POST' && path === '/api/assistant/confirm') {
+      if (!b.sessionId) return Promise.resolve(jsonResponse({ error: 'sessionId required' }, 400));
+      return confirmAssistant(b.sessionId, b.confirmed === true, b.answer).then(function (s) { return jsonResponse({ session: s }); }).catch(function (e) { return jsonResponse({ error: e.message }, 400); });
+    }
+    if (method === 'POST' && path === '/api/assistant/cancel') {
+      if (!b.sessionId) return Promise.resolve(jsonResponse({ error: 'sessionId required' }, 400));
+      return cancelAssistant(b.sessionId).then(function (s) { return jsonResponse({ session: s }); }).catch(function (e) { return jsonResponse({ error: e.message }, 400); });
+    }
+    if (method === 'POST' && path === '/api/assistant/execute') {
+      if (!b.sessionId) return Promise.resolve(jsonResponse({ error: 'sessionId required' }, 400));
+      return executeAssistant(b.sessionId).then(function (s) { return jsonResponse({ session: s }); }).catch(function (e) { return jsonResponse({ error: e.message }, 409); });
     }
 
     if (method === 'POST' && path === '/api/chat/direct') {
@@ -2399,8 +2783,9 @@
       if (['approved', 'rejected'].indexOf(b.decision) === -1) return Promise.resolve(jsonResponse({ error: 'decision must be approved or rejected' }, 400));
       var item = state.approvals.find(function (a) { return a.id === m[1]; });
       if (!item) return Promise.resolve(jsonResponse({ error: 'Not found' }, 404));
-      if (b.decision === 'approved' && item.quality && item.quality.status === 'flagged' && b.override !== true) {
-        return Promise.resolve(jsonResponse({ error: 'هذا المقترح مرفوض من حلقة الجودة. أرسل override=true لتنفيذه رغم ذلك على مسؤوليتك.', quality: item.quality }, 409));
+      var needsOverride = item.risk === 'high' || Boolean(item.quality && item.quality.status === 'flagged');
+      if (b.decision === 'approved' && needsOverride && b.override !== true) {
+        return Promise.resolve(jsonResponse({ error: 'هذا الإجراء عالي الخطورة أو مرفوض من حلقة الجودة. أرسل override=true من لوحة المخاطر العالية لتنفيذه على مسؤوليتك.', risk: item.risk, quality: item.quality }, 409));
       }
       item.status = b.decision;
       item.resolvedAt = nowIso();
@@ -2436,7 +2821,7 @@
       }
       recomputeStatus(item.agentId);
       state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'نظام القرارات (المكتب)', senderAvatar: b.decision === 'approved' ? '✅' : '❌', role: 'assistant', text: 'قرار المدير حول "' + item.title + '": ' + item.executionResult, timestamp: nowIso() });
-      logAudit('approval_' + b.decision, 'ui', b.decision.toUpperCase() + ': ' + item.title, { id: item.id });
+      logAudit('approval_' + b.decision, 'ui', b.decision.toUpperCase() + ': ' + item.title + (b.override === true ? ' (override=true)' : ''), { id: item.id, risk: item.risk, override: b.override === true });
       saveState();
       return Promise.resolve(jsonResponse({ approval: item }));
     }
@@ -3252,14 +3637,47 @@
   }
 
   /* Identity changes unlock messaging/sync; re-check state without asking for
-     the office passphrase again. */
+     the office passphrase again. Compliance notices are distinct from the
+     generic auth prompt and are logged once per real state change. */
   var authWatchInstalled = false;
+  var lastComplianceSig = null;
+  function complianceSnapshot() {
+    var A = window.MDM1Auth;
+    var s = A && typeof A.status === 'function' ? A.status() : {};
+    if (s.loading) return { text: '🔐 جارٍ فحص الحساب...', cls: '', sig: 'loading', ready: false, requiresTotp: false, verified: false };
+    if (s.error) return { text: '⚠️ تحقق الحساب غير متاح', cls: 'err', sig: 'error', ready: false, requiresTotp: false, verified: false };
+    if (!s.signedIn) return { text: '👤 بدون حساب — الإرسال مقفل', cls: '', sig: 'signed-out', ready: false, requiresTotp: false, verified: false };
+    if (s.requiresTotp) return { text: '🔐 مطلوب TOTP للإرسال', cls: 'warn', sig: 'totp-required', ready: false, requiresTotp: true, verified: false };
+    return {
+      text: '✅ امتثال الحساب مكتمل' + (s.verifiedFactors ? ' · TOTP' : ''),
+      cls: 'ok',
+      sig: 'ready-' + Boolean(s.verifiedFactors) + '-' + Boolean(s.messagingReady),
+      ready: Boolean(s.messagingReady),
+      requiresTotp: false,
+      verified: Boolean(s.verifiedFactors)
+    };
+  }
+  function renderComplianceBadge() {
+    var el = document.getElementById('complianceBadge'); if (!el) return;
+    var c = complianceSnapshot();
+    el.textContent = c.text;
+    el.className = 'provider-badge' + (c.cls ? ' ' + c.cls : '');
+    el.title = 'حالة الامتثال لحساب جوجل/الإيميل وTOTP؛ لا تؤثر على كلمة مرور المكتب الخاصة.';
+    return c;
+  }
   function watchAuth() {
+    renderComplianceBadge();
     if (authWatchInstalled || !window.MDM1Auth || typeof window.MDM1Auth.onChange !== 'function') return;
     authWatchInstalled = true;
     window.MDM1Auth.onChange(function (s) {
       renderAuthStatus();
-      if (s.messagingReady && settings.syncEnabled && settings.syncUrl && secret('syncSecret')) {
+      var c = renderComplianceBadge() || complianceSnapshot();
+      if (lastComplianceSig !== null && c.sig !== lastComplianceSig && c.sig !== 'loading') {
+        logAudit('auth_compliance_change', 'ui', c.text, { sig: c.sig, messagingReady: c.ready, requiresTotp: c.requiresTotp, verifiedFactors: c.verified });
+        showToast('🔐 تحديث الامتثال: ' + c.text, c.ready ? 'ok' : 'err');
+      }
+      lastComplianceSig = c.sig;
+      if (s && s.messagingReady && settings.syncEnabled && settings.syncUrl && secret('syncSecret')) {
         syncPull().catch(function (e) { console.warn('Office sync pull after sign-in failed:', e.message); });
       }
     });
@@ -3300,10 +3718,19 @@
     createSnapshot: createSnapshot,
     restoreSnapshot: restoreSnapshot,
     downloadSnapshot: downloadSnapshot,
+    importSnapshot: importSnapshot,
+    healthCheck: healthCheck,
     telegramSecretLink: telegramSecretLink,
     telegramShareLink: telegramShareLink,
     relaySend: relaySend,
     authStatusLine: authStatusLine,
+    assistant: {
+      start: createAssistantSession,
+      confirm: confirmAssistant,
+      cancel: cancelAssistant,
+      execute: executeAssistant,
+      current: function () { return assistantSession ? clone(assistantSession) : null; }
+    },
     syncPull: syncPull,
     syncPush: syncPush,
     quotaSummary: quotaSummary,

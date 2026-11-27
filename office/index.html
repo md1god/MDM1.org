@@ -14,10 +14,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261127pwa10" />
-  <link rel="icon" type="image/png" href="icon-192.png?v=20261127pwa10" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261127pwa10" />
-  <link rel="stylesheet" href="styles.css?v=20261127pwa10" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261127pwa11" />
+  <link rel="icon" type="image/png" href="icon-192.png?v=20261127pwa11" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261127pwa11" />
+  <link rel="stylesheet" href="styles.css?v=20261127pwa11" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +25,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <img class="brand-logo" src="app-logo.png?v=20261127pwa10" alt="MD1&#117;sd Company" />
+        <img class="brand-logo" src="app-logo.png?v=20261127pwa11" alt="MD1&#117;sd Company" />
         <div>
           <h1>MD1&#117;sd Company</h1>
           <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -36,12 +36,15 @@
         <div id="costBadge" class="cost-badge" title="مراقب التوكنز والتكلفة">🪙 0 tok | $0.00</div>
         <div id="providerBadge" class="provider-badge">جاري التحميل...</div>
         <div id="officeQuotaBadge" class="provider-badge">📊 0 طلب</div>
+        <div id="complianceBadge" class="provider-badge" title="حالة الامتثال وتأكيد الحساب">🔐 جارٍ الفحص</div>
         <div class="quick-actions" id="officeQuickActions" aria-label="إجراءات سريعة">
           <button type="button" class="quick-btn quick-api" id="quickApiBtn">🔑 إضافة API</button>
           <button type="button" class="quick-btn quick-google" id="quickGoogleBtn">👤 جوجل</button>
           <button type="button" class="quick-btn quick-whatsapp" id="quickWhatsappBtn">🟢 واتساب</button>
           <button type="button" class="quick-btn quick-telegram" id="quickTelegramBtn">✈️ تليجرام</button>
-          <button type="button" class="quick-btn quick-install install-app-btn" id="installAppBtn">💻 تثبيت التطبيق</button>
+          <button type="button" class="quick-btn quick-assistant" id="smartAssistantBtn">🧠 المساعد الذكي</button>
+          <button type="button" class="quick-btn quick-health" id="quickHealthBtn">🩺 فحص الصحة</button>
+          <button type="button" class="quick-btn quick-install install-app-btn" id="installAppBtn">⬇️ تحميل التطبيق</button>
         </div>
         <button class="btn btn-danger" id="killSwitchTopBtn" onclick="triggerKillSwitchQuick()">🚨 زر الطوارئ</button>
         <button class="btn btn-secondary" id="dailyBriefBtn">☀️ النشرة الصباحية</button>
@@ -104,7 +107,7 @@
         <!-- CHAT -->
         <section id="tab-chat" class="tab-panel">
           <div class="chat-toolbar">
-            <div class="chat-mode-switcher"><button class="mode-btn active" data-chatmode="direct">👤 شات فردي (مع ذاكرة RAG)</button><button class="mode-btn" data-chatmode="team">👥 اجتماع جماعي</button></div>
+            <div class="chat-mode-switcher"><button class="mode-btn active" data-chatmode="direct">👤 شات فردي (مع ذاكرة RAG)</button><button class="mode-btn" data-chatmode="team">👥 اجتماع جماعي</button><button class="mode-btn" data-chatmode="assistant">🧠 مساعد ذكي</button></div>
             <label class="voice-toggle"><input type="checkbox" id="ttsToggle" /><span>🔊 تفعيل الرد الصوتي (TTS)</span></label>
           </div>
           <div id="directChatView" class="chat-container">
@@ -129,11 +132,28 @@
               <button type="submit" class="btn btn-primary" id="teamSendBtn">إرسال للفريق</button>
             </form>
           </div>
+          <div id="assistantChatView" class="assistant-chat-container hidden">
+            <div class="assistant-intro card-box">
+              <h3>🧠 المساعد الذكي — يفهم اللهجة قبل التنفيذ</h3>
+              <p>اكتب طلبك بأي لهجة. المساعد يلخّص ما فهمه، يسأل عن النواقص، يقترح حلاً، يبحث في المهام الصعبة، ثم يوزّع الأدوار بعد موافقتك الصريحة.</p>
+            </div>
+            <div class="chat-messages" id="assistantChatMessages"></div>
+            <form class="chat-input-bar" id="assistantChatForm">
+              <button type="button" class="btn btn-secondary" id="assistantMicBtn" title="تحدث بالمايكروفون">🎤</button>
+              <input type="text" id="assistantChatInput" placeholder="مثال: أبغى نطلق منتج SaaS للشركات الصغيرة خلال أسبوع..." autocomplete="off" />
+              <button type="submit" class="btn btn-primary" id="assistantSendBtn">افهم الطلب</button>
+            </form>
+          </div>
         </section>
 
         <!-- APPROVALS -->
         <section id="tab-approvals" class="tab-panel">
           <div class="panel-header"><div><h2>بانتظار الموافقة</h2><p>الموافقة تنفّذ الإجراء فعلياً (تعيين، توسع تلقائي، تحديث مهارات، نشر تسويقي، تصدير مالي)</p></div></div>
+          <div class="card-box" style="margin-bottom:14px;">
+            <h3>🛡️ لوحة المخاطر العالية</h3>
+            <p style="font-size:12px;color:var(--muted);margin:4px 0 10px;">لا تُنفَّذ المقترحات عالية الخطورة إلا بتأكيد تجاوز صريح (override=true) بعد مراجعة حلقة الجودة.</p>
+            <div id="highRiskApprovalsList" class="approvals-list"></div>
+          </div>
           <div id="approvalsList" class="approvals-list"></div>
         </section>
 
@@ -175,6 +195,8 @@
             </div>
           </div>
           <div id="leaderboardGrid" class="tasks-grid" style="margin-bottom:16px;"></div>
+          <h3 style="font-size:15px;margin-bottom:10px;">🧪 نتائج اختبار النماذج لكل موظف</h3>
+          <div id="agentBenchmarks" class="tasks-grid" style="margin-bottom:16px;"></div>
           <h3 style="font-size:15px;margin-bottom:10px;">📈 تقارير تقييم المدربة</h3>
           <div id="kpiList" class="approvals-list"></div>
         </section>
@@ -193,6 +215,7 @@
             <button class="btn btn-secondary" onclick="document.getElementById('ledgerModal').classList.remove('hidden')">+ إضافة قيد مالي</button>
           </div>
           <div id="pnlSummary" class="pnl-summary"></div>
+          <div id="costForecast" class="card-box" style="margin-top:14px;"></div>
           <canvas id="pnlChart" width="700" height="220" style="margin-top:16px;"></canvas>
           <div id="ledgerList" class="approvals-list" style="margin-top:16px;"></div>
         </section>
@@ -246,6 +269,7 @@
         <section id="tab-audit" class="tab-panel">
           <div class="panel-header"><div><h2>📜 سجل التدقيق الكامل ومراقب التكلفة</h2></div></div>
           <div id="costBreakdown" class="tasks-grid" style="margin-bottom:16px;"></div>
+          <div style="margin-bottom:12px;"><input type="search" id="auditSearchInput" placeholder="ابحث في سجل التدقيق (حدث، موظف، ملخص)..." style="width:min(520px,100%);background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:inherit;" /></div>
           <div id="auditLogList" class="approvals-list"></div>
         </section>
 
@@ -296,6 +320,15 @@
               <div style="display:flex;align-items:flex-end;"><button type="submit" class="btn btn-primary" style="width:100%">💾 إنشاء نسخة مشفرة الآن</button></div>
             </form>
           </div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <h3>📥 استيراد نسخة مشفرة من ملف</h3>
+            <p style="font-size:12px;color:var(--muted);margin:4px 0 10px;">اختر ملف النسخة الذي حمّلته سابقاً، ثم أدخل كلمة مرورها. سيتم فك التشفير للتحقق فقط قبل حفظ النسخة في خزنتك.</p>
+            <form id="snapshotImportForm" class="sim-form-grid">
+              <div><label>ملف النسخة (.json)</label><input type="file" id="snapshotImportFile" accept="application/json,.json" required /></div>
+              <div><label>كلمة مرور النسخة</label><input type="password" id="snapshotImportPass" placeholder="كلمة المرور المستخدمة عند الإنشاء" /></div>
+              <div style="display:flex;align-items:flex-end;"><button type="submit" class="btn btn-primary" id="importSnapshotBtn" style="width:100%">📥 استيراد والتحقق</button></div>
+            </form>
+          </div>
           <div id="snapshotsList" class="approvals-list"></div>
         </section>
 
@@ -330,24 +363,29 @@
 
   <div id="awardModal" class="modal hidden"><div class="modal-card"><h3>⭐ منح نقاط مكافأة لموظف</h3><form id="awardForm"><label>الموظف</label><select id="awardAgentSelect"></select><label>عدد النقاط</label><input type="number" id="awardPointsInput" value="50" required /><label>السبب</label><input type="text" id="awardReasonInput" placeholder="أداء متميز في المشروع" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('awardModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">منح النقاط</button></div></form></div></div>
 
+  <div id="healthModal" class="modal hidden"><div class="modal-card"><h3>🩺 فحص صحة المكتب</h3><p id="healthResult" style="font-size:12px;white-space:pre-wrap;line-height:1.8;color:var(--muted);">جارٍ الفحص...</p><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeHealthModalBtn">إغلاق</button></div></div></div>
+
   <!-- Deploy-injection stubs. This private page must NOT inherit the public site shell:
-       no floating menu, no music, no language picker, no 3D layer, no public sign-in.
+       no floating menu, no music, no 3D layer, no public sign-in. The language
+       switcher below is intentionally allowed because it is a main-site feature.
        The strings below are comments only; nothing is executed. -->
   <button id="mdm1m-btn" hidden aria-hidden="true"></button>
   <audio id="bg-music" hidden></audio>
   <nav class="mdm1-policy-links" hidden aria-hidden="true"></nav>
-  <!-- /js/global.js /js/lang.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
+  <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
-  <!-- pwa.js only registers the service worker; standalone.js installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261127pwa10"></script>
-  <script src="office-auth.js?v=20261127pwa10"></script>
-  <script src="pwa.js?v=20261127pwa10"></script>
-  <script src="standalone.js?v=20261127pwa10"></script>
+  <!-- Main-site language switcher (same globe button as mdm1.org). -->
+  <script src="https://mdm1.org/js/lang.js?v=20261127pwa11"></script>
+  <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js installs the /api/* shim before app.js boots. -->
+  <script src="office-config.js?v=20261127pwa11"></script>
+  <script src="office-auth.js?v=20261127pwa11"></script>
+  <script src="pwa.js?v=20261127pwa11"></script>
+  <script src="standalone.js?v=20261127pwa11"></script>
   <script>
     // Start the UI only after company data is loaded and the private gate is passed.
     (window.MDM1Office && window.MDM1Office.ready || Promise.resolve()).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261127pwa10';
+      s.src = 'app.js?v=20261127pwa11';
       document.body.appendChild(s);
     });
   </script>

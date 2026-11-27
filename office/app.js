@@ -4,6 +4,8 @@ let D = {
   state:{ directChats:{}, teamChat:[], tasks:[], approvals:[], webhooks:[], usageStats:{totalTokens:0,totalCostUsd:0,byAgent:{}}, meetingActive:false, meetingAttendees:[], internalMemos:[], kpiReviews:[], financialLedger:[], schedules:[], gamification:{}, customers:[], votes:[], emergencyMode:false, incidents:[], simulations:[] }
 };
 let selectedAgentId = null;
+let assistantSession = null;
+let auditSearchTimer = null;
 const SL = { available:'متاح', working:'يعمل', waiting_approval:'ينتظر موافقة', offline:'غير متصل' };
 const ROOMS = [
   { id:'exec-hr', title:'👑 الإدارة التنفيذية والموارد البشرية', zones:['executive','hr-training'] },
@@ -17,12 +19,17 @@ const VP = { 'hr-manager':{pitch:1.15,rate:1}, 'ai-trainer':{pitch:1.1,rate:1.05
 async function api(u,o={}){const r=await fetch(u,{headers:{'Content-Type':'application/json'},...o});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-async function bootstrap(){D=await api('/api/bootstrap');if(!selectedAgentId&&D.agents.length)selectedAgentId=D.agents[0].id;renderAll()}
+async function bootstrap(){
+  D=await api('/api/bootstrap');
+  if(!selectedAgentId&&D.agents.length)selectedAgentId=D.agents[0].id;
+  renderAll();
+  try{const s=await api('/api/assistant/session');if(s.session){assistantSession=s.session;renderAssistantChat();}}catch(e){}
+}
 
 function renderAll(){
   renderTopBadges();renderStats();renderOfficeRooms();renderTasks();renderChatAgentsList();renderDirectChat();renderTeamChat();
-  renderApprovals();renderVotes();renderCRM();renderKPI();renderMemos();renderKnowledge();renderPnL();renderSchedules();renderSandbox();
-  renderOrgChart();renderAuditCost();renderIntegrations();renderSimulations();renderPlaybooks();renderSnapshots();renderIncidents();populateSelects();
+  renderApprovals();renderHighRiskApprovals();renderVotes();renderCRM();renderKPI();renderAgentBenchmarks();renderMemos();renderKnowledge();renderPnL();renderSchedules();renderSandbox();
+  renderOrgChart();renderAuditCost();renderIntegrations();renderSimulations();renderPlaybooks();renderSnapshots();renderIncidents();renderAssistantChat();populateSelects();
 }
 
 function renderTopBadges(){
@@ -105,10 +112,21 @@ function renderTeamChat(){
 }
 
 function renderApprovals(){
-  const c=document.getElementById('approvalsList'), l=D.state.approvals||[];
-  c.innerHTML=l.map(i=>`<div class="approval-card ${i.status}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">الموظف: <strong>${i.agentName}</strong> • الخطورة: <strong>${i.risk}</strong> • الإجراء: <strong>${i.actionType}</strong></div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${i.id}','approved')">✓ موافقة</button><button class="btn btn-reject" onclick="decideApproval('${i.id}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد ومنفّذ':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد طلبات حالياً.</div>';
+  const c=document.getElementById('approvalsList'), l=(D.state.approvals||[]).filter(i=>i.risk!=='high');
+  c.innerHTML=l.map(i=>`<div class="approval-card ${i.status}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">الموظف: <strong>${esc(i.agentName)}</strong> • الخطورة: <strong>${esc(i.risk)}</strong> • الإجراء: <strong>${esc(i.actionType)}</strong></div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${i.id}','approved')">✓ موافقة</button><button class="btn btn-reject" onclick="decideApproval('${i.id}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد ومنفّذ':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد طلبات متوسطة/منخفضة الخطورة حالياً.</div>';
 }
-async function decideApproval(id,d){await api(`/api/approvals/${id}/decide`,{method:'POST',body:JSON.stringify({decision:d})});await bootstrap()}
+
+function renderHighRiskApprovals(){
+  const c=document.getElementById('highRiskApprovalsList'); if(!c)return;
+  const l=(D.state.approvals||[]).filter(i=>i.risk==='high');
+  c.innerHTML=l.map(i=>`<div class="approval-card high-risk-card ${i.status}"><div style="flex:1"><div style="font-size:11px;color:#fca5a5;margin-bottom:3px;">🛡️ عالي الخطورة • ${esc(i.agentName)} • ${esc(i.actionType)} • ${i.quality&&i.quality.status?`حكم الجودة: ${esc(i.quality.status)}`:'بانتظار حلقة الجودة'}</div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${i.id}','approved',true)">⚠️ موافقة صريحة مع تجاوز</button><button class="btn btn-reject" onclick="decideApproval('${i.id}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد صريحاً':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد مقترحات عالية الخطورة حالياً.</div>';
+}
+
+async function decideApproval(id,d,override){
+  const body={decision:d}; if(override===true)body.override=true;
+  try{await api(`/api/approvals/${id}/decide`,{method:'POST',body:JSON.stringify(body)});await bootstrap();}
+  catch(e){alert('❌ '+e.message)}
+}
 
 function renderVotes(){
   document.getElementById('voterCheckboxes').innerHTML=D.agents.map((a,i)=>`<label class="attendee-pill"><input type="checkbox" class="voter-check" value="${a.id}" ${['web-research-team','auditors-experts-devs','accountant','security-officer'].includes(a.id)?'checked':''} /><span>${a.avatar} ${a.name}</span></label>`).join('');
@@ -179,6 +197,16 @@ function renderKPI(){
   document.getElementById('kpiList').innerHTML=l.map(r=>`<div class="approval-card"><div><div style="font-size:11px;color:var(--cyan);">📈 ${r.reviewerName} • ${r.timestamp?.slice(0,10)||''}</div><p style="font-size:13px;white-space:pre-wrap;margin-top:5px;">${esc(r.report)}</p></div></div>`).join('')||'<div class="approval-card">لم يتم تشغيل تقييم المدربة بعد. اضغط "تشغيل تقييم المدربة الآن" لتوزيع النقاط والترقيات.</div>';
 }
 
+function renderAgentBenchmarks(){
+  const el=document.getElementById('agentBenchmarks'); if(!el)return;
+  const rows=(D.providerStatus&&D.providerStatus.benchmarks)||[];
+  el.innerHTML=D.agents.map(a=>{
+    const best=rows.filter(r=>r.role===a.id).sort((x,y)=>(y.score||0)-(x.score||0))[0];
+    if(!best)return `<div class="bench-card"><strong>${a.avatar} ${esc(a.name)}</strong><span style="color:var(--muted)">لم يُختبر نموذج لهذا الدور بعد.</span></div>`;
+    return `<div class="bench-card"><strong>${a.avatar} ${esc(a.name)}</strong><div>${esc(best.provider)} / ${esc(best.model)}</div><div class="${best.passed?'pass':'fail'}">${best.passed?'✅ اجتاز':'❌ لم يجتز'} — ${Number(best.score||0)}/100</div><small style="color:var(--muted)">${esc(String(best.breakdown||'').slice(0,90))}</small></div>`;
+  }).join('');
+}
+
 function renderMemos(){
   const c=document.getElementById('memosList'), l=(D.state.internalMemos||[]).slice().reverse();
   c.innerHTML=l.map(m=>`<div class="approval-card"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${m.fromAvatar} ${m.fromName} ← إلى → ${m.toAvatar} ${m.toName} • ${m.timestamp?.slice(0,10)||''}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
@@ -209,6 +237,20 @@ function renderPnL(){
     bars.forEach((b,i)=>{const bh=(b.val/maxVal)*(h-50),x=i*(barW+30)+20;ctx.fillStyle=b.color;ctx.globalAlpha=.75;ctx.fillRect(x,h-30-bh,barW,bh);ctx.globalAlpha=1;ctx.fillStyle='#eef2ff';ctx.font='bold 12px Cairo';ctx.textAlign='center';ctx.fillText(b.label,x+barW/2,h-14);ctx.fillText(`$${b.val.toFixed(2)}`,x+barW/2,h-32-bh)});
   }
   document.getElementById('ledgerList').innerHTML=ledger.slice().reverse().map(e=>`<div class="approval-card"><div><div style="font-size:11px;color:${e.type==='revenue'?'var(--green)':'var(--red)'};">${e.type==='revenue'?'💰 إيراد':'📉 مصروف'} • ${e.date}</div><strong>${esc(e.title)}</strong> — $${e.amountUsd.toFixed(2)}<br/><small style="color:var(--muted)">${esc(e.notes)}</small></div></div>`).join('')||'<div class="approval-card">لا توجد قيود مالية.</div>';
+  renderCostForecast();
+}
+
+function renderCostForecast(){
+  const el=document.getElementById('costForecast'); if(!el)return;
+  const now=new Date(), month=now.toISOString().slice(0,7);
+  const created=new Date((D.state.meta&&D.state.meta.createdAt)||now.toISOString());
+  const days=Math.max(1,(now-created)/86400000);
+  const u=D.state.usageStats||{};
+  const apiToday=Number(u.totalCostUsd||0);
+  const monthlyApi=apiToday/days*30;
+  const monthlyExpense=(D.state.financialLedger||[]).filter(e=>e.type==='expense'&&String(e.date||'').slice(0,7)===month).reduce((s,e)=>s+Number(e.amountUsd||0),0);
+  const tokensPerDay=Number(u.totalTokens||0)/days;
+  el.innerHTML=`<h3 style="font-size:14px;margin-bottom:8px;">📅 توقع تكاليف الشهر الحالي</h3><div class="pnl-summary"><div class="pnl-card api"><div>🤖 واجهات الذكاء</div><div class="pnl-value">$${monthlyApi.toFixed(2)}</div></div><div class="pnl-card expense"><div>📉 مصروفات هذا الشهر</div><div class="pnl-value">$${monthlyExpense.toFixed(2)}</div></div><div class="pnl-card"><div>🪙 توكنات/يوم</div><div class="pnl-value">${Math.round(tokensPerDay)}</div></div><div class="pnl-card net"><div>💵 إجمالي متوقع</div><div class="pnl-value">$${(monthlyApi+monthlyExpense).toFixed(2)}</div></div></div><p style="font-size:11px;color:var(--muted);margin-top:8px;">الحساب مبني على ${days.toFixed(1)} يوم من الاستخدام الفعلي. إذا لم تُسجَّل تكلفة حية فسيظهر $0 بدل رقم وهمي.</p>`;
 }
 
 function renderSchedules(){
@@ -236,7 +278,16 @@ function renderOrgChart(){document.getElementById('orgChartContainer').innerHTML
 function renderAuditCost(){
   const ba=(D.state.usageStats&&D.state.usageStats.byAgent)||{};
   document.getElementById('costBreakdown').innerHTML=D.agents.map(a=>{const s=ba[a.id]||{tokens:0,costUsd:0};return `<div class="task-card"><strong>${a.avatar} ${a.name}</strong><div>${s.tokens} tokens</div><small>$${Number(s.costUsd).toFixed(5)}</small></div>`;}).join('');
-  document.getElementById('auditLogList').innerHTML=(D.auditLog||[]).map(e=>`<div class="approval-card"><div><div style="font-size:11px;color:var(--cyan);">${e.timestamp} • <strong>${e.eventType}</strong> • ${e.actor}</div><div style="font-size:12px;">${esc(e.summary)}</div></div></div>`).join('')||'<div class="approval-card">سجل التدقيق فارغ.</div>';
+  renderAuditRows(D.auditLog||[]);
+}
+
+function renderAuditRows(entries){
+  const el=document.getElementById('auditLogList'); if(!el)return;
+  el.innerHTML=(entries||[]).map(e=>`<div class="approval-card audit-hit"><div><div style="font-size:11px;color:var(--cyan);">${esc(e.timestamp)} • <strong class="audit-term">${esc(e.eventType)}</strong> • <span class="audit-term">${esc(e.actor)}</span></div><div style="font-size:12px;"><span class="audit-term">${esc(e.summary)}</span></div></div></div>`).join('')||'<div class="approval-card">لا توجد نتائج مطابقة.</div>';
+}
+
+async function searchAudit(q){
+  try{const r=await api('/api/audit/search?q='+encodeURIComponent(q));renderAuditRows(r.entries||[]);}catch(e){renderAuditRows([])}
 }
 
 function renderIntegrations(){
@@ -262,13 +313,98 @@ function speakText(t,id){if(!document.getElementById('ttsToggle').checked||!('sp
 function startMic(inputId){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return alert('متصفحك لا يدعم التعرف على الصوت.');const r=new S();r.lang='ar-SA';r.onresult=e=>{document.getElementById(inputId).value=e.results[0][0].transcript};r.start()}
 
 function switchTab(t){document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`))}
-function switchChatMode(m){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.chatmode===m));document.getElementById('directChatView').classList.toggle('hidden',m!=='direct');document.getElementById('teamChatView').classList.toggle('hidden',m!=='team')}
+function switchChatMode(m){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.chatmode===m));
+  document.getElementById('directChatView').classList.toggle('hidden',m!=='direct');
+  document.getElementById('teamChatView').classList.toggle('hidden',m!=='team');
+  const av=document.getElementById('assistantChatView'); if(av)av.classList.toggle('hidden',m!=='assistant');
+  if(m==='assistant')renderAssistantChat();
+}
+
+function assistantList(items,empty){
+  const a=(items||[]).filter(Boolean);
+  return a.length?`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<span style="color:var(--muted)">${esc(empty||'—')}</span>`;
+}
+
+function renderAssistantChat(){
+  const box=document.getElementById('assistantChatMessages'); if(!box)return;
+  const send=document.getElementById('assistantSendBtn');
+  if(!assistantSession){
+    box.innerHTML='<div class="msg assistant"><div class="msg-meta">المساعد الذكي</div>اكتب طلبك بأي لهجة (مصرية، خليجية، شامية، مغربية أو فصحى). سأعرض ما فهمته أولاً، وأسأل عن النواقص، وأبحث في المهام الصعبة، ثم أوزّع الأدوار بعد موافقتك.</div>';
+    if(send)send.textContent='افهم الطلب';
+    return;
+  }
+  const s=assistantSession, u=s.understanding||{};
+  let html=`<div class="msg user"><div class="msg-meta">أنت (CEO)</div>${esc(s.original||'')}</div>`;
+  html+=`<div class="msg assistant understanding"><div class="msg-meta">🧠 ما فهمته — ${esc(s.mode==='live'?'فهم حي':'فهم محلي')} • ثقة ${Number(s.confidence||0)}%</div>`+
+    `<strong>الهدف:</strong> ${esc(u.goal||'—')}\n<strong>النطاق:</strong> ${esc(u.scope||'—')}\n<strong>المخرجات:</strong> ${esc(u.deliverables||'—')}`+
+    `\n<strong>القيود:</strong>${assistantList(u.constraints,'لا توجد قيود صريحة')}`+
+    `\n<strong>المخاطر:</strong>${assistantList(u.risks,'لم تُذكر مخاطر')}`+
+    `\n<strong>ما اقترحه:</strong>${assistantList(u.suggestions,'لا توجد مقترحات إضافية')}</div>`;
+  if(s.status==='awaiting_confirmation'){
+    html+=`<div class="msg assistant"><div class="msg-meta">❓ أسئلة توضيحية قبل التنفيذ</div>${assistantList(s.questions,'لا توجد أسئلة — الطلب واضح بما يكفي.')}<div class="msg-actions"><button class="btn btn-approve" onclick="assistantConfirm()">✅ فهمت صح — أكمل البحث والتوزيع</button><button class="btn btn-secondary" onclick="assistantCancel()">✕ ألغِ الجلسة</button></div></div>`;
+  }
+  if((s.research||[]).length){
+    html+=`<div class="msg assistant research"><div class="msg-meta">🔎 بحث في المهام الصعبة</div>`+s.research.map(r=>`<div style="margin-bottom:6px;"><strong>${esc(r.task||'')}</strong> — محرك: ${esc(r.engine||'unavailable')}${r.note?` • ${esc(r.note)}`:''}<ul>${(r.results||[]).map(x=>`<li><a href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--cyan)">${esc(x.title)}</a></li>`).join('')}</ul></div>`).join('')+`</div>`;
+  }
+  if((s.plan||[]).length){
+    html+=`<div class="msg assistant plan"><div class="msg-meta">👥 توزيع الأدوار المقترح</div><ul>${s.plan.map(p=>`<li><strong>${esc(p.avatar||'🤖')} ${esc(p.agentName)}</strong> — ${esc(p.taskTitle)} <small style="color:var(--muted)">(${esc(p.reason||'')})</small></li>`).join('')}</ul>`+
+      (s.status==='awaiting_execution'?`<div class="msg-actions"><button class="btn btn-primary" onclick="assistantExecute()">🚀 اعتمد الخطة وأنفّذ المهام</button><button class="btn btn-secondary" onclick="assistantCancel()">✕ ألغِ</button></div>`:'')+`</div>`;
+  }
+  if(s.status==='done')html+=`<div class="msg assistant"><div class="msg-meta">✅ النتيجة</div>${esc(s.result||'تم تنفيذ الخطة.')}</div>`;
+  if(s.status==='cancelled')html+=`<div class="msg assistant"><div class="msg-meta">تم الإلغاء</div>ألغيت الجلسة. اكتب طلباً جديداً متى شئت.</div>`;
+  box.innerHTML=html; box.scrollTop=box.scrollHeight;
+  if(send)send.textContent=s.status==='awaiting_confirmation'?'أضف تعديلاً':'افهم الطلب';
+}
+
+async function assistantSend(message){
+  try{
+    const route=assistantSession&&(assistantSession.status==='awaiting_confirmation'||assistantSession.status==='awaiting_execution')?'/api/assistant/confirm':'/api/assistant/start';
+    const body=route.indexOf('confirm')!==-1?{sessionId:assistantSession.id,confirmed:false,answer:message}:{message:message};
+    const r=await api(route,{method:'POST',body:JSON.stringify(body)});
+    assistantSession=r.session; renderAssistantChat();
+  }catch(e){alert('❌ '+e.message)}
+}
+async function assistantConfirm(){
+  try{const r=await api('/api/assistant/confirm',{method:'POST',body:JSON.stringify({sessionId:assistantSession.id,confirmed:true})});assistantSession=r.session;renderAssistantChat();await bootstrap();}
+  catch(e){alert('❌ '+e.message)}
+}
+async function assistantCancel(){
+  if(!assistantSession)return;
+  try{const r=await api('/api/assistant/cancel',{method:'POST',body:JSON.stringify({sessionId:assistantSession.id})});assistantSession=r.session;renderAssistantChat();}
+  catch(e){alert('❌ '+e.message)}
+}
+async function assistantExecute(){
+  try{const r=await api('/api/assistant/execute',{method:'POST',body:JSON.stringify({sessionId:assistantSession.id})});assistantSession=r.session;renderAssistantChat();await bootstrap();switchTab('office');}
+  catch(e){alert('❌ '+e.message)}
+}
 
 // Listeners
 document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>switchChatMode(b.dataset.chatmode)));
 document.getElementById('directMicBtn').onclick=()=>startMic('directChatInput');
 document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');
+document.getElementById('assistantMicBtn').onclick=()=>startMic('assistantChatInput');
+document.getElementById('assistantChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('assistantChatInput'),btn=document.getElementById('assistantSendBtn'),t=inp.value.trim();if(!t)return;inp.value='';btn.disabled=true;btn.textContent='⏳...';try{await assistantSend(t);}finally{btn.disabled=false;renderAssistantChat();}});
+document.getElementById('smartAssistantBtn').onclick=()=>{switchTab('chat');switchChatMode('assistant');document.getElementById('assistantChatInput').focus();};
+
+document.getElementById('quickHealthBtn').onclick=async()=>{
+  const b=document.getElementById('quickHealthBtn'), box=document.getElementById('healthResult');
+  b.disabled=true;b.textContent='⏳ جارٍ الفحص...';document.getElementById('healthModal').classList.remove('hidden');box.textContent='جارٍ الفحص...';
+  try{
+    const r=await api('/api/health/check',{method:'POST'});
+    box.textContent=r.report||JSON.stringify(r,null,2);
+  }catch(e){box.textContent='❌ '+e.message}
+  finally{b.disabled=false;b.textContent='🩺 فحص الصحة'}
+};
+document.getElementById('closeHealthModalBtn').onclick=()=>document.getElementById('healthModal').classList.add('hidden');
+
+document.getElementById('auditSearchInput').addEventListener('input',e=>{
+  clearTimeout(auditSearchTimer);
+  const q=e.target.value.trim();
+  if(!q){renderAuditRows(D.auditLog||[]);return;}
+  auditSearchTimer=setTimeout(()=>searchAudit(q),220);
+});
 
 document.getElementById('directChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('directChatInput'),btn=document.getElementById('directSendBtn'),t=inp.value.trim();if(!t||!selectedAgentId)return;inp.value='';btn.disabled=true;btn.textContent='...';try{const r=await api('/api/chat/direct',{method:'POST',body:JSON.stringify({agentId:selectedAgentId,message:t})});await bootstrap();if(r.reply?.mode&&r.reply.mode!=='live'&&r.warning){window.MDM1Office?.showToast?.('⚠️ '+String(r.warning).slice(0,180),'err');}if(r.reply?.text)speakText(r.reply.text,selectedAgentId);}catch(e){alert(e.message)}finally{btn.disabled=false;btn.textContent='إرسال'}});
 document.getElementById('teamChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('teamChatInput'),btn=document.getElementById('teamSendBtn'),t=inp.value.trim();if(!t)return;const att=Array.from(document.querySelectorAll('.attendee-check:checked')).map(el=>el.value);inp.value='';btn.disabled=true;btn.textContent='جاري الاجتماع...';try{await api('/api/chat/team',{method:'POST',body:JSON.stringify({message:t,attendeeIds:att})});await bootstrap();}catch(e){alert(e.message)}finally{btn.disabled=false;btn.textContent='إرسال للفريق'}});
@@ -418,6 +554,20 @@ document.getElementById('snapshotForm').addEventListener('submit',async e=>{
   e.preventDefault();
   await api('/api/snapshots/create',{method:'POST',body:JSON.stringify({label:document.getElementById('snapLabel').value,passphrase:document.getElementById('snapPass').value})});
   document.getElementById('snapshotForm').reset();await bootstrap();
+});
+
+document.getElementById('snapshotImportForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const file=document.getElementById('snapshotImportFile').files[0], pass=document.getElementById('snapshotImportPass').value, btn=document.getElementById('importSnapshotBtn');
+  if(!file)return;
+  btn.disabled=true;btn.textContent='⏳ جارٍ التحقق...';
+  try{
+    const text=await file.text();
+    const record=JSON.parse(text);
+    const r=await api('/api/snapshots/import',{method:'POST',body:JSON.stringify({record:record,passphrase:pass})});
+    alert(`✅ ${r.message}`);document.getElementById('snapshotImportForm').reset();await bootstrap();
+  }catch(err){alert('❌ '+err.message)}
+  finally{btn.disabled=false;btn.textContent='📥 استيراد والتحقق'}
 });
 
 document.getElementById('incidentForm').addEventListener('submit',async e=>{
