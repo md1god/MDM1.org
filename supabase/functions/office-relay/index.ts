@@ -163,9 +163,18 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const supplied = req.headers.get('x-office-secret') || body.secret || '';
     const expected = Deno.env.get('OFFICE_RELAY_SECRET') || '';
-    if (!expected || supplied !== expected) return json({ error: 'invalid secret' }, 401);
-
     const action = String(body.action || 'message');
+
+    /* Model listing/chat are callable by any valid Supabase anon JWT (public
+       config) so a fresh office visitor sees real connected models immediately.
+       A supplied-but-wrong secret is still rejected. Outbound messaging keeps
+       the original shared-secret requirement. */
+    const modelAction = action === 'models' || action === 'chat';
+    if (modelAction) {
+      if (supplied && expected && supplied !== expected) return json({ error: 'invalid secret' }, 401);
+    } else if (!expected || supplied !== expected) {
+      return json({ error: 'invalid secret' }, 401);
+    }
 
     /* ── model catalogue / chat relay (keys stay server-side) ───────────── */
     if (action === 'models') {
