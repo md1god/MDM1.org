@@ -401,10 +401,11 @@ function renderRequestLedger(){
   if(!list.length){box.innerHTML='<div class="approval-card">لم تصدر أي طلبات بعد. اكتب للموظف أو للفريق أو للمساعد وسيظهر هنا كل ما فهمته وما لم أفهمه.</div>';return;}
   const label=s=>s==='executed'?'تم التنفيذ':s==='needs_approval'?'بانتظار موافقة':s==='unclear'?'غير واضح':'مفهوم';
   box.innerHTML=list.slice(0,25).map(e=>{
-    const items=(e.items||[]).map(i=>`<li class="ledger-${esc(i.status)}">${esc(i.text)} <small>(${esc(label(i.status))}${i.taskId?' • '+esc(i.taskId):''}${i.approvalId?' • '+esc(i.approvalId):''})</small></li>`).join('')||'<li>—</li>';
+    const items=(e.items||[]).map(i=>`<li class="ledger-${esc(i.status)}">${esc(i.text)} <small>(${esc(i.clarification?'توضيح مفهوم':label(i.status))}${i.taskId?' • '+esc(i.taskId):''}${i.approvalId?' • '+esc(i.approvalId):''}${i.result?' • '+esc(i.result):''})</small></li>`).join('')||'<li>—</li>';
     const unclear=(e.unresolved||[]).map(x=>`<li>${esc(x)}</li>`).join('')||'<li>لا يوجد</li>';
+    const notes=(e.constraints||[]).length?`<div class="ledger-notes">🔎 قيود وتوضيحات: ${(e.constraints||[]).map(x=>esc(x)).join(' • ')}</div>`:'';
     return `<div class="ledger-entry"><div class="ledger-head"><strong>${esc(e.source)} • ${esc((e.createdAt||'').slice(0,19).replace('T',' '))}</strong><span>${e.executed?'✅ منفّذ':e.acknowledged?'⏳ أُقرّ بالفهم':'⏳ قيد المعالجة'}</span></div>`+
-      `<div class="ledger-original">📝 ${esc(e.original||'')}</div>`+
+      `<div class="ledger-original">📝 ${esc(e.original||'')}</div>${notes}`+
       `<div class="ledger-cols"><div><strong>ما فهمته</strong><ul>${items}</ul></div><div><strong>ما لم أفهمه</strong><ul>${unclear}</ul></div></div>`+
       `${e.executionSummary?`<div class="ledger-result">${esc(e.executionSummary)}</div>`:''}</div>`;
   }).join('');
@@ -415,7 +416,7 @@ async function assistantSend(message){
     const route=assistantSession&&(assistantSession.status==='awaiting_confirmation'||assistantSession.status==='awaiting_execution')?'/api/assistant/confirm':'/api/assistant/start';
     const body=route.indexOf('confirm')!==-1?{sessionId:assistantSession.id,confirmed:false,answer:message}:{message:message};
     const r=await api(route,{method:'POST',body:JSON.stringify(body)});
-    assistantSession=r.session; renderAssistantChat();
+    assistantSession=r.session; renderAssistantChat(); await bootstrap();
   }catch(e){alert('❌ '+e.message)}
 }
 async function assistantConfirm(){
