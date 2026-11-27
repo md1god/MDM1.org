@@ -78,16 +78,13 @@
       '<div class="office-lock-card">' +
       (CFG.brandImage ? '<img class="office-brand-logo" src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" />' : '<div class="office-lock-logo">🏢</div>') +
       '<h1>MD1&#117;sd Company — دخول خاص</h1>' +
-      '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر أو بالرمز الموقّع من بوت تيليجرام.</p>' +
+      '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر الخاصة بك أو بحساب Google؛ لا تُستخدم مفاتيح المالك.</p>' +
       '<label>كلمة السر</label><input id="officePassInput" type="password" placeholder="كلمة سر المكتب..." autocomplete="current-password" />' +
       '<button id="officePassBtn" class="office-btn primary">دخول</button>' +
       '<button id="officeGoogleBtn" class="office-btn" type="button">🔵 متابعة عبر Google</button>' +
-      '<div class="office-lock-or">أو</div>' +
-      '<label>رمز تيليجرام (Secret Token)</label><input id="officeTokenInput" type="text" placeholder="الصق الرمز الذي أرسله البوت..." />' +
-      '<button id="officeTokenBtn" class="office-btn">تحقق من الرمز</button>' +
       '<button id="officeInstallBtn" class="office-btn install-app-btn" type="button">💻 تثبيت التطبيق على الجهاز</button>' +
       '<div id="officeLockMsg" class="office-lock-msg"></div>' +
-      '<div class="office-lock-links"><a id="officeBotLink" href="#" target="_blank" rel="noopener">افتح بوت تيليجرام</a><span>•</span><a href="https://mdm1.org/" target="_blank" rel="noopener">mdm1.org</a></div>' +
+      '<div class="office-lock-links"><a href="https://mdm1.org/" target="_blank" rel="noopener">mdm1.org</a></div>' +
       '</div>';
     document.body.appendChild(overlay);
     var msg = overlay.querySelector('#officeLockMsg');
@@ -106,29 +103,6 @@
         fail('تعذر فتح Google: ' + e.message);
       });
     };
-    overlay.querySelector('#officeTokenBtn').onclick = function () {
-      var v = overlay.querySelector('#officeTokenInput').value;
-      verifyToken(v).then(function (good) {
-        if (!good) { fail('الرمز غير صالح أو منتهي (أو أُصدر بمفتاح قديم). اطلب رمزاً جديداً من البوت.'); return null; }
-        var p = decodeTokenPayload(v) || {};
-        return consumeToken(v, p.exp).then(function (fresh) {
-          if (!fresh) { fail('هذا الرمز استُخدم بالفعل على هذا الجهاز. اطلب رمزاً جديداً.'); return null; }
-          return p;
-        });
-      }).then(function (p) {
-        if (!p) return;
-        // Bind the unlocked session to the Telegram chat that requested the token.
-        settings.telegramChatId = String(p.chat || '');
-        saveSettings();
-        var hours = Math.max(0.1, Math.min(num(CFG.maxTokenTtlHours, 6), (Number(p.exp) - Date.now()) / 3600000));
-        unlockFor(hours);
-        ok();
-        showToast('🔐 تم الدخول برمز مرتبط بمحادثة تيليجرام #' + p.chat, 'ok');
-      });
-    };
-    var bot = (settings.telegramBot || '').replace(/^@/, '');
-    var link = overlay.querySelector('#officeBotLink');
-    if (bot) link.href = 'https://t.me/' + encodeURIComponent(bot); else { link.style.opacity = '.45'; link.href = '#'; }
     var input = overlay.querySelector('#officePassInput');
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') overlay.querySelector('#officePassBtn').click(); });
   }

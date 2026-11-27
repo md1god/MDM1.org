@@ -108,12 +108,8 @@
   function relayApi(action, payload) {
     if (!settings.relayUrl) return Promise.reject(new Error('أدخل Supabase Relay URL في لوحة الاتصال.'));
     var headers = { 'content-type': 'application/json' };
-    var relaySecret = secret('relaySecret');
-    /* The relay is reachable with the public Supabase anon JWT. An optional
-       browser-entered relay secret is still sent when present, but it is no
-       longer required for model listing/chat — a fresh visitor must be able to
-       see connected models without hunting for a secret. */
-    if (relaySecret) headers['x-office-secret'] = relaySecret;
+    /* No owner/shared secret is ever sent. Model listing uses the public
+       Supabase publishable key; protected actions use the signed-in user's JWT. */
     var publicKey = (CFG.auth && CFG.auth.publishableKey) || (CFG.messaging && CFG.messaging.anonKey) || '';
     if (publicKey) headers.apikey = publicKey;
     return nativeFetch(settings.relayUrl, {
