@@ -1,0 +1,53 @@
+name: MDM1 Office — Task queue runner
+
+#Runs deterministic,no-model tasks every 5 minutes.
+#ar: ينفّذ المهام الثابتة (بدون نماذج) كل 5 دقائق عبر سر الـ queue فقط.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mdm1-office-task-queue
+  cancel-in-progress: false
+
+jobs:
+  run-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Claim and run due office tasks
+        env:
+          RELAY_URL: ${{ vars.OFFICE_RELAY_URL || secrets.OFFICE_RELAY_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.SUPABASE_ANON_KEY }}
+          OFFICE_QUEUE_SECRET: ${{ secrets.OFFICE_QUEUE_SECRET }}
+          RESPONSE_FILE: ${{ runner.temp }}/office-task-queue-response.json
+        run: |
+          set -euo pipefail
+          if [ -z "${RELAY_URL:-}" ] || [ -z "${SUPABASE_PUBLISHABLE_KEY:-}" ] || [ -z "${OFFICE_QUEUE_SECRET:-}" ]; then
+            echo "Missing OFFICE_RELAY_URL / SUPABASE_PUBLISHABLE_KEY / OFFICE_QUEUE_SECRET"
+            exit 1
+          fi
+
+          status=$(curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
+            -X POST "$RELAY_URL" \
+            -H 'Content-Type: application/json' \
+            -H "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            -H "x-office-queue-secret: $OFFICE_QUEUE_SECRET" \
+            --data '{"action":"queue_run"}')
+
+          echo "Relay HTTP $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "Queue run failed (HTTP $status)"
+            exit 1
+          fi
+
+          # Print counts only; never print request headers, tokens or secrets.
+          jq -c '{ok, action, claimed, done, failed, archived, unknown}' "$RESPONSE_FILE"
+          if [ "$(jq -r '.ok // false' "$RESPONSE_FILE")" != 'true' ]; then
+            echo "Queue run returned ok=false"
+            exit 1
+          fi
