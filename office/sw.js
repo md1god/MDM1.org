@@ -3,7 +3,7 @@
    are never cached and are always fetched from the network. */
 (function () {
   'use strict';
-  var CACHE = 'mdm1-office-pwa-20261127pwa21';
+  var CACHE = 'mdm1-office-pwa-20261128pwa22';
   var CORE = [
     './', './index.html', './styles.css', './app.js', './office-config.js',
     './office-auth.js', './standalone.js', './standalone-core.part.js',
