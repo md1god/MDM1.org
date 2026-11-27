@@ -772,10 +772,11 @@
     if (time) constraints.push('الإطار الزمني: ' + time[0]);
 
     var risks = [];
-    if (/دفع|جات|تحويل|مصروف/i.test(lower)) risks.push('أي دفع مالي يحتاج موافقة صريحة');
-    if (/نشر|اعلان|حمله/i.test(lower)) risks.push('النشر الخارجي يحتاج مراجعة مالية وقانونية');
-    if (/عقد|قانون|ضريبه|خصوصيه/i.test(lower)) risks.push('مراجعة المستشار القانوني والمحاسب القانوني إلزامية');
-    if (/بيانات|صلاحيه|امان/i.test(lower)) risks.push('مراجعة مسؤول الأمان قبل منح صلاحيات جديدة');
+    var riskLower = String(stripNegated(norm || '')).toLowerCase();
+    if (/دفع|جات|تحويل|مصروف/i.test(riskLower)) risks.push('أي دفع مالي يحتاج موافقة صريحة');
+    if (/نشر|اعلان/i.test(riskLower)) risks.push('النشر الخارجي يحتاج مراجعة مالية وقانونية');
+    if (/عقد|قانون|ضريبه|خصوصيه/i.test(riskLower)) risks.push('مراجعة المستشار القانوني والمحاسب القانوني إلزامية');
+    if (/بيانات|صلاحيه|امان/i.test(riskLower)) risks.push('مراجعة مسؤول الأمان قبل منح صلاحيات جديدة');
 
     var ambiguities = [];
     if (!money) ambiguities.push('ما هي الميزانية القصوى المسموح بها؟');
@@ -834,7 +835,7 @@
     var text = [u.goal, u.scope, u.deliverables, raw].filter(Boolean).join('، ');
     var parts = String(text).split(/[،,؛;\n]+|\s+و\s+/).map(function (x) { return String(x).trim(); }).filter(function (x) { return x.length > 8; });
     var hardRx = /(بحث|دراسه|دراسة|منافس|تسعير|سعر|قانون|ضريبه|ضريبة|امتثال|امان|امن|تقني|api|منصه|منصة|سوق|تكلفه|تكلفة|ميزانيه|ميزانية|عقد|حمايه|حماية)/i;
-    var picks = parts.filter(function (x) { return hardRx.test(x); }).slice(0, 4);
+    var picks = uniqueStrings(parts.filter(function (x) { return hardRx.test(x); })).slice(0, 4);
     if (!picks.length && hardRx.test(String(raw || ''))) picks = [String(raw).slice(0, 180)];
     return picks;
   }
@@ -868,7 +869,9 @@
 
   function distributeRoles(u, research, ledgerItems) {
     var byAgent = {};
-    var riskFlag = REQUEST_HIGH_RX.test([u.goal, u.deliverables, (u.risks || []).join(' ')].join(' '));
+    var riskText = [u.goal, u.deliverables, (u.risks || []).join(' ')]
+      .map(function (x) { return stripNegated(String(x || '')); }).join(' ');
+    var riskFlag = REQUEST_HIGH_RX.test(riskText);
     var title = String(u.deliverables || u.goal || 'مهمة جديدة').split(/[،,]/)[0].trim().slice(0, 110) || 'تنفيذ طلب المدير';
     var researchLine = (research || []).map(function (r) { return r.task + ' (' + r.engine + ')'; }).slice(0, 3).join('؛ ');
     var itemTitles = {};

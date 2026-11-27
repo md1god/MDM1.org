@@ -92,8 +92,9 @@ function renderProviderNotice(live, st){
 function renderStats(){
   const c={available:0,working:0,waiting_approval:0};
   D.agents.forEach(a=>{c[a.status]=(c[a.status]||0)+1});
+  const workingTasks=(D.state.tasks||[]).filter(t=>t.status==='working').length;
   document.getElementById('statAvailable').textContent=c.available;
-  document.getElementById('statWorking').textContent=c.working;
+  document.getElementById('statWorking').textContent=c.working||workingTasks;
   document.getElementById('statWaiting').textContent=c.waiting_approval;
   document.getElementById('statOffline').textContent=c.offline||0;
   document.getElementById('pendingCountBadge').textContent=D.state.approvals.filter(a=>a.status==='pending').length;
@@ -124,8 +125,8 @@ function renderTasks(){
 
 function renderWorkingTeam(){
   const el=document.getElementById('workingTeamList'); if(!el)return;
-  const active=(D.agents||[]).filter(a=>a.status==='working'||a.status==='waiting_approval');
   const tasks=D.state.tasks||[];
+  const active=(D.agents||[]).filter(a=>a.status==='working'||a.status==='waiting_approval'||tasks.some(t=>t.agentId===a.id&&t.status==='working'));
   if(!active.length){el.innerHTML='<div class="approval-card">لا يوجد فريق يعمل حالياً. كل الموظفين متاحون أو غير متصلين.</div>';return;}
   el.innerHTML=active.map(a=>{
     const mine=tasks.filter(t=>t.agentId===a.id&&t.status==='working').slice(0,3);
@@ -137,23 +138,23 @@ function renderWorkingTeam(){
 function openAgentChat(id){selectedAgentId=id;switchTab('chat');switchChatMode('direct');renderChatAgentsList();renderDirectChat()}
 function selectDirectAgent(id){selectedAgentId=id;renderChatAgentsList();renderDirectChat()}
 
-function renderChatAgentsList(){document.getElementById('chatAgentsList').innerHTML=D.agents.map(a=>`<button class="chat-agent-btn ${a.id===selectedAgentId?'active':''}" onclick="selectDirectAgent('${a.id}')"><span>${a.avatar}</span><span style="flex:1">${a.name}</span><i class="dot ${a.status}"></i></button>`).join('')}
+function renderChatAgentsList(){document.getElementById('chatAgentsList').innerHTML=D.agents.map(a=>`<button class="chat-agent-btn ${a.id===selectedAgentId?'active':''}" onclick="selectDirectAgent('${escAttr(a.id)}')"><span>${esc(a.avatar)}</span><span style="flex:1">${esc(a.name)}</span><i class="dot ${escAttr(a.status)}"></i></button>`).join('')}
 
 function renderDirectChat(){
   const a=D.agents.find(x=>x.id===selectedAgentId);if(!a)return;
   const g=a.gamification||{points:0,level:1,rankTitle:'موظف تنفيذي'};
-  document.getElementById('directChatHeader').innerHTML=`${a.avatar} ${a.name} <small style="color:var(--muted);font-weight:400">(${a.department} | 🏆 ${g.rankTitle} • 🧠 ${a.memoryCount||0} ذكرى)</small>`;
+  document.getElementById('directChatHeader').innerHTML=`${esc(a.avatar)} ${esc(a.name)} <small style="color:var(--muted);font-weight:400">(${esc(a.department)} | 🏆 ${esc(g.rankTitle)} • 🧠 ${a.memoryCount||0} ذكرى)</small>`;
   const h=D.state.directChats[a.id]||[], el=document.getElementById('directChatMessages');
   const fem=a.id==='executive-assistant';
-  el.innerHTML=h.length===0?`<div class="msg assistant"><div class="msg-meta">${a.name}</div>مرحباً سيادة المدير! أنا ${a.name}، ${fem?'جاهزة':'جاهز'} لتلقي توجيهاتك.</div>`:h.map(m=>`<div class="msg ${m.role}"><div class="msg-meta">${m.role==='user'?'أنت (CEO)':a.name}${m.ragUsed?` • 🧠 استرجاع ${m.ragUsed} ذكرى`:''}${m.mode&&m.mode!=='live'?` • ⚠️ ${SL[m.mode]||'رد تجريبي'}`:''}</div>${esc(m.text)}</div>`).join('');
+  el.innerHTML=h.length===0?`<div class="msg assistant"><div class="msg-meta">${esc(a.name)}</div>مرحباً سيادة المدير! أنا ${esc(a.name)}، ${fem?'جاهزة':'جاهز'} لتلقي توجيهاتك.</div>`:h.map(m=>`<div class="msg ${escAttr(m.role)}"><div class="msg-meta">${m.role==='user'?'أنت (CEO)':esc(a.name)}${m.ragUsed?` • 🧠 استرجاع ${m.ragUsed} ذكرى`:''}${m.mode&&m.mode!=='live'?` • ⚠️ ${esc(SL[m.mode]||'رد تجريبي')}`:''}</div>${esc(m.text)}</div>`).join('');
   el.scrollTop=el.scrollHeight;
-  document.getElementById('agentInspector').innerHTML=`<h4>ملف الموظف (${a.id})</h4><div class="inspector-block"><strong>الرتبة والنقاط (Gamification)</strong>المستوى: ${g.level} — ${g.rankTitle}\nالنقاط: ${g.points}\nالذاكرة المتجهة: ${a.memoryCount||0} ذكرى</div><div class="inspector-block"><strong>الصلاحيات</strong>الأدوات: ${a.allowedTools.join(', ')||'-'}\nموافقة: ${a.requiresApprovalFor.join(', ')||'-'}</div><div class="inspector-block"><strong>الدور</strong>${esc(a.roleMd.slice(0,320))}...</div><div class="inspector-block"><strong>المهارات</strong>${esc(a.skillsMd.slice(0,280))}...</div>`;
+  document.getElementById('agentInspector').innerHTML=`<h4>ملف الموظف (${esc(a.id)})</h4><div class="inspector-block"><strong>الرتبة والنقاط (Gamification)</strong>المستوى: ${g.level} — ${esc(g.rankTitle)}\nالنقاط: ${g.points}\nالذاكرة المتجهة: ${a.memoryCount||0} ذكرى</div><div class="inspector-block"><strong>الصلاحيات</strong>الأدوات: ${esc((a.allowedTools||[]).join(', ')||'-')}\nموافقة: ${esc((a.requiresApprovalFor||[]).join(', ')||'-')}</div><div class="inspector-block"><strong>الدور</strong>${esc(a.roleMd.slice(0,320))}...</div><div class="inspector-block"><strong>المهارات</strong>${esc(a.skillsMd.slice(0,280))}...</div>`;
 }
 
 function renderTeamChat(){
-  document.getElementById('attendeeCheckboxes').innerHTML=D.agents.map((a,i)=>`<label class="attendee-pill"><input type="checkbox" class="attendee-check" value="${a.id}" ${i<4?'checked':''} /><span>${a.avatar} ${a.name}</span></label>`).join('');
+  document.getElementById('attendeeCheckboxes').innerHTML=D.agents.map((a,i)=>`<label class="attendee-pill"><input type="checkbox" class="attendee-check" value="${escAttr(a.id)}" ${i<4?'checked':''} /><span>${esc(a.avatar)} ${esc(a.name)}</span></label>`).join('');
   const el=document.getElementById('teamChatMessages');
-  el.innerHTML=(D.state.teamChat||[]).map(m=>`<div class="msg ${m.role}"><div class="msg-meta">${m.senderAvatar||''} ${m.senderName}</div>${esc(m.text)}</div>`).join('');
+  el.innerHTML=(D.state.teamChat||[]).map(m=>`<div class="msg ${escAttr(m.role)}"><div class="msg-meta">${esc(m.senderAvatar||'')} ${esc(m.senderName)}</div>${esc(m.text)}</div>`).join('');
   el.scrollTop=el.scrollHeight;
 }
 
@@ -175,7 +176,7 @@ async function decideApproval(id,d,override){
 }
 
 function renderVotes(){
-  document.getElementById('voterCheckboxes').innerHTML=D.agents.map((a,i)=>`<label class="attendee-pill"><input type="checkbox" class="voter-check" value="${a.id}" ${['web-research-team','auditors-experts-devs','accountant','security-officer'].includes(a.id)?'checked':''} /><span>${a.avatar} ${a.name}</span></label>`).join('');
+  document.getElementById('voterCheckboxes').innerHTML=D.agents.map((a,i)=>`<label class="attendee-pill"><input type="checkbox" class="voter-check" value="${escAttr(a.id)}" ${['web-research-team','auditors-experts-devs','accountant','security-officer'].includes(a.id)?'checked':''} /><span>${esc(a.avatar)} ${esc(a.name)}</span></label>`).join('');
   const c=document.getElementById('votesList'), l=D.state.votes||[];
   c.innerHTML=l.map(v=>{
     const total=v.ballots.length||1;
@@ -183,7 +184,7 @@ function renderVotes(){
       const cnt=v.tally[opt]||0, pct=Math.round((cnt/total)*100);
       return `<div class="vote-bar-wrap"><div class="vote-bar-fill" style="width:${pct}%"></div><div class="vote-bar-label"><span>${esc(opt)} ${opt===v.winner?'🏆':''}</span><span>${cnt} أصوات (${pct}%)</span></div></div>`;
     }).join('');
-    const details=v.ballots.map(b=>`<div style="font-size:11px;color:var(--muted);margin-top:4px;">${b.avatar} <strong>${b.agentName}</strong> ← اختار (<strong>${esc(b.choice)}</strong>): ${esc(b.reason)}</div>`).join('');
+    const details=v.ballots.map(b=>`<div style="font-size:11px;color:var(--muted);margin-top:4px;">${esc(b.avatar)} <strong>${esc(b.agentName)}</strong> ← اختار (<strong>${esc(b.choice)}</strong>): ${esc(b.reason)}</div>`).join('');
     return `<div class="approval-card" style="flex-direction:column;align-items:stretch;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
         <div><span style="font-size:11px;color:var(--cyan);">🗳️ تصويت ديمقراطي • الفائز: <strong>${esc(v.winner)}</strong></span><h4>${esc(v.topic)}</h4></div>
@@ -240,7 +241,7 @@ function renderKPI(){
     return `<div class="task-card"><strong>#${i+1} ${a.avatar} ${a.name}</strong><div class="rank-badge">المستوى ${g.level}: ${g.rankTitle}</div><div style="margin-top:5px;font-size:13px;color:var(--cyan)">⭐ ${g.points} نقطة</div><small>${(g.badges||[]).slice(-2).join(' • ')}</small></div>`;
   }).join('');
   const l=D.state.kpiReviews||[];
-  document.getElementById('kpiList').innerHTML=l.map(r=>`<div class="approval-card"><div><div style="font-size:11px;color:var(--cyan);">📈 ${r.reviewerName} • ${r.timestamp?.slice(0,10)||''}</div><p style="font-size:13px;white-space:pre-wrap;margin-top:5px;">${esc(r.report)}</p></div></div>`).join('')||'<div class="approval-card">لم يتم تشغيل تقييم المدربة بعد. اضغط "تشغيل تقييم المدربة الآن" لتوزيع النقاط والترقيات.</div>';
+  document.getElementById('kpiList').innerHTML=l.map(r=>`<div class="approval-card"><div><div style="font-size:11px;color:var(--cyan);">📈 ${esc(r.reviewerName)} • ${esc(r.timestamp?.slice(0,10)||'')}</div><p style="font-size:13px;white-space:pre-wrap;margin-top:5px;">${esc(r.report)}</p></div></div>`).join('')||'<div class="approval-card">لم يتم تشغيل تقييم المدربة بعد. اضغط "تشغيل تقييم المدربة الآن" لتوزيع النقاط والترقيات.</div>';
 }
 
 function renderAgentBenchmarks(){
@@ -255,7 +256,7 @@ function renderAgentBenchmarks(){
 
 function renderMemos(){
   const c=document.getElementById('memosList'), l=(D.state.internalMemos||[]).slice().reverse();
-  c.innerHTML=l.map(m=>`<div class="approval-card ${m.read?'read':''}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${m.fromAvatar} ${m.fromName} ← إلى → ${m.toAvatar} ${m.toName} • ${m.timestamp?.slice(0,10)||''} • ${m.read?'✅ مقروء':'🔵 غير مقروء'}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div><div class="approval-actions"><button class="btn btn-secondary" onclick="forwardMemoToAssistant('${m.id}')">🧠 أرسل للمساعد</button>${m.read?'':'<button class="btn btn-secondary" onclick="markMemoRead(\''+m.id+'\')">✓ مقروء</button>'}</div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
+  c.innerHTML=l.map(m=>`<div class="approval-card ${m.read?'read':''}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${esc(m.fromAvatar)} ${esc(m.fromName)} ← إلى → ${esc(m.toAvatar)} ${esc(m.toName)} • ${esc(m.timestamp?.slice(0,10)||'')} • ${m.read?'✅ مقروء':'🔵 غير مقروء'}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div><div class="approval-actions"><button class="btn btn-secondary" onclick="forwardMemoToAssistant('${escAttr(m.id)}')">🧠 أرسل للمساعد</button>${m.read?'':'<button class="btn btn-secondary" onclick="markMemoRead(\''+escAttr(m.id)+'\')">✓ مقروء</button>'}</div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
 }
 
 async function markMemoRead(id){
@@ -280,8 +281,8 @@ async function forwardMemoToAssistant(id){
 }
 
 function renderKnowledge(){
-  document.getElementById('knowledgeEditorList').innerHTML=(D.knowledgeFiles||[]).map((k,i)=>`<div class="k-item"><strong>${k.filename}</strong><textarea id="k-content-${i}" rows="4">${esc(k.content)}</textarea><button class="btn btn-secondary" onclick="saveKnowledge('${k.filename}',${i})">حفظ</button></div>`).join('');
-  document.getElementById('exportsList').innerHTML=(D.exports||[]).map(ex=>`<div class="inspector-block"><strong>📄 ${ex.filename} (${ex.size} bytes)</strong>${esc(ex.preview)}</div>`).join('')||'<div class="inspector-block">لم يتم تصدير ملفات بعد.</div>';
+  document.getElementById('knowledgeEditorList').innerHTML=(D.knowledgeFiles||[]).map((k,i)=>`<div class="k-item"><strong>${esc(k.filename)}</strong><textarea id="k-content-${i}" rows="4">${esc(k.content)}</textarea><button class="btn btn-secondary" onclick="saveKnowledge('${escAttr(k.filename)}',${i})">حفظ</button></div>`).join('');
+  document.getElementById('exportsList').innerHTML=(D.exports||[]).map(ex=>`<div class="inspector-block"><strong>📄 ${esc(ex.filename)} (${ex.size} bytes)</strong>${esc(ex.preview)}</div>`).join('')||'<div class="inspector-block">لم يتم تصدير ملفات بعد.</div>';
 }
 async function saveKnowledge(fn,i){const c=document.getElementById(`k-content-${i}`).value;await api('/api/knowledge',{method:'POST',body:JSON.stringify({filename:fn,content:c})});alert(`تم حفظ ${fn}`);await bootstrap()}
 
@@ -303,7 +304,7 @@ function renderPnL(){
     const maxVal=Math.max(...bars.map(b=>b.val),1), barW=w/bars.length-30;
     bars.forEach((b,i)=>{const bh=(b.val/maxVal)*(h-50),x=i*(barW+30)+20;ctx.fillStyle=b.color;ctx.globalAlpha=.75;ctx.fillRect(x,h-30-bh,barW,bh);ctx.globalAlpha=1;ctx.fillStyle='#eef2ff';ctx.font='bold 12px Cairo';ctx.textAlign='center';ctx.fillText(b.label,x+barW/2,h-14);ctx.fillText(`$${b.val.toFixed(2)}`,x+barW/2,h-32-bh)});
   }
-  document.getElementById('ledgerList').innerHTML=ledger.slice().reverse().map(e=>`<div class="approval-card"><div><div style="font-size:11px;color:${e.type==='revenue'?'var(--green)':'var(--red)'};">${e.type==='revenue'?'💰 إيراد':'📉 مصروف'} • ${e.date}</div><strong>${esc(e.title)}</strong> — $${e.amountUsd.toFixed(2)}<br/><small style="color:var(--muted)">${esc(e.notes)}</small></div></div>`).join('')||'<div class="approval-card">لا توجد قيود مالية.</div>';
+  document.getElementById('ledgerList').innerHTML=ledger.slice().reverse().map(e=>`<div class="approval-card"><div><div style="font-size:11px;color:${e.type==='revenue'?'var(--green)':'var(--red)'};">${e.type==='revenue'?'💰 إيراد':'📉 مصروف'} • ${esc(e.date)}</div><strong>${esc(e.title)}</strong> — $${e.amountUsd.toFixed(2)}<br/><small style="color:var(--muted)">${esc(e.notes)}</small></div></div>`).join('')||'<div class="approval-card">لا توجد قيود مالية.</div>';
   renderCostForecast();
 }
 
@@ -321,7 +322,7 @@ function renderCostForecast(){
 }
 
 function renderSchedules(){
-  document.getElementById('schedulesList').innerHTML=(D.state.schedules||[]).map(s=>`<div class="approval-card"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);">🕐 ${s.frequency==='daily'?'يومي الساعة '+s.targetHour+':00':'أسبوعي الساعة '+s.targetHour+':00'}</div><strong>${esc(s.name)}</strong><div style="font-size:12px;color:var(--muted);margin-top:3px;">آخر تشغيل: ${s.lastRunAt||'لم يعمل بعد'} • الحالة: ${s.lastStatus||'جاهز'}</div></div><div class="approval-actions"><label style="font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSchedule('${s.id}',this.checked)" />${s.enabled?'مفعّل':'معطّل'}</label><button class="btn btn-secondary" onclick="triggerSchedule('${s.id}')">▶️ تشغيل الآن</button></div></div>`).join('');
+  document.getElementById('schedulesList').innerHTML=(D.state.schedules||[]).map(s=>`<div class="approval-card"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);">🕐 ${s.frequency==='daily'?'يومي الساعة '+s.targetHour+':00':'أسبوعي الساعة '+s.targetHour+':00'}</div><strong>${esc(s.name)}</strong><div style="font-size:12px;color:var(--muted);margin-top:3px;">آخر تشغيل: ${esc(s.lastRunAt||'لم يعمل بعد')} • الحالة: ${esc(s.lastStatus||'جاهز')}</div></div><div class="approval-actions"><label style="font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSchedule('${escAttr(s.id)}',this.checked)" />${s.enabled?'مفعّل':'معطّل'}</label><button class="btn btn-secondary" onclick="triggerSchedule('${escAttr(s.id)}')">▶️ تشغيل الآن</button></div></div>`).join('');
 }
 async function toggleSchedule(id,enabled){await api('/api/schedules/toggle',{method:'POST',body:JSON.stringify({scheduleId:id,enabled})});await bootstrap()}
 async function triggerSchedule(id){
@@ -336,15 +337,15 @@ async function runHrWorkloadCheckNow(){
 }
 
 function renderSandbox(){
-  api('/api/sandbox/git').then(g=>{document.getElementById('gitInfo').innerHTML=`<div class="inspector-block"><strong>حالة Git</strong>${g.isGitRepo?`الفرع الحالي: <strong>${g.branch}</strong>\nالفروع: ${g.branches.join(', ')||'-'}\nالتعديلات: ${g.changes.length||'لا يوجد'}`:'لا يوجد مستودع Git مهيأ.'}</div>`}).catch(()=>{});
-  document.getElementById('sandboxFilesList').innerHTML=(D.sandboxFiles||[]).map(f=>`<div class="inspector-block"><strong>📝 ${f.filename} (${f.size} bytes)</strong>${esc(f.content.slice(0,300))}</div>`).join('')||'<div class="inspector-block">لا توجد ملفات تجريبية بعد.</div>';
+  api('/api/sandbox/git').then(g=>{document.getElementById('gitInfo').innerHTML=`<div class="inspector-block"><strong>حالة Git</strong>${g.isGitRepo?`الفرع الحالي: <strong>${esc(g.branch)}</strong>\nالفروع: ${esc(g.branches.join(', ')||'-')}\nالتعديلات: ${g.changes.length||'لا يوجد'}`:'لا يوجد مستودع Git مهيأ.'}</div>`}).catch(()=>{});
+  document.getElementById('sandboxFilesList').innerHTML=(D.sandboxFiles||[]).map(f=>`<div class="inspector-block"><strong>📝 ${esc(f.filename)} (${f.size} bytes)</strong>${esc(f.content.slice(0,300))}</div>`).join('')||'<div class="inspector-block">لا توجد ملفات تجريبية بعد.</div>';
 }
 
-function renderOrgChart(){document.getElementById('orgChartContainer').innerHTML=`<div class="org-ceo">👑 المدير التنفيذي (CEO - أنت)</div><div class="org-grid">${D.agents.map(a=>`<div class="org-node"><div style="font-size:20px;margin-bottom:4px;">${a.avatar}</div><strong>${a.name}</strong><div style="font-size:11px;color:var(--cyan);">${a.department}</div><div class="rank-badge">${a.gamification?.rankTitle||'موظف تنفيذي'}</div></div>`).join('')}</div>`}
+function renderOrgChart(){document.getElementById('orgChartContainer').innerHTML=`<div class="org-ceo">👑 المدير التنفيذي (CEO - أنت)</div><div class="org-grid">${D.agents.map(a=>`<div class="org-node"><div style="font-size:20px;margin-bottom:4px;">${esc(a.avatar)}</div><strong>${esc(a.name)}</strong><div style="font-size:11px;color:var(--cyan);">${esc(a.department)}</div><div class="rank-badge">${esc(a.gamification?.rankTitle||'موظف تنفيذي')}</div></div>`).join('')}</div>`}
 
 function renderAuditCost(){
   const ba=(D.state.usageStats&&D.state.usageStats.byAgent)||{};
-  document.getElementById('costBreakdown').innerHTML=D.agents.map(a=>{const s=ba[a.id]||{tokens:0,costUsd:0};return `<div class="task-card"><strong>${a.avatar} ${a.name}</strong><div>${s.tokens} tokens</div><small>$${Number(s.costUsd).toFixed(5)}</small></div>`;}).join('');
+  document.getElementById('costBreakdown').innerHTML=D.agents.map(a=>{const s=ba[a.id]||{tokens:0,costUsd:0};return `<div class="task-card"><strong>${esc(a.avatar)} ${esc(a.name)}</strong><div>${s.tokens} tokens</div><small>$${Number(s.costUsd).toFixed(5)}</small></div>`;}).join('');
   renderAuditRows(D.auditLog||[]);
 }
 
@@ -364,12 +365,12 @@ function renderIntegrations(){
     <div class="webhook-card"><strong>⚡ n8n / Make</strong><div style="font-size:12px;color:var(--muted);margin:4px 0;">${o.n8n?'🟢 مهيأ':'🟡 غير مهيأ'}</div><button class="btn btn-secondary" onclick="testWebhook('n8n')">اختبار</button></div>
     <div class="webhook-card"><strong>📣 التسويق</strong><div style="font-size:12px;color:var(--muted);margin:4px 0;">${o.marketing?'🟢 مهيأ':'🟡 غير مهيأ'}</div><button class="btn btn-secondary" onclick="testWebhook('marketing')">اختبار</button></div>
   `;
-  document.getElementById('webhooksGrid').innerHTML=(D.state.webhooks||[]).map(w=>`<div class="webhook-card"><strong>${w.name}</strong><code>${w.method} ${w.endpoint}</code><div style="font-size:12px;color:var(--muted);">أمان: ${w.securityReviewed?'🛡️ معتمد':'⏳ بانتظار المراجعة'} • الحالة: <strong>${w.status}</strong></div></div>`).join('');
+  document.getElementById('webhooksGrid').innerHTML=(D.state.webhooks||[]).map(w=>`<div class="webhook-card"><strong>${esc(w.name)}</strong><code>${esc(w.method)} ${esc(w.endpoint)}</code><div style="font-size:12px;color:var(--muted);">أمان: ${w.securityReviewed?'🛡️ معتمد':'⏳ بانتظار المراجعة'} • الحالة: <strong>${esc(w.status)}</strong></div></div>`).join('');
 }
 async function testWebhook(t){const r=await api('/api/webhooks/test',{method:'POST',body:JSON.stringify({target:t})});alert(r.dispatched?`✅ تم (${r.status})`:`⚠️ ${r.reason}`)}
 
 function populateSelects(){
-  const opts=D.agents.map(a=>`<option value="${a.id}">${a.avatar} ${a.name}</option>`).join('');
+  const opts=D.agents.map(a=>`<option value="${escAttr(a.id)}">${esc(a.avatar)} ${esc(a.name)}</option>`).join('');
   document.getElementById('taskAgentSelect').innerHTML=opts;
   document.getElementById('memoFromSelect').innerHTML=opts;
   document.getElementById('memoToSelect').innerHTML=opts;
@@ -520,7 +521,7 @@ document.getElementById('voteForm').addEventListener('submit',async e=>{
   }catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='🗳️ بدء التصويت الآن'}
 });
 
-document.getElementById('webSearchTestForm').addEventListener('submit',async e=>{e.preventDefault();const q=document.getElementById('webSearchQueryInput').value.trim();if(!q)return;const r=await api('/api/tools/web-search',{method:'POST',body:JSON.stringify({query:q})});document.getElementById('webSearchResults').innerHTML=`<div>المحرك: <strong>${r.engine}</strong></div>`+(r.results.map(x=>`<div style="margin-top:5px;"><a href="${x.url}" target="_blank" style="color:var(--cyan)">${esc(x.title)}</a><br/><small style="color:var(--muted)">${esc(x.snippet)}</small></div>`).join('')||'لا توجد نتائج.')});
+document.getElementById('webSearchTestForm').addEventListener('submit',async e=>{e.preventDefault();const q=document.getElementById('webSearchQueryInput').value.trim();if(!q)return;const r=await api('/api/tools/web-search',{method:'POST',body:JSON.stringify({query:q})});document.getElementById('webSearchResults').innerHTML=`<div>المحرك: <strong>${esc(r.engine)}</strong></div>`+(r.results.map(x=>`<div style="margin-top:5px;"><a href="${/^https?:\/\//i.test(x.url||'')?escAttr(x.url):'#'}" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">${esc(x.title)}</a><br/><small style="color:var(--muted)">${esc(x.snippet)}</small></div>`).join('')||'لا توجد نتائج.')});
 
 // Modals
 document.getElementById('openWorkflowModalBtn').onclick=()=>document.getElementById('workflowModal').classList.remove('hidden');
