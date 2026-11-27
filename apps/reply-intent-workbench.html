@@ -227,19 +227,33 @@
   });
 
   function highlight(text) {
-    let highlighted = text;
-    prohibited.forEach(p => {
-      const regex = new RegExp(p, 'gi');
-      highlighted = highlighted.replace(regex, match => `<mark>${match}</mark>`);
-    });
-    return highlighted;
+    const fragment = document.createDocumentFragment();
+    const regex = new RegExp(prohibited.join('|'), 'gi');
+    let lastIndex = 0;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      const mark = document.createElement('mark');
+      mark.textContent = match[0];
+      fragment.appendChild(mark);
+      lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+    return fragment;
   }
 
   generateBtn.addEventListener('click', () => {
     const name = productName.value.trim() || 'المنتج';
     const facts = productFacts.value.trim() || 'المواصفات المتاحة';
     const template = `شكراً لك على سؤالك عن ${name}. بناءً على ${facts}، نوصي بـ...`;
-    draftContainer.innerHTML = `<p>${highlight(template)}</p>`;
+    const paragraph = document.createElement('p');
+    paragraph.appendChild(highlight(template));
+    draftContainer.innerHTML = '';
+    draftContainer.appendChild(paragraph);
     approveChk.checked = false;
     copyBtn.disabled = true;
   });
