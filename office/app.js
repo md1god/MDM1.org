@@ -345,7 +345,7 @@ function renderAssistantChat(){
     html+=`<div class="msg assistant"><div class="msg-meta">❓ أسئلة توضيحية قبل التنفيذ</div>${assistantList(s.questions,'لا توجد أسئلة — الطلب واضح بما يكفي.')}<div class="msg-actions"><button class="btn btn-approve" onclick="assistantConfirm()">✅ فهمت صح — أكمل البحث والتوزيع</button><button class="btn btn-secondary" onclick="assistantCancel()">✕ ألغِ الجلسة</button></div></div>`;
   }
   if((s.research||[]).length){
-    html+=`<div class="msg assistant research"><div class="msg-meta">🔎 بحث في المهام الصعبة</div>`+s.research.map(r=>`<div style="margin-bottom:6px;"><strong>${esc(r.task||'')}</strong> — محرك: ${esc(r.engine||'unavailable')}${r.note?` • ${esc(r.note)}`:''}<ul>${(r.results||[]).map(x=>`<li><a href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--cyan)">${esc(x.title)}</a></li>`).join('')}</ul></div>`).join('')+`</div>`;
+    html+=`<div class="msg assistant research"><div class="msg-meta">🔎 بحث في المهام الصعبة</div>`+s.research.map(r=>`<div style="margin-bottom:6px;"><strong>${esc(r.task||'')}</strong> — محرك: ${esc(r.engine||'unavailable')}${r.note?` • ${esc(r.note)}`:''}<ul>${(r.results||[]).map(x=>`<li><a href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--cyan)">${esc(x.title)}</a></li>`).join('')}</ul>${(r.solutions||[]).length?`<div><strong>مسارات الحل المقترحة:</strong>${assistantList(r.solutions,'—')}</div>`:''}</div>`).join('')+`</div>`;
   }
   if((s.plan||[]).length){
     html+=`<div class="msg assistant plan"><div class="msg-meta">👥 توزيع الأدوار المقترح</div><ul>${s.plan.map(p=>`<li><strong>${esc(p.avatar||'🤖')} ${esc(p.agentName)}</strong> — ${esc(p.taskTitle)} <small style="color:var(--muted)">(${esc(p.reason||'')})</small></li>`).join('')}</ul>`+

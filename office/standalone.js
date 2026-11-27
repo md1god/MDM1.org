@@ -1818,38 +1818,100 @@
   }
 
   /* ── web search (optional, no key) ────────────────────────────────────── */
-  function webSearch(query) {
-    var q = String(query || '').trim();
-    if (!q) return Promise.resolve({ engine: 'none', results: [] });
-    // Wikipedia supports CORS with origin=*, so it works directly from a static page.
-    var wiki = 'https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
-      encodeURIComponent(q) + '&gsrlimit=6&prop=extracts&exintro=1&explaintext=1&exchars=320&format=json&origin=*';
-    return nativeFetch(wiki, { cache: 'no-store' }).then(function (r) {
+  function localSolutions(query) {
+    var text = String(query || '').toLowerCase().replace(/[أإآ]/g, 'ا');
+    var out = [];
+    function add(rx, s) { if (rx.test(text) && out.indexOf(s) === -1) out.push(s); }
+    add(/تسعير|سعر|pricing/, 'قارن ثلاثة نماذج تسعير (شهري / حزمة / لكل مستخدم) مع جدول حساسية سعرية.');
+    add(/امان|امن|security|صلاحيه|بيانات/, 'قائمة تحقق أمنية: أقل صلاحيات، تشفير، سجلات تدقيق، واختبار اختراق قبل النشر.');
+    add(/قانون|ضريبه|ضريبة|امتثال|عقد|compliance/, 'اعرض البنود الحرجة على المستشار القانوني والمحاسب القانوني قبل أي توقيع أو نشر.');
+    add(/ميزانيه|ميزانية|تكلفه|تكلفة|ربح|budget/, 'جهّز ثلاث سيناريوهات تكلفة (منخفض / متوسط / مرتفع) ونقطة التعادل.');
+    add(/سوق|منافس|فرص|بحث|market/, 'اصنع مصفوفة مقارنة لثلاثة منافسين واستخرج ثلاث فرص قابلة للتنفيذ.');
+    add(/منتج|تطبيق|موقع|saas/, 'حدّد عرض القيمة، تجربة مجانية، ومسار إطلاق أسبوعي بمخرجات قابلة للمراجعة.');
+    if (!out.length) out.push('قسّم المهمة إلى ثلاث خطوات: مخرج واضح، مالك مسؤول، وموعد زمني قابل للقياس.');
+    out.push('اربط كل مسار بدور مسؤول، وأضفه للوحة الموافقات إذا كانت المخاطر عالية.');
+    return out.slice(0, 4);
+  }
+
+  function shortSearchQuery(q) {
+    var raw = String(q || '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').toLowerCase();
+    var stop = /^(في|من|على|الي|إلى|مع|عن|قبل|بعد|هذا|هذه|التي|الذي|كل|كان|كانت|أن|ان|او|أو|لكن|ثم|قد|ال)$/u;
+    var words = raw.match(/[a-z0-9\u0600-\u06ff]+/gu) || [];
+    var picked = words.filter(function (w) { return w.length > 2 && !stop.test(w); }).slice(0, 4);
+    return (picked.length ? picked : words.slice(0, 4)).join(' ');
+  }
+
+  function englishSearchQuery(q) {
+    var t = String(q || '').toLowerCase();
+    var map = [
+      [/ساس|saas/, 'SaaS pricing strategy'],
+      [/تسعير|سعر/, 'pricing strategy'],
+      [/امان|امن|صلاحيه/, 'application security checklist'],
+      [/قانون|ضريبه|ضريبة|امتثال/, 'legal compliance checklist'],
+      [/ميزانيه|ميزانية|تكلفه|تكلفة/, 'startup budget forecasting'],
+      [/سوق|منافس|فرص/, 'market research competitors']
+    ];
+    for (var i = 0; i < map.length; i++) if (map[i][0].test(t)) return map[i][1];
+    return '';
+  }
+
+  function wikiSearch(lang, query) {
+    var fetcher = nativeFetch || (window.fetch ? window.fetch.bind(window) : null);
+    if (!fetcher) return Promise.resolve({ engine: 'unavailable', results: [] });
+    var url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
+      encodeURIComponent(query) + '&gsrlimit=5&prop=extracts&exintro=1&explaintext=1&exchars=240&format=json&origin=*';
+    return fetcher(url, { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     }).then(function (j) {
       var pages = Object.keys((j.query && j.query.pages) || {}).map(function (k) { return j.query.pages[k]; });
       var results = pages.map(function (p) {
         return {
-          title: p.title || q,
-          snippet: String(p.extract || '').slice(0, 320),
-          url: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(String(p.title || q).replace(/\s+/g, '_'))
+          title: p.title || query,
+          snippet: String(p.extract || '').slice(0, 240),
+          url: 'https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(String(p.title || query).replace(/\s+/g, '_'))
         };
       });
-      if (results.length) return { engine: 'Wikipedia', results: results.slice(0, 6) };
-      throw new Error('empty');
-    }).catch(function () {
-      // Fallback: DuckDuckGo instant answers (some browsers block its CORS).
-      var ddg = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_html=1&skip_disambig=1';
-      return nativeFetch(ddg, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-        var results = [];
-        if (j.AbstractText) results.push({ title: j.Heading || q, snippet: j.AbstractText, url: j.AbstractURL || '' });
-        (j.RelatedTopics || []).slice(0, 6).forEach(function (t) {
-          if (t.Text && t.FirstURL) results.push({ title: t.Text.slice(0, 80), snippet: t.Text, url: t.FirstURL });
-        });
-        return { engine: results.length ? 'DuckDuckGo' : 'unavailable', results: results.slice(0, 6) };
-      }).catch(function () { return { engine: 'unavailable', results: [] }; });
+      return { engine: lang === 'ar' ? 'Wikipedia (ar)' : 'Wikipedia (en)', results: results.slice(0, 5) };
+    }).catch(function () { return { engine: 'unavailable', results: [] }; });
+  }
+
+  function ddgSearch(query) {
+    var fetcher = nativeFetch || (window.fetch ? window.fetch.bind(window) : null);
+    if (!fetcher) return Promise.resolve({ engine: 'unavailable', results: [] });
+    var url = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&no_html=1&skip_disambig=1';
+    return fetcher(url, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      var results = [];
+      if (j.AbstractText) results.push({ title: j.Heading || query, snippet: j.AbstractText, url: j.AbstractURL || '' });
+      (j.RelatedTopics || []).slice(0, 5).forEach(function (t) {
+        if (t.Text && t.FirstURL) results.push({ title: t.Text.slice(0, 80), snippet: t.Text, url: t.FirstURL });
+      });
+      return { engine: results.length ? 'DuckDuckGo' : 'unavailable', results: results.slice(0, 5) };
+    }).catch(function () { return { engine: 'unavailable', results: [] }; });
+  }
+
+  function webSearch(query) {
+    var q = String(query || '').trim();
+    if (!q) return Promise.resolve({ engine: 'none', results: [] });
+    var queries = [];
+    [shortSearchQuery(q), englishSearchQuery(q), q].forEach(function (x) {
+      x = String(x || '').trim();
+      if (x && queries.indexOf(x) === -1) queries.push(x);
     });
+    if (!queries.length) queries = [q];
+    var i = 0;
+    function next() {
+      if (i >= queries.length) return Promise.resolve({ engine: 'knowledge', results: [], suggestions: localSolutions(q) });
+      var query = queries[i++];
+      return wikiSearch('ar', query).then(function (r) {
+        return r.results.length ? r : wikiSearch('en', englishSearchQuery(query) || query);
+      }).then(function (r) {
+        return r.results.length ? r : ddgSearch(query);
+      }).then(function (r) {
+        return r.results.length ? r : next();
+      }).catch(function () { return next(); });
+    }
+    return next();
   }
 
   /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
@@ -1982,16 +2044,24 @@
     return Promise.all(tasks.map(function (t) {
       return webSearch(t).then(function (r) {
         var engine = r && r.engine ? r.engine : 'unavailable';
+        var solutions = (r && Array.isArray(r.suggestions) ? r.suggestions : []).map(String).slice(0, 4);
+        if (!solutions.length) solutions = localSolutions(t);
+        var note = engine === 'knowledge'
+          ? 'لا يوجد بحث حي متاح — مسارات الحل أدناه مقترحة من المعرفة المحلية وليست مصدراً حياً.'
+          : engine === 'unavailable'
+            ? 'تعذّر البحث الحي؛ أعددت مسارات حل مقترحة بدلاً من ادّعاء نتيجة.'
+            : 'بحث حي';
         return {
           task: t,
           engine: engine,
-          note: engine === 'unavailable' ? 'تعذّر البحث الحي؛ أعددت مسار تحقق يدوي بدلاً من ادّعاء نتيجة.' : 'بحث حي',
+          note: note,
+          solutions: solutions,
           results: (r && r.results ? r.results : []).slice(0, 4).map(function (x) {
             return { title: String(x.title || ''), url: String(x.url || ''), snippet: String(x.snippet || '').slice(0, 160) };
           })
         };
       }).catch(function (e) {
-        return { task: t, engine: 'unavailable', note: e.message, results: [] };
+        return { task: t, engine: 'unavailable', note: String(e && e.message || 'تعذّر البحث'), solutions: localSolutions(t), results: [] };
       });
     }));
   }
@@ -2232,7 +2302,10 @@
       logAudit('snapshot_imported', 'ceo', 'Imported and verified encrypted snapshot ' + rec.id);
       saveState();
       return rec;
-    }).catch(function (e) { throw new Error('فشل التحقق من كلمة المرور أو الملف: ' + e.message); });
+    }).catch(function (e) {
+      var detail = String((e && e.message) || '').trim() || 'فك التشفير غير صالح';
+      throw new Error('فشل التحقق من كلمة المرور أو الملف: ' + detail);
+    });
   }
 
   /* ── exports / knowledge ──────────────────────────────────────────────── */
