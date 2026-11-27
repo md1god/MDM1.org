@@ -5,7 +5,11 @@
    • it intercepts every /api/* call the UI makes and answers it locally;
    • it keeps the company state in localStorage (export/import + encrypted snapshots);
    • it talks directly to the OpenCode app on this machine (local HTTP API) or to
-     OpenCode Zen / OpenRouter when a key is supplied;
+     OpenCode Zen / Groq / OpenRouter when a key is supplied (free models only);
+   • before any model is assigned to a role it can be benchmarked and "trained"
+     (prompt calibration) in the in-page model lab;
+   • every proposal passes a per-department quality gate (monitor → auditor →
+     corrector) with rewards / penalties before the CEO can execute it;
    • it never contains a bot token or a model key. The Telegram bot only sends
      signed secret tokens; the page verifies them with a public key.
    ========================================================================== */
@@ -43,17 +47,27 @@
 
   /* ── settings (connection, models, telegram) ──────────────────────────── */
   var defaultSettings = {
-    mode: 'auto',                    // auto | local | zen | openrouter | demo
+    mode: 'auto',                    // auto | local | zen | groq | openrouter | demo
     localUrl: (CFG.localApi && CFG.localApi.url) || 'http://127.0.0.1:28894',
     localBridgeUrl: (CFG.localBridge && CFG.localBridge.url) || 'https://localhost:28895',
     localBase: '',
     localPassword: '',
     zenKey: '',
     zenBase: (CFG.zen && CFG.zen.baseUrl) || 'https://opencode.ai/zen/v1',
+    groqKey: '',
+    groqBase: (CFG.groq && CFG.groq.baseUrl) || 'https://api.groq.com/openai/v1',
+    groqModel: 'llama-3.3-70b-versatile',
     openrouterKey: '',
-    openrouterModel: 'openai/gpt-4o-mini:free',
+    openrouterBase: (CFG.openrouter && CFG.openrouter.baseUrl) || 'https://openrouter.ai/api/v1',
+    openrouterModel: 'baidu/ernie-5.5-flash-preview:free',
     freeOnly: true,
     modelOverrides: {},
+    /* Model lab: only benchmark-passed models are auto-assigned to roles. */
+    useBenchmarks: true,
+    benchmarkThreshold: (CFG.quality && CFG.quality.threshold) || 70,
+    /* Department-level monitor → auditor → corrector gate on every proposal. */
+    qualityGate: CFG.quality ? CFG.quality.enabled !== false : true,
+    vaultEnabled: false,
     telegramBot: (CFG.telegram && CFG.telegram.botUsername) || '',
     telegramChatId: '',
     relayUrl: (CFG.telegram && CFG.telegram.relayUrl) || '',
@@ -135,6 +149,13 @@
       usageStats: { totalTokens: 0, totalCostUsd: 0, byAgent: {} },
       /* Per-model quota / cost telemetry, primary input to the 📊 panel. */
       modelUsage: {},
+      /* Model lab: benchmark scores and prompt-calibration examples. */
+      modelBenchmarks: {},
+      modelTraining: {},
+      /* Quality gate history: monitor → auditor → corrector verdicts. */
+      qualityReports: [],
+      /* AES-256-GCM encrypted secret vault (never stores the passphrase). */
+      secretVault: null,
       meetingActive: false,
       meetingAttendees: [],
       internalMemos: [
@@ -187,10 +208,10 @@
     if (!saved || typeof saved !== 'object') return base;
     var merged = Object.assign(base, saved);
     // Ensure arrays/objects that older saves may miss.
-    ['tasks', 'approvals', 'teamChat', 'internalMemos', 'kpiReviews', 'financialLedger', 'schedules', 'customers', 'votes', 'incidents', 'simulations', 'webhooks', 'auditLog', 'exports', 'sandboxFiles', 'customAgents', 'snapshots', 'telegramOutbox'].forEach(function (k) {
+    ['tasks', 'approvals', 'teamChat', 'internalMemos', 'kpiReviews', 'financialLedger', 'schedules', 'customers', 'votes', 'incidents', 'simulations', 'webhooks', 'auditLog', 'exports', 'sandboxFiles', 'customAgents', 'snapshots', 'telegramOutbox', 'qualityReports'].forEach(function (k) {
       if (!Array.isArray(merged[k])) merged[k] = base[k] || [];
     });
-    ['directChats', 'agentStatuses', 'liveBubbles', 'gamification', 'memories', 'exportContents', 'knowledgeOverrides', 'modelUsage'].forEach(function (k) {
+    ['directChats', 'agentStatuses', 'liveBubbles', 'gamification', 'memories', 'exportContents', 'knowledgeOverrides', 'modelUsage', 'modelBenchmarks', 'modelTraining'].forEach(function (k) {
       if (!merged[k] || typeof merged[k] !== 'object') merged[k] = base[k] || {};
     });
     if (!merged.usageStats) merged.usageStats = base.usageStats;
@@ -304,7 +325,7 @@
     return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
   function syncKey() {
-    return crypto.subtle.importKey('raw', new TextEncoder().encode(settings.syncSecret), 'PBKDF2', false, ['deriveKey'])
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(secret('syncSecret')), 'PBKDF2', false, ['deriveKey'])
       .then(function (base) {
         return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: SYNC_SALT, iterations: 120000, hash: 'SHA-256' }, base,
           { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
@@ -325,8 +346,8 @@
     }).then(function (buf) { return safeJson(new TextDecoder().decode(buf), null); })
       .catch(function () { return null; });
   }
-  function syncConfigured() { return Boolean(settings.syncEnabled && settings.syncUrl && settings.syncSecret); }
-  function syncHeaders() { return { 'content-type': 'application/json', 'x-office-secret': settings.syncSecret }; }
+  function syncConfigured() { return Boolean(settings.syncEnabled && settings.syncUrl && secret('syncSecret')); }
+  function syncHeaders() { return { 'content-type': 'application/json', 'x-office-secret': secret('syncSecret') }; }
   function syncRow(j) { return Array.isArray(j) ? (j[0] || {}) : (j || {}); }
   function applyRemoteState(j) {
     return decryptState(j.state).then(function (plain) {
@@ -340,7 +361,7 @@
   }
   function syncPull() {
     if (!syncConfigured()) return Promise.resolve({ configured: false });
-    return sha256Hex(settings.syncSecret).then(function (workspace) {
+    return sha256Hex(secret('syncSecret')).then(function (workspace) {
       return nativeFetch(settings.syncUrl.replace(/\/$/, '') + '?workspace=' + encodeURIComponent(workspace), { headers: syncHeaders(), cache: 'no-store' });
     }).then(function (r) {
       if (!r.ok) throw new Error('Supabase sync HTTP ' + r.status);
@@ -353,7 +374,7 @@
   }
   function syncPush() {
     if (!syncConfigured()) return Promise.resolve({ configured: false });
-    return sha256Hex(settings.syncSecret).then(function (workspace) {
+    return sha256Hex(secret('syncSecret')).then(function (workspace) {
       return encryptState(state).then(function (blob) {
         return nativeFetch(settings.syncUrl.replace(/\/$/, ''), {
           method: 'POST',
@@ -384,6 +405,71 @@
       syncTimer = null;
       syncPush().catch(function (e) { console.warn('Office sync failed:', e.message); });
     }, 1500);
+  }
+
+  /* ── encrypted secret vault (browser-only) ───────────────────────────────
+     The scout can move every API key out of localStorage into an AES-256-GCM
+     blob. The passphrase is never written anywhere: after a reload the user
+     unlocks the vault in memory again. Nothing is sent to any server.      */
+  var SECRET_FIELDS = ['localPassword', 'zenKey', 'groqKey', 'openrouterKey', 'relaySecret', 'syncSecret'];
+  var runtimeVault = { key: null, data: {} };
+  function secret(field) {
+    if (settings[field]) return settings[field];
+    return (runtimeVault.data && runtimeVault.data[field]) || '';
+  }
+  function vaultKey(passphrase, saltB64) {
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(String(passphrase || '')), 'PBKDF2', false, ['deriveKey'])
+      .then(function (base) {
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: b64urlToBytes(saltB64), iterations: 150000, hash: 'SHA-256' },
+          base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+      });
+  }
+  function encryptSecrets(passphrase) {
+    if (!passphrase) return Promise.resolve({ ok: false, error: 'أدخل كلمة مرور الخزنة أولاً.' });
+    var fields = SECRET_FIELDS.filter(function (f) { return Boolean(secret(f)); });
+    if (!fields.length) return Promise.resolve({ ok: false, error: 'لا توجد مفاتيح لتشفيرها.' });
+    var payload = {};
+    fields.forEach(function (f) { payload[f] = secret(f); });
+    var salt = bytesToB64u(crypto.getRandomValues(new Uint8Array(16)));
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return vaultKey(passphrase, salt).then(function (key) {
+      return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(payload)))
+        .then(function (cipher) {
+          state.secretVault = {
+            version: 1, salt: salt, iv: bytesToB64u(iv), data: bytesToB64u(cipher),
+            fields: fields, at: nowIso(), algorithm: 'AES-256-GCM/PBKDF2-150k'
+          };
+          fields.forEach(function (f) { runtimeVault.data[f] = payload[f]; settings[f] = ''; });
+          runtimeVault.key = key;
+          settings.vaultEnabled = true;
+          saveSettings(); saveState();
+          logAudit('vault_encrypted', 'sec-scout', 'Encrypted ' + fields.length + ' secret fields locally', { fields: fields });
+          return { ok: true, fields: fields };
+        });
+    }).catch(function (e) { return { ok: false, error: e.message }; });
+  }
+  function unlockVault(passphrase) {
+    var v = state.secretVault;
+    if (!v || !v.data) return Promise.resolve({ ok: false, error: 'لا توجد خزنة مشفّرة على هذا الجهاز.' });
+    return vaultKey(passphrase, v.salt).then(function (key) {
+      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64urlToBytes(v.iv) }, key, b64urlToBytes(v.data))
+        .then(function (buf) {
+          var data = safeJson(new TextDecoder().decode(buf), null);
+          if (!data || typeof data !== 'object') throw new Error('فشل فك التشفير — كلمة المرور غير صحيحة.');
+          runtimeVault = { key: key, data: data };
+          logAudit('vault_unlocked', 'sec-scout', 'Secret vault unlocked in memory', {});
+          return { ok: true, fields: Object.keys(data) };
+        });
+    }).catch(function (e) { return { ok: false, error: e.message || 'كلمة المرور غير صحيحة.' }; });
+  }
+  function vaultStatus() {
+    return {
+      exists: Boolean(state.secretVault && state.secretVault.data),
+      unlocked: Boolean(runtimeVault.key),
+      algorithm: state.secretVault ? state.secretVault.algorithm : null,
+      fields: state.secretVault ? (state.secretVault.fields || []) : []
+    };
   }
 
   /* ── audit / points / status ──────────────────────────────────────────── */
@@ -424,11 +510,34 @@
     }
     return { profile: p, promoted: false, newLevel: lvl };
   }
+  /* Penalty side of the quality contract: an error caught by the department
+     trio costs points and can demote the author; never below zero. */
+  function penalizePoints(agentId, points, reason) {
+    var p = ensureProfile(agentId);
+    var oldLevel = p.level;
+    p.points = Math.max(0, p.points - Math.abs(num(points, 0)));
+    var lvl = LEVELS[0];
+    LEVELS.forEach(function (l) { if (p.points >= l.minPoints) lvl = l; });
+    p.level = lvl.level;
+    p.rankTitle = lvl.title;
+    p.history.unshift({ points: -Math.abs(num(points, 0)), reason: reason, timestamp: nowIso() });
+    p.history = p.history.slice(0, 15);
+    var demoted = lvl.level < oldLevel;
+    if (demoted) {
+      p.badges.push('⚠️ تخفيض رتبة: ' + lvl.title);
+      logAudit('agent_demoted', agentId, 'Demoted to Level ' + lvl.level + ': ' + lvl.title, { points: p.points });
+      var ag = getAgent(agentId);
+      state.teamChat.push({ id: uuid(), senderId: 'hr-manager', senderName: 'مديرة الموارد البشرية (إنذار ⚠️)', senderAvatar: '⚠️', role: 'assistant', text: 'تم تخفيض رتبة **' + (ag ? ag.name : agentId) + '** إلى **' + lvl.title + '** بعد خطأ رصدته حلقة الجودة.', timestamp: nowIso() });
+    }
+    return { profile: p, demoted: demoted, newLevel: lvl };
+  }
 
-  function getAgent(id) { return DATA.agents.find(function (a) { return a.id === id; }) || null; }
+  function getAgent(id) { return allAgents().find(function (a) { return a.id === id; }) || null; }
   function allAgents() {
     var custom = (state.customAgents || []).filter(function (a) { return !DATA.agents.some(function (x) { return x.id === a.id; }); });
-    return DATA.agents.concat(custom);
+    var qa = QA_AGENTS.filter(function (a) { return !DATA.agents.some(function (x) { return x.id === a.id; }); });
+    var special = SPECIAL_AGENTS.filter(function (a) { return !DATA.agents.some(function (x) { return x.id === a.id; }); });
+    return DATA.agents.concat(qa, special, custom);
   }
 
   function recomputeStatus(agentId) {
@@ -496,14 +605,126 @@
     'marketing-lead': ['nemotron-3.5-lightning-free', 'seaglass-alpha-free', 'mimo-v2.6-flash-free'],
     'security-officer': ['iceman-free', 'deepseek-v4.1-flash-free', 'flint-40b-free'],
     'web-research-team': ['seaglass-alpha-free', 'tidepool-alpha-free', 'nemotron-3.5-super-vl-free'],
-    'auditors-experts-devs': ['deepseek-v4.1-flash-free', 'flint-40b-free', 'big-pickle']
+    'auditors-experts-devs': ['deepseek-v4.1-flash-free', 'flint-40b-free', 'big-pickle'],
+    'dev-auto': ['deepseek-v4.1-flash-free', 'big-pickle', 'flint-40b-free'],
+    'sec-scout': ['iceman-free', 'deepseek-v4.1-flash-free', 'flint-40b-free'],
+    'qa-exec-monitor': ['iceman-free', 'deepseek-v4.1-flash-free'],
+    'qa-fin-auditor': ['flint-40b-free', 'deepseek-v4.1-flash-free'],
+    'qa-mkt-corrector': ['big-pickle', 'nemotron-3.5-lightning-free']
   };
   var FALLBACK_MODELS = ['big-pickle', 'deepseek-v4.1-flash-free', 'seaglass-alpha-free', 'tidepool-alpha-free', 'flint-40b-free', 'iceman-free', 'beam-free', 'mimo-v2.6-flash-free', 'nemotron-3.5-lightning-free', 'nemotron-3.5-super-vl-free', 'hy4-flash-free'];
+
+  /* ── department quality trio (monitor / auditor / corrector) ─────────── */
+  var QA_KINDS = {
+    monitor: {
+      title: 'المراقب المتخصص', avatar: '👁️',
+      duties: 'تراقب كل مخرجات قسمك قبل اعتمادها. تبحث عن الأرقام غير المدعومة، والتناقضات، وتجاوز الصلاحيات، والادعاءات غير الموثقة، وتتبع مصدر كل معلومة. لا تثق في أي رد لمجرد أنه جاء من وكيل آخر — اطلب الدليل.',
+      skills: '- كشف الشذوذ\n- تتبع المصادر\n- تصنيف الخطورة\n- منع التمرير العشوائي (rubber-stamping)'
+    },
+    auditor: {
+      title: 'المدقق المتخصص', avatar: '🧾',
+      duties: 'تعيد التحقق بشكل مستقل من الصفر: تفحص الحسابات والشروط والسياسات والقرارات السابقة، وتختبر ملاحظات المراقب بدلاً من تصديقها. ترفض أي إجراء غير مكتمل أو غامض أو عالي المخاطر بدون دليل.',
+      skills: '- تدقيق مستقل\n- تحقق رقمي\n- مراجعة سياسات\n- إصدار حكم قابل للتتبع'
+    },
+    corrector: {
+      title: 'المصحح المتخصص', avatar: '🛠️',
+      duties: 'تصلح الأخطاء التي يكتشفها المراقب والمدقق بأقل تغيير ممكن مع الحفاظ على نية صاحب القرار. تكتب النسخة المصححة كاملة وتوضح كل تعديل بوسم [CORRECTION]، ثم تُعيد إصدار الحكم النهائي.',
+      skills: '- تصحيح دقيق\n- إعادة صياغة\n- تقليل الأثر\n- توثيق التغييرات'
+    }
+  };
+  var QA_PROTOCOL = '\n\n=== بروتوكول الإخراج الإلزامي ===\n' +
+    'ابدأ بسطر واحد فقط: [QA verdict="PASS" أو "FAIL" confidence="0-1" issues="عدد"]\n' +
+    'ثم اذكر الأدلة في سطرين إلى أربعة أسطر داخل [QA_DETAILS] ... [/QA_DETAILS].\n' +
+    'المصحح فقط يضيف أيضاً [CORRECTION] النص المصحح كاملاً [/CORRECTION].\n' +
+    'لا تكتب أي كلام خارج هذه الأوسمة. لا تمنح PASS بدون دليل واضح.';
+
+  function qaAgent(id, zone, department, kind, focus) {
+    var k = QA_KINDS[kind];
+    return {
+      id: id,
+      name: k.title + ' — ' + focus,
+      englishName: kind + '-' + zone,
+      avatar: k.avatar,
+      department: department,
+      zone: zone,
+      reportsTo: 'ceo',
+      status: 'available',
+      requiresApprovalFor: [],
+      allowedTools: ['quality_review', 'audit', 'correction', 'priority_execution'],
+      externalAccess: [],
+      rankTitle: 'حارس جودة معتمد 💎',
+      level: 3,
+      roleMd: 'أنت **' + k.title + '** في قسم **' + department + '**. تخصصك الدقيق: ' + focus + '.\n' + k.duties + QA_PROTOCOL,
+      skillsMd: k.skills
+    };
+  }
+  var QA_AGENTS = [
+    qaAgent('qa-exec-monitor', 'executive', 'الإدارة التنفيذية', 'monitor', 'التنسيق والقرارات التنفيذية'),
+    qaAgent('qa-exec-auditor', 'executive', 'الإدارة التنفيذية', 'auditor', 'التنسيق والقرارات التنفيذية'),
+    qaAgent('qa-exec-corrector', 'executive', 'الإدارة التنفيذية', 'corrector', 'التنسيق والقرارات التنفيذية'),
+    qaAgent('qa-fin-monitor', 'finance-security', 'المالية والأمان', 'monitor', 'الأرقام والمدفوعات والصلاحيات'),
+    qaAgent('qa-fin-auditor', 'finance-security', 'المالية والأمان', 'auditor', 'الأرقام والمدفوعات والصلاحيات'),
+    qaAgent('qa-fin-corrector', 'finance-security', 'المالية والأمان', 'corrector', 'الأرقام والمدفوعات والصلاحيات'),
+    qaAgent('qa-hr-monitor', 'hr-training', 'الإدارة والتطوير التنظيمي', 'monitor', 'التوظيف والتدريب وأحمال الفريق'),
+    qaAgent('qa-hr-auditor', 'hr-training', 'الإدارة والتطوير التنظيمي', 'auditor', 'التوظيف والتدريب وأحمال الفريق'),
+    qaAgent('qa-hr-corrector', 'hr-training', 'الإدارة والتطوير التنظيمي', 'corrector', 'التوظيف والتدريب وأحمال الفريق'),
+    qaAgent('qa-mkt-monitor', 'marketing', 'التسويق والنمو', 'monitor', 'المحتوى والإعلانات والعملاء'),
+    qaAgent('qa-mkt-auditor', 'marketing', 'التسويق والنمو', 'auditor', 'المحتوى والإعلانات والعملاء'),
+    qaAgent('qa-mkt-corrector', 'marketing', 'التسويق والنمو', 'corrector', 'المحتوى والإعلانات والعملاء'),
+    qaAgent('qa-res-monitor', 'research-lab', 'البحث والابتكار', 'monitor', 'مصادر البحث والفرص والتوصيات'),
+    qaAgent('qa-res-auditor', 'research-lab', 'البحث والابتكار', 'auditor', 'مصادر البحث والفرص والتوصيات'),
+    qaAgent('qa-res-corrector', 'research-lab', 'البحث والابتكار', 'corrector', 'مصادر البحث والفرص والتوصيات')
+  ];
+  /* The core experts/auditors team (engineering-audit) is already the final
+     authority for its own department, so it has no extra quality trio. */
+  var QA_TEAM_BY_ZONE = {
+    executive: { monitor: 'qa-exec-monitor', auditor: 'qa-exec-auditor', corrector: 'qa-exec-corrector' },
+    'finance-security': { monitor: 'qa-fin-monitor', auditor: 'qa-fin-auditor', corrector: 'qa-fin-corrector' },
+    'hr-training': { monitor: 'qa-hr-monitor', auditor: 'qa-hr-auditor', corrector: 'qa-hr-corrector' },
+    marketing: { monitor: 'qa-mkt-monitor', auditor: 'qa-mkt-auditor', corrector: 'qa-mkt-corrector' },
+    'research-lab': { monitor: 'qa-res-monitor', auditor: 'qa-res-auditor', corrector: 'qa-res-corrector' }
+  };
+  function getQaTeam(agentId) {
+    var ag = getAgent(agentId);
+    var zone = ag && ag.zone;
+    if (!zone || zone === 'engineering-audit') return null;
+    return QA_TEAM_BY_ZONE[zone] || null;
+  }
+
+  /* Two core specialists: an auto-developer that proposes/applies safe fixes,
+     and a secret/vulnerability hunter that finds exposed keys and encrypts them. */
+  var SPECIAL_AGENTS = [
+    {
+      id: 'dev-auto', name: 'المطور التلقائي', englishName: 'Auto Developer', avatar: '🧑‍💻',
+      department: 'الهندسة والتدقيق', zone: 'engineering-audit', reportsTo: 'ceo', status: 'available',
+      requiresApprovalFor: ['deploy'], allowedTools: ['patch', 'refactor', 'priority_execution'], externalAccess: [],
+      rankTitle: 'مهندس تحديث معتمد 💎', level: 4,
+      roleMd: 'أنت **المطور التلقائي** في المكتب. مهمتك تحليل أخطاء التشغيل وحصص النماذج ونتائج المختبر، ثم إصدار تصحيح آمن قابل للتطبيق داخل المتصفح فقط.\n' +
+        'القواعد: لا تلمس مفاتيح أو أسرار، لا تقترح حفظ سر في ملف عام، لا تضع شفرة قابلة للتنفيذ، ولا تخلق دوال جديدة. اقتصر على [DEV_PATCH target="اسم_الإعداد" value="قيمة"]وصف موجز[/DEV_PATCH] للإعدادات المسموح فقط (freeOnly, useBenchmarks, qualityGate, benchmarkThreshold, mode, groqModel, openrouterModel).\n' +
+        'إن لم يكن هناك إصلاح آمن، اكتب [DEV_PATCH target="none" value="none"]لا يوجد إصلاح آمن تلقائي[/DEV_PATCH].',
+      skillsMd: '- تحليل الأخطاء\n- ضبط الإعدادات\n- اقتراح تصحيحات آمنة\n- عدم كشف الأسرار'
+    },
+    {
+      id: 'sec-scout', name: 'باحث الثغرات والمفاتيح المكشوفة', englishName: 'Secrets & Vulnerabilities Scout', avatar: '🕵️',
+      department: 'الهندسة والتدقيق', zone: 'engineering-audit', reportsTo: 'ceo', status: 'available',
+      requiresApprovalFor: ['security_change'], allowedTools: ['secret_scan', 'redact', 'encrypt'], externalAccess: [],
+      rankTitle: 'حارس أسرار معتمد 💎', level: 4,
+      roleMd: 'أنت **باحث الثغرات والمفاتيح المكشوفة**. تفحص الإعدادات العامة والتخزين المحلي والصور والنسخ الاحتياطية بحثاً عن أنماط مفاتيح (gsk_, sk-, sk-or-, ghp_, xoxb-, رموز تيليجرام الرقمية، أو مفتاح خاص EC في الحقل d).\n' +
+        'القواعد الذهبية: لا تعرض السر كاملاً أبداً، اذكر آخر 4 أحرف فقط، صنّف الخطورة، وأوصِ بتشفير AES-256-GCM في خزنة محلية بكلمة مرور يدخلها المدير وحده.\n' +
+        'أخرج النتائج بصيغة [SEC_FINDING severity="high|medium|low" where="المكان" kind="نوع السر"]وصف مختصر[/SEC_FINDING].',
+      skillsMd: '- كشف المفاتيح المكشوفة\n- تعتيم الأسرار (redaction)\n- تقييم الثغرات\n- تشفير AES-256-GCM\n- تخزين آمن في المتصفح'
+    }
+  ];
 
   function isFreeModel(m) {
     if (!m) return false;
     var id = String(m.id || '');
     if (/free/i.test(id)) return true;
+    /* OpenRouter publishes pricing as {prompt, completion} strings. */
+    if (m.pricing && m.pricing.prompt != null && m.pricing.completion != null) {
+      var p = num(m.pricing.prompt, 1), c = num(m.pricing.completion, 1);
+      return p === 0 && c === 0 && !/:batch/i.test(id);
+    }
     var costs = Array.isArray(m.cost) ? m.cost : (m.cost ? [m.cost] : []);
     if (!costs.length) return false;
     return costs.every(function (c) {
@@ -512,18 +733,109 @@
       return input === 0 && output === 0;
     });
   }
-  function pickModel(agentId, availableIds, explicit) {
+
+  /* ── model lab: benchmark → calibration → assignment ─────────────────── */
+  var BENCHMARK_TASKS = {
+    'executive-assistant': { prompt: 'لديك ثلاث مهام متزاحمة: عرض عميل، تقرير مالي، وموافقة أمنية. ضع جدولاً تنفيذياً بأولوياتك وحدد ما يحتاج موافقة المدير.', keywords: ['أولوية', 'جدول', 'موافقة', 'مدير'], minLen: 100 },
+    'hr-manager': { prompt: 'فريقك يعمل فوق طاقته أسبوعين متتاليين. اقترح خطة توظيف أو إعادة توزيع مع مؤشرات قياس ومخاطر.', keywords: ['توظيف', 'مؤشر', 'مخاطر', 'فريق'], minLen: 100 },
+    'ai-trainer': { prompt: 'صمم خطة تدريب أسبوعية لوكيل ضعيف في الرد على العملاء مع KPI واضح وطريقة قياس.', keywords: ['تدريب', 'مؤشر', 'قياس', 'أسبوع'], minLen: 100 },
+    'accountant': { prompt: 'احسب هامش ربح منتج سعره $99 وتكلفته $41 مع تكلفة API $6، واذكر الافتراضات والمخاطر المالية.', keywords: ['هامش', 'تكلفة', 'ربح', 'افتراض'], minLen: 90 },
+    'marketing-lead': { prompt: 'اكتب إعلاناً عربياً مختصراً لمنتج أتمتة مع دعوة لاتخاذ إجراء، وحدد جمهوراً وقناة نشر ومقياس نجاح.', keywords: ['جمهور', 'قناة', 'قياس', 'إعلان'], minLen: 90 },
+    'security-officer': { prompt: 'راجع ربط webhook خارجي بمفتاح سري. صنّف الخطر واذكر الضوابط المطلوبة قبل الموافقة.', keywords: ['خطر', 'ضوابط', 'مفتاح', 'موافقة'], minLen: 90 },
+    'web-research-team': { prompt: 'ابحث عن فرصة SaaS جديدة واذكر مصدراً ومعايير اختيار ومخاطرة واحدة على الأقل.', keywords: ['مصدر', 'معايير', 'فرصة', 'مخاطرة'], minLen: 90 },
+    'auditors-experts-devs': { prompt: 'راجع مقترح أتمتة تقنياً: ما المخاطر التقنية، ومتى يحتاج تعيين مطور جديد؟', keywords: ['تقني', 'مخاطر', 'مطور', 'تدقيق'], minLen: 90 }
+  };
+  function benchmarkSpec(role) {
+    if (BENCHMARK_TASKS[role]) return BENCHMARK_TASKS[role];
+    var isQa = /^qa-/.test(String(role || ''));
+    return isQa
+      ? { prompt: 'راجع مقترحاً تنفيذياً يتضمن رقماً غير مدعوم وإجراءً يتطلب موافقة. أثبت خطأً واحداً وأصدر حكماً وفق بروتوكول QA.', keywords: ['دليل', 'خطأ', 'حكم', 'موافقة'], minLen: 80 }
+      : { prompt: 'حلل هذه المهمة الإدارية واقترح خطوات عملية ومخاطر ومؤشر نجاح.', keywords: ['خطوات', 'مخاطر', 'مؤشر', 'حل'], minLen: 80 };
+  }
+  function benchmarkScore(text, spec, live) {
+    var t = String(text || '');
+    var lower = t.toLowerCase();
+    if (!live || /الوضع التجريبي|تعذر الوصول إلى النموذج|demo mode/i.test(t)) return { score: 0, breakdown: 'رد تجريبي/غير حي — لا يُحتسب.' };
+    var hits = (spec.keywords || []).filter(function (k) { return lower.indexOf(String(k).toLowerCase()) !== -1; }).length;
+    var kwPts = Math.round(40 * hits / Math.max(1, (spec.keywords || []).length));
+    var minLen = spec.minLen || 80;
+    var lenPts = Math.min(25, Math.round(25 * t.length / minLen));
+    var structurePts = /\n/.test(t) && /[-•١٢٣1-9]/.test(t) ? 15 : 6;
+    var cleanPts = !/عذراً|لا أستطيع|غير قادر على (الوصول|الاتصال)/i.test(t) ? 20 : 8;
+    var score = Math.max(0, Math.min(100, kwPts + lenPts + structurePts + cleanPts));
+    return { score: score, breakdown: 'كلمات مفتاحية ' + kwPts + '/40 · طول ' + lenPts + '/25 · تنظيم ' + structurePts + '/15 · وضوح ' + cleanPts + '/20' };
+  }
+  function labKey(provider, model, role) {
+    return usageKey(provider, model) + '::' + String(role || '');
+  }
+  function qualifiedModelForRole(role, availableIds) {
+    if (!settings.useBenchmarks) return null;
+    var best = null;
+    Object.keys(state.modelBenchmarks || {}).forEach(function (k) {
+      var x = state.modelBenchmarks[k];
+      if (!x || x.role !== role || !x.passed) return;
+      if (availableIds && availableIds.length && availableIds.indexOf(x.model) === -1) return;
+      if (!best || num(x.score, 0) > num(best.score, 0)) best = x;
+    });
+    return best ? best.model : null;
+  }
+  /* Known free-tier IDs. Groq's /models endpoint has no price field, so only
+     these IDs are eligible; account limits still apply (429 is tracked). */
+  var GROQ_FREE_TIER_MODELS = [
+    'llama-3.3-70b-versatile', 'llama-3.1-8b-instant',
+    'openai/gpt-oss-120b', 'openai/gpt-oss-20b',
+    'meta-llama/llama-4-scout-17b-16e-instruct',
+    'meta-llama/llama-4-maverick-17b-128e-instruct',
+    'qwen/qwen3-32b', 'moonshotai/kimi-k2-instruct-0905',
+    'allam-2-7b', 'gemma2-9b-it'
+  ];
+  var GROQ_ROLE_MODELS = {
+    'executive-assistant': ['llama-3.3-70b-versatile', 'openai/gpt-oss-120b'],
+    'hr-manager': ['openai/gpt-oss-20b', 'llama-3.3-70b-versatile'],
+    'ai-trainer': ['openai/gpt-oss-20b', 'llama-3.1-8b-instant'],
+    'accountant': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
+    'marketing-lead': ['llama-3.1-8b-instant', 'openai/gpt-oss-20b'],
+    'security-officer': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
+    'web-research-team': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
+    'auditors-experts-devs': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile']
+  };
+  var OPENROUTER_ROLE_MODELS = {
+    'executive-assistant': ['baidu/ernie-5.5-flash-preview:free', 'liquid/lfm-3-1.7b:free'],
+    'hr-manager': ['nvidia/nemotron-3.5-lightning:free', 'liquid/lfm-3-1.7b:free'],
+    'ai-trainer': ['google/gemma-4-26b-a4b-it:free', 'liquid/lfm-3-1.7b:free'],
+    'accountant': ['baidu/ernie-5.5-flash-preview:free', 'recursive/flint-v1.0:free'],
+    'marketing-lead': ['liquid/lfm-3-1.7b:free', 'nvidia/nemotron-3.5-lightning:free'],
+    'security-officer': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free'],
+    'web-research-team': ['nvidia/nemotron-3.5-super-vl:free', 'baidu/ernie-5.5-flash-preview:free'],
+    'auditors-experts-devs': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free']
+  };
+  function rolePreferenceMap(provider) {
+    if (provider === 'groq') return GROQ_ROLE_MODELS;
+    if (provider === 'openrouter') return OPENROUTER_ROLE_MODELS;
+    return ROLE_MODELS;
+  }
+  function providerFallbacks(provider) {
+    if (provider === 'groq') return GROQ_FREE_TIER_MODELS;
+    if (provider === 'openrouter') return ['baidu/ernie-5.5-flash-preview:free', 'liquid/lfm-3-1.7b:free', 'nvidia/nemotron-3.5-lightning:free', 'google/gemma-4-26b-a4b-it:free'];
+    return FALLBACK_MODELS;
+  }
+  function pickModel(agentId, availableIds, explicit, provider) {
     if (explicit && explicit !== 'auto') return explicit;
     var avail = availableIds || [];
-    var preferred = ROLE_MODELS[agentId] || [];
+    var qualified = qualifiedModelForRole(agentId, avail);
+    if (qualified) return qualified;
+    var map = rolePreferenceMap(provider);
+    var preferred = map[agentId] || [];
     for (var i = 0; i < preferred.length; i++) if (avail.indexOf(preferred[i]) !== -1) return preferred[i];
-    for (var j = 0; j < FALLBACK_MODELS.length; j++) if (avail.indexOf(FALLBACK_MODELS[j]) !== -1) return FALLBACK_MODELS[j];
-    return avail[0] || 'big-pickle';
+    var fallbacks = providerFallbacks(provider);
+    for (var j = 0; j < fallbacks.length; j++) if (avail.indexOf(fallbacks[j]) !== -1) return fallbacks[j];
+    return avail[0] || fallbacks[0];
   }
-  function fallbackChain(agentId, availableIds, first) {
+  function fallbackChain(agentId, availableIds, first, provider) {
     var chain = [];
     if (first) chain.push(first);
-    (ROLE_MODELS[agentId] || []).concat(FALLBACK_MODELS).forEach(function (id) {
+    var map = rolePreferenceMap(provider);
+    (map[agentId] || []).concat(providerFallbacks(provider), availableIds || []).forEach(function (id) {
       if ((availableIds || []).indexOf(id) !== -1 && chain.indexOf(id) === -1) chain.push(id);
     });
     if (!chain.length && availableIds && availableIds.length) chain.push(availableIds[0]);
@@ -531,24 +843,27 @@
   }
   /* Drop models already known to be rate-limited; keep at least one candidate. */
   function availableChain(agentId, availableIds, first, provider) {
-    var full = fallbackChain(agentId, availableIds, first);
+    var full = fallbackChain(agentId, availableIds, first, provider);
     var ok = full.filter(function (id) { return !isModelLimited(provider, id); });
     return ok.length ? ok : full;
   }
-  function roleAssignments(availableIds) {
+  function roleAssignments(availableIds, provider) {
     var out = {};
-    Object.keys(ROLE_MODELS).forEach(function (id) { out[id] = pickModel(id, availableIds, settings.modelOverrides[id]); });
+    var roles = Object.keys(ROLE_MODELS)
+      .concat(QA_AGENTS.map(function (a) { return a.id; }))
+      .concat(SPECIAL_AGENTS.map(function (a) { return a.id; }));
+    roles.forEach(function (id) { out[id] = pickModel(id, availableIds, settings.modelOverrides[id], provider); });
     return out;
   }
 
   /* ── provider layer ───────────────────────────────────────────────────── */
-  var providerCache = { local: null, localAt: 0, zen: null, zenAt: 0 };
+  var providerCache = { local: null, localAt: 0, zen: null, zenAt: 0, groq: null, groqAt: 0, openrouter: null, openrouterAt: 0 };
   function basicAuth(password) {
     return 'Basic ' + btoa('opencode:' + password);
   }
 
   function listLocalModels(force) {
-    if (!settings.localPassword) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل كلمة مرور خدمة OpenCode (service.json).' });
+    if (!secret('localPassword')) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل كلمة مرور خدمة OpenCode (service.json).' });
     if (!force && providerCache.local && Date.now() - providerCache.localAt < 30000) return Promise.resolve(providerCache.local);
     // Try the optional HTTPS/local bridge first (works from mdm1.org), then the direct app URL.
     var bases = [settings.localBridgeUrl, settings.localUrl].filter(Boolean).filter(function (v, i, a) { return a.indexOf(v) === i; });
@@ -561,7 +876,7 @@
       }
       var base = bases[i].replace(/\/$/, '');
       return nativeFetch(base + '/api/model', {
-        headers: { authorization: basicAuth(settings.localPassword), accept: 'application/json' },
+        headers: { authorization: basicAuth(secret('localPassword')), accept: 'application/json' },
         cache: 'no-store'
       }).then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -582,10 +897,10 @@
   }
 
   function listZenModels(force) {
-    if (!settings.zenKey) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل مفتاح OpenCode Zen.' });
+    if (!secret('zenKey')) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل مفتاح OpenCode Zen.' });
     if (!force && providerCache.zen && Date.now() - providerCache.zenAt < 30000) return Promise.resolve(providerCache.zen);
     return nativeFetch(settings.zenBase.replace(/\/$/, '') + '/models', {
-      headers: { authorization: 'Bearer ' + settings.zenKey, accept: 'application/json' },
+      headers: { authorization: 'Bearer ' + secret('zenKey'), accept: 'application/json' },
       cache: 'no-store'
     }).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -603,11 +918,58 @@
     });
   }
 
+  function listGroqModels(force) {
+    if (!secret('groqKey')) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل مفتاح Groq (يُحفظ في متصفحك فقط).' });
+    if (!force && providerCache.groq && Date.now() - providerCache.groqAt < 30000) return Promise.resolve(providerCache.groq);
+    return nativeFetch(settings.groqBase.replace(/\/$/, '') + '/models', {
+      headers: { authorization: 'Bearer ' + secret('groqKey'), accept: 'application/json' },
+      cache: 'no-store'
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      var all = (j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; });
+      /* Groq does not publish a price field — restrict to the free-tier allowlist. */
+      var ids = all.map(function (m) { return m.id; });
+      var free = GROQ_FREE_TIER_MODELS.filter(function (id) { return ids.indexOf(id) !== -1; });
+      var models = all.map(function (m) { return Object.assign({}, m, { freeTier: free.indexOf(m.id) !== -1 }); });
+      var out = { connected: true, models: models, free: free, base: settings.groqBase, error: null };
+      providerCache.groq = out; providerCache.groqAt = Date.now();
+      return out;
+    }).catch(function (e) {
+      var out = { connected: false, models: [], free: [], base: settings.groqBase, error: e.message };
+      providerCache.groq = out; providerCache.groqAt = Date.now();
+      return out;
+    });
+  }
+
+  function listOpenRouterModels(force) {
+    if (!force && providerCache.openrouter && Date.now() - providerCache.openrouterAt < 30000) return Promise.resolve(providerCache.openrouter);
+    var headers = { accept: 'application/json', 'HTTP-Referer': location.origin, 'X-Title': 'MDM1 AI Office' };
+    if (secret('openrouterKey')) headers.authorization = 'Bearer ' + secret('openrouterKey');
+    return nativeFetch(settings.openrouterBase.replace(/\/$/, '') + '/models', { headers: headers, cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).then(function (j) {
+        var all = (j.data || []).filter(function (m) { return !/:batch/i.test(String(m.id || '')); });
+        var free = all.filter(isFreeModel).map(function (m) { return m.id; });
+        var out = { connected: true, models: all, free: free, base: settings.openrouterBase, error: null };
+        providerCache.openrouter = out; providerCache.openrouterAt = Date.now();
+        return out;
+      }).catch(function (e) {
+        var out = { connected: false, models: [], free: [], base: settings.openrouterBase, error: e.message };
+        providerCache.openrouter = out; providerCache.openrouterAt = Date.now();
+        return out;
+      });
+  }
+
   function currentMode() {
     if (settings.mode !== 'auto') return settings.mode;
-    if (settings.localPassword) return 'local';
-    if (settings.zenKey) return 'zen';
-    if (settings.openrouterKey) return 'openrouter';
+    if (secret('localPassword')) return 'local';
+    if (secret('zenKey')) return 'zen';
+    if (secret('groqKey')) return 'groq';
+    if (secret('openrouterKey')) return 'openrouter';
     return 'demo';
   }
 
@@ -638,7 +1000,8 @@
     var agent = getAgent(opts.agentId) || { id: opts.agentId, name: opts.agentId, englishName: opts.agentId, roleMd: '', skillsMd: '', allowedTools: [], requiresApprovalFor: [], department: '' };
     var systemPrompt = opts.systemPrompt || buildSystemPrompt(agent, opts.extraContext || '', opts.memories || []);
     var messages = opts.messages || [];
-    var mode = currentMode();
+    var mode = opts.forceProvider || currentMode();
+    var forcedModel = opts.forceModel || ''; // used by the model lab for exact-model tests
     var lastUser = messages.length ? messages[messages.length - 1].text : '';
 
     function fallback(warning) {
@@ -647,19 +1010,68 @@
 
     if (mode === 'demo') return Promise.resolve(fallback(null));
 
+    /* Shared OpenAI-compatible executor for Zen / Groq / OpenRouter.
+       Free-only pool, per-role distribution, 429-aware fallback chain. */
+    function runOpenAiChain(provider, listing, url, headers, pool) {
+      var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], provider);
+      var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, provider).slice(0, 3);
+      var errors = [];
+      function attempt(i) {
+        if (i >= chain.length) return fallback(errors.join('\n'));
+        var id = chain[i];
+        return nativeFetch(url, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            model: id,
+            messages: [{ role: 'system', content: systemPrompt }].concat(messages.map(function (m) { return { role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text }; })),
+            temperature: 0.7
+          })
+        }).then(function (r) {
+          return r.text().then(function (raw) {
+            var j = safeJson(raw, {});
+            if (!r.ok) {
+              var msg = (j.error && j.error.message) || j.message || raw.slice(0, 200) || ('HTTP ' + r.status);
+              errors.push(id + ': ' + msg);
+              if (r.status === 429 || /rate limit|free usage limit/i.test(msg)) {
+                markRateLimit(provider, id, retryMsFrom(r, j), msg);
+                throw new Error('RATE_LIMIT');
+              }
+              if (r.status === 402 || /insufficient balance|insufficient_quota/i.test(msg)) throw new Error('NO_BALANCE');
+              markModelError(provider, id, msg);
+              return attempt(i + 1);
+            }
+            var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
+            if (!text) { errors.push(id + ': رد فارغ'); markModelError(provider, id, 'رد فارغ'); return attempt(i + 1); }
+            var out = { text: text, mode: 'live', provider: provider, model: id, usage: estimateUsage(systemPrompt, messages, text) };
+            markUsage(provider, id, out.usage);
+            return out;
+          });
+        }).catch(function (e) {
+          if (e.message === 'RATE_LIMIT' || e.message === 'NO_BALANCE') throw e;
+          errors.push(id + ': ' + e.message);
+          markModelError(provider, id, e.message);
+          return attempt(i + 1);
+        });
+      }
+      return attempt(0).catch(function (e) {
+        return fallback(errors.join('\n') || (e.message === 'NO_BALANCE' ? 'الرصيد غير كافٍ — استخدم النماذج المجانية فقط.' : e.message));
+      });
+    }
+
     if (mode === 'local') {
       return listLocalModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error);
         var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
-        var first = pickModel(agent.id, pool, settings.modelOverrides[agent.id]);
-        var chain = availableChain(agent.id, pool, first, 'opencode-local').slice(0, 3);
+        var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'local');
+        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-local').slice(0, 3);
         var errors = [];
         function attempt(i) {
           if (i >= chain.length) return fallback(errors.join('\n'));
           var id = chain[i];
           return nativeFetch((listing.base || settings.localUrl).replace(/\/$/, '') + '/api/experimental/generate/text', {
             method: 'POST',
-            headers: { authorization: basicAuth(settings.localPassword), 'content-type': 'application/json' },
+            headers: { authorization: basicAuth(secret('localPassword')), 'content-type': 'application/json' },
             body: JSON.stringify({ prompt: transcript(systemPrompt, messages), model: { id: id, providerID: 'opencode' } })
           }).then(function (r) {
             return r.text().then(function (raw) {
@@ -697,15 +1109,15 @@
       return listZenModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error);
         var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
-        var first = pickModel(agent.id, pool, settings.modelOverrides[agent.id]);
-        var chain = availableChain(agent.id, pool, first, 'opencode-zen').slice(0, 3);
+        var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'zen');
+        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-zen').slice(0, 3);
         var errors = [];
         function attempt(i) {
           if (i >= chain.length) return fallback(errors.join('\n'));
           var id = chain[i];
           return nativeFetch(settings.zenBase.replace(/\/$/, '') + '/chat/completions', {
             method: 'POST',
-            headers: { 'content-type': 'application/json', authorization: 'Bearer ' + settings.zenKey },
+            headers: { 'content-type': 'application/json', authorization: 'Bearer ' + secret('zenKey') },
             body: JSON.stringify({
               model: id,
               messages: [{ role: 'system', content: systemPrompt }].concat(messages.map(function (m) { return { role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text }; })),
@@ -741,33 +1153,26 @@
       });
     }
 
+    if (mode === 'groq') {
+      if (!secret('groqKey')) return Promise.resolve(fallback('أدخل مفتاح Groq.'));
+      return listGroqModels().then(function (listing) {
+        if (!listing.connected) return fallback(listing.error);
+        if (!listing.free.length) return fallback('لا توجد نماذج Groq مجانية متاحة لحسابك حالياً.');
+        var pool = forcedModel ? [forcedModel] : (settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; }));
+        return runOpenAiChain('groq', listing, settings.groqBase.replace(/\/$/, '') + '/chat/completions',
+          { 'content-type': 'application/json', authorization: 'Bearer ' + secret('groqKey') }, pool);
+      });
+    }
+
     if (mode === 'openrouter') {
-      if (!settings.openrouterKey) return Promise.resolve(fallback('أدخل مفتاح OpenRouter.'));
-      return nativeFetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + settings.openrouterKey, 'HTTP-Referer': location.origin, 'X-Title': 'MDM1 AI Office' },
-        body: JSON.stringify({
-          model: settings.openrouterModel || 'openai/gpt-4o-mini:free',
-          messages: [{ role: 'system', content: systemPrompt }].concat(messages.map(function (m) { return { role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text }; })),
-          temperature: 0.7
-        })
-      }).then(function (r) {
-        return r.text().then(function (raw) {
-          var j = safeJson(raw, {});
-          var model = settings.openrouterModel || 'openai/gpt-4o-mini:free';
-          if (!r.ok) {
-            var msg = (j.error && j.error.message) || raw.slice(0, 200);
-            if (r.status === 429) markRateLimit('openrouter', model, retryMsFrom(r, j), msg);
-            else markModelError('openrouter', model, msg);
-            return fallback(msg);
-          }
-          var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
-          if (!text) { markModelError('openrouter', model, 'رد فارغ'); return fallback('رد فارغ'); }
-          var out = { text: text, mode: 'live', provider: 'openrouter', model: model, usage: estimateUsage(systemPrompt, messages, text) };
-          markUsage('openrouter', model, out.usage);
-          return out;
-        });
-      }).catch(function (e) { return fallback(e.message); });
+      if (!secret('openrouterKey')) return Promise.resolve(fallback('أدخل مفتاح OpenRouter.'));
+      return listOpenRouterModels().then(function (listing) {
+        if (!listing.connected) return fallback(listing.error);
+        var pool = forcedModel ? [forcedModel] : (settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; }));
+        if (!pool.length) return fallback('لا توجد نماذج مجانية على OpenRouter حالياً.');
+        return runOpenAiChain('openrouter', listing, settings.openrouterBase.replace(/\/$/, '') + '/chat/completions',
+          { 'content-type': 'application/json', authorization: 'Bearer ' + secret('openrouterKey'), 'HTTP-Referer': location.origin, 'X-Title': 'MDM1 AI Office' }, pool);
+      });
     }
 
     return Promise.resolve(fallback('مزود غير معروف: ' + mode));
@@ -790,6 +1195,261 @@
         mode: 'fallback', provider: currentMode(), model: 'demo',
         warning: e.message, usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, costUsd: 0 }
       };
+    });
+  }
+
+  /* ── model lab ────────────────────────────────────────────────────────── */
+  function runBenchmark(provider, model, role) {
+    var spec = benchmarkSpec(role);
+    var ag = getAgent(role) || { id: role, name: role, roleMd: '', skillsMd: '' };
+    return aiGenerate({
+      agentId: role,
+      forceProvider: provider,
+      forceModel: model,
+      systemPrompt: buildSystemPrompt(ag, '', []),
+      messages: [{ role: 'user', text: spec.prompt }]
+    }).then(function (r) {
+      var sc = benchmarkScore(r.text, spec, r.mode === 'live');
+      var rec = {
+        provider: provider, model: model, role: role, score: sc.score, breakdown: sc.breakdown,
+        passed: sc.score >= num(settings.benchmarkThreshold, 70), at: nowIso(), mode: r.mode,
+        sample: String(r.text || '').slice(0, 400), warning: r.warning || null
+      };
+      state.modelBenchmarks[labKey(provider, model, role)] = rec;
+      logAudit('model_benchmark', role, 'Benchmark ' + provider + '/' + model + ': ' + sc.score + ' (' + (rec.passed ? 'pass' : 'fail') + ')', { model: model, score: sc.score });
+      saveState();
+      return rec;
+    });
+  }
+  function runTraining(provider, model, role) {
+    var spec = benchmarkSpec(role);
+    var ag = getAgent(role) || { id: role, name: role, roleMd: '', skillsMd: '' };
+    var drills = [
+      spec.prompt,
+      spec.prompt + '\n\nأعد الإجابة بخطوات قصيرة واضحة مع مثال عملي.',
+      spec.prompt + '\n\nأضف قائمة تحقق نهائية ومؤشر نجاح.'
+    ];
+    var results = [], chain = Promise.resolve();
+    drills.forEach(function (prompt) {
+      chain = chain.then(function () {
+        return aiGenerate({
+          agentId: role, forceProvider: provider, forceModel: model,
+          systemPrompt: buildSystemPrompt(ag, 'هذا تمرين تدريبي (prompt calibration) على دورك.', []),
+          messages: [{ role: 'user', text: prompt }]
+        });
+      }).then(function (r) {
+        if (r.mode !== 'live') return;
+        results.push({ text: String(r.text || '').slice(0, 700), score: benchmarkScore(r.text, spec, true).score });
+      });
+    });
+    return chain.then(function () {
+      var key = labKey(provider, model, role);
+      var avg = results.length ? Math.round(results.reduce(function (a, x) { return a + x.score; }, 0) / results.length) : 0;
+      var rec = {
+        provider: provider, model: model, role: role, status: results.length ? 'trained' : 'offline',
+        drills: results.length, avgScore: avg, trainedAt: nowIso(),
+        examples: results.slice(-2).map(function (x) { return x.text; })
+      };
+      state.modelTraining[key] = rec;
+      /* Training improves the stored benchmark when it produces a better pass. */
+      var b = state.modelBenchmarks[key];
+      if (results.length && (!b || avg > num(b.score, 0))) {
+        state.modelBenchmarks[key] = {
+          provider: provider, model: model, role: role, score: avg,
+          breakdown: 'متوسط ' + results.length + ' تمرين تدريبي',
+          passed: avg >= num(settings.benchmarkThreshold, 70), at: nowIso(), mode: 'live',
+          sample: results[results.length - 1].text.slice(0, 400), warning: null
+        };
+      }
+      logAudit('model_training', role, 'Calibrated ' + provider + '/' + model + ': ' + results.length + ' drills, avg ' + avg, { model: model });
+      saveState();
+      return rec;
+    });
+  }
+  function assignQualifiedModels() {
+    var count = 0;
+    var roles = Object.keys(ROLE_MODELS).concat(QA_AGENTS.map(function (a) { return a.id; }));
+    roles.forEach(function (role) {
+      var best = null;
+      Object.keys(state.modelBenchmarks || {}).forEach(function (k) {
+        var x = state.modelBenchmarks[k];
+        if (!x || x.role !== role || !x.passed) return;
+        if (!best || num(x.score, 0) > num(best.score, 0)) best = x;
+      });
+      if (best) { settings.modelOverrides[role] = best.model; count++; }
+    });
+    if (count) { saveSettings(); logAudit('models_auto_assigned', 'model-lab', 'Assigned ' + count + ' benchmark-qualified models', {}); }
+    return count;
+  }
+  function benchmarkReport() {
+    return Object.keys(state.modelBenchmarks || {}).map(function (k) { return state.modelBenchmarks[k]; })
+      .sort(function (a, b) { return num(b.score, 0) - num(a.score, 0); });
+  }
+  function trainingReport() {
+    return Object.keys(state.modelTraining || {}).map(function (k) { return state.modelTraining[k]; });
+  }
+
+  /* ── department quality gate ──────────────────────────────────────────── */
+  function qaVerdict(text) {
+    var m = String(text || '').match(/\[QA\s+verdict\s*=\s*"(PASS|FAIL)"/i);
+    return m ? m[1].toUpperCase() : null;
+  }
+  function qaTag(text, tag) {
+    var m = String(text || '').match(new RegExp('\\[' + tag + '\\]([\\s\\S]*?)\\[\\/' + tag + '\\]', 'i'));
+    return m ? m[1].trim() : '';
+  }
+  function qaCall(agentId, prompt, context) {
+    var ag = getAgent(agentId);
+    return aiGenerate({ agentId: agentId, extraContext: context || '', messages: [{ role: 'user', text: prompt }] });
+  }
+  function qualityGate(agentId, proposal) {
+    if (!settings.qualityGate) return Promise.resolve({ status: 'disabled', enabled: false, findings: [] });
+    var team = getQaTeam(agentId);
+    if (!team) return Promise.resolve({ status: 'core-team', enabled: true, team: null, findings: [], note: 'فريق الخبراء والمدققين الأساسي هو المرجع النهائي لهذا القسم.' });
+    var author = getAgent(agentId);
+    var summary = 'المقترح: ' + String(proposal.title || '') + '\n' +
+      'التفاصيل: ' + String(proposal.details || '') + '\n' +
+      'الخطورة المعلنة: ' + String(proposal.risk || 'medium') + '\n' +
+      'الإجراء: ' + String(proposal.actionType || 'agent_proposal');
+    return qaCall(team.monitor,
+      'أنت المراقب. راقب المقترح التالي قبل أي تنفيذ. اذكر عيباً واحداً على الأقل إن وُجد، ولا تمنح PASS إلا بوجود دليل واضح. لا تكرر كلام المقترح.\n\n' + summary,
+      'مراقبة ما قبل التنفيذ — قسم ' + (author ? author.department : agentId)
+    ).then(function (m) {
+      return qaCall(team.auditor,
+        'أنت المدقق. تحقق من المقترح ومن تقرير المراقب بشكل مستقل من الصفر. ارفض أي رقم أو صلاحية غير مؤكدة.\n\n' + summary + '\n\nتقرير المراقب:\n' + m.text,
+        'تدقيق مستقل — قسم ' + (author ? author.department : agentId)
+      ).then(function (a) {
+        return qaCall(team.corrector,
+          'أنت المصحح. أنتج النسخة المصححة الكاملة من المقترح بأقل تغيير، واذكر التعديلات داخل [CORRECTION]، ثم أصدر حكمك النهائي.\n\n' + summary + '\n\nالمراقب:\n' + m.text + '\n\nالمدقق:\n' + a.text,
+          'تصحيح ما قبل التنفيذ — قسم ' + (author ? author.department : agentId)
+        ).then(function (c) {
+          var live = m.mode === 'live' && a.mode === 'live' && c.mode === 'live';
+          var verdicts = [qaVerdict(m.text), qaVerdict(a.text), qaVerdict(c.text)];
+          var failed = verdicts.indexOf('FAIL') !== -1;
+          var correction = qaTag(c.text, 'CORRECTION');
+          var status = !live ? 'inconclusive' : (failed ? 'flagged' : (correction ? 'corrected' : 'passed'));
+          var findings = [qaTag(m.text, 'QA_DETAILS'), qaTag(a.text, 'QA_DETAILS')].filter(Boolean);
+          var report = {
+            at: nowIso(), author: agentId, team: team, status: status, live: live,
+            verdicts: verdicts, findings: findings, correction: correction,
+            summary: String(proposal.title || ''), models: [m.model, a.model, c.model]
+          };
+          if (live) {
+            if (status === 'passed') {
+              awardPoints(agentId, 6, 'اجتياز حلقة الجودة: ' + String(proposal.title || '').slice(0, 30));
+              Object.keys(team).forEach(function (k) { awardPoints(team[k], 4, 'مراجعة مقترح سليم: ' + String(proposal.title || '').slice(0, 24)); });
+            } else if (status === 'corrected') {
+              penalizePoints(agentId, 4, 'خطأ صحيحه المصحح: ' + String(proposal.title || '').slice(0, 30));
+              awardPoints(team.monitor, 5, 'رصد خطأ قبل التنفيذ');
+              awardPoints(team.auditor, 5, 'تحقق مستقل من الخطأ');
+              awardPoints(team.corrector, 8, 'تصحيح المقترح قبل التنفيذ');
+            } else if (status === 'flagged') {
+              penalizePoints(agentId, 10, 'مقترح مرفوض من حلقة الجودة: ' + String(proposal.title || '').slice(0, 30));
+              awardPoints(team.monitor, 8, 'منع تنفيذ مقترح خاطئ');
+              awardPoints(team.auditor, 8, 'رفض مقترح غير مؤكد');
+              awardPoints(team.corrector, 5, 'محاولة تصحيح مقترح مرفوض');
+            }
+          } else {
+            report.note = 'الردود كانت تجريبية/غير حي: لا توجد عقوبات أو مكافآت تلقائية.';
+          }
+          state.qualityReports.unshift(report);
+          state.qualityReports = state.qualityReports.slice(0, 100);
+          logAudit('quality_gate', agentId, 'Quality gate: ' + status + ' — ' + String(proposal.title || '').slice(0, 60), { team: team, verdicts: verdicts });
+          saveState();
+          return report;
+        });
+      });
+    }).catch(function (e) {
+      var report = { at: nowIso(), author: agentId, team: team, status: 'inconclusive', live: false, findings: [e.message], verdicts: [], correction: '' };
+      state.qualityReports.unshift(report);
+      state.qualityReports = state.qualityReports.slice(0, 100);
+      logAudit('quality_gate_error', agentId, 'Quality gate unavailable: ' + e.message, {});
+      saveState();
+      return report;
+    });
+  }
+
+  /* ── secret hunter + auto developer ───────────────────────────────────── */
+  function redactSecret(value) {
+    var s = String(value || '');
+    if (s.length <= 8) return '***';
+    return s.slice(0, 2) + '…' + s.slice(-4) + ' (' + s.length + 'char)';
+  }
+  var SECRET_PATTERNS = [
+    { re: /gsk_[A-Za-z0-9_-]{12,}/g, kind: 'مفتاح Groq', severity: 'high' },
+    { re: /sk-or-[A-Za-z0-9_-]{12,}/g, kind: 'مفتاح OpenRouter', severity: 'high' },
+    { re: /sk-[A-Za-z0-9]{20,}/g, kind: 'مفتاح OpenAI/Zen', severity: 'high' },
+    { re: /gh[pousr]_[A-Za-z0-9]{20,}/g, kind: 'رمز GitHub', severity: 'high' },
+    { re: /xox[baprs]-[A-Za-z0-9-]{10,}/g, kind: 'رمز Slack', severity: 'high' },
+    { re: /\b\d{8,10}:[A-Za-z0-9_-]{30,}\b/g, kind: 'رمز بوت تيليجرام', severity: 'high' },
+    { re: /"d"\s*:\s*"[A-Za-z0-9_-]{30,}"/g, kind: 'مفتاح خاص ECDSA', severity: 'high' }
+  ];
+  function securityScan() {
+    var sources = [
+      { where: 'office-config.js (عام)', text: JSON.stringify(CFG) },
+      { where: 'localStorage', text: Object.keys(localStorage).map(function (k) { return k + '=' + localStorage.getItem(k); }).join('\n') },
+      { where: 'النسخ/الصادرات المحفوظة', text: JSON.stringify({ exports: state.exports, snapshots: state.snapshots, exportsContent: state.exportContents }) }
+    ];
+    var findings = [];
+    sources.forEach(function (src) {
+      SECRET_PATTERNS.forEach(function (p) {
+        var m = String(src.text || '').match(p.re);
+        if (!m) return;
+        findings.push({ where: src.where, kind: p.kind, severity: p.severity, hint: redactSecret(m[0]), count: m.length });
+      });
+    });
+    var v = vaultStatus();
+    if (!v.exists && findings.length) {
+      findings.push({ where: 'الخزنة', kind: 'لا توجد خزنة مشفّرة', severity: 'medium', hint: 'استخدم زر «تشفير المفاتيح» في لوحة الاتصال.', count: 1 });
+    }
+    state.securityFindings = findings;
+    logAudit('security_scan', 'sec-scout', 'Scan found ' + findings.length + ' potential exposure(s)', { count: findings.length });
+    saveState();
+    return { findings: findings, vault: v, scannedAt: nowIso() };
+  }
+  var DEV_PATCH_ALLOWED = ['freeOnly', 'useBenchmarks', 'qualityGate', 'benchmarkThreshold', 'mode', 'groqModel', 'openrouterModel'];
+  function autoDeveloperUpdate() {
+    var diagnostics = {
+      quota: quotaSummary(),
+      recentErrors: (state.auditLog || []).filter(function (x) { return /error|fail|429|limit/i.test(String(x.eventType) + String(x.summary)); }).slice(0, 5),
+      benchmarks: benchmarkReport().slice(0, 5),
+      quality: (state.qualityReports || []).slice(0, 3)
+    };
+    return aiGenerate({
+      agentId: 'dev-auto',
+      extraContext: 'تشخيص تلقائي من المتصفح (لا ترسل أي مفتاح أو سر):\n' + JSON.stringify(diagnostics).slice(0, 2500),
+      messages: [{ role: 'user', text: 'اقترح إصلاحاً تلقائياً آمناً أو صرّح بعدم وجود إصلاح، وفق صيغة [DEV_PATCH] المعتمدة.' }]
+    }).then(function (r) {
+      var patches = [];
+      var clean = String(r.text || '').replace(/\[DEV_PATCH\s+target="([^"]+)"\s+value="([^"]+)"\]([\s\S]*?)\[\/DEV_PATCH\]/gi, function (_, target, value, desc) {
+        patches.push({ target: String(target).trim(), value: String(value).trim(), description: String(desc || '').trim() });
+        return '';
+      });
+      var applied = [];
+      patches.forEach(function (p) {
+        if (DEV_PATCH_ALLOWED.indexOf(p.target) === -1) return;
+        if (['freeOnly', 'useBenchmarks', 'qualityGate'].indexOf(p.target) !== -1) {
+          if (!/^(true|false)$/i.test(p.value)) return;
+          settings[p.target] = p.value.toLowerCase() === 'true';
+        } else if (p.target === 'benchmarkThreshold') {
+          var n = num(p.value, NaN);
+          if (!isFinite(n) || n < 40 || n > 95) return;
+          settings[p.target] = Math.round(n);
+        } else if (p.target === 'mode') {
+          if (['auto', 'local', 'zen', 'groq', 'openrouter', 'demo'].indexOf(p.value) === -1) return;
+          settings[p.target] = p.value;
+        } else {
+          if (!/^[A-Za-z0-9_.:/-]{1,120}$/.test(p.value)) return;
+          settings[p.target] = p.value;
+        }
+        applied.push({ target: p.target, value: settings[p.target] === true || settings[p.target] === false ? String(settings[p.target]) : settings[p.target] });
+      });
+      if (applied.length) {
+        saveSettings();
+        awardPoints('dev-auto', 10, 'تطبيق تحديث تلقائي آمن');
+        logAudit('auto_dev_patch', 'dev-auto', 'Applied ' + applied.length + ' safe setting patch(es)', { applied: applied });
+      }
+      return { ok: true, mode: r.mode, patches: patches, applied: applied, text: clean.trim() || String(r.text || '') };
     });
   }
 
@@ -842,19 +1502,45 @@
     recomputeStatus(item.agentId);
     logAudit('approval_created', item.agentId, 'Created approval: ' + item.title, { id: item.id });
     telegramNotify('⏳ *طلب موافقة جديد*\n\n👤 ' + item.agentName + '\n📌 ' + item.title + '\n⚠️ ' + item.risk + '\n📝 ' + String(item.details || '').slice(0, 500));
+    /* Every other approval source (votes, HR, tasks, workflows) is gated too.
+       processProposals already ran the gate and sets _skipQuality. */
+    if (settings.qualityGate && !data._skipQuality) {
+      qualityGate(item.agentId, item).then(function (qa) {
+        item.quality = qa;
+        if (qa.status === 'flagged') {
+          item.risk = 'high';
+          item.securityNote = '🚫 حلقة الجودة رفضت هذا المقترح — لا يُنفَّذ إلا بتأكيد صريح من المدير.';
+        }
+        saveState();
+      }).catch(function () { /* gate failure is recorded in qualityReports */ });
+    }
     return item;
   }
 
+  /* No proposal reaches the CEO's approval queue before the department's
+     monitor → auditor → corrector gate has finished. */
   function processProposals(agentId, agentName, agentAvatar, requests) {
-    (requests || []).forEach(function (r) {
+    return Promise.all((requests || []).map(function (r) {
       if (r._type === 'memo') {
         var target = getAgent(r.toId);
         state.internalMemos.push({ id: 'memo-' + uuid().slice(0, 8), fromId: agentId, fromName: agentName, fromAvatar: agentAvatar, toId: r.toId, toName: target ? target.name : r.toId, toAvatar: target ? target.avatar : '🤖', subject: r.subject, body: r.body, timestamp: nowIso() });
         logAudit('internal_memo', agentId, 'Memo to ' + r.toId + ': ' + r.subject);
-      } else {
-        addApproval(Object.assign({ agentId: agentId, agentName: agentName }, r));
+        return Promise.resolve(null);
       }
-    });
+      return qualityGate(agentId, r).then(function (qa) {
+        var payload = Object.assign({ agentId: agentId, agentName: agentName }, r, { _skipQuality: true });
+        var corrected = qa.correction ? qa.correction : (qa.findings && qa.findings[0] ? qa.findings[0] : '');
+        if (corrected) payload.details = String(payload.details || '') + '\n\n🔎 تقرير الجودة:\n' + String(corrected).slice(0, 700);
+        if (qa.status === 'flagged') payload.risk = 'high';
+        var item = addApproval(payload);
+        item.quality = qa;
+        if (qa.status === 'flagged') {
+          item.securityNote = '🚫 حلقة الجودة رفضت هذا المقترح — لا يُنفَّذ إلا بتأكيد صريح من المدير.';
+          telegramNotify('🚫 *حلقة الجودة ترفض مقترحاً*\n' + item.title + '\n' + String(corrected).slice(0, 300));
+        }
+        return item;
+      });
+    })).catch(function (e) { console.warn('quality gate failed', e); return []; });
   }
 
   /* ── Telegram (queue + share links; no token in the page) ─────────────── */
@@ -1147,16 +1833,16 @@
   /* ── bootstrap payload ────────────────────────────────────────────────── */
   function buildBootstrap() {
     var assignments = roleAssignments([]);
-    return Promise.all([listLocalModels(), listZenModels()]).then(function (results) {
-      var local = results[0], zen = results[1];
+    return Promise.all([listLocalModels(), listZenModels(), listGroqModels(), listOpenRouterModels()]).then(function (results) {
+      var local = results[0], zen = results[1], groq = results[2], or = results[3];
       var mode = currentMode();
-      var free = mode === 'zen' ? zen.free : local.free;
-      var allIds = (mode === 'zen' ? zen.models : local.models).map(function (m) { return m.id; });
-      if (mode === 'local' && !allIds.length) allIds = FALLBACK_MODELS.slice();
-      if (mode === 'zen' && !allIds.length) allIds = FALLBACK_MODELS.slice();
-      assignments = roleAssignments(allIds.length ? allIds : FALLBACK_MODELS);
-      var connected = mode === 'demo' ? false : (mode === 'zen' ? zen.connected : (mode === 'openrouter' ? Boolean(settings.openrouterKey) : local.connected));
-      var modelLabel = settings.modelOverrides['*'] || (mode === 'local' || mode === 'zen' ? (free[0] || 'auto') : (mode === 'openrouter' ? settings.openrouterModel : 'demo'));
+      var listing = mode === 'zen' ? zen : mode === 'groq' ? groq : mode === 'openrouter' ? or : local;
+      var free = listing.free || [];
+      var allIds = (listing.models || []).map(function (m) { return m.id; });
+      if (!allIds.length && (mode === 'local' || mode === 'zen')) allIds = providerFallbacks(mode).slice();
+      assignments = roleAssignments(allIds.length ? allIds : providerFallbacks(mode), mode === 'groq' ? 'groq' : mode === 'openrouter' ? 'openrouter' : mode);
+      var connected = mode === 'demo' ? false : listing.connected;
+      var modelLabel = settings.modelOverrides['*'] || (free[0] || (mode === 'groq' ? settings.groqModel : mode === 'openrouter' ? settings.openrouterModel : 'demo'));
       var agents = allAgents().map(function (a) {
         var g = ensureProfile(a.id);
         return Object.assign({}, a, {
@@ -1175,9 +1861,14 @@
           hasKey: connected,
           local: { connected: local.connected, baseUrl: local.base || settings.localUrl, bridgeUrl: settings.localBridgeUrl, error: local.error, modelCount: local.models.length },
           zen: { connected: zen.connected, error: zen.error, modelCount: zen.models.length },
+          groq: { connected: groq.connected, error: groq.error, freeModels: groq.free.length },
+          openrouter: { connected: or.connected, error: or.error, freeModels: or.free.length },
           freeModels: free,
           quota: quotaSummary(),
-          sync: { enabled: Boolean(settings.syncEnabled && settings.syncUrl && settings.syncSecret), version: settings.syncVersion || 0 },
+          quality: { enabled: settings.qualityGate, reports: num(state.qualityReports && state.qualityReports.length, 0), lastStatus: (state.qualityReports && state.qualityReports[0] && state.qualityReports[0].status) || null },
+          benchmarks: benchmarkReport().slice(0, 10),
+          vault: vaultStatus(),
+          sync: { enabled: syncConfigured(), version: settings.syncVersion || 0 },
           lastError: settings.lastError
         },
         models: free,
@@ -1210,18 +1901,55 @@
       return buildBootstrap().then(function (d) { return jsonResponse(d); });
     }
     if (method === 'GET' && path === '/api/models') {
-      return Promise.all([listLocalModels(true), listZenModels(true)]).then(function (r) {
+      return Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true)]).then(function (r) {
         var mode = currentMode();
-        var listing = mode === 'zen' ? r[1] : r[0];
+        var listing = mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
+        var ids = (listing.models || []).map(function (x) { return x.id; });
         return jsonResponse({
           connected: listing.connected,
-          baseUrl: mode === 'zen' ? settings.zenBase : settings.localUrl,
+          baseUrl: listing.base || settings.localUrl,
           error: listing.error,
           models: listing.models,
           freeModels: listing.free,
-          assignments: roleAssignments(listing.models.map(function (x) { return x.id; }))
+          providers: {
+            local: { connected: r[0].connected, freeModels: r[0].free.length },
+            zen: { connected: r[1].connected, freeModels: r[1].free.length },
+            groq: { connected: r[2].connected, freeModels: r[2].free.length, error: r[2].error },
+            openrouter: { connected: r[3].connected, freeModels: r[3].free.length, error: r[3].error }
+          },
+          assignments: roleAssignments(ids, mode),
+          benchmarks: benchmarkReport(),
+          trainings: trainingReport()
         });
       });
+    }
+    if (method === 'POST' && path === '/api/models/benchmark') {
+      if (!b.provider || !b.model || !b.role) return Promise.resolve(jsonResponse({ error: 'provider, model and role are required' }, 400));
+      return runBenchmark(b.provider, b.model, b.role).then(function (rec) { return jsonResponse(rec); });
+    }
+    if (method === 'POST' && path === '/api/models/train') {
+      if (!b.provider || !b.model || !b.role) return Promise.resolve(jsonResponse({ error: 'provider, model and role are required' }, 400));
+      return runTraining(b.provider, b.model, b.role).then(function (rec) { return jsonResponse(rec); });
+    }
+    if (method === 'POST' && path === '/api/models/auto-assign') {
+      var assigned = assignQualifiedModels();
+      saveSettings();
+      return Promise.resolve(jsonResponse({ assigned: assigned, roleModels: roleAssignments([], currentMode()) }));
+    }
+    if (method === 'GET' && path === '/api/quality/report') {
+      return Promise.resolve(jsonResponse({ enabled: settings.qualityGate, reports: state.qualityReports.slice(0, 100), benchmarks: benchmarkReport(), trainings: trainingReport() }));
+    }
+    if (method === 'POST' && path === '/api/dev/auto-update') {
+      return autoDeveloperUpdate().then(function (r) { return jsonResponse(r); });
+    }
+    if (method === 'POST' && path === '/api/security/scan') {
+      return Promise.resolve(jsonResponse(securityScan()));
+    }
+    if (method === 'POST' && path === '/api/security/encrypt') {
+      return encryptSecrets(b.passphrase).then(function (r) { return jsonResponse(r); });
+    }
+    if (method === 'POST' && path === '/api/security/unlock') {
+      return unlockVault(b.passphrase).then(function (r) { return jsonResponse(r); });
     }
 
     if (method === 'POST' && path === '/api/chat/direct') {
@@ -1453,6 +2181,9 @@
       if (['approved', 'rejected'].indexOf(b.decision) === -1) return Promise.resolve(jsonResponse({ error: 'decision must be approved or rejected' }, 400));
       var item = state.approvals.find(function (a) { return a.id === m[1]; });
       if (!item) return Promise.resolve(jsonResponse({ error: 'Not found' }, 404));
+      if (b.decision === 'approved' && item.quality && item.quality.status === 'flagged' && b.override !== true) {
+        return Promise.resolve(jsonResponse({ error: 'هذا المقترح مرفوض من حلقة الجودة. أرسل override=true لتنفيذه رغم ذلك على مسؤوليتك.', quality: item.quality }, 409));
+      }
       item.status = b.decision;
       item.resolvedAt = nowIso();
       if (b.decision === 'approved') {
@@ -1801,7 +2532,7 @@
     overlay.id = 'officeLock';
     overlay.innerHTML =
       '<div class="office-lock-card">' +
-      '<div class="office-lock-logo">🏢</div>' +
+      (CFG.brandImage ? '<img class="office-brand-logo" src="' + esc(CFG.brandImage) + '" alt="MD1usd Company" />' : '<div class="office-lock-logo">🏢</div>') +
       '<h1>المكتب الافتراضي — دخول خاص</h1>' +
       '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر أو بالرمز الموقّع من بوت تيليجرام.</p>' +
       '<label>كلمة السر</label><input id="officePassInput" type="password" placeholder="كلمة سر المكتب..." autocomplete="current-password" />' +
@@ -1809,6 +2540,7 @@
       '<div class="office-lock-or">أو</div>' +
       '<label>رمز تيليجرام (Secret Token)</label><input id="officeTokenInput" type="text" placeholder="الصق الرمز الذي أرسله البوت..." />' +
       '<button id="officeTokenBtn" class="office-btn">تحقق من الرمز</button>' +
+      '<button id="officeInstallBtn" class="office-btn install-app-btn" type="button">⬇️ تحميل التطبيق على الجهاز</button>' +
       '<div id="officeLockMsg" class="office-lock-msg"></div>' +
       '<div class="office-lock-links"><a id="officeBotLink" href="#" target="_blank" rel="noopener">افتح بوت تيليجرام</a><span>•</span><a href="https://mdm1.org/" target="_blank" rel="noopener">mdm1.org</a></div>' +
       '</div>';
@@ -1853,16 +2585,21 @@
   function injectStyles() {
     var css = document.createElement('style');
     css.textContent = [
-      '#officeLock{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 20%,#1b1608,#050505 70%);}',
-      '.office-lock-card{width:min(440px,100%);background:rgba(17,17,20,.96);border:1px solid rgba(201,168,76,.45);border-radius:20px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.65);color:#eef2ff;font-family:Cairo,system-ui,sans-serif;text-align:right;}',
+      '#officeLock{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 20%,#1b1608,#050403 70%);}',
+      '.office-lock-card{width:min(440px,100%);background:rgba(17,15,11,.97);border:1px solid rgba(201,168,76,.45);border-radius:20px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.65);color:#f2e6c8;font-family:Cairo,system-ui,sans-serif;text-align:right;}',
       '.office-lock-logo{font-size:44px;text-align:center;margin-bottom:6px;}',
+      '.office-brand-logo{display:block;width:min(120px,32vw);max-height:96px;object-fit:contain;margin:0 auto 10px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.45);}',
+      '.office-brand-card{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1px solid rgba(201,168,76,.3);background:linear-gradient(135deg,rgba(201,168,76,.14),rgba(139,26,26,.12));margin-bottom:12px;}',
+      '.office-brand-card img{width:64px;height:64px;object-fit:contain;border-radius:12px;flex:none;}',
+      '.office-brand-card strong{display:block;color:#e8c96a;font-size:14px;}',
+      '.office-brand-card span{display:block;color:#9aa3b2;font-size:11.5px;line-height:1.6;margin-top:3px;}',
       '.office-lock-card h1{font-size:21px;margin:0 0 6px;text-align:center;color:#e8c96a;}',
       '.office-lock-sub{font-size:12.5px;color:#9aa3b2;text-align:center;line-height:1.7;margin:0 0 18px;}',
       '.office-lock-card label{display:block;font-size:12px;color:#c9a84c;margin:12px 0 6px;}',
       '.office-lock-card input{width:100%;box-sizing:border-box;background:#0b0b0e;border:1px solid #2a2a33;border-radius:10px;padding:11px 13px;color:#eef2ff;font-family:inherit;font-size:14px;}',
       '.office-lock-card input:focus{outline:none;border-color:#c9a84c;box-shadow:0 0 0 3px rgba(201,168,76,.15);}',
       '.office-btn{width:100%;margin-top:9px;padding:11px;border-radius:10px;border:1px solid #3a3a46;background:#1a1a20;color:#eef2ff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}',
-      '.office-btn.primary{background:linear-gradient(135deg,#c9a84c,#8b6cff);border:none;color:#0a0a0c;}',
+      '.office-btn.primary{background:linear-gradient(135deg,#c9a84c,#8b6914);border:none;color:#0a0805;}',
       '.office-lock-or{text-align:center;color:#555;font-size:11px;margin:14px 0 2px;}',
       '.office-lock-msg{min-height:18px;margin-top:10px;font-size:12px;text-align:center;}',
       '.office-lock-msg.error{color:#ff8b8b;}.office-lock-msg.ok{color:#6ee7b7;}',
@@ -1907,9 +2644,10 @@
     modal.innerHTML =
       '<div class="office-modal-card">' +
       '<h2>🔌 الاتصال بالنماذج وبوت تيليجرام</h2>' +
-      '<p>اختر مزود النموذج. لا تُحفظ أي مفاتيح على أي سيرفر: تبقى في متصفحك فقط وتُرسل مباشرة إلى المزود.</p>' +
+      (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1usd Company" /><div><strong>MD1usd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
+      '<p>اختر مزود النموذج. لا تُحفظ أي مفاتيح على أي سيرفر: تبقى في متصفحك فقط وتُرسل مباشرة إلى المزود. النماذج المجانية فقط هي المسموح بها.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (الأفضل المتاح)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (سحابي)</option><option value="openrouter">OpenRouter</option><option value="demo">تجريبي بدون نموذج</option></select></div>' +
+      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (الأفضل المتاح)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (سحابي)</option><option value="groq">Groq (مجاني/محدود الحصة)</option><option value="openrouter">OpenRouter (المجاني فقط)</option><option value="demo">تجريبي بدون نموذج</option></select></div>' +
       '<div><label>النماذج المجانية فقط</label><select id="ocFree"><option value="true">نعم — مجاني فقط</option><option value="false">لا — اسمح بالمدفوع</option></select></div>' +
       '</div>' +
       '<label>عنوان OpenCode المحلي</label><input id="ocLocalUrl" type="text" placeholder="http://127.0.0.1:28894" />' +
@@ -1920,8 +2658,12 @@
       '<div><label>عنوان Zen</label><input id="ocZenBase" type="text" /></div>' +
       '</div>' +
       '<div class="office-grid2">' +
+      '<div><label>مفتاح Groq (اختياري)</label><input id="ocGroqKey" type="password" placeholder="gsk_..." /></div>' +
+      '<div><label>عنوان Groq / النموذج المجاني</label><input id="ocGroqBase" type="text" /><input id="ocGroqModel" type="text" placeholder="llama-3.3-70b-versatile" style="margin-top:6px;" /></div>' +
+      '</div>' +
+      '<div class="office-grid2">' +
       '<div><label>مفتاح OpenRouter (اختياري)</label><input id="ocOrKey" type="password" placeholder="sk-or-..." /></div>' +
-      '<div><label>موديل OpenRouter</label><input id="ocOrModel" type="text" placeholder="openai/gpt-4o-mini:free" /></div>' +
+      '<div><label>موديل OpenRouter المجاني</label><input id="ocOrModel" type="text" placeholder="...:free" /></div>' +
       '</div>' +
       '<label>اسم بوت تيليجرام (بدون @)</label><input id="ocBot" type="text" placeholder="MD1_Office_bot" />' +
       '<div class="office-grid2">' +
@@ -1935,6 +2677,20 @@
       '<label>تفعيل المزامنة السحابية</label><select id="ocSyncEnabled"><option value="false">معطّلة — هذا الجهاز فقط</option><option value="true">مفعّلة — تشفير AES-256-GCM قبل الإرسال</option></select>' +
       '<div id="ocStatus" class="office-status">اضغط "اختبار الاتصال" لمعرفة النماذج المتاحة.</div>' +
       '<div id="ocQuota" class="office-status quota">📊 لم تُسجّل طلبات بعد.</div>' +
+      '<label style="margin-top:16px;">🧪 مختبر النماذج — اختبار وتدريب قبل التعيين</label>' +
+      '<p>اختبر النموذج على مهمة الدور، ثم درّبه بـ 3 تمارين ضبط توجيه (prompt calibration). النماذج التي تجتاز الاختبار فقط هي التي تُعيَّن تلقائياً. هذا لا يغيّر أوزان النموذج، بل يضبط طريقة توجيهه.</p>' +
+      '<div class="office-grid2">' +
+      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="local">OpenCode المحلي</option><option value="zen">OpenCode Zen</option><option value="groq">Groq (مجاني)</option><option value="openrouter">OpenRouter (مجاني)</option></select></div>' +
+      '<div><label>الدور</label><select id="ocLabRole">' + allAgents().map(function (a) { return '<option value="' + esc(a.id) + '">' + a.avatar + ' ' + esc(a.name) + '</option>'; }).join('') + '</select></div>' +
+      '</div>' +
+      '<label>النموذج بالضبط</label><input id="ocLabModel" type="text" placeholder="اختر مزوداً لملء النموذج تلقائياً" />' +
+      '<div class="office-actions"><button class="office-btn" id="ocLabTest">🧪 اختبار الكفاءة</button><button class="office-btn" id="ocLabTrain">🎓 تدريب/ضبط</button><button class="office-btn" id="ocLabAssign">✅ تعيين المؤهلين</button><button class="office-btn" id="ocLabReport">📋 النتائج</button></div>' +
+      '<div id="ocLabOut" class="office-status quota">لم تُجرَّب أي نماذج بعد.</div>' +
+      '<label style="margin-top:16px;">🛡️ باحث الأسرار والمطور التلقائي</label>' +
+      '<p>يفحص الباحث الإعدادات والتخزين المحلي بحثاً عن مفاتيح مكشوفة ويعرضها مُعمّاة، ثم يشفّرها في خزنة AES-256-GCM بكلمة مرور تُدخلها أنت ولا تُحفظ. المطور التلقائي يقترح إصلاحات آمنة للإعدادات فقط.</p>' +
+      '<label>كلمة مرور الخزنة (للتشفير أو فتح القفل بعد إعادة التحميل)</label><input id="ocVaultPass" type="password" placeholder="كلمة مرور الخزنة..." />' +
+      '<div class="office-actions"><button class="office-btn" id="ocSecScan">🕵️ فحص المفاتيح</button><button class="office-btn" id="ocSecEncrypt">🔒 تشفير المفاتيح</button><button class="office-btn" id="ocSecUnlock">🔓 فتح الخزنة</button><button class="office-btn" id="ocDevUpdate">🧑‍💻 تحديث تلقائي آمن</button></div>' +
+      '<div id="ocSecOut" class="office-status quota">🛡️ لم يُجرَ فحص أمني بعد.</div>' +
       '<label style="margin-top:16px;">توزيع الأدوار على النماذج</label>' +
       '<div id="ocModels">' + agentOptions + '</div>' +
       '<div class="office-actions"><button class="office-btn primary" id="ocSave">حفظ وإعادة الاتصال</button><button class="office-btn" id="ocTest">اختبار الاتصال</button><button class="office-btn" id="ocSyncPull">☁️ سحب الحالة</button><button class="office-btn" id="ocSyncPush">⬆️ رفع الحالة</button><button class="office-btn" id="ocClose">إغلاق</button></div>' +
@@ -1952,16 +2708,19 @@
     q('ocFree').value = String(settings.freeOnly);
     q('ocLocalUrl').value = settings.localUrl;
     q('ocBridge').value = settings.localBridgeUrl;
-    q('ocLocalPass').value = settings.localPassword;
-    q('ocZenKey').value = settings.zenKey;
+    q('ocLocalPass').value = secret('localPassword');
+    q('ocZenKey').value = secret('zenKey');
     q('ocZenBase').value = settings.zenBase;
-    q('ocOrKey').value = settings.openrouterKey;
+    q('ocGroqKey').value = secret('groqKey');
+    q('ocGroqBase').value = settings.groqBase;
+    q('ocGroqModel').value = settings.groqModel;
+    q('ocOrKey').value = secret('openrouterKey');
     q('ocOrModel').value = settings.openrouterModel;
     q('ocBot').value = settings.telegramBot;
     q('ocRelay').value = settings.relayUrl;
-    q('ocRelaySecret').value = settings.relaySecret;
+    q('ocRelaySecret').value = secret('relaySecret');
     q('ocSyncUrl').value = settings.syncUrl;
-    q('ocSyncSecret').value = settings.syncSecret;
+    q('ocSyncSecret').value = secret('syncSecret');
     q('ocSyncEnabled').value = String(settings.syncEnabled);
 
     function fillModels(models, free) {
@@ -1984,8 +2743,11 @@
       settings.localPassword = q('ocLocalPass').value.trim();
       settings.zenKey = q('ocZenKey').value.trim();
       settings.zenBase = q('ocZenBase').value.trim() || 'https://opencode.ai/zen/v1';
+      settings.groqKey = q('ocGroqKey').value.trim();
+      settings.groqBase = q('ocGroqBase').value.trim() || 'https://api.groq.com/openai/v1';
+      settings.groqModel = q('ocGroqModel').value.trim() || 'llama-3.3-70b-versatile';
       settings.openrouterKey = q('ocOrKey').value.trim();
-      settings.openrouterModel = q('ocOrModel').value.trim() || 'openai/gpt-4o-mini:free';
+      settings.openrouterModel = q('ocOrModel').value.trim() || 'baidu/ernie-5.5-flash-preview:free';
       settings.telegramBot = q('ocBot').value.trim().replace(/^@/, '');
       settings.relayUrl = q('ocRelay').value.trim();
       settings.relaySecret = q('ocRelaySecret').value.trim();
@@ -1998,6 +2760,7 @@
       });
       saveSettings();
       providerCache.local = null; providerCache.zen = null;
+      providerCache.groq = null; providerCache.openrouter = null;
     }
 
     function status(text, cls) {
@@ -2023,17 +2786,89 @@
       readForm();
       renderQuota();
       status('جارٍ فحص الاتصال...', '');
-      Promise.all([listLocalModels(true), listZenModels(true)]).then(function (r) {
+      Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true)]).then(function (r) {
         var mode = currentMode();
-        var listing = mode === 'zen' ? r[1] : r[0];
+        var listing = mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
-        if (mode === 'openrouter') { status(settings.openrouterKey ? 'OpenRouter جاهز (سيُختبر عند أول رسالة).' : 'أدخل مفتاح OpenRouter.', settings.openrouterKey ? 'ok' : 'err'); fillModels([], []); return; }
-        if (!listing.connected) { status('غير متصل: ' + (listing.error || 'تحقق من العنوان/كلمة المرور/المفتاح.') + '\n' + (listing.base ? 'آخر عنوان جرّبه: ' + listing.base : ''), 'err'); fillModels([], []); return; }
-        var free = listing.free;
-        status('✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.\n' + (free.length ? 'المجاني: ' + free.join(', ') : 'لا توجد نماذج مجانية في القائمة.') + '\nالعنوان الفعّال: ' + listing.base, 'ok');
+        var providerLine = 'OpenCode: ' + (r[0].connected ? 'متصل' : 'غير متصل') +
+          ' · Zen: ' + (r[1].connected ? 'متصل' : 'غير متصل') +
+          ' · Groq: ' + (r[2].connected ? 'متصل (' + r[2].free.length + ' مجاني)' : 'غير متصل') +
+          ' · OpenRouter: ' + (r[3].connected ? 'متصل (' + r[3].free.length + ' مجاني)' : 'غير متصل');
+        if (!listing.connected) { status('غير متصل بالمزود المختار: ' + (listing.error || 'تحقق من العنوان/كلمة المرور/المفتاح.') + '\n' + providerLine, 'err'); fillModels([], []); return; }
+        var free = listing.free || [];
+        status('✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.\n' +
+          (free.length ? 'المجاني: ' + free.slice(0, 8).join(', ') + (free.length > 8 ? '…' : '') : 'لا توجد نماذج مجانية في القائمة.') +
+          '\n' + providerLine + '\nالعنوان الفعّال: ' + (listing.base || ''), 'ok');
         fillModels(listing.models, free);
       }).then(renderQuota);
     }
+
+    function labDefaultModel(provider) {
+      if (provider === 'groq') return settings.groqModel || GROQ_FREE_TIER_MODELS[0];
+      if (provider === 'openrouter') return settings.openrouterModel || 'baidu/ernie-5.5-flash-preview:free';
+      if (provider === 'zen') return (providerCache.zen && providerCache.zen.free && providerCache.zen.free[0]) || 'auto';
+      return (providerCache.local && providerCache.local.free && providerCache.local.free[0]) || 'big-pickle';
+    }
+    q('ocLabProvider').onchange = function () { q('ocLabModel').value = labDefaultModel(q('ocLabProvider').value); };
+    q('ocLabModel').value = labDefaultModel(q('ocLabProvider').value);
+
+    function labOut(text) { q('ocLabOut').textContent = text; }
+    function secOut(text) { q('ocSecOut').textContent = text; }
+    q('ocLabTest').onclick = function () {
+      readForm();
+      var p = q('ocLabProvider').value, m = q('ocLabModel').value.trim(), r = q('ocLabRole').value;
+      if (!m) { labOut('أدخل اسم النموذج.'); return; }
+      labOut('جارٍ اختبار ' + p + '/' + m + ' على دور ' + r + '...');
+      runBenchmark(p, m, r).then(function (x) {
+        labOut((x.passed ? '✅ نجح' : '❌ لم يجتز') + ' — ' + x.model + ' (' + x.role + '): ' + x.score + '/100\n' + x.breakdown + '\n' + String(x.sample || x.warning || '').slice(0, 220));
+      }).catch(function (e) { labOut('فشل الاختبار: ' + e.message); });
+    };
+    q('ocLabTrain').onclick = function () {
+      readForm();
+      var p = q('ocLabProvider').value, m = q('ocLabModel').value.trim(), r = q('ocLabRole').value;
+      if (!m) { labOut('أدخل اسم النموذج.'); return; }
+      labOut('جارٍ تدريب/ضبط ' + m + ' على دور ' + r + ' (3 تمارين)...');
+      runTraining(p, m, r).then(function (x) {
+        labOut((x.status === 'trained' ? '✅ اكتمل الضبط' : '⚠️ لا يوجد اتصال حي — لم يُسجَّل تدريب') + ': ' + x.drills + ' تمارين، متوسط ' + x.avgScore + '/100');
+      }).catch(function (e) { labOut('فشل التدريب: ' + e.message); });
+    };
+    q('ocLabAssign').onclick = function () {
+      var n = assignQualifiedModels();
+      labOut(n ? '✅ تم تعيين ' + n + ' نموذجاً مؤهلاً على الأدوار. اضغط «حفظ وإعادة الاتصال» لتطبيقه.' : 'لا توجد نماذج اجتازت الاختبار بعد — اختبر النماذج أولاً.');
+      renderQuota();
+    };
+    q('ocLabReport').onclick = function () {
+      var rows = benchmarkReport().map(function (x) {
+        return (x.passed ? '✅' : '❌') + ' ' + x.provider + '/' + x.model + ' → ' + x.role + ': ' + x.score + '/100';
+      });
+      labOut(rows.length ? rows.slice(0, 40).join('\n') : 'لا توجد نتائج اختبار بعد.');
+    };
+    q('ocSecScan').onclick = function () {
+      var r = securityScan();
+      secOut(r.findings.length
+        ? '🕵️ تم رصد ' + r.findings.length + ' مؤشر(ات):\n' + r.findings.map(function (f) { return f.severity + ' · ' + f.kind + ' @ ' + f.where + ' → ' + f.hint; }).join('\n')
+        : '✅ لم يُرصد مفتاح مكشوف في المصادر التي يمكن للصفحة فحصها.');
+    };
+    q('ocSecEncrypt').onclick = function () {
+      var pass = q('ocVaultPass').value;
+      secOut('جارٍ تشفير المفاتيح في الخزنة المحلية...');
+      encryptSecrets(pass).then(function (r) {
+        if (!r.ok) { secOut('❌ ' + r.error); return; }
+        secOut('✅ تم تشفير ' + r.fields.length + ' حقل(password/keys) داخل المتصفح وإزالتها من التخزين المقروء. احتفظ بكلمة المرور — ستحتاجها بعد إعادة التحميل.');
+      });
+    };
+    q('ocSecUnlock').onclick = function () {
+      var pass = q('ocVaultPass').value;
+      unlockVault(pass).then(function (r) {
+        secOut(r.ok ? '🔓 تم فتح الخزنة في ذاكرة هذه الجلسة: ' + r.fields.join(', ') : '❌ ' + r.error);
+      });
+    };
+    q('ocDevUpdate').onclick = function () {
+      secOut('🧑‍💻 المطور التلقائي يحلل التشخيص...');
+      autoDeveloperUpdate().then(function (r) {
+        secOut('الوضع: ' + r.mode + '\n' + (r.text || '').slice(0, 500) + '\n✅ إصلاحات مطبقة: ' + r.applied.length + '\n' + r.applied.map(function (a) { return a.target + '=' + a.value; }).join('\n'));
+      }).catch(function (e) { secOut('فشل التحديث التلقائي: ' + e.message); });
+    };
 
     q('ocSave').onclick = function () { readForm(); modal.remove(); bootstrap(); };
     q('ocTest').onclick = test;
@@ -2130,6 +2965,21 @@
     quotaSummary: quotaSummary,
     getUsage: getUsage,
     markRateLimit: markRateLimit,
+    /* model lab / governance / security helpers */
+    listGroqModels: listGroqModels,
+    listOpenRouterModels: listOpenRouterModels,
+    runBenchmark: runBenchmark,
+    runTraining: runTraining,
+    benchmarkScore: benchmarkScore,
+    benchmarkReport: benchmarkReport,
+    assignQualifiedModels: assignQualifiedModels,
+    qualityGate: qualityGate,
+    qualityReports: function () { return state.qualityReports; },
+    securityScan: securityScan,
+    encryptSecrets: encryptSecrets,
+    unlockVault: unlockVault,
+    vaultStatus: vaultStatus,
+    autoDeveloperUpdate: autoDeveloperUpdate,
     reset: function () { localStorage.removeItem(LS_STATE); location.reload(); }
   };
 

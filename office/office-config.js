@@ -6,6 +6,8 @@
    ========================================================================== */
 window.OFFICE_CONFIG = {
   officeName: 'المكتب الافتراضي للذكاء الاصطناعي',
+  /* Local brand image copied into office/ (public, no secrets). */
+  brandImage: 'md1usd-logo.jfif?v=20261127pwa2',
 
   /* Private page gate. The passphrase itself is never stored — only its hash. */
   requireUnlock: true,
@@ -35,6 +37,16 @@ window.OFFICE_CONFIG = {
 
   /* Cloud fallbacks (keys are entered by the user and kept in localStorage). */
   zen: { baseUrl: 'https://opencode.ai/zen/v1' },
+  groq: { baseUrl: 'https://api.groq.com/openai/v1' },
+  openrouter: { baseUrl: 'https://openrouter.ai/api/v1' },
+
+  /* Model lab + quality governance. No secrets live in this file. */
+  quality: {
+    enabled: true,
+    threshold: 70,
+    maxRetries: 2,
+    note: 'Models are benchmarked and prompt-calibrated before assignment; every proposal is reviewed by a department monitor, auditor and corrector.'
+  },
 
   /* Telegram deep links. Set botUsername once the bot exists (@Name without @). */
   telegram: {
