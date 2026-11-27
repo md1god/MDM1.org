@@ -5,9 +5,9 @@
    private key live ONLY in GitHub Actions secrets / the bot runner.
    ========================================================================== */
 window.OFFICE_CONFIG = {
-  officeName: 'المكتب الافتراضي للذكاء الاصطناعي',
+  officeName: 'MD1\u0075sd Company',
   /* Local brand image copied into office/ (public, no secrets). */
-  brandImage: 'md1\u0075sd-logo.jfif?v=20261127pwa3',
+  brandImage: 'app-logo.png?v=20261127pwa4',
 
   /* Private page gate. The passphrase itself is never stored — only its hash. */
   requireUnlock: true,
@@ -34,6 +34,23 @@ window.OFFICE_CONFIG = {
   /* Optional Supabase state sync. Endpoint and secret are entered by the user
      in the connection panel; nothing is hardcoded here. */
   sync: { url: '', enabled: false },
+
+  /* Public Supabase Auth settings. The publishable key is safe in a static
+     page; it is not a service-role key. Google/email sign-in is an extra
+     identity layer for messaging/sync — the office passphrase is still
+     required to open the page. */
+  auth: {
+    enabled: true,
+    supabaseUrl: 'https://fksjltytevcmpjxzamhp.supabase.co',
+    publishableKey: 'sb_publishable_fFnLwsu5bB3w-WRSsYoPWw_M3iLhDS-',
+    redirectTo: ''
+  },
+
+  /* Optional outbound messaging through the Supabase Edge relay. Tokens stay
+     in Edge Function secrets; only the public function URL is stored here. */
+  messaging: {
+    relayUrl: 'https://fksjltytevcmpjxzamhp.supabase.co/functions/v1/office-relay'
+  },
 
   /* Cloud fallbacks (keys are entered by the user and kept in localStorage). */
   zen: { baseUrl: 'https://opencode.ai/zen/v1' },

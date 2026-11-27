@@ -3,7 +3,7 @@
   'use strict';
   var deferredPrompt = null;
   var installed = false;
-  var VERSION = '20261127pwa3';
+  var VERSION = '20261127pwa4';
   var standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
 
   function secureContext() {

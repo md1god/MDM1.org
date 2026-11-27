@@ -33,7 +33,7 @@
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function safeJson(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
   function num(v, d) { var n = Number(v); return isFinite(n) ? n : (d || 0); }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function words(s) { return String(s || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(function (w) { return w.length > 2; }); }
 
@@ -70,8 +70,9 @@
     vaultEnabled: false,
     telegramBot: (CFG.telegram && CFG.telegram.botUsername) || '',
     telegramChatId: '',
-    relayUrl: (CFG.telegram && CFG.telegram.relayUrl) || '',
+    relayUrl: (CFG.messaging && CFG.messaging.relayUrl) || (CFG.telegram && CFG.telegram.relayUrl) || '',
     relaySecret: '',
+    whatsappTo: '',
     /* Optional encrypted Supabase sync: endpoint + browser-only secret. */
     syncUrl: (CFG.sync && CFG.sync.url) || '',
     syncSecret: '',
@@ -346,7 +347,9 @@
     }).then(function (buf) { return safeJson(new TextDecoder().decode(buf), null); })
       .catch(function () { return null; });
   }
-  function syncConfigured() { return Boolean(settings.syncEnabled && settings.syncUrl && secret('syncSecret')); }
+  function syncConfigured() {
+    return Boolean(settings.syncEnabled && settings.syncUrl && secret('syncSecret') && messagingAuthOk());
+  }
   function syncHeaders() { return { 'content-type': 'application/json', 'x-office-secret': secret('syncSecret') }; }
   function syncRow(j) { return Array.isArray(j) ? (j[0] || {}) : (j || {}); }
   function applyRemoteState(j) {
@@ -1543,18 +1546,58 @@
     })).catch(function (e) { console.warn('quality gate failed', e); return []; });
   }
 
-  /* ── Telegram (queue + share links; no token in the page) ─────────────── */
+  /* ── Telegram / WhatsApp relay (no token in the page) ─────────────────── */
+  function messagingAuthOk() {
+    var A = window.MDM1Auth;
+    return !A || !A.configured() || A.canSend();
+  }
+  function authRequiredNotice() {
+    showToast('👤 سجّل الدخول من زر «الحساب» (وأدخل رمز TOTP إن كان مفعّلاً) لتفعيل الإرسال والمزامنة.', 'err');
+  }
+  function authStatusLine() {
+    var A = window.MDM1Auth;
+    if (!A || !A.configured()) return '⚠️ تسجيل الدخول غير مهيّأ في هذا النشر.';
+    var s = A.status();
+    if (s.loading) return '⏳ جارٍ استعادة جلسة الحساب...';
+    if (s.error) return '⚠️ ' + s.error;
+    if (!s.signedIn) return '👤 لا يوجد حساب مرتبط — اضغط «تسجيل الدخول / الحساب».';
+    if (s.requiresTotp) return '🔐 مطلوب رمز TOTP لتفعيل الإرسال والمزامنة.';
+    return '✅ الحساب مرتبط' + (s.email ? ' — ' + esc(s.email) : '') +
+      (s.verifiedFactors ? ' · ثنائي مفعّل' : ' · أضف TOTP اختيارياً من نافذة الحساب');
+  }
+  function renderAuthStatus() {
+    var el = document.getElementById('ocAuthStatus');
+    if (!el) return;
+    el.textContent = authStatusLine();
+    el.className = 'office-status' + (messagingAuthOk() && window.MDM1Auth && window.MDM1Auth.status().signedIn ? ' ok' : '');
+  }
+  function relaySend(text, channel, chatId, waTo) {
+    var body = {
+      text: String(text || '').slice(0, 4000),
+      channel: channel || 'telegram',
+      chatId: chatId || undefined,
+      to: waTo || undefined,
+      secret: secret('relaySecret') || undefined
+    };
+    if (!body.text) return Promise.resolve({ ok: false, error: 'الرسالة فارغة.' });
+    if (!settings.relayUrl) return Promise.resolve({ ok: false, error: 'أدخل Supabase Relay URL في لوحة الاتصال.' });
+    if (!messagingAuthOk()) { authRequiredNotice(); return Promise.resolve({ ok: false, error: 'identity required' }); }
+    return nativeFetch(settings.relayUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-office-secret': secret('relaySecret') || '' },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.text().then(function (t) { return safeJson(t, {}); }).then(function (j) {
+        if (!r.ok || j.error) throw new Error(j.error || ('HTTP ' + r.status));
+        return j;
+      });
+    });
+  }
   function telegramNotify(text) {
-    if (settings.relayUrl) {
-      nativeFetch(settings.relayUrl, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text: text, chatId: settings.telegramChatId || undefined, secret: settings.relaySecret || undefined })
-      }).catch(function () { /* queue below */ });
-    }
     state.telegramOutbox.unshift({ id: uuid(), text: text, createdAt: nowIso(), sent: false });
     state.telegramOutbox = state.telegramOutbox.slice(0, 30);
     saveState();
+    if (settings.relayUrl) relaySend(text, 'telegram', settings.telegramChatId, '').catch(function () { /* queued above */ });
   }
   function telegramShareLink(text) {
     var bot = (settings.telegramBot || '').replace(/^@/, '');
@@ -2533,7 +2576,7 @@
     overlay.innerHTML =
       '<div class="office-lock-card">' +
       (CFG.brandImage ? '<img class="office-brand-logo" src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" />' : '<div class="office-lock-logo">🏢</div>') +
-      '<h1>المكتب الافتراضي — دخول خاص</h1>' +
+      '<h1>MD1&#117;sd Company — دخول خاص</h1>' +
       '<p class="office-lock-sub">هذه الصفحة غير مرتبطة بالقائمة. الدخول بكلمة السر أو بالرمز الموقّع من بوت تيليجرام.</p>' +
       '<label>كلمة السر</label><input id="officePassInput" type="password" placeholder="كلمة سر المكتب..." autocomplete="current-password" />' +
       '<button id="officePassBtn" class="office-btn primary">دخول</button>' +
@@ -2615,7 +2658,7 @@
       '.office-modal-card h2{font-size:18px;color:#e8c96a;margin:0 0 4px;}',
       '.office-modal-card p{font-size:12px;color:#9aa3b2;line-height:1.7;}',
       '.office-modal-card label{display:block;font-size:12px;color:#c9a84c;margin:12px 0 5px;}',
-      '.office-modal-card input,.office-modal-card select{width:100%;box-sizing:border-box;background:#0b0b0e;border:1px solid #2a2a33;border-radius:9px;padding:9px 11px;color:#eef2ff;font-family:inherit;font-size:13px;}',
+      '.office-modal-card input,.office-modal-card select,.office-modal-card textarea{width:100%;box-sizing:border-box;background:#0b0b0e;border:1px solid #2a2a33;border-radius:9px;padding:9px 11px;color:#eef2ff;font-family:inherit;font-size:13px;}',
       '.office-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}',
       '@media(max-width:640px){.office-grid2{grid-template-columns:1fr;}}',
       '.office-model-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #1f1f26;font-size:12px;}',
@@ -2700,6 +2743,16 @@
       '<label style="margin-top:14px;">📤 صندوق رسائل تيليجرام (آخر 30)</label>' +
       '<div class="office-outbox" id="ocOutbox"></div>' +
       '<div class="office-actions"><button class="office-btn" id="ocShareLast">إرسال آخر رسالة عبر تيليجرام</button><button class="office-btn" id="ocClearOutbox">تفريغ الصندوق</button></div>' +
+      '<label style="margin-top:18px;">📨 إرسال رسالة (واتساب / تيليجرام)</label>' +
+      '<p>يُرسل عبر Supabase Edge Relay. المطلوب: تسجيل الدخول بحساب Google أو الإيميل، وتفعيل TOTP اختيارياً، ثم إدخال سر الـ relay في الأعلى.</p>' +
+      '<div id="ocAuthStatus" class="office-status">جارٍ قراءة حالة الحساب...</div>' +
+      '<div class="office-grid2">' +
+      '<div><label>القناة</label><select id="ocMsgChannel"><option value="telegram">تيليجرام</option><option value="whatsapp">واتساب</option><option value="both">الاثنان معاً</option></select></div>' +
+      '<div><label>رقم واتساب (مع رمز الدولة)</label><input id="ocWaTo" type="tel" placeholder="9665xxxxxxxx" /></div>' +
+      '</div>' +
+      '<label>نص الرسالة</label><textarea id="ocMsgText" rows="3" placeholder="اكتب رسالتك هنا..."></textarea>' +
+      '<div class="office-actions"><button class="office-btn" id="ocOpenAuth">👤 تسجيل الدخول / الحساب</button><button class="office-btn primary" id="ocSendMsg">📤 إرسال</button></div>' +
+      '<div id="ocMsgOut" class="office-status quota">لا توجد رسائل مرسلة بعد.</div>' +
       '</div>';
     document.body.appendChild(modal);
 
@@ -2719,6 +2772,7 @@
     q('ocBot').value = settings.telegramBot;
     q('ocRelay').value = settings.relayUrl;
     q('ocRelaySecret').value = secret('relaySecret');
+    q('ocWaTo').value = settings.whatsappTo || '';
     q('ocSyncUrl').value = settings.syncUrl;
     q('ocSyncSecret').value = secret('syncSecret');
     q('ocSyncEnabled').value = String(settings.syncEnabled);
@@ -2751,6 +2805,7 @@
       settings.telegramBot = q('ocBot').value.trim().replace(/^@/, '');
       settings.relayUrl = q('ocRelay').value.trim();
       settings.relaySecret = q('ocRelaySecret').value.trim();
+      settings.whatsappTo = q('ocWaTo').value.trim();
       settings.syncUrl = q('ocSyncUrl').value.trim();
       settings.syncSecret = q('ocSyncSecret').value.trim();
       settings.syncEnabled = q('ocSyncEnabled').value === 'true';
@@ -2891,6 +2946,36 @@
       else alert('أدخل اسم بوت تيليجرام أولاً.');
     };
     q('ocClearOutbox').onclick = function () { state.telegramOutbox = []; saveState(); renderOutbox(); };
+    q('ocOpenAuth').onclick = function () {
+      if (window.MDM1Auth) window.MDM1Auth.openPanel();
+      else alert('وحدة الحساب غير محمّلة في هذه الصفحة.');
+    };
+    q('ocSendMsg').onclick = function () {
+      var out = q('ocMsgOut');
+      var text = q('ocMsgText').value.trim();
+      if (!text) {
+        out.textContent = '❌ اكتب نص الرسالة أولاً.';
+        out.className = 'office-status err';
+        return;
+      }
+      readForm();
+      out.textContent = 'جارٍ الإرسال عبر Supabase Relay...';
+      out.className = 'office-status';
+      relaySend(text, q('ocMsgChannel').value, settings.telegramChatId, q('ocWaTo').value.trim())
+        .then(function (r) {
+          var parts = [];
+          if (r.telegram) parts.push('تيليجرام: ' + (r.telegram.ok ? '✅' : r.telegram.skipped ? '⏭️ ' + (r.telegram.reason || 'مهيّأ مسبقاً') : '❌ HTTP ' + (r.telegram.status || '')));
+          if (r.whatsapp) parts.push('واتساب: ' + (r.whatsapp.ok ? '✅' : r.whatsapp.skipped ? '⏭️ ' + (r.whatsapp.reason || 'مهيّأ مسبقاً') : '❌ HTTP ' + (r.whatsapp.status || '')));
+          out.textContent = '✅ حُفظ الرسالة في Supabase' + (parts.length ? ' · ' + parts.join(' · ') : '') +
+            (r.error ? ' ⚠️ ' + r.error : '');
+          out.className = 'office-status ok';
+          q('ocMsgText').value = '';
+          renderAuthStatus();
+        }).catch(function (e) {
+          out.textContent = '❌ فشل الإرسال: ' + e.message;
+          out.className = 'office-status err';
+        });
+    };
     q('ocSyncPull').onclick = function () {
       readForm();
       status('جارٍ سحب الحالة المشفّرة...', '');
@@ -2913,6 +2998,8 @@
       q('ocOutbox').innerHTML = state.telegramOutbox.map(function (x) { return '<div>' + esc(String(x.text).slice(0, 160)) + '</div>'; }).join('') || '<div>لا رسائل بعد.</div>';
     }
     renderOutbox();
+    renderAuthStatus();
+    watchAuth();
     test();
   }
 
@@ -2927,12 +3014,27 @@
     actions.insertBefore(btn, actions.firstChild);
   }
 
+  /* Identity changes unlock messaging/sync; re-check state without asking for
+     the office passphrase again. */
+  var authWatchInstalled = false;
+  function watchAuth() {
+    if (authWatchInstalled || !window.MDM1Auth || typeof window.MDM1Auth.onChange !== 'function') return;
+    authWatchInstalled = true;
+    window.MDM1Auth.onChange(function (s) {
+      renderAuthStatus();
+      if (s.messagingReady && settings.syncEnabled && settings.syncUrl && secret('syncSecret')) {
+        syncPull().catch(function (e) { console.warn('Office sync pull after sign-in failed:', e.message); });
+      }
+    });
+  }
+
   /* ── boot ─────────────────────────────────────────────────────────────── */
   var resolveReady;
   var readyPromise = new Promise(function (resolve) { resolveReady = resolve; });
 
   function boot() {
     injectStyles();
+    watchAuth();
     buildLockScreen();
     loadCompanyData()
       .then(waitUnlock)
@@ -2960,6 +3062,8 @@
     downloadSnapshot: downloadSnapshot,
     telegramSecretLink: telegramSecretLink,
     telegramShareLink: telegramShareLink,
+    relaySend: relaySend,
+    authStatusLine: authStatusLine,
     syncPull: syncPull,
     syncPush: syncPush,
     quotaSummary: quotaSummary,
