@@ -3,7 +3,7 @@
   'use strict';
   var deferredPrompt = null;
   var installed = false;
-  var VERSION = '20261127pwa14';
+  var VERSION = '20261127pwa15';
   var MANIFEST_URL = '../downloads/packages.json?v=' + VERSION;
   var manifestCache = null;
   var standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
@@ -198,6 +198,37 @@
     });
     updateButtons();
   }
+
+
+  /* Weekly backup reminder: all office data lives in this browser only, so a
+     cleared browser would erase it. Nothing is sent anywhere. */
+  var BACKUP_KEY = 'mdm1_office_v2_last_backup';
+  var BACKUP_DAYS = 7;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
+  function watchBackups() {
+    var ready = window.MDM1Office && window.MDM1Office.ready;
+    if (!ready || !ready.then) return;
+    ready.then(function () {
+      var office = window.MDM1Office;
+      if (!office) return;
+      ['downloadSnapshot', 'createSnapshot'].forEach(function (name) {
+        var orig = office[name];
+        if (typeof orig !== 'function' || orig.__backupWrapped) return;
+        var wrapped = function () { lsSet(BACKUP_KEY, String(Date.now())); return orig.apply(this, arguments); };
+        wrapped.__backupWrapped = true;
+        office[name] = wrapped;
+      });
+      var last = Number(lsGet(BACKUP_KEY) || 0);
+      if (!last) { lsSet(BACKUP_KEY, String(Date.now())); return; }
+      if (Date.now() - last > BACKUP_DAYS * 86400000) {
+        window.setTimeout(function () {
+          toast('💾 مرّ أكثر من أسبوع على آخر نسخة احتياطية. افتح تبويب «النسخ الاحتياطي» وحمّل نسخة مشفرة حتى لا تضيع بياناتك.', 12000);
+        }, 4000);
+      }
+    }).catch(function () { /* gate never passed: nothing to remind */ });
+  }
+  window.addEventListener('load', watchBackups);
 
   window.MDM1PWA = { install: install, showHelp: showInstallHelp, download: downloadPackage, toast: toast, isStandalone: standalone };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
