@@ -786,6 +786,7 @@
         return syncPull().catch(function (e) { console.warn('Office secure sync pull failed:', e.message); return { configured: false }; });
       })
       .then(function () {
+        if (typeof quarantineUnapprovedAssistantTasks === 'function') quarantineUnapprovedAssistantTasks();
         injectTopbarButton();
         bindQuickButtons();
         autopilotInit();

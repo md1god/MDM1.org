@@ -646,9 +646,9 @@
   function routeRequestAgent(text) {
     var t = normalizeDialect(text).normalized.toLowerCase();
     if (/قانون|عقد|ضريبه|ضريبة|امتثال|خصوصيه|خصوصية/.test(t)) return 'legal-advisor';
+    if (/ابحث|بحث|سوق|مشاريع|منتجات|فرص|منافس|مصادر|ترويج/.test(t)) return 'web-research-team';
+    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm|بيع|مبيعات/.test(t)) return 'marketing-lead';
     if (/مال|ميزانيه|ميزانية|فاتوره|فاتورة|تكلفه|تكلفة|سعر|ربح|دفع/.test(t)) return 'accountant';
-    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm/.test(t)) return 'marketing-lead';
-    if (/بحث|سوق|منافس|فرص|مصادر/.test(t)) return 'web-research-team';
     if (/امان|امن|صلاحيه|صلاحية|بيانات|حمايه|حماية/.test(t)) return 'security-officer';
     if (/توظيف|فريق|تدريب|kpi|ضغط/.test(t)) return 'hr-manager';
     if (/كود|تطبيق|موقع|منصه|منصة|api|ساندبوكس|تطوير/.test(t)) return 'auditors-experts-devs';
@@ -661,7 +661,7 @@
     var norm = String(d.normalized || '').trim();
     /* A dot inside a decimal ($49.99) or domain (md1usd.com) is not a
        sentence boundary. */
-    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n،,]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
+    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n]+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
     if (!parts.length) parts = [original];
     var items = [];
     var constraints = [];
@@ -671,7 +671,9 @@
       var nd = normalizeDialect(rawPart).normalized.trim();
       var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
       var context = /^(?:يا|أيها|ايها)\s+/u.test(nd);
-      var clarification = !actionable && (REQUEST_NEGATION_RX.test(nd) || context);
+      var intelligence = window.MDM1ConversationIntelligence || {};
+      var semanticConstraint = typeof intelligence.isContextualConstraint === 'function' && intelligence.isContextualConstraint(nd);
+      var clarification = !actionable && (semanticConstraint || REQUEST_NEGATION_RX.test(nd) || context);
       /* Preserve the user's original spelling in the ledger and task title. */
       var text = rawPart.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|لازم|لازمه|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || rawPart;
       var riskText = stripNegated(nd);
@@ -695,14 +697,20 @@
     if (time) constraints.push('الإطار الزمني: ' + time[0]);
     var audience = original.match(/(للشركات|للعملاء|للأفراد|b2b|b2c|للموظفين)/iu);
     if (audience) constraints.push('الجمهور: ' + audience[0]);
+    var intelligenceHints = window.MDM1ConversationIntelligence || {};
+    if (typeof intelligenceHints.isAudienceByProject === 'function' && intelligenceHints.isAudienceByProject(original)) {
+      constraints.push('قاعدة الجمهور: اختاري الشريحة الأنسب لكل مشروع حسب وظيفة المنتج، ولا تطلبي جمهوراً موحداً من المدير.');
+    }
+    if (typeof intelligenceHints.isRevenueGoal === 'function' && intelligenceHints.isRevenueGoal(original)) {
+      constraints.push('الهدف التجاري: تحقيق دخل ومبيعات فعلية من العروض المناسبة، وليس مجرد زيارات أو أفكار.');
+    }
 
     var unresolved = [];
     if (!items.some(function (x) { return x.status === 'understood'; })) unresolved.push('ما المخرج أو الإجراء المطلوب بالضبط؟');
     items.filter(function (x) { return x.status === 'unclear'; }).slice(0, 3).forEach(function (x) { unresolved.push('ماذا تريد من «' + x.text + '» تحديداً؟'); });
     if (/(ميزانيه|ميزانية|تكلفه|تكلفة|سعر|دفع)/iu.test(norm) && !money) unresolved.push('ما الميزانية القصوى أو الرقم المعتمد؟');
     if (/(خلال|بكره|بكرا|غدا|موعد|جدول)/iu.test(norm) && !time) unresolved.push('ما الموعد النهائي المطلوب؟');
-    if (/(منتج|تطبيق|موقع|حمله|حملة)/iu.test(norm) && !audience) unresolved.push('من هو الجمهور المستهدف؟');
-    if (/(هذا|كده|كذا|هيك|ذلك|اللي|التي|المادة|الشيء)/iu.test(norm)) unresolved.push('ما المقصود بالإشارة في الطلب؟');
+    /* Pronouns and relative clauses are resolved from chat history; their presence alone is not ambiguity. */
 
     return { original: original, normalized: norm, items: items.slice(0, 10), constraints: constraints, unresolved: uniqueStrings(unresolved).slice(0, 5) };
   }
@@ -750,13 +758,13 @@
     var e = findLedgerEntry(id);
     if (!e) return Promise.resolve('');
     if (e.executed) return Promise.resolve(e.executionSummary || '');
-    var done = [], approvals = [], unclear = [];
+    var queued = [], approvals = [], unclear = [];
     (e.items || []).forEach(function (item) {
-      if (item.clarification === true) { return; }
+      if (item.clarification === true) return;
       if (item.status !== 'understood') { unclear.push(item.text); return; }
       var ag = getAgent(item.agentId) || getAgent('executive-assistant');
-      if (!ag) return;
-      if (item.risk === 'high') {
+      if (!ag) { unclear.push(item.text); return; }
+      if (!window.MDM1DecisionPolicy.shouldQueueImmediately(item.risk)) {
         var ap = addApproval({
           agentId: ag.id, agentName: ag.name, title: String(item.text).slice(0, 110),
           details: String(item.text) + '\n\nطلب صريح من المدير عبر الشات.',
@@ -765,7 +773,7 @@
         });
         item.status = 'needs_approval';
         item.approvalId = ap.id;
-        item.result = 'بانتظار موافقة صريحة (override)';
+        item.result = 'بانتظار موافقة صريحة من المدير';
         approvals.push(ag.name + ': ' + String(item.text).slice(0, 70));
       } else {
         var task = {
@@ -773,29 +781,51 @@
           title: String(item.text).slice(0, 110),
           description: String(item.text) + '\n\nمصدر الطلب: ' + e.source,
           status: 'queued', createdAt: nowIso(),
-          ledgerId: e.id, ledgerItemId: item.id
+          ledgerId: e.id, ledgerItemId: item.id, ledgerItemIds: [item.id]
         };
         state.tasks.unshift(task);
         state.liveBubbles[ag.id] = 'مهمة جديدة: ' + String(item.text).slice(0, 34);
         recomputeStatus(ag.id);
-        awardPoints(ag.id, 5, 'تنفيذ طلب المدير من الشات');
-        item.status = 'executed';
+        awardPoints(ag.id, 5, 'إدراج طلب المدير في قائمة التنفيذ');
+        item.status = 'queued';
         item.taskId = task.id;
-        item.result = 'تم إنشاء مهمة لدى ' + ag.name;
-        done.push(ag.name + ': ' + String(item.text).slice(0, 70));
+        item.result = 'أُدرجت في قائمة التنفيذ لدى ' + ag.name;
+        queued.push(ag.name + ': ' + String(item.text).slice(0, 70));
       }
     });
     var lines = [];
-    if (done.length) lines.push('✅ تم التنفيذ فعلياً: ' + done.join('؛ '));
-    if (approvals.length) lines.push('🛡️ حوّلت للوحة المخاطر العالية (لا تُنفَّذ بلا تجاوز صريح): ' + approvals.join('؛ '));
+    if (queued.length) lines.push('✅ أُدرجت في قائمة التنفيذ: ' + queued.join('؛ '));
+    if (approvals.length) lines.push('🛡️ تنتظر موافقة المدير قبل إنشاء أي مهمة: ' + approvals.join('؛ '));
     e.executionSummary = lines.join('\n');
     e.executed = true;
     e.updatedAt = nowIso();
-    logAudit('request_executed', e.agentId || 'ceo', 'Executed ' + done.length + ' request item(s), ' + approvals.length + ' approval(s)', { id: e.id });
+    logAudit('request_execution_prepared', e.agentId || 'ceo', 'Queued ' + queued.length + ' item(s), awaiting approval for ' + approvals.length + ' item(s)', { id: e.id });
     saveState();
-    if (typeof startTaskRunner === 'function') startTaskRunner();
+    if (queued.length && typeof startTaskRunner === 'function') startTaskRunner();
     return Promise.resolve(e.executionSummary);
   }
+
+
+  function quarantineUnapprovedAssistantTasks() {
+    var quarantined = 0;
+    (state.approvals || []).forEach(function (approval) {
+      (state.tasks || []).forEach(function (task) {
+        if (!window.MDM1DecisionPolicy.shouldQuarantineLegacyAssistantTask(task, approval)) return;
+        task.status = 'needs_review';
+        task.completedAt = nowIso();
+        task.result = 'تم إيقاف التشغيل التلقائي: المهمة عالية الخطورة كانت مدرجة قبل اكتمال موافقة المدير. أعد اعتمادها لبدء التنفيذ.';
+        task.meta = Object.assign({}, task.meta || {}, { quarantinedForApproval: approval.id });
+        recomputeStatus(task.agentId);
+        quarantined += 1;
+      });
+    });
+    if (quarantined) {
+      logAudit('legacy_high_risk_tasks_quarantined', 'security-officer', 'Quarantined ' + quarantined + ' legacy task(s) awaiting explicit CEO approval');
+      saveState();
+    }
+    return quarantined;
+  }
+
 
   /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
   var assistantSession = null;
@@ -843,7 +873,8 @@
   function fallbackUnderstanding(raw, norm) {
     var lower = String(norm || '').toLowerCase();
     var scope = 'عام — يحتاج تحديد نطاق أدق';
-    if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
+    if (/ابحث|بحث|مشروع|فرص|سوق|منافس|ترويج|مبيعات/i.test(lower)) scope = 'بحث فرص تجارية وتسويق منتجات الشركة';
+    else if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
     else if (/تسويق|حمله|اعلان|إعلان|عميل|crm/i.test(lower)) scope = 'تسويق ونمو العملاء';
     else if (/مالي|محاسب|فاتوره|تكلفه|ربح|ضريبه/i.test(lower)) scope = 'مالية ومحاسبة';
     else if (/قانون|عقد|امتثال|خصوصيه|ضرائب/i.test(lower)) scope = 'الشؤون القانونية والامتثال';
@@ -869,9 +900,9 @@
     if (/بيانات|صلاحيه|امان/i.test(riskLower)) risks.push('مراجعة مسؤول الأمان قبل منح صلاحيات جديدة');
 
     var ambiguities = [];
-    if (!money) ambiguities.push('ما هي الميزانية القصوى المسموح بها؟');
-    if (!time) ambiguities.push('ما الموعد النهائي أو الإطار الزمني المتوقع؟');
-    if (/منتج|تطبيق|موقع|حمله/i.test(lower) && !/للشركات|للعملاء|للأفراد|b2b|b2c/i.test(lower)) ambiguities.push('من هو الجمهور المستهدف بالضبط؟');
+    if (/(ميزانيه|تكلفه|تكلفه اعلانيه|سعر|مصروف|دفع)/i.test(lower) && !money) ambiguities.push('ما الحد المالي المعتمد لهذا الإنفاق؟');
+    if (/(موعد نهائي|موعد التسليم|تاريخ التسليم|قبل تاريخ|خلال مده)/i.test(lower) && !time) ambiguities.push('ما الموعد النهائي المطلوب؟');
+    /* Audience is inferred per product; it is not a mandatory global field. */
 
     return {
       goal: String(raw).slice(0, 240) || 'لم يُحدد الهدف بوضوح',
@@ -916,7 +947,13 @@
         judgment: String(parsed.judgment || fb.judgment).slice(0, 400),
         keywords: words(d.normalized).slice(0, 18)
       };
-      if (!u.ambiguities.length && d.changes.length === 0) u.ambiguities = ['هل هناك قيد مالي أو زمني يجب أن ألتزم به؟'];
+      var intentHints = window.MDM1ConversationIntelligence || {};
+      if (typeof intentHints.isAudienceByProject === 'function' && intentHints.isAudienceByProject(d.raw)) {
+        u.ambiguities = u.ambiguities.filter(function (q) { return !/جمهور|شريحه|عملاء/.test(String(q)); });
+      }
+      if (typeof intentHints.isRevenueGoal === 'function' && intentHints.isRevenueGoal(d.raw)) {
+        u.ambiguities = u.ambiguities.filter(function (q) { return !/ماذا.*ربح|ماذا.*مبيعات|مقصود.*ربح/.test(String(q)); });
+      }
       return { understanding: u, mode: r.mode, normalized: d.normalized, changes: d.changes, live: r.mode === 'live' };
     });
   }
@@ -974,7 +1011,7 @@
     function riskRank(r) { return r === 'high' ? 3 : (r === 'medium' ? 2 : 1); }
     function add(agentId, reason, risk, suffix) {
       var ag = getAgent(agentId); if (!ag) return;
-      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: itemTitles[agentId] || title, details: [], reason: reason, risk: risk || 'medium' };
+      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: itemTitles[agentId] || title, details: [], ledgerItemIds: [], reason: reason, risk: risk || 'medium' };
       if (risk && riskRank(risk) > riskRank(byAgent[agentId].risk)) byAgent[agentId].risk = risk;
       if (suffix && byAgent[agentId].details.indexOf(suffix) === -1 && suffix !== byAgent[agentId].taskTitle) byAgent[agentId].details.push(suffix);
     }
@@ -999,6 +1036,8 @@
       var t = stripNegated(String(it.text || ''));
       var itemRisk = REQUEST_HIGH_RX.test(t) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(t) ? 'medium' : 'low');
       add(it.agentId, 'مهمة طلبها المدير صراحةً', itemRisk, String(it.text || '').slice(0, 110));
+      var grouped = byAgent[it.agentId];
+      if (grouped && grouped.ledgerItemIds.indexOf(it.id) === -1) grouped.ledgerItemIds.push(it.id);
     });
 
     /* Keep the working team small and explainable. QA trios review approvals
@@ -1023,7 +1062,8 @@
         agentId: x.agentId, agentName: x.agentName, avatar: x.avatar,
         taskTitle: x.taskTitle,
         details: x.details.join(' ') + (reviewers.length ? ' مراجعة الجودة: ' + reviewers.join('، ') + '.' : ''),
-        reason: x.reason, risk: x.risk, reviewers: reviewers
+        reason: x.reason, risk: x.risk, reviewers: reviewers,
+        ledgerItemIds: x.ledgerItemIds.slice()
       };
     });
   }
@@ -1111,41 +1151,70 @@
     var s = assistantSession;
     if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
     if (s.status !== 'awaiting_execution') return Promise.reject(new Error('يجب تأكيد الفهم أولاً قبل التنفيذ'));
+    var ledger = findLedgerEntry(s.ledgerId);
+    var queuedCount = 0, approvalCount = 0;
     (s.plan || []).forEach(function (p) {
-      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'queued', createdAt: nowIso(), ledgerId: s.ledgerId });
-      state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
-      recomputeStatus(p.agentId);
-      awardPoints(p.agentId, 8, 'تنفيذ خطة المساعد الذكي');
-      if (p.risk === 'high') {
-        var item = addApproval({
+      var itemIds = Array.isArray(p.ledgerItemIds) ? p.ledgerItemIds.slice() : [];
+      if (!window.MDM1DecisionPolicy.shouldQueueImmediately(p.risk)) {
+        var approval = addApproval({
           agentId: p.agentId, agentName: p.agentName, title: 'موافقة صريحة: ' + p.taskTitle,
           details: p.details || p.reason, risk: 'high', actionType: 'assistant_plan',
-          payload: { assistantSessionId: s.id, ledgerId: s.ledgerId }
+          payload: {
+            assistantSessionId: s.id, ledgerId: s.ledgerId,
+            agentId: p.agentId, taskTitle: p.taskTitle,
+            taskDescription: String(p.details || '') + '\n\nالسبب: ' + String(p.reason || ''),
+            ledgerItemIds: itemIds
+          }
         });
-        item.securityNote = '🛡️ مهمة عالية الخطورة من خطة المساعد — لا تُنفّذ إلا بتأكيد تجاوز صريح من لوحة المخاطر العالية.';
+        approval.securityNote = '🛡️ لم تُنشأ المهمة بعد. يلزم اعتماد صريح من المدير قبل إدراجها في قائمة التنفيذ.';
+        if (ledger) {
+          (ledger.items || []).forEach(function (entry) {
+            if (itemIds.indexOf(entry.id) !== -1 && entry.status === 'understood') {
+              entry.status = 'needs_approval';
+              entry.approvalId = approval.id;
+              entry.result = 'موقوفة حتى موافقة المدير';
+            }
+          });
+        }
+        approvalCount += 1;
+        return;
       }
+      var task = {
+        id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle,
+        description: p.details + '\n\nالسبب: ' + p.reason, status: 'queued',
+        createdAt: nowIso(), ledgerId: s.ledgerId, ledgerItemIds: itemIds
+      };
+      state.tasks.unshift(task);
+      state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
+      recomputeStatus(p.agentId);
+      awardPoints(p.agentId, 8, 'إدراج مهمة منخفضة/متوسطة المخاطر من المساعد الذكي');
+      if (ledger) {
+        (ledger.items || []).forEach(function (entry) {
+          if (itemIds.indexOf(entry.id) !== -1 && entry.status === 'understood') {
+            entry.status = 'queued'; entry.taskId = task.id; entry.result = 'أُدرجت في قائمة التنفيذ';
+          }
+        });
+      }
+      queuedCount += 1;
     });
     var teamNames = (s.plan || []).map(function (p) { return p.agentName + ' (' + p.taskTitle + ')'; }).join('؛ ');
-    state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠', role: 'assistant', text: 'تم اعتماد خطة المساعد وتوزيع ' + s.plan.length + ' مهمة على الأقسام بعد تأكيد فهم الطلب.\nالفريق العامل الآن: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة صعبة.' : ''), timestamp: nowIso() });
+    state.teamChat.push({
+      id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠',
+      role: 'assistant',
+      text: 'تم اعتماد الخطة بعد تأكيد الفهم. أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وأُحيلت ' + approvalCount + ' مهمة عالية الخطورة إلى الموافقة قبل إنشاء المهام.\nالفريق المقترح: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة.' : ''),
+      timestamp: nowIso()
+    });
     s.status = 'done';
-    s.result = '✅ تم إنشاء ' + s.plan.length + ' مهمة وتوزيعها على ' + s.plan.length + ' دور.\nالفريق العامل الآن: ' + teamNames + '\nحلقة الجودة تراجع أي موافقة قبل تنفيذها، والمهام عالية الخطورة تنتقل للوحة الموافقات الصريحة.';
+    s.result = '✅ أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وتنتظر ' + approvalCount + ' موافقة قبل إنشاء أي مهمة عالية الخطورة.';
     s.updatedAt = nowIso();
-    var doneLedger = findLedgerEntry(s.ledgerId);
-    if (doneLedger) {
-      doneLedger.executed = true;
-      doneLedger.executionSummary = s.result;
-      doneLedger.updatedAt = nowIso();
-      (doneLedger.items || []).forEach(function (x) {
-        x.status = 'executed';
-        x.result = 'دخل في خطة المساعد الذكي';
-      });
-    }
+    if (ledger) { ledger.executed = true; ledger.executionSummary = s.result; ledger.updatedAt = nowIso(); }
     assistantSession = s;
-    logAudit('assistant_plan_executed', 'ceo', 'Assistant plan executed: ' + s.plan.length + ' tasks', { sessionId: s.id });
+    logAudit('assistant_plan_queued', 'ceo', 'Queued ' + queuedCount + ' assistant task(s); approval required for ' + approvalCount, { sessionId: s.id });
     saveState();
-    if (typeof startTaskRunner === 'function') startTaskRunner();
+    if (queuedCount && typeof startTaskRunner === 'function') startTaskRunner();
     return Promise.resolve(clone(s));
   }
+
 
   /* ── snapshots (AES-GCM, browser only) ────────────────────────────────── */
   function b64(buf) {
