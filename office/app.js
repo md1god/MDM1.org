@@ -41,6 +41,44 @@ async function bootstrap(){
 window.addEventListener('mdm1-provider-change',()=>{bootstrap().catch(e=>console.warn('provider refresh',e))});
 window.addEventListener('mdm1-vault-change',()=>{bootstrap().catch(e=>console.warn('vault refresh',e))});
 
+/* ── Optional approval beep (toggle in the sidebar, remembered per browser) ── */
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+let approvalAudioCtx=null;
+function playApprovalBeep(){
+  if(lsGet('office.approvalSound','1')!=='1')return;
+  try{
+    approvalAudioCtx=approvalAudioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=approvalAudioCtx.createOscillator(), g=approvalAudioCtx.createGain(), t=approvalAudioCtx.currentTime;
+    o.type='sine';o.frequency.setValueAtTime(880,t);o.frequency.setValueAtTime(1175,t+.12);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+    o.connect(g);g.connect(approvalAudioCtx.destination);o.start(t);o.stop(t+.32);
+  }catch(e){}
+}
+(function(){
+  const t=document.getElementById('approvalSoundToggle');if(!t)return;
+  t.checked=lsGet('office.approvalSound','1')==='1';
+  t.addEventListener('change',()=>{lsSet('office.approvalSound',t.checked?'1':'0');if(t.checked)playApprovalBeep()});
+})();
+
+/* ── Backup reminder: office data lives in this browser, so remind when the
+      newest encrypted snapshot is older than 7 days (snooze: 3 days). ── */
+const BACKUP_MAX_AGE_DAYS=7, BACKUP_SNOOZE_DAYS=3;
+function renderBackupReminder(){
+  const el=document.getElementById('backupReminder');if(!el)return;
+  const snaps=D.snapshots||[], st=D.state||{};
+  const hasData=(st.tasks||[]).length||(st.customers||[]).length||(st.financialLedger||[]).length||(st.internalMemos||[]).length||(D.memoryStats&&D.memoryStats.totalMemories>0);
+  const newest=snaps.reduce((m,x)=>Math.max(m,Date.parse(x.createdAt)||0),0);
+  const days=newest?Math.floor((Date.now()-newest)/86400000):null;
+  const due=(newest?days>=BACKUP_MAX_AGE_DAYS:Boolean(hasData));
+  const snoozed=Number(lsGet('office.backupSnoozeUntil','0'))>Date.now();
+  if(!due||snoozed){el.classList.add('hidden');el.innerHTML='';return;}
+  el.classList.remove('hidden');
+  el.innerHTML=`<span>💾 ${newest?`آخر نسخة احتياطية مشفّرة كانت قبل ${days} يوم.`:'لا توجد نسخة احتياطية مشفّرة بعد.'} بيانات المكتب محفوظة في هذا المتصفح فقط؛ لو اتمسحت بيانات الموقع تضيع.</span><button type="button" class="btn btn-primary" id="backupNowBtn">إنشاء نسخة الآن</button><button type="button" class="btn btn-secondary" id="backupLaterBtn">ذكّرني بعد ${BACKUP_SNOOZE_DAYS} أيام</button>`;
+  document.getElementById('backupNowBtn').onclick=()=>{switchTab('snapshots');document.getElementById('snapLabel')?.focus()};
+  document.getElementById('backupLaterBtn').onclick=()=>{lsSet('office.backupSnoozeUntil',String(Date.now()+BACKUP_SNOOZE_DAYS*86400000));renderBackupReminder()};
+}
+
 function notifyNewApprovals(prevIds){
   const pending=(D.state.approvals||[]).filter(a=>a.status==='pending');
   const fresh=pending.filter(a=>lastPendingApprovalIds&&!prevIds.has(a.id));
@@ -48,6 +86,7 @@ function notifyNewApprovals(prevIds){
   if(fresh.length){
     document.title=`(${fresh.length}) ⏳ ${BASE_TITLE}`;
     try{window.MDM1Office?.showToast?.(`⏳ ${fresh.length} موافقة جديدة`,'info')}catch(e){}
+    playApprovalBeep();
     if('Notification' in window&&Notification.permission==='granted'){
       fresh.forEach(a=>{try{new Notification('⏳ موافقة جديدة',{body:String(a.agentName||'')+' — '+String(a.title||'')})}catch(e){}});
     }
@@ -55,7 +94,7 @@ function notifyNewApprovals(prevIds){
 }
 
 function renderGlobal(){
-  renderTopBadges();renderStats();populateSelects();
+  renderTopBadges();renderStats();populateSelects();renderBackupReminder();
   const input=document.getElementById('staffSearchInput');if(input&&input.value!==staffQuery)input.value=staffQuery;
 }
 
