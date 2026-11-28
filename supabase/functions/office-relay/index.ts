@@ -855,8 +855,7 @@ Deno.serve(async (req) => {
       case 'queue_complete': return await handleQueueComplete(send, body, user);
       default: return send({ ok: false, error: 'unknown action' }, 400);
     }
-  } catch (err) {
-    const message = String((err as Error)?.message || err);
-    return send({ ok: false, error: message.slice(0, 300) }, 500);
+  } catch {
+    return send({ ok: false, error: 'internal error' }, 500);
   }
 });

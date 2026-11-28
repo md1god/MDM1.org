@@ -477,10 +477,9 @@
       '<h2>👤 الحساب والهوية</h2>' +
       '<div class="auth-note">تسجيل الدخول بحساب Google إلزامي: الخادم يتحقق من JWT قبل السماح بقراءة بيانات المكتب من Supabase. ' +
       'مفاتيح النماذج تبقى على جهازك فقط؛ لا تُستخدم مفاتيح مشتركة. كلمة سر المكتب ما زالت مطلوبة لفتح الصفحة.</div>' +
-      '<div id="mdm1AuthStatus" class="office-status">' + statusText() + '</div>' +
+      '<div id="mdm1AuthStatus" class="office-status"></div>' +
       '<label style="margin-top:14px;">🔵 الحساب المسموح</label>' +
-      '<button class="office-btn primary auth-provider" id="mdm1AuthGoogle" type="button">' +
-      (s.googleReady ? '✅ Google مرتبط — ' + esc(s.email) : 'متابعة عبر Google') + '</button>' +
+      '<button class="office-btn primary auth-provider" id="mdm1AuthGoogle" type="button"></button>' +
       (!s.signedIn ? '' : !s.googleReady ?
         '<div id="mdm1AuthFormMsg" class="office-status err">هذا الحساب غير مسموح به داخل المكتب. سجّل الخروج ثم أدخل بحساب Google.</div>' +
         '<div class="office-actions"><button class="office-btn" id="mdm1AuthSignout" type="button">تسجيل الخروج</button></div>' :
@@ -504,7 +503,7 @@
         '<label style="margin-top:16px;">🔐 المصادقة الثنائية (اختيارية — TOTP)</label>' +
         '<p>تطبيق مصادقة مثل Google Authenticator أو Authy. إن كان العامل مفعّلاً سيُطلب الرمز عند كل جلسة جديدة.</p>' +
         (qr ? '<div class="auth-qr"><img src="data:image/svg+xml;utf-8,' + encodeURIComponent(qr) + '" alt="QR" /></div>' +
-          '<p>أو أدخل المفتاح يدوياً: <span class="auth-secret">' + esc(secret || '') + '</span></p>' : '') +
+          '<p>أو أدخل المفتاح يدوياً: <span class="auth-secret"></span></p>' : '') +
         '<input id="mdm1TotpCode" type="text" inputmode="numeric" maxlength="6" placeholder="رمز TOTP من 6 أرقام" />' +
         '<div class="office-actions">' +
         '<button class="office-btn" id="mdm1AuthEnroll" type="button">' + (verified ? '✅ ثنائي مفعّل' : 'تفعيل TOTP') + '</button>' +
@@ -516,6 +515,10 @@
     document.body.appendChild(modal);
 
     var q = function (id) { return modal.querySelector('#' + id); };
+    q('mdm1AuthStatus').textContent = statusText();
+    q('mdm1AuthGoogle').textContent = s.googleReady ? '✅ Google مرتبط — ' + s.email : 'متابعة عبر Google';
+    var secretEl = modal.querySelector('.auth-secret');
+    if (secretEl) secretEl.textContent = secret || '';
     function formMsg(text, cls) {
       var el = q('mdm1AuthFormMsg');
       if (!el) return;
