@@ -265,6 +265,16 @@
     if (method === 'GET' && path === '/api/selftest') {
       return runSelfTests().then(function (r) { saveState(); return jsonResponse(r); });
     }
+    if (method === 'GET' && path === '/api/trust') {
+      return Promise.resolve(jsonResponse({ enabled: settings.autoTrustEnabled === true, categories: trustReport() }));
+    }
+    if (method === 'POST' && path === '/api/trust/toggle') {
+      settings.autoTrustEnabled = b.enabled === true;
+      saveSettings();
+      logAudit('trust_toggle', 'ceo', 'Earned autonomy ' + (settings.autoTrustEnabled ? 'enabled' : 'disabled') + ' (only READY low-risk categories)', { enabled: settings.autoTrustEnabled });
+      saveState();
+      return Promise.resolve(jsonResponse({ ok: true, enabled: settings.autoTrustEnabled, categories: trustReport() }));
+    }
     if (method === 'GET' && path === '/api/models') {
       return Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true), listCloudModels(true)]).then(function (r) {
         var mode = currentMode();

@@ -65,6 +65,8 @@
     benchmarkThreshold: (CFG.quality && CFG.quality.threshold) || 70,
     /* Department-level monitor → auditor → corrector gate on every proposal. */
     qualityGate: CFG.quality ? CFG.quality.enabled !== false : true,
+    /* Earned autonomy stays OFF until the CEO explicitly opts in. */
+    autoTrustEnabled: false,
     vaultEnabled: false,
     telegramBot: (CFG.telegram && CFG.telegram.botUsername) || '',
     telegramChatId: '',
@@ -176,7 +178,9 @@
       incidents: [],
       simulations: [],
       webhooks: [
-        { id: 'wh-incoming', name: 'Incoming Automation Webhook (n8n / Make / Zapier)', endpoint: '/api/webhooks/incoming', method: 'POST', securityReviewed: true, status: 'ready' },
+        /* The local SPA cannot receive inbound HTTP. Show the real state instead
+           of claiming "ready" while the endpoint returns 501. */
+        { id: 'wh-incoming', name: 'Incoming Automation Webhook (n8n / Make / Zapier)', endpoint: '/api/webhooks/incoming', method: 'POST', securityReviewed: true, status: 'needs_relay' },
         { id: 'wh-email', name: 'Email & Calendar Sync Connector', endpoint: '/api/webhooks/email', method: 'POST', securityReviewed: false, status: 'planned' },
         { id: 'wh-sheets', name: 'Google Sheets Financial Export', endpoint: '/api/webhooks/sheets', method: 'POST', securityReviewed: false, status: 'planned' }
       ],
@@ -279,6 +283,29 @@
       tokens += num(u.tokens, 0);
     });
     return { limited: limited, calls: calls, tokens: tokens };
+  }
+  /* Earned trust is measured from the CEO's own approval decisions. It is
+     reported honestly and never grants automatic execution in this build:
+     a 95% rate over 20+ low-risk cases only marks a category as READY, and the
+     CEO must still opt in explicitly before any autonomy is enabled. */
+  function trustReport() {
+    var log = Array.isArray(state.decisionLog) ? state.decisionLog : [];
+    var by = {};
+    log.forEach(function (d) {
+      if (!d || d.decision !== 'approved' && d.decision !== 'rejected') return;
+      var key = String(d.actionType || 'agent_proposal');
+      if (!by[key]) by[key] = { actionType: key, decisions: 0, approved: 0, rejected: 0, risk: String(d.risk || 'medium') };
+      by[key].decisions += 1;
+      if (d.decision === 'approved') by[key].approved += 1; else by[key].rejected += 1;
+      if (d.risk === 'low') by[key].risk = 'low';
+    });
+    return Object.keys(by).map(function (k) {
+      var x = by[k];
+      x.approvalRate = x.decisions ? Math.round(x.approved * 100 / x.decisions) : 0;
+      x.ready = x.decisions >= 20 && x.approvalRate >= 95 && x.risk === 'low';
+      x.autoExecute = Boolean(x.ready && settings.autoTrustEnabled === true);
+      return x;
+    }).sort(function (a, b) { return b.decisions - a.decisions; });
   }
   function quotaReserve(provider, cost) {
     var A = window.MDM1Auth;
