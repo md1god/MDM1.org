@@ -86,6 +86,12 @@
     lastError: null
   };
   var settings = Object.assign({}, defaultSettings, readLS(LS_SETTINGS, {}));
+  /* Older sessions could store a bare provider origin (e.g. https://api.groq.com)
+     instead of the OpenAI-compatible API path. Repair it on load so model
+     listing and chat calls use the real endpoint. */
+  if (/^https:\/\/opencode\.ai\/?$/i.test(settings.zenBase)) settings.zenBase = defaultSettings.zenBase;
+  if (/^https:\/\/api\.groq\.com\/?$/i.test(settings.groqBase)) settings.groqBase = defaultSettings.groqBase;
+  if (/^https:\/\/openrouter\.ai\/?$/i.test(settings.openrouterBase)) settings.openrouterBase = defaultSettings.openrouterBase;
   function saveSettings() { writeLS(LS_SETTINGS, settings); }
 
   /* ── company data (agents / knowledge / playbooks) ────────────────────── */
