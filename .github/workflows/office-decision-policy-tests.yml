@@ -6,6 +6,8 @@ on:
       - 'office/standalone-*.part.js'
       - 'office/standalone.js'
       - 'office/index.html'
+      - 'office/pwa.js'
+      - 'office/sw.js'
       - 'tests/decision-policy.test.js'
       - '.github/workflows/office-decision-policy-tests.yml'
   pull_request:
@@ -14,6 +16,8 @@ on:
       - 'office/standalone-*.part.js'
       - 'office/standalone.js'
       - 'office/index.html'
+      - 'office/pwa.js'
+      - 'office/sw.js'
       - 'tests/decision-policy.test.js'
       - '.github/workflows/office-decision-policy-tests.yml'
 jobs:
@@ -42,4 +46,19 @@ jobs:
           const source = parts.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
           new vm.Script(source, { filename: 'mdm1-office-combined.js' });
           console.log('Combined office runtime syntax is valid.');
+          NODE
+
+      - name: Verify service-worker cache version and policy asset
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const sw = fs.readFileSync('office/sw.js', 'utf8');
+          const pwa = fs.readFileSync('office/pwa.js', 'utf8');
+          const index = fs.readFileSync('office/index.html', 'utf8');
+          const version = '20261128pwa35';
+          if (!sw.includes("var VERSION = '" + version + "'")) throw new Error('Service worker version mismatch');
+          if (!pwa.includes("var VERSION = '" + version + "'")) throw new Error('PWA loader version mismatch');
+          if (!index.includes(version)) throw new Error('Index cache version mismatch');
+          if (!sw.includes("'./decision-policy.js?v=' + VERSION")) throw new Error('Decision policy is missing from offline precache');
+          console.log('PWA cache version and offline decision-policy asset are aligned.');
           NODE
