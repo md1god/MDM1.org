@@ -84,6 +84,19 @@
   }
   function startTaskRunner() {
     if (taskRunnerBusy || state.emergencyMode) return;
+    /* A tab may close while a model call is in flight. On the next boot,
+       put those interrupted tasks back into the queue; only a real live model
+       response may move them to done. */
+    var recovered = false;
+    (state.tasks || []).forEach(function (task) {
+      if (task.status === 'working') {
+        task.status = 'queued';
+        task.recoveredAt = nowIso();
+        task.recoveryCount = (task.recoveryCount || 0) + 1;
+        recovered = true;
+      }
+    });
+    if (recovered) saveState();
     taskRunnerBusy = true;
     window.setTimeout(function pump() {
       var next = (state.tasks || []).find(function (t) { return t.status === 'queued'; });
@@ -118,21 +131,17 @@
     return Promise.all(ran).then(function () { if (ran.length) saveState(); return { ran: ran.length }; });
   }
   function processDurableQueue() {
-    if (!syncConfigured()) return Promise.resolve({ skipped: true });
+    /* The static-site runner can execute deterministic queue actions only; it
+       cannot call the owner's browser-held model key. Never translate a queue
+       row into a completed AI task. AI tasks resume locally when this page opens. */
+    if (!syncConfigured()) return Promise.resolve({ skipped: true, reason: 'sync_not_configured' });
     return queueList().then(function (j) {
       var rows = (j && j.tasks) || [];
-      var jobs = [];
-      rows.forEach(function (row) {
-        var p = row && row.payload;
-        if (!p || p.action !== 'mark_done' || !p.taskId || row.status !== 'done') return;
-        var t = findTask(p.taskId);
-        if (t && ['queued', 'working'].indexOf(t.status) !== -1) {
-          jobs.push(Promise.resolve(completeTask(t.id, 'done', '✅ أُنجز بواسطة طابور المهام الدائم (GitHub Actions).', { queueId: row.id })));
-        }
-        jobs.push(queueComplete(row.id, { ok: true, syncedToOffice: true }).catch(function () { return null; }));
-      });
-      return Promise.all(jobs).then(function () { return { processed: jobs.length }; });
-    }).catch(function () { return { processed: 0 }; });
+      var unsupported = rows.filter(function (row) {
+        return row && row.payload && row.payload.action === 'mark_done' && row.status === 'done';
+      }).length;
+      return { processed: 0, skipped: unsupported, reason: 'model_work_requires_live_browser_provider' };
+    }).catch(function (e) { return { processed: 0, error: String(e.message || e) }; });
   }
 
   /* ── golden self-tests ─────────────────────────────────────────────────
@@ -686,9 +695,8 @@
       hrWorkloadCheck();
       logAudit('task_assigned', 'ceo', 'Assigned "' + task.title + '" to ' + ag.id);
       saveState();
-      /* Durable queue: GitHub Actions keeps deterministic work moving while the
-         page is closed. Model work still requires the user's own device key. */
-      queueAdd({ taskId: task.id, agentId: ag.id, title: task.title, action: 'mark_done' }, 'task', null).catch(function () { return null; });
+      /* The user's AI key is in the browser vault. Do not enqueue a fake
+         mark_done job for a backend that cannot execute this model request. */
       startTaskRunner();
       return Promise.resolve(jsonResponse({ task: task }, 201));
     }
