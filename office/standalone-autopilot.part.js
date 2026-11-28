@@ -11,7 +11,8 @@
        when a key or an account link is missing it says so and waits.
      ========================================================================== */
   var AP_DEFAULT_SITE = 'https://mdm1.org/';
-  var AP_GAP_MS = 4 * 60 * 1000;          // between cycles while there is work
+  var APEngine = window.MDM1AutopilotEngine || {};
+  var AP_GAP_MS = 20 * 1000;              // checkpointed cycles; provider quotas still govern actual calls
   var AP_ROUND_GAP_MS = 60 * 60 * 1000;   // after a full round, look for news hourly
   var apBusy = false, apTimer = null, apWake = null;
 
@@ -24,6 +25,9 @@
     if (!Array.isArray(a.log)) a.log = [];
     if (!a.everAnalyzed || typeof a.everAnalyzed !== 'object') a.everAnalyzed = {};
     if (!a.analyzed || typeof a.analyzed !== 'object') a.analyzed = {};
+    if (!a.projectAssessments || typeof a.projectAssessments !== 'object') a.projectAssessments = {};
+    if (!a.prospects || typeof a.prospects !== 'object') a.prospects = {};
+    if (!a.scan || typeof a.scan !== 'object') a.scan = null;
     return a;
   }
   function apLog(msg, kind) {
@@ -95,7 +99,7 @@
       title: ((doc.title || '') + '').trim() || url,
       description: meta ? (meta.getAttribute('content') || '').trim() : '',
       headings: heads,
-      links: links.slice(0, 40),
+      links: links.slice(0, 1500),
       text: ((doc.body && doc.body.textContent) || '').replace(/\s+/g, ' ').trim().slice(0, 4500)
     };
   }
@@ -128,91 +132,386 @@
   /* ── cycle steps ────────────────────────────────────────────────────── */
   function apSite() { var u = extractUrls(apState().goal)[0]; return u || AP_DEFAULT_SITE; }
 
-  function apDiscover() {
-    var a = apState(), site = apSite();
-    apLog('أسحب الموقع ' + site + ' لحصر المشاريع الحقيقية...');
-    return fetchPage(site).then(function (home) {
-      var cands = home.links.slice(0, 14);
-      return Promise.all(cands.map(function (l) {
-        return fetchPage(l.href).then(function (p) {
-          return { title: (p.title || l.text || l.href).slice(0, 90), url: l.href, summary: (p.description || p.text).slice(0, 260) };
-        }).catch(function () { return null; });
-      })).then(function (rows) {
-        var projects = rows.filter(function (x) { return x && x.summary; });
-        if (!projects.length) projects = [{ title: home.title.slice(0, 90), url: site, summary: (home.description || home.text).slice(0, 260) }];
-        a.projects = projects;
-        a.analyzed = Object.assign({}, a.everAnalyzed);
-        var md = '# مشاريع ' + site + ' (مسحوبة فعلياً)\n\n' + projects.map(function (p, i) { return (i + 1) + '. [' + p.title + '](' + p.url + ')\n   ' + p.summary; }).join('\n') + '\n';
-        writeExport('autopilot-projects.md', md);
-        state.teamChat.push({ id: uuid(), senderId: 'web-research-team', senderName: 'فريق البحث (الأتمتة 🤖)', senderAvatar: '🤖', role: 'assistant', text: '📚 حصرت ' + projects.length + ' صفحة/مشروع من ' + site + ':\n' + projects.map(function (p) { return '• ' + p.title + ' — ' + p.url; }).join('\n'), timestamp: nowIso() });
-        apLog('حصرت ' + projects.length + ' صفحة/مشروع حقيقي من الموقع.', 'ok');
+  function apSiteOrigin(site) {
+    try { return new URL(site).origin + '/'; } catch (_) { return AP_DEFAULT_SITE; }
+  }
+
+  function apReadSitemap(url, depth, seen) {
+    var key = String(url || '');
+    if (!key || (seen && seen[key]) || depth > 3) return Promise.resolve([]);
+    seen = seen || {};
+    seen[key] = true;
+    return fetchTextWithTimeout(key, 18000, { Accept: 'application/xml,text/xml,text/plain' }).then(function (xml) {
+      var doc = new DOMParser().parseFromString(xml, 'application/xml');
+      if (doc.querySelector('parsererror')) throw new Error('ملف Sitemap غير صالح');
+      var locs = Array.prototype.map.call(doc.getElementsByTagName('loc'), function (n) { return (n.textContent || '').trim(); }).filter(Boolean);
+      if (!locs.length) return [];
+      var nested = locs.filter(function (u) { return /\.xml(?:\?|$)/i.test(u); });
+      if (nested.length) return Promise.all(nested.map(function (u) { return apReadSitemap(u, depth + 1, seen); }))
+        .then(function (parts) { return Array.prototype.concat.apply([], parts); });
+      var base = apSiteOrigin(key);
+      return locs.map(function (u) { return APEngine.normalizeUrl ? APEngine.normalizeUrl(u, base) : ''; }).filter(Boolean);
+    }).catch(function () { return []; });
+  }
+
+  function apSiteInventoryUrls(site) {
+    var origin = apSiteOrigin(site), candidates = [origin + 'sitemap.xml', origin + 'sitemap_index.xml', origin + 'sitemap-index.xml'];
+    return fetchTextWithTimeout(origin + 'robots.txt', 9000, { Accept: 'text/plain' }).then(function (robots) {
+      var matches = robots.match(/^sitemap:\s*(\S+)/gim) || [];
+      matches.forEach(function (line) {
+        var m = line.match(/^sitemap:\s*(\S+)/i);
+        if (m && candidates.indexOf(m[1]) === -1) candidates.unshift(m[1]);
+      });
+      return candidates;
+    }).catch(function () { return candidates; }).then(function (maps) {
+      return Promise.all(maps.map(function (u) { return apReadSitemap(u, 0, {}); })).then(function (parts) {
+        var all = Array.prototype.concat.apply([], parts), seen = {}, out = [];
+        all.forEach(function (u) {
+          var v = APEngine.normalizeUrl ? APEngine.normalizeUrl(u, origin) : u;
+          if (v && APEngine.isPageUrl(v, origin) && !seen[v]) { seen[v] = true; out.push(v); }
+        });
+        /* Catalog pages are added as discovery seeds, not as a fixed project list. */
+        [origin, origin + 'apps/index.html', origin + 'projects/index.html', origin + 'pages/index.html'].forEach(function (u) {
+          var v = APEngine.normalizeUrl ? APEngine.normalizeUrl(u, origin) : u;
+          if (v && APEngine.isPageUrl(v, origin) && !seen[v]) { seen[v] = true; out.unshift(v); }
+        });
+        return { urls: out, source: out.length > 4 ? 'sitemap/robots + catalogs' : 'catalog/link crawl' };
       });
     });
   }
 
+  function apInventoryExport(scan) {
+    var records = scan.records || [];
+    var candidates = records.filter(function (p) { return APEngine.isProjectPage ? APEngine.isProjectPage(p) : false; });
+    var lines = ['# جرد الموقع بالكامل', '', 'الموقع: ' + scan.site, 'مصدر الحصر: ' + scan.source,
+      'صفحات جرى فحصها: ' + records.length, 'صفحات/مشروعات مرشحة للتحليل: ' + candidates.length,
+      'روابط تعذّر فتحها بعد إعادة المحاولة: ' + (scan.failedFinal || 0), '',
+      'هذا الجرد يشمل روابط الموقع التي كشفها ملف Sitemap أو روابط الصفحات الداخلية، ولا يساوي عدد المشروعات الجاهزة للبيع.', ''];
+    candidates.forEach(function (p, i) {
+      lines.push((i + 1) + '. [' + p.title + '](' + p.url + ')');
+      lines.push('   ' + String(p.description || p.summary || p.text || '').slice(0, 360));
+      lines.push('');
+    });
+    writeExport('autopilot-full-site-inventory.md', lines.join('\n'));
+    return candidates;
+  }
+
+  function apFinishDiscovery() {
+    var a = apState(), scan = a.scan;
+    var candidates = apInventoryExport(scan);
+    scan.complete = true;
+    scan.completedAt = nowIso();
+    scan.candidateCount = candidates.length;
+    a.projects = candidates.map(function (p) {
+      return { title: p.title, url: p.url, summary: String(p.description || p.summary || p.text || '').slice(0, 1800) };
+    }).filter(function (p) { return !a.everAnalyzed[p.url]; });
+    a.analyzed = Object.assign({}, a.everAnalyzed);
+    a.scan.inFlight = null;
+    saveNow();
+    state.teamChat.push({ id: uuid(), senderId: 'web-research-team', senderName: 'فريق البحث (الأتمتة 🤖)', senderAvatar: '🤖', role: 'assistant',
+      text: '📚 اكتمل جرد ' + scan.site + ': فُحصت ' + scan.records.length + ' صفحة، ووجدت ' + candidates.length + ' صفحة منتج/مشروع مرشحة. ستُحلَّل كل المرشحات، وليس أول ثلاث فقط، ثم تُرتَّب بمؤشر الفرصة التجارية من الأعلى إلى الأدنى.',
+      timestamp: nowIso() });
+    apLog('اكتمل حصر الموقع: ' + scan.records.length + ' صفحة، ' + candidates.length + ' مرشحاً للتحليل.', 'ok');
+    saveNow();
+  }
+
+  function apContinueDiscovery() {
+    var a = apState(), scan = a.scan;
+    if (!scan || scan.complete) return Promise.resolve();
+    var origin = apSiteOrigin(scan.site), batchSize = 12, startAt = num(scan.cursor, 0);
+    if (startAt >= scan.queue.length) {
+      if (scan.failed.length && scan.retryPass < 1) {
+        scan.queue = scan.failed.slice(); scan.cursor = 0; scan.failed = []; scan.retryPass++;
+        apLog('إعادة محاولة فتح ' + scan.queue.length + ' صفحة تعذّر تحميلها في المسح الأول.', 'warn');
+      } else {
+        scan.failedFinal = scan.failed.length;
+        apFinishDiscovery();
+        return Promise.resolve();
+      }
+    }
+    var endAt = Math.min(scan.queue.length, startAt + batchSize);
+    var batch = scan.queue.slice(startAt, endAt);
+    scan.inFlight = { start: startAt, end: endAt };
+    saveNow(); /* if the tab closes, this batch is repeated rather than skipped */
+    apLog('أفحص صفحات الموقع: ' + Math.min(endAt, scan.queue.length) + ' من ' + scan.queue.length + ' رابطاً مكتشفاً...');
+    return Promise.all(batch.map(function (url) {
+      return fetchPage(url).then(function (page) { return { page: page, error: null }; })
+        .catch(function (e) { return { page: null, url: url, error: e.message || 'تعذّر فتح الصفحة' }; });
+    })).then(function (results) {
+      results.forEach(function (result) {
+        if (!result.page) { scan.failed.push(result.url); return; }
+        var page = result.page, normalized = APEngine.normalizeUrl ? APEngine.normalizeUrl(page.url, origin) : page.url;
+        if (!normalized || scan.visited[normalized]) return;
+        scan.visited[normalized] = true;
+        scan.records.push({
+          url: normalized, title: String(page.title || normalized).slice(0, 180),
+          description: String(page.description || '').slice(0, 420),
+          headings: (page.headings || []).slice(0, 12),
+          summary: String(page.description || page.text || '').slice(0, 1500),
+          text: String(page.text || '').slice(0, 2200)
+        });
+        (page.links || []).forEach(function (link) {
+          var next = APEngine.normalizeUrl ? APEngine.normalizeUrl(link.href, origin) : '';
+          if (!next || !APEngine.isPageUrl(next, origin) || scan.queued[next] || scan.visited[next] || scan.queue.length >= 12000) return;
+          scan.queued[next] = true;
+          scan.queue.push(next);
+        });
+      });
+      scan.cursor = endAt;
+      scan.inFlight = null;
+      scan.scanned = Object.keys(scan.visited).length;
+      saveNow();
+      if (scan.cursor >= scan.queue.length) {
+        if (scan.failed.length && scan.retryPass < 1) {
+          scan.queue = scan.failed.slice(); scan.cursor = 0; scan.failed = []; scan.retryPass++;
+          apLog('إعادة محاولة تحميل الصفحات غير المتاحة.', 'warn');
+        } else {
+          scan.failedFinal = scan.failed.length;
+          apFinishDiscovery();
+        }
+      } else {
+        apLog('حُفظ تقدم المسح: ' + scan.scanned + ' صفحة؛ المتبقي المكتشف ' + (scan.queue.length - scan.cursor) + '.', 'info');
+      }
+    });
+  }
+
+  function apDiscover() {
+    var a = apState(), site = apSite();
+    if (a.scan && a.scan.site === site && !a.scan.complete) return apContinueDiscovery();
+    apLog('أبدأ جرد الموقع كاملاً عبر Sitemap وروابط الصفحات الداخلية: ' + site, 'info');
+    return apSiteInventoryUrls(site).then(function (inventory) {
+      var origin = apSiteOrigin(site), queued = {};
+      var queue = inventory.urls.filter(function (u) {
+        var n = APEngine.normalizeUrl ? APEngine.normalizeUrl(u, origin) : '';
+        if (!n || queued[n]) return false;
+        queued[n] = true; return true;
+      });
+      a.scan = { site: site, source: inventory.source, queue: queue, cursor: 0, queued: queued, visited: {},
+        records: [], failed: [], retryPass: 0, scanned: 0, complete: false, startedAt: nowIso(), inFlight: null };
+      a.projects = [];
+      a.projectAssessments = a.projectAssessments || {};
+      saveNow();
+      apLog('اكتشفت ' + queue.length + ' رابط بداية من Sitemap/الفهارس؛ أواصل الزحف على دفعات محفوظة.', 'ok');
+      return apContinueDiscovery();
+    });
+  }
+
+  function apParseSearchHtml(html, query) {
+    var doc = new DOMParser().parseFromString(String(html || ''), 'text/html'), out = [], seen = {};
+    var anchors = doc.querySelectorAll('a.result__a, a[data-testid="result-title-a"], a[href]');
+    Array.prototype.forEach.call(anchors, function (a) {
+      var href = a.getAttribute('href') || '';
+      var title = (a.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!title || title.length < 3) return;
+      try {
+        var u = new URL(href, 'https://html.duckduckgo.com/');
+        if (u.hostname.indexOf('duckduckgo.com') !== -1 && u.searchParams.has('uddg')) href = u.searchParams.get('uddg');
+        var parsed = new URL(href);
+        if (!/^https?:$/.test(parsed.protocol) || /duckduckgo\.com|google\.com\/search|bing\.com\/search/i.test(parsed.hostname)) return;
+        parsed.hash = ''; href = parsed.href;
+      } catch (_) { return; }
+      if (seen[href]) return;
+      seen[href] = true;
+      var box = a.closest('.result') || a.parentElement;
+      var sn = box && box.querySelector('.result__snippet, [data-testid="result-snippet"]');
+      out.push({ title: title.slice(0, 120), url: href, snippet: String(sn && sn.textContent || query || '').replace(/\s+/g, ' ').trim().slice(0, 260) });
+    });
+    return out.slice(0, 12);
+  }
+
+  function apSearchResults(query) {
+    var q = String(query || '').trim();
+    if (!q) return Promise.resolve([]);
+    var url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q);
+    return fetchTextWithTimeout(url, 18000, { Accept: 'text/html' }).then(function (html) {
+      var rows = apParseSearchHtml(html, q);
+      if (rows.length) return rows;
+      throw new Error('لا توجد نتائج HTML قابلة للاستخراج');
+    }).catch(function () {
+      var reader = 'https://r.jina.ai/http://html.duckduckgo.com/html/?q=' + encodeURIComponent(q);
+      return fetchTextWithTimeout(reader, 25000, { Accept: 'text/plain' }).then(function (text) {
+        return APEngine.parseMarkdownSearchResults ? APEngine.parseMarkdownSearchResults(text, q) : [];
+      }).catch(function () { return []; });
+    });
+  }
+
+  function apContactFromPage(page) {
+    var text = String(page && page.text || ''), emails = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig) || [];
+    var phones = text.match(/(?:\+?\d[\d\s().-]{7,}\d)/g) || [];
+    var email = emails.filter(function (x) { return !/example\.com|domain\.com|email\.com/i.test(x); })[0] || '';
+    var phone = phones.map(function (x) { return x.replace(/\s+/g, ' ').trim(); }).filter(function (x) { return x.replace(/\D/g, '').length >= 8; })[0] || '';
+    return { email: email, phone: phone };
+  }
+
+  function apInspectProspect(row) {
+    return fetchPage(row.url).then(function (page) {
+      var contact = apContactFromPage(page), contactLinks = (page.links || []).filter(function (l) {
+        return /contact|about|impressum|اتصل|تواصل|من نحن|حول/i.test((l.text || '') + ' ' + l.href);
+      }).slice(0, 2);
+      var chain = Promise.resolve();
+      contactLinks.forEach(function (link) {
+        chain = chain.then(function () {
+          if (contact.email && contact.phone) return;
+          return fetchPage(link.href).then(function (contactPage) {
+            var found = apContactFromPage(contactPage);
+            if (!contact.email) contact.email = found.email;
+            if (!contact.phone) contact.phone = found.phone;
+          }).catch(function () { return null; });
+        });
+      });
+      return chain.then(function () {
+        return { name: String(row.title || page.title || '').slice(0, 100), url: page.url || row.url,
+          email: contact.email, phone: contact.phone, snippet: String(row.snippet || page.description || page.text || '').slice(0, 260) };
+      });
+    }).catch(function () { return null; });
+  }
+
+  function apFindProspects(queries, project) {
+    var qs = (Array.isArray(queries) ? queries : []).map(function (q) { return String(q || '').trim(); }).filter(Boolean).slice(0, 4);
+    if (!qs.length) qs = [project.title + ' businesses potential customers contact', project.title + ' companies email contact'];
+    return Promise.all(qs.map(apSearchResults)).then(function (lists) {
+      var seen = {}, rows = Array.prototype.concat.apply([], lists).filter(function (x) {
+        if (!x || !x.url || seen[x.url]) return false;
+        seen[x.url] = true;
+        return true;
+      }).slice(0, 10);
+      return Promise.all(rows.map(apInspectProspect)).then(function (inspected) {
+        var a = apState(), added = 0, accepted = [];
+        inspected.forEach(function (lead) {
+          if (!lead || !APEngine.validProspect || !APEngine.validProspect(lead)) return;
+          var duplicate = (state.customers || []).some(function (c) {
+            return (lead.email && String(c.email || '').toLowerCase() === lead.email.toLowerCase()) ||
+              String(c.notes || '').indexOf(lead.url) !== -1;
+          });
+          if (duplicate) return;
+          state.customers.unshift({
+            id: 'cust-' + uuid().slice(0, 8), portalToken: 'pl_' + uuid().replace(/-/g, ''),
+            name: lead.name, contactName: '', email: lead.email, phone: lead.phone,
+            stage: 'عميل محتمل', projectTitle: project.title, totalValueUsd: 0, paidUsd: 0,
+            assignedTo: 'marketing-lead',
+            notes: 'مرشح بحث موثّق بوسيلة اتصال منشورة. المصدر: ' + lead.url + '\n' + lead.snippet,
+            createdAt: nowIso().slice(0, 10), leadVerifiedAt: nowIso(), leadSource: lead.url
+          });
+          accepted.push(lead); added++;
+        });
+        a.leads = (a.leads || 0) + added;
+        a.prospects[project.url] = { searched: rows.length, qualified: added, checkedAt: nowIso() };
+        saveNow();
+        return { added: added, searched: rows.length, accepted: accepted };
+      });
+    });
+  }
+
+  function apBuildRankedReport() {
+    var a = apState(), rows = Object.keys(a.projectAssessments || {}).map(function (url) { return a.projectAssessments[url]; });
+    rows = APEngine.sortAssessments ? APEngine.sortAssessments(rows) : rows;
+    var lines = ['# ترتيب كل مشروعات الموقع حسب مؤشر الفرصة التجارية', '', 'عدد المشروعات/الصفحات المحللة: ' + rows.length,
+      'المؤشر من 100، وهو تقييم مقارن احتمالي وليس ربحاً محققاً أو توقعاً مالياً مؤكداً.',
+      'الأوزان: وضوح الإيراد 25%، جاهزية البيع 25%، هامش الربح المحتمل 20%، حجم الجمهور 15%، قوة الدليل 10%، سهولة التسليم 5%.', ''];
+    rows.forEach(function (p, i) {
+      lines.push('## ' + (i + 1) + '. ' + p.title + ' — ' + p.profitabilityScore + '/100');
+      lines.push('الرابط: ' + p.url);
+      lines.push('الجمهور: ' + (p.audience || 'غير محسوم'));
+      lines.push('الجاهزية: ' + (p.readinessLabel || 'غير محددة'));
+      lines.push('الربح الإجمالي بالدولار: ' + (p.estimatedGrossProfitUsd == null ? 'غير قابل للحساب من بيانات الصفحة' : '$' + p.estimatedGrossProfitUsd));
+      lines.push('الدليل السعري: ' + (p.profitEvidence || 'لا يوجد دليل سعري/تكلفة كافٍ'));
+      lines.push('سبب الترتيب: ' + (p.why || '—'));
+      lines.push('');
+    });
+    writeExport('autopilot-profitability-ranking.md', lines.join('\n'));
+    return rows;
+  }
+
   function apAnalyze(p) {
-    var a = apState();
-    var agent = getAgent('web-research-team');
-    apLog('أحلّل: ' + p.title);
-    return fetchPage(p.url).catch(function () { return { url: p.url, title: p.title, description: p.summary, headings: [], links: [], text: p.summary }; }).then(function (page) {
-      var prompt = 'حلّل هذا المشروع الحقيقي لتحقيق مبيعات وأرباح. أعد JSON فقط بدون أي نص آخر بالشكل:\n' +
-        '{"offer":"عرض بيع واضح بجملتين","audience":"الجمهور المناسب لهذا المشروع تحديداً","priceUsd":رقم,"channels":["قناة1","قناة2"],"queries":["عبارة بحث إنجليزية عن عملاء محتملين","عبارة ثانية"],"outreach":"رسالة تواصل جاهزة قصيرة","post":"منشور ترويج جاهز","fit":رقم من 1 إلى 10,"why":"سبب التقييم بجملة"}\n\n' +
-        'هدف المدير: ' + (a.goal || 'تحقيق أرباح من مشاريع موقعنا') + '\nالمشروع: ' + p.title + '\n' + pageContext(page);
+    var a = apState(), agent = getAgent('web-research-team');
+    apLog('أحلّل المشروع: ' + p.title + ' (' + (Object.keys(a.projectAssessments).length + 1) + '/' + a.scan.candidateCount + ')');
+    a.currentProjectUrl = p.url; saveNow();
+    return fetchPage(p.url).catch(function () {
+      return { url: p.url, title: p.title, description: p.summary, headings: [], links: [], text: p.summary };
+    }).then(function (page) {
+      var prompt = 'قيّم هذا المشروع التجاري بالاعتماد على الصفحة نفسها فقط، ثم جهّز طريقة بيع قابلة للتنفيذ. أعد JSON صالحاً فقط. لا تخترع مبيعات أو أسعاراً أو تكاليف. إذا لم يوجد نص صريح يثبت السعر والتكلفة فاجعل estimatedGrossProfitUsd=null وprofitEvidence فارغاً. الأرقام التالية تقييم نسبي من 0 إلى 100 وليست أرباحاً محققة: revenueClarity, readiness, marginPotential, audienceReach, evidenceStrength, deliveryEase. readinessLabel من: جاهز للبيع، يحتاج تخصيصاً، قيد التطوير، غير واضح. أخرج البنية: {"offer":"...","audience":"...","revenueClarity":0,"readiness":0,"marginPotential":0,"audienceReach":0,"evidenceStrength":0,"deliveryEase":0,"readinessLabel":"...","publishedPriceUsd":null,"estimatedGrossProfitUsd":null,"profitEvidence":"","confidence":0,"channels":["..."],"queries":["بحث عن شركات/أنشطة حقيقية محتملة كعملاء مع معلومات اتصال عامة"],"outreach":"مسودة فقط لا ترسلها","post":"مسودة فقط لا تنشرها","why":"سبب التقييم مع الدليل"}.\n\n' +
+        'الهدف: ' + (a.goal || 'تحقيق مبيعات وربح من منتجات الموقع') + '\nالمشروع: ' + p.title + '\n' + pageContext(page);
       return aiGenerate({ agentId: agent ? agent.id : 'web-research-team', messages: [{ role: 'user', text: prompt }], _urlDone: true });
     }).then(function (r) {
       recordUsage('web-research-team', r.usage);
-      if (r.mode !== 'live') throw new Error('النموذج غير متصل — ' + (r.warning || 'تحقق من المفتاح'));
-      var j = parseJsonLoose(r.text) || {};
-      var offer = j.offer || String(r.text || '').slice(0, 400);
-      var qs = (Array.isArray(j.queries) ? j.queries : []).slice(0, 2);
-      return Promise.all(qs.map(function (q) { return webSearch(q).catch(function () { return { results: [] }; }); })).then(function (found) {
-        var added = 0;
-        found.forEach(function (f) {
-          (f.results || []).forEach(function (x) {
-            if (added >= 4 || !x.url || /wikipedia\.org|wikimedia/i.test(x.url)) return;
-            if (state.customers.some(function (c) { return String(c.notes || '').indexOf(x.url) !== -1; })) return;
-            state.customers.unshift({
-              id: 'cust-' + uuid().slice(0, 8), portalToken: 'pl_' + uuid().replace(/-/g, ''), name: String(x.title || x.url).slice(0, 80), contactName: '', email: '', phone: '',
-              stage: 'عميل محتمل', projectTitle: p.title, totalValueUsd: 0, paidUsd: 0, assignedTo: 'marketing-lead',
-              notes: 'المصدر: ' + x.url + '\n' + String(x.snippet || '').slice(0, 200), createdAt: nowIso().slice(0, 10)
-            });
-            added++;
-          });
-        });
-        a.leads = (a.leads || 0) + added;
-        var md = '# حملة: ' + p.title + '\n\nالرابط: ' + p.url + '\n\n## العرض\n' + offer + '\n\n## الجمهور\n' + (j.audience || '—') + '\n\n## السعر المقترح\n' + (j.priceUsd ? '$' + j.priceUsd : '—') +
-          '\n\n## القنوات\n' + (Array.isArray(j.channels) ? j.channels.join('، ') : '—') + '\n\n## رسالة التواصل\n' + (j.outreach || '—') + '\n\n## منشور الترويج\n' + (j.post || '—') +
-          '\n\n## التقييم\n' + (j.fit || '—') + '/10 — ' + (j.why || '') + '\n';
+      if (r.mode !== 'live') throw new Error('لم ينجح أي نموذج متاح: ' + (r.warning || 'تحقق من المفاتيح والحصص'));
+      var j = parseJsonLoose(r.text);
+      if (!j) throw new Error('النموذج لم يُرجع تحليلاً منظماً صالحاً؛ لم أعلّم المشروع كمنجز.');
+      var parts = {
+        revenueClarity: j.revenueClarity, readiness: j.readiness, marginPotential: j.marginPotential,
+        audienceReach: j.audienceReach, evidenceStrength: j.evidenceStrength, deliveryEase: j.deliveryEase
+      };
+      var score = APEngine.profitabilityScore ? APEngine.profitabilityScore(parts) : num(j.fit, 0);
+      var evidence = String(j.profitEvidence || '').trim();
+      var evidenceVerified = Boolean(evidence && String(page.text || '').indexOf(evidence) !== -1);
+      var gross = evidenceVerified && j.estimatedGrossProfitUsd != null && isFinite(Number(j.estimatedGrossProfitUsd))
+        ? Number(j.estimatedGrossProfitUsd) : null;
+      var publishedPrice = evidenceVerified && j.publishedPriceUsd != null && isFinite(Number(j.publishedPriceUsd))
+        ? Number(j.publishedPriceUsd) : null;
+      var assessment = {
+        title: p.title, url: p.url, profitabilityScore: score, audience: j.audience || '',
+        readinessLabel: j.readinessLabel || 'غير واضح', publishedPriceUsd: publishedPrice,
+        estimatedGrossProfitUsd: gross, profitEvidence: evidenceVerified ? evidence : '',
+        evidenceStrength: num(j.evidenceStrength, 0), confidence: num(j.confidence, 0),
+        why: j.why || '', assessedAt: nowIso()
+      };
+      a.projectAssessments[p.url] = assessment;
+      saveNow();
+      return apFindProspects(j.queries, p).then(function (prospectResult) {
+        var offer = j.offer || String(r.text || '').slice(0, 400);
+        var md = '# حملة مقترحة: ' + p.title + '\n\nالرابط: ' + p.url +
+          '\n\n## الترتيب التجاري\n' + score + '/100 (مؤشر مقارن، وليس ربحاً محققاً)' +
+          '\n\n## العرض\n' + offer + '\n\n## الجمهور\n' + (j.audience || '—') +
+          '\n\n## الجاهزية\n' + (j.readinessLabel || 'غير واضح') +
+          '\n\n## سعر موثق من الصفحة\n' + (publishedPrice == null ? 'غير موجود/لم يثبت' : '$' + publishedPrice) +
+          '\n\n## الربح الإجمالي\n' + (gross == null ? 'لا يمكن حسابه بأمان من البيانات المتاحة' : '$' + gross) +
+          '\n\n## وسيلة التحقق\n' + (evidenceVerified ? evidence : 'لا يوجد دليل سعري/تكلفة حرفي كافٍ') +
+          '\n\n## العملاء المحتملون المؤهلون\n' + prospectResult.added + ' من ' + prospectResult.searched + ' نتيجة بحث؛ لا يُضاف إلى CRM إلا من لديه بريد أو هاتف منشور على موقعه.' +
+          '\n\n## القنوات\n' + (Array.isArray(j.channels) ? j.channels.join('، ') : '—') +
+          '\n\n## مسودة التواصل (لم تُرسل)\n' + (j.outreach || '—') +
+          '\n\n## مسودة الترويج (لم تُنشر)\n' + (j.post || '—') +
+          '\n\n## سبب التقييم\n' + (j.why || '—') + '\n';
         writeExport('campaign-' + slug(p.title) + '.md', md);
         addApproval({
-          agentId: 'marketing-lead', agentName: 'مسؤول التسويق', title: 'اعتماد حملة ترويج: ' + p.title,
-          details: offer + '\n\nرسالة التواصل:\n' + (j.outreach || '—') + '\n\nمنشور:\n' + (j.post || '—') + '\n\nلا يُرسل شيء للخارج قبل اعتمادك.',
+          agentId: 'marketing-lead', agentName: 'مسؤول التسويق',
+          title: 'مراجعة واعتماد مسودة حملة: ' + p.title + ' (' + score + '/100)',
+          details: offer + '\n\nمؤشر الفرصة: ' + score + '/100\nالعملاء المؤهلون: ' + prospectResult.added +
+            '\n\nمسودة التواصل:\n' + (j.outreach || '—') + '\n\nمسودة المنشور:\n' + (j.post || '—') +
+            '\n\nالموافقة هنا على المسودة فقط. لا إرسال أو نشر خارجي تلقائي.',
           risk: 'medium', actionType: 'publish_marketing', _skipQuality: true
         });
         a.campaigns = (a.campaigns || 0) + 1;
-        a.analyzed[p.url] = true; a.everAnalyzed[p.url] = true; a.sinceReport = (a.sinceReport || 0) + 1;
-        awardPoints('web-research-team', 5, 'دورة أتمتة: تحليل مشروع حقيقي وإعداد حملة');
+        a.analyzed[p.url] = true; a.everAnalyzed[p.url] = true;
+        a.sinceReport = (a.sinceReport || 0) + 1;
+        delete a.currentProjectUrl;
+        saveNow();
+        awardPoints('web-research-team', 5, 'تحليل صفحة مشروع وترتيبها تجارياً');
         state.liveBubbles['web-research-team'] = 'حلّلت: ' + p.title.slice(0, 30);
-        telegramNotify('🤖 *الأتمتة*: حلّلت «' + p.title + '» وجهّزت حملة بانتظار اعتمادك (' + (j.fit || '?') + '/10).');
-        apLog('«' + p.title + '»: تقييم ' + (j.fit || '?') + '/10، حملة جاهزة، ' + added + ' عميل محتمل مضاف' + (added ? '' : ' (لا نتائج بحث حي كافية — الحملة جاهزة للتوزيع اليدوي)') + '.', 'ok');
+        apLog('«' + p.title + '»: مؤشر ' + score + '/100؛ ' + prospectResult.added + ' عميل مؤهل بوسيلة اتصال منشورة.', 'ok');
+        saveNow();
       });
     });
   }
 
   function apSummarize() {
-    var a = apState();
-    var ea = getAgent('executive-assistant');
-    var done = a.projects.map(function (p) { return '- ' + p.title; }).join('\n');
+    var a = apState(), ea = getAgent('executive-assistant');
+    var rows = apBuildRankedReport(), top = rows.slice(0, 20);
+    var brief = top.map(function (p, i) { return (i + 1) + '. ' + p.title + ' — ' + p.profitabilityScore + '/100 — ' + p.url; }).join('\n');
+    var report = '# تقرير ترتيب الربحية والفرص\n\nعدد الصفحات المحللة: ' + rows.length +
+      '\n\nالمؤشر نسبي ومبني على تقييم موحّد؛ لا توجد أرباح مؤكدة دون بيانات مبيعات وتكاليف حقيقية.\n\n' + brief +
+      '\n\nالملف الكامل: autopilot-profitability-ranking.md\n';
+    writeExport('autopilot-final-report.md', report);
     return aiGenerate({
       agentId: ea ? ea.id : 'executive-assistant', _urlDone: true,
-      messages: [{ role: 'user', text: 'أنهت الأتمتة دورة كاملة على مشاريع الموقع:\n' + done + '\n\nعملاء محتملون مضافون: ' + (a.leads || 0) + '، حملات جاهزة بانتظار اعتمادي: ' + (a.campaigns || 0) + '.\nاكتبي لي تقرير نتائج مختصراً: أي مشروع أبدأ به أولاً ولماذا، وأول 3 خطوات ملموسة هذا الأسبوع لأحقق أول إيراد.' }]
+      messages: [{ role: 'user', text: 'اكتمل تحليل كل الصفحات المرشحة من الموقع، وعددها ' + rows.length + '. هذه أعلى الفرص مرتبة بمؤشر تجاري من 100 (ليس ربحاً فعلياً):\n' + brief +
+        '\n\nاكتبي تقريراً تنفيذياً موجزاً: ابدئي بالأعلى ترتيباً، اذكري لماذا، فرّقي بين المنتجات الجاهزة والمشروعات قيد التطوير، ولا تدّعي مبيعات أو أرباحاً محققة.' }]
     }).then(function (r) {
       recordUsage('executive-assistant', r.usage);
-      if (r.mode !== 'live') return;
+      if (r.mode !== 'live') throw new Error('تعذّر إعداد الملخص بالنموذج؛ ملف الترتيب الكامل محفوظ.');
       state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (تقرير الأتمتة 🤖)', senderAvatar: '📋', role: 'assistant', text: r.text, timestamp: nowIso() });
-      writeExport('autopilot-report-' + Date.now() + '.md', '# تقرير الأتمتة\n\n' + r.text + '\n');
-      telegramNotify('📋 *تقرير الأتمتة*\n\n' + String(r.text).slice(0, 1200));
-      apLog('أصدرت تقرير النتائج وبدأت جولة بحث جديدة عن مستجدات الموقع.', 'ok');
+      writeExport('autopilot-report-' + Date.now() + '.md', report + '\n## الملخص التنفيذي\n' + r.text + '\n');
+      telegramNotify('📋 *اكتمل تحليل الموقع وترتيب الفرص*\nعدد الصفحات: ' + rows.length + '\n' + rows.slice(0, 5).map(function (x, i) { return (i + 1) + ') ' + x.title + ' — ' + x.profitabilityScore + '/100'; }).join('\n'));
+      apLog('اكتمل تحليل جميع الصفحات المرشحة. الترتيب الكامل محفوظ في autopilot-profitability-ranking.md.', 'ok');
     });
   }
 
@@ -236,14 +535,25 @@
     apBusy = true; apRender();
     var todo = a.projects.filter(function (p) { return !a.analyzed[p.url]; })[0];
     var job;
-    if (!a.projects.length) job = apDiscover();
+    if (!a.scan) job = apDiscover();
+    else if (!a.scan.complete) job = apContinueDiscovery();
     else if (todo) job = apAnalyze(todo);
-    else if (a.sinceReport > 0) job = apSummarize().then(function () { a.sinceReport = 0; a.projects = []; a.roundDone = true; });
-    else job = Promise.resolve().then(function () { apLog('لا جديد في الموقع حالياً؛ سأعيد الفحص بعد ساعة.', 'info'); a.projects = []; a.roundDone = true; });
+    else if (a.projects.length && a.sinceReport > 0) {
+      job = apSummarize().then(function () {
+        a.sinceReport = 0; a.projects = []; a.scan = null; a.roundDone = true; saveNow();
+      });
+    } else if (a.projects.length) {
+      job = apSummarize().then(function () { a.projects = []; a.scan = null; a.roundDone = true; saveNow(); });
+    } else {
+      job = Promise.resolve().then(function () {
+        apLog('اكتمل تحليل الدفعة الحالية؛ سأعيد جرد الموقع بعد ساعة للعثور على صفحات جديدة.', 'info');
+        a.scan = null; a.roundDone = true; saveNow();
+      });
+    }
     return job.then(function () {
       a.failStreak = 0;
       a.cycle = (a.cycle || 0) + 1;
-      a.nextAt = Date.now() + (a.roundDone ? AP_ROUND_GAP_MS : AP_GAP_MS);
+      a.nextAt = Date.now() + (a.roundDone ? AP_ROUND_GAP_MS : AP_GAP_MS); saveNow();
       a.roundDone = false;
     }).catch(function (e) {
       /* Back off instead of hammering providers that are rate-limited: each retry
@@ -252,7 +562,7 @@
       var quota = /rate limit|quota|429|per-day|credits|انتهت الحصة|الحصة/i.test(String(e.message || ''));
       var waitMin = quota ? 30 : Math.min(60, 3 * Math.pow(2, a.failStreak - 1));
       apLog('تعذّرت الخطوة: ' + String(e.message).slice(0, 220) + ' — ' + (quota ? 'الحصة المجانية لمزودك انتهت أو محدودة؛ ' : '') + 'سأعيد المحاولة بعد ' + waitMin + ' دقيقة. للاستمرار الآن: أضف مفتاح مزود آخر (Groq مجاني بلا بطاقة) من «إضافة مفتاح».', 'err');
-      a.nextAt = Date.now() + waitMin * 60 * 1000;
+      a.nextAt = Date.now() + waitMin * 60 * 1000; saveNow();
     }).then(function () {
       apBusy = false; saveState(); apRender();
     });
@@ -274,7 +584,8 @@
   function apStart(goal) {
     var a = apState();
     a.goal = String(goal || a.goal || '').trim();
-    a.enabled = true; a.nextAt = 0; a.startedAt = a.startedAt || nowIso();
+    if (a.scan && a.scan.site !== apSite()) { a.scan = null; a.projects = []; }
+    a.enabled = true; a.nextAt = 0; a.startedAt = a.startedAt || nowIso(); saveNow();
     logAudit('autopilot_started', 'ceo', 'Autopilot started', { goal: a.goal.slice(0, 120) });
     apLog('بدأت الأتمتة. الهدف: ' + (a.goal || 'مشاريع الموقع'), 'ok');
     apWakeLock();
@@ -282,8 +593,8 @@
   }
   function apStop() {
     var a = apState();
-    a.enabled = false;
-    apLog('تم إيقاف الأتمتة. تستأنف من نفس النقطة عند التشغيل.', 'info');
+    a.enabled = false; saveNow();
+    apLog('تم إيقاف الأتمتة. ستستأنف من آخر نقطة محفوظة عند فتح المكتب مجدداً.', 'info');
   }
 
   /* ── autopilot panel ────────────────────────────────────────────────── */
@@ -298,7 +609,7 @@
         apBusy ? '⚙️ تعمل الآن على خطوة...' : a.enabled ? '🟢 تعمل — الخطوة التالية خلال ' + Math.max(0, Math.round(((a.nextAt || 0) - Date.now()) / 1000)) + ' ث' : '⚪ متوقفة';
     }
     var stats = box.querySelector('#apStats');
-    if (stats) stats.innerHTML = '<span>📚 مشاريع: ' + a.projects.length + '</span><span>✅ محلَّلة: ' + Object.keys(a.analyzed).length + '</span><span>👥 عملاء محتملون: ' + (a.leads || 0) + '</span><span>📣 حملات بانتظارك: ' + (a.campaigns || 0) + '</span><span>🔁 دورات: ' + (a.cycle || 0) + '</span>';
+    if (stats) stats.innerHTML = '<span>🌐 صفحات ممسوحة: ' + (a.scan ? (a.scan.scanned || 0) + '/' + (a.scan.queue || []).length : 0) + '</span><span>📚 مرشحات: ' + (a.scan && a.scan.candidateCount || a.projects.length) + '</span><span>✅ محلَّلة: ' + Object.keys(a.everAnalyzed || {}).length + '</span><span>👥 عملاء محتملون: ' + (a.leads || 0) + '</span><span>📣 حملات بانتظارك: ' + (a.campaigns || 0) + '</span><span>🔁 دورات: ' + (a.cycle || 0) + '</span>';
     var log = box.querySelector('#apLog');
     if (log) log.innerHTML = a.log.slice(0, 25).map(function (x) { return '<div class="ap-line ' + esc(x.k) + '"><small>' + esc(String(x.t).slice(11, 19)) + '</small> ' + esc(x.m) + '</div>'; }).join('') || '<div class="ap-line">لم تبدأ بعد.</div>';
     var tgl = box.querySelector('#apToggle');
@@ -311,7 +622,7 @@
     m.id = 'apModal'; m.className = 'office-modal';
     m.innerHTML = '<div class="office-modal-card">' +
       '<h2>🤖 أتمتة العمل</h2>' +
-      '<p>تعمل المنظومة لوحدها: تسحب مشاريع موقعك الحقيقية، تحلّل كل مشروع، تجهّز حملة وعرض بيع وتبحث عن عملاء، وتفتح لك طلب اعتماد قبل أي شيء يخرج من الشركة. لا تأخذ أي صلاحية دون موافقتك، وتطلب منك الربط (مفتاح نموذج/تليجرام) عند الحاجة فقط. تعمل طالما التطبيق مفتوح، وتستأنف من مكانها عند فتحه من جديد.</p>' +
+      '<p>تحصر صفحات الموقع عبر Sitemap والروابط الداخلية، ثم تحلل كل صفحة منتج/مشروع وتقيّمها بمؤشر تجاري موحّد وترتبها من الأعلى للأقل. يبحث عن شركات حقيقية ويضيف إلى CRM فقط من يظهر له بريد أو هاتف منشور. المسودات لا تُرسل ولا تُنشر إلا بقرارك. الحفظ محلي في هذا المتصفح: تعمل الصفحة وهي مفتوحة، وتستأنف من آخر نقطة محفوظة عند إعادة فتحها؛ لا تعمل أثناء إغلاق المتصفح في هذه النسخة الثابتة.</p>' +
       '<label>الهدف (يمكنك ذكر رابط موقعك)</label>' +
       '<textarea id="apGoal" rows="3" placeholder="مثال: روّج لمشاريع https://mdm1.org/ وحقق أول مبيعات">' + esc(a.goal || 'ابحث عن مشاريع حقيقية من https://mdm1.org/ وروّج لها وحقق أرباحاً من المبيعات') + '</textarea>' +
       '<div id="apStatus" class="ap-status"></div><div id="apStats" class="ap-stats"></div>' +
@@ -397,9 +708,11 @@
     var b1 = document.getElementById('quickStartBtn'); if (b1) b1.onclick = openStartHere;
     var b2 = document.getElementById('autopilotBtn'); if (b2) b2.onclick = openAutopilot;
     if (apTimer) return;
-    apTimer = window.setInterval(apTick, 30000);
+    window.addEventListener('pagehide', function () { try { saveNow(); } catch (_) {} });
+    window.addEventListener('beforeunload', function () { try { saveNow(); } catch (_) {} });
+    apTimer = window.setInterval(apTick, 5000);
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { apWakeLock(); apTick(); } });
-    if (a.enabled) { apLog('استأنفت الأتمتة بعد فتح التطبيق.', 'info'); apWakeLock(); window.setTimeout(apTick, 5000); }
+    if (a.enabled) { if (a.scan && a.scan.inFlight) { a.scan.cursor = Math.min(num(a.scan.cursor, 0), num(a.scan.inFlight.start, 0)); a.scan.inFlight = null; } a.nextAt = 0; saveNow(); apLog('استأنفت الأتمتة من آخر نقطة محفوظة بعد فتح التطبيق.', 'info'); apWakeLock(); window.setTimeout(apTick, 1500); }
     if (!settings.onboardingSeen) {
       settings.onboardingSeen = true; saveSettings();
       window.setTimeout(openStartHere, 1500);
