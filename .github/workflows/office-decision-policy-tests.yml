@@ -3,22 +3,26 @@ on:
   push:
     paths:
       - 'office/decision-policy.js'
+      - 'office/conversation-intelligence.js'
       - 'office/standalone-*.part.js'
       - 'office/standalone.js'
       - 'office/index.html'
       - 'office/pwa.js'
       - 'office/sw.js'
       - 'tests/decision-policy.test.js'
+      - 'tests/conversation-intelligence.test.js'
       - '.github/workflows/office-decision-policy-tests.yml'
   pull_request:
     paths:
       - 'office/decision-policy.js'
+      - 'office/conversation-intelligence.js'
       - 'office/standalone-*.part.js'
       - 'office/standalone.js'
       - 'office/index.html'
       - 'office/pwa.js'
       - 'office/sw.js'
       - 'tests/decision-policy.test.js'
+      - 'tests/conversation-intelligence.test.js'
       - '.github/workflows/office-decision-policy-tests.yml'
 jobs:
   office-policy:
@@ -28,8 +32,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Test decision policy
-        run: node --test tests/decision-policy.test.js
+      - name: Test office decision and conversation policies
+        run: node --test tests/decision-policy.test.js tests/conversation-intelligence.test.js
       - name: Compile combined office runtime
         run: |
           node - <<'NODE'
@@ -37,6 +41,7 @@ jobs:
           const vm = require('node:vm');
           const parts = [
             'office/decision-policy.js',
+            'office/conversation-intelligence.js',
             'office/standalone-core.part.js',
             'office/standalone-model.part.js',
             'office/standalone-domain.part.js',
@@ -55,10 +60,11 @@ jobs:
           const sw = fs.readFileSync('office/sw.js', 'utf8');
           const pwa = fs.readFileSync('office/pwa.js', 'utf8');
           const index = fs.readFileSync('office/index.html', 'utf8');
-          const version = '20261128pwa36';
+          const version = '20261128pwa37';
           if (!sw.includes("var VERSION = '" + version + "'")) throw new Error('Service worker version mismatch');
           if (!pwa.includes("var VERSION = '" + version + "'")) throw new Error('PWA loader version mismatch');
           if (!index.includes(version)) throw new Error('Index cache version mismatch');
           if (!sw.includes("'./decision-policy.js?v=' + VERSION")) throw new Error('Decision policy is missing from offline precache');
+          if (!sw.includes("'./conversation-intelligence.js?v=' + VERSION")) throw new Error('Conversation intelligence is missing from offline precache');
           console.log('PWA cache version and offline decision-policy asset are aligned.');
           NODE

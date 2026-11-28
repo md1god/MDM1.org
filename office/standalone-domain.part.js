@@ -646,9 +646,9 @@
   function routeRequestAgent(text) {
     var t = normalizeDialect(text).normalized.toLowerCase();
     if (/قانون|عقد|ضريبه|ضريبة|امتثال|خصوصيه|خصوصية/.test(t)) return 'legal-advisor';
+    if (/ابحث|بحث|سوق|مشاريع|منتجات|فرص|منافس|مصادر|ترويج/.test(t)) return 'web-research-team';
+    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm|بيع|مبيعات/.test(t)) return 'marketing-lead';
     if (/مال|ميزانيه|ميزانية|فاتوره|فاتورة|تكلفه|تكلفة|سعر|ربح|دفع/.test(t)) return 'accountant';
-    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm/.test(t)) return 'marketing-lead';
-    if (/بحث|سوق|منافس|فرص|مصادر/.test(t)) return 'web-research-team';
     if (/امان|امن|صلاحيه|صلاحية|بيانات|حمايه|حماية/.test(t)) return 'security-officer';
     if (/توظيف|فريق|تدريب|kpi|ضغط/.test(t)) return 'hr-manager';
     if (/كود|تطبيق|موقع|منصه|منصة|api|ساندبوكس|تطوير/.test(t)) return 'auditors-experts-devs';
@@ -661,7 +661,7 @@
     var norm = String(d.normalized || '').trim();
     /* A dot inside a decimal ($49.99) or domain (md1usd.com) is not a
        sentence boundary. */
-    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n،,]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
+    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n]+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
     if (!parts.length) parts = [original];
     var items = [];
     var constraints = [];
@@ -671,7 +671,9 @@
       var nd = normalizeDialect(rawPart).normalized.trim();
       var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
       var context = /^(?:يا|أيها|ايها)\s+/u.test(nd);
-      var clarification = !actionable && (REQUEST_NEGATION_RX.test(nd) || context);
+      var intelligence = window.MDM1ConversationIntelligence || {};
+      var semanticConstraint = typeof intelligence.isContextualConstraint === 'function' && intelligence.isContextualConstraint(nd);
+      var clarification = !actionable && (semanticConstraint || REQUEST_NEGATION_RX.test(nd) || context);
       /* Preserve the user's original spelling in the ledger and task title. */
       var text = rawPart.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|لازم|لازمه|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || rawPart;
       var riskText = stripNegated(nd);
@@ -695,14 +697,20 @@
     if (time) constraints.push('الإطار الزمني: ' + time[0]);
     var audience = original.match(/(للشركات|للعملاء|للأفراد|b2b|b2c|للموظفين)/iu);
     if (audience) constraints.push('الجمهور: ' + audience[0]);
+    var intelligenceHints = window.MDM1ConversationIntelligence || {};
+    if (typeof intelligenceHints.isAudienceByProject === 'function' && intelligenceHints.isAudienceByProject(original)) {
+      constraints.push('قاعدة الجمهور: اختاري الشريحة الأنسب لكل مشروع حسب وظيفة المنتج، ولا تطلبي جمهوراً موحداً من المدير.');
+    }
+    if (typeof intelligenceHints.isRevenueGoal === 'function' && intelligenceHints.isRevenueGoal(original)) {
+      constraints.push('الهدف التجاري: تحقيق دخل ومبيعات فعلية من العروض المناسبة، وليس مجرد زيارات أو أفكار.');
+    }
 
     var unresolved = [];
     if (!items.some(function (x) { return x.status === 'understood'; })) unresolved.push('ما المخرج أو الإجراء المطلوب بالضبط؟');
     items.filter(function (x) { return x.status === 'unclear'; }).slice(0, 3).forEach(function (x) { unresolved.push('ماذا تريد من «' + x.text + '» تحديداً؟'); });
     if (/(ميزانيه|ميزانية|تكلفه|تكلفة|سعر|دفع)/iu.test(norm) && !money) unresolved.push('ما الميزانية القصوى أو الرقم المعتمد؟');
     if (/(خلال|بكره|بكرا|غدا|موعد|جدول)/iu.test(norm) && !time) unresolved.push('ما الموعد النهائي المطلوب؟');
-    if (/(منتج|تطبيق|موقع|حمله|حملة)/iu.test(norm) && !audience) unresolved.push('من هو الجمهور المستهدف؟');
-    if (/(هذا|كده|كذا|هيك|ذلك|اللي|التي|المادة|الشيء)/iu.test(norm)) unresolved.push('ما المقصود بالإشارة في الطلب؟');
+    /* Pronouns and relative clauses are resolved from chat history; their presence alone is not ambiguity. */
 
     return { original: original, normalized: norm, items: items.slice(0, 10), constraints: constraints, unresolved: uniqueStrings(unresolved).slice(0, 5) };
   }
@@ -867,7 +875,8 @@
   function fallbackUnderstanding(raw, norm) {
     var lower = String(norm || '').toLowerCase();
     var scope = 'عام — يحتاج تحديد نطاق أدق';
-    if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
+    if (/ابحث|بحث|مشروع|فرص|سوق|منافس|ترويج|مبيعات/i.test(lower)) scope = 'بحث فرص تجارية وتسويق منتجات الشركة';
+    else if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
     else if (/تسويق|حمله|اعلان|إعلان|عميل|crm/i.test(lower)) scope = 'تسويق ونمو العملاء';
     else if (/مالي|محاسب|فاتوره|تكلفه|ربح|ضريبه/i.test(lower)) scope = 'مالية ومحاسبة';
     else if (/قانون|عقد|امتثال|خصوصيه|ضرائب/i.test(lower)) scope = 'الشؤون القانونية والامتثال';
@@ -893,9 +902,9 @@
     if (/بيانات|صلاحيه|امان/i.test(riskLower)) risks.push('مراجعة مسؤول الأمان قبل منح صلاحيات جديدة');
 
     var ambiguities = [];
-    if (!money) ambiguities.push('ما هي الميزانية القصوى المسموح بها؟');
-    if (!time) ambiguities.push('ما الموعد النهائي أو الإطار الزمني المتوقع؟');
-    if (/منتج|تطبيق|موقع|حمله/i.test(lower) && !/للشركات|للعملاء|للأفراد|b2b|b2c/i.test(lower)) ambiguities.push('من هو الجمهور المستهدف بالضبط؟');
+    if (/(ميزانيه|تكلفه|تكلفه اعلانيه|سعر|مصروف|دفع)/i.test(lower) && !money) ambiguities.push('ما الحد المالي المعتمد لهذا الإنفاق؟');
+    if (/(موعد نهائي|موعد التسليم|تاريخ التسليم|قبل تاريخ|خلال مده)/i.test(lower) && !time) ambiguities.push('ما الموعد النهائي المطلوب؟');
+    /* Audience is inferred per product; it is not a mandatory global field. */
 
     return {
       goal: String(raw).slice(0, 240) || 'لم يُحدد الهدف بوضوح',
@@ -940,7 +949,13 @@
         judgment: String(parsed.judgment || fb.judgment).slice(0, 400),
         keywords: words(d.normalized).slice(0, 18)
       };
-      if (!u.ambiguities.length && d.changes.length === 0) u.ambiguities = ['هل هناك قيد مالي أو زمني يجب أن ألتزم به؟'];
+      var intentHints = window.MDM1ConversationIntelligence || {};
+      if (typeof intentHints.isAudienceByProject === 'function' && intentHints.isAudienceByProject(d.raw)) {
+        u.ambiguities = u.ambiguities.filter(function (q) { return !/جمهور|شريحه|عملاء/.test(String(q)); });
+      }
+      if (typeof intentHints.isRevenueGoal === 'function' && intentHints.isRevenueGoal(d.raw)) {
+        u.ambiguities = u.ambiguities.filter(function (q) { return !/ماذا.*ربح|ماذا.*مبيعات|مقصود.*ربح/.test(String(q)); });
+      }
       return { understanding: u, mode: r.mode, normalized: d.normalized, changes: d.changes, live: r.mode === 'live' };
     });
   }
