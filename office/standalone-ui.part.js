@@ -54,10 +54,13 @@
       return true;
     });
   }
+  /* A stored timestamp is editable from DevTools, so it is not a lock.
+     The unlocked state lives only in this page's memory and is cleared on
+     reload. Every /api/* call is gated on it (see standalone-api.part.js). */
+  var unlockedInMemory = false;
   function isUnlocked() {
     if (!CFG.requireUnlock) return true;
-    var until = Number(localStorage.getItem(LS_UNLOCK) || 0);
-    return until > Date.now();
+    return unlockedInMemory;
   }
   var unlockWaiters = [];
   function waitUnlock() {
@@ -65,7 +68,7 @@
     return new Promise(function (resolve) { unlockWaiters.push(resolve); });
   }
   function unlockFor(hours) {
-    localStorage.setItem(LS_UNLOCK, String(Date.now() + (hours || CFG.tokenTtlHours || 24) * 3600 * 1000));
+    unlockedInMemory = true;
     var waiters = unlockWaiters.splice(0);
     waiters.forEach(function (resolve) { resolve(); });
   }

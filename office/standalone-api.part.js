@@ -115,6 +115,11 @@
   }
 
   function handleApi(method, path, body) {
+    /* Real lock: a value in localStorage or the Console cannot unlock the
+       office. Only a successful passphrase check sets the in-memory flag. */
+    if (CFG.requireUnlock && typeof isUnlocked === 'function' && !isUnlocked()) {
+      return Promise.resolve(jsonResponse({ error: 'المكتب مقفل — أدخل كلمة السر أولاً.' }, 401));
+    }
     var b = body || {};
     var m;
     var qi = path.indexOf('?');
