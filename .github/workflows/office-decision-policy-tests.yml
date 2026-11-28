@@ -46,6 +46,7 @@ jobs:
             'office/standalone-model.part.js',
             'office/standalone-domain.part.js',
             'office/standalone-api.part.js',
+            'office/standalone-autopilot.part.js',
             'office/standalone-ui.part.js'
           ];
           const source = parts.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
@@ -60,7 +61,8 @@ jobs:
           const sw = fs.readFileSync('office/sw.js', 'utf8');
           const pwa = fs.readFileSync('office/pwa.js', 'utf8');
           const index = fs.readFileSync('office/index.html', 'utf8');
-          const version = '20261128pwa37';
+          const version = (sw.match(/var VERSION = '([^']+)'/) || [])[1];
+          if (!version) throw new Error('Service worker version not found');
           if (!sw.includes("var VERSION = '" + version + "'")) throw new Error('Service worker version mismatch');
           if (!pwa.includes("var VERSION = '" + version + "'")) throw new Error('PWA loader version mismatch');
           if (!index.includes(version)) throw new Error('Index cache version mismatch');
