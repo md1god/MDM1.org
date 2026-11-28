@@ -828,6 +828,18 @@
       mirror: memoryMirror
     },
     sanitizeContext: sanitizeContextText,
+    redTeamDrill: redTeamDrill,
+    /* Short-lived local undo and signed SOP packs */
+    approvalUndo: {
+      list: function () { return (state.approvalUndo || []).map(function (u) { return clone(u); }); },
+      activeFor: activeUndoFor,
+      run: undoApprovalLocal
+    },
+    sop: {
+      templates: sopTemplates,
+      buildPack: buildSopPack,
+      verifyPack: verifySopPack
+    },
     listBrowserModels: listLocalModels,
     ensureBrowserEngine: ensureBrowserEngine,
     vaultStatus: vaultStatus,

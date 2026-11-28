@@ -1,7 +1,7 @@
 let D = {
   agents:[], providerConfig:{}, knowledgeFiles:[], exports:[], auditLog:[], sandboxFiles:[], playbooks:[], snapshots:[], memoryStats:{totalMemories:0,byAgent:{}},
   outgoingWebhooks:{}, telegramEnabled:false,
-  state:{ directChats:{}, teamChat:[], tasks:[], approvals:[], webhooks:[], usageStats:{totalTokens:0,totalCostUsd:0,byAgent:{}}, meetingActive:false, meetingAttendees:[], internalMemos:[], kpiReviews:[], financialLedger:[], schedules:[], gamification:{}, customers:[], votes:[], emergencyMode:false, incidents:[], simulations:[], requestLedger:[] }
+  state:{ directChats:{}, teamChat:[], tasks:[], approvals:[], webhooks:[], usageStats:{totalTokens:0,totalCostUsd:0,byAgent:{}}, meetingActive:false, meetingAttendees:[], internalMemos:[], kpiReviews:[], financialLedger:[], schedules:[], gamification:{}, customers:[], votes:[], emergencyMode:false, incidents:[], simulations:[], requestLedger:[], approvalUndo:[], sopPacks:[] }
 };
 let selectedAgentId = null;
 let assistantSession = null;
@@ -267,20 +267,30 @@ function renderTeamChat(){
   el.scrollTop=el.scrollHeight;
 }
 
+function undoControl(i){
+  const u=(D.state?.approvalUndo||[]).find(x=>x && x.approvalId===i.id && !x.usedAt && Date.parse(x.expiresAt)>Date.now());
+  return u?`<button class="btn btn-secondary" onclick="undoApproval('${jsAttr(i.id)}')">↩️ تراجع (حتى ${esc(String(u.expiresAt).slice(11,16))})</button>`:'';
+}
+const APPROVAL_STATUS_LABEL={approved:'✅ معتمد ومنفّذ',rejected:'❌ مرفوض',blocked:'🚫 محجوب برمجياً',undone:'↩️ تم التراجع'};
 function renderApprovals(){
   const c=document.getElementById('approvalsList'), l=(D.state.approvals||[]).filter(i=>i.risk!=='high');
-  c.innerHTML=l.map(i=>`<div class="approval-card ${escAttr(i.status)}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">الموظف: <strong>${esc(i.agentName)}</strong> • الخطورة: <strong>${esc(i.risk)}</strong> • الإجراء: <strong>${esc(i.actionType)}</strong></div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${jsAttr(i.id)}','approved')">✓ موافقة</button><button class="btn btn-reject" onclick="decideApproval('${jsAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد ومنفّذ':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد طلبات متوسطة/منخفضة الخطورة حالياً.</div>';
+  c.innerHTML=l.map(i=>`<div class="approval-card ${escAttr(i.status)}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">الموظف: <strong>${esc(i.agentName)}</strong> • الخطورة: <strong>${esc(i.risk)}</strong> • الإجراء: <strong>${esc(i.actionType)}</strong></div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${jsAttr(i.id)}','approved')">✓ موافقة</button><button class="btn btn-reject" onclick="decideApproval('${jsAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${esc(APPROVAL_STATUS_LABEL[i.status]||i.status)}</span>${undoControl(i)}`}</div></div>`).join('')||'<div class="approval-card">لا توجد طلبات متوسطة/منخفضة الخطورة حالياً.</div>';
 }
 
 function renderHighRiskApprovals(){
   const c=document.getElementById('highRiskApprovalsList'); if(!c)return;
   const l=(D.state.approvals||[]).filter(i=>i.risk==='high');
-  c.innerHTML=l.map(i=>`<div class="approval-card high-risk-card ${escAttr(i.status)}"><div style="flex:1"><div style="font-size:11px;color:#fca5a5;margin-bottom:3px;">🛡️ عالي الخطورة • ${esc(i.agentName)} • ${esc(i.actionType)} • ${i.quality&&i.quality.status?`حكم الجودة: ${esc(i.quality.status)}`:'بانتظار حلقة الجودة'}</div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${jsAttr(i.id)}','approved',true)">⚠️ موافقة صريحة مع تجاوز</button><button class="btn btn-reject" onclick="decideApproval('${jsAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد صريحاً':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد مقترحات عالية الخطورة حالياً.</div>';
+  c.innerHTML=l.map(i=>`<div class="approval-card high-risk-card ${escAttr(i.status)}"><div style="flex:1"><div style="font-size:11px;color:#fca5a5;margin-bottom:3px;">🛡️ عالي الخطورة • ${esc(i.agentName)} • ${esc(i.actionType)} • ${i.quality&&i.quality.status?`حكم الجودة: ${esc(i.quality.status)}`:'بانتظار حلقة الجودة'}</div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${jsAttr(i.id)}','approved',true)">⚠️ موافقة صريحة مع تجاوز</button><button class="btn btn-reject" onclick="decideApproval('${jsAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${esc(APPROVAL_STATUS_LABEL[i.status]||i.status)}</span>${undoControl(i)}`}</div></div>`).join('')||'<div class="approval-card">لا توجد مقترحات عالية الخطورة حالياً.</div>';
 }
 
 async function decideApproval(id,d,override){
   const body={decision:d}; if(override===true)body.override=true;
   try{await api(`/api/approvals/${id}/decide`,{method:'POST',body:JSON.stringify(body)});await bootstrap();}
+  catch(e){alert('❌ '+e.message)}
+}
+async function undoApproval(id){
+  if(!confirm('هل تريد التراجع عن الآثار المحلية لهذا القرار؟ لن يُلغى سجل التدقيق، ولن تُلغى أي آثار خارجية حقيقية.'))return;
+  try{await api(`/api/approvals/${id}/undo`,{method:'POST',body:'{}'});await bootstrap();window.MDM1Office?.showToast?.('↩️ تم التراجع عن الآثار المحلية','ok');}
   catch(e){alert('❌ '+e.message)}
 }
 
@@ -720,6 +730,17 @@ document.getElementById('directMicBtn').onclick=()=>startMic('directChatInput');
 document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');
 document.getElementById('assistantMicBtn').onclick=()=>startMic('assistantChatInput');
 document.getElementById('localMemoryForm')?.addEventListener('submit',addLocalMemoryFromForm);
+document.getElementById('sopImportFile')?.addEventListener('change',async e=>{
+  const f=e.target.files?.[0]; if(!f)return;
+  const st=document.getElementById('sopImportStatus'); st.textContent='جارٍ التحقق من البصمة...';
+  try{
+    const pack=JSON.parse(await f.text());
+    const r=await api('/api/sop/import',{method:'POST',body:JSON.stringify({pack})});
+    st.textContent='✅ تم استيراد «'+r.template.title+'» — البصمة '+String(r.fingerprint).slice(0,12);
+    await renderSop();
+  }catch(err){st.textContent='❌ '+err.message;}
+  e.target.value='';
+});
 document.getElementById('assistantChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('assistantChatInput'),btn=document.getElementById('assistantSendBtn'),t=inp.value.trim();if(!t)return;inp.value='';btn.disabled=true;btn.textContent='⏳...';try{await assistantSend(t);}finally{btn.disabled=false;renderAssistantChat();}});
 document.getElementById('smartAssistantBtn').onclick=()=>{switchTab('chat');switchChatMode('assistant');document.getElementById('assistantChatInput').focus();};
 buildMobileMore();
@@ -755,6 +776,15 @@ document.getElementById('runSelftestBtn').onclick=async()=>{
       '<ul style="margin:8px 0;padding-inline-start:18px;">'+(r.results||[]).map(x=>`<li>${x.ok?'✅':'❌'} ${esc(x.name)}${x.ok?'':' — <span style="color:var(--red)">'+esc(x.detail)+'</span>'}</li>`).join('')+'</ul>';
   }catch(e){out.textContent='❌ '+e.message}
   finally{b.disabled=false;b.textContent='🧪 اختبارات ذهبية'}
+};
+document.getElementById('runRedteamBtn').onclick=async()=>{
+  const b=document.getElementById('runRedteamBtn'), out=document.getElementById('redteamResult');
+  b.disabled=true;b.textContent='⏳ جارٍ الهجوم التجريبي...';out.style.display='block';out.textContent='جارٍ حقن وسوم تعيين تجريبية في المعرفة...';
+  try{
+    const r=await api('/api/redteam/drill',{method:'POST',body:'{}'});
+    out.innerHTML='<strong style="color:'+(r.ok?'var(--green)':'var(--red)')+'">'+(r.ok?'✅':'❌')+' '+esc(r.note)+'</strong><ul style="margin:8px 0;padding-inline-start:18px;">'+(r.sanitized||[]).map((s,i)=>`<li>${i+1}. <code style="font-size:11px;">${esc(s)}</code></li>`).join('')+'</ul>';
+  }catch(e){out.textContent='❌ '+e.message}
+  finally{b.disabled=false;b.textContent='🛡️ تدريب الفريق الأحمر'}
 };
 
 document.getElementById('auditSearchInput').addEventListener('input',e=>{
@@ -839,6 +869,46 @@ function renderPlaybooks(){
       <button class="btn btn-primary" onclick="runPlaybook('${jsAttr(pb.id)}')">▶️ تشغيل القالب الآن</button>
     </div>
   `).join('');
+  renderSop();
+}
+
+function sopNodeHtml(nodes,nodeId,seen){
+  const n=(nodes||[]).find(x=>x&&x.id===nodeId); if(!n||seen.has(nodeId))return '';
+  seen.add(nodeId);
+  const tool=n.tool?`<small style="color:var(--cyan);">الأداة: ${esc(n.tool)}</small>`:'';
+  const risk=n.risk?`<small style="color:var(--muted);"> • الخطورة: ${esc(n.risk)}</small>`:'';
+  const approval=n.approval?'<small style="color:#fcd34d;"> • موافقة المدير إلزامية</small>':'';
+  const icon=n.type==='decision'?'🔀':n.type==='review'?'🔍':n.type==='end'?'🏁':'•';
+  let branches='';
+  if(n.type==='decision'){
+    branches=`<div style="margin-inline-start:18px;border-inline-start:1px solid var(--border);padding-inline-start:12px;margin-top:6px;"><div style="font-size:11px;color:var(--green);">✅ نعم → ${sopNodeHtml(nodes,n.yes,seen)}</div><div style="font-size:11px;color:var(--red);">❌ لا → ${sopNodeHtml(nodes,n.no,seen)}</div></div>`;
+  }
+  return `<div style="font-size:12px;line-height:1.8;">${icon} ${esc(n.text)} ${tool}${risk}${approval}${branches}</div>`;
+}
+
+async function renderSop(){
+  const el=document.getElementById('sopTreeList'); if(!el)return;
+  try{
+    const r=await api('/api/sop');
+    const templates=r.templates||[];
+    const sel=document.getElementById('sopExportSelect');
+    if(sel)sel.innerHTML=templates.map(t=>`<option value="${jsAttr(t.id)}">${esc(t.title)}</option>`).join('');
+    el.innerHTML=templates.map(t=>`<details class="inspector-block" style="margin-bottom:8px;"><summary style="cursor:pointer;font-weight:600;">${esc(t.icon||'📖')} ${esc(t.title)} <small style="color:var(--muted);">— ${(t.nodes||[]).length} عقدة</small></summary><p style="font-size:12px;color:var(--muted);margin:8px 0;">${esc(t.description)}</p><div style="border-top:1px solid var(--border);padding-top:8px;">${(t.nodes||[]).filter(n=>!t.nodes.some(x=>x.yes===n.id||x.no===n.id)).map(n=>sopNodeHtml(t.nodes,n.id,new Set())).join('')}</div></details>`).join('')||'<div class="inspector-block">لا توجد قوالب.</div>';
+    if(r.note){const st=document.getElementById('sopImportStatus');if(st&&!st.textContent)st.textContent=r.note;}
+  }catch(e){el.innerHTML='<div class="inspector-block">تعذّر تحميل قوالب SOP: '+esc(e.message)+'</div>'}
+}
+
+async function exportSopPack(){
+  try{
+    const id=document.getElementById('sopExportSelect').value;
+    const r=await api('/api/sop');
+    const t=(r.templates||[]).find(x=>x.id===id); if(!t)return;
+    const pack=window.MDM1Office.sop.buildPack(t);
+    const blob=new Blob([JSON.stringify(pack,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`mdm1-sop-${t.id}.json`;a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+    window.MDM1Office?.showToast?.('📦 تم تصدير الحزمة — البصمة '+String(pack.fingerprint).slice(0,12),'ok');
+  }catch(e){alert('❌ '+e.message)}
 }
 async function runPlaybook(id){
   const pt=document.getElementById('playbookProjectTitle').value.trim();

@@ -13,11 +13,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa43h1" />
-  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa43h1" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa43h1" />
-  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa43h1" />
-  <link rel="stylesheet" href="styles.css?v=20261128pwa43h1" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa44" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa44" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa44" />
+  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa44" />
+  <link rel="stylesheet" href="styles.css?v=20261128pwa44" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -26,7 +26,7 @@
     <header class="topbar">
       <div class="topbar-main">
         <div class="brand">
-          <img class="brand-logo" src="app-logo.webp?v=20261128pwa43h1" alt="MD1&#117;sd Company" />
+          <img class="brand-logo" src="app-logo.webp?v=20261128pwa44" alt="MD1&#117;sd Company" />
           <div>
             <h1>MD1&#117;sd Company</h1>
             <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -352,6 +352,17 @@
         <section id="tab-playbooks" class="tab-panel">
           <div class="panel-header"><div><h2>📖 مكتبة قوالب المشاريع (Company Playbooks / SOPs)</h2><p>إجراءات قياسية جاهزة تطلق سلسلة مهام ومذكرات مترابطة بين الأقسام بضغطة زر.</p></div></div>
           <div style="margin-bottom:12px;"><input type="text" id="playbookProjectTitle" placeholder="اسم المشروع المرتبط بالقالب (اختياري، مثال: تطبيق متجر النخبة)" style="width:min(450px,100%);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:inherit;" /></div>
+          <div class="card-box" style="margin-bottom:16px;">
+            <h3>🧬 قوالب SOP عربية بتفرّع وشروط — حزمة شركة موقّعة</h3>
+            <p style="font-size:12px;color:var(--muted);margin:6px 0 10px;">كل قرار له مساران، وكل خطوة تذكر الأداة الحقيقية ومستوى الخطورة. التصدير ملف JSON محلي البصمة؛ الرابط/QR العام يحتاج خادمًا ولن يُفعّل في نسخة المتصفح.</p>
+            <div id="sopTreeList"></div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;">
+              <select id="sopExportSelect" style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px;color:var(--text);font-family:inherit;"></select>
+              <button type="button" class="btn btn-primary" onclick="exportSopPack()">📦 تصدير الحزمة الموقّعة</button>
+              <input type="file" id="sopImportFile" accept="application/json,.json" style="max-width:220px;font-size:12px;" />
+              <span id="sopImportStatus" style="font-size:12px;color:var(--muted);"></span>
+            </div>
+          </div>
           <div id="playbooksGrid" class="webhooks-grid"></div>
         </section>
 
@@ -361,7 +372,7 @@
           <div class="card-box" style="margin-bottom:16px;">
             <form id="snapshotForm" class="sim-form-grid">
               <div><label>تسمية النسخة</label><input type="text" id="snapLabel" placeholder="قبل إطلاق الحملة الكبرى" required /></div>
-              <div><label>كلمة مرور التشفير (اختياري — يستخدم WEBHOOK_SECRET افتراضياً)</label><input type="password" id="snapPass" placeholder="كلمة سر قوية..." /></div>
+              <div><label>كلمة مرور التشفير (اتركها فارغة لاستخدام كلمة المكتب)</label><input type="password" id="snapPass" placeholder="نفس كلمة المكتب أو كلمة أقوى..." /></div>
               <div style="display:flex;align-items:flex-end;"><button type="submit" class="btn btn-primary" style="width:100%">💾 إنشاء نسخة مشفرة الآن</button></div>
             </form>
           </div>
@@ -410,7 +421,7 @@
 
   <div id="decisionModal" class="modal hidden"><div class="modal-card"><h3>🔍 أعد شرح هذا القرار</h3><div id="decisionExplain" style="font-size:12px;white-space:pre-wrap;line-height:1.8;max-height:50vh;overflow:auto;color:var(--text);"></div><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('decisionModal').classList.add('hidden')">إغلاق</button></div></div></div>
 
-  <div id="healthModal" class="modal hidden"><div class="modal-card"><h3>🩺 فحص صحة المكتب</h3><p id="healthResult" style="font-size:12px;white-space:pre-wrap;line-height:1.8;color:var(--muted);">جارٍ الفحص...</p><div id="selfTestResult" style="font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:38vh;overflow:auto;display:none;"></div><div class="modal-actions"><button type="button" class="btn btn-primary" id="runSelftestBtn">🧪 اختبارات ذهبية</button><button type="button" class="btn btn-secondary" id="closeHealthModalBtn">إغلاق</button></div></div></div>
+  <div id="healthModal" class="modal hidden"><div class="modal-card"><h3>🩺 فحص صحة المكتب</h3><p id="healthResult" style="font-size:12px;white-space:pre-wrap;line-height:1.8;color:var(--muted);">جارٍ الفحص...</p><div id="selfTestResult" style="font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:38vh;overflow:auto;display:none;"></div><div id="redteamResult" style="font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:20vh;overflow:auto;display:none;margin-top:8px;"></div><div class="modal-actions"><button type="button" class="btn btn-primary" id="runSelftestBtn">🧪 اختبارات ذهبية</button><button type="button" class="btn btn-secondary" id="runRedteamBtn">🛡️ تدريب الفريق الأحمر</button><button type="button" class="btn btn-secondary" id="closeHealthModalBtn">إغلاق</button></div></div></div>
 
   <!-- Mobile-only bottom navigation: five real destinations, no duplicate menu. -->
   <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="تنقل سريع">
@@ -437,12 +448,12 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261128pwa43h1"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261128pwa44"></script>
   <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261128pwa43h1"></script>
-  <script src="office-auth.js?v=20261128pwa43h1"></script>
-  <script src="pwa.js?v=20261128pwa43h1"></script>
-  <script src="standalone.js?v=20261128pwa43h1"></script>
+  <script src="office-config.js?v=20261128pwa44"></script>
+  <script src="office-auth.js?v=20261128pwa44"></script>
+  <script src="pwa.js?v=20261128pwa44"></script>
+  <script src="standalone.js?v=20261128pwa44"></script>
   <script>
     // Wait for the runtime parts, then for boot() to finish the private gate.
     // MDM1OfficeReady only means the parts loaded; MDM1Office.ready means the
@@ -451,7 +462,7 @@
       return (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve();
     }).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261128pwa43h1';
+      s.src = 'app.js?v=20261128pwa44';
       document.body.appendChild(s);
     }).catch(function (error) {
       console.error('MDM1 Office could not start:', error);
