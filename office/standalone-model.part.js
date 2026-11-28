@@ -184,10 +184,15 @@
       var all = (j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; });
       /* Show every live Groq model. Free status comes only from live metadata;
          where Groq omits pricing we mark it unknown instead of hiding it. */
-      var free = all.filter(isFreeModel).map(function (m) { return m.id; });
+      /* Groq publishes no pricing in /models, so isFreeModel() could never match and
+         the free-only mode left Groq with zero usable models. Groq has a no-card free
+         plan (over-limit requests get 429, they are not billed); only chat models are
+         offered — speech, TTS and guard models are excluded. */
+      var chat = all.filter(function (m) { return !/whisper|tts|playai|orpheus|guard|safeguard|embed/i.test(String(m.id)); });
+      var free = chat.map(function (m) { return m.id; });
       var models = all.map(function (m) { return Object.assign({}, m, { freeTier: free.indexOf(m.id) !== -1 }); });
       var out = { connected: true, models: models, free: free, base: settings.groqBase, error: null,
-        note: free.length ? null : 'Groq لا يعلن أسعار النماذج — تحقق من حسابك قبل الاختيار.' };
+        note: 'Groq لا يعلن الأسعار: الباقة المجانية بلا بطاقة، وتُحاسَب فقط إن رقّيت حسابك لخطة مدفوعة.' };
       providerCache.groq = out; providerCache.groqAt = Date.now();
       return out;
     }).catch(function (e) {
