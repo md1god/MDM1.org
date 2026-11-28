@@ -1,4 +1,20 @@
   var providerCache = { cloud: null, cloudAt: 0, local: null, localAt: 0, zen: null, zenAt: 0, groq: null, groqAt: 0, openrouter: null, openrouterAt: 0 };
+  /* A provider can list models successfully yet be unable to execute a chat
+     call from this origin (Zen/CORS). Track real chat health separately so the
+     badge and auto fallback never advertise a provider that cannot generate. */
+  var providerChatHealth = {};
+  var providerHealthDirty = false;
+  function markChatHealth(provider, ok, error) {
+    if (!provider) return;
+    var prev = providerChatHealth[provider];
+    if (prev && prev.ok === ok && (!error || prev.error === String(error).slice(0, 200))) return;
+    providerChatHealth[provider] = { ok: Boolean(ok), error: error ? String(error).slice(0, 200) : null, at: Date.now() };
+    providerHealthDirty = true;
+  }
+  function chatUsable(provider) {
+    var h = providerChatHealth[provider];
+    return !(h && h.ok === false && Date.now() - h.at < 15 * 60 * 1000);
+  }
   function basicAuth(password) {
     return 'Basic ' + btoa('opencode:' + password);
   }
@@ -167,10 +183,10 @@
     var i, mode;
     for (i = 0; i < order.length; i++) {
       mode = order[i];
-      if (providerConfigured(mode) && providerCache[mode] && providerCache[mode].connected) return mode;
+      if (providerConfigured(mode) && chatUsable(mode) && providerCache[mode] && providerCache[mode].connected) return mode;
     }
     for (i = 0; i < order.length; i++) {
-      if (providerConfigured(order[i])) return order[i];
+      if (providerConfigured(order[i]) && chatUsable(order[i])) return order[i];
     }
     return 'demo';
   }
@@ -240,9 +256,9 @@
     if (!opts.forceProvider && settings.mode === 'auto') {
       var order = ['local', 'zen', 'groq', 'openrouter'];
       var autoChain = order.filter(function (m) {
-        return providerConfigured(m) && providerCache[m] && providerCache[m].connected;
+        return providerConfigured(m) && chatUsable(m) && providerCache[m] && providerCache[m].connected;
       });
-      if (!autoChain.length) autoChain = order.filter(providerConfigured);
+      if (!autoChain.length) autoChain = order.filter(function (m) { return providerConfigured(m) && chatUsable(m); });
       if (autoChain.length > 1) {
         function tryAuto(i, errors) {
           if (i >= autoChain.length) return Promise.resolve(fallback(errors.join('\n')));
@@ -299,12 +315,14 @@
             var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
             if (!text) { errors.push(id + ': رد فارغ'); markModelError(provider, id, 'رد فارغ'); return attempt(i + 1); }
             var out = { text: text, mode: 'live', provider: provider, model: id, usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id)) };
+            markChatHealth(provider, true, null);
             markUsage(provider, id, out.usage);
             return out;
           });
         }).catch(function (e) {
           errors.push(id + ': ' + e.message);
           markModelError(provider, id, e.message);
+          markChatHealth(provider, false, e.message);
           return attempt(i + 1);
         });
       }
@@ -450,12 +468,14 @@
               var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
               if (!text) { errors.push(id + ': رد فارغ'); markModelError('opencode-zen', id, 'رد فارغ'); return attempt(i + 1); }
               var out = { text: text, mode: 'live', provider: 'opencode-zen', model: id, usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id)) };
+              markChatHealth('zen', true, null);
               markUsage('opencode-zen', id, out.usage);
               return out;
             });
           }).catch(function (e) {
             errors.push(id + ': ' + e.message);
             markModelError('opencode-zen', id, e.message);
+            markChatHealth('zen', false, e.message);
             return attempt(i + 1);
           });
         }
@@ -520,6 +540,11 @@
         warning: 'emergency_mode_active', usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, costUsd: 0 }
       });
     }
+    function flushProviderHealth() {
+      if (!providerHealthDirty) return;
+      providerHealthDirty = false;
+      try { window.dispatchEvent(new Event('mdm1-provider-change')); } catch (e) {}
+    }
     return Promise.resolve().then(function () { return aiGenerateRaw(opts); }).then(function (r) {
       settings.lastProvider = r.provider || settings.lastProvider;
       saveSettings();
@@ -527,9 +552,11 @@
         showToast('⚠️ تعذّر التوليد حياً: ' + String(r.warning).slice(0, 180), 'err');
       }
       updateQuotaBadge();
+      flushProviderHealth();
       return r;
     }).catch(function (e) {
       var agent = getAgent(opts && opts.agentId) || { name: opts && opts.agentId || 'المساعد', id: opts && opts.agentId || 'unknown' };
+      flushProviderHealth();
       return {
         text: demoReply(agent, '', e.message),
         mode: 'fallback', provider: currentMode(), model: 'demo',

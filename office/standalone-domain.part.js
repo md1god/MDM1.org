@@ -1441,6 +1441,7 @@
           zen: { connected: zen.connected, error: zen.error, modelCount: zen.models.length },
           groq: { connected: groq.connected, error: groq.error, freeModels: groq.free.length },
           openrouter: { connected: or.connected, error: or.error, freeModels: or.free.length },
+          chatHealth: providerChatHealth,
           freeModels: free,
           quota: quotaSummary(),
           quality: { enabled: settings.qualityGate, reports: num(state.qualityReports && state.qualityReports.length, 0), lastStatus: (state.qualityReports && state.qualityReports[0] && state.qualityReports[0].status) || null },

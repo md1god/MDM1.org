@@ -3,7 +3,7 @@
    are never cached and are always fetched from the network. */
 (function () {
   'use strict';
-  var VERSION = '20261128pwa26';
+  var VERSION = '20261128pwa27';
   var CACHE = 'mdm1-office-pwa-' + VERSION;
   /* Versioned URLs match index.html, so a deploy can never serve a cached old
      fragment next to a fresh index (and vice versa). */

@@ -35,6 +35,10 @@ async function bootstrap(){
   renderGlobal();renderActiveTab(activeTab());
   try{const s=await api('/api/assistant/session');if(s.session){assistantSession=s.session;if(activeTab()==='chat')renderAssistantChat();}}catch(e){}
 }
+/* The runtime reports when a provider's real chat health changes (e.g. Zen
+   lists models but CORS blocks generation). Refresh the badge/status from the
+   new truth without reloading the whole app. */
+window.addEventListener('mdm1-provider-change',()=>{bootstrap().catch(e=>console.warn('provider refresh',e))});
 
 function notifyNewApprovals(prevIds){
   const pending=(D.state.approvals||[]).filter(a=>a.status==='pending');
