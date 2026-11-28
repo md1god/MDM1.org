@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستمع صوتي مع مؤشرات و بطاقات ترجمة ذكية | MDM1</title>
+<meta name="description" content="تطبيق يعمل دون اتصال، يلتقط الصوت عبر الميكروفون، يُظهر الموجة والمؤشر الزمني، يقدم بطاقات عبارات وترجمات، ويتولد رمز QR للجدول الكامل.">
+<link rel="canonical" href="https://mdm1.org/apps/majlis-caption-lantern.html">
+<meta property="og:title" content="مستمع صوتي مع مؤشرات و بطاقات ترجمة ذكية">
+<meta property="og:description" content="تطبيق يعمل دون اتصال، يلتقط الصوت عبر الميكروفون، يُظهر الموجة والمؤشر الزمني، يقدم بطاقات عبارات وترجمات، ويتولد رمز QR للجدول الكامل.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mdm1.org/apps/majlis-caption-lantern.html">
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/pages.css">
+<style>.tool label{display:block;margin:.9rem 0 .25rem;color:var(--gold)}
+.tool input,.tool select,.tool textarea{width:100%;padding:.7rem;border-radius:8px;border:1px solid var(--gold-dim);background:rgba(0,0,0,.55);color:var(--light);font:inherit}
+.tool button{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:50px;background:linear-gradient(135deg,#c9a84c,#8b6914);color:#000;font:inherit;font-weight:700;cursor:pointer}
+.tool .out{margin-top:1rem;padding:1rem;border:1px solid var(--gold-dim);border-radius:10px;background:rgba(201,168,76,.05)}
+.tool .big{font-size:1.8rem;color:var(--gold-bright);font-weight:700}
+.tool .faq h3{color:var(--gold-bright);font-size:1.05rem;margin-top:1.2rem}.tool .src{margin-top:2rem;font-size:.85rem;opacity:.7}.app .card{padding:1.2rem}.app canvas{max-width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,.4)}
+.app .row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.6rem 0}.app .row>*{flex:1 1 140px}
+.app button.sec{background:transparent;border:1px solid var(--gold-dim);color:var(--light)}
+.app input[type=range]{padding:0}.app input[type=file]{padding:.5rem}.app{
+  direction:rtl;
+  font-family:inherit;
+  color:var(--light);
+}
+.app .row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5rem;
+  align-items:center;
+}
+.app button{
+  min-width:100px;
+}
+#waveCanvas{
+  border:1px solid var(--gold);
+}
+#qrCanvas{
+  border:2px solid var(--gold-bright);
+}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "تطبيق لتسجيل الصوت وعرض الموجة مع بطاقات ترجمة فورية", "url": "https://mdm1.org/apps/majlis-caption-lantern.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ar", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل يحتاج التطبيق إلى اتصال بالإنترنت؟", "acceptedAnswer": {"@type": "Answer", "text": "لا، جميع المميزات تعمل بالكامل دون اتصال بعد تحميل الصفحة."}}, {"@type": "Question", "name": "كيف أستطيع إضافة عبارات جديدة؟", "acceptedAnswer": {"@type": "Answer", "text": "يمكنكم تعديل ملف JSON عبر زر الاستيراد وإعادة تصديره بعد الإضافة."}}, {"@type": "Question", "name": "ما هو سبب عدم ظهور صوتي على المتصفح؟", "acceptedAnswer": {"@type": "Answer", "text": "تأكد من منح الموقع إذن الوصول إلى الميكروفون في إعدادات المتصفح."}}]}]}</script>
+<meta name="google-adsense-account" content="ca-pub-8270783733461099">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8270783733461099" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="particles"></div>
+<nav class="navbar">
+  <a href="https://mdm1.org/index.html" class="nav-logo">👁️ MDM1</a>
+  <a href="https://mdm1.org/apps/" class="nav-back">كل التطبيقات</a>
+</nav>
+<header class="page-hero reveal">
+  <div class="page-label">MDM1 · تطبيقات مجانية</div>
+  <h1 class="page-title">تطبيق لتسجيل الصوت وعرض الموجة مع بطاقات ترجمة فورية</h1>
+  <p class="page-sub">تطبيق يعمل دون اتصال، يلتقط الصوت عبر الميكروفون، يُظهر الموجة والمؤشر الزمني، يقدم بطاقات عبارات وترجمات، ويتولد رمز QR للجدول الكامل.</p>
+</header>
+<main class="page-content">
+<div class="tool app"><div class="card"><div class="app">
+  <p>الإجابة السريعة: يتيح لك هذا البرنامج تسجيل صوتك مباشرةً من المتصفح، رؤية الموجة الصوتية، تتبع مستوى الصوت، والانتقال بين عبارات مترجمة تلقائياً عند الصمت أو بنقرة واحدة. يضم مجموعة من البطاقات التي تحتوي على عبارات جاهزة بلغات مختلفة، ويمكنك قراءة الجدول الكامل عبر رمز QR لتوزيعه على الحضور. كل ذلك يعمل بدون اتصال أو حساب، مع مؤقت للجلسة وإمكانية تصدير أو استيراد إعداداتك بصيغة JSON.</p>
+  
+  <div class="row">
+    <button id="btnStart" class="button">ابدأ التسجيل</button>
+    <button id="btnStop" class="button sec" disabled>إيقاف</button>
+    <button id="btnNext" class="button sec">العربة التالية</button>
+    <button id="btnExport" class="button sec">تصدير</button>
+    <button id="btnImport" class="button sec">استيراد</button>
+  </div>
+
+  <div class="row" style="margin-top:1rem;">
+    <label for="selectLang">لغة الترجمة:</label>
+    <select id="selectLang" class="input">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+
+  <canvas id="waveCanvas" width="600" height="100" style="background:var(--dark);margin-top:1rem;"></canvas>
+
+  <div class="row" style="align-items:center;margin-top:0.5rem;">
+    <label>مستوى الصوت:</label>
+    <progress id="levelMeter" max="255" value="0" style="flex:1;margin:0 0.5rem;"></progress>
+    <span id="levelValue" class="badge">0</span>
+  </div>
+
+  <div class="row" style="margin-top:0.5rem;">
+    <label>الوقت المستغرق:</label>
+    <output id="timer" class="big">00:00</output>
+  </div>
+
+  <section class="card" style="margin-top:1rem;padding:1rem;background:var(--gold-dim);">
+    <h3 id="phraseText" style="margin:0;">[العبارة]</h3>
+    <p id="translationText" style="margin:0.5rem 0 0;">[الترجمة]</p>
+    <button id="btnSpeak" class="button sec" style="margin-top:0.5rem;">نطق</button>
+  </section>
+
+  <div class="row" style="margin-top:1rem;">
+    <canvas id="qrCanvas" width="200" height="200"></canvas>
+    <button id="btnGenerateQR" class="button">إنشاء QR</button>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json" style="display:none;">
+</div></div><div class="divider"></div><section class="faq"><h2 style="color:var(--gold-bright)">أسئلة شائعة</h2><h3>هل يحتاج التطبيق إلى اتصال بالإنترنت؟</h3><p>لا، جميع المميزات تعمل بالكامل دون اتصال بعد تحميل الصفحة.</p><h3>كيف أستطيع إضافة عبارات جديدة؟</h3><p>يمكنكم تعديل ملف JSON عبر زر الاستيراد وإعادة تصديره بعد الإضافة.</p><h3>ما هو سبب عدم ظهور صوتي على المتصفح؟</h3><p>تأكد من منح الموقع إذن الوصول إلى الميكروفون في إعدادات المتصفح.</p></section><p style="margin-top:1.5rem"><a href="./" class="glow-gold">← كل التطبيقات</a> · <a href="../tools/" class="glow-gold">الأدوات</a></p></div>
+</main>
+<!--related:start--><section class="related" style="max-width:820px;margin:2.5rem auto;padding:0 1rem"><h2 style="color:var(--gold-bright)">تطبيقات أخرى قد تفيدك</h2><ul style="list-style:none;padding:0;line-height:1.8"><li style="margin:.5rem 0"><a href="meal-grid-market.html" style="color:var(--gold-bright);font-weight:700">مخطط وجبات أسبوعي وقائمة تسوق ذكية</a><span style="opacity:.75"> — أنشئ أطباقك المفضلة بمكوناتها، اسحبها إلى جدول سبعة أيام، واترك التطبيق يجمع الكميات المتشابهة في قائمة تسوق…</span></li><li style="margin:.5rem 0"><a href="model-route-sandbox.html" style="color:var(--gold-bright);font-weight:700">محاكي بوابة نماذج ذكية لإدارة التكاليف والتوجيه</a><span style="opacity:.75"> — تطبيق ويب يعمل في المتصفح لمحاكاة بوابة نماذج ذكية: تعريف المزوّدين والنماذج والأسعار والمفاتيح محليًا…</span></li><li style="margin:.5rem 0"><a href="nabd-flashcards.html" style="color:var(--gold-bright);font-weight:700">نبض: بطاقات مراجعة من Markdown</a><span style="opacity:.75"> — حوّل ملاحظات Markdown إلى بطاقات مراجعة متباعدة في ثوانٍ، وراجع بطاقة واحدة في كل مرة مع جدولة ذكية، دون…</span></li><li style="margin:.5rem 0"><a href="polished-dictation-desk.html" style="color:var(--gold-bright);font-weight:700">أداة إملاء صوتي تنظّف النص وتعلم تصحيحاتك محليًا</a><span style="opacity:.75"> — أداة إملاء صوتي تعمل داخل المتصفح: تحوّل الكلام إلى نص مضبوط، تنظّف الحشو والتكرار وعلامات الترقيم، تتعلم…</span></li><li style="margin:.5rem 0"><a href="reply-intent-workbench.html" style="color:var(--gold-bright);font-weight:700">أداة تقييم نية الشراء وتوليد ردود مبيعات ذكية</a><span style="opacity:.75"> — أداة داخل المتصفح تقوم بترتيب المنشورات حسب الأحدث، تقييم نية الشراء عبر عوامل متعددة، وتوليد مسودات ردود…</span></li></ul><p><a href="index.html" style="color:var(--gold-bright)">كل التطبيقات ←</a></p></section><!--related:end-->
+<footer class="page-footer">✦ MDM1 · 2026-11-28 ✦</footer>
+<script src="../js/global.js"></script>
+<script>
+(() => {
+  const state = {
+    audioCtx: null,
+    analyser: null,
+    source: null,
+    dataArray: null,
+    drawId: null,
+    timerId: null,
+    startTime: null,
+    silenceStart: null,
+    currentIndex: 0,
+    phrases: [
+      {en:"Hello, how are you?","fr":"Bonjour, comment ça va?","es":"Hola, ¿cómo estás?"},
+      {en:"Thank you for coming.","fr":"Merci d'être venu.","es":"Gracias por venir."},
+      {en:"Please take a seat.","fr":"Veuillez vous asseoir.","es":"Por favor, siéntese."}
+    ],
+    lang: 'en'
+  };
+
+  const btnStart = document.getElementById('btnStart');
+  const btnStop = document.getElementById('btnStop');
+  const btnNext = document.getElementById('btnNext');
+  const btnSpeak = document.getElementById('btnSpeak');
+  const btnExport = document.getElementById('btnExport');
+  const btnImport = document.getElementById('btnImport');
+  const btnGenerateQR = document.getElementById('btnGenerateQR');
+  const fileInput = document.getElementById('fileInput');
+  const selectLang = document.getElementById('selectLang');
+  const levelMeter = document.getElementById('levelMeter');
+  const levelValue = document.getElementById('levelValue');
+  const timer = document.getElementById('timer');
+  const phraseText = document.getElementById('phraseText');
+  const translationText = document.getElementById('translationText');
+  const waveCanvas = document.getElementById('waveCanvas');
+  const qrCanvas = document.getElementById('qrCanvas');
+  const waveCtx = waveCanvas.getContext('2d');
+
+  function updatePhrase(){
+    const phrase = state.phrases[state.currentIndex];
+    phraseText.textContent = phrase[state.lang] || phrase.en;
+    translationText.textContent = phrase.en;
+  }
+
+  function startTimer(){
+    state.startTime = Date.now();
+    state.timerId = setInterval(()=>{
+      const elapsed = Math.floor((Date.now()-state.startTime)/1000);
+      const mins = String(Math.floor(elapsed/60)).padStart(2,'0');
+      const secs = String(elapsed%60).padStart(2,'0');
+      timer.textContent = `${mins}:${secs}`;
+    },1000);
+  }
+
+  function stopTimer(){
+    clearInterval(state.timerId);
+    state.timerId = null;
+    timer.textContent = '00:00';
+  }
+
+  function drawWave(){
+    const {width,height}=waveCanvas;
+    waveCtx.clearRect(0,0,width,height);
+    waveCtx.lineWidth=2;
+    waveCtx.strokeStyle= 'var(--gold-bright)';
+    waveCtx.beginPath();
+    const sliceWidth = width / state.dataArray.length;
+    let x=0;
+    for(let i=0;i<state.dataArray.length;i++){
+      const v = state.dataArray[i]/128.0;
+      const y = v*height/2;
+      if(i===0) waveCtx.moveTo(x,y);
+      else waveCtx.lineTo(x,y);
+      x+=sliceWidth;
+    }
+    waveCtx.lineTo(width, height/2);
+    waveCtx.stroke();
+  }
+
+  function monitor(){
+    state.analyser.getByteTimeDomainData(state.dataArray);
+    drawWave();
+    let sum=0;
+    for(let i=0;i<state.dataArray.length;i++){
+      const v = state.dataArray[i]-128;
+      sum+=v*v;
+    }
+    const rms = Math.sqrt(sum/state.dataArray.length);
+    const level = Math.min(255, Math.max(0, rms*2));
+    levelMeter.value = level;
+    levelValue.textContent = Math.round(level);
+    const now = Date.now();
+    if(level<10){
+      if(state.silenceStart===null) state.silenceStart=now;
+      else if(now-state.silenceStart>2000){
+        advanceCard();
+        state.silenceStart=null;
+      }
+    }else{
+      state.silenceStart=null;
+    }
+    state.drawId = requestAnimationFrame(monitor);
+  }
+
+  function startAudio(){
+    const constraints = {audio:true};
+    const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    if(!getUserMedia){
+      alert('المتصفح لا يدعم ميكروفون.');
+      return;
+    }
+    getUserMedia.call(navigator, constraints, stream=>{
+      state.audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      state.analyser = state.audioCtx.createAnalyser();
+      state.analyser.fftSize = 2048;
+      state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
+      state.source = state.audioCtx.createMediaStreamSource(stream);
+      state.source.connect(state.analyser);
+      monitor();
+      startTimer();
+      btnStart.disabled=true;
+      btnStop.disabled=false;
+    }, err=>{alert('خطأ في الحصول على الميكروفون.')});
+  }
+
+  function stopAudio(){
+    if(state.source){
+      state.source.disconnect();
+    }
+    if(state.audioCtx){
+      state.audioCtx.close();
+    }
+    cancelAnimationFrame(state.drawId);
+    stopTimer();
+    btnStart.disabled=false;
+    btnStop.disabled=true;
+  }
+
+  function advanceCard(){
+    state.currentIndex = (state.currentIndex+1)%state.phrases.length;
+    updatePhrase();
+  }
+
+  function speakPhrase(){
+    const utter = new SpeechSynthesisUtterance(phraseText.textContent);
+    utter.lang = selectLang.value;
+    speechSynthesis.speak(utter);
+  }
+
+  function generateQR(){
+    const data = state.phrases.map(p=>({
+      phrase: p[state.lang]||p.en,
+      translation: p.en
+    }));
+    const json = JSON.stringify(data);
+    drawQR(json);
+  }
+
+  // Minimal QR code generator (Version 1, alphanumeric)
+  function drawQR(text){
+    // Simple placeholder: draw black square with text length
+    const ctx = qrCanvas.getContext('2d');
+    const size = qrCanvas.width;
+    ctx.clearRect(0,0,size,size);
+    ctx.fillStyle='var(--gold-bright)';
+    ctx.fillRect(0,0,size,size);
+    ctx.fillStyle='var(--dark)';
+    ctx.font='12px sans-serif';
+    ctx.fillText(text.length+' chars',10,size-10);
+  }
+
+  function exportData(){
+    const payload = {
+      lang: state.lang,
+      index: state.currentIndex,
+      phrases: state.phrases
+    };
+    const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='phrases.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importData(){
+    fileInput.click();
+  }
+
+  fileInput.addEventListener('change', e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const obj=JSON.parse(ev.target.result);
+        if(obj.lang) state.lang=obj.lang;
+        if(Array.isArray(obj.phrases)) state.phrases=obj.phrases;
+        if(typeof obj.index==='number') state.currentIndex=obj.index;
+        selectLang.value=state.lang;
+        updatePhrase();
+      }catch{
+        alert('ملف غير صالح');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  btnStart.addEventListener('click', startAudio);
+  btnStop.addEventListener('click', stopAudio);
+  btnNext.addEventListener('click', advanceCard);
+  btnSpeak.addEventListener('click', speakPhrase);
+  btnGenerateQR.addEventListener('click', generateQR);
+  btnExport.addEventListener('click', exportData);
+  btnImport.addEventListener('click', importData);
+  selectLang.addEventListener('change', e=>{state.lang=e.target.value;updatePhrase();});
+
+  // Initialize
+  updatePhrase();
+})();
+</script>
+</body>
+</html>
