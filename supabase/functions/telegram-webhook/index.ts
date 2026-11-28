@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
     }
     await sendMessage(`✅ تم استلام رسالتك وتخزينها في صندوق المكتب الخاص.\n\n${text.slice(0, 200)}`, chatId);
     return new Response('ok', { headers: jsonHeaders });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), { status: 500, headers: jsonHeaders });
+  } catch {
+    return new Response(JSON.stringify({ error: 'internal error' }), { status: 500, headers: jsonHeaders });
   }
 });
