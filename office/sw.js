@@ -9,7 +9,7 @@
      fragment next to a fresh index (and vice versa). */
   var CORE = [
     './?v=' + VERSION, './index.html?v=' + VERSION, './styles.css?v=' + VERSION, './app.js?v=' + VERSION, './office-config.js?v=' + VERSION,
-    './office-auth.js?v=' + VERSION, './standalone.js?v=' + VERSION, './decision-policy.js?v=' + VERSION, './conversation-intelligence.js?v=' + VERSION, './standalone-core.part.js?v=' + VERSION,
+    './office-auth.js?v=' + VERSION, './standalone.js?v=' + VERSION, './decision-policy.js?v=' + VERSION, './conversation-intelligence.js?v=' + VERSION, './autopilot-engine.js?v=' + VERSION, './standalone-core.part.js?v=' + VERSION,
     './standalone-model.part.js?v=' + VERSION, './standalone-domain.part.js?v=' + VERSION,
     './standalone-api.part.js?v=' + VERSION, './standalone-autopilot.part.js?v=' + VERSION, './standalone-ui.part.js?v=' + VERSION,
     './pwa.js?v=' + VERSION, './manifest.webmanifest?v=' + VERSION,
