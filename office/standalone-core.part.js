@@ -372,6 +372,10 @@
       merged.approvals = (merged.approvals || []).filter(function (a) { return a.id !== 'apr-initial-1' && a.id !== 'apr-initial-2'; });
       merged.tasks = (merged.tasks || []).filter(function (t) { return demoTitles.indexOf(t.title) === -1 || t.status === 'done'; });
       merged.agentStatuses = {}; merged.liveBubbles = {};
+      Object.keys(merged.gamification || {}).forEach(function (id) {
+        var g = merged.gamification[id];
+        if (g && g.points === 20 && (!g.history || !g.history.length)) { g.points = 0; g.badges = []; }
+      });
       merged.demoCleared = true;
     }
     (merged.approvals || []).forEach(function (a) {
@@ -657,7 +661,7 @@
   ];
   function ensureProfile(agentId) {
     if (!state.gamification[agentId]) {
-      state.gamification[agentId] = { points: 20, level: 1, rankTitle: LEVELS[0].title, badges: ['🌟 بداية موفقة'], history: [] };
+      state.gamification[agentId] = { points: 0, level: 1, rankTitle: LEVELS[0].title, badges: [], history: [] };
     }
     return state.gamification[agentId];
   }
@@ -774,10 +778,10 @@
       '=== الصلاحيات ===\n- القسم: ' + (agent.department || '') + '\n- الأدوات: ' + ((agent.allowedTools || []).join(', ') || 'لا يوجد') + '\n' +
       '- تتطلب موافقة المدير: ' + ((agent.requiresApprovalFor || []).join(', ') || 'لا يوجد') + '\n\n' +
       'تعليمات صارمة:\n' +
-      '1. ابدأ ردك بالنتيجة أو بالخطوات العملية، ولا تكرر التحية أو عبارة "جاهز للخدمة" أبداً.\n' +
-      '2. فكّك طلب المدير إلى عناصر واضحة وصف ما سيفعله كل عنصر؛ النظام ينشئ المهام تلقائياً بعد ردك، فلا تقل "لا أستطيع التنفيذ".\n' +
-      '3. إن وجد عنصر غامض اكتب سطراً مستقلاً: "ما لم أفهمه: ..." واسأل سؤالاً محدداً، ولا تخترع معلومات.\n' +
-      '4. لا تعدّد الردود النمطية ولا تكرر ما سبق أن قلته في نفس المحادثة.\n' +
+      '1. ابدأ ردك بالنتيجة نفسها: أجب أو نفّذ داخل هذا الرد. لا تكتب خطة عمل ولا قائمة "سأقوم بكذا" بدل التنفيذ؛ ما تستطيع إنجازه الآن (تحليل، مقارنة، أرقام تقديرية، مسودة رسالة، قائمة خيارات) اكتبه كاملاً.\n' +
+      '2. كن ذكياً وعملياً: افهم الغرض من كلام المدير حتى لو كان مختصراً أو بالعامية، وقدّم 2-3 حلولاً أو خيارات ملموسة مع توصيتك الأقوى وسببها بجملة واحدة.\n' +
+      '3. لا تسأل أسئلة توضيحية إلا إذا كان الطلب مستحيل التنفيذ بدونها، وحينئذ اسأل سؤالاً واحداً فقط في آخر الرد بعد أن تقدّم أفضل إجابة بافتراض معلن. ممنوع كتابة "ما لم أفهمه".\n' +
+      '4. لا تخترع معلومات. إن كان في السياق محتوى صفحة مسحوب فعلاً فاعتمد عليه واذكر ما وجدته؛ وإن لم يتوفر فقل ذلك بوضوح واقترح أقرب بديل قابل للتنفيذ.\n' +
       '5. إذا اقترحت إجراءً يتطلب موافقة المدير، أضف في نهاية ردك:\n' +
       '[APPROVAL_REQUEST title="عنوان مختصر" risk="medium" action="publish_marketing"]\nوصف القرار المطلوب اعتماده.\n[/APPROVAL_REQUEST]\n' +
       '- مديرة الموارد البشرية: [HIRE_AGENT id="agent-id" name="الاسم" department="القسم" avatar="🤖"]وصف الدور[/HIRE_AGENT]\n' +

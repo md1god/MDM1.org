@@ -323,16 +323,10 @@
   }
 
   function demoReply(agent, userMessage, warning) {
-    var parsed = parseRequestItems(userMessage || '');
-    var items = (parsed.items || []).slice(0, 4).map(function (x) {
-      return '• ' + x.text + ' [' + (x.status === 'understood' ? 'مفهوم' : 'غير واضح') + ']';
-    }).join('\n');
-    var unclear = (parsed.unresolved || []).slice(0, 3).map(function (x) { return '• ' + x; }).join('\n');
-    return '⚠️ **رد غير حي — ليس من نموذج متصل** — ' + (warning || 'لا يوجد اتصال حي حالياً') + '\n\n' +
-      '📝 **كل ما فهمته من طلبك:**\n' + (items || '• لم أستخرج طلباً قابلاً للتنفيذ بعد.') + '\n\n' +
-      '❓ **ما لم أفهمه بعد:**\n' + (unclear || '• لا توجد أسئلة توضيحية عاجلة.') + '\n\n' +
-      '🔧 افتح **🔌 الاتصال** أو **🔑 إضافة API** لتفعيل الرد الحي. المهام الواضحة أُنشئت تلقائياً في لوحة المهام حتى في هذا الوضع.';
+    return '⚠️ لا يوجد نموذج ذكاء اصطناعي متصل حالياً، لذلك لا أستطيع الرد بذكاء ولا تحليل طلبك. ' + (warning ? '(' + warning + ') ' : '') +
+      'اضغط **🔑 إضافة API** وأضف مفتاحك (Groq أو OpenRouter أو OpenCode Zen — فيه خيارات مجانية) وسأرد فوراً. المهام الواضحة في رسالتك أُضيفت إلى لوحة المهام.';
   }
+
 
   function aiGenerateRaw(opts) {
     var agent = getAgent(opts.agentId) || { id: opts.agentId, name: opts.agentId, englishName: opts.agentId, roleMd: '', skillsMd: '', allowedTools: [], requiresApprovalFor: [], department: '' };
@@ -600,6 +594,17 @@
         mode: 'fallback', provider: currentMode(), model: 'emergency-hold',
         warning: 'emergency_mode_active', usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, costUsd: 0 }
       });
+    }
+    if (opts && !opts._urlDone) {
+      var _msgs = opts.messages || [];
+      var _last = _msgs.length ? String(_msgs[_msgs.length - 1].text || '') : '';
+      if (extractUrls(_last).length) {
+        return urlsContextFor(_last).then(function (ctx) {
+          var o2 = Object.assign({}, opts, { _urlDone: true });
+          if (ctx) o2.extraContext = (opts.extraContext ? opts.extraContext + '\n\n' : '') + ctx;
+          return aiGenerate(o2);
+        });
+      }
     }
     function flushProviderHealth() {
       if (!providerHealthDirty) return;
