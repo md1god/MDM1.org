@@ -159,7 +159,7 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     }).then(function (j) {
-      var models = (j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; });
+      var models = rankModelsForProvider((j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; }), 'zen');
       var free = models.filter(isFreeModel).map(function (m) { return m.id; });
       var out = { connected: true, models: models, free: free, error: null };
       providerCache.zen = out; providerCache.zenAt = Date.now();
@@ -181,7 +181,7 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     }).then(function (j) {
-      var all = (j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; });
+      var all = rankModelsForProvider((j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; }), 'groq');
       /* Groq publishes no pricing in /models, so isFreeModel() could never match and
          the free-only mode left Groq with zero usable models. Groq has a no-card free
          plan (over-limit requests get 429, they are not billed); only chat models are
@@ -209,7 +209,7 @@
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       }).then(function (j) {
-        var all = (j.data || []).filter(function (m) { return !/:batch/i.test(String(m.id || '')); });
+        var all = rankModelsForProvider((j.data || []).filter(function (m) { return !/:batch/i.test(String(m.id || '')); }), 'openrouter');
         var free = all.filter(isFreeModel).map(function (m) { return m.id; });
         var out = { connected: true, models: all, free: free, base: settings.openrouterBase, error: null };
         providerCache.openrouter = out; providerCache.openrouterAt = Date.now();
@@ -278,16 +278,12 @@
   function currentMode() {
     var mode = settings.mode === 'supabase' || settings.mode === 'cloud' ? 'demo' : settings.mode;
     if (mode !== 'auto') return mode;
-    /* Owner keys are never used. Order: browser-local WebGPU/quick, then the
-       user's own Zen / Groq / OpenRouter keys on this device only. */
+    /* Automatic routing is deliberately ordered; an unavailable or limited
+       Zen account falls through to Groq, then OpenRouter. Local WebGPU stays
+       available only when the owner explicitly selects it. */
     var order = ['zen', 'groq', 'openrouter'];
-    var i, mode;
-    for (i = 0; i < order.length; i++) {
-      mode = order[i];
-      if (providerConfigured(mode) && chatUsable(mode) && providerCache[mode] && providerCache[mode].connected) return mode;
-    }
-    for (i = 0; i < order.length; i++) {
-      if (providerConfigured(order[i]) && chatUsable(order[i])) return order[i];
+    for (var i = 0; i < order.length; i++) {
+      if (providerConfigured(order[i])) return order[i];
     }
     return 'demo';
   }
