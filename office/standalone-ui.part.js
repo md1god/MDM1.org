@@ -741,10 +741,9 @@
     injectStyles();
     watchAuth();
     buildLockScreen();
-    buildVaultGate();
     loadCompanyData()
       .then(waitUnlock)
-      .then(waitVaultUnlock)
+      .then(function () { buildVaultGate(); return waitVaultUnlock(); })
       .then(waitGoogleIdentity)
       .then(function () {
         return syncPull().catch(function (e) { console.warn('Office secure sync pull failed:', e.message); return { configured: false }; });

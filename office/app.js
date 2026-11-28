@@ -39,6 +39,7 @@ async function bootstrap(){
    lists models but CORS blocks generation). Refresh the badge/status from the
    new truth without reloading the whole app. */
 window.addEventListener('mdm1-provider-change',()=>{bootstrap().catch(e=>console.warn('provider refresh',e))});
+window.addEventListener('mdm1-vault-change',()=>{bootstrap().catch(e=>console.warn('vault refresh',e))});
 
 function notifyNewApprovals(prevIds){
   const pending=(D.state.approvals||[]).filter(a=>a.status==='pending');
