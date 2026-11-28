@@ -272,33 +272,72 @@
       if (!state.directChats[agent.id]) state.directChats[agent.id] = [];
       var userMsg = String(b.message || '').trim();
       if (!userMsg) return Promise.resolve(jsonResponse({ error: 'message required' }, 400));
+      var intelligence = window.MDM1ConversationIntelligence || {};
+      var priorHistory = state.directChats[agent.id].slice(-12);
+      var turn = typeof intelligence.classifyTurn === 'function'
+        ? intelligence.classifyTurn(userMsg, priorHistory)
+        : { kind: 'request', shouldQueue: true, note: '' };
       var memories = retrieveMemories(agent.id, userMsg, 4);
       var ledger = recordRequestLedger('direct', userMsg, { agentId: agent.id, agentName: agent.name });
+      ledger.turnKind = turn.kind;
+      if (turn.kind !== 'request') {
+        (ledger.items || []).forEach(function (item) {
+          item.status = 'understood';
+          item.clarification = true;
+          item.reason = 'رسالة متابعة أو توضيح — لا تنشئ مهمة مستقلة.';
+          item.result = 'تم ربطها بسياق المحادثة السابقة.';
+        });
+        ledger.unresolved = [];
+        if (turn.note) ledger.constraints.push(turn.note);
+      }
       state.directChats[agent.id].push({ id: uuid(), role: 'user', text: userMsg, timestamp: nowIso() });
       indexMemory(agent.id, 'user', userMsg, 'direct');
       var memos = state.internalMemos.filter(function (x) { return x.toId === agent.id; }).slice(-3);
       var extra = memos.length ? 'مذكرات داخلية:\n' + memos.map(function (x) { return 'من ' + x.fromName + ': ' + x.subject + ' — ' + x.body; }).join('\n') : '';
-      extra += '\n=== ما سيُنفَّذ تلقائياً بعد ردك ===\n' +
-        (ledger.items || []).map(function (x) { return '- ' + x.text + ' → ' + x.agentId + ' (' + x.risk + ')'; }).join('\n') +
-        '\nما لم يفهمه النظام: ' + ((ledger.unresolved || []).join('؛ ') || 'لا يوجد');
+      extra += '\n=== نوع رسالة المدير ===\n' + turn.kind + '\n' +
+        (typeof intelligence.buildTurnContext === 'function' ? intelligence.buildTurnContext(turn) : 'اقرئي سجل المحادثة ولا تعيدي الأسئلة السابقة.') + '\n';
+      if (turn.kind === 'request') {
+        extra += '\n=== طلب تنفيذي صريح يمكن إدراجه في قائمة العمل ===\n' +
+          (ledger.items || []).map(function (x) { return '- ' + x.text + ' → ' + x.agentId + ' (' + x.risk + ')'; }).join('\n');
+      } else {
+        extra += '\nلا توجد مهمة جديدة لهذه الرسالة. أجيبي على التوضيح وواصلي الطلب الأصلي.';
+      }
       var history = state.directChats[agent.id].slice(-12);
-      return aiGenerate({ agentId: agent.id, messages: history, memories: memories, extraContext: extra }).then(function (r) {
-        return executeLedgerEntry(ledger.id).then(function (summary) {
-          ledger.mode = r.mode; ledger.model = r.model; ledger.warning = r.warning || null;
-          recordUsage(agent.id, r.usage);
-          var ex = extractProposals(r.text);
-          var replyText = String(ex.cleanText || r.text || '').trim() + (summary ? '\n\n' + summary : '');
-          var assistantMsg = { id: uuid(), role: 'assistant', text: replyText, mode: r.mode, model: r.model, ragUsed: memories.length, ledgerId: ledger.id, timestamp: nowIso() };
-          state.directChats[agent.id].push(assistantMsg);
-          indexMemory(agent.id, 'assistant', replyText, 'direct');
-          state.liveBubbles[agent.id] = replyText.slice(0, 42) + '...';
-          awardPoints(agent.id, 5, 'إنجاز محادثة');
-          processProposals(agent.id, agent.name, agent.avatar, ex.requests);
-          recomputeStatus(agent.id);
-          hrWorkloadCheck();
-          logAudit('direct_chat', agent.id, 'Chat (' + (r.usage ? r.usage.totalTokens : 0) + ' tok)', { mode: r.mode, model: r.model, ledgerId: ledger.id });
-          saveState();
-          return jsonResponse({ reply: assistantMsg, ragUsed: memories.length, warning: r.warning || null, ledger: clone(ledger) });
+      var researchPromise = typeof intelligence.shouldResearchSite === 'function' && intelligence.shouldResearchSite(userMsg)
+        && typeof intelligence.fetchMdm1SiteResearch === 'function'
+        ? intelligence.fetchMdm1SiteResearch().catch(function (e) {
+            return { context: 'تعذر جمع بيانات الموقع في هذه الجلسة: ' + String(e && e.message || e), data: null };
+          })
+        : Promise.resolve(null);
+      return researchPromise.then(function (siteResearch) {
+        if (siteResearch && siteResearch.context) {
+          extra += '\n\n=== نتائج جلب صفحات mdm1.org أثناء هذا الطلب ===\n' +
+            siteResearch.context +
+            '\n\nاستخدمي هذه البيانات لتسمية منتجات حقيقية وروابطها. ميّزي بين تطبيق منشور، مشروع قيد البناء، وخدمة منشورة. لا تدّعي وجود اشتراك مستضاف إن كان التطبيق يعمل محلياً.';
+        }
+        return aiGenerate({ agentId: agent.id, messages: history, memories: memories, extraContext: extra }).then(function (r) {
+          return executeLedgerEntry(ledger.id).then(function (summary) {
+            ledger.mode = r.mode; ledger.model = r.model; ledger.warning = r.warning || null;
+            ledger.siteResearch = siteResearch ? {
+              fetched: !!(siteResearch.data && siteResearch.data.listingStatus === 'fetched'),
+              candidates: siteResearch.data && siteResearch.data.candidates ? siteResearch.data.candidates.length : 0,
+              fetchedAt: siteResearch.data && siteResearch.data.fetchedAt || null
+            } : null;
+            recordUsage(agent.id, r.usage);
+            var ex = extractProposals(r.text);
+            var replyText = String(ex.cleanText || r.text || '').trim() + (summary ? '\n\n' + summary : '');
+            var assistantMsg = { id: uuid(), role: 'assistant', text: replyText, mode: r.mode, model: r.model, ragUsed: memories.length, ledgerId: ledger.id, timestamp: nowIso() };
+            state.directChats[agent.id].push(assistantMsg);
+            indexMemory(agent.id, 'assistant', replyText, 'direct');
+            state.liveBubbles[agent.id] = replyText.slice(0, 42) + '...';
+            awardPoints(agent.id, 5, 'إنجاز محادثة');
+            processProposals(agent.id, agent.name, agent.avatar, ex.requests);
+            recomputeStatus(agent.id);
+            hrWorkloadCheck();
+            logAudit('direct_chat', agent.id, 'Chat (' + (r.usage ? r.usage.totalTokens : 0) + ' tok)', { mode: r.mode, model: r.model, ledgerId: ledger.id, turnKind: turn.kind, siteResearch: !!siteResearch });
+            saveState();
+            return jsonResponse({ reply: assistantMsg, ragUsed: memories.length, warning: r.warning || null, ledger: clone(ledger) });
+          });
         });
       });
     }
@@ -308,33 +347,63 @@
       if (!message) return Promise.resolve(jsonResponse({ error: 'message required' }, 400));
       var ids = Array.isArray(b.attendeeIds) && b.attendeeIds.length ? b.attendeeIds : ['executive-assistant', 'hr-manager', 'auditors-experts-devs'];
       var attendees = allAgents().filter(function (a) { return ids.indexOf(a.id) !== -1; });
+      var intelligence = window.MDM1ConversationIntelligence || {};
+      var previousTeam = state.teamChat.slice(-8);
+      var turn = typeof intelligence.classifyTurn === 'function'
+        ? intelligence.classifyTurn(message, previousTeam)
+        : { kind: 'request', shouldQueue: true, note: '' };
       var ledger = recordRequestLedger('team', message, { agentName: 'الاجتماع الجماعي' });
+      ledger.turnKind = turn.kind;
+      if (turn.kind !== 'request') {
+        (ledger.items || []).forEach(function (item) {
+          item.status = 'understood';
+          item.clarification = true;
+          item.reason = 'رسالة متابعة أو توضيح — لا تنشئ مهمة مستقلة.';
+          item.result = 'تم ربطها بسياق المحادثة السابقة.';
+        });
+        ledger.unresolved = [];
+        if (turn.note) ledger.constraints.push(turn.note);
+      }
       state.meetingActive = true;
       state.meetingAttendees = attendees.map(function (a) { return a.id; });
       state.teamChat.push({ id: uuid(), senderId: 'ceo', senderName: 'المدير التنفيذي (أنت)', senderAvatar: '👑', role: 'user', text: message, timestamp: nowIso() });
       var recent = state.teamChat.slice(-8).map(function (x) { return x.senderName + ': ' + x.text; }).join('\n');
-      var teamContext = 'أنت في اجتماع جماعي (Stand-up). أجب باختصار (2-4 أسطر). لا تكرر التحية، وابدأ بمساهمة عملية محددة.\n' +
-        '=== ما سيُنفَّذ تلقائياً ===\n' +
-        (ledger.items || []).map(function (x) { return '- ' + x.text + ' → ' + x.agentId + ' (' + x.risk + ')'; }).join('\n') +
-        '\nما لم يفهمه النظام: ' + ((ledger.unresolved || []).join('؛ ') || 'لا يوجد');
-      return Promise.all(attendees.map(function (a) {
-        return aiGenerate({ agentId: a.id, extraContext: teamContext, messages: [{ role: 'user', text: 'سياق:\n' + recent + '\n\nتوجيه المدير: ' + message }] }).then(function (r) { return { agent: a, r: r }; });
-      })).then(function (replies) {
-        replies.forEach(function (x) {
-          var ex = extractProposals(x.r.text);
-          state.teamChat.push({ id: uuid(), senderId: x.agent.id, senderName: x.agent.name, senderAvatar: x.agent.avatar, role: 'assistant', text: ex.cleanText || x.r.text, mode: x.r.mode, timestamp: nowIso() });
-          indexMemory(x.agent.id, 'assistant', ex.cleanText || x.r.text, 'team');
-          state.liveBubbles[x.agent.id] = (ex.cleanText || x.r.text).slice(0, 40) + '...';
-          recordUsage(x.agent.id, x.r.usage);
-          awardPoints(x.agent.id, 10, 'مشاركة في اجتماع الفريق');
-          processProposals(x.agent.id, x.agent.name, x.agent.avatar, ex.requests);
-          recomputeStatus(x.agent.id);
-        });
-        return executeLedgerEntry(ledger.id).then(function (summary) {
-          if (summary) state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'المساعد الذكي 🧠', senderAvatar: '🧠', role: 'assistant', text: summary, timestamp: nowIso() });
-          logAudit('team_meeting', 'ceo', 'Stand-up with ' + attendees.length + ' agents', { ledgerId: ledger.id });
-          saveState();
-          return jsonResponse({ ok: true, ledger: clone(ledger) });
+      var teamContext = 'أنت في اجتماع جماعي. أجيبي بمساهمة عملية مرتبطة بسياق المحادثة، ولا تنشئي خطة عامة من ست نقاط تلقائياً.\n' +
+        'نوع رسالة المدير: ' + turn.kind + '\n' +
+        (typeof intelligence.buildTurnContext === 'function' ? intelligence.buildTurnContext(turn) : 'اقرئي سجل المحادثة السابق.') + '\n' +
+        (turn.kind === 'request'
+          ? 'طلب تنفيذي صريح:\n' + (ledger.items || []).map(function (x) { return '- ' + x.text + ' → ' + x.agentId + ' (' + x.risk + ')'; }).join('\n')
+          : 'لا توجد مهمة جديدة لهذه الرسالة؛ اعتبريها توضيحاً للطلب السابق وأجيبي بناءً عليه.');
+      var researchPromise = typeof intelligence.shouldResearchSite === 'function' && intelligence.shouldResearchSite(message)
+        && typeof intelligence.fetchMdm1SiteResearch === 'function'
+        ? intelligence.fetchMdm1SiteResearch().catch(function (e) {
+            return { context: 'تعذر جمع بيانات الموقع في هذه الجلسة: ' + String(e && e.message || e), data: null };
+          })
+        : Promise.resolve(null);
+      return researchPromise.then(function (siteResearch) {
+        if (siteResearch && siteResearch.context) {
+          teamContext += '\n\n=== نتائج جلب mdm1.org أثناء الطلب ===\n' + siteResearch.context +
+            '\nاستخدمي روابط المنتجات المنشورة. لا تخلطي بين المنتجات الجاهزة ومشاريع التطوير. استنتجي الجمهور لكل منتج ولا تسألي عنه كسؤال موحد.';
+        }
+        return Promise.all(attendees.map(function (a) {
+          return aiGenerate({ agentId: a.id, extraContext: teamContext, messages: [{ role: 'user', text: 'سياق الاجتماع السابق:\n' + recent + '\n\nتوجيه المدير: ' + message }] }).then(function (r) { return { agent: a, r: r }; });
+        })).then(function (replies) {
+          replies.forEach(function (x) {
+            var ex = extractProposals(x.r.text);
+            state.teamChat.push({ id: uuid(), senderId: x.agent.id, senderName: x.agent.name, senderAvatar: x.agent.avatar, role: 'assistant', text: ex.cleanText || x.r.text, mode: x.r.mode, timestamp: nowIso() });
+            indexMemory(x.agent.id, 'assistant', ex.cleanText || x.r.text, 'team');
+            state.liveBubbles[x.agent.id] = (ex.cleanText || x.r.text).slice(0, 40) + '...';
+            recordUsage(x.agent.id, x.r.usage);
+            awardPoints(x.agent.id, 10, 'مشاركة في اجتماع الفريق');
+            processProposals(x.agent.id, x.agent.name, x.agent.avatar, ex.requests);
+            recomputeStatus(x.agent.id);
+          });
+          return executeLedgerEntry(ledger.id).then(function (summary) {
+            if (summary) state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'المساعد الذكي 🧠', senderAvatar: '🧠', role: 'assistant', text: summary, timestamp: nowIso() });
+            logAudit('team_meeting', 'ceo', 'Stand-up with ' + attendees.length + ' agents', { ledgerId: ledger.id, turnKind: turn.kind, siteResearch: !!siteResearch });
+            saveState();
+            return jsonResponse({ ok: true, ledger: clone(ledger) });
+          });
         });
       });
     }
