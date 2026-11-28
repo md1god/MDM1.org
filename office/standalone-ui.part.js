@@ -73,6 +73,31 @@
     waiters.forEach(function (resolve) { resolve(); });
   }
 
+  /* A verified Google session IS the unlock. The lock itself lives only in this
+     page's memory (a full-page redirect to Google resets it), so after coming
+     back from Google we open the page as soon as the server-verified session
+     (/auth/v1/user) is known. Errors from the return trip are shown on the lock. */
+  function autoUnlockForGoogle() {
+    var A = window.MDM1Auth;
+    if (!CFG.requireUnlock || !A || typeof A.status !== 'function') return;
+    function check(s) {
+      s = s || A.status();
+      var overlay = document.getElementById('officeLock');
+      if (isUnlocked()) { if (overlay) overlay.remove(); return; }
+      if (s.googleReady) {
+        unlockFor(24);
+        if (overlay) overlay.remove();
+        return;
+      }
+      var msg = overlay && overlay.querySelector('#officeLockMsg');
+      if (msg && s.error) { msg.textContent = s.error; msg.className = 'office-lock-msg error'; }
+      else if (msg && s.loading) { msg.textContent = 'جارٍ التحقق من حساب Google...'; msg.className = 'office-lock-msg'; }
+    }
+    if (typeof A.onChange === 'function') A.onChange(check);
+    if (A.ready && typeof A.ready.then === 'function') A.ready.then(function () { check(); });
+    check();
+  }
+
   function buildLockScreen() {
     if (!CFG.requireUnlock || isUnlocked()) return;
     var overlay = document.createElement('div');
@@ -752,6 +777,7 @@
     injectStyles();
     watchAuth();
     buildLockScreen();
+    autoUnlockForGoogle();
     loadCompanyData()
       .then(waitUnlock)
       .then(function () { buildVaultGate(); return waitVaultUnlock(); })

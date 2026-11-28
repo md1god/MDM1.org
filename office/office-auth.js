@@ -68,7 +68,8 @@
   function jwtPayload(token) {
     var parts = String(token || '').split('.');
     if (parts.length < 2) return null;
-    return safeJson(new TextDecoder().decode(bytesOfB64u(parts[1])), null);
+    try { return safeJson(new TextDecoder().decode(bytesOfB64u(parts[1])), null); }
+    catch (e) { return null; } /* a corrupt stored token must never break the page */
   }
   function redirectTo() {
     return AUTH.redirectTo || (location.origin + location.pathname);
