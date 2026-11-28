@@ -162,9 +162,14 @@ function renderTasks(){
   g.innerHTML=t.slice(0,8).map(t=>{
     const a=D.agents.find(x=>x.id===t.agentId), status=TASK_STATUS_LABEL[t.status]||esc(t.status||'جديد');
     const actionable=['queued','working','needs_review','failed'].includes(t.status);
-    return `<div class="task-card"><div style="display:flex;justify-content:space-between;gap:8px;"><strong>${a?esc(a.avatar)+' '+esc(a.name):esc(t.agentId)}</strong><span class="status-pill">${esc(status)}</span></div><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small>${t.result?`<small style="color:var(--muted);white-space:pre-wrap;">${esc(t.result)}</small>`:''}${actionable?`<div class="approval-actions"><button class="btn btn-approve" onclick="completeTaskUI('${jsAttr(t.id)}','done')">✓ تم التنفيذ</button><button class="btn btn-secondary" onclick="completeTaskUI('${jsAttr(t.id)}','needs_review')">مراجعة</button></div>`:''}</div>`;
+    return `<div class="task-card"><div style="display:flex;justify-content:space-between;gap:8px;"><strong>${a?esc(a.avatar)+' '+esc(a.name):esc(t.agentId)}</strong><span class="status-pill">${esc(status)}</span></div><div class="task-title">${esc(t.title)}</div><small class="task-desc">${esc(t.description||'')}</small>${t.result?`<small style="color:var(--muted);white-space:pre-wrap;">${esc(t.result)}</small>`:''}${actionable?`<div class="approval-actions"><button class="btn btn-approve" onclick="completeTaskUI('${jsAttr(t.id)}','done')">✓ تم التنفيذ</button><button class="btn btn-secondary" onclick="completeTaskUI('${jsAttr(t.id)}','needs_review')">مراجعة</button></div>`:''}</div>`;
   }).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
 }
+
+document.getElementById('tasksGrid')?.addEventListener('click',e=>{
+  if(e.target.closest('button,a,input,select,textarea'))return;
+  const c=e.target.closest('.task-card');if(c)c.classList.toggle('expanded');
+});
 
 function renderWorkingTeam(){
   const el=document.getElementById('workingTeamList'); if(!el)return;
@@ -444,7 +449,7 @@ function populateSelects(){
 function speakText(t,id){if(!document.getElementById('ttsToggle').checked||!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.slice(0,350));u.lang='ar-SA';const p=VP[id]||{pitch:1,rate:1};u.pitch=p.pitch;u.rate=p.rate;window.speechSynthesis.speak(u)}
 function startMic(inputId){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return alert('متصفحك لا يدعم التعرف على الصوت.');const r=new S();r.lang='ar-SA';r.onresult=e=>{document.getElementById(inputId).value=e.results[0][0].transcript};r.start()}
 
-function switchTab(t){document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`));renderActiveTab(t)}
+function switchTab(t){const ca=document.querySelector('.content-area');if(ca)ca.scrollTop=0;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`));renderActiveTab(t)}
 function switchChatMode(m){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.chatmode===m));
   document.getElementById('directChatView').classList.toggle('hidden',m!=='direct');
