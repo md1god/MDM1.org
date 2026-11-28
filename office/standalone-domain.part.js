@@ -646,9 +646,9 @@
   function routeRequestAgent(text) {
     var t = normalizeDialect(text).normalized.toLowerCase();
     if (/قانون|عقد|ضريبه|ضريبة|امتثال|خصوصيه|خصوصية/.test(t)) return 'legal-advisor';
+    if (/ابحث|بحث|سوق|مشاريع|منتجات|فرص|منافس|مصادر|ترويج/.test(t)) return 'web-research-team';
+    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm|بيع|مبيعات/.test(t)) return 'marketing-lead';
     if (/مال|ميزانيه|ميزانية|فاتوره|فاتورة|تكلفه|تكلفة|سعر|ربح|دفع/.test(t)) return 'accountant';
-    if (/تسويق|اعلان|إعلان|حمله|حملة|عميل|crm/.test(t)) return 'marketing-lead';
-    if (/بحث|سوق|منافس|فرص|مصادر/.test(t)) return 'web-research-team';
     if (/امان|امن|صلاحيه|صلاحية|بيانات|حمايه|حماية/.test(t)) return 'security-officer';
     if (/توظيف|فريق|تدريب|kpi|ضغط/.test(t)) return 'hr-manager';
     if (/كود|تطبيق|موقع|منصه|منصة|api|ساندبوكس|تطوير/.test(t)) return 'auditors-experts-devs';
@@ -875,7 +875,8 @@
   function fallbackUnderstanding(raw, norm) {
     var lower = String(norm || '').toLowerCase();
     var scope = 'عام — يحتاج تحديد نطاق أدق';
-    if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
+    if (/ابحث|بحث|مشروع|فرص|سوق|منافس|ترويج|مبيعات/i.test(lower)) scope = 'بحث فرص تجارية وتسويق منتجات الشركة';
+    else if (/ساس|saas|منتج|تطبيق|موقع|متجر/i.test(lower)) scope = 'إطلاق منتج أو خدمة رقمية';
     else if (/تسويق|حمله|اعلان|إعلان|عميل|crm/i.test(lower)) scope = 'تسويق ونمو العملاء';
     else if (/مالي|محاسب|فاتوره|تكلفه|ربح|ضريبه/i.test(lower)) scope = 'مالية ومحاسبة';
     else if (/قانون|عقد|امتثال|خصوصيه|ضرائب/i.test(lower)) scope = 'الشؤون القانونية والامتثال';
