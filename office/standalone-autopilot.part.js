@@ -241,12 +241,18 @@
     else if (a.sinceReport > 0) job = apSummarize().then(function () { a.sinceReport = 0; a.projects = []; a.roundDone = true; });
     else job = Promise.resolve().then(function () { apLog('لا جديد في الموقع حالياً؛ سأعيد الفحص بعد ساعة.', 'info'); a.projects = []; a.roundDone = true; });
     return job.then(function () {
+      a.failStreak = 0;
       a.cycle = (a.cycle || 0) + 1;
       a.nextAt = Date.now() + (a.roundDone ? AP_ROUND_GAP_MS : AP_GAP_MS);
       a.roundDone = false;
     }).catch(function (e) {
-      apLog('تعذّرت الخطوة: ' + e.message + ' — سأعيد المحاولة تلقائياً.', 'err');
-      a.nextAt = Date.now() + 2 * 60 * 1000;
+      /* Back off instead of hammering providers that are rate-limited: each retry
+         spends the user's remaining free quota. */
+      a.failStreak = (a.failStreak || 0) + 1;
+      var quota = /rate limit|quota|429|per-day|credits|انتهت الحصة|الحصة/i.test(String(e.message || ''));
+      var waitMin = quota ? 30 : Math.min(60, 3 * Math.pow(2, a.failStreak - 1));
+      apLog('تعذّرت الخطوة: ' + String(e.message).slice(0, 220) + ' — ' + (quota ? 'الحصة المجانية لمزودك انتهت أو محدودة؛ ' : '') + 'سأعيد المحاولة بعد ' + waitMin + ' دقيقة. للاستمرار الآن: أضف مفتاح مزود آخر (Groq مجاني بلا بطاقة) من «إضافة مفتاح».', 'err');
+      a.nextAt = Date.now() + waitMin * 60 * 1000;
     }).then(function () {
       apBusy = false; saveState(); apRender();
     });
