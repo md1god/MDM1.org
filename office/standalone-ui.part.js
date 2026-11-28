@@ -224,6 +224,10 @@
         sel.innerHTML = '<option value="">تلقائي — ' + esc(pickModel(agentId, pool)) + '</option>' + pool.map(function (id) {
           return '<option value="' + esc(id) + '"' + (current === id ? ' selected' : '') + '>' + esc(id) + '</option>';
         }).join('');
+        if (!sel.dataset.modelBound) {
+          sel.dataset.modelBound = '1';
+          sel.addEventListener('change', function () { sel.dataset.touched = '1'; });
+        }
       });
     }
 
@@ -247,9 +251,13 @@
       settings.syncUrl = q('ocSyncUrl').value.trim();
       runtimeVault.data.syncSecret = q('ocSyncSecret').value.trim();
       settings.syncEnabled = q('ocSyncEnabled').value === 'true';
-      settings.modelOverrides = {};
+      /* Only an explicit user change updates an override. Opening the panel
+         or re-testing the connection must never wipe assigned models. */
       modal.querySelectorAll('select[data-model-for]').forEach(function (sel) {
-        if (sel.value) settings.modelOverrides[sel.getAttribute('data-model-for')] = sel.value;
+        if (sel.dataset.touched !== '1') return;
+        var agentId = sel.getAttribute('data-model-for');
+        if (sel.value) settings.modelOverrides[agentId] = sel.value;
+        else delete settings.modelOverrides[agentId];
       });
       saveSettings();
       providerCache.cloud = null; providerCache.local = null; providerCache.zen = null;
@@ -260,6 +268,19 @@
       var el = q('ocStatus');
       el.textContent = text;
       el.className = 'office-status ' + (cls || '');
+    }
+    function showSyncRollback() {
+      var old = q('ocSyncRollback'); if (old) old.remove();
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'office-btn'; btn.id = 'ocSyncRollback';
+      btn.textContent = '↩️ استعادة نسختي قبل التعارض';
+      btn.onclick = function () {
+        var r = restoreSyncBackup();
+        status(r.ok ? '✅ تمت استعادة حالتك المحلية من قبل التعارض.' : '❌ ' + (r.error || 'تعذّرت الاستعادة.'), r.ok ? 'ok' : 'err');
+        btn.remove(); renderQuota();
+      };
+      q('ocStatus').appendChild(document.createTextNode(' '));
+      q('ocStatus').appendChild(btn);
     }
 
     function renderQuota() {
@@ -275,8 +296,10 @@
       q('ocQuota').textContent = (lines.length ? lines.join('\n') : '📊 لم تُسجّل طلبات بعد.') + syncLine;
     }
 
-    function test() {
-      readForm();
+    function test(opts) {
+      /* Event handlers pass the click event; only skip form reads when the
+         panel is first opened (fields may still be vault-locked/empty). */
+      if (!(opts && opts.read === false)) readForm();
       renderQuota();
       status('جارٍ فحص الاتصال...', '');
       Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true), listCloudModels(true)]).then(function (r) {
@@ -422,6 +445,7 @@
       syncPull().then(function (r) {
         if (!r.configured) return status('المزامنة غير مهيّأة. أدخل URL والسر ثم فعّلها.', 'err');
         status(r.applied ? '✅ تم سحب الحالة واستعادتها (إصدار ' + r.version + ').' : 'لا توجد نسخة بعيدة بعد.', r.applied ? 'ok' : '');
+        if (r.applied) showSyncRollback();
         renderQuota();
       }).catch(function (e) { status('فشل السحب: ' + e.message, 'err'); });
     };
@@ -430,7 +454,8 @@
       status('جارٍ رفع الحالة المشفّرة...', '');
       syncPush().then(function (r) {
         if (!r.configured) return status('المزامنة غير مهيّأة. أدخل URL والسر ثم فعّلها.', 'err');
-        status(r.conflict ? '⚠️ تعارض: سُحبت النسخة الأحدث، ثم أُعيد رفع حالتك.' : '✅ تم رفع الحالة (إصدار ' + r.version + ').', r.conflict ? '' : 'ok');
+        status(r.conflict ? '⚠️ تعارض: سُحبت النسخة الأحدث؛ احتفظت بنسخة محلية للتراجع.' : '✅ تم رفع الحالة (إصدار ' + r.version + ').', r.conflict ? '' : 'ok');
+        if (r.conflict) showSyncRollback();
         renderQuota();
       }).catch(function (e) { status('فشل الرفع: ' + e.message, 'err'); });
     };
@@ -440,7 +465,7 @@
     renderOutbox();
     renderAuthStatus();
     watchAuth();
-    test();
+    test({ read: false });
     applyConnectionFocus(options);
   }
 
@@ -557,13 +582,30 @@
   function waitGoogleIdentity() {
     return new Promise(function (resolve) {
       var A = window.MDM1Auth;
+      /* Offline / no encrypted sync: never block the whole office on Google. */
+      if (!syncConfigured() || !secret('syncSecret')) return resolve(false);
       if (!A || typeof A.status !== 'function') return resolve(false);
       if (A.status().googleReady) return resolve(true);
-      if (A.openPanel) A.openPanel();
+      var settled = false;
+      function done(value) { if (settled) return; settled = true; resolve(value); }
+      var timer = window.setTimeout(function () { done(false); }, 2500);
       var stop = A.onChange(function (s) {
-        if (s && s.googleReady) { stop(); resolve(true); }
+        if (s && s.googleReady) { window.clearTimeout(timer); if (stop) stop(); done(true); }
       });
     });
+  }
+
+  var loopsStarted = false;
+  function startBackgroundLoops() {
+    if (loopsStarted) return;
+    loopsStarted = true;
+    window.setTimeout(function () { runDueSchedules().catch(function () { return null; }); }, 4000);
+    window.setInterval(function () {
+      if (state.emergencyMode) return;
+      startTaskRunner();
+      runDueSchedules().catch(function () { return null; });
+      processDurableQueue().catch(function () { return null; });
+    }, 60000);
   }
 
   function boot() {
@@ -580,6 +622,7 @@
         injectTopbarButton();
         bindQuickButtons();
         updateQuotaBadge();
+        startBackgroundLoops();
         resolveReady();
       });
   }
@@ -613,9 +656,14 @@
     },
     syncPull: syncPull,
     syncPush: syncPush,
+    restoreSyncBackup: restoreSyncBackup,
     queueAdd: queueAdd,
     queueList: queueList,
     queueComplete: queueComplete,
+    processDurableQueue: processDurableQueue,
+    runDueSchedules: runDueSchedules,
+    completeTask: completeTask,
+    quotaRelease: quotaRelease,
     quotaSummary: quotaSummary,
     getUsage: getUsage,
     markRateLimit: markRateLimit,

@@ -23,6 +23,7 @@
   var LS_UNLOCK = (CFG.storageKey || 'mdm1_office_v2') + '_unlock';
   var LS_SNAPS = (CFG.storageKey || 'mdm1_office_v2') + '_snapshots';
   var LS_EXPORTS = (CFG.storageKey || 'mdm1_office_v2') + '_exports';
+  var LS_SYNC_BACKUP = (CFG.storageKey || 'mdm1_office_v2') + '_sync_backup';
 
   /* ── tiny helpers ─────────────────────────────────────────────────────── */
   function uuid() {
@@ -155,6 +156,8 @@
       modelTraining: {},
       /* Quality gate history: monitor → auditor → corrector verdicts. */
       qualityReports: [],
+      /* Provable CEO decision trail: decision, evidence and override reason. */
+      decisionLog: [],
       /* AES-256-GCM encrypted secret vault (never stores the passphrase). */
       secretVault: null,
       meetingActive: false,
@@ -406,21 +409,44 @@
       });
     });
   }
-  function applyRemoteBlob(j) {
+  function backupLocalState(reason) {
+    var backup = { at: nowIso(), reason: reason || 'sync', state: syncableState() };
+    writeLS(LS_SYNC_BACKUP, backup);
+    return backup;
+  }
+  function restoreSyncBackup() {
+    var backup = readLS(LS_SYNC_BACKUP, null);
+    if (!backup || !backup.state) return { ok: false, error: 'لا توجد نسخة محلية للتراجع بعد.' };
+    backupLocalState('pre-restore');
+    state = mergeState(backup.state);
+    saveNow();
+    logAudit('sync_conflict_rollback', 'ceo', 'Restored local state saved before cloud conflict (' + (backup.reason || 'sync') + ')');
+    return { ok: true, at: backup.at };
+  }
+  function applyRemoteBlob(j, reason) {
     return decryptState(j.blob).then(function (plain) {
       if (!plain || typeof plain !== 'object' || !plain.meta) throw new Error('النسخة البعيدة غير صالحة أو أن سر المزامنة مختلف.');
+      /* Never overwrite local work silently: keep a one-click rollback copy. */
+      var backup = backupLocalState(reason || 'cloud');
       state = mergeState(plain);
       settings.syncVersion = num(j.version, 0);
       saveSettings(); saveNow();
+      logAudit('sync_conflict_applied', 'ceo', 'Cloud state applied; local backup kept at ' + backup.at);
       return true;
     });
   }
-  function syncPull() {
+  function syncPull(opts) {
     if (!syncConfigured()) return Promise.resolve({ configured: false });
+    if (opts && opts.keepMine) {
+      return secureRelay('state_get', {}).then(function (j) {
+        settings.syncVersion = num(j.version, 0); saveSettings();
+        return { configured: true, applied: false, keptLocal: true, version: settings.syncVersion };
+      });
+    }
     return secureRelay('state_get', {}).then(function (j) {
       settings.syncVersion = num(j.version, 0); saveSettings();
       if (!j.blob) return { configured: true, applied: false, version: settings.syncVersion };
-      return applyRemoteBlob(j).then(function () { return { configured: true, applied: true, version: settings.syncVersion }; });
+      return applyRemoteBlob(j, 'sync_pull').then(function () { return { configured: true, applied: true, version: settings.syncVersion }; });
     });
   }
   function syncPush() {
@@ -429,7 +455,7 @@
       return secureRelay('state_put', { blob: blob, expected: num(settings.syncVersion, 0) })
         .then(function (j) {
           if (j.conflict && j.blob) {
-            return applyRemoteBlob(j).then(function () { return { ok: true, conflict: true, applied: true, version: settings.syncVersion }; });
+            return applyRemoteBlob(j, 'sync_push_conflict').then(function () { return { ok: true, conflict: true, applied: true, version: settings.syncVersion, rollbackAvailable: true }; });
           }
           if (isFinite(j.version)) { settings.syncVersion = num(j.version, 0); saveSettings(); }
           return { ok: true, conflict: false, version: settings.syncVersion };
@@ -596,7 +622,7 @@
 
   function recomputeStatus(agentId) {
     if (state.approvals.some(function (a) { return a.agentId === agentId && a.status === 'pending'; })) { state.agentStatuses[agentId] = 'waiting_approval'; return; }
-    state.agentStatuses[agentId] = state.tasks.some(function (t) { return t.agentId === agentId && t.status === 'working'; }) ? 'working' : 'available';
+    state.agentStatuses[agentId] = state.tasks.some(function (t) { return t.agentId === agentId && (t.status === 'queued' || t.status === 'working'); }) ? 'working' : 'available';
   }
 
   function unreadMemoCount() {
@@ -841,31 +867,40 @@
     'executive-assistant': { prompt: 'لديكِ ثلاث مهام متزاحمة: عرض عميل، تقرير مالي، وموافقة أمنية. ضعي جدولاً تنفيذياً بأولوياتكِ وحددّي ما يحتاج موافقة المدير.', keywords: ['أولوية', 'جدول', 'موافقة', 'مدير'], minLen: 100 },
     'hr-manager': { prompt: 'فريقك يعمل فوق طاقته أسبوعين متتاليين. اقترحي خطة توظيف أو إعادة توزيع مع مؤشرات قياس ومخاطر.', keywords: ['توظيف', 'مؤشر', 'مخاطر', 'فريق'], minLen: 100 },
     'ai-trainer': { prompt: 'صمّمي خطة تدريب أسبوعية لوكيل ضعيف في الرد على العملاء مع KPI واضح وطريقة قياس.', keywords: ['تدريب', 'مؤشر', 'قياس', 'أسبوع'], minLen: 100 },
-    'accountant': { prompt: 'احسبي هامش ربح منتج سعره $99 وتكلفته $41 مع تكلفة API $6، واذكري الافتراضات والمخاطر المالية.', keywords: ['هامش', 'تكلفة', 'ربح', 'افتراض'], minLen: 90 },
+    'accountant': { prompt: 'احسبي هامش ربح منتج سعره $99 وتكلفته $41 مع تكلفة API $6، واذكري الافتراضات والمخاطر المالية.', keywords: ['هامش', 'تكلفة', 'ربح', 'افتراض'], minLen: 90, expect: 'number' },
     'marketing-lead': { prompt: 'اكتب إعلاناً عربياً مختصراً لمنتج أتمتة مع دعوة لاتخاذ إجراء، وحدد جمهوراً وقناة نشر ومقياس نجاح.', keywords: ['جمهور', 'قناة', 'قياس', 'إعلان'], minLen: 90 },
     'security-officer': { prompt: 'راجع ربط webhook خارجي بمفتاح سري. صنّف الخطر واذكر الضوابط المطلوبة قبل الموافقة.', keywords: ['خطر', 'ضوابط', 'مفتاح', 'موافقة'], minLen: 90 },
-    'web-research-team': { prompt: 'ابحث عن فرصة SaaS جديدة واذكر مصدراً ومعايير اختيار ومخاطرة واحدة على الأقل.', keywords: ['مصدر', 'معايير', 'فرصة', 'مخاطرة'], minLen: 90 },
+    'web-research-team': { prompt: 'ابحث عن فرصة SaaS جديدة واذكر مصدراً ومعايير اختيار ومخاطرة واحدة على الأقل.', keywords: ['مصدر', 'معايير', 'فرصة', 'مخاطرة'], minLen: 90, expect: 'url' },
     'auditors-experts-devs': { prompt: 'راجع مقترح أتمتة تقنياً: ما المخاطر التقنية، ومتى يحتاج تعيين مطور جديد؟', keywords: ['تقني', 'مخاطر', 'مطور', 'تدقيق'], minLen: 90 }
   };
   function benchmarkSpec(role) {
     if (BENCHMARK_TASKS[role]) return BENCHMARK_TASKS[role];
     var isQa = /^qa-/.test(String(role || ''));
     return isQa
-      ? { prompt: 'راجع مقترحاً تنفيذياً يتضمن رقماً غير مدعوم وإجراءً يتطلب موافقة. أثبت خطأً واحداً وأصدر حكماً وفق بروتوكول QA.', keywords: ['دليل', 'خطأ', 'حكم', 'موافقة'], minLen: 80 }
+      ? { prompt: 'راجع مقترحاً تنفيذياً يتضمن رقماً غير مدعوم وإجراءً يتطلب موافقة. أثبت خطأً واحداً وأصدر حكماً وفق بروتوكول QA.', keywords: ['دليل', 'خطأ', 'حكم', 'موافقة'], minLen: 80, expect: 'qa' }
       : { prompt: 'حلل هذه المهمة الإدارية واقترح خطوات عملية ومخاطر ومؤشر نجاح.', keywords: ['خطوات', 'مخاطر', 'مؤشر', 'حل'], minLen: 80 };
   }
   function benchmarkScore(text, spec, live) {
     var t = String(text || '');
     var lower = t.toLowerCase();
-    if (!live || /الوضع التجريبي|تعذر الوصول إلى النموذج|demo mode/i.test(t)) return { score: 0, breakdown: 'رد تجريبي/غير حي — لا يُحتسب.' };
+    if (!live || /الوضع التجريبي|تعذر الوصول إلى النموذج|demo mode/i.test(t)) return { score: 0, heuristic: true, breakdown: 'رد تجريبي/غير حي — لا يُحتسب.' };
     var hits = (spec.keywords || []).filter(function (k) { return lower.indexOf(String(k).toLowerCase()) !== -1; }).length;
     var kwPts = Math.round(40 * hits / Math.max(1, (spec.keywords || []).length));
     var minLen = spec.minLen || 80;
     var lenPts = Math.min(25, Math.round(25 * t.length / minLen));
     var structurePts = /\n/.test(t) && /[-•١٢٣1-9]/.test(t) ? 15 : 6;
     var cleanPts = !/عذراً|لا أستطيع|غير قادر على (الوصول|الاتصال)/i.test(t) ? 20 : 8;
-    var score = Math.max(0, Math.min(100, kwPts + lenPts + structurePts + cleanPts));
-    return { score: score, breakdown: 'كلمات مفتاحية ' + kwPts + '/40 · طول ' + lenPts + '/25 · تنظيم ' + structurePts + '/15 · وضوح ' + cleanPts + '/20' };
+    /* Deterministic validation of task-specific facts, above keyword counting. */
+    var expect = spec.expect || '';
+    var semanticPts = 0;
+    if (expect === 'number' && /(?:\$?\s*)(?:5[0-4])\b/.test(t)) semanticPts = 20;
+    if (expect === 'qa' && /(PASS|FAIL|حكم|مقبول|مرفوض)/i.test(t)) semanticPts = 20;
+    if (expect === 'url' && /https?:\/\//i.test(t)) semanticPts = 20;
+    var score = Math.max(0, Math.min(100, kwPts + lenPts + structurePts + cleanPts + semanticPts));
+    return {
+      score: score, heuristic: true,
+      breakdown: 'تقدير إرشادي: كلمات ' + kwPts + '/40 · طول ' + lenPts + '/25 · تنظيم ' + structurePts + '/15 · وضوح ' + cleanPts + '/20 · تحقق ' + semanticPts + '/20' + (expect ? ' (' + expect + ')' : '')
+    };
   }
   function labKey(provider, model, role) {
     return usageKey(provider, model) + '::' + String(role || '');

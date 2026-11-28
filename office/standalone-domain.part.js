@@ -259,23 +259,53 @@
     return '🛡️ فحص مسؤول الأمان: تعديل تشغيلي أو مالي متوسط الأثر — مسموح بعد موافقة المدير.';
   }
 
+  /* Model output is untrusted text. Tags can only create structured proposals
+     with bounded, plain-text fields — never markup or executable identifiers. */
+  function tagValue(value, fallback, maxLen, pattern) {
+    var s = String(value == null ? '' : value)
+      .replace(/[\[\]<>]/g, '')
+      .replace(/[\u0000-\u001f]/g, ' ')
+      .trim().slice(0, maxLen || 120);
+    if (pattern && !pattern.test(s)) s = fallback;
+    return s || fallback;
+  }
+  function safeAgentId(value) {
+    return tagValue(value, 'agent-' + uuid().slice(0, 6), 40, /^[A-Za-z0-9_-]{2,40}$/);
+  }
+  function safeRisk(value) {
+    var r = String(value || '').toLowerCase();
+    return ['low', 'medium', 'high'].indexOf(r) >= 0 ? r : 'medium';
+  }
+
   function extractProposals(text) {
     var requests = [];
     var clean = String(text || '');
     clean = clean.replace(/\[APPROVAL_REQUEST\s+title="([^"]+)"(?:\s+risk="([^"]+)")?(?:\s+action="([^"]+)")?\]([\s\S]*?)\[\/APPROVAL_REQUEST\]/g, function (_, title, risk, action, details) {
-      requests.push({ title: title.trim(), risk: (risk || 'medium').trim(), actionType: (action || 'agent_proposal').trim(), details: details.trim(), payload: {} });
+      requests.push({
+        title: tagValue(title, 'مقترح من وكيل', 120),
+        risk: safeRisk(risk),
+        actionType: tagValue(action, 'agent_proposal', 40, /^[a-z][a-z0-9_]{1,39}$/i),
+        details: tagValue(details, '', 2000),
+        payload: {}
+      });
       return '';
     });
     clean = clean.replace(/\[HIRE_AGENT\s+id="([^"]+)"\s+name="([^"]+)"(?:\s+department="([^"]+)")?(?:\s+avatar="([^"]+)")?\]([\s\S]*?)\[\/HIRE_AGENT\]/g, function (_, id, name, dept, avatar, details) {
-      requests.push({ title: 'تعيين موظف جديد: ' + name, risk: 'medium', actionType: 'hire_agent', details: details.trim(), payload: { id: id.trim(), name: name.trim(), department: (dept || 'فريق جديد').trim(), avatar: (avatar || '🤖').trim(), roleDescription: details.trim() } });
+      var safeName = tagValue(name, 'موظف جديد', 60);
+      var safeDept = tagValue(dept, 'فريق جديد', 80);
+      var safeAvatar = tagValue(avatar, '🤖', 8);
+      var safeDetails = tagValue(details, 'موظف ذكاء اصطناعي متخصص.', 2000);
+      requests.push({ title: 'تعيين موظف جديد: ' + safeName, risk: 'medium', actionType: 'hire_agent', details: safeDetails, payload: { id: safeAgentId(id), name: safeName, department: safeDept, avatar: safeAvatar, roleDescription: safeDetails } });
       return '';
     });
     clean = clean.replace(/\[UPDATE_SKILLS\s+target="([^"]+)"(?:\s+title="([^"]+)")?\]([\s\S]*?)\[\/UPDATE_SKILLS\]/g, function (_, target, title, additions) {
-      requests.push({ title: (title || ('تحديث مهارات ' + target)).trim(), risk: 'medium', actionType: 'update_skills', details: additions.trim(), payload: { targetAgentId: target.trim(), skillsAddition: additions.trim() } });
+      var safeTarget = safeAgentId(target);
+      var safeAdditions = tagValue(additions, '', 2000);
+      requests.push({ title: tagValue(title, 'تحديث مهارات ' + safeTarget, 120), risk: 'medium', actionType: 'update_skills', details: safeAdditions, payload: { targetAgentId: safeTarget, skillsAddition: safeAdditions } });
       return '';
     });
     clean = clean.replace(/\[MEMO\s+to="([^"]+)"(?:\s+subject="([^"]+)")?\]([\s\S]*?)\[\/MEMO\]/g, function (_, to, subject, body) {
-      requests.push({ _type: 'memo', toId: to.trim(), subject: (subject || 'مذكرة داخلية').trim(), body: body.trim() });
+      requests.push({ _type: 'memo', toId: safeAgentId(to), subject: tagValue(subject, 'مذكرة داخلية', 120), body: tagValue(body, '', 2000) });
       return '';
     });
     return { cleanText: clean.trim(), requests: requests };
@@ -407,7 +437,32 @@
     return { code: code, url: 'https://t.me/' + encodeURIComponent(bot) + '?start=' + code };
   }
 
-  /* ── simulator (ported from lib/simulator.js) ─────────────────────────── */
+  /* ── simulator: deterministic Monte Carlo instead of fixed multipliers ── */
+  function seededRng(seedText) {
+    var seed = 2166136261;
+    String(seedText || '').split('').forEach(function (ch) { seed = (seed ^ ch.charCodeAt(0)) * 16777619 >>> 0; });
+    if (!seed) seed = 0x9e3779b9;
+    return function () {
+      seed ^= seed << 13; seed >>>= 0;
+      seed ^= seed >> 17;
+      seed ^= seed << 5; seed >>>= 0;
+      return seed / 4294967296;
+    };
+  }
+  function triangular(rng, min, max) {
+    return min + (max - min) * ((rng() + rng() + rng()) / 3);
+  }
+  function simulationScenario(key, label, customers, probabilityPct, fixed, ad, price, apiCost) {
+    var revenue = Number((customers * price).toFixed(2));
+    var totalApiCost = Number((customers * apiCost).toFixed(2));
+    var totalCost = Number((fixed + ad + totalApiCost).toFixed(2));
+    var netProfit = Number((revenue - totalCost).toFixed(2));
+    return {
+      key: key, label: label, customers: customers, probabilityPct: probabilityPct,
+      revenue: revenue, totalApiCost: totalApiCost, totalCost: totalCost,
+      netProfit: netProfit, roiPct: totalCost > 0 ? Number(((netProfit / totalCost) * 100).toFixed(1)) : 0
+    };
+  }
   function runSimulation(input) {
     var fixed = num(input.fixedCostUsd, 0);
     var ad = num(input.adBudgetUsd, 0);
@@ -418,27 +473,51 @@
     var contributionMargin = price - apiCost;
     var totalUpfrontCost = fixed + ad;
     var breakEven = contributionMargin > 0 ? Math.ceil(totalUpfrontCost / contributionMargin) : -1;
-    var baseClicks = ad / cpc;
-    var baseCustomers = Math.max(1, Math.round(baseClicks * conv));
-    var scenarios = [
-      { key: 'conservative', label: 'متحفظ 🐢', multiplier: 0.6 },
-      { key: 'realistic', label: 'واقعي ⚖️', multiplier: 1.0 },
-      { key: 'optimistic', label: 'متفائل 🚀', multiplier: 1.7 }
-    ].map(function (s) {
-      var customers = Math.max(1, Math.round(baseCustomers * s.multiplier));
-      var revenue = Number((customers * price).toFixed(2));
-      var totalApiCost = Number((customers * apiCost).toFixed(2));
-      var totalCost = Number((fixed + ad + totalApiCost).toFixed(2));
-      var netProfit = Number((revenue - totalCost).toFixed(2));
-      var roiPct = totalCost > 0 ? Number(((netProfit / totalCost) * 100).toFixed(1)) : 0;
-      return { key: s.key, label: s.label, customers: customers, revenue: revenue, totalApiCost: totalApiCost, totalCost: totalCost, netProfit: netProfit, roiPct: roiPct };
+    var baseCustomers = Math.max(1, Math.round((ad / cpc) * conv));
+
+    var rawProbs = Array.isArray(input.probabilities) ? input.probabilities : String(input.probabilities || '25,50,25').split(/[,،\s]+/);
+    var probs = [0, 1, 2].map(function (i) { return Math.max(0, num(rawProbs[i], [25, 50, 25][i])); });
+    var probTotal = probs.reduce(function (a, b) { return a + b; }, 0) || 100;
+    probs = probs.map(function (p) { return Math.round(p / probTotal * 100); });
+
+    var bands = [
+      { key: 'conservative', label: 'متحفظ 🐢', min: 0.35, max: 0.8 },
+      { key: 'realistic', label: 'واقعي ⚖️', min: 0.8, max: 1.25 },
+      { key: 'optimistic', label: 'متفائل 🚀', min: 1.25, max: 2.0 }
+    ];
+    var rng = seededRng([fixed, ad, price, apiCost, cpc, conv, probs.join('-')].join('|'));
+    var trials = 600, samples = [];
+    for (var i = 0; i < trials; i++) {
+      var u = rng() * 100, band = bands[2], cumulative = probs[0] + probs[1];
+      if (u < probs[0]) band = bands[0];
+      else if (u < cumulative) band = bands[1];
+      var customers = Math.max(1, Math.round(baseCustomers * triangular(rng, band.min, band.max)));
+      var revenue = customers * price;
+      var cost = fixed + ad + customers * apiCost;
+      samples.push({ customers: customers, net: Number((revenue - cost).toFixed(2)), band: band.key });
+    }
+    samples.sort(function (a, b) { return a.customers - b.customers; });
+    function quantile(q) { return samples[Math.min(samples.length - 1, Math.floor(q * samples.length))].customers; }
+    var q10 = quantile(0.1), q50 = quantile(0.5), q90 = quantile(0.9);
+    var scenarios = bands.map(function (band, idx) {
+      return simulationScenario(band.key, band.label, [q10, q50, q90][idx], probs[idx], fixed, ad, price, apiCost);
     });
+    var actualRevenue = (state.financialLedger || []).filter(function (e) { return e.type === 'revenue'; }).reduce(function (a, e) { return a + num(e.amountUsd, 0); }, 0);
+    var actualCost = (state.financialLedger || []).filter(function (e) { return e.type === 'expense'; }).reduce(function (a, e) { return a + num(e.amountUsd, 0); }, 0) + num(state.usageStats && state.usageStats.totalCostUsd, 0);
     return {
       projectName: input.projectName || 'مشروع جديد',
-      inputs: { fixed: fixed, ad: ad, price: price, apiCost: apiCost, cpc: cpc, conversionRatePct: conv * 100 },
+      inputs: { fixed: fixed, ad: ad, price: price, apiCost: apiCost, cpc: cpc, conversionRatePct: conv * 100, probabilities: probs },
+      method: 'Monte Carlo — ' + trials + ' تجربة بمولّد عشوائي ثابت (P10 / P50 / P90)',
       contributionMargin: Number(contributionMargin.toFixed(2)),
       breakEvenCustomers: breakEven,
       scenarios: scenarios,
+      plannedVsActual: {
+        projectedNet: scenarios[1].netProfit,
+        actualRevenue: Number(actualRevenue.toFixed(2)),
+        actualCost: Number(actualCost.toFixed(2)),
+        actualNet: Number((actualRevenue - actualCost).toFixed(2)),
+        source: 'financialLedger + usageStats'
+      },
       createdAt: nowIso()
     };
   }
@@ -545,13 +624,13 @@
   var REQUEST_ACTION_RX = /(أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي|جهّز|جاهز|نجهز|نجّز|نجهّز|اكتب|نكتب|حلّل|حلل|نحلّل|نحلل|ابحث|دوّر|دور|فتّش|فتش|أنشئ|انشئ|أطلق|اطلق|أرسل|ارسل|نرسل|انشر|ننشر|ادفع|ندفع|راجع|نراجع|افحص|قارن|لخّص|لخص|عدّل|عدل|نعدّل|نعدل|حدّث|حدث|نحدّث|نحدث|أضف|نضيف|أزل|احذف|استخرج|صدّر|احسب|نحسب|خطّط|خطط|نخطّط|نخطط|افهم|فهم)/iu;
   var REQUEST_OUTPUT_RX = /(تقرير|خطة|مخطط|منتج|تطبيق|موقع|صفحة|حملة|إعلان|عقد|اتفاقية|جدول|ميزانية|بحث|دراسة|تحليل|مراجعة|تقييم|مسودة|اقتراح|قائمة|نموذج|نظام|بوت|محتوى|رسالة|إشعار|تذكرة|حل|خطوات)/iu;
   var REQUEST_HIGH_RX = /(دفع\s|تحويل\s|مصروف|توقيع\s+عقد|إبرام\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|صلاحيات\s+جديدة|بيانات\s+سرية|حذف\s+بيانات|ربط\s+خارجي|webhook|api\s*key)/iu;
-  var REQUEST_NEGATION_RX = /(?:مش|مو|ليس|لا|غير|بدون|عادي|مجرد)/iu;
+  var REQUEST_NEGATION_RX = /(?<![\p{L}\p{N}])(?:مش|مو|ليس|لا|غير|بدون|عادي|مجرد)(?![\p{L}\p{N}])/iu;
 
   /* A phrase like "مش حملة نشر عام" is a clarification, not a dangerous
      order. Remove negated clauses before risk classification. */
   function stripNegated(text) {
     return String(text || '')
-      .replace(/(?:مش|مو|ليس|لا|غير|بدون)\s+[^.؛;،,!?؟\n]+/giu, ' ')
+      .replace(/(?<![\p{L}\p{N}])(?:مش|مو|ليس|لا|غير|بدون)(?![\p{L}\p{N}])\s+[^.؛;،,!?؟\n]{0,80}/giu, ' ')
       .trim();
   }
 
@@ -580,16 +659,21 @@
     var original = String(raw || '').trim();
     var d = normalizeDialect(original);
     var norm = String(d.normalized || '').trim();
-    var parts = original.split(/[.!?؟؛;\n،,]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
+    /* A dot inside a decimal ($49.99) or domain (md1usd.com) is not a
+       sentence boundary. */
+    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n،,]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
     if (!parts.length) parts = [original];
     var items = [];
     var constraints = [];
     parts.forEach(function (part) {
-      var nd = normalizeDialect(part).normalized.replace(/^(?:و\s*|ثم\s+|بس\s+|لكن\s+|أو\s+|او\s+|فـ\s+|ف\s+)/u, '').trim();
+      var stripLead = /^(?:و\s*|ثم\s+|بس\s+|لكن\s+|أو\s+|او\s+|فـ\s+|ف\s+)/u;
+      var rawPart = String(part).replace(stripLead, '').trim();
+      var nd = normalizeDialect(rawPart).normalized.trim();
       var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
       var context = /^(?:يا|أيها|ايها)\s+/u.test(nd);
       var clarification = !actionable && (REQUEST_NEGATION_RX.test(nd) || context);
-      var text = nd.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|لازم|لازمه|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || nd;
+      /* Preserve the user's original spelling in the ledger and task title. */
+      var text = rawPart.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|لازم|لازمه|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || rawPart;
       var riskText = stripNegated(nd);
       if (clarification) constraints.push((context ? 'السياق: ' : 'توضيح: ') + String(text).slice(0, 120));
       items.push({
@@ -688,7 +772,7 @@
           id: 'tsk-' + uuid().slice(0, 8), agentId: ag.id,
           title: String(item.text).slice(0, 110),
           description: String(item.text) + '\n\nمصدر الطلب: ' + e.source,
-          status: 'working', createdAt: nowIso(),
+          status: 'queued', createdAt: nowIso(),
           ledgerId: e.id, ledgerItemId: item.id
         };
         state.tasks.unshift(task);
@@ -711,36 +795,44 @@
     e.updatedAt = nowIso();
     logAudit('request_executed', e.agentId || 'ceo', 'Executed ' + done.length + ' request item(s), ' + approvals.length + ' approval(s)', { id: e.id });
     saveState();
+    if (typeof startTaskRunner === 'function') startTaskRunner();
     return Promise.resolve(e.executionSummary);
   }
 
   /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
   var assistantSession = null;
 
+  /* \b is ASCII-only; Arabic words need Unicode letter/number boundaries. */
+  function arabicWordRx(words) {
+    return new RegExp('(?<![\\p{L}\\p{N}_])(?:' + words + ')(?![\\p{L}\\p{N}_])', 'giu');
+  }
   var DIALECT_RULES = [
-    [/\b(أبغى|ابغى|عايز|عيز|أريد|اريد|بغيت|ودّي|ودي|أبغاك|ابغاك)\b/gu, 'أريد'],
-    [/\b(شيف|شوف|إعمل|اعمل|سوي|سوّي|نفّذ|نفذ)\b/gu, 'أنفّذ'],
-    [/\b(بكره|بكرا|غدا)\b/gu, 'غداً'],
-    [/\b(دلوقتي|دلوقت|هلوقتي|الآن)\b/gu, 'الآن'],
-    [/\b(مزبون|زبون|عميل|كليانت)\b/gu, 'عميل'],
-    [/\b(فلوس|فلاوس|مال|مصاريف)\b/gu, 'ميزانية'],
-    [/\b(شغل|وظيفة|مهمة|task)\b/gu, 'مهمة'],
-    [/\b(مفيش|مافي|ما عندي|مش عندي)\b/gu, 'لا يوجد'],
-    [/\b(كده|كذا|هيك|هكذا)\b/gu, 'هكذا'],
-    [/\b(قريب|قريبا|سريع|بسرعة|بالسرعة)\b/gu, 'بسرعة'],
-    [/\b(اتصل|اتصلت|تواصل|راسل)\b/gu, 'تواصل'],
-    [/\b(دوّر|دور|ابحث|ابحت|فتّش)\b/gu, 'ابحث']
+    [arabicWordRx('أبغى|ابغى|عايز|عيز|أريد|اريد|بغيت|ودّي|ودي|أبغاك|ابغاك'), 'أريد'],
+    [arabicWordRx('شيف|شوف|إعمل|اعمل|سوي|سوّي|نفّذ|نفذ'), 'أنفّذ'],
+    [arabicWordRx('بكره|بكرا|غدا'), 'غداً'],
+    [arabicWordRx('دلوقتي|دلوقت|هلوقتي|الآن'), 'الآن'],
+    [arabicWordRx('مزبون|زبون|عميل|كليانت'), 'عميل'],
+    [arabicWordRx('فلوس|فلاوس|مال|مصاريف'), 'ميزانية'],
+    [arabicWordRx('شغل|وظيفة|مهمة|task'), 'مهمة'],
+    [arabicWordRx('مفيش|مافي|ما عندي|مش عندي'), 'لا يوجد'],
+    [arabicWordRx('كده|كذا|هيك|هكذا'), 'هكذا'],
+    [arabicWordRx('قريب|قريبا|سريع|بسرعة|بالسرعة'), 'بسرعة'],
+    [arabicWordRx('اتصل|اتصلت|تواصل|راسل'), 'تواصل'],
+    [arabicWordRx('دوّر|دور|ابحث|ابحت|فتّش'), 'ابحث']
   ];
 
+  /* `normalized` is only for analysis/routing. Callers must display/store
+     `raw` for task titles and ledger text so dialect spelling is not lost. */
   function normalizeDialect(message) {
     var raw = String(message || '').trim();
     var out = raw;
     var changes = [];
     DIALECT_RULES.forEach(function (rule) {
-      if (rule[0].test(out)) { out = out.replace(rule[0], rule[1]); changes.push(rule[1]); }
+      var next = out.replace(rule[0], rule[1]);
+      if (next !== out) { out = next; changes.push(rule[1]); }
     });
-    out = out.replace(/[أإآ]/gu, 'ا').replace(/ة(?=\s|$)/gu, 'ه');
-    return { raw: raw, normalized: out, changes: changes };
+    var analysis = out.replace(/[أإآ]/gu, 'ا').replace(/ة(?=\s|$)/gu, 'ه');
+    return { raw: raw, normalized: analysis, changes: changes };
   }
 
   function jsonFromText(text) {
@@ -1022,7 +1114,7 @@
     if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
     if (s.status !== 'awaiting_execution') return Promise.reject(new Error('يجب تأكيد الفهم أولاً قبل التنفيذ'));
     (s.plan || []).forEach(function (p) {
-      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'working', createdAt: nowIso(), ledgerId: s.ledgerId });
+      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'queued', createdAt: nowIso(), ledgerId: s.ledgerId });
       state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
       recomputeStatus(p.agentId);
       awardPoints(p.agentId, 8, 'تنفيذ خطة المساعد الذكي');
@@ -1053,6 +1145,7 @@
     assistantSession = s;
     logAudit('assistant_plan_executed', 'ceo', 'Assistant plan executed: ' + s.plan.length + ' tasks', { sessionId: s.id });
     saveState();
+    if (typeof startTaskRunner === 'function') startTaskRunner();
     return Promise.resolve(clone(s));
   }
 
@@ -1069,21 +1162,45 @@
     for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     return bytes;
   }
-  function deriveKey(passphrase) {
+  var SNAPSHOT_VERSION = '2.1.0';
+  var LEGACY_SNAPSHOT_SALT = 'mdm1-office-salt-v1';
+  /* Passphrase is mandatory. New snapshots get a random 16-byte salt stored
+     with the record; the fixed legacy salt is only for decrypting old files. */
+  function deriveKey(passphrase, saltBytes, iterations) {
+    var pass = String(passphrase || '');
+    if (!pass) return Promise.reject(new Error('كلمة مرور النسخة مطلوبة — لا توجد كلمة افتراضية'));
     var enc = new TextEncoder();
-    return crypto.subtle.importKey('raw', enc.encode(passphrase || 'mdm1-office-default'), { name: 'PBKDF2' }, false, ['deriveKey']).then(function (base) {
+    var salt = saltBytes && saltBytes.length ? saltBytes : enc.encode(LEGACY_SNAPSHOT_SALT);
+    return crypto.subtle.importKey('raw', enc.encode(pass), { name: 'PBKDF2' }, false, ['deriveKey']).then(function (base) {
       return crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt: enc.encode('mdm1-office-salt-v1'), iterations: 120000, hash: 'SHA-256' },
+        { name: 'PBKDF2', salt: salt, iterations: iterations || 150000, hash: 'SHA-256' },
         base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
       );
+    });
+  }
+  function snapshotSalt(rec) {
+    return rec && rec.salt ? unb64(rec.salt) : null;
+  }
+  /* Old snapshots used the fixed salt and 120k iterations. Try both so the
+     security upgrade never strands existing backup files. */
+  function decryptSnapshotRecord(rec, passphrase) {
+    var iv = unb64(rec.iv), data = unb64(rec.data), salt = snapshotSalt(rec);
+    return deriveKey(passphrase, salt, 150000).then(function (key) {
+      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, data);
+    }).catch(function (e) {
+      if (salt) throw e;
+      return deriveKey(passphrase, null, 120000).then(function (legacyKey) {
+        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, legacyKey, data);
+      });
     });
   }
   function createSnapshot(label, passphrase) {
     var payload = clone(state);
     delete payload.snapshots;
-    payload.__snapshot = { label: label, createdAt: nowIso(), version: '2.0.0' };
+    payload.__snapshot = { label: label, createdAt: nowIso(), version: SNAPSHOT_VERSION };
     var json = JSON.stringify(payload);
-    return deriveKey(passphrase).then(function (key) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    return deriveKey(passphrase, salt).then(function (key) {
       var iv = crypto.getRandomValues(new Uint8Array(12));
       return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(json)).then(function (cipher) {
         var record = {
@@ -1093,6 +1210,8 @@
           fileCount: 1,
           size: cipher.byteLength,
           createdAt: nowIso(),
+          version: SNAPSHOT_VERSION,
+          salt: b64(salt),
           iv: b64(iv),
           data: b64(cipher)
         };
@@ -1101,7 +1220,7 @@
         snaps = snaps.slice(0, 5);
         writeLS(LS_SNAPS, snaps);
         state.snapshots = snaps.map(function (s) { return { id: s.id, label: s.label, alg: s.alg, fileCount: s.fileCount, size: s.size, createdAt: s.createdAt }; });
-        logAudit('snapshot_created', 'ceo', 'Encrypted snapshot ' + record.id);
+        logAudit('snapshot_created', 'ceo', 'Encrypted snapshot ' + record.id + ' (salt per snapshot, PBKDF2 150k)');
         saveState();
         return record;
       });
@@ -1111,15 +1230,17 @@
     var snaps = readLS(LS_SNAPS, []);
     var rec = snaps.find(function (s) { return s.id === id; });
     if (!rec) return Promise.reject(new Error('النسخة غير موجودة'));
-    return deriveKey(passphrase).then(function (key) {
-      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(rec.iv) }, key, unb64(rec.data)).then(function (plain) {
-        var payload = JSON.parse(new TextDecoder().decode(plain));
-        var snapsMeta = state.snapshots;
+    return decryptSnapshotRecord(rec, passphrase).then(function (plain) {
+      var payload = JSON.parse(new TextDecoder().decode(plain));
+      var snapVersion = (payload.__snapshot && payload.__snapshot.version) || '1.0.0';
+      var snapsMeta = state.snapshots;
+      /* Always keep a rollback point before time-travel replaces state. */
+      return createSnapshot('نقطة تراجع تلقائية قبل استعادة ' + id, passphrase).then(function (rollback) {
         state = Object.assign(initialState(), payload);
         state.snapshots = snapsMeta;
         saveNow();
-        logAudit('snapshot_restored', 'ceo', 'Time-travel rollback to ' + id);
-        return { restoredCount: 1, snapshotDate: rec.createdAt };
+        logAudit('snapshot_restored', 'ceo', 'Time-travel rollback to ' + id + (snapVersion !== SNAPSHOT_VERSION ? ' (compat ' + snapVersion + ')' : '') + ' — rollback ' + rollback.id);
+        return { restoredCount: 1, snapshotDate: rec.createdAt, version: snapVersion, rollbackId: rollback.id };
       });
     });
   }
@@ -1143,9 +1264,7 @@
     if (!record || !record.iv || !record.data || record.alg !== 'AES-256-GCM') {
       return Promise.reject(new Error('ملف النسخة غير صالح أو غير مشفّر بـ AES-256-GCM'));
     }
-    return deriveKey(passphrase).then(function (key) {
-      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(record.iv) }, key, unb64(record.data));
-    }).then(function (plain) {
+    return decryptSnapshotRecord(record, passphrase).then(function (plain) {
       var payload = JSON.parse(new TextDecoder().decode(plain));
       if (!payload || typeof payload !== 'object') throw new Error('محتوى النسخة غير مقروء');
       var rec = {
@@ -1155,6 +1274,8 @@
         fileCount: num(record.fileCount, 1),
         size: num(record.size, 0) || String(record.data || '').length,
         createdAt: record.createdAt || nowIso(),
+        version: record.version || (payload.__snapshot && payload.__snapshot.version) || '1.0.0',
+        salt: record.salt || null,
         iv: record.iv,
         data: record.data
       };
@@ -1253,11 +1374,14 @@
     var trainer = getAgent('ai-trainer');
     if (!trainer) return Promise.resolve('');
     var summaries = allAgents().map(function (a) {
-      var chatCount = (state.directChats[a.id] || []).length;
-      var done = state.approvals.filter(function (ap) { return ap.agentId === a.id && ap.status === 'approved'; }).length;
-      var earned = 15 + Math.min(35, chatCount * 2 + done * 10);
-      var res = awardPoints(a.id, earned, 'تقييم الأداء الأسبوعي (KPI)');
-      return '- ' + a.name + ': +' + earned + ' نقطة (الإجمالي: ' + res.profile.points + ' | ' + res.profile.rankTitle + ')';
+      var doneTasks = (state.tasks || []).filter(function (t) { return t.agentId === a.id && (t.status === 'done' || t.status === 'completed'); }).length;
+      var approved = (state.approvals || []).filter(function (ap) { return ap.agentId === a.id && ap.status === 'approved'; }).length;
+      var rejected = (state.approvals || []).filter(function (ap) { return ap.agentId === a.id && ap.status === 'rejected'; }).length;
+      /* Points now follow evidence of completed work and clean approvals —
+         chat volume alone never earns an automatic promotion. */
+      var earned = Math.max(0, Math.min(50, doneTasks * 6 + approved * 4 - rejected * 3));
+      var res = earned ? awardPoints(a.id, earned, 'KPI أسبوعي مبني على ' + doneTasks + ' مهمة منجزة و' + approved + ' موافقة') : { profile: ensureProfile(a.id) };
+      return '- ' + a.name + ': +' + earned + ' نقطة (' + doneTasks + ' مهمة منجزة، ' + approved + ' موافقة، ' + rejected + ' رفض) — الإجمالي: ' + res.profile.points + ' | ' + res.profile.rankTitle;
     }).join('\n');
     return aiGenerate({ agentId: trainer.id, messages: [{ role: 'user', text: 'أعدّي تقييم الأداء الأسبوعي (KPI) لجميع الموظفين واقترحي تحسينات على skills.md:\n\n' + summaries }] }).then(function (r) {
       recordUsage(trainer.id, r.usage);
@@ -1363,9 +1487,9 @@
       var lines = [
         connected ? '🟢 النموذج الحي: متصل (' + mode + ')' : '🔴 النموذج الحي: غير متصل — الردود ستكون تجريبية/بديلة ومُسمّدة بوضوح.',
         '👤 الحساب: ' + authStatusLine(),
-        '🔐 الخزنة: ' + (vault.enabled ? 'مفعّلة' : 'غير مفعّلة') + (vault.locked === false ? ' — مفتوحة' : ''),
+        '🔐 الخزنة: ' + (vault.exists ? 'مفعّلة' : 'غير مفعّلة') + (vault.unlocked ? ' — مفتوحة' : vault.exists ? ' — مقفلة' : ''),
         '🛡️ فحص الأمان: ' + (sec && Array.isArray(sec.findings) ? sec.findings.length + ' ملاحظة' : 'تم'),
-        '📊 الحصة: ' + (q && q.requests != null ? q.requests + ' طلب' : 'لا توجد بيانات'),
+        '📊 الحصة: ' + (q && q.calls != null ? q.calls + ' طلب / ' + (q.tokens || 0) + ' tok' : 'لا توجد بيانات'),
         '☁️ السحابة: معطّلة (مفاتيحك أنت فقط)',
         '🏠 المحلي: ' + (providers.local.connected ? 'متصل' : 'غير متصل') + (providers.local.error ? ' — ' + providers.local.error : ''),
         '🔄 المزامنة: ' + (settings.syncEnabled && syncConfigured() ? 'مفعّلة' : 'معطّلة')

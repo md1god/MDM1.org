@@ -3,15 +3,18 @@
    are never cached and are always fetched from the network. */
 (function () {
   'use strict';
-  var CACHE = 'mdm1-office-pwa-20261128pwa22';
+  var VERSION = '20261128pwa23';
+  var CACHE = 'mdm1-office-pwa-' + VERSION;
+  /* Versioned URLs match index.html, so a deploy can never serve a cached old
+     fragment next to a fresh index (and vice versa). */
   var CORE = [
-    './', './index.html', './styles.css', './app.js', './office-config.js',
-    './office-auth.js', './standalone.js', './standalone-core.part.js',
-    './standalone-model.part.js', './standalone-domain.part.js',
-    './standalone-api.part.js', './standalone-ui.part.js',
-    './pwa.js', './manifest.webmanifest',
-    './data.json', './app-logo.webp', './icon-192.webp', './icon-512.webp',
-    './apple-touch-icon.png'
+    './?v=' + VERSION, './index.html?v=' + VERSION, './styles.css?v=' + VERSION, './app.js?v=' + VERSION, './office-config.js?v=' + VERSION,
+    './office-auth.js?v=' + VERSION, './standalone.js?v=' + VERSION, './standalone-core.part.js?v=' + VERSION,
+    './standalone-model.part.js?v=' + VERSION, './standalone-domain.part.js?v=' + VERSION,
+    './standalone-api.part.js?v=' + VERSION, './standalone-ui.part.js?v=' + VERSION,
+    './pwa.js?v=' + VERSION, './manifest.webmanifest?v=' + VERSION,
+    './data.json?v=' + VERSION, './app-logo.webp?v=' + VERSION, './icon-192.webp?v=' + VERSION, './icon-512.webp?v=' + VERSION,
+    './office-background.webp?v=' + VERSION, './apple-touch-icon.png?v=' + VERSION
   ];
   var STATIC = /\.(?:css|js|json|webmanifest|png|webp|jfif|jpe?g|svg|html)$/i;
 
@@ -44,15 +47,19 @@
     if (url.pathname.indexOf('/api/') !== -1) return; // Dynamic state, tokens and secrets.
 
     if (req.mode === 'navigate') {
+      /* Keep the requested path (e.g. /office/portal.html) instead of rewriting
+         every navigation to index.html. */
       event.respondWith(
         fetch(req).then(function (res) {
           if (res && res.status === 200) {
             var copy = res.clone();
-            caches.open(CACHE).then(function (cache) { cache.put('./index.html', copy); });
+            caches.open(CACHE).then(function (cache) { cache.put(req, copy); });
           }
           return res;
         }).catch(function () {
-          return caches.match('./index.html').then(function (hit) { return hit || Response.error(); });
+          return caches.match(req).then(function (hit) {
+            return hit || caches.match('./index.html?v=' + VERSION).then(function (fallback) { return fallback || Response.error(); });
+          });
         })
       );
       return;

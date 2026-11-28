@@ -2,6 +2,118 @@
     return new Response(JSON.stringify(data), { status: status || 200, headers: { 'content-type': 'application/json; charset=utf-8' } });
   }
 
+  /* ── task state machine: queued → working → done / needs_review / failed ──
+     A task may only become `done` after a real result (live model output, an
+     explicit CEO decision or a completed durable queue job). No timer pretends
+     that unfinished model work succeeded. */
+  var taskRunnerBusy = false;
+  var SCHEDULE_HANDLERS = {
+    'daily-morning-brief': function () { return runDailyBrief(); },
+    'weekly-saas-research': function () { return runWeeklyResearch(); },
+    'weekly-trainer-kpi': function () { return runWeeklyKpi(); },
+    'daily-hr-workload': function () { hrWorkloadCheck(); saveState(); return Promise.resolve(); }
+  };
+
+  function findTask(id) {
+    return (state.tasks || []).find(function (t) { return t.id === id; }) || null;
+  }
+  function completeTask(id, status, result, meta) {
+    var task = findTask(id);
+    if (!task) return null;
+    var allowed = ['done', 'needs_review', 'failed'];
+    if (allowed.indexOf(status) === -1) status = 'done';
+    if (['done', 'needs_review', 'failed'].indexOf(task.status) !== -1 && status !== 'failed') return task;
+    task.status = status;
+    task.completedAt = nowIso();
+    task.result = String(result || '').slice(0, 2000);
+    task.meta = meta || task.meta || null;
+    var led = task.ledgerId && typeof findLedgerEntry === 'function' ? findLedgerEntry(task.ledgerId) : null;
+    if (led) {
+      (led.items || []).forEach(function (x) { if (x.status === 'working') { x.status = status === 'done' ? 'executed' : status; x.result = task.result; } });
+      led.updatedAt = nowIso();
+    }
+    var ag = getAgent(task.agentId);
+    recomputeStatus(task.agentId);
+    if (status === 'done' && ag) {
+      awardPoints(ag.id, 5, 'أكمل مهمة: ' + String(task.title).slice(0, 40));
+      state.liveBubbles[ag.id] = '✅ أنجزت: ' + String(task.title).slice(0, 30);
+    } else if (ag) {
+      state.liveBubbles[ag.id] = status === 'failed' ? '⚠️ تعذّرت مهمة: ' + String(task.title).slice(0, 26) : '⏳ مهمة تحت المراجعة: ' + String(task.title).slice(0, 26);
+    }
+    logAudit('task_' + status, ag ? ag.id : task.agentId, String(task.title).slice(0, 80) + ' — ' + String(result || '').slice(0, 120));
+    saveState();
+    return task;
+  }
+  function executeTaskLocally(task) {
+    if (!task || ['done', 'needs_review', 'failed'].indexOf(task.status) !== -1) return Promise.resolve(null);
+    var ag = getAgent(task.agentId);
+    task.status = 'working'; task.startedAt = nowIso(); saveState();
+    var prompt = 'نفّذ المهمة المسندة إليك وأخرج نتيجة قابلة للمراجعة.\n\nالعنوان: ' + task.title + '\nالتفاصيل: ' + (task.description || 'لا توجد تفاصيل إضافية.');
+    return aiGenerate({ agentId: task.agentId, messages: [{ role: 'user', text: prompt }] }).then(function (r) {
+      if (r.mode !== 'live') {
+        return completeTask(task.id, 'needs_review', 'رد غير حي — لم يُعتبر منجزاً. ' + String(r.warning || ''), { provider: r.provider, mode: r.mode });
+      }
+      var filename = 'task-' + task.id + '.md';
+      writeExport(filename, '# ' + task.title + '\n\n' + r.text + '\n');
+      state.teamChat.push({ id: uuid(), senderId: task.agentId, senderName: ag ? ag.name : task.agentId, senderAvatar: ag ? ag.avatar : '🤖', role: 'assistant', text: r.text, timestamp: nowIso() });
+      return completeTask(task.id, 'done', '✅ نتيجة حية من ' + r.provider + ' / ' + r.model + '\n' + String(r.text).slice(0, 700), { provider: r.provider, model: r.model, export: filename });
+    }).catch(function (e) {
+      return completeTask(task.id, 'failed', e.message || 'تعذّر تنفيذ المهمة.');
+    });
+  }
+  function startTaskRunner() {
+    if (taskRunnerBusy || state.emergencyMode) return;
+    taskRunnerBusy = true;
+    window.setTimeout(function pump() {
+      var next = (state.tasks || []).find(function (t) { return t.status === 'queued'; });
+      if (!next) { taskRunnerBusy = false; return; }
+      executeTaskLocally(next).then(function () { window.setTimeout(pump, 250); }, function () { window.setTimeout(pump, 1000); });
+    }, 200);
+  }
+  function scheduleStamp(s, d) {
+    var day = String(d.getDate()).padStart(2, '0');
+    var month = String(d.getMonth() + 1).padStart(2, '0');
+    return s.frequency === 'daily' ? d.getFullYear() + '-' + month + '-' + day : d.getFullYear() + '-' + month + '-W' + Math.floor(d.getDate() / 7);
+  }
+  function runDueSchedules() {
+    if (state.emergencyMode) return Promise.resolve({ skipped: true, reason: 'emergency' });
+    var d = new Date(), hour = d.getHours(), ran = [];
+    (state.schedules || []).forEach(function (s) {
+      if (!s.enabled || hour < num(s.targetHour, 0)) return;
+      if (s.frequency === 'weekly' && d.getDay() !== num(s.targetDay, 0)) return;
+      if (s.lastRunStamp === scheduleStamp(s, d)) return;
+      var h = SCHEDULE_HANDLERS[s.id];
+      if (!h) return;
+      s.lastRunStamp = scheduleStamp(s, d);
+      s.lastRunAt = nowIso();
+      s.lastStatus = 'جارٍ التشغيل';
+      ran.push(h().then(function () {
+        s.lastStatus = 'تم التشغيل';
+      }).catch(function (e) {
+        s.lastStatus = 'فشل: ' + String(e.message || e).slice(0, 60);
+      }));
+    });
+    if (ran.length) saveState();
+    return Promise.all(ran).then(function () { if (ran.length) saveState(); return { ran: ran.length }; });
+  }
+  function processDurableQueue() {
+    if (!syncConfigured()) return Promise.resolve({ skipped: true });
+    return queueList().then(function (j) {
+      var rows = (j && j.tasks) || [];
+      var jobs = [];
+      rows.forEach(function (row) {
+        var p = row && row.payload;
+        if (!p || p.action !== 'mark_done' || !p.taskId || row.status !== 'done') return;
+        var t = findTask(p.taskId);
+        if (t && ['queued', 'working'].indexOf(t.status) !== -1) {
+          jobs.push(Promise.resolve(completeTask(t.id, 'done', '✅ أُنجز بواسطة طابور المهام الدائم (GitHub Actions).', { queueId: row.id })));
+        }
+        jobs.push(queueComplete(row.id, { ok: true, syncedToOffice: true }).catch(function () { return null; }));
+      });
+      return Promise.all(jobs).then(function () { return { processed: jobs.length }; });
+    }).catch(function () { return { processed: 0 }; });
+  }
+
   function handleApi(method, path, body) {
     var b = body || {};
     var m;
@@ -12,6 +124,13 @@
         if (params.has('q')) b.q = params.get('q');
       } catch (e) { /* ignore malformed query */ }
       path = path.slice(0, qi);
+    }
+
+    /* Emergency mode is a real execution freeze, not a cosmetic banner.
+       Read-only requests and incident/snapshot recovery stay available. */
+    if (state.emergencyMode && method !== 'GET' &&
+        !/^\/api\/(incident|snapshots|auth|sync)\//.test(path)) {
+      return Promise.resolve(jsonResponse({ error: '🚨 وضع الطوارئ نشط — تنفيذ العمليات متوقف مؤقتاً. استعد التشغيل من لوحة إدارة الأزمات.' }, 423));
     }
 
     if (method === 'GET' && path === '/api/bootstrap') {
@@ -342,7 +461,7 @@
     if (method === 'POST' && path === '/api/tasks') {
       var ag = getAgent(b.agentId);
       if (!ag || !b.title) return Promise.resolve(jsonResponse({ error: 'agentId and title required' }, 400));
-      var task = { id: 'tsk-' + uuid().slice(0, 8), agentId: ag.id, title: String(b.title).trim(), description: String(b.description || '').trim(), status: 'working', createdAt: nowIso() };
+      var task = { id: 'tsk-' + uuid().slice(0, 8), agentId: ag.id, title: String(b.title).trim(), description: String(b.description || '').trim(), status: 'queued', createdAt: nowIso() };
       state.tasks.unshift(task);
       state.liveBubbles[ag.id] = 'أعمل على: ' + task.title.slice(0, 30);
       if (b.requiresApproval) addApproval({ agentId: ag.id, agentName: ag.name, title: 'اعتماد مهمة: ' + task.title, details: task.description || 'مهمة مسندة.', risk: 'medium', actionType: 'task_execution', payload: { taskId: task.id } });
@@ -353,7 +472,23 @@
       /* Durable queue: GitHub Actions keeps deterministic work moving while the
          page is closed. Model work still requires the user's own device key. */
       queueAdd({ taskId: task.id, agentId: ag.id, title: task.title, action: 'mark_done' }, 'task', null).catch(function () { return null; });
+      startTaskRunner();
       return Promise.resolve(jsonResponse({ task: task }, 201));
+    }
+
+    m = path.match(/^\/api\/tasks\/([^/]+)\/complete$/);
+    if (method === 'POST' && m) {
+      var wantedStatus = ['done', 'failed', 'needs_review'].indexOf(b.status) >= 0 ? b.status : 'done';
+      var finished = completeTask(m[1], wantedStatus, b.result || (wantedStatus === 'done' ? 'تم الإنجاز بواسطة المدير.' : ''), b.meta || null);
+      return Promise.resolve(finished ? jsonResponse({ task: finished }) : jsonResponse({ error: 'Task not found' }, 404));
+    }
+
+    if (method === 'POST' && path === '/api/scheduler/run-due') {
+      return runDueSchedules().then(function (r) { return jsonResponse(r); });
+    }
+
+    if (method === 'POST' && path === '/api/queue/process') {
+      return processDurableQueue().then(function (r) { return jsonResponse(r); });
     }
 
     m = path.match(/^\/api\/approvals\/([^/]+)\/decide$/);
@@ -370,20 +505,25 @@
       if (b.decision === 'approved') {
         var execResult = '✅ تم الاعتماد والتنفيذ في المكتب السحابي.';
         if (item.actionType === 'hire_agent' && item.payload) {
-          var newId = item.payload.id || ('agent-' + uuid().slice(0, 6));
+          var newId = safeAgentId(item.payload.id);
+          var safeName = tagValue(item.payload.name, 'موظف جديد', 60);
+          var safeDept = tagValue(item.payload.department, 'فريق جديد', 80);
+          var safeAvatar = tagValue(item.payload.avatar, '🤖', 8);
+          var safeRole = tagValue(item.payload.roleDescription, 'موظف ذكاء اصطناعي متخصص.', 2000);
           if (!getAgent(newId)) {
             state.customAgents.push({
-              id: newId, name: item.payload.name || 'موظف جديد', englishName: newId, avatar: item.payload.avatar || '🤖',
-              department: item.payload.department || 'فريق جديد', zone: 'engineering-audit', reportsTo: 'hr-manager', status: 'available',
+              id: newId, name: safeName, englishName: newId, avatar: safeAvatar,
+              department: safeDept, zone: 'engineering-audit', reportsTo: 'hr-manager', status: 'available',
               requiresApprovalFor: ['external_action'], allowedTools: ['general_analysis'], externalAccess: [], rankTitle: 'موظف تنفيذي', level: 1,
-              roleMd: item.payload.roleDescription || 'موظف ذكاء اصطناعي متخصص.', skillsMd: '- تنفيذ المهام المسندة'
+              roleMd: safeRole, skillsMd: '- تنفيذ المهام المسندة'
             });
-            execResult = '✅ تم تعيين **' + (item.payload.name || newId) + '** وإضافته إلى الهيكل التنظيمي.';
+            execResult = '✅ تم تعيين **' + safeName + '** وإضافته إلى الهيكل التنظيمي.';
           }
         } else if (item.actionType === 'update_skills' && item.payload) {
-          var target = getAgent(item.payload.targetAgentId);
-          if (target) target.skillsMd = String(target.skillsMd || '') + '\n\n## تحديثات معتمدة\n' + item.payload.skillsAddition;
-          execResult = '✅ تم تحديث مهارات ' + (target ? target.name : item.payload.targetAgentId) + '.';
+          var target = getAgent(safeAgentId(item.payload.targetAgentId));
+          var safeSkills = tagValue(item.payload.skillsAddition, '', 2000);
+          if (target) target.skillsMd = String(target.skillsMd || '') + '\n\n## تحديثات معتمدة\n' + safeSkills;
+          execResult = '✅ تم تحديث مهارات ' + (target ? target.name : safeAgentId(item.payload.targetAgentId)) + '.';
         } else if (item.actionType === 'publish_marketing') {
           execResult = '✅ تم اعتماد المحتوى التسويقي — أرسله إلى قناة النشر أو تيليجرام.';
         } else if (item.actionType === 'project_decision') {
@@ -397,9 +537,32 @@
         item.executionResult = '❌ تم رفض الطلب من قبل المدير التنفيذي.';
         state.liveBubbles[item.agentId] = 'تم رفض الطلب';
       }
+      /* Provable decision log + red-team guard: every CEO decision records the
+         QA evidence that existed at the moment of approval and the exact
+         override reason, so high-risk actions can be audited later. */
+      var guard = {
+        id: 'dec-' + uuid().slice(0, 8), approvalId: item.id, title: item.title,
+        decision: b.decision, risk: item.risk, actionType: item.actionType,
+        agentId: item.agentId, at: item.resolvedAt,
+        override: b.override === true,
+        reason: tagValue(b.reason, b.override === true ? 'تجاوز صريح من المدير التنفيذي' : '', 300),
+        qualityStatus: item.quality ? item.quality.status : 'no-qa-report',
+        qualityVerdicts: item.quality && item.quality.verdicts ? item.quality.verdicts : [],
+        qualityModels: item.quality && item.quality.models ? item.quality.models : [],
+        redTeam: item.risk === 'high'
+          ? (item.quality && ['flagged', 'corrected'].indexOf(item.quality.status) !== -1
+            ? 'RED_FLAG — تجاوز CEO بعد تحذير حلقة الجودة'
+            : 'CHALLENGED — إجراء عالي الخطورة روجع قبل التنفيذ')
+          : (item.quality && item.quality.status === 'flagged'
+            ? 'CHALLENGED — مقترح مُعلَّم من الجودة'
+            : 'NOT_REQUIRED')
+      };
+      if (!Array.isArray(state.decisionLog)) state.decisionLog = [];
+      state.decisionLog.unshift(guard);
+      state.decisionLog = state.decisionLog.slice(0, 100);
       recomputeStatus(item.agentId);
       state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'نظام القرارات (المكتب)', senderAvatar: b.decision === 'approved' ? '✅' : '❌', role: 'assistant', text: 'قرار المدير حول "' + item.title + '": ' + item.executionResult, timestamp: nowIso() });
-      logAudit('approval_' + b.decision, 'ui', b.decision.toUpperCase() + ': ' + item.title + (b.override === true ? ' (override=true)' : ''), { id: item.id, risk: item.risk, override: b.override === true });
+      logAudit('approval_' + b.decision, 'ui', b.decision.toUpperCase() + ': ' + item.title + (b.override === true ? ' (override=true)' : '') + ' — redTeam: ' + guard.redTeam, { id: item.id, decisionId: guard.id, risk: item.risk, override: b.override === true, qualityStatus: guard.qualityStatus });
       saveState();
       return Promise.resolve(jsonResponse({ approval: item }));
     }
@@ -459,13 +622,7 @@
     }
 
     if (method === 'POST' && path === '/api/schedules/run-now') {
-      var handlers = {
-        'daily-morning-brief': runDailyBrief,
-        'weekly-saas-research': runWeeklyResearch,
-        'weekly-trainer-kpi': runWeeklyKpi,
-        'daily-hr-workload': function () { hrWorkloadCheck(); saveState(); return Promise.resolve(); }
-      };
-      var h = handlers[b.scheduleId];
+      var h = SCHEDULE_HANDLERS[b.scheduleId];
       if (!h) return Promise.resolve(jsonResponse({ error: 'Unknown schedule' }, 404));
       return h().then(function () {
         var sc = state.schedules.find(function (s) { return s.id === b.scheduleId; });
@@ -477,7 +634,7 @@
 
     if (method === 'POST' && path === '/api/ledger/add') {
       if (!b.type || !b.title || b.amountUsd == null) return Promise.resolve(jsonResponse({ error: 'type, title, amountUsd required' }, 400));
-      var entry = { id: 'fin-' + uuid().slice(0, 8), type: b.type, title: b.title, amountUsd: num(b.amountUsd, 0), date: nowIso().slice(0, 10), notes: b.notes || '' };
+      var entry = { id: 'fin-' + uuid().slice(0, 8), type: b.type === 'expense' ? 'expense' : 'revenue', title: tagValue(b.title, 'قيد مالي', 120), project: tagValue(b.project, '', 80), amountUsd: num(b.amountUsd, 0), date: nowIso().slice(0, 10), notes: tagValue(b.notes, '', 300) };
       state.financialLedger.push(entry);
       logAudit('ledger_entry', 'ceo', b.type + ': ' + b.title + ' ($' + b.amountUsd + ')');
       saveState();
@@ -547,16 +704,16 @@
 
     if (method === 'POST' && path === '/api/incident/trigger') {
       state.emergencyMode = true;
-      state.schedules.forEach(function (s) { s.enabled = false; });
+      state.schedules.forEach(function (s) { if (s.prevEnabled === undefined) s.prevEnabled = s.enabled; s.enabled = false; s.lastStatus = 'frozen'; });
       state.webhooks.forEach(function (w) { w.prevStatus = w.status; w.status = 'frozen'; });
       var frozen = 0;
       state.approvals.forEach(function (a) {
         if (a.status === 'pending' && (a.actionType === 'publish_marketing' || a.actionType === 'launch_paid_campaign')) {
-          a.status = 'rejected'; a.executionResult = '🚨 تم التجميد الفوري بواسطة زر الطوارئ (Kill Switch).'; frozen++;
+          a.prevStatus = 'pending'; a.status = 'rejected'; a.executionResult = '🚨 تم التجميد الفوري بواسطة زر الطوارئ (Kill Switch).'; frozen++;
         }
       });
       var sec = getAgent('security-officer');
-      return aiGenerate({ agentId: 'security-officer', extraContext: 'حالة طوارئ فعلية: اكتب تقرير استجابة للحادثة وخطوات الفحص الفورية في 4 نقاط.', messages: [{ role: 'user', text: 'تم تفعيل زر الطوارئ. السبب: ' + (b.reason || 'إجراء وقائي') }] }).then(function (r) {
+      return aiGenerate({ agentId: 'security-officer', allowDuringEmergency: true, extraContext: 'حالة طوارئ فعلية: اكتب تقرير استجابة للحادثة وخطوات الفحص الفورية في 4 نقاط.', messages: [{ role: 'user', text: 'تم تفعيل زر الطوارئ. السبب: ' + (b.reason || 'إجراء وقائي') }] }).then(function (r) {
         if (sec) { recordUsage(sec.id, r.usage); state.liveBubbles[sec.id] = '🚨 وضع الطوارئ نشط — جاري التحقيق!'; }
         var inc = { id: 'inc-' + uuid().slice(0, 8), reason: b.reason || 'تفعيل يدوي لزر الطوارئ', frozenCampaigns: frozen, securityReport: r.text, status: 'active', triggeredAt: nowIso(), recoveredAt: null };
         state.incidents.unshift(inc);
@@ -570,10 +727,21 @@
 
     if (method === 'POST' && path === '/api/incident/recover') {
       state.emergencyMode = false;
-      state.webhooks.forEach(function (w) { if (w.status === 'frozen') w.status = w.prevStatus || 'ready'; });
+      state.webhooks.forEach(function (w) { if (w.status === 'frozen') w.status = w.prevStatus || 'ready'; delete w.prevStatus; });
+      state.schedules.forEach(function (s) {
+        if (s.lastStatus === 'frozen') { s.enabled = s.prevEnabled !== false; s.lastStatus = 'restored'; }
+        delete s.prevEnabled;
+      });
+      var restoredApprovals = 0;
+      state.approvals.forEach(function (a) {
+        if (a.prevStatus === 'pending' && a.status === 'rejected') {
+          a.status = 'pending'; a.executionResult = '✅ أُعيدت بعد إنهاء وضع الطوارئ — بانتظار موافقتك الصريحة.'; restoredApprovals++;
+        }
+        delete a.prevStatus;
+      });
       state.incidents.forEach(function (i) { if (i.status === 'active') { i.status = 'resolved'; i.recoveredAt = nowIso(); } });
       state.liveBubbles['security-officer'] = '✅ تم إنهاء وضع الطوارئ واستئناف الأمان';
-      logAudit('incident_recovered', 'ceo', 'Emergency mode OFF — normal operations resumed');
+      logAudit('incident_recovered', 'ceo', 'Emergency mode OFF — restored webhooks, ' + restoredApprovals + ' approvals and prior schedule states');
       saveState();
       return Promise.resolve(jsonResponse({ ok: true }));
     }
@@ -604,7 +772,7 @@
       (pb.steps || []).forEach(function (step) {
         var ag2 = getAgent(step.agentId);
         if (!ag2) return;
-        state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: ag2.id, title: prefix + step.taskTitle, description: step.taskDesc || '', status: 'working', createdAt: nowIso() });
+        state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: ag2.id, title: prefix + step.taskTitle, description: step.taskDesc || '', status: 'queued', createdAt: nowIso(), playbookId: pb.id });
         state.liveBubbles[ag2.id] = 'SOP: ' + String(step.taskTitle).slice(0, 28);
         recomputeStatus(ag2.id);
         awardPoints(ag2.id, 10, 'تنفيذ قالب: ' + pb.title);
@@ -616,6 +784,7 @@
       state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (Playbooks 📚)', senderAvatar: pb.icon || '📚', role: 'assistant', text: 'تم تشغيل قالب الإجراءات القياسية "' + pb.title + '" ' + prefix + 'وتوزيع ' + (pb.steps || []).length + ' مهام ومذكرات مترابطة بين الأقسام!', timestamp: nowIso() });
       logAudit('playbook_executed', 'ceo', 'Ran playbook ' + pb.id + ' (' + (pb.steps || []).length + ' steps)');
       saveState();
+      startTaskRunner();
       return Promise.resolve(jsonResponse({ ok: true, playbook: pb }));
     }
 

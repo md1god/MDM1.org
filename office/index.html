@@ -14,10 +14,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa22" />
-  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa22" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa22" />
-  <link rel="stylesheet" href="styles.css?v=20261128pwa22" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa23" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa23" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa23" />
+  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa23" />
+  <link rel="stylesheet" href="styles.css?v=20261128pwa23" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +26,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <img class="brand-logo" src="app-logo.webp?v=20261128pwa22" alt="MD1&#117;sd Company" />
+        <img class="brand-logo" src="app-logo.webp?v=20261128pwa23" alt="MD1&#117;sd Company" />
         <div>
           <h1>MD1&#117;sd Company</h1>
           <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -97,6 +98,7 @@
             <div><h2>MD1&#117;sd Company</h2><p>غرف حقيقية، فقاعات حوار حية، ذاكرة RAG، ورتب الموظفين</p></div>
             <div class="office-filter"><input id="staffSearchInput" type="search" placeholder="🔎 بحث بالاسم أو القسم أو الرقم" aria-label="بحث في الموظفين" autocomplete="off" /><div class="legend"><span><i class="dot available"></i> متاح</span><span><i class="dot working"></i> يعمل</span><span><i class="dot waiting_approval"></i> ينتظر</span></div></div>
           </div>
+          <div id="todayCommandCenter" class="today-command-center" aria-label="لوحة اليوم"></div>
           <div class="office-stage">
             <div id="meetingRoomBox" class="meeting-room hidden"><div class="meeting-room-header"><span>🏛️ غرفة الاجتماعات الزجاجية — اجتماع جارٍ</span><button class="btn btn-secondary" onclick="endMeeting()">إنهاء الاجتماع</button></div><div id="meetingAvatars" class="meeting-avatars"></div></div>
             <div id="officeRooms" class="office-rooms"></div>
@@ -205,8 +207,10 @@
           <div id="leaderboardGrid" class="tasks-grid" style="margin-bottom:16px;"></div>
           <h3 style="font-size:15px;margin-bottom:10px;">🧪 نتائج اختبار النماذج لكل موظف</h3>
           <div id="agentBenchmarks" class="tasks-grid" style="margin-bottom:16px;"></div>
-          <h3 style="font-size:15px;margin-bottom:10px;">📈 تقارير تقييم المدربة</h3>
+          <h3 style="font-size:15px;margin-bottom:10px;">📈 تقارير تقييم المدربة (مبنية على مهام منجزة وموافقات فعلية)</h3>
           <div id="kpiList" class="approvals-list"></div>
+          <h3 style="font-size:15px;margin:16px 0 10px;">🧾 سجل القرارات الموثّق (Red-Team + Evidence)</h3>
+          <div id="decisionLogList" class="approvals-list"></div>
         </section>
 
         <!-- INTERNAL MEMOS -->
@@ -224,6 +228,7 @@
           </div>
           <div id="pnlSummary" class="pnl-summary"></div>
           <div id="costForecast" class="card-box" style="margin-top:14px;"></div>
+          <div id="projectProfitability" class="card-box" style="margin-top:14px;"></div>
           <canvas id="pnlChart" width="700" height="220" style="margin-top:16px;"></canvas>
           <div id="ledgerList" class="approvals-list" style="margin-top:16px;"></div>
         </section>
@@ -305,6 +310,7 @@
               <div><label>تكلفة API للعميل ($)</label><input type="number" id="simApi" value="5" step="0.01" required /></div>
               <div><label>نسبة التحويل المتوقعة (%)</label><input type="number" id="simConv" value="3" step="0.1" required /></div>
               <div><label>تكلفة النقرة CPC ($)</label><input type="number" id="simCpc" value="0.7" step="0.05" required /></div>
+              <div><label>احتمالات (متحفظ/واقعي/متفائل)</label><input type="text" id="simProbabilities" value="25,50,25" /></div>
               <div style="display:flex;align-items:flex-end;"><button type="submit" class="btn btn-primary" id="runSimBtn" style="width:100%">🔮 تشغيل المحاكاة الآن</button></div>
             </form>
           </div>
@@ -365,7 +371,7 @@
 
   <div id="memoModal" class="modal hidden"><div class="modal-card"><h3>📨 إرسال مذكرة داخلية</h3><form id="memoForm"><label>من</label><select id="memoFromSelect"></select><label>إلى</label><select id="memoToSelect"></select><label>الموضوع</label><input type="text" id="memoSubjectInput" required /><label>المحتوى</label><textarea id="memoBodyInput" rows="3"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('memoModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">إرسال المذكرة</button></div></form></div></div>
 
-  <div id="ledgerModal" class="modal hidden"><div class="modal-card"><h3>📊 إضافة قيد مالي</h3><form id="ledgerForm"><label>النوع</label><select id="ledgerTypeSelect"><option value="revenue">إيراد (Revenue)</option><option value="expense">مصروف (Expense)</option></select><label>الوصف</label><input type="text" id="ledgerTitleInput" required /><label>المبلغ بالدولار</label><input type="number" id="ledgerAmountInput" step="0.01" required /><label>ملاحظات</label><input type="text" id="ledgerNotesInput" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('ledgerModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">إضافة</button></div></form></div></div>
+  <div id="ledgerModal" class="modal hidden"><div class="modal-card"><h3>📊 إضافة قيد مالي</h3><form id="ledgerForm"><label>النوع</label><select id="ledgerTypeSelect"><option value="revenue">إيراد (Revenue)</option><option value="expense">مصروف (Expense)</option></select><label>الوصف</label><input type="text" id="ledgerTitleInput" required /><label>المبلغ بالدولار</label><input type="number" id="ledgerAmountInput" step="0.01" required /><label>المشروع / العميل (اختياري لحساب الربحية لكل مشروع)</label><input type="text" id="ledgerProjectInput" placeholder="مثال: باقة الأتمتة للشركات" /><label>ملاحظات</label><input type="text" id="ledgerNotesInput" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('ledgerModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">إضافة</button></div></form></div></div>
 
   <div id="customerModal" class="modal hidden"><div class="modal-card"><h3>💼 إضافة عميل جديد (CRM)</h3><form id="customerForm"><label>اسم العميل / الشركة</label><input type="text" id="custNameInput" required /><label>اسم جهة الاتصال</label><input type="text" id="custContactInput" /><label>البريد الإلكتروني</label><input type="email" id="custEmailInput" /><label>اسم المشروع</label><input type="text" id="custProjectInput" required /><label>قيمة العقد ($)</label><input type="number" id="custValueInput" step="0.01" value="200" /><label>المرحلة</label><select id="custStageSelect"><option value="عميل محتمل">عميل محتمل</option><option value="قيد التفاوض">قيد التفاوض</option><option value="نشط">نشط</option></select><label>ملاحظات</label><textarea id="custNotesInput" rows="2"></textarea><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('customerModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">حفظ العميل</button></div></form></div></div>
 
@@ -383,17 +389,17 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261128pwa22"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261128pwa23"></script>
   <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261128pwa22"></script>
-  <script src="office-auth.js?v=20261128pwa22"></script>
-  <script src="pwa.js?v=20261128pwa22"></script>
-  <script src="standalone.js?v=20261128pwa22"></script>
+  <script src="office-config.js?v=20261128pwa23"></script>
+  <script src="office-auth.js?v=20261128pwa23"></script>
+  <script src="pwa.js?v=20261128pwa23"></script>
+  <script src="standalone.js?v=20261128pwa23"></script>
   <script>
     // Start the UI only after company data is loaded and the private gate is passed.
     (window.MDM1OfficeReady || (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve()).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261128pwa22';
+      s.src = 'app.js?v=20261128pwa23';
       document.body.appendChild(s);
     }).catch(function (error) {
       console.error('MDM1 Office could not start:', error);

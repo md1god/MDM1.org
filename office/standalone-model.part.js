@@ -182,11 +182,30 @@
     return lines.join('\n\n');
   }
 
-  function estimateUsage(systemPrompt, messages, text) {
+  function modelPrice(meta) {
+    var p = (meta && (meta.pricing || meta.cost)) || {};
+    return {
+      input: num(p.prompt != null ? p.prompt : (p.input != null ? p.input : (p.inputCostPerToken != null ? p.inputCostPerToken : p.inputCost)), 0),
+      output: num(p.completion != null ? p.completion : (p.output != null ? p.output : (p.outputCostPerToken != null ? p.outputCostPerToken : p.outputCost)), 0)
+    };
+  }
+  function modelById(listing, id) {
+    var models = (listing && listing.models) || [];
+    for (var i = 0; i < models.length; i++) if (models[i] && models[i].id === id) return models[i];
+    return null;
+  }
+  function estimateUsage(systemPrompt, messages, text, meta) {
     var inputChars = (systemPrompt || '').length + (messages || []).reduce(function (a, m) { return a + String(m.text || '').length; }, 0);
     var inputTokens = Math.max(1, Math.ceil(inputChars / 4));
     var outputTokens = Math.max(1, Math.ceil(String(text || '').length / 4));
-    return { inputTokens: inputTokens, outputTokens: outputTokens, totalTokens: inputTokens + outputTokens, costUsd: 0 };
+    var price = modelPrice(meta);
+    var costUsd = Math.round(((inputTokens / 1000) * price.input + (outputTokens / 1000) * price.output) * 1000000) / 1000000;
+    return { inputTokens: inputTokens, outputTokens: outputTokens, totalTokens: inputTokens + outputTokens, costUsd: costUsd };
+  }
+  function poolFor(listing, forcedModel) {
+    if (forcedModel) return [forcedModel];
+    if (!settings.freeOnly) return (listing.models || []).map(function (m) { return m.id; });
+    return (listing.free || []).map(String);
   }
 
   function demoReply(agent, userMessage, warning) {
@@ -240,27 +259,28 @@
               errors.push(id + ': ' + msg);
               if (r.status === 429 || /rate limit|free usage limit/i.test(msg)) {
                 markRateLimit(provider, id, retryMsFrom(r, j), msg);
-                throw new Error('RATE_LIMIT');
+              } else if (r.status === 402 || /insufficient balance|insufficient_quota/i.test(msg)) {
+                markModelError(provider, id, msg);
+              } else {
+                markModelError(provider, id, msg);
               }
-              if (r.status === 402 || /insufficient balance|insufficient_quota/i.test(msg)) throw new Error('NO_BALANCE');
-              markModelError(provider, id, msg);
+              /* A limited/paid-out model must not abort the whole chain. */
               return attempt(i + 1);
             }
             var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
             if (!text) { errors.push(id + ': رد فارغ'); markModelError(provider, id, 'رد فارغ'); return attempt(i + 1); }
-            var out = { text: text, mode: 'live', provider: provider, model: id, usage: estimateUsage(systemPrompt, messages, text) };
+            var out = { text: text, mode: 'live', provider: provider, model: id, usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id)) };
             markUsage(provider, id, out.usage);
             return out;
           });
         }).catch(function (e) {
-          if (e.message === 'RATE_LIMIT' || e.message === 'NO_BALANCE') throw e;
           errors.push(id + ': ' + e.message);
           markModelError(provider, id, e.message);
           return attempt(i + 1);
         });
       }
       return attempt(0).catch(function (e) {
-        return fallback(errors.join('\n') || (e.message === 'NO_BALANCE' ? 'الرصيد غير كافٍ — استخدم النماذج المجانية فقط.' : e.message));
+        return fallback(errors.join('\n') || e.message);
       });
     }
 
@@ -302,7 +322,7 @@
             var out = {
               text: text, mode: 'live', provider: 'cloud', model: id,
               upstreamProvider: j.provider || '',
-              usage: estimateUsage(systemPrompt, messages, text)
+              usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id))
             };
             markUsage('cloud', id, out.usage);
             return out;
@@ -329,7 +349,8 @@
     if (mode === 'local') {
       return listLocalModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error);
-        var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
+        var pool = poolFor(listing, forcedModel);
+        if (!pool.length) return fallback('وضع المجاني فقط مفعّل ولا توجد نماذج مجانية متاحة — لم أستخدم نموذجاً مدفوعاً.');
         var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'local');
         var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-local').slice(0, 3);
         var errors = [];
@@ -346,21 +367,17 @@
               if (!r.ok) {
                 var msg = j.message || (j.error && j.error.message) || raw.slice(0, 200) || ('HTTP ' + r.status);
                 errors.push(id + ': ' + msg);
-                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) {
-                  markRateLimit('opencode-local', id, retryMsFrom(r, j), msg);
-                  throw new Error('RATE_LIMIT');
-                }
-                markModelError('opencode-local', id, msg);
+                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) markRateLimit('opencode-local', id, retryMsFrom(r, j), msg);
+                else markModelError('opencode-local', id, msg);
                 return attempt(i + 1);
               }
               var text = (j.data && j.data.text) || '';
               if (!text) { errors.push(id + ': رد فارغ'); markModelError('opencode-local', id, 'رد فارغ'); return attempt(i + 1); }
-              var out = { text: text, mode: 'live', provider: 'opencode-local', model: id, usage: estimateUsage(systemPrompt, messages, text) };
+              var out = { text: text, mode: 'live', provider: 'opencode-local', model: id, usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id)) };
               markUsage('opencode-local', id, out.usage);
               return out;
             });
           }).catch(function (e) {
-            if (e.message === 'RATE_LIMIT') throw e;
             errors.push(id + ': ' + e.message);
             markModelError('opencode-local', id, e.message);
             return attempt(i + 1);
@@ -375,7 +392,8 @@
     if (mode === 'zen') {
       return listZenModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error);
-        var pool = settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; });
+        var pool = poolFor(listing, forcedModel);
+        if (!pool.length) return fallback('وضع المجاني فقط مفعّل ولا توجد نماذج مجانية متاحة — لم أستخدم نموذجاً مدفوعاً.');
         var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'zen');
         var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-zen').slice(0, 3);
         var errors = [];
@@ -396,21 +414,17 @@
               if (!r.ok) {
                 var msg = (j.error && j.error.message) || j.message || raw.slice(0, 200) || ('HTTP ' + r.status);
                 errors.push(id + ': ' + msg);
-                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) {
-                  markRateLimit('opencode-zen', id, retryMsFrom(r, j), msg);
-                  throw new Error('RATE_LIMIT');
-                }
-                markModelError('opencode-zen', id, msg);
+                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) markRateLimit('opencode-zen', id, retryMsFrom(r, j), msg);
+                else markModelError('opencode-zen', id, msg);
                 return attempt(i + 1);
               }
               var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
               if (!text) { errors.push(id + ': رد فارغ'); markModelError('opencode-zen', id, 'رد فارغ'); return attempt(i + 1); }
-              var out = { text: text, mode: 'live', provider: 'opencode-zen', model: id, usage: estimateUsage(systemPrompt, messages, text) };
+              var out = { text: text, mode: 'live', provider: 'opencode-zen', model: id, usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id)) };
               markUsage('opencode-zen', id, out.usage);
               return out;
             });
           }).catch(function (e) {
-            if (e.message === 'RATE_LIMIT') throw e;
             errors.push(id + ': ' + e.message);
             markModelError('opencode-zen', id, e.message);
             return attempt(i + 1);
@@ -422,29 +436,46 @@
 
     if (mode === 'groq') {
       if (!secret('groqKey')) return Promise.resolve(fallback('أدخل مفتاح Groq.'));
+      var reservedGroq = false;
       return quotaReserve('groq', 1).then(function (q) {
         if (!q.allowed) return fallback('انتهت الحصة اليومية لمزود Groq على حسابك — جرّب مزوداً آخر أو غداً.');
+        reservedGroq = q.skipped !== true;
         return listGroqModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error);
         if (!listing.free.length) return fallback('لا توجد نماذج Groq مجانية متاحة لحسابك حالياً.');
-        var pool = forcedModel ? [forcedModel] : (settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; }));
+        var pool = poolFor(listing, forcedModel);
+        if (!pool.length) return fallback('وضع المجاني فقط مفعّل ولا توجد نماذج مجانية متاحة — لم أستخدم نموذجاً مدفوعاً.');
         return runOpenAiChain('groq', listing, settings.groqBase.replace(/\/$/, '') + '/chat/completions',
           { 'content-type': 'application/json', authorization: 'Bearer ' + secret('groqKey') }, pool);
         });
+      }).then(function (out) {
+        if (reservedGroq && out.mode !== 'live') quotaRelease('groq', 1);
+        return out;
+      }, function (e) {
+        if (reservedGroq) quotaRelease('groq', 1);
+        throw e;
       });
     }
 
     if (mode === 'openrouter') {
       if (!secret('openrouterKey')) return Promise.resolve(fallback('أدخل مفتاح OpenRouter.'));
+      var reservedOr = false;
       return quotaReserve('openrouter', 1).then(function (q) {
         if (!q.allowed) return fallback('انتهت الحصة اليومية لمزود OpenRouter على حسابك — جرّب مزوداً آخر أو غداً.');
+        reservedOr = q.skipped !== true;
         return listOpenRouterModels().then(function (listing) {
         if (!listing.connected) return fallback(listing.error);
-        var pool = forcedModel ? [forcedModel] : (settings.freeOnly && listing.free.length ? listing.free : listing.models.map(function (m) { return m.id; }));
-        if (!pool.length) return fallback('لا توجد نماذج مجانية على OpenRouter حالياً.');
+        var pool = poolFor(listing, forcedModel);
+        if (!pool.length) return fallback(settings.freeOnly ? 'وضع المجاني فقط مفعّل ولا توجد نماذج مجانية متاحة — لم أستخدم نموذجاً مدفوعاً.' : 'لا توجد نماذج متاحة على OpenRouter حالياً.');
         return runOpenAiChain('openrouter', listing, settings.openrouterBase.replace(/\/$/, '') + '/chat/completions',
           { 'content-type': 'application/json', authorization: 'Bearer ' + secret('openrouterKey'), 'HTTP-Referer': location.origin, 'X-Title': 'MDM1 AI Office' }, pool);
         });
+      }).then(function (out) {
+        if (reservedOr && out.mode !== 'live') quotaRelease('openrouter', 1);
+        return out;
+      }, function (e) {
+        if (reservedOr) quotaRelease('openrouter', 1);
+        throw e;
       });
     }
 
@@ -453,6 +484,13 @@
 
   /* Single instrumented entry point for every runtime call. */
   function aiGenerate(opts) {
+    if (typeof state !== 'undefined' && state.emergencyMode && !(opts && opts.allowDuringEmergency)) {
+      return Promise.resolve({
+        text: '🚨 وضع الطوارئ نشط — تم إيقاف التوليد والتنفيذ مؤقتاً. استعد التشغيل من لوحة إدارة الأزمات.',
+        mode: 'fallback', provider: currentMode(), model: 'emergency-hold',
+        warning: 'emergency_mode_active', usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, costUsd: 0 }
+      });
+    }
     return Promise.resolve().then(function () { return aiGenerateRaw(opts); }).then(function (r) {
       settings.lastProvider = r.provider || settings.lastProvider;
       saveSettings();

@@ -22,6 +22,9 @@ const VP = { 'hr-manager':{pitch:1.15,rate:1}, 'ai-trainer':{pitch:1.1,rate:1.05
 async function api(u,o={}){const r=await fetch(u,{headers:{'Content-Type':'application/json'},...o});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 const escAttr=esc;
+/* Safe inside a double-quoted HTML attribute whose value also contains a
+   single-quoted JavaScript string. HTML-escape first, then JS-escape. */
+function jsAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r|\n/g,' ')}
 const activeTab=()=>document.querySelector('.nav-item.active')?.dataset.tab||'office';
 
 async function bootstrap(){
@@ -52,10 +55,10 @@ function renderGlobal(){
 }
 
 const TAB_RENDERERS={
-  office:[renderOfficeRooms,renderTasks,renderWorkingTeam],
-  chat:[renderChatAgentsList,renderDirectChat,renderTeamChat,renderAssistantChat],
+  office:[renderToday,renderOfficeRooms,renderTasks,renderWorkingTeam],
+  chat:[renderChatAgentsList,renderDirectChat,renderTeamChat,renderAssistantChat,renderRequestLedger],
   approvals:[renderApprovals,renderHighRiskApprovals],
-  votes:[renderVotes],crm:[renderCRM],kpi:[renderKPI,renderAgentBenchmarks],memos:[renderMemos],
+  votes:[renderVotes],crm:[renderCRM],kpi:[renderKPI,renderAgentBenchmarks,renderDecisionLog],memos:[renderMemos],
   pnl:[renderPnL],scheduler:[renderSchedules],knowledge:[renderKnowledge],sandbox:[renderSandbox],
   org:[renderOrgChart],audit:[renderAuditCost],integrations:[renderIntegrations],simulator:[renderSimulations],
   playbooks:[renderPlaybooks],snapshots:[renderSnapshots],incident:[renderIncidents],assistant:[renderAssistantChat]
@@ -118,19 +121,51 @@ function renderOfficeRooms(){
 
 async function endMeeting(){await api('/api/meeting/end',{method:'POST'});await bootstrap()}
 
+const TASK_STATUS_LABEL={queued:'في الطابور',working:'قيد التنفيذ',done:'منجز',needs_review:'يحتاج مراجعة',failed:'فشل'};
+
+function renderToday(){
+  const el=document.getElementById('todayCommandCenter'); if(!el)return;
+  const st=D.state||{}, tasks=st.tasks||[], approvals=st.approvals||[], memos=st.internalMemos||[];
+  const pending=approvals.filter(a=>a.status==='pending').length;
+  const unread=memos.filter(m=>m.read!==true).length;
+  const queued=tasks.filter(t=>t.status==='queued').length;
+  const working=tasks.filter(t=>t.status==='working').length;
+  const done=tasks.filter(t=>t.status==='done').length;
+  const ledger=st.financialLedger||[], cost=Number((st.usageStats||{}).totalCostUsd||0);
+  const revenue=ledger.filter(e=>e.type==='revenue').reduce((s,e)=>s+Number(e.amountUsd||0),0);
+  const expense=ledger.filter(e=>e.type==='expense').reduce((s,e)=>s+Number(e.amountUsd||0),0);
+  const provider=(document.getElementById('providerBadge')?.textContent||'غير معروف').trim();
+  el.innerHTML=`<div class="today-card"><span>🗓️ اليوم</span><strong>${esc(new Date().toLocaleDateString('ar'))}</strong><small>لوحة تشغيل واحدة لكل الأقسام</small></div>
+    <button type="button" class="today-card" onclick="switchTab('approvals')"><span>⏳ موافقات</span><strong>${pending}</strong><small>${pending?'تحتاج قرارك':'لا يوجد معلّق'}</small></button>
+    <button type="button" class="today-card" onclick="switchTab('memos')"><span>📨 بريد غير مقروء</span><strong>${unread}</strong><small>${unread?'افتح البريد الداخلي':'كل الرسائل مقروءة'}</small></button>
+    <button type="button" class="today-card" onclick="switchTab('chat')"><span>🚀 المهام</span><strong>${working+queued}</strong><small>${queued} بالطابور • ${working} قيد التنفيذ • ${done} منجز</small></button>
+    <div class="today-card"><span>📊 صافي الأعمال</span><strong>$${(revenue-expense-cost).toFixed(2)}</strong><small>إيراد ${revenue.toFixed(0)} − مصروف ${expense.toFixed(0)} − APIs ${cost.toFixed(2)}</small></div>
+    <div class="today-card"><span>🔌 المزود الحي</span><strong style="font-size:13px;">${esc(provider)}</strong><small>الحالة من الاتصال الفعلي لا قيمة افتراضية</small></div>`;
+}
+
+async function completeTaskUI(id,status){
+  try{await api(`/api/tasks/${encodeURIComponent(id)}/complete`,{method:'POST',body:JSON.stringify({status,result:status==='done'?'تم الإنجاز بواسطة المدير التنفيذي.':'سُجّل كعمل غير مكتمل.'})});await bootstrap();}
+  catch(e){alert('❌ '+e.message)}
+}
+
 function renderTasks(){
   const g=document.getElementById('tasksGrid'), t=D.state.tasks||[];
-  g.innerHTML=t.slice(0,6).map(t=>{const a=D.agents.find(x=>x.id===t.agentId);return `<div class="task-card"><strong>${a?esc(a.avatar)+' '+esc(a.name):esc(t.agentId)}</strong><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small></div>`;}).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
+  g.innerHTML=t.slice(0,8).map(t=>{
+    const a=D.agents.find(x=>x.id===t.agentId), status=TASK_STATUS_LABEL[t.status]||esc(t.status||'جديد');
+    const actionable=['queued','working','needs_review','failed'].includes(t.status);
+    return `<div class="task-card"><div style="display:flex;justify-content:space-between;gap:8px;"><strong>${a?esc(a.avatar)+' '+esc(a.name):esc(t.agentId)}</strong><span class="status-pill">${esc(status)}</span></div><div>${esc(t.title)}</div><small>${esc(t.description||'')}</small>${t.result?`<small style="color:var(--muted);white-space:pre-wrap;">${esc(t.result)}</small>`:''}${actionable?`<div class="approval-actions"><button class="btn btn-approve" onclick="completeTaskUI('${jsAttr(t.id)}','done')">✓ تم التنفيذ</button><button class="btn btn-secondary" onclick="completeTaskUI('${jsAttr(t.id)}','needs_review')">مراجعة</button></div>`:''}</div>`;
+  }).join('')||'<div class="task-card">لا توجد مهام حالياً.</div>';
 }
 
 function renderWorkingTeam(){
   const el=document.getElementById('workingTeamList'); if(!el)return;
   const tasks=D.state.tasks||[];
-  const active=(D.agents||[]).filter(a=>a.status==='working'||a.status==='waiting_approval'||tasks.some(t=>t.agentId===a.id&&t.status==='working'));
+  const busy=t=>t.status==='queued'||t.status==='working';
+  const active=(D.agents||[]).filter(a=>a.status==='working'||a.status==='waiting_approval'||tasks.some(t=>t.agentId===a.id&&busy(t)));
   if(!active.length){el.innerHTML='<div class="approval-card">لا يوجد فريق يعمل حالياً. كل الموظفين متاحون أو غير متصلين.</div>';return;}
   el.innerHTML=active.map(a=>{
-    const mine=tasks.filter(t=>t.agentId===a.id&&t.status==='working').slice(0,3);
-    const what=mine.length?mine.map(t=>esc(t.title)).join('؛ '):(a.status==='waiting_approval'?'بانتظار موافقتك على مقترح':esc(a.bubble||'لم يُسند إليه عمل محدد بعد'));
+    const mine=tasks.filter(t=>t.agentId===a.id&&busy(t)).slice(0,3);
+    const what=mine.length?mine.map(t=>`${esc(t.title)} <small>(${esc(TASK_STATUS_LABEL[t.status]||t.status)})</small>`).join('؛ '):(a.status==='waiting_approval'?'بانتظار موافقتك على مقترح':esc(a.bubble||'لم يُسند إليه عمل محدد بعد'));
     return `<div class="working-team-card"><div class="working-team-head"><span>${esc(a.avatar)} <strong>${esc(a.name)}</strong></span><span class="status-pill"><i class="dot ${escAttr(a.status)}"></i> ${esc(SL[a.status]||a.status)}</span></div><div class="working-team-dept">${esc(a.department||'')}</div><div class="working-team-work">${what}</div></div>`;
   }).join('');
 }
@@ -138,7 +173,7 @@ function renderWorkingTeam(){
 function openAgentChat(id){selectedAgentId=id;switchTab('chat');switchChatMode('direct');renderChatAgentsList();renderDirectChat()}
 function selectDirectAgent(id){selectedAgentId=id;renderChatAgentsList();renderDirectChat()}
 
-function renderChatAgentsList(){document.getElementById('chatAgentsList').innerHTML=D.agents.map(a=>`<button class="chat-agent-btn ${a.id===selectedAgentId?'active':''}" onclick="selectDirectAgent('${escAttr(a.id)}')"><span>${esc(a.avatar)}</span><span style="flex:1">${esc(a.name)}</span><i class="dot ${escAttr(a.status)}"></i></button>`).join('')}
+function renderChatAgentsList(){document.getElementById('chatAgentsList').innerHTML=D.agents.map(a=>`<button class="chat-agent-btn ${a.id===selectedAgentId?'active':''}" onclick="selectDirectAgent('${jsAttr(a.id)}')"><span>${esc(a.avatar)}</span><span style="flex:1">${esc(a.name)}</span><i class="dot ${escAttr(a.status)}"></i></button>`).join('')}
 
 function renderDirectChat(){
   const a=D.agents.find(x=>x.id===selectedAgentId);if(!a)return;
@@ -160,13 +195,13 @@ function renderTeamChat(){
 
 function renderApprovals(){
   const c=document.getElementById('approvalsList'), l=(D.state.approvals||[]).filter(i=>i.risk!=='high');
-  c.innerHTML=l.map(i=>`<div class="approval-card ${i.status}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">الموظف: <strong>${esc(i.agentName)}</strong> • الخطورة: <strong>${esc(i.risk)}</strong> • الإجراء: <strong>${esc(i.actionType)}</strong></div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${escAttr(i.id)}','approved')">✓ موافقة</button><button class="btn btn-reject" onclick="decideApproval('${escAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد ومنفّذ':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد طلبات متوسطة/منخفضة الخطورة حالياً.</div>';
+  c.innerHTML=l.map(i=>`<div class="approval-card ${escAttr(i.status)}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">الموظف: <strong>${esc(i.agentName)}</strong> • الخطورة: <strong>${esc(i.risk)}</strong> • الإجراء: <strong>${esc(i.actionType)}</strong></div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${jsAttr(i.id)}','approved')">✓ موافقة</button><button class="btn btn-reject" onclick="decideApproval('${jsAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد ومنفّذ':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد طلبات متوسطة/منخفضة الخطورة حالياً.</div>';
 }
 
 function renderHighRiskApprovals(){
   const c=document.getElementById('highRiskApprovalsList'); if(!c)return;
   const l=(D.state.approvals||[]).filter(i=>i.risk==='high');
-  c.innerHTML=l.map(i=>`<div class="approval-card high-risk-card ${i.status}"><div style="flex:1"><div style="font-size:11px;color:#fca5a5;margin-bottom:3px;">🛡️ عالي الخطورة • ${esc(i.agentName)} • ${esc(i.actionType)} • ${i.quality&&i.quality.status?`حكم الجودة: ${esc(i.quality.status)}`:'بانتظار حلقة الجودة'}</div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${escAttr(i.id)}','approved',true)">⚠️ موافقة صريحة مع تجاوز</button><button class="btn btn-reject" onclick="decideApproval('${escAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد صريحاً':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد مقترحات عالية الخطورة حالياً.</div>';
+  c.innerHTML=l.map(i=>`<div class="approval-card high-risk-card ${escAttr(i.status)}"><div style="flex:1"><div style="font-size:11px;color:#fca5a5;margin-bottom:3px;">🛡️ عالي الخطورة • ${esc(i.agentName)} • ${esc(i.actionType)} • ${i.quality&&i.quality.status?`حكم الجودة: ${esc(i.quality.status)}`:'بانتظار حلقة الجودة'}</div><h4>${esc(i.title)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;white-space:pre-wrap;">${esc(i.details)}</p>${i.securityNote?`<div style="font-size:11px;color:#fcd34d;margin-top:4px;">${esc(i.securityNote)}</div>`:''}${i.executionResult?`<div style="font-size:12px;color:#6ee7b7;margin-top:5px;">${esc(i.executionResult)}</div>`:''}</div><div class="approval-actions">${i.status==='pending'?`<button class="btn btn-approve" onclick="decideApproval('${jsAttr(i.id)}','approved',true)">⚠️ موافقة صريحة مع تجاوز</button><button class="btn btn-reject" onclick="decideApproval('${jsAttr(i.id)}','rejected')">✕ رفض</button>`:`<span>${i.status==='approved'?'✅ معتمد صريحاً':'❌ مرفوض'}</span>`}</div></div>`).join('')||'<div class="approval-card">لا توجد مقترحات عالية الخطورة حالياً.</div>';
 }
 
 async function decideApproval(id,d,override){
@@ -188,7 +223,7 @@ function renderVotes(){
     return `<div class="approval-card" style="flex-direction:column;align-items:stretch;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
         <div><span style="font-size:11px;color:var(--cyan);">🗳️ تصويت ديمقراطي • الفائز: <strong>${esc(v.winner)}</strong></span><h4>${esc(v.topic)}</h4></div>
-        ${v.convertedToApproval?'<span style="font-size:12px;color:var(--green);">✅ مرفوع للموافقات</span>':`<button class="btn btn-approve" onclick="convertVoteToApproval('${v.id}')">✓ رفع الفائز للاعتماد</button>`}
+        ${v.convertedToApproval?'<span style="font-size:12px;color:var(--green);">✅ مرفوع للموافقات</span>':`<button class="btn btn-approve" onclick="convertVoteToApproval('${jsAttr(v.id)}')">✓ رفع الفائز للاعتماد</button>`}
       </div>
       <div style="margin-top:8px;">${bars}</div>
       <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">${details}</div>
@@ -209,14 +244,14 @@ function renderCRM(){
   document.getElementById('customersList').innerHTML=list.map(c=>`
     <div class="approval-card">
       <div style="flex:1">
-        <div style="font-size:11px;color:var(--cyan);">الحالة: <strong>${c.stage}</strong> • ${c.contactName||''} (${c.email||'-'})</div>
+        <div style="font-size:11px;color:var(--cyan);">الحالة: <strong>${esc(c.stage)}</strong> • ${esc(c.contactName||'')} (${esc(c.email||'-')})</div>
         <h4>💼 ${esc(c.name)} — ${esc(c.projectTitle)}</h4>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px;">العقد: $${c.totalValueUsd} | المدفوع: <strong style="color:var(--green)">$${c.paidUsd}</strong> • ${esc(c.notes)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">العقد: $${esc(c.totalValueUsd||0)} | المدفوع: <strong style="color:var(--green)">$${esc(c.paidUsd||0)}</strong> • ${esc(c.notes)}</div>
       </div>
       <div class="approval-actions">
         <a class="btn btn-cyan" style="text-decoration:none" href="portal.html?t=${encodeURIComponent(c.portalToken||'')}" target="_blank" rel="noopener">🔗 بوابة العميل</a>
-        <button class="btn btn-approve" onclick="recordCustomerPayment('${c.id}')">💵 دفعة مالية</button>
-        <button class="btn btn-secondary" onclick="sendCustomerMarketing('${c.id}')">📣 متابعة تسويقية</button>
+        <button class="btn btn-approve" onclick="recordCustomerPayment('${jsAttr(c.id)}')">💵 دفعة مالية</button>
+        <button class="btn btn-secondary" onclick="sendCustomerMarketing('${jsAttr(c.id)}')">📣 متابعة تسويقية</button>
       </div>
     </div>
   `).join('')||'<div class="approval-card">لا يوجد عملاء بعد.</div>';
@@ -238,10 +273,22 @@ function renderKPI(){
   const sorted=[...D.agents].sort((a,b)=>(b.gamification?.points||0)-(a.gamification?.points||0));
   document.getElementById('leaderboardGrid').innerHTML=sorted.map((a,i)=>{
     const g=a.gamification||{points:0,level:1,rankTitle:'موظف تنفيذي',badges:[]};
-    return `<div class="task-card"><strong>#${i+1} ${a.avatar} ${a.name}</strong><div class="rank-badge">المستوى ${g.level}: ${g.rankTitle}</div><div style="margin-top:5px;font-size:13px;color:var(--cyan)">⭐ ${g.points} نقطة</div><small>${(g.badges||[]).slice(-2).join(' • ')}</small></div>`;
+    return `<div class="task-card"><strong>#${i+1} ${esc(a.avatar)} ${esc(a.name)}</strong><div class="rank-badge">المستوى ${esc(g.level)}: ${esc(g.rankTitle)}</div><div style="margin-top:5px;font-size:13px;color:var(--cyan)">⭐ ${esc(g.points)} نقطة</div><small>${(g.badges||[]).slice(-2).map(esc).join(' • ')}</small></div>`;
   }).join('');
   const l=D.state.kpiReviews||[];
   document.getElementById('kpiList').innerHTML=l.map(r=>`<div class="approval-card"><div><div style="font-size:11px;color:var(--cyan);">📈 ${esc(r.reviewerName)} • ${esc(r.timestamp?.slice(0,10)||'')}</div><p style="font-size:13px;white-space:pre-wrap;margin-top:5px;">${esc(r.report)}</p></div></div>`).join('')||'<div class="approval-card">لم يتم تشغيل تقييم المدربة بعد. اضغط "تشغيل تقييم المدربة الآن" لتوزيع النقاط والترقيات.</div>';
+}
+
+function renderDecisionLog(){
+  const dl=document.getElementById('decisionLogList'); if(!dl)return;
+  const decisions=(D.state.decisionLog||[]).slice(0,30);
+  dl.innerHTML=decisions.map(d=>`<div class="approval-card"><div style="flex-direction:column;align-items:stretch;gap:4px;">
+    <div style="font-size:11px;color:var(--muted);">🧾 ${esc(d.id)} • ${esc(d.at||'')} • ${d.decision==='approved'?'✅ اعتماد':'❌ رفض'} • خطورة: ${esc(d.risk||'medium')}</div>
+    <strong>${esc(d.title||'')}</strong>
+    <div style="font-size:12px;">🛡️ حارس المراجعة: <span style="color:${d.redTeam==='NOT_REQUIRED'?'var(--muted)':'#fcd34d'}">${esc(d.redTeam||'غير مسجّل')}</span></div>
+    <div style="font-size:12px;">🔬 دليل الجودة: ${esc(d.qualityStatus||'no-qa-report')} ${(d.qualityVerdicts||[]).length?'— '+esc((d.qualityVerdicts||[]).join(' / ')):''}${d.override?' • ⚠️ override=true':''}</div>
+    ${d.reason?`<small style="color:var(--muted)">السبب: ${esc(d.reason)}</small>`:''}
+  </div></div>`).join('')||'<div class="approval-card">لا توجد قرارات موثّقة بعد. كل موافقة ستُسجَّل بدليل الجودة وسبب التجاوز إن وُجد.</div>';
 }
 
 function renderAgentBenchmarks(){
@@ -249,14 +296,14 @@ function renderAgentBenchmarks(){
   const rows=(D.providerStatus&&D.providerStatus.benchmarks)||[];
   el.innerHTML=D.agents.map(a=>{
     const best=rows.filter(r=>r.role===a.id).sort((x,y)=>(y.score||0)-(x.score||0))[0];
-    if(!best)return `<div class="bench-card"><strong>${a.avatar} ${esc(a.name)}</strong><span style="color:var(--muted)">لم يُختبر نموذج لهذا الدور بعد.</span></div>`;
-    return `<div class="bench-card"><strong>${a.avatar} ${esc(a.name)}</strong><div>${esc(best.provider)} / ${esc(best.model)}</div><div class="${best.passed?'pass':'fail'}">${best.passed?'✅ اجتاز':'❌ لم يجتز'} — ${Number(best.score||0)}/100</div><small style="color:var(--muted)">${esc(String(best.breakdown||'').slice(0,90))}</small></div>`;
+    if(!best)return `<div class="bench-card"><strong>${esc(a.avatar)} ${esc(a.name)}</strong><span style="color:var(--muted)">لم يُختبر نموذج لهذا الدور بعد.</span></div>`;
+    return `<div class="bench-card"><strong>${esc(a.avatar)} ${esc(a.name)}</strong><div>${esc(best.provider)} / ${esc(best.model)}</div><div class="${best.passed?'pass':'fail'}">${best.passed?'✅ اجتاز':'❌ لم يجتز'} — ${Number(best.score||0)}/100 <span style="color:var(--muted)">(تقدير إرشادي)</span></div><small style="color:var(--muted)">${esc(String(best.breakdown||'').slice(0,90))}</small></div>`;
   }).join('');
 }
 
 function renderMemos(){
   const c=document.getElementById('memosList'), l=(D.state.internalMemos||[]).slice().reverse();
-  c.innerHTML=l.map(m=>`<div class="approval-card ${m.read?'read':''}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${esc(m.fromAvatar)} ${esc(m.fromName)} ← إلى → ${esc(m.toAvatar)} ${esc(m.toName)} • ${esc(m.timestamp?.slice(0,10)||'')} • ${m.read?'✅ مقروء':'🔵 غير مقروء'}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div><div class="approval-actions"><button class="btn btn-secondary" onclick="forwardMemoToAssistant('${escAttr(m.id)}')">🧠 أرسل للمساعد</button>${m.read?'':'<button class="btn btn-secondary" onclick="markMemoRead(\''+escAttr(m.id)+'\')">✓ مقروء</button>'}</div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
+  c.innerHTML=l.map(m=>`<div class="approval-card ${m.read?'read':''}"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);margin-bottom:3px;">${esc(m.fromAvatar)} ${esc(m.fromName)} ← إلى → ${esc(m.toAvatar)} ${esc(m.toName)} • ${esc(m.timestamp?.slice(0,10)||'')} • ${m.read?'✅ مقروء':'🔵 غير مقروء'}</div><h4>📨 ${esc(m.subject)}</h4><p style="font-size:12px;color:var(--muted);margin-top:3px;">${esc(m.body)}</p></div><div class="approval-actions"><button class="btn btn-secondary" onclick="forwardMemoToAssistant('${jsAttr(m.id)}')">🧠 أرسل للمساعد</button>${m.read?'':`<button class="btn btn-secondary" onclick="markMemoRead('${jsAttr(m.id)}')">✓ مقروء</button>`}</div></div>`).join('')||'<div class="approval-card">لا توجد مذكرات داخلية حالياً.</div>';
 }
 
 async function markMemoRead(id){
@@ -281,7 +328,7 @@ async function forwardMemoToAssistant(id){
 }
 
 function renderKnowledge(){
-  document.getElementById('knowledgeEditorList').innerHTML=(D.knowledgeFiles||[]).map((k,i)=>`<div class="k-item"><strong>${esc(k.filename)}</strong><textarea id="k-content-${i}" rows="4">${esc(k.content)}</textarea><button class="btn btn-secondary" onclick="saveKnowledge('${escAttr(k.filename)}',${i})">حفظ</button></div>`).join('');
+  document.getElementById('knowledgeEditorList').innerHTML=(D.knowledgeFiles||[]).map((k,i)=>`<div class="k-item"><strong>${esc(k.filename)}</strong><textarea id="k-content-${i}" rows="4">${esc(k.content)}</textarea><button class="btn btn-secondary" onclick="saveKnowledge('${jsAttr(k.filename)}',${i})">حفظ</button></div>`).join('');
   document.getElementById('exportsList').innerHTML=(D.exports||[]).map(ex=>`<div class="inspector-block"><strong>📄 ${esc(ex.filename)} (${ex.size} bytes)</strong>${esc(ex.preview)}</div>`).join('')||'<div class="inspector-block">لم يتم تصدير ملفات بعد.</div>';
 }
 async function saveKnowledge(fn,i){const c=document.getElementById(`k-content-${i}`).value;await api('/api/knowledge',{method:'POST',body:JSON.stringify({filename:fn,content:c})});alert(`تم حفظ ${fn}`);await bootstrap()}
@@ -304,7 +351,14 @@ function renderPnL(){
     const maxVal=Math.max(...bars.map(b=>b.val),1), barW=w/bars.length-30;
     bars.forEach((b,i)=>{const bh=(b.val/maxVal)*(h-50),x=i*(barW+30)+20;ctx.fillStyle=b.color;ctx.globalAlpha=.75;ctx.fillRect(x,h-30-bh,barW,bh);ctx.globalAlpha=1;ctx.fillStyle='#eef2ff';ctx.font='bold 12px Cairo';ctx.textAlign='center';ctx.fillText(b.label,x+barW/2,h-14);ctx.fillText(`$${b.val.toFixed(2)}`,x+barW/2,h-32-bh)});
   }
-  document.getElementById('ledgerList').innerHTML=ledger.slice().reverse().map(e=>`<div class="approval-card"><div><div style="font-size:11px;color:${e.type==='revenue'?'var(--green)':'var(--red)'};">${e.type==='revenue'?'💰 إيراد':'📉 مصروف'} • ${esc(e.date)}</div><strong>${esc(e.title)}</strong> — $${e.amountUsd.toFixed(2)}<br/><small style="color:var(--muted)">${esc(e.notes)}</small></div></div>`).join('')||'<div class="approval-card">لا توجد قيود مالية.</div>';
+  document.getElementById('ledgerList').innerHTML=ledger.slice().reverse().map(e=>`<div class="approval-card"><div><div style="font-size:11px;color:${e.type==='revenue'?'var(--green)':'var(--red)'};">${e.type==='revenue'?'💰 إيراد':'📉 مصروف'} • ${esc(e.date)}${e.project?` • 📁 ${esc(e.project)}`:''}</div><strong>${esc(e.title)}</strong> — $${Number(e.amountUsd||0).toFixed(2)}<br/><small style="color:var(--muted)">${esc(e.notes)}</small></div></div>`).join('')||'<div class="approval-card">لا توجد قيود مالية.</div>';
+  const projects={};
+  ledger.forEach(e=>{const key=e.project||'بدون مشروع';if(!projects[key])projects[key]={revenue:0,expense:0};projects[key][e.type==='revenue'?'revenue':'expense']+=Number(e.amountUsd||0);});
+  const byAgent=D.state.usageStats?.byAgent||{};
+  const apiByProject=Number(u.totalCostUsd||0);
+  const projectCards=Object.keys(projects).map(name=>{const p=projects[name], share=p.revenue?Math.min(1,apiByProject/Math.max(1,Object.keys(projects).length)):0, net=p.revenue-p.expense-share;return `<div class="pnl-card"><div>📁 ${esc(name)}</div><div class="pnl-value">$${net.toFixed(2)}</div><small>إيراد ${p.revenue.toFixed(0)} − مصروف ${p.expense.toFixed(0)} − API ~$${share.toFixed(2)}</small></div>`;}).join('');
+  const projectBox=document.getElementById('projectProfitability');
+  if(projectBox)projectBox.innerHTML=`<h3 style="font-size:14px;margin:12px 0 8px;">🏷️ الربحية لكل مشروع</h3><div class="pnl-summary">${projectCards||'<div class="approval-card">أضف قيداً مالياً ومشروعاً لعرض الربحية.</div>'}</div><p style="font-size:11px;color:var(--muted);margin-top:6px;">تكلفة API موزّعة بالتساوي على المشاريع كتقدير شفاف؛ التكلفة الحقيقية تُسجَّل لكل نموذج في سجل التدقيق.</p>`;
   renderCostForecast();
 }
 
@@ -322,7 +376,7 @@ function renderCostForecast(){
 }
 
 function renderSchedules(){
-  document.getElementById('schedulesList').innerHTML=(D.state.schedules||[]).map(s=>`<div class="approval-card"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);">🕐 ${s.frequency==='daily'?'يومي الساعة '+s.targetHour+':00':'أسبوعي الساعة '+s.targetHour+':00'}</div><strong>${esc(s.name)}</strong><div style="font-size:12px;color:var(--muted);margin-top:3px;">آخر تشغيل: ${esc(s.lastRunAt||'لم يعمل بعد')} • الحالة: ${esc(s.lastStatus||'جاهز')}</div></div><div class="approval-actions"><label style="font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSchedule('${escAttr(s.id)}',this.checked)" />${s.enabled?'مفعّل':'معطّل'}</label><button class="btn btn-secondary" onclick="triggerSchedule('${escAttr(s.id)}')">▶️ تشغيل الآن</button></div></div>`).join('');
+  document.getElementById('schedulesList').innerHTML=(D.state.schedules||[]).map(s=>`<div class="approval-card"><div style="flex:1"><div style="font-size:11px;color:var(--cyan);">🕐 ${s.frequency==='daily'?'يومي الساعة '+esc(s.targetHour)+':00':'أسبوعي الساعة '+esc(s.targetHour)+':00'}</div><strong>${esc(s.name)}</strong><div style="font-size:12px;color:var(--muted);margin-top:3px;">آخر تشغيل: ${esc(s.lastRunAt||'لم يعمل بعد')} • الحالة: ${esc(s.lastStatus||'جاهز')}</div></div><div class="approval-actions"><label style="font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" ${s.enabled?'checked':''} onchange="toggleSchedule('${jsAttr(s.id)}',this.checked)" />${s.enabled?'مفعّل':'معطّل'}</label><button class="btn btn-secondary" onclick="triggerSchedule('${jsAttr(s.id)}')">▶️ تشغيل الآن</button></div></div>`).join('');
 }
 async function toggleSchedule(id,enabled){await api('/api/schedules/toggle',{method:'POST',body:JSON.stringify({scheduleId:id,enabled})});await bootstrap()}
 async function triggerSchedule(id){
@@ -537,7 +591,7 @@ document.getElementById('closeHireModalBtn').onclick=()=>document.getElementById
 document.getElementById('hireForm').addEventListener('submit',async e=>{e.preventDefault();await api('/api/agents/hire',{method:'POST',body:JSON.stringify({id:document.getElementById('hireIdInput').value,name:document.getElementById('hireNameInput').value,department:document.getElementById('hireDeptInput').value,avatar:document.getElementById('hireAvatarInput').value||'🤖',roleDescription:document.getElementById('hireRoleInput').value,skillsList:document.getElementById('hireSkillsInput').value})});document.getElementById('hireModal').classList.add('hidden');document.getElementById('hireForm').reset();await bootstrap()});
 
 document.getElementById('memoForm').addEventListener('submit',async e=>{e.preventDefault();await api('/api/memos',{method:'POST',body:JSON.stringify({fromId:document.getElementById('memoFromSelect').value,toId:document.getElementById('memoToSelect').value,subject:document.getElementById('memoSubjectInput').value,body:document.getElementById('memoBodyInput').value})});document.getElementById('memoModal').classList.add('hidden');document.getElementById('memoForm').reset();await bootstrap()});
-document.getElementById('ledgerForm').addEventListener('submit',async e=>{e.preventDefault();await api('/api/ledger/add',{method:'POST',body:JSON.stringify({type:document.getElementById('ledgerTypeSelect').value,title:document.getElementById('ledgerTitleInput').value,amountUsd:document.getElementById('ledgerAmountInput').value,notes:document.getElementById('ledgerNotesInput').value})});document.getElementById('ledgerModal').classList.add('hidden');document.getElementById('ledgerForm').reset();await bootstrap()});
+document.getElementById('ledgerForm').addEventListener('submit',async e=>{e.preventDefault();await api('/api/ledger/add',{method:'POST',body:JSON.stringify({type:document.getElementById('ledgerTypeSelect').value,title:document.getElementById('ledgerTitleInput').value,amountUsd:document.getElementById('ledgerAmountInput').value,project:document.getElementById('ledgerProjectInput').value,notes:document.getElementById('ledgerNotesInput').value})});document.getElementById('ledgerModal').classList.add('hidden');document.getElementById('ledgerForm').reset();await bootstrap()});
 document.getElementById('customerForm').addEventListener('submit',async e=>{e.preventDefault();await api('/api/customers',{method:'POST',body:JSON.stringify({name:document.getElementById('custNameInput').value,contactName:document.getElementById('custContactInput').value,email:document.getElementById('custEmailInput').value,projectTitle:document.getElementById('custProjectInput').value,totalValueUsd:document.getElementById('custValueInput').value,stage:document.getElementById('custStageSelect').value,notes:document.getElementById('custNotesInput').value})});document.getElementById('customerModal').classList.add('hidden');document.getElementById('customerForm').reset();await bootstrap()});
 document.getElementById('awardForm').addEventListener('submit',async e=>{e.preventDefault();await api('/api/gamification/award',{method:'POST',body:JSON.stringify({agentId:document.getElementById('awardAgentSelect').value,points:document.getElementById('awardPointsInput').value,reason:document.getElementById('awardReasonInput').value})});document.getElementById('awardModal').classList.add('hidden');document.getElementById('awardForm').reset();await bootstrap()});
 
@@ -552,17 +606,19 @@ function renderSimulations(){
         <h4>🔮 ${esc(s.projectName)}</h4>
         <span style="font-size:12px;color:#fcd34d;">⚖️ نقطة التعادل: <strong>${s.breakEvenCustomers>=0?s.breakEvenCustomers+' عميل':'غير مجدٍ'}</strong> (هامش المساهمة $${s.contributionMargin}/عميل)</span>
       </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">${esc(s.method||'سيناريوهات تقديرية قديمة')}</div>
       <div class="sim-scenarios">
         ${(s.scenarios||[]).map(sc=>`
           <div class="sim-box">
-            <strong>${sc.label}</strong>
-            <div>العملاء المتوقعون: <strong>${sc.customers}</strong></div>
-            <div>الإيرادات: <span style="color:var(--green)">$${sc.revenue}</span></div>
-            <div>التكاليف الكلية: $${sc.totalCost} (APIs: $${sc.totalApiCost})</div>
-            <div>صافي الربح: <strong style="color:${sc.netProfit>=0?'var(--cyan)':'var(--red)'}">${sc.netProfit>=0?'+':''}$${sc.netProfit}</strong> (ROI: ${sc.roiPct}%)</div>
+            <strong>${esc(sc.label)} ${sc.probabilityPct!=null?`(${esc(sc.probabilityPct)}%)`:''}</strong>
+            <div>العملاء المتوقعون: <strong>${esc(sc.customers)}</strong> (كمية نطاق Monte Carlo)</div>
+            <div>الإيرادات: <span style="color:var(--green)">$${esc(sc.revenue)}</span></div>
+            <div>التكاليف الكلية: $${esc(sc.totalCost)} (APIs: $${esc(sc.totalApiCost)})</div>
+            <div>صافي الربح: <strong style="color:${sc.netProfit>=0?'var(--cyan)':'var(--red)'}">${sc.netProfit>=0?'+':''}$${esc(sc.netProfit)}</strong> (ROI: ${esc(sc.roiPct)}%)</div>
           </div>
         `).join('')}
       </div>
+      ${s.plannedVsActual?`<div style="font-size:12px;color:var(--muted);margin-top:8px;">📈 <strong>الخطة مقابل الواقع:</strong> متوقع $${esc(s.plannedVsActual.projectedNet)} • فعلي $${esc(s.plannedVsActual.actualNet)} (إيراد ${esc(s.plannedVsActual.actualRevenue)} − تكلفة ${esc(s.plannedVsActual.actualCost)}) — المصدر: ${esc(s.plannedVsActual.source)}</div>`:''}
       ${s.accountantNote?`<div style="font-size:12px;color:var(--muted);margin-top:8px;">💰 <strong>المحاسبة:</strong> ${esc(s.accountantNote)}</div>`:''}
       ${s.marketingNote?`<div style="font-size:12px;color:var(--muted);margin-top:4px;">📣 <strong>التسويق:</strong> ${esc(s.marketingNote)}</div>`:''}
     </div>
@@ -572,11 +628,11 @@ function renderSimulations(){
 function renderPlaybooks(){
   document.getElementById('playbooksGrid').innerHTML=(D.playbooks||[]).map(pb=>`
     <div class="webhook-card">
-      <div style="font-size:22px;margin-bottom:4px;">${pb.icon||'📖'}</div>
+      <div style="font-size:22px;margin-bottom:4px;">${esc(pb.icon||'📖')}</div>
       <strong>${esc(pb.title)}</strong>
       <p style="font-size:12px;color:var(--muted);margin:6px 0;">${esc(pb.description)}</p>
       <div style="font-size:11px;color:var(--cyan);margin-bottom:10px;">${(pb.steps||[]).length} خطوات متتابعة بين الأقسام</div>
-      <button class="btn btn-primary" onclick="runPlaybook('${pb.id}')">▶️ تشغيل القالب الآن</button>
+      <button class="btn btn-primary" onclick="runPlaybook('${jsAttr(pb.id)}')">▶️ تشغيل القالب الآن</button>
     </div>
   `).join('');
 }
@@ -591,12 +647,12 @@ function renderSnapshots(){
   document.getElementById('snapshotsList').innerHTML=(D.snapshots||[]).map(sn=>`
     <div class="approval-card">
       <div>
-        <div style="font-size:11px;color:var(--cyan);">🔐 ${sn.alg} • ${sn.fileCount} ملف • ${Math.round(sn.size/1024)} KB • ${sn.createdAt?.slice(0,16)||''}</div>
+        <div style="font-size:11px;color:var(--cyan);">🔐 ${esc(sn.alg)} • ${esc(sn.fileCount)} ملف • ${Math.round(sn.size/1024)} KB • ${esc(sn.createdAt?.slice(0,16)||'')}</div>
         <h4>${esc(sn.label)}</h4>
       </div>
       <div class="approval-actions">
-        <button class="btn btn-secondary" onclick="window.MDM1Office.downloadSnapshot('${sn.id}')">⬇️ تحميل</button>
-        <button class="btn btn-approve" onclick="restoreSnapshot('${sn.id}')">⏪ استعادة (Time-Travel)</button>
+        <button class="btn btn-secondary" onclick="window.MDM1Office.downloadSnapshot('${jsAttr(sn.id)}')">⬇️ تحميل</button>
+        <button class="btn btn-approve" onclick="restoreSnapshot('${jsAttr(sn.id)}')">⏪ استعادة (Time-Travel)</button>
       </div>
     </div>
   `).join('')||'<div class="approval-card">لا توجد نسخ احتياطية مشفرة بعد.</div>';
@@ -644,7 +700,8 @@ document.getElementById('simulatorForm').addEventListener('submit',async e=>{
       pricePerCustomerUsd:document.getElementById('simPrice').value,
       apiCostPerCustomerUsd:document.getElementById('simApi').value,
       conversionRatePct:document.getElementById('simConv').value,
-      cpcUsd:document.getElementById('simCpc').value
+      cpcUsd:document.getElementById('simCpc').value,
+      probabilities:document.getElementById('simProbabilities').value
     })});
     await bootstrap();
   }catch(err){alert(err.message)}finally{b.disabled=false;b.textContent='🔮 تشغيل المحاكاة الآن'}

@@ -3,7 +3,7 @@
   'use strict';
   var deferredPrompt = null;
   var installed = false;
-  var VERSION = '20261128pwa22';
+  var VERSION = '20261128pwa23';
   var MANIFEST_URL = '../downloads/packages.json?v=' + VERSION;
   var manifestCache = null;
   var standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
@@ -63,6 +63,9 @@
   function detectedOs() {
     var ua = String(navigator.userAgent || '');
     if (/android/i.test(ua)) return 'android';
+    if (/iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+    if (/mac os x|macintosh/i.test(ua)) return 'mac';
+    if (/linux/i.test(ua)) return 'linux';
     return 'windows';
   }
 
@@ -152,7 +155,7 @@
     modal.innerHTML =
       '<div class="pwa-install-card" role="dialog" aria-modal="true" aria-label="تنزيل تطبيق MD1usd Office">' +
       '<h2>⬇️ تنزيل تطبيق MD1&#117;sd Office</h2>' +
-      '<p>اختر حزمة نظامك؛ سيبدأ الحفظ مباشرة على جهازك. الحزمة موقّعة ومُتحقَّق من بصمتها قبل الحفظ، ثم تثبّتها مثل أي تطبيق من Microsoft Store أو Google Play.</p>' +
+      '<p>اختر حزمة نظامك؛ سيبدأ الحفظ مباشرة على جهازك. تم التحقق من بصمة SHA-256 قبل الحفظ، ثم تفتح الحزمة لتثبيت التطبيق كأي برنامج مثبّت.</p>' +
       '<div class="pwa-download-actions">' +
       '<button type="button" class="office-btn primary" id="pwaDownloadWindows">💻 تحميل حزمة ويندوز .zip' + (detected === 'windows' ? ' — موصى به' : '') + '</button>' +
       '<button type="button" class="office-btn primary" id="pwaDownloadAndroid">🤖 تحميل حزمة أندرويد .zip' + (detected === 'android' ? ' — موصى به' : '') + '</button>' +
@@ -185,6 +188,16 @@
     if (standalone || installed) {
       toast('التطبيق مثبّت بالفعل ويعمل كنافذة مستقلة.');
       return;
+    }
+    /* Use the browser's real install flow when it offers one; otherwise save
+       the verified package directly to the device. */
+    if (deferredPrompt && typeof deferredPrompt.prompt === 'function') {
+      deferredPrompt.prompt();
+      return Promise.resolve(deferredPrompt.userChoice).then(function (choice) {
+        deferredPrompt = null;
+        if (choice && choice.outcome === 'accepted') installed = true;
+        updateButtons();
+      }).catch(function () { showInstallHelp(); });
     }
     showInstallHelp();
   }
