@@ -752,7 +752,7 @@
       item.resolvedAt = nowIso();
       var shouldStartTaskRunner = false;
       if (b.decision === 'approved') {
-        var execResult = '✅ تم الاعتماد والتنفيذ في المكتب السحابي.';
+        var execResult = '✅ تم تسجيل الاعتماد في المكتب. حالة التنفيذ الفعلية موضحة حسب نوع الإجراء أدناه.';
         if (preparedTask) {
           state.tasks.unshift(preparedTask);
           linkedApprovalItems.forEach(function (entry) {
@@ -783,13 +783,13 @@
           if (target) target.skillsMd = String(target.skillsMd || '') + '\n\n## تحديثات معتمدة\n' + safeSkills;
           execResult = '✅ تم تحديث مهارات ' + (target ? target.name : safeAgentId(item.payload.targetAgentId)) + '.';
         } else if (item.actionType === 'publish_marketing') {
-          execResult = '✅ تم اعتماد المحتوى التسويقي — أرسله إلى قناة النشر أو تيليجرام.';
+          execResult = '✅ تمت الموافقة على مسودة المحتوى فقط. لم يتم إرسالها أو نشرها خارجياً؛ النشر يتم يدوياً من القناة التي تختارها.';
         } else if (item.actionType === 'project_decision') {
-          execResult = '✅ تم اعتماد قرار المشروع وبدء التنفيذ.';
+          execResult = '✅ تم تسجيل قرار المشروع. هذا الاعتماد لا يعني أن تنفيذ المشروع أو نشره خارجياً قد بدأ.';
         }
         item.executionResult = execResult;
         state.liveBubbles[item.agentId] = 'تم تنفيذ: ' + item.title.slice(0, 28) + '...';
-        awardPoints(item.agentId, 25, 'اعتماد وتنفيذ: ' + item.title.slice(0, 30));
+        awardPoints(item.agentId, 25, 'تسجيل قرار موافقة: ' + item.title.slice(0, 30));
         telegramNotify('✅ *تم الاعتماد*\n' + item.title + '\n' + execResult);
       } else {
         item.executionResult = '❌ تم رفض الطلب من قبل المدير التنفيذي.';
