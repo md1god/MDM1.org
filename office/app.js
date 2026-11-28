@@ -73,25 +73,29 @@ function renderAll(){renderGlobal();Object.keys(TAB_RENDERERS).forEach(renderAct
 
 function renderTopBadges(){
   const c=D.providerConfig||{}, st=D.providerStatus||{}, b=document.getElementById('providerBadge');
-  const live=Boolean(st.hasKey||c.hasKey);
-  b.className='provider-badge '+(live?'live':'offline');
-  b.textContent=live?`🟢 ${String(c.provider||st.provider||'model').toUpperCase()} (${c.model||st.model||'auto'})`:'🔴 غير متصل — أضف API';
-  b.title=live
+  const vault=st.vault||{}, locked=Boolean(vault.needsUnlock||vault.locked);
+  const quick=Boolean(st.local&&st.local.quick)&&(!st.hasKey||c.provider==='local');
+  const live=Boolean(st.hasKey||c.hasKey)&&!locked&&!quick;
+  b.className='provider-badge '+(locked||quick?'offline':live?'live':'offline');
+  b.textContent=locked?'🔒 الخزنة مقفلة — افتحها':quick?'🟡 سريع (بدون نموذج محلي)':live?`🟢 ${String(c.provider||st.provider||'model').toUpperCase()} (${c.model||st.model||'auto'})`:'🔴 غير متصل — أضف API';
+  b.title=locked?'الخزنة مقفلة — مفاتيحك محفوظة مشفّرة.':quick?'الوضع السريع الآمن يعمل محلياً دون خادم.':live
     ? `المزود: ${c.provider||st.provider||'-'}\nالنموذج: ${c.model||st.model||'-'}\nاضغط لفتح إعدادات الاتصال.`
     : (st.lastError||'لا يوجد اتصال حي بنموذج. اضغط لفتح 🔑 إضافة API.');
-  b.onclick=()=>window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});
+  b.onclick=()=>{if(locked&&window.MDM1Office&&window.MDM1Office.showVaultGate)window.MDM1Office.showVaultGate();else window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});};
+  const vb=document.getElementById('vaultBadge');
+  if(vb){vb.textContent=locked?'🔒 مقفلة':vault.exists?(vault.unlocked?'🔐 مفتوحة':'🔐 محفوظة'):'🔐 بلا خزنة';vb.className='provider-badge '+(vault.exists?'live':'offline');vb.onclick=b.onclick;}
   const u=D.state.usageStats||{totalTokens:0,totalCostUsd:0};
   document.getElementById('costBadge').textContent=`🪙 ${u.totalTokens} tok | $${Number(u.totalCostUsd||0).toFixed(4)}`;
   document.getElementById('ragBadge').textContent=`🧠 ${(D.memoryStats&&D.memoryStats.totalMemories)||0} ذكرى`;
   document.getElementById('emergencyBanner').classList.toggle('hidden', !D.state.emergencyMode);
-  renderProviderNotice(live, st);
+  renderProviderNotice(live, st, locked);
 }
 
-function renderProviderNotice(live, st){
+function renderProviderNotice(live, st, locked){
   const el=document.getElementById('providerNotice'); if(!el)return;
-  if(live){el.classList.add('hidden');el.innerHTML='';return;}
+  if(live||locked){if(locked){el.classList.remove('hidden');el.innerHTML='<span>🔐 مفاتيحك محفوظة في خزنة مشفّرة وهي مقفلة الآن. افتح الخزنة لتفعيل المزودين.</span><button type="button" class="btn btn-primary" id="noticeVaultBtn">🔓 فتح الخزنة</button>';const vb=document.getElementById('noticeVaultBtn');if(vb)vb.onclick=()=>window.MDM1Office&&window.MDM1Office.showVaultGate&&window.MDM1Office.showVaultGate();}else{el.classList.add('hidden');el.innerHTML='';}return;}
   el.classList.remove('hidden');
-  el.innerHTML='<span>⚠️ الردود الحالية تجريبية لأنه لا يوجد اتصال حي بنموذج. حالة الموظفين تظهر «غير متصل» إلى أن تُدخل مفتاحك أنت (Groq / OpenRouter / Zen) أو تشغّل OpenCode محلياً. مفاتيحك أنت فقط هي التي تُستخدم.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة مفتاحي الآن</button>';
+  el.innerHTML='<span>⚠️ الردود الحالية تجريبية لأنه لا يوجد اتصال حي بنموذج. حالة الموظفين تظهر «غير متصل» إلى أن تُدخل مفتاحك أنت (Zen / Groq / OpenRouter) أو تشغّل النموذج المحلي WebGPU. مفاتيحك أنت فقط هي التي تُستخدم.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة مفتاحي الآن</button>';
   const btn=document.getElementById('noticeApiBtn');
   if(btn)btn.onclick=()=>window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});
 }

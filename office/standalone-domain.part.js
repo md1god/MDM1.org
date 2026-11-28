@@ -206,7 +206,7 @@
     saveState();
     return { findings: findings, vault: v, scannedAt: nowIso() };
   }
-  var DEV_PATCH_ALLOWED = ['freeOnly', 'useBenchmarks', 'qualityGate', 'benchmarkThreshold', 'mode', 'groqModel', 'openrouterModel'];
+  var DEV_PATCH_ALLOWED = ['freeOnly', 'useBenchmarks', 'qualityGate', 'benchmarkThreshold', 'mode', 'browserProfile', 'browserAutoLoad'];
   function autoDeveloperUpdate() {
     var diagnostics = {
       quota: quotaSummary(),
@@ -1236,9 +1236,12 @@
       var snapsMeta = state.snapshots;
       /* Always keep a rollback point before time-travel replaces state. */
       return createSnapshot('نقطة تراجع تلقائية قبل استعادة ' + id, passphrase).then(function (rollback) {
+        var currentVault = state.secretVault;
         state = Object.assign(initialState(), payload);
         state.snapshots = snapsMeta;
+        state.secretVault = currentVault; // a snapshot never silently replaces the owner's keys
         saveNow();
+        dispatchVaultChange();
         logAudit('snapshot_restored', 'ceo', 'Time-travel rollback to ' + id + (snapVersion !== SNAPSHOT_VERSION ? ' (compat ' + snapVersion + ')' : '') + ' — rollback ' + rollback.id);
         return { restoredCount: 1, snapshotDate: rec.createdAt, version: snapVersion, rollbackId: rollback.id };
       });
@@ -1413,15 +1416,14 @@
       var listing = mode === 'cloud' ? cloud : mode === 'zen' ? zen : mode === 'groq' ? groq : mode === 'openrouter' ? or : local;
       var free = listing.free || [];
       var allIds = (listing.models || []).map(function (m) { return m.id; });
-      if (!allIds.length && (mode === 'local' || mode === 'zen')) allIds = providerFallbacks(mode).slice();
-      assignments = roleAssignments(allIds.length ? allIds : providerFallbacks(mode), mode === 'cloud' ? 'cloud' : mode === 'groq' ? 'groq' : mode === 'openrouter' ? 'openrouter' : mode);
+      assignments = roleAssignments(allIds, mode === 'cloud' ? 'cloud' : mode === 'groq' ? 'groq' : mode === 'openrouter' ? 'openrouter' : mode);
       /* A public model listing (OpenRouter works without a key) is NOT the
          same as a usable chat connection. Require credentials before showing
          agents as connected; otherwise the bulbs lie about live replies. */
       var connected = mode === 'demo' ? false : (listing.connected && providerConfigured(mode));
-      var modelLabel = (settings.lastProviderMode === mode && settings.lastModel)
-        ? settings.lastModel
-        : (settings.modelOverrides['*'] || (free[0] || (mode === 'groq' ? settings.groqModel : mode === 'openrouter' ? settings.openrouterModel : 'demo')));
+      var lastLive = settings.lastProviderMode === mode && settings.lastModel && allIds.indexOf(settings.lastModel) !== -1
+        ? settings.lastModel : '';
+      var modelLabel = lastLive || settings.modelOverrides['*'] || free[0] || (allIds.length ? allIds[0] : '—');
       var agents = allAgents().map(function (a) {
         var g = ensureProfile(a.id);
         return Object.assign({}, a, {
@@ -1433,13 +1435,13 @@
         });
       });
       return {
-        providerConfig: { provider: mode, model: modelLabel, hasKey: connected, baseUrl: mode === 'cloud' ? settings.relayUrl : (local.base || settings.localUrl) },
+        providerConfig: { provider: mode, model: modelLabel, hasKey: connected, baseUrl: mode === 'cloud' ? settings.relayUrl : (local.base || 'browser') },
         providerStatus: {
           provider: mode,
           model: modelLabel,
           hasKey: connected,
           cloud: { connected: cloud.connected, baseUrl: settings.relayUrl, error: cloud.error, freeModels: cloud.free.length, defaultProvider: cloud.defaultProvider, providers: cloud.providers },
-          local: { connected: local.connected, baseUrl: local.base || settings.localUrl, bridgeUrl: settings.localBridgeUrl, error: local.error, modelCount: local.models.length },
+          local: { connected: local.connected, quick: Boolean(local.quick), webgpu: Boolean(local.webgpu), profile: settings.browserProfile, error: local.error, modelCount: local.models.length },
           zen: { connected: zen.connected, error: zen.error, modelCount: zen.models.length },
           groq: { connected: groq.connected, error: groq.error, freeModels: groq.free.length },
           openrouter: { connected: or.connected, error: or.error, freeModels: or.free.length },
@@ -1475,14 +1477,16 @@
     ]).then(function (r) {
       var mode = currentMode();
       var listing = mode === 'cloud' ? r[0] : mode === 'local' ? r[1] : mode === 'zen' ? r[2] : mode === 'groq' ? r[3] : mode === 'openrouter' ? r[4] : null;
-      var connected = mode === 'demo' ? false : Boolean(listing && listing.connected && providerConfigured(mode));
+      var connected = mode === 'demo' ? false : mode === 'local'
+        ? Boolean(listing && (listing.connected || listing.quick))
+        : Boolean(listing && listing.connected && providerConfigured(mode));
       var auth = window.MDM1Auth && typeof window.MDM1Auth.status === 'function' ? window.MDM1Auth.status() : { signedIn: false };
       var vault = vaultStatus();
       var sec = securityScan();
       var q = quotaSummary();
       var providers = {
         cloud: { connected: Boolean(r[0].connected), error: r[0].error || null, freeModels: (r[0].free || []).length },
-        local: { connected: Boolean(r[1].connected), error: r[1].error || null, models: (r[1].models || []).length },
+        local: { connected: Boolean(r[1].connected || r[1].quick), quick: Boolean(r[1].quick), webgpu: Boolean(r[1].webgpu), profile: settings.browserProfile, error: r[1].error || null, models: (r[1].models || []).length },
         zen: { connected: Boolean(r[2].connected), error: r[2].error || null, models: (r[2].models || []).length },
         groq: { connected: Boolean(r[3].connected), error: r[3].error || null, freeModels: (r[3].free || []).length },
         openrouter: { connected: Boolean(r[4].connected), error: r[4].error || null, freeModels: (r[4].free || []).length }
@@ -1494,7 +1498,7 @@
         '🛡️ فحص الأمان: ' + (sec && Array.isArray(sec.findings) ? sec.findings.length + ' ملاحظة' : 'تم'),
         '📊 الحصة: ' + (q && q.calls != null ? q.calls + ' طلب / ' + (q.tokens || 0) + ' tok' : 'لا توجد بيانات'),
         '☁️ السحابة: معطّلة (مفاتيحك أنت فقط)',
-        '🏠 المحلي: ' + (providers.local.connected ? 'متصل' : 'غير متصل') + (providers.local.error ? ' — ' + providers.local.error : ''),
+        '🏠 المحلي (WebGPU): ' + (providers.local.quick ? 'وضع سريع آمن' : providers.local.connected ? 'متصل' : 'غير متصل') + (providers.local.error ? ' — ' + providers.local.error : ''),
         '🔄 المزامنة: ' + (settings.syncEnabled && syncConfigured() ? 'مفعّلة' : 'معطّلة')
       ];
       return {

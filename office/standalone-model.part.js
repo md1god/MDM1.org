@@ -15,42 +15,138 @@
     var h = providerChatHealth[provider];
     return !(h && h.ok === false && Date.now() - h.at < 15 * 60 * 1000);
   }
-  function basicAuth(password) {
-    return 'Basic ' + btoa('opencode:' + password);
+  /* ── browser-local WebGPU model (same engine as /assistant/) ─────────────
+     The old local HTTP bridge and its service password are gone. On capable
+     desktops the WebLLM engine runs a small Qwen model inside this tab; on
+     phones or without WebGPU we use a clearly labeled quick mode. No key and
+     no server are involved, and no model is invented by us — the IDs below
+     are the approved profiles from the owner's own assistant site. */
+  var WEBLLM_MODULE_URL = (CFG.webllm && CFG.webllm.moduleUrl) || 'https://esm.run/@mlc-ai/web-llm';
+  var BROWSER_PROFILES = {
+    auto: { label: 'تلقائي حسب الجهاز واللغة', model: null },
+    quick: { label: 'الوضع السريع الآمن', model: null },
+    multilingual: { label: 'Qwen متعدد اللغات · خفيف', model: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC' },
+    balanced: { label: 'Qwen3 متعدد اللغات · متوازن', model: 'Qwen3-1.7B-q4f16_1-MLC' },
+    coding: { label: 'Qwen Coder · برمجة', model: 'Qwen2.5-Coder-0.5B-Instruct-q4f16_1-MLC' }
+  };
+  var WEBLLM = { module: null, engine: null, modelId: null, loading: null };
+  var CONSTRAINED_DEVICE = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)
+    || (navigator.deviceMemory && navigator.deviceMemory <= 4)
+    || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+  function detectLanguage(text) {
+    var v = String(text || '');
+    if (/\p{Script=Arabic}/u.test(v)) return 'ar';
+    if (/\p{Script=Devanagari}/u.test(v)) return 'hi';
+    if (/\p{Script=Cyrillic}/u.test(v)) return 'ru';
+    if (/\p{Script=Han}/u.test(v)) return 'zh';
+    if (/\p{Script=Hiragana}|\p{Script=Katakana}/u.test(v)) return 'ja';
+    if (/\p{Script=Hangul}/u.test(v)) return 'ko';
+    return 'en';
   }
-
+  function profileFor(lang) {
+    if (CONSTRAINED_DEVICE || !navigator.gpu) return 'quick';
+    if (settings.browserProfile && settings.browserProfile !== 'auto') return settings.browserProfile;
+    return (navigator.deviceMemory >= 8 && navigator.hardwareConcurrency >= 8) ? 'balanced' : 'multilingual';
+  }
+  function loadWebLLMModule() {
+    if (WEBLLM.module) return Promise.resolve(WEBLLM.module);
+    return import(WEBLLM_MODULE_URL).then(function (mod) { WEBLLM.module = mod; return mod; });
+  }
+  function browserProfileModel(lang) {
+    var p = profileFor(lang || 'ar');
+    return BROWSER_PROFILES[p] ? BROWSER_PROFILES[p].model : null;
+  }
   function listLocalModels(force) {
-    if (!secret('localPassword')) return Promise.resolve({ connected: false, models: [], free: [], error: 'أدخل كلمة مرور خدمة OpenCode (service.json).' });
     if (!force && providerCache.local && Date.now() - providerCache.localAt < 30000) return Promise.resolve(providerCache.local);
-    // Try the optional HTTPS/local bridge first (works from mdm1.org), then the direct app URL.
-    var bases = [settings.localBridgeUrl, settings.localUrl].filter(Boolean).filter(function (v, i, a) { return a.indexOf(v) === i; });
-    var lastErr = '';
-    function tryBase(i) {
-      if (i >= bases.length) {
-        var out = { connected: false, models: [], free: [], base: bases[0] || settings.localUrl, error: lastErr || 'تعذر الاتصال بالمزود المحلي.' };
-        providerCache.local = out; providerCache.localAt = Date.now();
-        return Promise.resolve(out);
-      }
-      var base = bases[i].replace(/\/$/, '');
-      return nativeFetch(base + '/api/model', {
-        headers: { authorization: basicAuth(secret('localPassword')), accept: 'application/json' },
-        cache: 'no-store'
-      }).then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      }).then(function (j) {
-        var models = (j.data || []).filter(function (m) { return m.type === 'chat' && m.enabled !== false; });
-        var free = models.filter(isFreeModel).map(function (m) { return m.id; });
-        var out = { connected: true, models: models, free: free, base: base, error: null };
-        settings.localBase = base; saveSettings();
-        providerCache.local = out; providerCache.localAt = Date.now();
+    var out = { connected: false, models: [], free: [], quick: true, webgpu: Boolean(navigator.gpu), base: WEBLLM_MODULE_URL, error: null };
+    if (CONSTRAINED_DEVICE || !navigator.gpu) {
+      out.error = 'الجهاز يستخدم الوضع السريع الآمن — النموذج المحلي يحتاج WebGPU.';
+      providerCache.local = out; providerCache.localAt = Date.now();
+      return Promise.resolve(out);
+    }
+    return loadWebLLMModule().then(function (mod) {
+      var list = (mod.prebuiltAppConfig && mod.prebuiltAppConfig.model_list) || [];
+      var ids = Object.keys(BROWSER_PROFILES).map(function (k) { return BROWSER_PROFILES[k].model; }).filter(Boolean);
+      var models = ids.filter(function (id) {
+        return list.some(function (x) { return x && x.model_id === id; });
+      }).map(function (id) { return { id: id, name: id }; });
+      out.connected = true;
+      out.models = models;
+      out.free = models.map(function (m) { return m.id; });
+      out.quick = profileFor('ar') === 'quick';
+      providerCache.local = out; providerCache.localAt = Date.now();
+      return out;
+    }).catch(function (e) {
+      out.error = e.message || 'تعذر تحميل محرك النموذج المحلي.';
+      providerCache.local = out; providerCache.localAt = Date.now();
+      return out;
+    });
+  }
+  function ensureBrowserEngine(progressCb, lang) {
+    var modelId = browserProfileModel(lang || 'ar');
+    if (!modelId) return Promise.resolve({ ok: false, quick: true, error: 'الوضع السريع الآمن — لا يوجد نموذج محلي على هذا الجهاز.' });
+    if (WEBLLM.engine && WEBLLM.modelId === modelId) return Promise.resolve({ ok: true, modelId: modelId, engine: WEBLLM.engine });
+    if (WEBLLM.loading) return WEBLLM.loading;
+    WEBLLM.loading = loadWebLLMModule().then(function (mod) {
+      var list = (mod.prebuiltAppConfig && mod.prebuiltAppConfig.model_list) || [];
+      if (!list.some(function (x) { return x && x.model_id === modelId; })) throw new Error('النموذج غير متاح في قائمة WebLLM.');
+      var cb = typeof progressCb === 'function' ? function (info) {
+        progressCb({ progress: Number(info && info.progress) || 0, text: (info && info.text) || 'تحميل النموذج…' });
+      } : undefined;
+      if (WEBLLM.engine && typeof WEBLLM.engine.reload === 'function') return WEBLLM.engine.reload(modelId).then(function () { return WEBLLM.engine; });
+      return mod.CreateMLCEngine(modelId, cb ? { initProgressCallback: cb } : undefined);
+    }).then(function (engine) {
+      WEBLLM.engine = engine; WEBLLM.modelId = modelId; WEBLLM.loading = null;
+      return { ok: true, modelId: modelId, engine: engine };
+    }).catch(function (e) {
+      WEBLLM.loading = null; WEBLLM.engine = null; WEBLLM.modelId = null;
+      return { ok: false, quick: true, error: e.message };
+    });
+    return WEBLLM.loading;
+  }
+  function quickLocalReply(agent, warning) {
+    return {
+      text: '⚡ **الوضع السريع الآمن** — يعمل محلياً داخل متصفحك دون خادم أو مفتاح. ' +
+        (warning ? String(warning) + '\n\n' : '') +
+        'لتفعيل النموذج اللغوي المحلي الكامل، افتح 🔌 الاتصال واضغط «تحميل النموذج المحلي» على جهاز يدعم WebGPU.',
+      mode: 'fallback', provider: 'browser-quick', model: 'quick', warning: warning || 'quick_mode',
+      usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, costUsd: 0 }
+    };
+  }
+  function generateLocal(opts, systemPrompt, messages, listing) {
+    var lang = detectLanguage((messages.length ? messages[messages.length - 1].text : '') || '');
+    var modelId = browserProfileModel(lang);
+    if (!modelId || CONSTRAINED_DEVICE || !navigator.gpu || (!WEBLLM.engine && settings.browserAutoLoad === false)) {
+      return Promise.resolve(quickLocalReply(getAgent(opts.agentId), listing && listing.error));
+    }
+    return ensureBrowserEngine(null, lang).then(function (r) {
+      if (!r.ok || !r.engine) return quickLocalReply(getAgent(opts.agentId), r.error || (listing && listing.error));
+      var lastUser = messages.length ? messages[messages.length - 1].text : '';
+      var req = r.engine.chat.completions.create({
+        messages: [{ role: 'system', content: systemPrompt }].concat(messages.map(function (m) {
+          return { role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text };
+        })),
+        temperature: 0.2,
+        max_tokens: 300
+      });
+      return Promise.race([
+        req,
+        new Promise(function (_, reject) { setTimeout(function () { reject(new Error('انتهت مهلة النموذج المحلي.')); }, 20000); })
+      ]).then(function (res) {
+        var text = res && res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content;
+        if (!text) return quickLocalReply(getAgent(opts.agentId), 'رد فارغ من النموذج المحلي.');
+        var out = { text: String(text), mode: 'live', provider: 'browser-webllm', model: r.modelId,
+          usage: estimateUsage(systemPrompt, messages, String(text), modelById(listing, r.modelId)) };
+        out.usage.costUsd = 0;
+        markChatHealth('local', true, null);
+        markUsage('browser-webllm', r.modelId, out.usage);
         return out;
       }).catch(function (e) {
-        lastErr = e.message;
-        return tryBase(i + 1);
+        try { r.engine.interruptGenerate && r.engine.interruptGenerate(); } catch (_) {}
+        markChatHealth('local', false, e.message);
+        return quickLocalReply(getAgent(opts.agentId), e.message);
       });
-    }
-    return tryBase(0);
+    });
   }
 
   function listZenModels(force) {
@@ -86,11 +182,12 @@
       return r.json();
     }).then(function (j) {
       var all = (j.data || []).filter(function (m) { return !m.type || m.type === 'chat'; });
-      /* Groq does not publish a price field — restrict to the free-tier allowlist. */
-      var ids = all.map(function (m) { return m.id; });
-      var free = GROQ_FREE_TIER_MODELS.filter(function (id) { return ids.indexOf(id) !== -1; });
+      /* Show every live Groq model. Free status comes only from live metadata;
+         where Groq omits pricing we mark it unknown instead of hiding it. */
+      var free = all.filter(isFreeModel).map(function (m) { return m.id; });
       var models = all.map(function (m) { return Object.assign({}, m, { freeTier: free.indexOf(m.id) !== -1 }); });
-      var out = { connected: true, models: models, free: free, base: settings.groqBase, error: null };
+      var out = { connected: true, models: models, free: free, base: settings.groqBase, error: null,
+        note: free.length ? null : 'Groq لا يعلن أسعار النماذج — تحقق من حسابك قبل الاختيار.' };
       providerCache.groq = out; providerCache.groqAt = Date.now();
       return out;
     }).catch(function (e) {
@@ -168,7 +265,8 @@
   }
   function providerConfigured(mode) {
     if (mode === 'cloud' || mode === 'supabase') return false;
-    if (mode === 'local') return Boolean(secret('localPassword'));
+    if (mode === 'local') return true; // WebGPU full mode or labeled quick mode
+    if (typeof vaultLocked === 'function' && vaultLocked()) return false;
     if (mode === 'zen') return Boolean(secret('zenKey'));
     if (mode === 'groq') return Boolean(secret('groqKey'));
     if (mode === 'openrouter') return Boolean(secret('openrouterKey'));
@@ -177,8 +275,8 @@
   function currentMode() {
     var mode = settings.mode === 'supabase' || settings.mode === 'cloud' ? 'demo' : settings.mode;
     if (mode !== 'auto') return mode;
-    /* Owner keys are never used. Order: local OpenCode (HTTPS bridge first),
-       then user-owned Zen / Groq / OpenRouter keys on this device only. */
+    /* Owner keys are never used. Order: browser-local WebGPU/quick, then the
+       user's own Zen / Groq / OpenRouter keys on this device only. */
     var order = ['local', 'zen', 'groq', 'openrouter'];
     var i, mode;
     for (i = 0; i < order.length; i++) {
@@ -395,44 +493,7 @@
 
     if (mode === 'local') {
       return listLocalModels().then(function (listing) {
-        if (!listing.connected) return fallback(listing.error);
-        var pool = poolFor(listing, forcedModel);
-        if (!pool.length) return fallback('وضع المجاني فقط مفعّل ولا توجد نماذج مجانية متاحة — لم أستخدم نموذجاً مدفوعاً.');
-        var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'local');
-        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-local').slice(0, 3);
-        var errors = [];
-        function attempt(i) {
-          if (i >= chain.length) return fallback(errors.join('\n'));
-          var id = chain[i];
-          return nativeFetch((listing.base || settings.localUrl).replace(/\/$/, '') + '/api/experimental/generate/text', {
-            method: 'POST',
-            headers: { authorization: basicAuth(secret('localPassword')), 'content-type': 'application/json' },
-            body: JSON.stringify({ prompt: transcript(systemPrompt, messages), model: { id: id, providerID: 'opencode' } })
-          }).then(function (r) {
-            return r.text().then(function (raw) {
-              var j = safeJson(raw, {});
-              if (!r.ok) {
-                var msg = j.message || (j.error && j.error.message) || raw.slice(0, 200) || ('HTTP ' + r.status);
-                errors.push(id + ': ' + msg);
-                if (r.status === 429 || /free usage limit|rate limit/i.test(msg)) markRateLimit('opencode-local', id, retryMsFrom(r, j), msg);
-                else markModelError('opencode-local', id, msg);
-                return attempt(i + 1);
-              }
-              var text = (j.data && j.data.text) || '';
-              if (!text) { errors.push(id + ': رد فارغ'); markModelError('opencode-local', id, 'رد فارغ'); return attempt(i + 1); }
-              var out = { text: text, mode: 'live', provider: 'opencode-local', model: id, usage: estimateUsage(systemPrompt, messages, text, modelById(listing, id)) };
-              markUsage('opencode-local', id, out.usage);
-              return out;
-            });
-          }).catch(function (e) {
-            errors.push(id + ': ' + e.message);
-            markModelError('opencode-local', id, e.message);
-            return attempt(i + 1);
-          });
-        }
-        return attempt(0).catch(function (e) {
-          return fallback(errors.join('\n') || e.message);
-        });
+        return generateLocal(opts, systemPrompt, messages, listing);
       });
     }
 

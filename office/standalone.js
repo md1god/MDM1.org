@@ -7,7 +7,7 @@
    published synchronously so app.js never boots before the runtime exists. */
 (function () {
   'use strict';
-  var VERSION = '20261128pwa29';
+  var VERSION = '20261128pwa30';
   var PARTS = [
     './standalone-core.part.js',
     './standalone-model.part.js',

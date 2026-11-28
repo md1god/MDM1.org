@@ -34,7 +34,8 @@
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function safeJson(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
   function num(v, d) { var n = Number(v); return isFinite(n) ? n : (d || 0); }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  var escAttr = esc;
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function words(s) { return String(s || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(function (w) { return w.length > 2; }); }
 
@@ -48,19 +49,15 @@
 
   /* ── settings (connection, models, telegram) ──────────────────────────── */
   var defaultSettings = {
-    mode: 'auto',                    // auto | cloud | local | zen | groq | openrouter | demo
-    localUrl: (CFG.localApi && CFG.localApi.url) || 'http://127.0.0.1:28894',
-    localBridgeUrl: (CFG.localBridge && CFG.localBridge.url) || 'https://localhost:28895',
-    localBase: '',
-    localPassword: '',
+    mode: 'auto',                    // auto | local(WebGPU) | zen | groq | openrouter | demo
+    browserProfile: 'auto',          // auto | quick | multilingual | balanced | coding
+    browserAutoLoad: true,
     zenKey: '',
     zenBase: (CFG.zen && CFG.zen.baseUrl) || 'https://opencode.ai/zen/v1',
     groqKey: '',
     groqBase: (CFG.groq && CFG.groq.baseUrl) || 'https://api.groq.com/openai/v1',
-    groqModel: 'llama-3.3-70b-versatile',
     openrouterKey: '',
     openrouterBase: (CFG.openrouter && CFG.openrouter.baseUrl) || 'https://openrouter.ai/api/v1',
-    openrouterModel: 'baidu/ernie-5.5-flash-preview:free',
     freeOnly: true,
     modelOverrides: {},
     /* Model lab: only benchmark-passed models are auto-assigned to roles. */
@@ -92,6 +89,10 @@
   if (/^https:\/\/opencode\.ai\/?$/i.test(settings.zenBase)) settings.zenBase = defaultSettings.zenBase;
   if (/^https:\/\/api\.groq\.com\/?$/i.test(settings.groqBase)) settings.groqBase = defaultSettings.groqBase;
   if (/^https:\/\/openrouter\.ai\/?$/i.test(settings.openrouterBase)) settings.openrouterBase = defaultSettings.openrouterBase;
+  /* The old local HTTP bridge/password is gone. The local provider now means
+     the browser WebGPU model from https://mdm1.org/assistant/. */
+  if (settings.localPassword) settings.localPassword = '';
+  delete settings.localUrl; delete settings.localBridgeUrl; delete settings.localBase;
   function saveSettings() { writeLS(LS_SETTINGS, settings); }
 
   /* ── company data (agents / knowledge / playbooks) ────────────────────── */
@@ -438,7 +439,9 @@
       if (!plain || typeof plain !== 'object' || !plain.meta) throw new Error('النسخة البعيدة غير صالحة أو أن سر المزامنة مختلف.');
       /* Never overwrite local work silently: keep a one-click rollback copy. */
       var backup = backupLocalState(reason || 'cloud');
+      var currentVault = state.secretVault;
       state = mergeState(plain);
+      state.secretVault = currentVault; // remote sync never overwrites local keys
       settings.syncVersion = num(j.version, 0);
       saveSettings(); saveNow();
       logAudit('sync_conflict_applied', 'ceo', 'Cloud state applied; local backup kept at ' + backup.at);
@@ -488,25 +491,27 @@
     }, 1500);
   }
 
-  /* ── encrypted secret vault (browser-only) ───────────────────────────────
-     The scout can move every API key out of localStorage into an AES-256-GCM
-     blob. The passphrase is never written anywhere: after a reload the user
-     unlocks the vault in memory again. Nothing is sent to any server.      */
-  var SECRET_FIELDS = ['localPassword', 'zenKey', 'groqKey', 'openrouterKey', 'relaySecret', 'syncSecret'];
+  /* ── encrypted secret vault (browser-only, persistent) ───────────────────
+     Keys never touch localStorage in plaintext. The AES-256-GCM blob lives in
+     state.secretVault; the PBKDF2-150k passphrase is never stored. After a
+     reload the owner unlocks the vault in memory. Only an explicit disconnect
+     deletes a key — opening a panel, testing, or reloading never does.       */
+  var SECRET_FIELDS = ['zenKey', 'groqKey', 'openrouterKey', 'relaySecret', 'syncSecret'];
   var runtimeVault = { key: null, data: {} };
-  /* Migrate any legacy plaintext keys out of localStorage into this session's
-     memory vault. They are never synced, never sent to a server, and are
-     persisted only if the user explicitly encrypts the vault with a passphrase. */
+  var pendingVaultMigration = false;
   SECRET_FIELDS.forEach(function (field) {
     if (settings[field]) {
       runtimeVault.data[field] = String(settings[field]);
       settings[field] = '';
+      pendingVaultMigration = true;
     }
   });
   saveSettings();
-  function secret(field) {
-    return (runtimeVault.data && runtimeVault.data[field]) || '';
+  function secret(field) { return (runtimeVault.data && runtimeVault.data[field]) || ''; }
+  function hasAnySecret() {
+    return SECRET_FIELDS.some(function (f) { return Boolean(secret(f)); });
   }
+  function vaultLocked() { return Boolean(state.secretVault && !runtimeVault.key); }
   function vaultKey(passphrase, saltB64) {
     return crypto.subtle.importKey('raw', new TextEncoder().encode(String(passphrase || '')), 'PBKDF2', false, ['deriveKey'])
       .then(function (base) {
@@ -514,6 +519,34 @@
           { name: 'PBKDF2', salt: b64urlToBytes(saltB64), iterations: 150000, hash: 'SHA-256' },
           base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
       });
+  }
+  function dispatchVaultChange() {
+    try { window.dispatchEvent(new Event('mdm1-vault-change')); } catch (e) {}
+  }
+  function persistSecrets() {
+    if (!runtimeVault.key || !state.secretVault) return Promise.resolve({ ok: false, error: 'الخزنة غير مفتوحة.' });
+    var payload = {};
+    var fields = [];
+    SECRET_FIELDS.forEach(function (f) { if (secret(f)) { payload[f] = secret(f); fields.push(f); } });
+    if (!fields.length) {
+      state.secretVault = null; settings.vaultEnabled = false;
+      saveSettings(); saveState(); dispatchVaultChange();
+      return Promise.resolve({ ok: true, fields: [], removed: true });
+    }
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, runtimeVault.key, new TextEncoder().encode(JSON.stringify(payload)))
+      .then(function (cipher) {
+        state.secretVault.version = 1;
+        state.secretVault.salt = state.secretVault.salt || bytesToB64u(crypto.getRandomValues(new Uint8Array(16)));
+        state.secretVault.iv = bytesToB64u(iv);
+        state.secretVault.data = bytesToB64u(cipher);
+        state.secretVault.fields = fields;
+        state.secretVault.at = nowIso();
+        state.secretVault.algorithm = 'AES-256-GCM/PBKDF2-150k';
+        settings.vaultEnabled = true;
+        saveSettings(); saveState(); dispatchVaultChange();
+        return { ok: true, fields: fields };
+      }).catch(function (e) { return { ok: false, error: e.message }; });
   }
   function encryptSecrets(passphrase) {
     if (!passphrase) return Promise.resolve({ ok: false, error: 'أدخل كلمة مرور الخزنة أولاً.' });
@@ -530,16 +563,23 @@
             version: 1, salt: salt, iv: bytesToB64u(iv), data: bytesToB64u(cipher),
             fields: fields, at: nowIso(), algorithm: 'AES-256-GCM/PBKDF2-150k'
           };
-          fields.forEach(function (f) { runtimeVault.data[f] = payload[f]; settings[f] = ''; });
           runtimeVault.key = key;
+          pendingVaultMigration = false;
           settings.vaultEnabled = true;
-          saveSettings(); saveState();
+          saveSettings(); saveState(); dispatchVaultChange();
           logAudit('vault_encrypted', 'sec-scout', 'Encrypted ' + fields.length + ' secret fields locally', { fields: fields });
           return { ok: true, fields: fields };
         });
     }).catch(function (e) { return { ok: false, error: e.message }; });
   }
-  function unlockVault(passphrase) {
+  function setSecret(field, value) {
+    var v = String(value || '').trim();
+    if (!v || SECRET_FIELDS.indexOf(field) === -1) return false;
+    if (secret(field) === v) return false;
+    runtimeVault.data[field] = v;
+    return true;
+  }
+  function unlockVault(passphrase, persistMerged) {
     var v = state.secretVault;
     if (!v || !v.data) return Promise.resolve({ ok: false, error: 'لا توجد خزنة مشفّرة على هذا الجهاز.' });
     return vaultKey(passphrase, v.salt).then(function (key) {
@@ -547,16 +587,48 @@
         .then(function (buf) {
           var data = safeJson(new TextDecoder().decode(buf), null);
           if (!data || typeof data !== 'object') throw new Error('فشل فك التشفير — كلمة المرور غير صحيحة.');
-          runtimeVault = { key: key, data: data };
+          var merged = {};
+          SECRET_FIELDS.forEach(function (f) { if (secret(f)) merged[f] = secret(f); });
+          Object.keys(data).forEach(function (f) { if (SECRET_FIELDS.indexOf(f) !== -1) merged[f] = data[f]; });
+          runtimeVault = { key: key, data: merged };
+          pendingVaultMigration = false;
           logAudit('vault_unlocked', 'sec-scout', 'Secret vault unlocked in memory', {});
-          return { ok: true, fields: Object.keys(data) };
+          dispatchVaultChange();
+          if (persistMerged && Object.keys(merged).length) return persistSecrets().then(function () { return { ok: true, fields: Object.keys(merged) }; });
+          return { ok: true, fields: Object.keys(merged) };
         });
     }).catch(function (e) { return { ok: false, error: e.message || 'كلمة المرور غير صحيحة.' }; });
+  }
+  var PROVIDER_SECRET_FIELDS = {
+    zen: 'zenKey', groq: 'groqKey', openrouter: 'openrouterKey', relay: 'relaySecret', sync: 'syncSecret', all: null
+  };
+  function disconnectProvider(provider) {
+    var field = Object.prototype.hasOwnProperty.call(PROVIDER_SECRET_FIELDS, provider) ? PROVIDER_SECRET_FIELDS[provider] : undefined;
+    if (field === undefined) return Promise.resolve({ ok: false, error: 'مزود غير معروف.' });
+    if (field === null) {
+      SECRET_FIELDS.forEach(function (f) { delete runtimeVault.data[f]; });
+      logAudit('vault_disconnected', 'owner', 'All provider keys disconnected', { provider: 'all' });
+    } else {
+      delete runtimeVault.data[field];
+      logAudit('provider_disconnected', 'owner', 'Provider disconnected', { provider: provider, field: field });
+    }
+    providerCache[provider] = null; providerCache[provider + 'At'] = 0;
+    providerChatHealth[provider] = null;
+    return persistSecrets().then(function (r) { return { ok: true, fields: r.fields || [], removed: Boolean(r.removed) }; });
+  }
+  function lockVault() {
+    runtimeVault = { key: null, data: {} };
+    dispatchVaultChange();
+    return { ok: true };
   }
   function vaultStatus() {
     return {
       exists: Boolean(state.secretVault && state.secretVault.data),
       unlocked: Boolean(runtimeVault.key),
+      locked: vaultLocked(),
+      needsUnlock: Boolean(state.secretVault && !runtimeVault.key),
+      pendingMigration: pendingVaultMigration || (hasAnySecret() && !state.secretVault),
+      hasKeys: hasAnySecret(),
       algorithm: state.secretVault ? state.secretVault.algorithm : null,
       fields: state.secretVault ? (state.secretVault.fields || []) : []
     };
@@ -706,24 +778,16 @@
   }
 
   /* ── model routing ────────────────────────────────────────────────────── */
+  /* Roles are listed with NO hardcoded model IDs. Every model assigned to a
+     role comes from a live provider listing or a benchmark the owner ran. */
   var ROLE_MODELS = {
-    'executive-assistant': ['big-pickle', 'seaglass-alpha-free', 'tidepool-alpha-free'],
-    'hr-manager': ['mimo-v2.6-flash-free', 'big-pickle', 'beam-free'],
-    'ai-trainer': ['beam-free', 'nemotron-3.5-lightning-free', 'flint-40b-free'],
-    'accountant': ['flint-40b-free', 'deepseek-v4.1-flash-free', 'big-pickle'],
-    'marketing-lead': ['nemotron-3.5-lightning-free', 'seaglass-alpha-free', 'mimo-v2.6-flash-free'],
-    'security-officer': ['iceman-free', 'deepseek-v4.1-flash-free', 'flint-40b-free'],
-    'web-research-team': ['seaglass-alpha-free', 'tidepool-alpha-free', 'nemotron-3.5-super-vl-free'],
-    'auditors-experts-devs': ['deepseek-v4.1-flash-free', 'flint-40b-free', 'big-pickle'],
-    'dev-auto': ['deepseek-v4.1-flash-free', 'big-pickle', 'flint-40b-free'],
-    'sec-scout': ['iceman-free', 'deepseek-v4.1-flash-free', 'flint-40b-free'],
-    'legal-accountant': ['flint-40b-free', 'deepseek-v4.1-flash-free', 'big-pickle'],
-    'legal-advisor': ['deepseek-v4.1-flash-free', 'iceman-free', 'big-pickle'],
-    'qa-exec-monitor': ['iceman-free', 'deepseek-v4.1-flash-free'],
-    'qa-fin-auditor': ['flint-40b-free', 'deepseek-v4.1-flash-free'],
-    'qa-mkt-corrector': ['big-pickle', 'nemotron-3.5-lightning-free']
+    'executive-assistant': [], 'hr-manager': [], 'ai-trainer': [], 'accountant': [],
+    'marketing-lead': [], 'security-officer': [], 'web-research-team': [],
+    'auditors-experts-devs': [], 'dev-auto': [], 'sec-scout': [],
+    'legal-accountant': [], 'legal-advisor': [], 'qa-exec-monitor': [],
+    'qa-fin-auditor': [], 'qa-mkt-corrector': []
   };
-  var FALLBACK_MODELS = ['big-pickle', 'deepseek-v4.1-flash-free', 'seaglass-alpha-free', 'tidepool-alpha-free', 'flint-40b-free', 'iceman-free', 'beam-free', 'mimo-v2.6-flash-free', 'nemotron-3.5-lightning-free', 'nemotron-3.5-super-vl-free', 'hy4-flash-free'];
+  var FALLBACK_MODELS = [];
 
   /* ── department quality trio (monitor / auditor / corrector) ─────────── */
   var QA_KINDS = {
@@ -926,71 +990,23 @@
     });
     return best ? best.model : null;
   }
-  /* Known free-tier IDs. Groq's /models endpoint has no price field, so only
-     these IDs are eligible; account limits still apply (429 is tracked). */
-  var GROQ_FREE_TIER_MODELS = [
-    'llama-3.3-70b-versatile', 'llama-3.1-8b-instant',
-    'openai/gpt-oss-120b', 'openai/gpt-oss-20b',
-    'meta-llama/llama-4-scout-17b-16e-instruct',
-    'meta-llama/llama-4-maverick-17b-128e-instruct',
-    'qwen/qwen3-32b', 'moonshotai/kimi-k2-instruct-0905',
-    'allam-2-7b', 'gemma2-9b-it'
-  ];
-  var GROQ_ROLE_MODELS = {
-    'executive-assistant': ['llama-3.3-70b-versatile', 'openai/gpt-oss-120b'],
-    'hr-manager': ['openai/gpt-oss-20b', 'llama-3.3-70b-versatile'],
-    'ai-trainer': ['openai/gpt-oss-20b', 'llama-3.1-8b-instant'],
-    'accountant': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
-    'marketing-lead': ['llama-3.1-8b-instant', 'openai/gpt-oss-20b'],
-    'security-officer': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
-    'web-research-team': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
-    'auditors-experts-devs': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
-    'legal-accountant': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'],
-    'legal-advisor': ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile']
-  };
-  var OPENROUTER_ROLE_MODELS = {
-    'executive-assistant': ['baidu/ernie-5.5-flash-preview:free', 'liquid/lfm-3-1.7b:free'],
-    'hr-manager': ['nvidia/nemotron-3.5-lightning:free', 'liquid/lfm-3-1.7b:free'],
-    'ai-trainer': ['google/gemma-4-26b-a4b-it:free', 'liquid/lfm-3-1.7b:free'],
-    'accountant': ['baidu/ernie-5.5-flash-preview:free', 'recursive/flint-v1.0:free'],
-    'marketing-lead': ['liquid/lfm-3-1.7b:free', 'nvidia/nemotron-3.5-lightning:free'],
-    'security-officer': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free'],
-    'web-research-team': ['nvidia/nemotron-3.5-super-vl:free', 'baidu/ernie-5.5-flash-preview:free'],
-    'auditors-experts-devs': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free'],
-    'legal-accountant': ['baidu/ernie-5.5-flash-preview:free', 'recursive/flint-v1.0:free'],
-    'legal-advisor': ['nvidia/nemotron-3-ultra-550b-a55b:free', 'baidu/ernie-5.5-flash-preview:free']
-  };
-  function rolePreferenceMap(provider) {
-    if (provider === 'groq') return GROQ_ROLE_MODELS;
-    if (provider === 'openrouter') return OPENROUTER_ROLE_MODELS;
-    return ROLE_MODELS;
-  }
-  function providerFallbacks(provider) {
-    if (provider === 'cloud') return (providerCache.cloud && providerCache.cloud.free || []).concat(FALLBACK_MODELS);
-    if (provider === 'groq') return GROQ_FREE_TIER_MODELS;
-    if (provider === 'openrouter') return ['baidu/ernie-5.5-flash-preview:free', 'liquid/lfm-3-1.7b:free', 'nvidia/nemotron-3.5-lightning:free', 'google/gemma-4-26b-a4b-it:free'];
-    return FALLBACK_MODELS;
+  /* Live-only model routing. Every ID must come from a live /models response,
+     the owner's explicit selection, or a benchmark they actually ran. */
+  function liveIds(availableIds) {
+    return (availableIds || []).filter(function (id) { return Boolean(id) && id !== 'auto' && id !== 'demo'; });
   }
   function pickModel(agentId, availableIds, explicit, provider) {
-    if (explicit && explicit !== 'auto') return explicit;
-    var avail = availableIds || [];
+    var avail = liveIds(availableIds);
+    if (explicit && explicit !== 'auto' && avail.indexOf(explicit) !== -1) return explicit;
     var qualified = qualifiedModelForRole(agentId, avail);
-    if (qualified) return qualified;
-    var map = rolePreferenceMap(provider);
-    var preferred = map[agentId] || [];
-    for (var i = 0; i < preferred.length; i++) if (avail.indexOf(preferred[i]) !== -1) return preferred[i];
-    var fallbacks = providerFallbacks(provider);
-    for (var j = 0; j < fallbacks.length; j++) if (avail.indexOf(fallbacks[j]) !== -1) return fallbacks[j];
-    return avail[0] || fallbacks[0];
+    if (qualified && avail.indexOf(qualified) !== -1) return qualified;
+    return avail[0] || '';
   }
   function fallbackChain(agentId, availableIds, first, provider) {
+    var avail = liveIds(availableIds);
     var chain = [];
-    if (first) chain.push(first);
-    var map = rolePreferenceMap(provider);
-    (map[agentId] || []).concat(providerFallbacks(provider), availableIds || []).forEach(function (id) {
-      if ((availableIds || []).indexOf(id) !== -1 && chain.indexOf(id) === -1) chain.push(id);
-    });
-    if (!chain.length && availableIds && availableIds.length) chain.push(availableIds[0]);
+    if (first && avail.indexOf(first) !== -1) chain.push(first);
+    avail.forEach(function (id) { if (chain.indexOf(id) === -1) chain.push(id); });
     return chain;
   }
   /* Drop models already known to be rate-limited; keep at least one candidate. */

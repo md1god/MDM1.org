@@ -138,6 +138,13 @@
       return Promise.resolve(jsonResponse({ error: '🚨 وضع الطوارئ نشط — تنفيذ العمليات متوقف مؤقتاً. استعد التشغيل من لوحة إدارة الأزمات.' }, 423));
     }
 
+    /* A locked vault must not silently generate with empty keys. Unlock and
+       disconnect endpoints stay reachable so the owner can resolve the gate. */
+    if (typeof vaultLocked === 'function' && vaultLocked() &&
+        /^\/api\/(chat|assistant|models\/(benchmark|train|auto-assign)|sync|security\/encrypt)/.test(path)) {
+      return Promise.resolve(jsonResponse({ error: 'الخزنة مقفلة — افتحها أولاً.', code: 'VAULT_LOCKED' }, 423));
+    }
+
     if (method === 'GET' && path === '/api/bootstrap') {
       return buildBootstrap().then(function (d) { return jsonResponse(d); });
     }
@@ -148,7 +155,7 @@
         var ids = (listing.models || []).map(function (x) { return x.id; });
         return jsonResponse({
           connected: listing.connected,
-          baseUrl: listing.base || settings.localUrl,
+          baseUrl: listing.base || 'browser',
           error: listing.error,
           models: listing.models,
           freeModels: listing.free,
@@ -192,6 +199,15 @@
     }
     if (method === 'POST' && path === '/api/security/unlock') {
       return unlockVault(b.passphrase).then(function (r) { return jsonResponse(r); });
+    }
+    if (method === 'GET' && path === '/api/security/vault') {
+      return Promise.resolve(jsonResponse(vaultStatus()));
+    }
+    if (method === 'POST' && path === '/api/security/lock') {
+      return Promise.resolve(jsonResponse(lockVault()));
+    }
+    if (method === 'POST' && path === '/api/security/disconnect') {
+      return disconnectProvider(b.provider || 'all').then(function (r) { return jsonResponse(r); });
     }
 
     if (method === 'POST' && path === '/api/health/check') {

@@ -7,7 +7,7 @@
 window.OFFICE_CONFIG = {
   officeName: 'MD1\u0075sd Company',
   /* Local brand image copied into office/ (public, no secrets). */
-  brandImage: 'app-logo.webp?v=20261128pwa29',
+  brandImage: 'app-logo.webp?v=20261128pwa30',
 
   /* Private page gate. The passphrase itself is never stored — only its hash. */
   requireUnlock: true,
@@ -26,10 +26,9 @@ window.OFFICE_CONFIG = {
   tokenTtlHours: 6,
   maxTokenTtlHours: 6,
 
-  /* Where the browser looks for the OpenCode app running on the user's PC.
-     The bridge is the HTTPS-capable proxy that also works from mdm1.org. */
-  localApi: { url: 'http://127.0.0.1:28894' },
-  localBridge: { url: 'https://localhost:28895' },
+  /* Browser-local model (the same WebGPU assistant already used on mdm1.org).
+     No local service, bridge, or password is needed — weights run in the tab. */
+  webllm: { moduleUrl: 'https://esm.run/@mlc-ai/web-llm' },
 
   /* Optional Supabase state sync. Endpoint and secret are entered by the user
      in the connection panel; nothing is hardcoded here. */
@@ -55,7 +54,8 @@ window.OFFICE_CONFIG = {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2psdHl0ZXZjbXBqeHphbWhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxMTgxMTEsImV4cCI6MjA5NzY5NDExMX0.nSgcMvEI4fjtKArc-1y7DkX_04kvclg8LCm3PahsiII'
   },
 
-  /* Cloud fallbacks (keys are entered by the user and kept in localStorage). */
+  /* Provider endpoints. Keys are entered by the user and live only in the
+     encrypted browser vault — never in localStorage plaintext or this file. */
   zen: { baseUrl: 'https://opencode.ai/zen/v1' },
   groq: { baseUrl: 'https://api.groq.com/openai/v1' },
   openrouter: { baseUrl: 'https://openrouter.ai/api/v1' },

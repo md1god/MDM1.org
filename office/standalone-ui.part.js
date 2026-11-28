@@ -110,6 +110,65 @@
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter') overlay.querySelector('#officePassBtn').click(); });
   }
 
+  /* ── encrypted vault gate (after the office passphrase) ───────────────── */
+  var vaultWaiters = [];
+  function waitVaultUnlock() {
+    var v = vaultStatus();
+    if (!v.exists && !v.pendingMigration && !v.hasKeys) return Promise.resolve();
+    if (!v.needsUnlock && !v.pendingMigration) return Promise.resolve();
+    return new Promise(function (resolve) { vaultWaiters.push(resolve); });
+  }
+  function resolveVaultWaiters() {
+    var list = vaultWaiters.splice(0);
+    list.forEach(function (resolve) { resolve(); });
+  }
+  function buildVaultGate() {
+    var v = vaultStatus();
+    if (!v.exists && !v.pendingMigration && !v.hasKeys) return;
+    if (!v.needsUnlock && !v.pendingMigration) return;
+    if (document.getElementById('officeVaultGate')) return;
+    var creating = !v.exists;
+    var overlay = document.createElement('div');
+    overlay.id = 'officeVaultGate';
+    overlay.className = 'office-vault-gate';
+    overlay.innerHTML =
+      '<div class="office-lock-card">' +
+      '<div class="office-lock-logo">🔐</div>' +
+      '<h1>' + (creating ? 'أنشئ خزنة مفاتيحك' : 'الخزنة مقفلة') + '</h1>' +
+      '<p class="office-lock-sub">' + (creating
+        ? 'وجدنا مفاتيح تحتاج حماية. اختر كلمة مرور للخزنة — لا تُحفظ ولا تُرسل لأي خادم. ستحتاجها بعد كل إعادة تحميل.'
+        : 'مفاتيحك محفوظة مشفّرة على هذا الجهاز. أدخل كلمة مرور الخزنة لفتحها في ذاكرة هذه الجلسة.') + '</p>' +
+      '<label>كلمة مرور الخزنة</label><input id="officeVaultPass" type="password" placeholder="كلمة مرور الخزنة..." autocomplete="current-password" />' +
+      (creating ? '<label>تأكيد كلمة المرور</label><input id="officeVaultPass2" type="password" placeholder="أعد كتابتها..." autocomplete="new-password" />' : '') +
+      '<button id="officeVaultBtn" class="office-btn primary">' + (creating ? '🔒 إنشاء الخزنة وحفظ المفاتيح' : '🔓 فتح الخزنة') + '</button>' +
+      '<button id="officeVaultDisconnect" class="office-btn" type="button">🗑️ فصل كل المفاتيح وحذف الخزنة</button>' +
+      '<div id="officeVaultMsg" class="office-lock-msg"></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    var msg = overlay.querySelector('#officeVaultMsg');
+    function fail(t) { msg.textContent = t; msg.className = 'office-lock-msg error'; }
+    function done() { msg.textContent = 'تم...'; msg.className = 'office-lock-msg ok'; setTimeout(function () { overlay.remove(); resolveVaultWaiters(); }, 350); }
+    overlay.querySelector('#officeVaultBtn').onclick = function () {
+      var pass = overlay.querySelector('#officeVaultPass').value;
+      if (!pass) { fail('أدخل كلمة مرور الخزنة.'); return; }
+      if (creating) {
+        var pass2 = overlay.querySelector('#officeVaultPass2').value;
+        if (pass !== pass2) { fail('كلمتا المرور غير متطابقتين.'); return; }
+        encryptSecrets(pass).then(function (r) { r.ok ? done() : fail('❌ ' + r.error); });
+      } else {
+        unlockVault(pass, true).then(function (r) { r.ok ? done() : fail('❌ ' + r.error); });
+      }
+    };
+    overlay.querySelector('#officeVaultDisconnect').onclick = function () {
+      if (!window.confirm('سيُحذف كل المفاتيح والخزنة من هذا الجهاز. هل أنت متأكد؟')) return;
+      disconnectProvider('all').then(function () { done(); });
+    };
+    overlay.querySelector('#officeVaultPass').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') overlay.querySelector('#officeVaultBtn').click();
+    });
+  }
+  function showVaultGate() { buildVaultGate(); }
+
   /* ── connection panel ─────────────────────────────────────────────────── */
   function injectStyles() { /* runtime CSS lives in styles.css (pwa21) */ }
 
@@ -122,31 +181,35 @@
     modal.id = 'officeConnModal';
     modal.className = 'office-modal';
     var agentOptions = allAgents().map(function (a) {
-      return '<div class="office-model-row" data-agent="' + esc(a.id) + '"><span>' + a.avatar + ' ' + esc(a.name) + '</span><select data-model-for="' + esc(a.id) + '"></select></div>';
+      return '<div class="office-model-row" data-agent="' + escAttr(a.id) + '"><span>' + esc(a.avatar) + ' ' + esc(a.name) + '</span><select data-model-for="' + escAttr(a.id) + '"></select></div>';
     }).join('');
     modal.innerHTML =
       '<div class="office-modal-card">' +
       '<h2>🔌 الاتصال بالنماذج وبوت تيليجرام</h2>' +
       (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" /><div><strong>MD1&#117;sd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
-      '<p>مفاتيحك أنت فقط هي التي تُستخدم. أدخل مفتاحك واختر مزوداً من: تطبيق OpenCode المحلي، جسر HTTPS المحلي، OpenCode Zen، Groq، OpenRouter، ثم تجريبي موسوم بوضوح. النماذج المجانية فقط هي المسموح بها.</p>' +
+      '<p>مفاتيحك أنت فقط هي التي تُستخدم، وتُحفظ في خزنة مشفّرة تبقى بعد إعادة التحميل ولا تُحذف إلا عند «الفصل». النموذج المحلي يعمل داخل متصفحك عبر WebGPU مثل مساعد MDM1 في /assistant/. كل النماذج المعروضة تأتي من القائمة الحية للمزود — اختر ما تريد.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (مفاتيحك أنت فقط)</option><option value="local">تطبيق OpenCode على هذا الجهاز</option><option value="zen">OpenCode Zen (مفتاحك أنت)</option><option value="groq">Groq (مفتاحك أنت — مجاني)</option><option value="openrouter">OpenRouter (مفتاحك أنت — المجاني فقط)</option><option value="demo">تجريبي موسوم — بدون نموذج حي</option></select></div>' +
-      '<div><label>النماذج المجانية فقط</label><select id="ocFree"><option value="true">نعم — مجاني فقط</option><option value="false">لا — اسمح بالمدفوع</option></select></div>' +
+      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (مفاتيحك أنت فقط)</option><option value="local">محلي — WebGPU داخل المتصفح</option><option value="zen">OpenCode Zen (مفتاحك أنت)</option><option value="groq">Groq (مفتاحك أنت)</option><option value="openrouter">OpenRouter (مفتاحك أنت)</option><option value="demo">تجريبي موسوم — بدون نموذج حي</option></select></div>' +
+      '<div><label>تفضيل النماذج المجانية</label><select id="ocFree"><option value="true">نعم — مجاني حيث عُرف</option><option value="false">اعرض كل النماذج المتاحة</option></select></div>' +
       '</div>' +
-      '<label>عنوان OpenCode المحلي</label><input id="ocLocalUrl" type="text" placeholder="http://127.0.0.1:28894" />' +
-      '<label>جسر HTTPS المحلي (يعمل من mdm1.org — اختياري)</label><input id="ocBridge" type="text" placeholder="https://localhost:28895" />' +
-      '<label>كلمة مرور خدمة OpenCode (من ~/.config/opencode/service.json)</label><input id="ocLocalPass" type="password" placeholder="الصق كلمة المرور..." />' +
+      '<div id="ocBrowserBox" class="office-browser-box">' +
+      '<div class="office-grid2"><div><label>ملف النموذج المحلي</label><select id="ocBrowserProfile"><option value="auto">تلقائي حسب الجهاز واللغة</option><option value="quick">الوضع السريع الآمن</option><option value="multilingual">Qwen متعدد اللغات · خفيف</option><option value="balanced">Qwen3 · متوازن</option><option value="coding">Qwen Coder · برمجة</option></select></div>' +
+      '<div><label class="office-check"><input id="ocBrowserAutoLoad" type="checkbox" checked /> حمّل النموذج المحلي عند الحاجة</label></div></div>' +
+      '<div class="office-actions"><button class="office-btn" id="ocBrowserLoad" type="button">🧠 تحميل النموذج المحلي</button></div>' +
+      '<div id="ocBrowserStatus" class="office-status">لم يُحمّل النموذج المحلي بعد.</div>' +
+      '<progress id="ocBrowserProgress" max="100" value="0" class="office-progress"></progress>' +
+      '</div>' +
       '<div class="office-grid2">' +
-      '<div><label>مفتاح OpenCode Zen (مفتاحك أنت — جهازك فقط)</label><input id="ocZenKey" type="password" placeholder="oc_..." /></div>' +
+      '<div><label>مفتاح OpenCode Zen</label><input id="ocZenKey" type="password" placeholder="اتركه فارغاً للإبقاء على المفتاح المحفوظ" /><button class="office-btn tiny" data-disconnect="zen" type="button">فصل Zen</button></div>' +
       '<div><label>عنوان Zen</label><input id="ocZenBase" type="text" /></div>' +
       '</div>' +
       '<div class="office-grid2">' +
-      '<div><label>مفتاح Groq (مفتاحك أنت — مجاني/مدفوع على جهازك فقط)</label><input id="ocGroqKey" type="password" placeholder="gsk_..." /></div>' +
-      '<div><label>عنوان Groq / النموذج المجاني</label><input id="ocGroqBase" type="text" /><input id="ocGroqModel" type="text" placeholder="llama-3.3-70b-versatile" style="margin-top:6px;" /></div>' +
+      '<div><label>مفتاح Groq</label><input id="ocGroqKey" type="password" placeholder="اتركه فارغاً للإبقاء على المفتاح المحفوظ" /><button class="office-btn tiny" data-disconnect="groq" type="button">فصل Groq</button></div>' +
+      '<div><label>عنوان Groq</label><input id="ocGroqBase" type="text" /><label>النموذج من القائمة الحية</label><select id="ocGroqModel"><option value="">اختبر الاتصال أولاً</option></select></div>' +
       '</div>' +
       '<div class="office-grid2">' +
-      '<div><label>مفتاح OpenRouter (مفتاحك أنت — جهازك فقط)</label><input id="ocOrKey" type="password" placeholder="sk-or-..." /></div>' +
-      '<div><label>موديل OpenRouter المجاني</label><input id="ocOrModel" type="text" placeholder="...:free" /></div>' +
+      '<div><label>مفتاح OpenRouter</label><input id="ocOrKey" type="password" placeholder="اتركه فارغاً للإبقاء على المفتاح المحفوظ" /><button class="office-btn tiny" data-disconnect="openrouter" type="button">فصل OpenRouter</button></div>' +
+      '<div><label>النموذج من القائمة الحية</label><select id="ocOrModel"><option value="">اختبر الاتصال أولاً</option></select></div>' +
       '</div>' +
       '<label>اسم بوت تيليجرام (بدون @)</label><input id="ocBot" type="text" placeholder="MD1_Office_bot" />' +
       '<div class="office-grid2">' +
@@ -163,8 +226,8 @@
       '<label style="margin-top:16px;">🧪 مختبر النماذج — اختبار وتدريب قبل التعيين</label>' +
       '<p>اختبر النموذج على مهمة الدور، ثم درّبه بـ 3 تمارين ضبط توجيه (prompt calibration). النماذج التي تجتاز الاختبار فقط هي التي تُعيَّن تلقائياً. هذا لا يغيّر أوزان النموذج، بل يضبط طريقة توجيهه.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="local">OpenCode المحلي</option><option value="zen">OpenCode Zen (مفتاحك)</option><option value="groq">Groq (مفتاحك — مجاني)</option><option value="openrouter">OpenRouter (مفتاحك — مجاني)</option></select></div>' +
-      '<div><label>الدور</label><select id="ocLabRole">' + allAgents().map(function (a) { return '<option value="' + esc(a.id) + '">' + a.avatar + ' ' + esc(a.name) + '</option>'; }).join('') + '</select></div>' +
+      '<div><label>المزود المراد اختباره</label><select id="ocLabProvider"><option value="local">محلي — WebGPU</option><option value="zen">OpenCode Zen (مفتاحك)</option><option value="groq">Groq (مفتاحك)</option><option value="openrouter">OpenRouter (مفتاحك)</option></select></div>' +
+      '<div><label>الدور</label><select id="ocLabRole">' + allAgents().map(function (a) { return '<option value="' + escAttr(a.id) + '">' + esc(a.avatar) + ' ' + esc(a.name) + '</option>'; }).join('') + '</select></div>' +
       '</div>' +
       '<label>النموذج بالضبط</label><input id="ocLabModel" type="text" placeholder="اختر مزوداً لملء النموذج تلقائياً" />' +
       '<div class="office-actions"><button class="office-btn" id="ocLabTest">🧪 اختبار الكفاءة</button><button class="office-btn" id="ocLabTrain">🎓 تدريب/ضبط</button><button class="office-btn" id="ocLabAssign">✅ تعيين المؤهلين</button><button class="office-btn" id="ocLabReport">📋 النتائج</button></div>' +
@@ -172,7 +235,7 @@
       '<label style="margin-top:16px;">🛡️ باحث الأسرار والمطور التلقائي</label>' +
       '<p>يفحص الباحث الإعدادات والتخزين المحلي بحثاً عن مفاتيح مكشوفة ويعرضها مُعمّاة، ثم يشفّرها في خزنة AES-256-GCM بكلمة مرور تُدخلها أنت ولا تُحفظ. المطور التلقائي يقترح إصلاحات آمنة للإعدادات فقط.</p>' +
       '<label>كلمة مرور الخزنة (للتشفير أو فتح القفل بعد إعادة التحميل)</label><input id="ocVaultPass" type="password" placeholder="كلمة مرور الخزنة..." />' +
-      '<div class="office-actions"><button class="office-btn" id="ocSecScan">🕵️ فحص المفاتيح</button><button class="office-btn" id="ocSecEncrypt">🔒 تشفير المفاتيح</button><button class="office-btn" id="ocSecUnlock">🔓 فتح الخزنة</button><button class="office-btn" id="ocDevUpdate">🧑‍💻 تحديث تلقائي آمن</button></div>' +
+      '<div class="office-actions"><button class="office-btn" id="ocSecScan">🕵️ فحص المفاتيح</button><button class="office-btn" id="ocSecEncrypt">🔒 إنشاء/تحديث الخزنة</button><button class="office-btn" id="ocSecUnlock">🔓 فتح الخزنة</button><button class="office-btn" id="ocSecLock">🔒 قفل الخزنة في الذاكرة</button><button class="office-btn" id="ocSecDisconnectAll">🗑️ فصل كل المفاتيح</button><button class="office-btn" id="ocDevUpdate">🧑‍💻 تحديث تلقائي آمن</button></div>' +
       '<div id="ocSecOut" class="office-status quota">🛡️ لم يُجرَ فحص أمني بعد.</div>' +
       '<label style="margin-top:16px;">توزيع الأدوار على النماذج</label>' +
       '<div id="ocModels">' + agentOptions + '</div>' +
@@ -200,19 +263,21 @@
     if (settings.mode === 'cloud' || settings.mode === 'supabase') settings.mode = 'auto';
     q('ocMode').value = settings.mode;
     q('ocFree').value = String(settings.freeOnly);
-    q('ocLocalUrl').value = settings.localUrl;
-    q('ocBridge').value = settings.localBridgeUrl;
-    q('ocLocalPass').value = secret('localPassword');
-    q('ocZenKey').value = secret('zenKey');
+    q('ocBrowserProfile').value = settings.browserProfile || 'auto';
+    q('ocBrowserAutoLoad').checked = settings.browserAutoLoad !== false;
+    function maskKey(id, field) {
+      var el = q(id), s = secret(field);
+      el.value = '';
+      el.placeholder = s ? '••••' + s.slice(-4) + ' — اتركه فارغاً للإبقاء' : 'الصق مفتاحك هنا';
+      el.title = s ? 'مفتاح محفوظ في الخزنة — اترك الحقل فارغاً للإبقاء عليه' : '';
+    }
+    maskKey('ocZenKey', 'zenKey');
+    maskKey('ocGroqKey', 'groqKey');
+    maskKey('ocOrKey', 'openrouterKey');
     q('ocZenBase').value = settings.zenBase;
-    q('ocGroqKey').value = secret('groqKey');
     q('ocGroqBase').value = settings.groqBase;
-    q('ocGroqModel').value = settings.groqModel;
-    q('ocOrKey').value = secret('openrouterKey');
-    q('ocOrModel').value = settings.openrouterModel;
     q('ocBot').value = settings.telegramBot;
     q('ocRelay').value = settings.relayUrl;
-    runtimeVault.data.relaySecret = '';
     q('ocWaTo').value = settings.whatsappTo || '';
     q('ocSyncUrl').value = settings.syncUrl;
     q('ocSyncSecret').value = secret('syncSecret');
@@ -220,12 +285,20 @@
 
     function fillModels(models, free) {
       var ids = (models || []).map(function (m) { return m.id; });
-      var pool = settings.freeOnly && free && free.length ? free : ids;
+      var pool = ids;
+      var html = '<option value="">' + (ids.length ? 'اختر من القائمة الحية' : 'لا توجد نماذج حية — اختبر الاتصال أولاً') + '</option>' +
+        pool.map(function (id) {
+          var tag = free && free.indexOf(id) !== -1 ? ' ✓ مجاني' : '';
+          return '<option value="' + escAttr(id) + '">' + esc(id) + tag + '</option>';
+        }).join('');
+      ['ocGroqModel', 'ocOrModel', 'ocLabModel'].forEach(function (id) {
+        var sel = q(id); if (sel) sel.innerHTML = html;
+      });
       modal.querySelectorAll('select[data-model-for]').forEach(function (sel) {
         var agentId = sel.getAttribute('data-model-for');
         var current = settings.modelOverrides[agentId] || '';
-        sel.innerHTML = '<option value="">تلقائي — ' + esc(pickModel(agentId, pool)) + '</option>' + pool.map(function (id) {
-          return '<option value="' + esc(id) + '"' + (current === id ? ' selected' : '') + '>' + esc(id) + '</option>';
+        sel.innerHTML = '<option value="">تلقائي — ' + esc(pickModel(agentId, pool) || '—') + '</option>' + pool.map(function (id) {
+          return '<option value="' + escAttr(id) + '"' + (current === id ? ' selected' : '') + '>' + esc(id) + '</option>';
         }).join('');
         if (!sel.dataset.modelBound) {
           sel.dataset.modelBound = '1';
@@ -237,25 +310,28 @@
     function readForm() {
       settings.mode = q('ocMode').value;
       settings.freeOnly = q('ocFree').value === 'true';
-      settings.localUrl = q('ocLocalUrl').value.trim() || 'http://127.0.0.1:28894';
-      settings.localBridgeUrl = q('ocBridge').value.trim() || 'https://localhost:28895';
-      runtimeVault.data.localPassword = q('ocLocalPass').value.trim();
-      runtimeVault.data.zenKey = q('ocZenKey').value.trim();
+      settings.browserProfile = q('ocBrowserProfile').value || 'auto';
+      settings.browserAutoLoad = Boolean(q('ocBrowserAutoLoad').checked);
       settings.zenBase = q('ocZenBase').value.trim() || 'https://opencode.ai/zen/v1';
-      runtimeVault.data.groqKey = q('ocGroqKey').value.trim();
       settings.groqBase = q('ocGroqBase').value.trim() || 'https://api.groq.com/openai/v1';
-      settings.groqModel = q('ocGroqModel').value.trim() || 'llama-3.3-70b-versatile';
-      runtimeVault.data.openrouterKey = q('ocOrKey').value.trim();
-      settings.openrouterModel = q('ocOrModel').value.trim() || 'baidu/ernie-5.5-flash-preview:free';
+      settings.groqModel = q('ocGroqModel').value.trim() || '';
+      settings.openrouterModel = q('ocOrModel').value.trim() || '';
       settings.telegramBot = q('ocBot').value.trim().replace(/^@/, '');
       settings.relayUrl = q('ocRelay').value.trim();
-      runtimeVault.data.relaySecret = '';
       settings.whatsappTo = q('ocWaTo').value.trim();
       settings.syncUrl = q('ocSyncUrl').value.trim();
-      runtimeVault.data.syncSecret = q('ocSyncSecret').value.trim();
       settings.syncEnabled = q('ocSyncEnabled').value === 'true';
-      /* Only an explicit user change updates an override. Opening the panel
-         or re-testing the connection must never wipe assigned models. */
+      /* Blank key inputs mean "keep the stored key" — never delete a key. */
+      var changed = false;
+      function take(id, field) {
+        var v = q(id) ? q(id).value.trim() : '';
+        if (v && typeof setSecret === 'function' && setSecret(field, v)) changed = true;
+      }
+      take('ocZenKey', 'zenKey');
+      take('ocGroqKey', 'groqKey');
+      take('ocOrKey', 'openrouterKey');
+      take('ocSyncSecret', 'syncSecret');
+      /* Only an explicit user change updates an override. */
       modal.querySelectorAll('select[data-model-for]').forEach(function (sel) {
         if (sel.dataset.touched !== '1') return;
         var agentId = sel.getAttribute('data-model-for');
@@ -265,6 +341,9 @@
       saveSettings();
       providerCache.cloud = null; providerCache.local = null; providerCache.zen = null;
       providerCache.groq = null; providerCache.openrouter = null;
+      if (changed && runtimeVault.key) persistSecrets();
+      else if (changed && !runtimeVault.key) showVaultGate();
+      return changed;
     }
 
     function status(text, cls) {
@@ -315,26 +394,31 @@
         var mode = currentMode();
         var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
+        var localLabel = r[0].quick ? 'وضع سريع آمن' : chatStateLabel('local', r[0].connected);
         var providerLine = 'Cloud: معطّل (مفاتيحك أنت فقط)' +
-          ' · OpenCode: ' + chatStateLabel('local', r[0].connected) +
+          ' · محلي WebGPU: ' + localLabel +
           ' · Zen: ' + chatStateLabel('zen', r[1].connected) +
-          ' · Groq: ' + chatStateLabel('groq', r[2].connected) + (r[2].connected ? ' (' + r[2].free.length + ' مجاني)' : '') +
-          ' · OpenRouter: ' + chatStateLabel('openrouter', r[3].connected) + (r[3].connected ? ' (' + r[3].free.length + ' مجاني)' : '');
-        if (!listing.connected) { status('غير متصل بالمزود المختار: ' + (listing.error || 'تحقق من العنوان/كلمة المرور/المفتاح.') + '\n' + providerLine, 'err'); fillModels([], []); return; }
+          ' · Groq: ' + chatStateLabel('groq', r[2].connected) + (r[2].connected ? ' (' + r[2].models.length + ' نموذج)' : '') +
+          ' · OpenRouter: ' + chatStateLabel('openrouter', r[3].connected) + (r[3].connected ? ' (' + r[3].models.length + ' نموذج)' : '');
+        var vaultLine = vaultStatus().needsUnlock ? '\n🔐 الخزنة مقفلة — افتحها لتفعيل المفاتيح.' : '';
+        if (!listing.connected && !(mode === 'local' && r[0].quick)) {
+          status('غير متصل بالمزود المختار: ' + (listing.error || 'تحقق من المفتاح.') + '\n' + providerLine + vaultLine, 'err'); fillModels([], []); return;
+        }
         var free = listing.free || [];
-        status('✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.\n' +
-          (free.length ? 'المجاني: ' + free.slice(0, 8).join(', ') + (free.length > 8 ? '…' : '') : 'لا توجد نماذج مجانية في القائمة.') +
-          '\n' + providerLine + '\nالعنوان الفعّال: ' + (listing.base || ''), 'ok');
+        status((mode === 'local' && r[0].quick ? '🟡 الوضع السريع الآمن — بلا نموذج محلي على هذا الجهاز.' : '✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.') + '\n' +
+          (free.length ? 'المجاني: ' + free.slice(0, 8).join(', ') + (free.length > 8 ? '…' : '') : 'لا توجد أسعار منشورة — جميع النماذج المعروضة حية.') +
+          '\n' + providerLine + vaultLine + '\nالعنوان الفعّال: ' + (listing.base || ''), mode === 'local' && r[0].quick ? '' : 'ok');
         fillModels(listing.models, free);
       }).then(renderQuota);
     }
 
     function labDefaultModel(provider) {
-      if (provider === 'cloud') return (providerCache.cloud && providerCache.cloud.free && providerCache.cloud.free[0]) || 'openai/gpt-oss-20b';
-      if (provider === 'groq') return settings.groqModel || GROQ_FREE_TIER_MODELS[0];
-      if (provider === 'openrouter') return settings.openrouterModel || 'baidu/ernie-5.5-flash-preview:free';
-      if (provider === 'zen') return (providerCache.zen && providerCache.zen.free && providerCache.zen.free[0]) || 'auto';
-      return (providerCache.local && providerCache.local.free && providerCache.local.free[0]) || 'big-pickle';
+      var key = provider === 'local' ? 'local' : provider;
+      var cache = providerCache[key];
+      var live = (cache && (cache.free && cache.free.length ? cache.free : (cache.models || []).map(function (m) { return m.id; }))) || [];
+      if (provider === 'groq' && settings.groqModel && live.indexOf(settings.groqModel) !== -1) return settings.groqModel;
+      if (provider === 'openrouter' && settings.openrouterModel && live.indexOf(settings.openrouterModel) !== -1) return settings.openrouterModel;
+      return live[0] || '';
     }
     q('ocLabProvider').onchange = function () { q('ocLabModel').value = labDefaultModel(q('ocLabProvider').value); };
     q('ocLabModel').value = labDefaultModel(q('ocLabProvider').value);
@@ -395,6 +479,42 @@
       autoDeveloperUpdate().then(function (r) {
         secOut('الوضع: ' + r.mode + '\n' + (r.text || '').slice(0, 500) + '\n✅ إصلاحات مطبقة: ' + r.applied.length + '\n' + r.applied.map(function (a) { return a.target + '=' + a.value; }).join('\n'));
       }).catch(function (e) { secOut('فشل التحديث التلقائي: ' + e.message); });
+    };
+    function vaultSecLine() {
+      var v = vaultStatus();
+      return '🔐 الخزنة: ' + (v.exists ? (v.unlocked ? 'مفتوحة' : 'مقفلة') : 'غير منشأة') +
+        (v.fields.length ? ' — الحقول: ' + v.fields.join(', ') : '') +
+        (v.needsUnlock ? ' — افتحها لتفعيل المفاتيح.' : '');
+    }
+    secOut(vaultSecLine());
+    window.addEventListener('mdm1-vault-change', function () {
+      if (document.body.contains(modal)) {
+        secOut(vaultSecLine());
+        maskKey('ocZenKey', 'zenKey'); maskKey('ocGroqKey', 'groqKey'); maskKey('ocOrKey', 'openrouterKey');
+      }
+    });
+    q('ocSecLock').onclick = function () { lockVault(); secOut(vaultSecLine()); };
+    q('ocSecDisconnectAll').onclick = function () {
+      if (!window.confirm('سيُحذف كل المفاتيح من الخزنة. هل أنت متأكد؟')) return;
+      disconnectProvider('all').then(function () { secOut(vaultSecLine()); });
+    };
+    modal.querySelectorAll('[data-disconnect]').forEach(function (btn) {
+      btn.onclick = function () {
+        var p = btn.getAttribute('data-disconnect');
+        if (!window.confirm('فصل ' + p + ' وحذف مفتاحه من الخزنة؟')) return;
+        disconnectProvider(p).then(function () { secOut(vaultSecLine()); maskKey(p === 'zen' ? 'ocZenKey' : p === 'groq' ? 'ocGroqKey' : 'ocOrKey', p + 'Key'); });
+      };
+    });
+    q('ocBrowserLoad').onclick = function () {
+      var btn = q('ocBrowserLoad'), bar = q('ocBrowserProgress'), st = q('ocBrowserStatus');
+      btn.disabled = true; st.textContent = 'جارٍ تحميل النموذج المحلي...';
+      ensureBrowserEngine(function (info) {
+        bar.value = Math.max(0, Math.min(100, Math.round((Number(info.progress) || 0) * 100)));
+        st.textContent = info.text || 'تحميل النموذج…';
+      }, detectLanguage(q('ocMsgText') ? q('ocMsgText').value : 'مرحباً')).then(function (r) {
+        btn.disabled = false;
+        st.textContent = r.ok ? '✅ النموذج المحلي جاهز: ' + r.modelId : '⚠️ ' + (r.error || 'الوضع السريع الآمن');
+      });
     };
 
     q('ocSave').onclick = function () { readForm(); modal.remove(); bootstrap(); };
@@ -621,8 +741,10 @@
     injectStyles();
     watchAuth();
     buildLockScreen();
+    buildVaultGate();
     loadCompanyData()
       .then(waitUnlock)
+      .then(waitVaultUnlock)
       .then(waitGoogleIdentity)
       .then(function () {
         return syncPull().catch(function (e) { console.warn('Office secure sync pull failed:', e.message); return { configured: false }; });
@@ -652,6 +774,17 @@
     downloadSnapshot: downloadSnapshot,
     importSnapshot: importSnapshot,
     healthCheck: healthCheck,
+    listBrowserModels: listLocalModels,
+    ensureBrowserEngine: ensureBrowserEngine,
+    vaultStatus: vaultStatus,
+    createVault: encryptSecrets,
+    unlockVault: unlockVault,
+    lockVault: lockVault,
+    disconnectProvider: disconnectProvider,
+    disconnectAll: function () { return disconnectProvider('all'); },
+    waitVaultUnlock: waitVaultUnlock,
+    showVaultGate: showVaultGate,
+    get modelCatalog() { return { local: providerCache.local && providerCache.local.models, zen: providerCache.zen && providerCache.zen.models, groq: providerCache.groq && providerCache.groq.models, openrouter: providerCache.openrouter && providerCache.openrouter.models }; },
     telegramSecretLink: telegramSecretLink,
     telegramShareLink: telegramShareLink,
     relaySend: relaySend,
