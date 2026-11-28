@@ -464,10 +464,12 @@
     return secureRelay('message', payload);
   }
   function telegramNotify(text) {
-    state.telegramOutbox.unshift({ id: uuid(), text: text, createdAt: nowIso(), sent: false });
+    /* Internal status notices are queued locally only. Nothing is sent to
+       Telegram automatically; the CEO uses the explicit Send action in the
+       messaging panel after reviewing the text. */
+    state.telegramOutbox.unshift({ id: uuid(), text: text, createdAt: nowIso(), sent: false, requiresManualSend: true });
     state.telegramOutbox = state.telegramOutbox.slice(0, 30);
     saveState();
-    if (settings.relayUrl) relaySend(text, 'telegram', settings.telegramChatId, '').catch(function () { /* queued above */ });
   }
   function telegramShareLink(text) {
     var bot = (settings.telegramBot || '').replace(/^@/, '');
