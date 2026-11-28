@@ -1419,7 +1419,9 @@
          same as a usable chat connection. Require credentials before showing
          agents as connected; otherwise the bulbs lie about live replies. */
       var connected = mode === 'demo' ? false : (listing.connected && providerConfigured(mode));
-      var modelLabel = settings.modelOverrides['*'] || (free[0] || (mode === 'groq' ? settings.groqModel : mode === 'openrouter' ? settings.openrouterModel : 'demo'));
+      var modelLabel = (settings.lastProviderMode === mode && settings.lastModel)
+        ? settings.lastModel
+        : (settings.modelOverrides['*'] || (free[0] || (mode === 'groq' ? settings.groqModel : mode === 'openrouter' ? settings.openrouterModel : 'demo')));
       var agents = allAgents().map(function (a) {
         var g = ensureProfile(a.id);
         return Object.assign({}, a, {

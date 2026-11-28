@@ -299,6 +299,12 @@
       q('ocQuota').textContent = (lines.length ? lines.join('\n') : '📊 لم تُسجّل طلبات بعد.') + syncLine;
     }
 
+    function chatStateLabel(mode, connected) {
+      var h = providerChatHealth[mode];
+      if (!connected) return 'غير متصل';
+      if (h && h.ok === false && Date.now() - h.at < 15 * 60 * 1000) return 'متصل للقائمة فقط — التنفيذ محجوب';
+      return 'متصل';
+    }
     function test(opts) {
       /* Event handlers pass the click event; only skip form reads when the
          panel is first opened (fields may still be vault-locked/empty). */
@@ -310,10 +316,10 @@
         var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
         if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
         var providerLine = 'Cloud: معطّل (مفاتيحك أنت فقط)' +
-          ' · OpenCode: ' + (r[0].connected ? 'متصل' : 'غير متصل') +
-          ' · Zen: ' + (r[1].connected ? 'متصل' : 'غير متصل') +
-          ' · Groq: ' + (r[2].connected ? 'متصل (' + r[2].free.length + ' مجاني)' : 'غير متصل') +
-          ' · OpenRouter: ' + (r[3].connected ? 'متصل (' + r[3].free.length + ' مجاني)' : 'غير متصل');
+          ' · OpenCode: ' + chatStateLabel('local', r[0].connected) +
+          ' · Zen: ' + chatStateLabel('zen', r[1].connected) +
+          ' · Groq: ' + chatStateLabel('groq', r[2].connected) + (r[2].connected ? ' (' + r[2].free.length + ' مجاني)' : '') +
+          ' · OpenRouter: ' + chatStateLabel('openrouter', r[3].connected) + (r[3].connected ? ' (' + r[3].free.length + ' مجاني)' : '');
         if (!listing.connected) { status('غير متصل بالمزود المختار: ' + (listing.error || 'تحقق من العنوان/كلمة المرور/المفتاح.') + '\n' + providerLine, 'err'); fillModels([], []); return; }
         var free = listing.free || [];
         status('✅ متصل — ' + listing.models.length + ' نموذج، منها ' + free.length + ' مجاني.\n' +

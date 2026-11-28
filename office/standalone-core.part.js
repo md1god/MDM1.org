@@ -81,6 +81,8 @@
     syncVersion: 0,
     syncSalt: '',
     lastProvider: null,
+    lastProviderMode: null,
+    lastModel: null,
     lastError: null
   };
   var settings = Object.assign({}, defaultSettings, readLS(LS_SETTINGS, {}));
@@ -238,6 +240,8 @@
     u.limitedUntil = 0;
     u.retryAfterMs = 0;
     settings.lastProvider = provider;
+    settings.lastProviderMode = provider === 'opencode-zen' ? 'zen' : provider === 'opencode-local' ? 'local' : provider === 'cloud' ? 'demo' : provider;
+    settings.lastModel = model;
     settings.lastError = null;
     saveSettings();
     updateQuotaBadge();
