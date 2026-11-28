@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://mdm1.org https://esm.run https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; media-src 'self' blob: data:; connect-src 'self' https: wss: http://localhost:* http://127.0.0.1:*; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MD1&#117;sd Company | AI Virtual Office</title>
   <link rel="preload" href="fonts/cairo-arabic-600-normal.woff2" as="font" type="font/woff2" crossorigin />
@@ -12,11 +13,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa43" />
-  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa43" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa43" />
-  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa43" />
-  <link rel="stylesheet" href="styles.css?v=20261128pwa43" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa43h1" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa43h1" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa43h1" />
+  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa43h1" />
+  <link rel="stylesheet" href="styles.css?v=20261128pwa43h1" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +26,7 @@
     <header class="topbar">
       <div class="topbar-main">
         <div class="brand">
-          <img class="brand-logo" src="app-logo.webp?v=20261128pwa43" alt="MD1&#117;sd Company" />
+          <img class="brand-logo" src="app-logo.webp?v=20261128pwa43h1" alt="MD1&#117;sd Company" />
           <div>
             <h1>MD1&#117;sd Company</h1>
             <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -64,6 +65,7 @@
       <button class="btn btn-approve" onclick="recoverEmergency()">✓ استعادة التشغيل الطبيعي</button>
     </div>
     <div id="providerNotice" class="provider-notice hidden"></div>
+    <div id="backupReminder" class="provider-notice backup-reminder hidden" role="status"></div>
 
     <div class="main-layout">
       <aside class="sidebar">
@@ -98,6 +100,7 @@
           <div class="stat-row"><span class="dot working"></span> يعمل: <strong id="statWorking">0</strong></div>
           <div class="stat-row"><span class="dot waiting_approval"></span> ينتظر: <strong id="statWaiting">0</strong></div>
           <div class="stat-row"><span class="dot offline"></span> غير متصل: <strong id="statOffline">0</strong></div>
+          <label class="stat-toggle"><input type="checkbox" id="approvalSoundToggle" checked /> <span>🔔 تنبيه صوتي للموافقات</span></label>
         </div>
       </aside>
 
@@ -434,12 +437,12 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261128pwa43"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261128pwa43h1"></script>
   <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261128pwa43"></script>
-  <script src="office-auth.js?v=20261128pwa43"></script>
-  <script src="pwa.js?v=20261128pwa43"></script>
-  <script src="standalone.js?v=20261128pwa43"></script>
+  <script src="office-config.js?v=20261128pwa43h1"></script>
+  <script src="office-auth.js?v=20261128pwa43h1"></script>
+  <script src="pwa.js?v=20261128pwa43h1"></script>
+  <script src="standalone.js?v=20261128pwa43h1"></script>
   <script>
     // Wait for the runtime parts, then for boot() to finish the private gate.
     // MDM1OfficeReady only means the parts loaded; MDM1Office.ready means the
@@ -448,7 +451,7 @@
       return (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve();
     }).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261128pwa43';
+      s.src = 'app.js?v=20261128pwa43h1';
       document.body.appendChild(s);
     }).catch(function (error) {
       console.error('MDM1 Office could not start:', error);

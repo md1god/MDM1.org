@@ -1,0 +1,39 @@
+name: Office UI smoke
+
+# Runs on pull requests that touch the private office. It checks that the
+# cache version is identical in every file, then loads the real office page in
+# headless Chromium (API mocked) and verifies layout, XSS safety, all tabs,
+# staff search and the Content-Security-Policy.
+on:
+  pull_request:
+    paths:
+      - 'office/**'
+      - 'tests/office-ui-smoke.js'
+      - 'scripts/office-version.js'
+      - '.github/workflows/office-ui-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: office-ui-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Cache version is consistent
+        run: node scripts/office-version.js check
+      - name: Install Chromium
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.49.1
+          npx playwright install --with-deps chromium
+      - name: UI smoke test
+        run: node tests/office-ui-smoke.js
