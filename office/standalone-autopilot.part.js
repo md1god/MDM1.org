@@ -181,15 +181,17 @@
   }
 
   function apInventoryExport(scan) {
-    var records = scan.records || [];
-    var candidates = records.filter(function (p) { return APEngine.isProjectPage ? APEngine.isProjectPage(p) : false; });
+    var candidates = scan.records || [], allUrls = scan.allUrls || [];
     var lines = ['# جرد الموقع بالكامل', '', 'الموقع: ' + scan.site, 'مصدر الحصر: ' + scan.source,
-      'صفحات جرى فحصها: ' + records.length, 'صفحات/مشروعات مرشحة للتحليل: ' + candidates.length,
+      'صفحات جرى فحصها بنجاح: ' + (scan.pageCount || 0), 'إجمالي روابط الموقع المكتشفة: ' + allUrls.length,
+      'صفحات/مشروعات مرشحة للتحليل: ' + candidates.length,
       'روابط تعذّر فتحها بعد إعادة المحاولة: ' + (scan.failedFinal || 0), '',
-      'هذا الجرد يشمل روابط الموقع التي كشفها ملف Sitemap أو روابط الصفحات الداخلية، ولا يساوي عدد المشروعات الجاهزة للبيع.', ''];
+      'كل الروابط المكتشفة داخل النطاق:'];
+    allUrls.forEach(function (url) { lines.push('- ' + url); });
+    lines.push('', 'الصفحات المرشحة للتحليل التجاري:');
     candidates.forEach(function (p, i) {
       lines.push((i + 1) + '. [' + p.title + '](' + p.url + ')');
-      lines.push('   ' + String(p.description || p.summary || p.text || '').slice(0, 360));
+      lines.push('   ' + String(p.description || p.summary || '').slice(0, 360));
       lines.push('');
     });
     writeExport('autopilot-full-site-inventory.md', lines.join('\n'));
@@ -209,9 +211,12 @@
     a.scan.inFlight = null;
     saveNow();
     state.teamChat.push({ id: uuid(), senderId: 'web-research-team', senderName: 'فريق البحث (الأتمتة 🤖)', senderAvatar: '🤖', role: 'assistant',
-      text: '📚 اكتمل جرد ' + scan.site + ': فُحصت ' + scan.records.length + ' صفحة، ووجدت ' + candidates.length + ' صفحة منتج/مشروع مرشحة. ستُحلَّل كل المرشحات، وليس أول ثلاث فقط، ثم تُرتَّب بمؤشر الفرصة التجارية من الأعلى إلى الأدنى.',
+      text: '📚 اكتمل جرد ' + scan.site + ': فُحصت ' + (scan.pageCount || 0) + ' صفحة، واكتُشف ' + (scan.allUrls || []).length + ' رابطاً داخلياً، منها ' + candidates.length + ' صفحة منتج/مشروع مرشحة. ستُحلَّل كل المرشحات ثم تُرتَّب من الأعلى إلى الأدنى.',
       timestamp: nowIso() });
-    apLog('اكتمل حصر الموقع: ' + scan.records.length + ' صفحة، ' + candidates.length + ' مرشحاً للتحليل.', 'ok');
+    apLog('اكتمل حصر الموقع: ' + (scan.pageCount || 0) + ' صفحة، ' + candidates.length + ' مرشحاً للتحليل.', 'ok');
+    /* Keep the URL inventory and candidate summaries, but release duplicate
+       crawler maps to stay within browser storage quotas. */
+    scan.queue = []; scan.queued = {}; scan.visited = {};
     saveNow();
   }
 
@@ -243,18 +248,24 @@
         var page = result.page, normalized = APEngine.normalizeUrl ? APEngine.normalizeUrl(page.url, origin) : page.url;
         if (!normalized || scan.visited[normalized]) return;
         scan.visited[normalized] = true;
-        scan.records.push({
+        scan.pageCount = (scan.pageCount || 0) + 1;
+        var candidateMeta = {
           url: normalized, title: String(page.title || normalized).slice(0, 180),
           description: String(page.description || '').slice(0, 420),
           headings: (page.headings || []).slice(0, 12),
-          summary: String(page.description || page.text || '').slice(0, 1500),
-          text: String(page.text || '').slice(0, 2200)
-        });
+          text: String(page.text || '').slice(0, 1800)
+        };
+        if (APEngine.isProjectPage && APEngine.isProjectPage(candidateMeta)) {
+          candidateMeta.summary = String(page.description || page.text || '').slice(0, 1200);
+          delete candidateMeta.text;
+          scan.records.push(candidateMeta);
+        }
         (page.links || []).forEach(function (link) {
           var next = APEngine.normalizeUrl ? APEngine.normalizeUrl(link.href, origin) : '';
-          if (!next || !APEngine.isPageUrl(next, origin) || scan.queued[next] || scan.visited[next] || scan.queue.length >= 12000) return;
+          if (!next || !APEngine.isPageUrl(next, origin) || scan.queued[next] || scan.visited[next] || scan.queue.length >= 50000) return;
           scan.queued[next] = true;
           scan.queue.push(next);
+          scan.allUrls.push(next);
         });
       });
       scan.cursor = endAt;
@@ -286,8 +297,8 @@
         if (!n || queued[n]) return false;
         queued[n] = true; return true;
       });
-      a.scan = { site: site, source: inventory.source, queue: queue, cursor: 0, queued: queued, visited: {},
-        records: [], failed: [], retryPass: 0, scanned: 0, complete: false, startedAt: nowIso(), inFlight: null };
+      a.scan = { site: site, source: inventory.source, queue: queue, allUrls: queue.slice(), cursor: 0, queued: queued, visited: {},
+        records: [], failed: [], retryPass: 0, scanned: 0, pageCount: 0, complete: false, startedAt: nowIso(), inFlight: null };
       a.projects = [];
       a.projectAssessments = a.projectAssessments || {};
       saveNow();
@@ -609,7 +620,7 @@
         apBusy ? '⚙️ تعمل الآن على خطوة...' : a.enabled ? '🟢 تعمل — الخطوة التالية خلال ' + Math.max(0, Math.round(((a.nextAt || 0) - Date.now()) / 1000)) + ' ث' : '⚪ متوقفة';
     }
     var stats = box.querySelector('#apStats');
-    if (stats) stats.innerHTML = '<span>🌐 صفحات ممسوحة: ' + (a.scan ? (a.scan.scanned || 0) + '/' + (a.scan.queue || []).length : 0) + '</span><span>📚 مرشحات: ' + (a.scan && a.scan.candidateCount || a.projects.length) + '</span><span>✅ محلَّلة: ' + Object.keys(a.everAnalyzed || {}).length + '</span><span>👥 عملاء محتملون: ' + (a.leads || 0) + '</span><span>📣 حملات بانتظارك: ' + (a.campaigns || 0) + '</span><span>🔁 دورات: ' + (a.cycle || 0) + '</span>';
+    if (stats) stats.innerHTML = '<span>🌐 صفحات ممسوحة: ' + (a.scan ? (a.scan.scanned || 0) + '/' + (a.scan.allUrls || a.scan.queue || []).length : 0) + '</span><span>📚 مرشحات: ' + (a.scan && a.scan.candidateCount || a.projects.length) + '</span><span>✅ محلَّلة: ' + Object.keys(a.everAnalyzed || {}).length + '</span><span>👥 عملاء محتملون: ' + (a.leads || 0) + '</span><span>📣 حملات بانتظارك: ' + (a.campaigns || 0) + '</span><span>🔁 دورات: ' + (a.cycle || 0) + '</span>';
     var log = box.querySelector('#apLog');
     if (log) log.innerHTML = a.log.slice(0, 25).map(function (x) { return '<div class="ap-line ' + esc(x.k) + '"><small>' + esc(String(x.t).slice(11, 19)) + '</small> ' + esc(x.m) + '</div>'; }).join('') || '<div class="ap-line">لم تبدأ بعد.</div>';
     var tgl = box.querySelector('#apToggle');
