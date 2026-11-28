@@ -96,7 +96,7 @@ function renderProviderNotice(live, st, locked){
   const el=document.getElementById('providerNotice'); if(!el)return;
   if(live||locked){if(locked){el.classList.remove('hidden');el.innerHTML='<span>🔐 مفاتيحك محفوظة في خزنة مشفّرة وهي مقفلة الآن. افتح الخزنة لتفعيل المزودين.</span><button type="button" class="btn btn-primary" id="noticeVaultBtn">🔓 فتح الخزنة</button>';const vb=document.getElementById('noticeVaultBtn');if(vb)vb.onclick=()=>window.MDM1Office&&window.MDM1Office.showVaultGate&&window.MDM1Office.showVaultGate();}else{el.classList.add('hidden');el.innerHTML='';}return;}
   el.classList.remove('hidden');
-  el.innerHTML='<span>⚠️ الردود الحالية تجريبية لأنه لا يوجد اتصال حي بنموذج. حالة الموظفين تظهر «غير متصل» إلى أن تُدخل مفتاحك أنت (Zen / Groq / OpenRouter) أو تشغّل النموذج المحلي WebGPU. مفاتيحك أنت فقط هي التي تُستخدم.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة مفتاحي الآن</button>';
+  el.innerHTML='<span>⚠️ لا يوجد اتصال حي بنموذج، فلن ترد الموظفات بذكاء. حالة الموظفين تظهر «غير متصل» إلى أن تُدخل مفتاحك أنت (Zen / Groq / OpenRouter) أو تشغّل النموذج المحلي WebGPU. مفاتيحك أنت فقط هي التي تُستخدم.</span><button type="button" class="btn btn-primary" id="noticeApiBtn">🔑 إضافة مفتاحي الآن</button>';
   const btn=document.getElementById('noticeApiBtn');
   if(btn)btn.onclick=()=>window.MDM1Office&&window.MDM1Office.openConnectionPanel&&window.MDM1Office.openConnectionPanel({focus:'api'});
 }
@@ -195,7 +195,7 @@ function renderDirectChat(){
   document.getElementById('directChatHeader').innerHTML=`${esc(a.avatar)} ${esc(a.name)} <small style="color:var(--muted);font-weight:400">(${esc(a.department)} | 🏆 ${esc(g.rankTitle)} • 🧠 ${a.memoryCount||0} ذكرى)</small>`;
   const h=D.state.directChats[a.id]||[], el=document.getElementById('directChatMessages');
   const fem=a.id==='executive-assistant';
-  el.innerHTML=h.length===0?`<div class="msg assistant"><div class="msg-meta">${esc(a.name)}</div>مرحباً سيادة المدير! أنا ${esc(a.name)}، ${fem?'جاهزة':'جاهز'} لتلقي توجيهاتك.</div>`:h.map(m=>`<div class="msg ${escAttr(m.role)}"><div class="msg-meta">${m.role==='user'?'أنت (CEO)':esc(a.name)}${m.ragUsed?` • 🧠 استرجاع ${m.ragUsed} ذكرى`:''}${m.mode&&m.mode!=='live'?` • ⚠️ ${esc(SL[m.mode]||'رد تجريبي')}`:''}</div>${esc(m.text)}</div>`).join('');
+  el.innerHTML=h.length===0?`<div class="msg assistant"><div class="msg-meta">${esc(a.name)}</div>مرحباً سيادة المدير! أنا ${esc(a.name)}، ${fem?'جاهزة':'جاهز'} لتلقي توجيهاتك.</div>`:h.map(m=>`<div class="msg ${escAttr(m.role)}"><div class="msg-meta">${m.role==='user'?'أنت (CEO)':esc(a.name)}${m.ragUsed?` • 🧠 استرجاع ${m.ragUsed} ذكرى`:''}${m.mode&&m.mode!=='live'?` • ⚠️ ${esc(SL[m.mode]||'رد غير حي')}`:''}</div>${esc(m.text)}</div>`).join('');
   el.scrollTop=el.scrollHeight;
   document.getElementById('agentInspector').innerHTML=`<h4>ملف الموظف (${esc(a.id)})</h4><div class="inspector-block"><strong>الرتبة والنقاط (Gamification)</strong>المستوى: ${g.level} — ${esc(g.rankTitle)}\nالنقاط: ${g.points}\nالذاكرة المتجهة: ${a.memoryCount||0} ذكرى</div><div class="inspector-block"><strong>الصلاحيات</strong>الأدوات: ${esc((a.allowedTools||[]).join(', ')||'-')}\nموافقة: ${esc((a.requiresApprovalFor||[]).join(', ')||'-')}</div><div class="inspector-block"><strong>الدور</strong>${esc(a.roleMd.slice(0,320))}...</div><div class="inspector-block"><strong>المهارات</strong>${esc(a.skillsMd.slice(0,280))}...</div>`;
 }
@@ -427,10 +427,18 @@ async function searchAudit(q){
   try{const r=await api('/api/audit/search?q='+encodeURIComponent(q));renderAuditRows(r.entries||[]);}catch(e){renderAuditRows([])}
 }
 
-function renderIntegrations(){
+async function renderIntegrations(){
   const o=D.outgoingWebhooks||{};
+  let tgLinked=Boolean(D.telegramEnabled);
+  try{
+    if(window.MDM1Auth&&MDM1Auth.status&&MDM1Auth.status().googleReady){
+      const r=await MDM1Auth.relay('identity_get',{});
+      const i=(r&&r.identities)||r||{};
+      tgLinked=Boolean(i.telegram);
+    }
+  }catch(e){}
   document.getElementById('integrationsStatus').innerHTML=`
-    <div class="webhook-card"><strong>📱 Telegram</strong><div style="font-size:12px;color:var(--muted);margin:4px 0;">${D.telegramEnabled?'🟢 متصل ونشط':'🟡 أضف TELEGRAM_BOT_TOKEN في .env'}</div></div>
+    <div class="webhook-card"><strong>📱 Telegram</strong><div style="font-size:12px;color:var(--muted);margin:4px 0;">${tgLinked?'🟢 مربوط بحسابك':'⚪ غير مربوط — اضغط «تليجرام» بالأعلى للربط'}</div></div>
     <div class="webhook-card"><strong>⚡ n8n / Make</strong><div style="font-size:12px;color:var(--muted);margin:4px 0;">${o.n8n?'🟢 مهيأ':'🟡 غير مهيأ'}</div><button class="btn btn-secondary" onclick="testWebhook('n8n')">اختبار</button></div>
     <div class="webhook-card"><strong>📣 التسويق</strong><div style="font-size:12px;color:var(--muted);margin:4px 0;">${o.marketing?'🟢 مهيأ':'🟡 غير مهيأ'}</div><button class="btn btn-secondary" onclick="testWebhook('marketing')">اختبار</button></div>
   `;

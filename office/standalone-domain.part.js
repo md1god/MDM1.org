@@ -149,7 +149,7 @@
               awardPoints(team.corrector, 5, 'محاولة تصحيح مقترح مرفوض');
             }
           } else {
-            report.note = 'الردود كانت تجريبية/غير حي: لا توجد عقوبات أو مكافآت تلقائية.';
+            report.note = 'الردود لم تكن من نموذج حي: لا توجد عقوبات أو مكافآت تلقائية.';
           }
           state.qualityReports.unshift(report);
           state.qualityReports = state.qualityReports.slice(0, 100);
@@ -796,8 +796,6 @@
     var lines = [];
     if (queued.length) lines.push('✅ أُدرجت في قائمة التنفيذ: ' + queued.join('؛ '));
     if (approvals.length) lines.push('🛡️ تنتظر موافقة المدير قبل إنشاء أي مهمة: ' + approvals.join('؛ '));
-    if (unclear.length) lines.push('❓ لم يتم تحويل هذه الأجزاء إلى مهام: ' + unclear.join('؛ '));
-    if ((e.unresolved || []).length) lines.push('❓ أسئلة توضيحية: ' + e.unresolved.slice(0, 3).join('؛ '));
     e.executionSummary = lines.join('\n');
     e.executed = true;
     e.updatedAt = nowIso();
@@ -1525,7 +1523,7 @@
         },
         models: free,
         roleModels: assignments,
-        telegramEnabled: Boolean(settings.telegramBot || settings.relayUrl),
+        telegramEnabled: Boolean(settings.telegramChatId),
         outgoingWebhooks: { n8n: false, marketing: false, email: false, sheets: false },
         agents: agents,
         knowledgeFiles: DATA.knowledge.map(function (k) { return { filename: k.filename, content: state.knowledgeOverrides[k.filename] != null ? state.knowledgeOverrides[k.filename] : k.content }; }),
@@ -1561,7 +1559,7 @@
         openrouter: { connected: Boolean(r[4].connected), error: r[4].error || null, freeModels: (r[4].free || []).length }
       };
       var lines = [
-        connected ? '🟢 النموذج الحي: متصل (' + mode + ')' : '🔴 النموذج الحي: غير متصل — الردود ستكون تجريبية/بديلة ومُسمّدة بوضوح.',
+        connected ? '🟢 النموذج الحي: متصل (' + mode + ')' : '🔴 النموذج الحي: غير متصل — الردود ستكون بديلة ومُسمّدة بوضوح.',
         '👤 الحساب: ' + authStatusLine(),
         '🔐 الخزنة: ' + (vault.exists ? 'مفعّلة' : 'غير مفعّلة') + (vault.unlocked ? ' — مفتوحة' : vault.exists ? ' — مقفلة' : ''),
         '🛡️ فحص الأمان: ' + (sec && Array.isArray(sec.findings) ? sec.findings.length + ' ملاحظة' : 'تم'),

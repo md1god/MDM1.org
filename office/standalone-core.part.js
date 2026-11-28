@@ -372,6 +372,10 @@
       merged.approvals = (merged.approvals || []).filter(function (a) { return a.id !== 'apr-initial-1' && a.id !== 'apr-initial-2'; });
       merged.tasks = (merged.tasks || []).filter(function (t) { return demoTitles.indexOf(t.title) === -1 || t.status === 'done'; });
       merged.agentStatuses = {}; merged.liveBubbles = {};
+      Object.keys(merged.gamification || {}).forEach(function (id) {
+        var g = merged.gamification[id];
+        if (g && g.points === 20 && (!g.history || !g.history.length)) { g.points = 0; g.badges = []; }
+      });
       merged.demoCleared = true;
     }
     (merged.approvals || []).forEach(function (a) {
@@ -657,7 +661,7 @@
   ];
   function ensureProfile(agentId) {
     if (!state.gamification[agentId]) {
-      state.gamification[agentId] = { points: 20, level: 1, rankTitle: LEVELS[0].title, badges: ['🌟 بداية موفقة'], history: [] };
+      state.gamification[agentId] = { points: 0, level: 1, rankTitle: LEVELS[0].title, badges: [], history: [] };
     }
     return state.gamification[agentId];
   }

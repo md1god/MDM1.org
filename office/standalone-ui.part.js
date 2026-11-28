@@ -214,7 +214,7 @@
       (CFG.brandImage ? '<div class="office-brand-card"><img src="' + esc(CFG.brandImage) + '" alt="MD1&#117;sd Company" /><div><strong>MD1&#117;sd Company — AI Virtual Office</strong><span>صفحة خاصة لا تظهر في قائمة الموقع. كل البيانات والمفاتيح تبقى في متصفحك.</span></div></div>' : '') +
       '<p>مفاتيحك أنت فقط هي التي تُستخدم، وتُحفظ في خزنة مشفّرة تبقى بعد إعادة التحميل ولا تُحذف إلا عند «الفصل». النموذج المحلي يعمل داخل متصفحك عبر WebGPU مثل مساعد MDM1 في /assistant/. كل النماذج المعروضة تأتي من القائمة الحية للمزود — اختر ما تريد.</p>' +
       '<div class="office-grid2">' +
-      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (مفاتيحك أنت فقط)</option><option value="local">محلي — WebGPU داخل المتصفح</option><option value="zen">OpenCode Zen (مفتاحك أنت)</option><option value="groq">Groq (مفتاحك أنت)</option><option value="openrouter">OpenRouter (مفتاحك أنت)</option><option value="demo">تجريبي موسوم — بدون نموذج حي</option></select></div>' +
+      '<div><label>المزود</label><select id="ocMode"><option value="auto">تلقائي (مفاتيحك أنت فقط)</option><option value="local">محلي — WebGPU داخل المتصفح</option><option value="zen">OpenCode Zen (مفتاحك أنت)</option><option value="groq">Groq (مفتاحك أنت)</option><option value="openrouter">OpenRouter (مفتاحك أنت)</option><option value="demo">بدون نموذج حي</option></select></div>' +
       '<div><label>تفضيل النماذج المجانية</label><select id="ocFree"><option value="true">نعم — مجاني حيث عُرف</option><option value="false">اعرض كل النماذج المتاحة</option></select></div>' +
       '</div>' +
       '<div id="ocBrowserBox" class="office-browser-box">' +
@@ -429,7 +429,7 @@
       Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true), listCloudModels(true)]).then(function (r) {
         var mode = currentMode();
         var listing = mode === 'cloud' ? r[4] : mode === 'zen' ? r[1] : mode === 'groq' ? r[2] : mode === 'openrouter' ? r[3] : r[0];
-        if (mode === 'demo') { status('الوضع التجريبي مفعّل: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
+        if (mode === 'demo') { status('وضع بدون نموذج: الواجهة تعمل بدون نموذج.', 'ok'); fillModels([], []); return; }
         var localLabel = r[0].quick ? 'وضع سريع آمن' : chatStateLabel('local', r[0].connected);
         var providerLine = 'Cloud: معطّل (مفاتيحك أنت فقط)' +
           ' · محلي WebGPU: ' + localLabel +
@@ -789,6 +789,7 @@
         if (typeof quarantineUnapprovedAssistantTasks === 'function') quarantineUnapprovedAssistantTasks();
         injectTopbarButton();
         bindQuickButtons();
+        autopilotInit();
         updateQuotaBadge();
         startBackgroundLoops();
         resolveReady();
@@ -822,6 +823,7 @@
     waitVaultUnlock: waitVaultUnlock,
     showVaultGate: showVaultGate,
     get modelCatalog() { return { local: providerCache.local && providerCache.local.models, zen: providerCache.zen && providerCache.zen.models, groq: providerCache.groq && providerCache.groq.models, openrouter: providerCache.openrouter && providerCache.openrouter.models }; },
+    autopilot: { start: apStart, stop: apStop, cycle: apCycle, status: apState, openPanel: openAutopilot, startHere: openStartHere, readPages: urlsContextFor },
     telegramSecretLink: telegramSecretLink,
     telegramShareLink: telegramShareLink,
     relaySend: relaySend,
