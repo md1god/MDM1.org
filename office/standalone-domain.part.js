@@ -661,7 +661,7 @@
     var norm = String(d.normalized || '').trim();
     /* A dot inside a decimal ($49.99) or domain (md1usd.com) is not a
        sentence boundary. */
-    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n،,]+|\s+و\s+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
+    var parts = original.split(/(?<![0-9])\.(?![0-9])|[?؟؛;\n]+/u).map(function (x) { return String(x || '').trim(); }).filter(function (x) { return x.length > 3; });
     if (!parts.length) parts = [original];
     var items = [];
     var constraints = [];
@@ -671,7 +671,9 @@
       var nd = normalizeDialect(rawPart).normalized.trim();
       var actionable = REQUEST_ACTION_RX.test(nd) || REQUEST_OUTPUT_RX.test(nd);
       var context = /^(?:يا|أيها|ايها)\s+/u.test(nd);
-      var clarification = !actionable && (REQUEST_NEGATION_RX.test(nd) || context);
+      var intelligence = window.MDM1ConversationIntelligence || {};
+      var semanticConstraint = typeof intelligence.isContextualConstraint === 'function' && intelligence.isContextualConstraint(nd);
+      var clarification = !actionable && (semanticConstraint || REQUEST_NEGATION_RX.test(nd) || context);
       /* Preserve the user's original spelling in the ledger and task title. */
       var text = rawPart.replace(/^(?:أريد|اريد|أبغى|ابغى|عايز|عيز|بغيت|ودّي|ودي|لازم|لازمه|أنفّذ|نفّذ|نفذ|اعمل|إعمل|سوي|سوّي)\s+/iu, '').trim() || rawPart;
       var riskText = stripNegated(nd);
@@ -695,13 +697,19 @@
     if (time) constraints.push('الإطار الزمني: ' + time[0]);
     var audience = original.match(/(للشركات|للعملاء|للأفراد|b2b|b2c|للموظفين)/iu);
     if (audience) constraints.push('الجمهور: ' + audience[0]);
+    var intelligenceHints = window.MDM1ConversationIntelligence || {};
+    if (typeof intelligenceHints.isAudienceByProject === 'function' && intelligenceHints.isAudienceByProject(original)) {
+      constraints.push('قاعدة الجمهور: اختاري الشريحة الأنسب لكل مشروع حسب وظيفة المنتج، ولا تطلبي جمهوراً موحداً من المدير.');
+    }
+    if (typeof intelligenceHints.isRevenueGoal === 'function' && intelligenceHints.isRevenueGoal(original)) {
+      constraints.push('الهدف التجاري: تحقيق دخل ومبيعات فعلية من العروض المناسبة، وليس مجرد زيارات أو أفكار.');
+    }
 
     var unresolved = [];
     if (!items.some(function (x) { return x.status === 'understood'; })) unresolved.push('ما المخرج أو الإجراء المطلوب بالضبط؟');
     items.filter(function (x) { return x.status === 'unclear'; }).slice(0, 3).forEach(function (x) { unresolved.push('ماذا تريد من «' + x.text + '» تحديداً؟'); });
     if (/(ميزانيه|ميزانية|تكلفه|تكلفة|سعر|دفع)/iu.test(norm) && !money) unresolved.push('ما الميزانية القصوى أو الرقم المعتمد؟');
     if (/(خلال|بكره|بكرا|غدا|موعد|جدول)/iu.test(norm) && !time) unresolved.push('ما الموعد النهائي المطلوب؟');
-    if (/(منتج|تطبيق|موقع|حمله|حملة)/iu.test(norm) && !audience) unresolved.push('من هو الجمهور المستهدف؟');
     if (/(هذا|كده|كذا|هيك|ذلك|اللي|التي|المادة|الشيء)/iu.test(norm)) unresolved.push('ما المقصود بالإشارة في الطلب؟');
 
     return { original: original, normalized: norm, items: items.slice(0, 10), constraints: constraints, unresolved: uniqueStrings(unresolved).slice(0, 5) };
