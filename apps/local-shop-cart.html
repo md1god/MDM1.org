@@ -250,10 +250,10 @@ return;
 }
 box.innerHTML=list.map(function(p){
 var net=p.price*(1-(p.disc||0)/100);
-var img=p.img?'<img src="'+p.img+'" alt="'+esc(p.name)+'">':'<div class="app-ph">لا توجد صورة</div>';
-var priceHtml=p.disc>0?'<div class="app-price">'+money(net)+' <span class="app-old">'+money(p.price)+'</span> <span class="badge">-'+p.disc+'%</span></div>':'<div class="app-price">'+money(p.price)+'</div>';
-var stockHtml=p.stock<=0?'<span class="badge">نفد المخزون</span>':(p.stock<=3?'<span class="badge">آخر '+p.stock+' قطع</span>':'<span class="badge">متوفر: '+p.stock+'</span>');
-var btn=p.stock<=0?'<button class="button" id="add-'+p.id+'" data-add="'+p.id+'" disabled>نفد المخزون</button>':'<button class="button" id="add-'+p.id+'" data-add="'+p.id+'">أضف إلى السلة</button>';
+var img=p.img?'<img src="'+esc(p.img)+'" alt="'+esc(p.name)+'">':'<div class="app-ph">لا توجد صورة</div>';
+var priceHtml=p.disc>0?'<div class="app-price">'+esc(money(net))+' <span class="app-old">'+esc(money(p.price))+'</span> <span class="badge">-'+esc(p.disc)+'%</span></div>':'<div class="app-price">'+esc(money(p.price))+'</div>';
+var stockHtml=p.stock<=0?'<span class="badge">نفد المخزون</span>':(p.stock<=3?'<span class="badge">آخر '+esc(p.stock)+' قطع</span>':'<span class="badge">متوفر: '+esc(p.stock)+'</span>');
+var btn=p.stock<=0?'<button class="button" id="add-'+esc(p.id)+'" data-add="'+esc(p.id)+'" disabled>نفد المخزون</button>':'<button class="button" id="add-'+esc(p.id)+'" data-add="'+esc(p.id)+'">أضف إلى السلة</button>';
 return '<div class="app-prod">'+img+'<div class="app-pbody"><div><b>'+esc(p.name)+'</b></div><div><span class="badge">'+esc(p.cat)+'</span></div>'+priceHtml+stockHtml+btn+'</div></div>';
 }).join("");
 }
@@ -263,13 +263,13 @@ var box=$("products-list");
 if(!products.length){box.innerHTML='<p class="app-msg">لا توجد منتجات بعد. أضف أول منتج من النموذج أعلاه.</p>';return;}
 box.innerHTML=products.map(function(p){
 var net=p.price*(1-(p.disc||0)/100);
-var img=p.img?'<img src="'+p.img+'" alt="'+esc(p.name)+'">':'<div class="app-ph">-</div>';
+var img=p.img?'<img src="'+esc(p.img)+'" alt="'+esc(p.name)+'">':'<div class="app-ph">-</div>';
 var low=p.stock<=3?' <span class="badge">مخزون منخفض</span>':"";
 return '<div class="app-item">'+img+'<div class="app-grow"><div><b>'+esc(p.name)+'</b> <span class="badge">'+esc(p.cat)+'</span></div>'+
-'<div>السعر: '+money(p.price)+' • بعد الخصم: '+money(net)+(p.disc>0?" ("+p.disc+"%)":"")+'</div>'+
-'<div>المخزون: '+p.stock+low+'</div></div>'+
-'<button class="button sec" id="edit-'+p.id+'" data-edit="'+p.id+'">تعديل</button>'+
-'<button class="button sec" id="del-'+p.id+'" data-del="'+p.id+'">حذف</button></div>';
+'<div>السعر: '+esc(money(p.price))+' • بعد الخصم: '+esc(money(net))+(p.disc>0?" ("+esc(p.disc)+"%)":"")+'</div>'+
+'<div>المخزون: '+esc(p.stock)+low+'</div></div>'+
+'<button class="button sec" id="edit-'+esc(p.id)+'" data-edit="'+esc(p.id)+'">تعديل</button>'+
+'<button class="button sec" id="del-'+esc(p.id)+'" data-del="'+esc(p.id)+'">حذف</button></div>';
 }).join("");
 }
 
@@ -281,10 +281,10 @@ box.innerHTML='<p class="app-msg">سلتك فارغة حاليًا. انتقل �
 box.innerHTML=cart.map(function(l){
 var p=find(l.id);if(!p){return "";}
 var line=p.price*l.qty*(1-(p.disc||0)/100);
-var img=p.img?'<img src="'+p.img+'" alt="'+esc(p.name)+'">':'<div class="app-ph">-</div>';
-return '<div class="app-item">'+img+'<div class="app-grow"><div><b>'+esc(p.name)+'</b></div><div class="app-price">'+money(line)+'</div><div>الكمية المتاحة: '+p.stock+'</div></div>'+
-'<div class="app-qty"><button class="button sec" id="dec-'+l.id+'" data-dec="'+l.id+'">−</button><span>'+l.qty+'</span><button class="button sec" id="inc-'+l.id+'" data-inc="'+l.id+'">+</button></div>'+
-'<button class="button sec" id="rem-'+l.id+'" data-rem="'+l.id+'">حذف</button></div>';
+var img=p.img?'<img src="'+esc(p.img)+'" alt="'+esc(p.name)+'">':'<div class="app-ph">-</div>';
+return '<div class="app-item">'+img+'<div class="app-grow"><div><b>'+esc(p.name)+'</b></div><div class="app-price">'+esc(money(line))+'</div><div>الكمية المتاحة: '+esc(p.stock)+'</div></div>'+
+'<div class="app-qty"><button class="button sec" id="dec-'+esc(l.id)+'" data-dec="'+esc(l.id)+'">−</button><span>'+esc(l.qty)+'</span><button class="button sec" id="inc-'+esc(l.id)+'" data-inc="'+esc(l.id)+'">+</button></div>'+
+'<button class="button sec" id="rem-'+esc(l.id)+'" data-rem="'+esc(l.id)+'">حذف</button></div>';
 }).join("");
 }
 $("cart-sub").textContent=money(t.sub);
@@ -450,7 +450,7 @@ msg("pf-msg","جارٍ معالجة الصورة وتصغير حجمها...");
 resizeImage(f,320,function(url,err){
 if(err||!url){msg("pf-msg",err||"تعذّر تجهيز الصورة.",1);return;}
 pendingImage=url;
-$("pf-img-preview").innerHTML='<img src="'+url+'" alt="معاينة صورة المنتج">';
+$("pf-img-preview").innerHTML='<img src="'+esc(url)+'" alt="معاينة صورة المنتج">';
 msg("pf-msg","تم تجهيز الصورة بنجاح، أكمل بيانات المنتج ثم اضغط حفظ.");
 });
 });
@@ -470,7 +470,7 @@ if(ed){
 var p=find(ed);if(!p){return;}
 editId=ed;pendingImage="";
 $("pf-name").value=p.name;$("pf-price").value=p.price;$("pf-cat").value=p.cat;$("pf-stock").value=p.stock;$("pf-disc").value=p.disc||0;
-$("pf-img-preview").innerHTML=p.img?'<img src="'+p.img+'" alt="الصورة الحالية للمنتج">':"";
+$("pf-img-preview").innerHTML=p.img?'<img src="'+esc(p.img)+'" alt="الصورة الحالية للمنتج">':"";
 $("pf-add").textContent="حفظ التعديلات";
 $("pf-cancel").className="button sec";
 switchTab("admin");
