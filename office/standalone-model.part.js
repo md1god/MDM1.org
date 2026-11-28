@@ -234,6 +234,35 @@
 
     if (mode === 'demo') return Promise.resolve(fallback(null));
 
+    /* Auto mode must survive a provider that lists models successfully but
+       cannot execute a chat call from this origin (e.g. Zen/CORS). Try every
+       configured live provider in order before showing a labeled fallback. */
+    if (!opts.forceProvider && settings.mode === 'auto') {
+      var order = ['local', 'zen', 'groq', 'openrouter'];
+      var autoChain = order.filter(function (m) {
+        return providerConfigured(m) && providerCache[m] && providerCache[m].connected;
+      });
+      if (!autoChain.length) autoChain = order.filter(providerConfigured);
+      if (autoChain.length > 1) {
+        function tryAuto(i, errors) {
+          if (i >= autoChain.length) return Promise.resolve(fallback(errors.join('\n')));
+          var nextOpts = {};
+          Object.keys(opts).forEach(function (k) { nextOpts[k] = opts[k]; });
+          nextOpts.forceProvider = autoChain[i];
+          return aiGenerateRaw(nextOpts).then(function (out) {
+            if (out && out.mode === 'live') return out;
+            var w = out && out.warning ? String(out.warning) : '';
+            if (w) errors.push(autoChain[i] + ': ' + w.slice(0, 200));
+            return tryAuto(i + 1, errors);
+          }).catch(function (e) {
+            errors.push(autoChain[i] + ': ' + (e.message || String(e)).slice(0, 200));
+            return tryAuto(i + 1, errors);
+          });
+        }
+        return tryAuto(0, []);
+      }
+    }
+
     /* Shared OpenAI-compatible executor for Zen / Groq / OpenRouter.
        Free-only pool, per-role distribution, 429-aware fallback chain. */
     function runOpenAiChain(provider, listing, url, headers, pool) {
