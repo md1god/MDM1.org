@@ -347,8 +347,28 @@ async function forwardMemoToAssistant(id){
 function renderKnowledge(){
   document.getElementById('knowledgeEditorList').innerHTML=(D.knowledgeFiles||[]).map((k,i)=>`<div class="k-item"><strong>${esc(k.filename)}</strong><textarea id="k-content-${i}" rows="4">${esc(k.content)}</textarea><button class="btn btn-secondary" onclick="saveKnowledge('${jsAttr(k.filename)}',${i})">حفظ</button></div>`).join('');
   document.getElementById('exportsList').innerHTML=(D.exports||[]).map(ex=>`<div class="inspector-block"><strong>📄 ${esc(ex.filename)} (${ex.size} bytes)</strong>${esc(ex.preview)}</div>`).join('')||'<div class="inspector-block">لم يتم تصدير ملفات بعد.</div>';
+  renderLocalMemory();
 }
 async function saveKnowledge(fn,i){const c=document.getElementById(`k-content-${i}`).value;await api('/api/knowledge',{method:'POST',body:JSON.stringify({filename:fn,content:c})});alert(`تم حفظ ${fn}`);await bootstrap()}
+
+/* Local Arabic memory: source, expiry and an explicit per-item "forget". */
+function renderLocalMemory(){
+  const el=document.getElementById('localMemoryList'); if(!el)return;
+  const all=(D.state?.localMemories||[]);
+  const now=Date.now();
+  const active=all.filter(m=>!m.expiresAt||Date.parse(m.expiresAt)>now);
+  el.innerHTML=active.map(m=>`<div class="inspector-block"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;"><div style="min-width:0;"><strong>${esc(m.source||'مصدر غير محدد')}</strong> <small style="color:var(--muted);">${esc(String(m.createdAt||'').slice(0,10))} → ${esc(String(m.expiresAt||'').slice(0,10))}</small><div style="font-size:12px;line-height:1.7;word-break:break-word;">${esc(m.text)}</div></div><button class="btn btn-secondary" onclick="forgetLocalMemory('${jsAttr(m.id)}')">انسَ هذا</button></div></div>`).join('')||'<div class="inspector-block">لا توجد ذاكرة محلية بعد. أضف معلومة لتُستخدم في ردود الموظفين.</div>';
+}
+async function addLocalMemoryFromForm(e){
+  e.preventDefault();
+  const text=document.getElementById('localMemoryText').value.trim(); if(!text)return;
+  const source=document.getElementById('localMemorySource').value.trim();
+  const ttl=document.getElementById('localMemoryTtl').value;
+  try{await api('/api/memory',{method:'POST',body:JSON.stringify({text,source,ttlDays:ttl})});document.getElementById('localMemoryForm').reset();document.getElementById('localMemoryTtl').value=90;await bootstrap();}
+  catch(err){alert(err.message)}
+}
+async function forgetLocalMemory(id){try{await api('/api/memory/forget',{method:'POST',body:JSON.stringify({id})});await bootstrap();}catch(e){alert(e.message)}}
+async function forgetAllLocalMemories(){if(!confirm('هل تريد مسح كل الذاكرة المحلية على هذا الجهاز؟'))return;try{await api('/api/memory/clear',{method:'POST',body:'{}'});await bootstrap();}catch(e){alert(e.message)}}
 
 function renderPnL(){
   const ledger=D.state.financialLedger||[], u=D.state.usageStats||{totalCostUsd:0};
@@ -422,7 +442,39 @@ function renderAuditCost(){
 
 function renderAuditRows(entries){
   const el=document.getElementById('auditLogList'); if(!el)return;
-  el.innerHTML=(entries||[]).map(e=>`<div class="approval-card audit-hit"><div><div style="font-size:11px;color:var(--cyan);">${esc(e.timestamp)} • <strong class="audit-term">${esc(e.eventType)}</strong> • <span class="audit-term">${esc(e.actor)}</span></div><div style="font-size:12px;"><span class="audit-term">${esc(e.summary)}</span></div></div></div>`).join('')||'<div class="approval-card">لا توجد نتائج مطابقة.</div>';
+  el.innerHTML=(entries||[]).map(e=>`<div class="approval-card audit-hit"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;"><div><div style="font-size:11px;color:var(--cyan);">${esc(e.timestamp)} • <strong class="audit-term">${esc(e.eventType)}</strong> • <span class="audit-term">${esc(e.actor)}</span></div><div style="font-size:12px;"><span class="audit-term">${esc(e.summary)}</span></div></div><button class="btn btn-secondary" onclick="explainDecision('${jsAttr(e.id)}')">أعد شرح هذا القرار</button></div></div>`).join('')||'<div class="approval-card">لا توجد نتائج مطابقة.</div>';
+}
+
+/* Verifiable decision explanation: who proposed, which model, what QA said,
+   which sources were used and the hash-chain position. All values are escaped. */
+function explainDecision(id){
+  const list=(D.auditLog||[]).concat(D.state?.auditLog||[]);
+  const e=list.find(x=>x?.id===id);
+  if(!e){alert('لم يتم العثور على القرار.');return;}
+  const m=e.meta||{}, dl=D.state?.decisionLog||[];
+  const decision=dl.find(x=>x.id===m.decisionId)||dl.find(x=>x.approvalId===m.id)||null;
+  const fmt=v=>v==null||v===''?'—':(typeof v==='object'?JSON.stringify(v):String(v));
+  const lines=[
+    `الحدث: ${fmt(e.eventType)}`,
+    `الوقت: ${fmt(e.timestamp)}`,
+    `الجهة: ${fmt(e.actor)}`,
+    `الملخص: ${fmt(e.summary)}`,
+    `من اقترح: ${fmt(decision?.agentId||m.agentId||m.proposedBy)}`,
+    `النموذج: ${fmt(decision?.model||m.model||m.modelId)}`,
+    `نوع الإجراء: ${fmt(decision?.actionType||m.actionType)}`,
+    `القرار: ${fmt(decision?.decision||m.decision)}`,
+    `السبب: ${fmt(decision?.reason||m.reason)}`,
+    `حالة الجودة: ${fmt(decision?.qualityStatus||m.qualityStatus||m.quality?.status)}`,
+    `آراء الجودة: ${fmt(decision?.qualityVerdicts||m.quality?.verdicts)}`,
+    `نماذج الجودة: ${fmt(decision?.qualityModels||m.quality?.models)}`,
+    `الفريق الأحمر: ${fmt(decision?.redTeam||m.redTeam)}`,
+    `المصادر: ${fmt(m.sources)}`,
+    `سلسلة التدقيق — الحالية: ${fmt(e.hash)}`,
+    `سلسلة التدقيق — السابقة: ${fmt(e.prevHash)}`
+  ];
+  const box=document.getElementById('decisionExplain'); if(!box)return;
+  box.textContent=lines.join('\n');
+  document.getElementById('decisionModal').classList.remove('hidden');
 }
 
 async function searchAudit(q){
@@ -593,6 +645,7 @@ document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=
 document.getElementById('directMicBtn').onclick=()=>startMic('directChatInput');
 document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');
 document.getElementById('assistantMicBtn').onclick=()=>startMic('assistantChatInput');
+document.getElementById('localMemoryForm')?.addEventListener('submit',addLocalMemoryFromForm);
 document.getElementById('assistantChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('assistantChatInput'),btn=document.getElementById('assistantSendBtn'),t=inp.value.trim();if(!t)return;inp.value='';btn.disabled=true;btn.textContent='⏳...';try{await assistantSend(t);}finally{btn.disabled=false;renderAssistantChat();}});
 document.getElementById('smartAssistantBtn').onclick=()=>{switchTab('chat');switchChatMode('assistant');document.getElementById('assistantChatInput').focus();};
 buildMobileMore();

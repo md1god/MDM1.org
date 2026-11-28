@@ -786,6 +786,11 @@
         return syncPull().catch(function (e) { console.warn('Office secure sync pull failed:', e.message); return { configured: false }; });
       })
       .then(function () {
+        /* Local memory is device-only: restore it AFTER secure sync so a cloud
+           pull can never overwrite it, then mirror the merged list back. */
+        if (typeof memoryRestore === 'function') {
+          memoryRestore().then(function (added) { if (added) { saveState(); memoryMirror(); } }).catch(function () {});
+        }
         if (typeof quarantineUnapprovedAssistantTasks === 'function') quarantineUnapprovedAssistantTasks();
         injectTopbarButton();
         bindQuickButtons();
@@ -813,6 +818,16 @@
     importSnapshot: importSnapshot,
     healthCheck: healthCheck,
     runSelfTests: runSelfTests,
+    /* Local Arabic memory — stored in this browser only, with explicit forget. */
+    localMemory: {
+      list: function () { return activeLocalMemories().map(function (m) { return clone(m); }); },
+      add: addLocalMemory,
+      forget: forgetLocalMemory,
+      clear: clearLocalMemories,
+      restore: memoryRestore,
+      mirror: memoryMirror
+    },
+    sanitizeContext: sanitizeContextText,
     listBrowserModels: listLocalModels,
     ensureBrowserEngine: ensureBrowserEngine,
     vaultStatus: vaultStatus,

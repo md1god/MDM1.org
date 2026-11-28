@@ -12,11 +12,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa41" />
-  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa41" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa41" />
-  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa41" />
-  <link rel="stylesheet" href="styles.css?v=20261128pwa41" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa42" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa42" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa42" />
+  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa42" />
+  <link rel="stylesheet" href="styles.css?v=20261128pwa42" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +25,7 @@
     <header class="topbar">
       <div class="topbar-main">
         <div class="brand">
-          <img class="brand-logo" src="app-logo.webp?v=20261128pwa41" alt="MD1&#117;sd Company" />
+          <img class="brand-logo" src="app-logo.webp?v=20261128pwa42" alt="MD1&#117;sd Company" />
           <div>
             <h1>MD1&#117;sd Company</h1>
             <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -259,6 +259,18 @@
             <div class="card-box"><h3>📚 ملفات المعرفة (knowledge/)</h3><div id="knowledgeEditorList"></div></div>
             <div class="card-box"><h3>📁 المخرجات المصدّرة (exports/)</h3><div id="exportsList"></div></div>
           </div>
+          <div class="card-box" style="margin-top:14px;">
+            <h3>🧠 الذاكرة العربية المحلية — «انسَ هذا»</h3>
+            <p style="font-size:12px;color:var(--muted);margin:6px 0 10px;">قطع تُحفظ في متصفحك فقط (IndexedDB) مع المصدر وتاريخ الانتهاء، وتُسترجع مع ملفات المعرفة حسب صلة الطلب. لا تُرسل لأي مزود أو خادم.</p>
+            <form id="localMemoryForm" class="chat-input-bar" style="border:none;padding:8px 0 0;">
+              <input type="text" id="localMemoryText" placeholder="أضف معلومة للذاكرة المحلية..." maxlength="800" required />
+              <input type="text" id="localMemorySource" placeholder="المصدر (اختياري)" maxlength="120" style="max-width:190px;" />
+              <input type="number" id="localMemoryTtl" value="90" min="1" max="365" title="أيام الصلاحية" style="max-width:90px;" />
+              <button type="submit" class="btn btn-primary">حفظ</button>
+              <button type="button" class="btn btn-secondary" onclick="forgetAllLocalMemories()">مسح الكل</button>
+            </form>
+            <div id="localMemoryList" style="margin-top:10px;"></div>
+          </div>
         </section>
 
         <!-- SANDBOX -->
@@ -387,6 +399,8 @@
 
   <div id="awardModal" class="modal hidden"><div class="modal-card"><h3>⭐ منح نقاط مكافأة لموظف</h3><form id="awardForm"><label>الموظف</label><select id="awardAgentSelect"></select><label>عدد النقاط</label><input type="number" id="awardPointsInput" value="50" required /><label>السبب</label><input type="text" id="awardReasonInput" placeholder="أداء متميز في المشروع" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('awardModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">منح النقاط</button></div></form></div></div>
 
+  <div id="decisionModal" class="modal hidden"><div class="modal-card"><h3>🔍 أعد شرح هذا القرار</h3><div id="decisionExplain" style="font-size:12px;white-space:pre-wrap;line-height:1.8;max-height:50vh;overflow:auto;color:var(--text);"></div><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('decisionModal').classList.add('hidden')">إغلاق</button></div></div></div>
+
   <div id="healthModal" class="modal hidden"><div class="modal-card"><h3>🩺 فحص صحة المكتب</h3><p id="healthResult" style="font-size:12px;white-space:pre-wrap;line-height:1.8;color:var(--muted);">جارٍ الفحص...</p><div id="selfTestResult" style="font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:38vh;overflow:auto;display:none;"></div><div class="modal-actions"><button type="button" class="btn btn-primary" id="runSelftestBtn">🧪 اختبارات ذهبية</button><button type="button" class="btn btn-secondary" id="closeHealthModalBtn">إغلاق</button></div></div></div>
 
   <!-- Mobile-only bottom navigation: five real destinations, no duplicate menu. -->
@@ -414,12 +428,12 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261128pwa41"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261128pwa42"></script>
   <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261128pwa41"></script>
-  <script src="office-auth.js?v=20261128pwa41"></script>
-  <script src="pwa.js?v=20261128pwa41"></script>
-  <script src="standalone.js?v=20261128pwa41"></script>
+  <script src="office-config.js?v=20261128pwa42"></script>
+  <script src="office-auth.js?v=20261128pwa42"></script>
+  <script src="pwa.js?v=20261128pwa42"></script>
+  <script src="standalone.js?v=20261128pwa42"></script>
   <script>
     // Wait for the runtime parts, then for boot() to finish the private gate.
     // MDM1OfficeReady only means the parts loaded; MDM1Office.ready means the
@@ -428,7 +442,7 @@
       return (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve();
     }).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261128pwa41';
+      s.src = 'app.js?v=20261128pwa42';
       document.body.appendChild(s);
     }).catch(function (error) {
       console.error('MDM1 Office could not start:', error);
