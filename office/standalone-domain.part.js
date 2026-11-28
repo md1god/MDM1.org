@@ -901,9 +901,9 @@
     if (/بيانات|صلاحيه|امان/i.test(riskLower)) risks.push('مراجعة مسؤول الأمان قبل منح صلاحيات جديدة');
 
     var ambiguities = [];
-    if (!money) ambiguities.push('ما هي الميزانية القصوى المسموح بها؟');
-    if (!time) ambiguities.push('ما الموعد النهائي أو الإطار الزمني المتوقع؟');
-    if (/منتج|تطبيق|موقع|حمله/i.test(lower) && !/للشركات|للعملاء|للأفراد|b2b|b2c/i.test(lower)) ambiguities.push('من هو الجمهور المستهدف بالضبط؟');
+    if (/(ميزانيه|تكلفه|تكلفه اعلانيه|سعر|مصروف|دفع)/i.test(lower) && !money) ambiguities.push('ما الحد المالي المعتمد لهذا الإنفاق؟');
+    if (/(موعد نهائي|موعد التسليم|تاريخ التسليم|قبل تاريخ|خلال مده)/i.test(lower) && !time) ambiguities.push('ما الموعد النهائي المطلوب؟');
+    /* Audience is inferred per product; it is not a mandatory global field. */
 
     return {
       goal: String(raw).slice(0, 240) || 'لم يُحدد الهدف بوضوح',
@@ -948,7 +948,13 @@
         judgment: String(parsed.judgment || fb.judgment).slice(0, 400),
         keywords: words(d.normalized).slice(0, 18)
       };
-      if (!u.ambiguities.length && d.changes.length === 0) u.ambiguities = ['هل هناك قيد مالي أو زمني يجب أن ألتزم به؟'];
+      var intentHints = window.MDM1ConversationIntelligence || {};
+      if (typeof intentHints.isAudienceByProject === 'function' && intentHints.isAudienceByProject(d.raw)) {
+        u.ambiguities = u.ambiguities.filter(function (q) { return !/جمهور|شريحه|عملاء/.test(String(q)); });
+      }
+      if (typeof intentHints.isRevenueGoal === 'function' && intentHints.isRevenueGoal(d.raw)) {
+        u.ambiguities = u.ambiguities.filter(function (q) { return !/ماذا.*ربح|ماذا.*مبيعات|مقصود.*ربح/.test(String(q)); });
+      }
       return { understanding: u, mode: r.mode, normalized: d.normalized, changes: d.changes, live: r.mode === 'live' };
     });
   }
