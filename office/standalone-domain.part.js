@@ -642,6 +642,17 @@
   function webSearch(query) {
     var q = String(query || '').trim();
     if (!q) return Promise.resolve({ engine: 'none', results: [] });
+    /* Prefer real search-result pages; Wikipedia's instant API is an
+       encyclopedia lookup, not a prospect or market search engine. */
+    if (typeof apSearchResults === 'function') {
+      return apSearchResults(q).then(function (rows) {
+        if (rows && rows.length) return { engine: 'DuckDuckGo HTML / Jina Reader', results: rows };
+        return legacyWebSearch(q);
+      }).catch(function () { return legacyWebSearch(q); });
+    }
+    return legacyWebSearch(q);
+  }
+  function legacyWebSearch(q) {
     var queries = [];
     [englishSearchQuery(q), shortSearchQuery(q), q].forEach(function (x) {
       x = String(x || '').trim();
@@ -652,11 +663,12 @@
     function next() {
       if (i >= queries.length) return Promise.resolve({ engine: 'knowledge', results: [], suggestions: localSolutions(q) });
       var query = queries[i++];
-      var latin = /^[a-z0-9\s-]+$/i.test(query);
-      return wikiSearch(latin ? 'en' : 'ar', query).then(function (r) {
-        return r.results.length ? r : wikiSearch(latin ? 'ar' : 'en', englishSearchQuery(query) || query);
+      var latin = /^[a-z0-9\\s-]+$/i.test(query);
+      return ddgSearch(query).then(function (r) {
+        if (r.results.length) return r;
+        return wikiSearch(latin ? 'en' : 'ar', query);
       }).then(function (r) {
-        return r.results.length ? r : ddgSearch(query);
+        return r.results.length ? r : wikiSearch(latin ? 'ar' : 'en', englishSearchQuery(query) || query);
       }).then(function (r) {
         return r.results.length ? r : next();
       }).catch(function () { return next(); });
