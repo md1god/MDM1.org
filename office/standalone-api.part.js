@@ -687,17 +687,21 @@
     if (method === 'POST' && path === '/api/tasks') {
       var ag = getAgent(b.agentId);
       if (!ag || !b.title) return Promise.resolve(jsonResponse({ error: 'agentId and title required' }, 400));
-      var task = { id: 'tsk-' + uuid().slice(0, 8), agentId: ag.id, title: String(b.title).trim(), description: String(b.description || '').trim(), status: 'queued', createdAt: nowIso() };
+      var needsApproval = b.requiresApproval === true;
+      var task = { id: 'tsk-' + uuid().slice(0, 8), agentId: ag.id, title: String(b.title).trim(), description: String(b.description || '').trim(), status: needsApproval ? 'needs_review' : 'queued', requiresApproval: needsApproval, createdAt: nowIso() };
       state.tasks.unshift(task);
-      state.liveBubbles[ag.id] = 'أعمل على: ' + task.title.slice(0, 30);
-      if (b.requiresApproval) addApproval({ agentId: ag.id, agentName: ag.name, title: 'اعتماد مهمة: ' + task.title, details: task.description || 'مهمة مسندة.', risk: 'medium', actionType: 'task_execution', payload: { taskId: task.id } });
+      state.liveBubbles[ag.id] = needsApproval ? '⏳ بانتظار اعتماد المهمة' : 'أعمل على: ' + task.title.slice(0, 30);
+      if (needsApproval) {
+        var taskApproval = addApproval({ agentId: ag.id, agentName: ag.name, title: 'اعتماد مهمة: ' + task.title, details: task.description || 'مهمة مسندة.', risk: 'medium', actionType: 'task_execution', payload: { taskId: task.id } });
+        task.approvalId = taskApproval.id;
+        if (taskApproval.status !== 'pending') task.result = taskApproval.executionResult || 'لم تُقبل الموافقة آلياً؛ راجع سجل الأمان.';
+      }
       recomputeStatus(ag.id);
       hrWorkloadCheck();
-      logAudit('task_assigned', 'ceo', 'Assigned "' + task.title + '" to ' + ag.id);
+      logAudit('task_assigned', 'ceo', 'Assigned "' + task.title + '" to ' + ag.id + (needsApproval ? ' (approval required)' : ''));
       saveState();
-      /* The user's AI key is in the browser vault. Do not enqueue a fake
-         mark_done job for a backend that cannot execute this model request. */
-      startTaskRunner();
+      /* Do not queue an explicitly approval-gated task before the CEO decides. */
+      if (!needsApproval) startTaskRunner();
       return Promise.resolve(jsonResponse({ task: task }, 201));
     }
 
@@ -745,7 +749,13 @@
         }
       }
       var approvalLedger = item.payload && item.payload.ledgerId ? findLedgerEntry(item.payload.ledgerId) : null;
-      var preparedTask = null, linkedApprovalItems = [];
+      var preparedTask = null, linkedApprovalItems = [], approvalTask = null;
+      if (b.decision === 'approved' && item.actionType === 'task_execution') {
+        approvalTask = findTask(item.payload && item.payload.taskId);
+        if (!approvalTask || approvalTask.status !== 'needs_review') {
+          return Promise.resolve(jsonResponse({ error: 'المهمة لم تعد معلّقة للموافقة أو أنها غير موجودة.', code: 'TASK_NOT_PENDING_APPROVAL' }, 409));
+        }
+      }
       if (b.decision === 'approved' && ['request_execution', 'assistant_plan'].indexOf(item.actionType) !== -1) {
         var prepared = window.MDM1DecisionPolicy.prepareApprovedTask(item, approvalLedger, 'tsk-' + uuid().slice(0, 8), nowIso());
         if (!prepared.ok) return Promise.resolve(jsonResponse({
@@ -761,7 +771,14 @@
       var shouldStartTaskRunner = false;
       if (b.decision === 'approved') {
         var execResult = '✅ تم تسجيل الاعتماد في المكتب. حالة التنفيذ الفعلية موضحة حسب نوع الإجراء أدناه.';
-        if (preparedTask) {
+        if (approvalTask) {
+          approvalTask.status = 'queued';
+          approvalTask.approvedAt = nowIso();
+          approvalTask.result = 'تمت الموافقة الصريحة؛ أُدرجت المهمة في طابور التنفيذ المحلي.';
+          recomputeStatus(approvalTask.agentId);
+          execResult = '✅ تمت الموافقة الصريحة. بدأت إضافة المهمة إلى طابور التنفيذ المحلي: ' + approvalTask.title;
+          shouldStartTaskRunner = true;
+        } else if (preparedTask) {
           state.tasks.unshift(preparedTask);
           linkedApprovalItems.forEach(function (entry) {
             entry.status = 'queued'; entry.taskId = preparedTask.id;
@@ -796,11 +813,19 @@
           execResult = '✅ تم تسجيل قرار المشروع. هذا الاعتماد لا يعني أن تنفيذ المشروع أو نشره خارجياً قد بدأ.';
         }
         item.executionResult = execResult;
-        state.liveBubbles[item.agentId] = 'تم تنفيذ: ' + item.title.slice(0, 28) + '...';
+        state.liveBubbles[item.agentId] = item.actionType === 'publish_marketing' ? 'تم اعتماد المسودة فقط' : 'تم تسجيل قرار الموافقة';
         awardPoints(item.agentId, 25, 'تسجيل قرار موافقة: ' + item.title.slice(0, 30));
         telegramNotify('✅ *تم الاعتماد*\n' + item.title + '\n' + execResult);
       } else {
         item.executionResult = '❌ تم رفض الطلب من قبل المدير التنفيذي.';
+        if (item.actionType === 'task_execution' && item.payload && item.payload.taskId) {
+          var rejectedTask = findTask(item.payload.taskId);
+          if (rejectedTask && rejectedTask.status === 'needs_review') {
+            rejectedTask.status = 'failed';
+            rejectedTask.result = 'تم رفض المهمة من المدير؛ لم تدخل طابور التنفيذ.';
+            rejectedTask.rejectedAt = nowIso();
+          }
+        }
         state.liveBubbles[item.agentId] = 'تم رفض الطلب';
         if (approvalLedger) {
           window.MDM1DecisionPolicy.linkedLedgerItems(item, approvalLedger).forEach(function (entry) {
