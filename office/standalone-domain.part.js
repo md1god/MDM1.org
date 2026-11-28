@@ -710,7 +710,7 @@
     items.filter(function (x) { return x.status === 'unclear'; }).slice(0, 3).forEach(function (x) { unresolved.push('ماذا تريد من «' + x.text + '» تحديداً؟'); });
     if (/(ميزانيه|ميزانية|تكلفه|تكلفة|سعر|دفع)/iu.test(norm) && !money) unresolved.push('ما الميزانية القصوى أو الرقم المعتمد؟');
     if (/(خلال|بكره|بكرا|غدا|موعد|جدول)/iu.test(norm) && !time) unresolved.push('ما الموعد النهائي المطلوب؟');
-    if (/(هذا|كده|كذا|هيك|ذلك|اللي|التي|المادة|الشيء)/iu.test(norm)) unresolved.push('ما المقصود بالإشارة في الطلب؟');
+    /* Pronouns and relative clauses are resolved from chat history; their presence alone is not ambiguity. */
 
     return { original: original, normalized: norm, items: items.slice(0, 10), constraints: constraints, unresolved: uniqueStrings(unresolved).slice(0, 5) };
   }
