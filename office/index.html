@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MD1&#117;sd Company | AI Virtual Office</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" href="fonts/cairo-arabic-600-normal.woff2" as="font" type="font/woff2" crossorigin />
   <meta name="robots" content="noindex, nofollow, noarchive" />
   <meta property="og:image" content="https://mdm1.org/images/og-card.jpg" />
   <meta name="description" content="MDM1 AI Virtual Office — private workspace" />
@@ -14,31 +12,35 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa33" />
-  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa33" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa33" />
-  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa33" />
-  <link rel="stylesheet" href="styles.css?v=20261128pwa33" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa33ui1" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa33ui1" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa33ui1" />
+  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa33ui1" />
+  <link rel="stylesheet" href="styles.css?v=20261128pwa33ui1" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand">
-        <img class="brand-logo" src="app-logo.webp?v=20261128pwa33" alt="MD1&#117;sd Company" />
-        <div>
-          <h1>MD1&#117;sd Company</h1>
-          <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
+      <div class="topbar-main">
+        <div class="brand">
+          <img class="brand-logo" src="app-logo.webp?v=20261128pwa33ui1" alt="MD1&#117;sd Company" />
+          <div>
+            <h1>MD1&#117;sd Company</h1>
+            <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
+          </div>
+        </div>
+        <div class="status-badges" aria-label="حالة النظام">
+          <div id="ragBadge" class="cost-badge" title="الذاكرة المتجهة RAG">🧠 0 ذكرى</div>
+          <div id="costBadge" class="cost-badge" title="مراقب التوكنز والتكلفة">🪙 0 tok | $0.00</div>
+          <div id="providerBadge" class="provider-badge">جاري التحميل...</div>
+          <div id="vaultBadge" class="provider-badge" title="حالة خزنة المفاتيح">🔐 بلا خزنة</div>
+          <div id="officeQuotaBadge" class="provider-badge">📊 0 طلب</div>
+          <div id="complianceBadge" class="provider-badge" title="حالة الامتثال وتأكيد الحساب">🔐 جارٍ الفحص</div>
         </div>
       </div>
       <div class="topbar-actions">
-        <div id="ragBadge" class="cost-badge" title="الذاكرة المتجهة RAG">🧠 0 ذكرى</div>
-        <div id="costBadge" class="cost-badge" title="مراقب التوكنز والتكلفة">🪙 0 tok | $0.00</div>
-        <div id="providerBadge" class="provider-badge">جاري التحميل...</div>
-        <div id="vaultBadge" class="provider-badge" title="حالة خزنة المفاتيح">🔐 بلا خزنة</div>
-        <div id="officeQuotaBadge" class="provider-badge">📊 0 طلب</div>
-        <div id="complianceBadge" class="provider-badge" title="حالة الامتثال وتأكيد الحساب">🔐 جارٍ الفحص</div>
         <div class="quick-actions" id="officeQuickActions" aria-label="إجراءات سريعة">
           <button type="button" class="quick-btn quick-api" id="quickApiBtn">🔑 إضافة API</button>
           <button type="button" class="quick-btn quick-google" id="quickGoogleBtn">👤 جوجل</button>
@@ -63,25 +65,30 @@
 
     <div class="main-layout">
       <aside class="sidebar">
-        <nav class="nav-list">
+        <nav class="nav-list" aria-label="أقسام المكتب">
+          <div class="nav-group-title">الرئيسية</div>
           <button class="nav-item active" data-tab="office"><span class="nav-icon">🖥️</span><span>المكتب المرئي</span></button>
           <button class="nav-item" data-tab="chat"><span class="nav-icon">💬</span><span>المحادثات والصوت</span></button>
           <button class="nav-item" data-tab="approvals"><span class="nav-icon">⏳</span><span>بانتظار الموافقة</span><span id="pendingCountBadge" class="count-badge">0</span></button>
+          <button class="nav-item" data-tab="memos"><span class="nav-icon">📨</span><span>البريد الداخلي</span><span id="memoCountBadge" class="count-badge memo-badge">0</span></button>
+          <div class="nav-group-title">الإدارة</div>
           <button class="nav-item" data-tab="votes"><span class="nav-icon">🗳️</span><span>التصويت الديمقراطي</span></button>
           <button class="nav-item" data-tab="crm"><span class="nav-icon">💼</span><span>العملاء (CRM)</span></button>
           <button class="nav-item" data-tab="kpi"><span class="nav-icon">🏆</span><span>الترقيات و KPI</span></button>
-          <button class="nav-item" data-tab="memos"><span class="nav-icon">📨</span><span>البريد الداخلي</span><span id="memoCountBadge" class="count-badge memo-badge">0</span></button>
+          <button class="nav-item" data-tab="org"><span class="nav-icon">🌳</span><span>هيكل الشركة</span></button>
+          <button class="nav-item" data-tab="playbooks"><span class="nav-icon">📖</span><span>قوالب المشاريع</span></button>
+          <div class="nav-group-title">المال والتحليل</div>
           <button class="nav-item" data-tab="pnl"><span class="nav-icon">📊</span><span>الأرباح والخسائر</span></button>
           <button class="nav-item" data-tab="simulator"><span class="nav-icon">🔮</span><span>المحاكاة المالية</span></button>
-          <button class="nav-item" data-tab="playbooks"><span class="nav-icon">📖</span><span>قوالب المشاريع</span></button>
-          <button class="nav-item" data-tab="snapshots"><span class="nav-icon">🔐</span><span>النسخ الاحتياطي</span></button>
-          <button class="nav-item" data-tab="incident"><span class="nav-icon">🚨</span><span>إدارة الأزمات</span></button>
+          <div class="nav-group-title">الأنظمة</div>
           <button class="nav-item" data-tab="scheduler"><span class="nav-icon">🕐</span><span>المُجدول والتوسع</span></button>
           <button class="nav-item" data-tab="knowledge"><span class="nav-icon">📚</span><span>المعرفة والملفات</span></button>
           <button class="nav-item" data-tab="sandbox"><span class="nav-icon">💻</span><span>بيئة المطورين</span></button>
-          <button class="nav-item" data-tab="org"><span class="nav-icon">🌳</span><span>هيكل الشركة</span></button>
-          <button class="nav-item" data-tab="audit"><span class="nav-icon">📜</span><span>سجل التدقيق</span></button>
           <button class="nav-item" data-tab="integrations"><span class="nav-icon">🔌</span><span>التكاملات</span></button>
+          <div class="nav-group-title">الأمان والتدقيق</div>
+          <button class="nav-item" data-tab="snapshots"><span class="nav-icon">🔐</span><span>النسخ الاحتياطي</span></button>
+          <button class="nav-item" data-tab="incident"><span class="nav-icon">🚨</span><span>إدارة الأزمات</span></button>
+          <button class="nav-item" data-tab="audit"><span class="nav-icon">📜</span><span>سجل التدقيق</span></button>
         </nav>
         <div class="sidebar-stats">
           <h4>حالة الفريق</h4>
@@ -390,12 +397,12 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261128pwa33"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261128pwa33ui1"></script>
   <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261128pwa33"></script>
-  <script src="office-auth.js?v=20261128pwa33"></script>
-  <script src="pwa.js?v=20261128pwa33"></script>
-  <script src="standalone.js?v=20261128pwa33"></script>
+  <script src="office-config.js?v=20261128pwa33ui1"></script>
+  <script src="office-auth.js?v=20261128pwa33ui1"></script>
+  <script src="pwa.js?v=20261128pwa33ui1"></script>
+  <script src="standalone.js?v=20261128pwa33ui1"></script>
   <script>
     // Wait for the runtime parts, then for boot() to finish the private gate.
     // MDM1OfficeReady only means the parts loaded; MDM1Office.ready means the
@@ -404,7 +411,7 @@
       return (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve();
     }).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261128pwa33';
+      s.src = 'app.js?v=20261128pwa33ui1';
       document.body.appendChild(s);
     }).catch(function (error) {
       console.error('MDM1 Office could not start:', error);
