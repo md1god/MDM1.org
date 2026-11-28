@@ -1,13 +1,13 @@
 /* MDM1 AI Office — runtime loader (pwa21)
    ----------------------------------------------------------------------------
-   The browser runtime is maintained as five source parts instead of one 270KB
+   The browser runtime is maintained as nine source parts instead of one 270KB
    file. They are concatenated in order and evaluated as one program so all
    existing closures and state stay intact. The injected CSS now lives in
    styles.css; no stylesheet is generated from JavaScript. The ready promise is
    published synchronously so app.js never boots before the runtime exists. */
 (function () {
   'use strict';
-  var VERSION = '20261128pwa44';
+  var VERSION = '20261128pwa45';
   var PARTS = [
     './decision-policy.js',
     './conversation-intelligence.js',
@@ -16,6 +16,7 @@
     './standalone-domain.part.js',
     './standalone-api.part.js',
     './standalone-autopilot.part.js',
+    './standalone-engine.part.js',
     './standalone-ui.part.js'
   ];
   var resolveReady, rejectReady;
@@ -28,11 +29,21 @@
     rejectReady(error);
   }
 
+  function loadEngineUi() {
+    try {
+      var el = document.createElement('script');
+      el.src = './engine-ui.js?v=' + VERSION;
+      el.defer = true;
+      document.head.appendChild(el);
+    } catch (error) { console.warn('engine ui not loaded', error); }
+  }
+
   function loadPart(index, source) {
     if (index >= PARTS.length) {
       try {
         (0, eval)(source);
         resolveReady(window.MDM1Office);
+        loadEngineUi();
       } catch (error) { fail(error); }
       return;
     }

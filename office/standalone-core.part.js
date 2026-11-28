@@ -365,8 +365,14 @@
     var rec = activeUndoFor(approvalId);
     if (!rec) return { ok: false, error: 'انتهت نافذة التراجع أو لا يوجد تراجع متاح لهذا القرار.' };
     var before = rec.before || {};
-    state.tasks = (state.tasks || []).filter(function (t) { return (before.taskIds || []).indexOf(t.id) !== -1; });
-    state.customAgents = (state.customAgents || []).filter(function (a) { return (before.agentIds || []).indexOf(a.id) !== -1; });
+    /* Remove only the items this decision created. Older records without an
+       explicit created list fall back to the snapshot-ID difference. */
+    var createdTasks = Array.isArray(rec.createdTaskIds) ? rec.createdTaskIds
+      : (state.tasks || []).filter(function (t) { return (before.taskIds || []).indexOf(t.id) === -1; }).map(function (t) { return t.id; });
+    var createdAgents = Array.isArray(rec.createdAgentIds) ? rec.createdAgentIds
+      : (state.customAgents || []).filter(function (a) { return (before.agentIds || []).indexOf(a.id) === -1; }).map(function (a) { return a.id; });
+    state.tasks = (state.tasks || []).filter(function (t) { return createdTasks.indexOf(t.id) === -1; });
+    state.customAgents = (state.customAgents || []).filter(function (a) { return createdAgents.indexOf(a.id) === -1; });
     if (before.skillTarget) {
       var target = getAgent(before.skillTarget);
       if (target) target.skillsMd = before.skills == null ? '' : before.skills;

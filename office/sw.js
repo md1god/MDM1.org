@@ -3,7 +3,7 @@
    are never cached and are always fetched from the network. */
 (function () {
   'use strict';
-  var VERSION = '20261128pwa44';
+  var VERSION = '20261128pwa45';
   var CACHE = 'mdm1-office-pwa-' + VERSION;
   /* Versioned URLs match index.html, so a deploy can never serve a cached old
      fragment next to a fresh index (and vice versa). */
@@ -11,7 +11,8 @@
     './?v=' + VERSION, './index.html?v=' + VERSION, './styles.css?v=' + VERSION, './app.js?v=' + VERSION, './office-config.js?v=' + VERSION,
     './office-auth.js?v=' + VERSION, './standalone.js?v=' + VERSION, './decision-policy.js?v=' + VERSION, './conversation-intelligence.js?v=' + VERSION, './standalone-core.part.js?v=' + VERSION,
     './standalone-model.part.js?v=' + VERSION, './standalone-domain.part.js?v=' + VERSION,
-    './standalone-api.part.js?v=' + VERSION, './standalone-autopilot.part.js?v=' + VERSION, './standalone-ui.part.js?v=' + VERSION,
+    './standalone-api.part.js?v=' + VERSION, './standalone-autopilot.part.js?v=' + VERSION,
+    './standalone-engine.part.js?v=' + VERSION, './engine-ui.js?v=' + VERSION, './standalone-ui.part.js?v=' + VERSION,
     './pwa.js?v=' + VERSION, './manifest.webmanifest?v=' + VERSION,
     './data.json?v=' + VERSION, './app-logo.webp?v=' + VERSION, './icon-192.webp?v=' + VERSION, './icon-512.webp?v=' + VERSION,
     './office-background.webp?v=' + VERSION, './apple-touch-icon.png?v=' + VERSION
