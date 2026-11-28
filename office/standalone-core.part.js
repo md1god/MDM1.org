@@ -142,21 +142,10 @@
         role: 'assistant', text: 'صباح الخير سيادة المدير! أنا السكرتيرة التنفيذية وجاهزة لتلقي توجيهاتك. حالة الاتصال الفعلية بالنموذج تظهر أعلى الصفحة، ويمكنك بدء اجتماع جماعي أو مسار مشروع تلقائي.',
         timestamp: now
       }],
-      tasks: [
-        { id: uuid(), agentId: 'web-research-team', title: 'رصد 3 أدوات AI قابلة لإعادة البيع (White-label)', description: 'البحث على الويب عن أدوات أتمتة وتسويق يمكن استخدامها أو بيعها للعملاء.', status: 'working', createdAt: now },
-        { id: uuid(), agentId: 'accountant', title: 'إعداد مسودة ميزانية الشهر الأول وتكاليف APIs', description: 'مراجعة التكاليف التقديرية لمزودي الذكاء الاصطناعي والأدوات.', status: 'available', createdAt: now }
-      ],
-      approvals: [
-        { id: 'apr-initial-1', agentId: 'marketing-lead', agentName: 'مسؤول التسويق', title: 'إطلاق حملة إعلانية تجريبية لمنتج الشركة الأول', details: 'خطة حملة مبدئية بميزانية مقترحة $50 لاختبار معدل التحويل على منصات التواصل.', risk: 'medium', securityNote: '🛡️ فحص مسؤول الأمان: تعديل تشغيلي أو مالي متوسط الأثر — مسموح بعد موافقة المدير.', actionType: 'publish_marketing', payload: {}, status: 'pending', createdAt: now, resolvedAt: null },
-        { id: 'apr-initial-2', agentId: 'security-officer', agentName: 'مسؤول الأمان', title: 'تفعيل بوابة Webhooks للأدوات الخارجية', details: 'مراجعة أمنية لتفعيل نقطة استقبال /api/webhooks/incoming مع التحقق من التوقيع السري.', risk: 'low', securityNote: '🛡️ فحص مسؤول الأمان: توقيع WEBHOOK_SECRET مفعّل.', actionType: 'enable_new_webhook', payload: {}, status: 'pending', createdAt: now, resolvedAt: null }
-      ],
-      agentStatuses: { 'web-research-team': 'working', 'marketing-lead': 'waiting_approval', 'security-officer': 'waiting_approval' },
-      liveBubbles: {
-        'web-research-team': 'أبحث في الويب عن فرص SaaS...',
-        'accountant': 'جاهزة لمراجعة الأرباح والخسائر',
-        'marketing-lead': 'بانتظار اعتماد الحملة الإعلانية',
-        'security-officer': 'أراقب صلاحيات الـ Webhooks'
-      },
+      tasks: [],
+      approvals: [],
+      agentStatuses: {},
+      liveBubbles: {},
       usageStats: { totalTokens: 0, totalCostUsd: 0, byAgent: {} },
       /* Per-model quota / cost telemetry, primary input to the 📊 panel. */
       modelUsage: {},
@@ -171,15 +160,9 @@
       secretVault: null,
       meetingActive: false,
       meetingAttendees: [],
-      internalMemos: [
-        { id: 'memo-1', fromId: 'web-research-team', fromName: 'فريق البحث والتطوير', fromAvatar: '🌐', toId: 'accountant', toName: 'المحاسبة', toAvatar: '💰', subject: 'دراسة تكلفة أداة أتمتة مقترحة', body: 'تم رصد أداة أتمتة خدمة عملاء بتكلفة ترخيص $29/شهر وإمكانية بيعها بـ $99/شهر. يرجى مراجعة هامش الربح.', timestamp: now, read: false },
-        { id: 'memo-2', fromId: 'auditors-experts-devs', fromName: 'المدققون والخبراء والمطورون', fromAvatar: '⚙️', toId: 'hr-manager', toName: 'مديرة الموارد البشرية', toAvatar: '👩‍💼', subject: 'توصية بتعيين مختص تكاملات API', body: 'مع توسع مشاريع n8n والربط الخارجي، نقترح تجهيز وصف وظيفي لمطور تكاملات عند الحاجة.', timestamp: now, read: false }
-      ],
+      internalMemos: [],
       kpiReviews: [],
-      financialLedger: [
-        { id: 'fin-1', type: 'revenue', title: 'اشتراك عميل تجريبي — باقة الأتمتة', amountUsd: 199, date: now.slice(0, 10), notes: 'دفعة شهرية أولى' },
-        { id: 'fin-2', type: 'expense', title: 'استضافة وخوادم تجريبية', amountUsd: 25, date: now.slice(0, 10), notes: 'بنية تحتية شهرية' }
-      ],
+      financialLedger: [],
       schedules: [
         { id: 'daily-morning-brief', name: 'النشرة الصباحية التنفيذية (السكرتيرة -> تيليجرام)', agentId: 'executive-assistant', frequency: 'daily', targetHour: 9, enabled: true, lastRunAt: null, lastStatus: 'جاهز' },
         { id: 'weekly-saas-research', name: 'تقرير 3 فرص SaaS أسبوعي (فريق البحث)', agentId: 'web-research-team', frequency: 'weekly', targetDay: 1, targetHour: 10, enabled: true, lastRunAt: null, lastStatus: 'جاهز' },
@@ -187,10 +170,7 @@
         { id: 'daily-hr-workload', name: 'مراقبة ضغط العمل والتوسع الذاتي (HR Manager)', agentId: 'hr-manager', frequency: 'daily', targetHour: 16, enabled: true, lastRunAt: null, lastStatus: 'جاهز' }
       ],
       gamification: {},
-      customers: [
-        { id: 'cust-1', portalToken: 'portal-elite-trade-01', name: 'شركة النخبة للتجارة', contactName: 'أحمد العتيبي', email: 'ahmed@elite-trade.example', phone: '+96650000001', stage: 'نشط', projectTitle: 'أتمتة خدمة العملاء عبر واتساب', totalValueUsd: 450, paidUsd: 199, assignedTo: 'marketing-lead', notes: 'عميل نشط يدفع باقة شهرية — مهتم بباقة التسويق الآلي.', createdAt: now.slice(0, 10) },
-        { id: 'cust-2', portalToken: 'portal-rowad-store-02', name: 'متجر رواد الرقمي', contactName: 'سارة المنصور', email: 'sara@rowad-store.example', phone: '+96650000002', stage: 'قيد التفاوض', projectTitle: 'نظام تقارير مالية بالذكاء الاصطناعي', totalValueUsd: 320, paidUsd: 0, assignedTo: 'accountant', notes: 'بانتظار عرض السعر النهائي وخطة التنفيذ.', createdAt: now.slice(0, 10) }
-      ],
+      customers: [],
       votes: [],
       emergencyMode: false,
       incidents: [],
@@ -383,6 +363,17 @@
     });
     if (!merged.usageStats) merged.usageStats = base.usageStats;
     if (!merged.auditChainHead || typeof merged.auditChainHead !== 'string') merged.auditChainHead = base.auditChainHead;
+    /* One-time cleanup: drop the old built-in demo data so real work starts from zero. */
+    if (!merged.demoCleared) {
+      var demoTitles = ['رصد 3 أدوات AI قابلة لإعادة البيع (White-label)', 'إعداد مسودة ميزانية الشهر الأول وتكاليف APIs'];
+      merged.customers = (merged.customers || []).filter(function (c) { return c.id !== 'cust-1' && c.id !== 'cust-2'; });
+      merged.financialLedger = (merged.financialLedger || []).filter(function (x) { return x.id !== 'fin-1' && x.id !== 'fin-2'; });
+      merged.internalMemos = (merged.internalMemos || []).filter(function (m) { return m.id !== 'memo-1' && m.id !== 'memo-2'; });
+      merged.approvals = (merged.approvals || []).filter(function (a) { return a.id !== 'apr-initial-1' && a.id !== 'apr-initial-2'; });
+      merged.tasks = (merged.tasks || []).filter(function (t) { return demoTitles.indexOf(t.title) === -1 || t.status === 'done'; });
+      merged.agentStatuses = {}; merged.liveBubbles = {};
+      merged.demoCleared = true;
+    }
     (merged.approvals || []).forEach(function (a) {
       var serious = /دفع\s|تحويل\s|توقيع\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|بيانات\s+سرية|حذف\s+بيانات|webhook|api\s*key/i.test(stripNegated(String(a.title || '') + ' ' + String(a.details || '')));
       if (a.risk === 'high' && !serious) {
