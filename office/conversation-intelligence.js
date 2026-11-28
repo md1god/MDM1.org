@@ -16,7 +16,7 @@
       .trim();
   }
 
-  var ACTION_RX = /(?:^|\s)(?:ابحث|ابحثي|ابحثوا|نفذ|نفذي|نفذوا|اعمل|اعملي|انشئ|انشئي|جهز|جهزي|اكتب|اكتبي|حلل|حللي|راجع|راجعي|قارن|قارني|استخرج|استخرجي|ابن|ابني|طور|طوري|اطلق|اطلقي|انشر|انشري|ارسل|ارسلي|احسب|احسبي|صمم|صممي|جهز|قدمي|قدم|اريد|عايز|عاوزه|عاوز|نريد|نحتاج)\b/u;
+  var ACTION_RX = /(?:^|\s)(?:ابحث|ابحثي|ابحثوا|نفذ|نفذي|نفذوا|اعمل|اعملي|انشئ|انشئي|جهز|جهزي|اكتب|اكتبي|حلل|حللي|راجع|راجعي|قارن|قارني|استخرج|استخرجي|ابن|ابني|طور|طوري|اطلق|اطلقي|انشر|انشري|ارسل|ارسلي|احسب|احسبي|صمم|صممي|جهز|قدمي|قدم|اريد|عايز|عاوزه|عاوز|نريد|نحتاج)(?![\p{L}\p{N}])/u;
   var QUESTION_RX = /(?:\?|؟|❓|ما لم افهم|لم افهم|ماذا تريد|ماذا تقصد|من هو الجمهور|ما الجمهور|هل تريد|هل لدينا|ما المخرج|ايهما|أيّهما)/iu;
 
   function isAudienceByProject(value) {
@@ -172,11 +172,9 @@
     var priceMatches = text.match(/(?:\d+(?:[.,]\d+)?\s*(?:USDT|USD|\$)|(?:USDT|USD|\$)\s*\d+(?:[.,]\d+)?)/giu) || [];
     var hasCustomization = /نسخه مخصصه|تخصيص|معدا لنشاطك|معد لنشاطك|white[\s-]?label/iu.test(text);
     var offer = '';
-    var allNodes = doc.querySelectorAll('body *');
-    for (var i = 0; i < allNodes.length; i++) {
-      var node = allNodes[i];
-      if (node.children.length > 3) continue;
-      var nodeText = compact(node.textContent, 900);
+    var offerNodes = doc.querySelectorAll('.card, .notice, p');
+    for (var i = 0; i < offerNodes.length; i++) {
+      var nodeText = compact(offerNodes[i].textContent, 900);
       if (/نسخه مخصصه لنشاطك|معدا لنشاطك|معد لنشاطك/iu.test(nodeText) && nodeText.length > 40) {
         offer = nodeText;
         break;
