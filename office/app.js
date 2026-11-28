@@ -291,7 +291,8 @@ function renderKPI(){
 function renderDecisionLog(){
   const dl=document.getElementById('decisionLogList'); if(!dl)return;
   const decisions=(D.state.decisionLog||[]).slice(0,30);
-  dl.innerHTML=decisions.map(d=>`<div class="approval-card"><div style="flex-direction:column;align-items:stretch;gap:4px;">
+  const head=String(D.state.auditChainHead||'0');
+  dl.innerHTML=`<div class="approval-card"><div style="flex-direction:column;align-items:stretch;gap:4px;"><div style="font-size:11px;color:var(--muted);">🔗 سلسلة التدقيق (تجزئة متسلسلة): <code>${esc(head)}</code></div><div style="font-size:11px;color:var(--muted);">أي تعديل على سجل سابق يكسر السلسلة.</div></div></div>`+decisions.map(d=>`<div class="approval-card"><div style="flex-direction:column;align-items:stretch;gap:4px;">
     <div style="font-size:11px;color:var(--muted);">🧾 ${esc(d.id)} • ${esc(d.at||'')} • ${d.decision==='approved'?'✅ اعتماد':'❌ رفض'} • خطورة: ${esc(d.risk||'medium')}</div>
     <strong>${esc(d.title||'')}</strong>
     <div style="font-size:12px;">🛡️ حارس المراجعة: <span style="color:${d.redTeam==='NOT_REQUIRED'?'var(--muted)':'#fcd34d'}">${esc(d.redTeam||'غير مسجّل')}</span></div>

@@ -283,17 +283,28 @@
     q('ocSyncSecret').value = secret('syncSecret');
     q('ocSyncEnabled').value = String(settings.syncEnabled);
 
+    function liveOptions(cache, selected) {
+      var listing = cache || {};
+      var all = (listing.models || []).map(function (m) { return m.id; });
+      var free = listing.free || [];
+      var ids = all.length ? all : (free || []);
+      var opts = '<option value="">' + (ids.length ? 'اختر من القائمة الحية' : 'لا توجد نماذج حية — اختبر الاتصال أولاً') + '</option>' +
+        ids.map(function (id) {
+          var tag = free.indexOf(id) !== -1 ? ' ✓ مجاني' : '';
+          return '<option value="' + escAttr(id) + '"' + (selected === id ? ' selected' : '') + '>' + esc(id) + tag + '</option>';
+        }).join('');
+      return { html: opts, ids: ids };
+    }
     function fillModels(models, free) {
       var ids = (models || []).map(function (m) { return m.id; });
       var pool = ids;
-      var html = '<option value="">' + (ids.length ? 'اختر من القائمة الحية' : 'لا توجد نماذج حية — اختبر الاتصال أولاً') + '</option>' +
-        pool.map(function (id) {
-          var tag = free && free.indexOf(id) !== -1 ? ' ✓ مجاني' : '';
-          return '<option value="' + escAttr(id) + '">' + esc(id) + tag + '</option>';
-        }).join('');
-      ['ocGroqModel', 'ocOrModel', 'ocLabModel'].forEach(function (id) {
-        var sel = q(id); if (sel) sel.innerHTML = html;
-      });
+      var g = liveOptions(providerCache.groq, settings.groqModel);
+      var o = liveOptions(providerCache.openrouter, settings.openrouterModel);
+      if (q('ocGroqModel')) q('ocGroqModel').innerHTML = g.html;
+      if (q('ocOrModel')) q('ocOrModel').innerHTML = o.html;
+      var lab = q('ocLabProvider') ? q('ocLabProvider').value : 'local';
+      var labCache = lab === 'local' ? providerCache.local : lab === 'zen' ? providerCache.zen : lab === 'groq' ? providerCache.groq : providerCache.openrouter;
+      if (q('ocLabModel')) q('ocLabModel').innerHTML = liveOptions(labCache, q('ocLabModel').value).html;
       modal.querySelectorAll('select[data-model-for]').forEach(function (sel) {
         var agentId = sel.getAttribute('data-model-for');
         var current = settings.modelOverrides[agentId] || '';

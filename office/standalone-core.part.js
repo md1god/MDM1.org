@@ -202,6 +202,7 @@
       ],
       memories: {},
       auditLog: [],
+      auditChainHead: '0',
       exports: [],
       exportContents: {},
       sandboxFiles: [],
@@ -381,6 +382,7 @@
       if (!merged[k] || typeof merged[k] !== 'object') merged[k] = base[k] || {};
     });
     if (!merged.usageStats) merged.usageStats = base.usageStats;
+    if (!merged.auditChainHead || typeof merged.auditChainHead !== 'string') merged.auditChainHead = base.auditChainHead;
     (merged.approvals || []).forEach(function (a) {
       var serious = /دفع\s|تحويل\s|توقيع\s+عقد|نشر\s+عام|نشر\s+خارجي|منح\s+صلاحية|تغيير\s+صلاحية|بيانات\s+سرية|حذف\s+بيانات|webhook|api\s*key/i.test(stripNegated(String(a.title || '') + ' ' + String(a.details || '')));
       if (a.risk === 'high' && !serious) {
@@ -635,9 +637,24 @@
   }
 
   /* ── audit / points / status ──────────────────────────────────────────── */
+  /* Tamper-evident hash chain: every entry commits to the previous head.
+     A changed/deleted earlier entry breaks every following hash. */
+  function chainHash(prev, text) {
+    var h = String(prev || '0');
+    var s = String(text || '');
+    for (var i = 0; i < s.length; i++) {
+      h = (((h.charCodeAt(i % h.length) * 33) ^ s.charCodeAt(i)) >>> 0).toString(16).padStart(8, '0');
+    }
+    return h;
+  }
   function logAudit(eventType, actor, summary, meta) {
-    state.auditLog.unshift({ id: uuid(), timestamp: nowIso(), eventType: eventType, actor: actor, summary: summary, meta: meta || null });
+    var prev = state.auditChainHead || '0';
+    var entry = { id: uuid(), timestamp: nowIso(), eventType: eventType, actor: actor, summary: summary, meta: meta || null, prevHash: prev };
+    entry.hash = chainHash(prev, [entry.timestamp, eventType, actor, summary, JSON.stringify(meta || null)].join('|'));
+    state.auditChainHead = entry.hash;
+    state.auditLog.unshift(entry);
     state.auditLog = state.auditLog.slice(0, 250);
+    saveState();
   }
 
   var LEVELS = [
