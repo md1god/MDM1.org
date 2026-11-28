@@ -20,6 +20,16 @@
       return ids.indexOf(item.id) !== -1 && item.status === 'needs_approval' && item.approvalId === approval.id;
     });
   }
+  function shouldQuarantineLegacyAssistantTask(task, approval) {
+    if (!task || !approval) return false;
+    if (approval.status !== 'pending' || approval.actionType !== 'assistant_plan' || String(approval.risk || '').toLowerCase() !== 'high') return false;
+    if (['queued', 'working'].indexOf(task.status) === -1) return false;
+    var payload = approval.payload || {};
+    var expectedAgent = String(payload.agentId || approval.agentId || '');
+    var expectedLedger = payload.ledgerId || null;
+    var expectedTitle = String(payload.taskTitle || approval.title || '').replace(/^موافقة صريحة:\s*/u, '').trim();
+    return task.agentId === expectedAgent && (task.ledgerId || null) === expectedLedger && String(task.title || '').trim() === expectedTitle;
+  }
   function prepareApprovedTask(approval, ledgerEntry, taskId, createdAt) {
     if (!approval || !approval.id) return { ok: false, code: 'INVALID_APPROVAL' };
     var payload = approval.payload || {}, action = approval.actionType;
@@ -55,5 +65,5 @@
       ledgerItemIds: ledgerItemIds
     };
   }
-  return { shouldQueueImmediately, canResolveApproval, linkedLedgerItems, prepareApprovedTask };
+  return { shouldQueueImmediately, canResolveApproval, linkedLedgerItems, prepareApprovedTask, shouldQuarantineLegacyAssistantTask };
 });

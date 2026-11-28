@@ -44,3 +44,17 @@ test('an assistant-plan approval links all and only its pending ledger items', (
   assert.deepEqual(prepared.task.ledgerItemIds, ['ri-1', 'ri-2']);
   assert.deepEqual(policy.linkedLedgerItems(approval, ledger).map(x => x.id), ['ri-1', 'ri-2']);
 });
+
+test('legacy high-risk assistant tasks are quarantined only while the matching approval is pending', () => {
+  const approval = {
+    id: 'apr-legacy', status: 'pending', risk: 'high', actionType: 'assistant_plan',
+    agentId: 'security-officer', title: 'موافقة صريحة: Audit deployment',
+    payload: { ledgerId: 'req-legacy' }
+  };
+  const task = { agentId: 'security-officer', ledgerId: 'req-legacy', title: 'Audit deployment', status: 'queued' };
+  assert.equal(policy.shouldQuarantineLegacyAssistantTask(task, approval), true);
+  assert.equal(policy.shouldQuarantineLegacyAssistantTask({ ...task, status: 'done' }, approval), false);
+  assert.equal(policy.shouldQuarantineLegacyAssistantTask(task, { ...approval, status: 'approved' }), false);
+  assert.equal(policy.shouldQuarantineLegacyAssistantTask(task, { ...approval, risk: 'low' }), false);
+  assert.equal(policy.shouldQuarantineLegacyAssistantTask({ ...task, title: 'Different task' }, approval), false);
+});

@@ -800,6 +800,27 @@
   }
 
 
+  function quarantineUnapprovedAssistantTasks() {
+    var quarantined = 0;
+    (state.approvals || []).forEach(function (approval) {
+      (state.tasks || []).forEach(function (task) {
+        if (!window.MDM1DecisionPolicy.shouldQuarantineLegacyAssistantTask(task, approval)) return;
+        task.status = 'needs_review';
+        task.completedAt = nowIso();
+        task.result = 'تم إيقاف التشغيل التلقائي: المهمة عالية الخطورة كانت مدرجة قبل اكتمال موافقة المدير. أعد اعتمادها لبدء التنفيذ.';
+        task.meta = Object.assign({}, task.meta || {}, { quarantinedForApproval: approval.id });
+        recomputeStatus(task.agentId);
+        quarantined += 1;
+      });
+    });
+    if (quarantined) {
+      logAudit('legacy_high_risk_tasks_quarantined', 'security-officer', 'Quarantined ' + quarantined + ' legacy task(s) awaiting explicit CEO approval');
+      saveState();
+    }
+    return quarantined;
+  }
+
+
   /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
   var assistantSession = null;
 
