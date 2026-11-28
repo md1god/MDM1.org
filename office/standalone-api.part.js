@@ -135,6 +135,88 @@
     }).catch(function () { return { processed: 0 }; });
   }
 
+  /* ── golden self-tests ─────────────────────────────────────────────────
+     Cheap deterministic checks that catch the regressions this project has
+     already suffered: dialect/stopword handling, prompt bloat, intent limits,
+     tool permissions, state merging, audit chain and the HTML escaper. They
+     never call a model and never mutate stored state. */
+  function runSelfTests() {
+    var results = [];
+    function add(name, ok, detail) {
+      results.push({ name: name, ok: ok === true, detail: ok === true ? 'ok' : String(detail == null ? '' : detail) });
+    }
+    function check(name, fn) {
+      try { var v = fn(); add(name, v === true, v === true ? 'ok' : v); }
+      catch (e) { add(name, false, e && e.message || e); }
+    }
+
+    check('تطبيع العربية (همزات/تشكيل)', function () { return arNormalize('أَحْمَد') === 'احمد'; });
+    check('إزالة كلمات التوقف', function () {
+      var t = arTokens('ما هي أسعار الخدمات؟');
+      return t.indexOf('اسعار') !== -1 && t.indexOf('ما') === -1;
+    });
+    check('استرجاع مقتطفات المعرفة', function () {
+      var full = knowledgeContext('');
+      var picked = knowledgeContext('أسعار الخدمات والعروض');
+      return picked.length > 0 && picked.length <= full.length + 20 && picked.indexOf('###') !== -1;
+    });
+
+    var intent = buildIntentContract('انشر الحملة بدون دفع أي مبلغ، الميزانية $100، خلال 3 أيام', { goal: 'حملة' });
+    check('عقد النية: منع الدفع', function () { return intent.forbidden.indexOf('payment') !== -1; });
+    check('عقد النية: سقف الميزانية', function () { return intent.budgetUsd === 100; });
+    check('عقد النية: الموعد النهائي', function () { return !!intent.deadline && Date.parse(intent.deadline) > Date.now(); });
+    check('منع تجاوز الميزانية', function () {
+      return checkIntent(intent, 'payment', 'ادفع 150 دولار', 150).code === 'INTENT_BUDGET';
+    });
+    check('منع إجراء محظور صراحة', function () {
+      return checkIntent(intent, 'payment', 'ادفع الآن', 0).code === 'INTENT_FORBIDDEN';
+    });
+    check('صلاحية النشر للتسويق + موافقة', function () {
+      var p = authorizeAction('marketing-lead', 'publish_marketing', {});
+      return p.allowed === true && p.requiresApproval === true;
+    });
+    check('منع النشر عن السكرتيرة', function () {
+      return authorizeAction('executive-assistant', 'publish_marketing', {}).allowed === false;
+    });
+    check('صلاحية التعيين للموارد البشرية', function () {
+      return authorizeAction('hr-manager', 'hire_agent', {}).allowed === true;
+    });
+    check('دمج الحالة لا يكسر المصفوفات', function () { return Array.isArray(mergeState({ tasks: 'bad' }).tasks); });
+    check('سلسلة التدقيق حتمية', function () {
+      var a = chainHash('0', 'x'), b = chainHash('0', 'x');
+      return a === b && /^[a-f0-9]{64}$/.test(a) && chainHash('0', 'y') !== a;
+    });
+    check('ملخص الحصة أرقام', function () {
+      var q = quotaSummary();
+      return typeof q.calls === 'number' && typeof q.limited === 'number';
+    });
+    check('تهريب HTML', function () {
+      if (typeof window.esc !== 'function') return 'esc غير محمّل بعد';
+      var out = window.esc('<b>&"</b>');
+      return out.indexOf('<b>') === -1 && out.indexOf('&lt;') !== -1;
+    });
+
+    var cryptoTest = Promise.resolve().then(function () {
+      if (!secret('syncSecret')) return { skipped: true };
+      return encryptState({ hello: 'عالم' }).then(function (payload) {
+        return decryptState(payload);
+      }).then(function (value) {
+        add('تشفير/فك تشفير AES-GCM', !!(value && value.hello === 'عالم'), value ? 'قيمة مختلفة' : 'فشل فك التشفير');
+      }).catch(function (e) { add('تشفير/فك تشفير AES-GCM', false, e.message); });
+    });
+
+    return cryptoTest.then(function () {
+      var failed = results.filter(function (r) { return !r.ok; }).length;
+      var out = {
+        ok: failed === 0, total: results.length, passed: results.length - failed, failed: failed,
+        results: results, at: nowIso(), version: (window.MDM1OfficeConfig && window.MDM1OfficeConfig.version) || ''
+      };
+      if (failed) logAudit('selftest_failed', 'system', 'Golden self-tests: ' + failed + '/' + results.length + ' failed', { failed: failed });
+      else logAudit('selftest_passed', 'system', 'Golden self-tests passed (' + results.length + ')');
+      return out;
+    });
+  }
+
   function handleApi(method, path, body) {
     /* Real lock: a value in localStorage or the Console cannot unlock the
        office. Only a successful passphrase check sets the in-memory flag. */
@@ -168,6 +250,9 @@
 
     if (method === 'GET' && path === '/api/bootstrap') {
       return buildBootstrap().then(function (d) { return jsonResponse(d); });
+    }
+    if (method === 'GET' && path === '/api/selftest') {
+      return runSelfTests().then(function (r) { saveState(); return jsonResponse(r); });
     }
     if (method === 'GET' && path === '/api/models') {
       return Promise.all([listLocalModels(true), listZenModels(true), listGroqModels(true), listOpenRouterModels(true), listCloudModels(true)]).then(function (r) {
@@ -610,6 +695,25 @@
       if (item.status !== 'pending') return Promise.resolve(jsonResponse({ error: 'تم حسم هذا الطلب من قبل.', code: 'APPROVAL_ALREADY_RESOLVED' }, 409));
       if (!window.MDM1DecisionPolicy.canResolveApproval(item.risk, b.decision, b.override === true)) {
         return Promise.resolve(jsonResponse({ error: 'هذا الإجراء عالي الخطورة ويتطلب تأكيد تجاوز صريح من المدير (override=true).', risk: item.risk, quality: item.quality }, 409));
+      }
+      /* Re-check the contract and the employee's tools at decision time. A
+         permission or budget that changed after the request was opened must
+         not be executable just because the request is still in the queue. */
+      if (b.decision === 'approved') {
+        var guardText = String(item.title || '') + ' ' + String(item.details || '');
+        var guardIntent = (item.payload && item.payload.intent) || null;
+        var guardIntentCheck = checkIntent(guardIntent, item.actionType, guardText, item.payload && item.payload.amountUsd);
+        var guardPolicy = authorizeAction(item.agentId, item.actionType, item.payload || {});
+        if (!guardIntentCheck.ok || (!guardPolicy.allowed && b.override !== true)) {
+          var blockReason = !guardIntentCheck.ok ? guardIntentCheck.reason : guardPolicy.reason;
+          var blockCode = !guardIntentCheck.ok ? guardIntentCheck.code : guardPolicy.code;
+          item.status = 'blocked';
+          item.resolvedAt = nowIso();
+          item.executionResult = '🚫 منع برمجي عند الاعتماد: ' + blockReason;
+          logAudit('policy_blocked_at_approval', item.agentId, 'Blocked «' + item.title + '»: ' + blockReason, { id: item.id, code: blockCode });
+          saveState();
+          return Promise.resolve(jsonResponse({ ok: false, error: item.executionResult, code: blockCode, approval: item }, 409));
+        }
       }
       var approvalLedger = item.payload && item.payload.ledgerId ? findLedgerEntry(item.payload.ledgerId) : null;
       var preparedTask = null, linkedApprovalItems = [];

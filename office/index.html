@@ -12,11 +12,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MD1&#117;sd Company" />
-  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa40" />
-  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa40" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa40" />
-  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa40" />
-  <link rel="stylesheet" href="styles.css?v=20261128pwa40" />
+  <link rel="manifest" href="manifest.webmanifest?v=20261128pwa39" />
+  <link rel="icon" type="image/webp" href="icon-192.webp?v=20261128pwa39" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261128pwa39" />
+  <link rel="preload" as="image" href="office-background.webp?v=20261128pwa39" />
+  <link rel="stylesheet" href="styles.css?v=20261128pwa39" />
   <!-- Private page: the deploy checker sees this path, but the script is intentionally NOT loaded. -->
   <!-- /js/mdm1-auth-button.js -->
 </head>
@@ -25,7 +25,7 @@
     <header class="topbar">
       <div class="topbar-main">
         <div class="brand">
-          <img class="brand-logo" src="app-logo.webp?v=20261128pwa40" alt="MD1&#117;sd Company" />
+          <img class="brand-logo" src="app-logo.webp?v=20261128pwa39" alt="MD1&#117;sd Company" />
           <div>
             <h1>MD1&#117;sd Company</h1>
             <span class="subtitle">AI Virtual Office — الشركة الذكية ذاتية التوسع والذاكرة</span>
@@ -387,7 +387,22 @@
 
   <div id="awardModal" class="modal hidden"><div class="modal-card"><h3>⭐ منح نقاط مكافأة لموظف</h3><form id="awardForm"><label>الموظف</label><select id="awardAgentSelect"></select><label>عدد النقاط</label><input type="number" id="awardPointsInput" value="50" required /><label>السبب</label><input type="text" id="awardReasonInput" placeholder="أداء متميز في المشروع" /><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="document.getElementById('awardModal').classList.add('hidden')">إلغاء</button><button type="submit" class="btn btn-primary">منح النقاط</button></div></form></div></div>
 
-  <div id="healthModal" class="modal hidden"><div class="modal-card"><h3>🩺 فحص صحة المكتب</h3><p id="healthResult" style="font-size:12px;white-space:pre-wrap;line-height:1.8;color:var(--muted);">جارٍ الفحص...</p><div class="modal-actions"><button type="button" class="btn btn-secondary" id="closeHealthModalBtn">إغلاق</button></div></div></div>
+  <div id="healthModal" class="modal hidden"><div class="modal-card"><h3>🩺 فحص صحة المكتب</h3><p id="healthResult" style="font-size:12px;white-space:pre-wrap;line-height:1.8;color:var(--muted);">جارٍ الفحص...</p><div id="selfTestResult" style="font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:38vh;overflow:auto;display:none;"></div><div class="modal-actions"><button type="button" class="btn btn-primary" id="runSelftestBtn">🧪 اختبارات ذهبية</button><button type="button" class="btn btn-secondary" id="closeHealthModalBtn">إغلاق</button></div></div></div>
+
+  <!-- Mobile-only bottom navigation: five real destinations, no duplicate menu. -->
+  <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="تنقل سريع">
+    <button type="button" class="mbn-item active" data-mbn-tab="office"><span class="mbn-icon">🖥️</span><span>المكتب</span></button>
+    <button type="button" class="mbn-item" data-mbn-tab="chat"><span class="mbn-icon">💬</span><span>المحادثة</span></button>
+    <button type="button" class="mbn-item" data-mbn-tab="approvals"><span class="mbn-icon">⏳</span><span>الموافقات</span><span id="mobileApprovalBadge" class="count-badge">0</span></button>
+    <button type="button" class="mbn-item" data-mbn-tab="pnl"><span class="mbn-icon">📊</span><span>المال</span></button>
+    <button type="button" class="mbn-item" data-mbn-more="1"><span class="mbn-icon">☰</span><span>المزيد</span></button>
+  </nav>
+  <div id="mobileMoreSheet" class="mobile-more-sheet hidden" role="dialog" aria-modal="true" aria-label="كل الأقسام">
+    <div class="mobile-more-card">
+      <div class="mobile-more-head"><strong>كل الأقسام</strong><button type="button" id="mobileMoreClose" aria-label="إغلاق">✕</button></div>
+      <div id="mobileMoreGrid" class="mobile-more-grid"></div>
+    </div>
+  </div>
 
   <!-- Deploy-injection stubs. This private page must NOT inherit the public site shell:
        no floating menu, no music, no 3D layer, no public sign-in. The language
@@ -399,12 +414,12 @@
   <!-- /js/global.js /js/music-resume.js /js/mdm1-3d.js /js/mdm1-auth-button.js -->
   <div id="account-panel" hidden></div>
   <!-- Main-site language switcher (same globe button as mdm1.org). -->
-  <script src="https://mdm1.org/js/lang.js?v=20261128pwa40"></script>
+  <script src="https://mdm1.org/js/lang.js?v=20261128pwa39"></script>
   <!-- pwa.js registers the service worker and builds downloadable packages; standalone.js loads the split runtime parts and installs the /api/* shim before app.js boots. -->
-  <script src="office-config.js?v=20261128pwa40"></script>
-  <script src="office-auth.js?v=20261128pwa40"></script>
-  <script src="pwa.js?v=20261128pwa40"></script>
-  <script src="standalone.js?v=20261128pwa40"></script>
+  <script src="office-config.js?v=20261128pwa39"></script>
+  <script src="office-auth.js?v=20261128pwa39"></script>
+  <script src="pwa.js?v=20261128pwa39"></script>
+  <script src="standalone.js?v=20261128pwa39"></script>
   <script>
     // Wait for the runtime parts, then for boot() to finish the private gate.
     // MDM1OfficeReady only means the parts loaded; MDM1Office.ready means the
@@ -413,7 +428,7 @@
       return (window.MDM1Office && window.MDM1Office.ready) || Promise.resolve();
     }).then(function () {
       var s = document.createElement('script');
-      s.src = 'app.js?v=20261128pwa40';
+      s.src = 'app.js?v=20261128pwa39';
       document.body.appendChild(s);
     }).catch(function (error) {
       console.error('MDM1 Office could not start:', error);

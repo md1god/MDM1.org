@@ -109,8 +109,10 @@ function renderStats(){
   document.getElementById('statWorking').textContent=c.working||workingTasks;
   document.getElementById('statWaiting').textContent=c.waiting_approval;
   document.getElementById('statOffline').textContent=c.offline||0;
-  document.getElementById('pendingCountBadge').textContent=D.state.approvals.filter(a=>a.status==='pending').length;
+  const pendingCount=D.state.approvals.filter(a=>a.status==='pending').length;
+  document.getElementById('pendingCountBadge').textContent=pendingCount;
   document.getElementById('memoCountBadge').textContent=(D.state.internalMemos||[]).filter(m=>m.read!==true).length;
+  const mobBadge=document.getElementById('mobileApprovalBadge');if(mobBadge){mobBadge.textContent=pendingCount;mobBadge.style.display=pendingCount?'':'none';}
 }
 
 function renderOfficeRooms(){
@@ -457,7 +459,23 @@ function populateSelects(){
 function speakText(t,id){if(!document.getElementById('ttsToggle').checked||!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.slice(0,350));u.lang='ar-SA';const p=VP[id]||{pitch:1,rate:1};u.pitch=p.pitch;u.rate=p.rate;window.speechSynthesis.speak(u)}
 function startMic(inputId){const S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S)return alert('متصفحك لا يدعم التعرف على الصوت.');const r=new S();r.lang='ar-SA';r.onresult=e=>{document.getElementById(inputId).value=e.results[0][0].transcript};r.start()}
 
-function switchTab(t){const ca=document.querySelector('.content-area');if(ca)ca.scrollTop=0;document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`));renderActiveTab(t)}
+function switchTab(t){
+  const ca=document.querySelector('.content-area');if(ca)ca.scrollTop=0;
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.querySelectorAll('#mobileBottomNav .mbn-item').forEach(b=>b.classList.toggle('active',b.dataset.mbnTab===t));
+  document.getElementById('mobileMoreSheet')?.classList.add('hidden');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${t}`));
+  renderActiveTab(t);
+}
+function buildMobileMore(){
+  const grid=document.getElementById('mobileMoreGrid');if(!grid)return;
+  const main=new Set(['office','chat','approvals','pnl']);
+  grid.innerHTML=[...document.querySelectorAll('.sidebar .nav-item')].filter(b=>!main.has(b.dataset.tab)).map(b=>{
+    const icon=b.querySelector('.nav-icon')?.textContent||'•';
+    const label=[...b.querySelectorAll('span')].find(s=>!s.classList.contains('nav-icon')&&!s.classList.contains('count-badge'))?.textContent||b.dataset.tab;
+    return `<button type="button" data-mbn-tab="${escAttr(b.dataset.tab)}"><span style="font-size:16px">${esc(icon)}</span><span>${esc(label)}</span></button>`;
+  }).join('');
+}
 function switchChatMode(m){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.chatmode===m));
   document.getElementById('directChatView').classList.toggle('hidden',m!=='direct');
@@ -486,9 +504,19 @@ function renderAssistantChat(){
     `\n<strong>القيود:</strong>${assistantList(u.constraints,'لا توجد قيود صريحة')}`+
     `\n<strong>المخاطر:</strong>${assistantList(u.risks,'لم تُذكر مخاطر')}`+
     `\n<strong>ما اقترحه:</strong>${assistantList(u.suggestions,'لا توجد مقترحات إضافية')}</div>`;
+  if(s.intent){
+    const it=s.intent, acts=k=>({payment:'الدفع',publish:'النشر الخارجي',hire:'التعيين',deploy:'النشر التقني',contract:'العقود',data:'البيانات والصلاحيات'})[k]||k;
+    html+=`<div class="msg assistant intent-card"><div class="msg-meta">📜 عقد النية الملزم — يُفحص قبل كل مهمة</div>`+
+      `<strong>الهدف:</strong> ${esc(it.goal||'—')}`+
+      `\n<strong>سقف الميزانية:</strong> ${it.budgetUsd!=null?'$'+esc(it.budgetUsd):'غير محدد — لا إنفاق بدون موافقة'}`+
+      `\n<strong>الموعد النهائي:</strong> ${it.deadline?esc(String(it.deadline).slice(0,10)):'غير محدد'}`+
+      `\n<strong>ممنوع صراحةً:</strong> ${(it.forbidden||[]).length?(it.forbidden||[]).map(x=>esc(acts(x))).join('، '):'لا شيء'}`+
+      `\n<small style="color:var(--muted)">بصمة: ${esc(String(it.fingerprint||'').slice(0,16))}… — أي تجاوز للميزانية أو الإجراء الممنوع يُرفض برمجياً.</small></div>`;
+  }
   const led=(D.state.requestLedger||[]).find(x=>x.id===s.ledgerId);
   if(led){
-    html+=`<div class="msg assistant"><div class="msg-meta">📒 كل ما طلبته — عناصر الطلب</div><ul>${(led.items||[]).map(i=>`<li>${esc(i.text)} <small>(${esc(i.status==='executed'?'تم التنفيذ':i.status==='needs_approval'?'بانتظار موافقة':i.status==='unclear'?'غير واضح':'مفهوم')})</small></li>`).join('')||'<li>—</li>'}</ul></div>`;
+    const stLabel=i=>i.status==='executed'?'تم التنفيذ':i.status==='needs_approval'?'بانتظار موافقة':i.status==='blocked'?'🚫 منع برمجي':i.status==='unclear'?'غير واضح':'مفهوم';
+    html+=`<div class="msg assistant"><div class="msg-meta">📒 كل ما طلبته — عناصر الطلب</div><ul>${(led.items||[]).map(i=>`<li>${esc(i.text)} <small>(${esc(stLabel(i))}${i.result?' • '+esc(i.result):''})</small></li>`).join('')||'<li>—</li>'}</ul></div>`;
     html+=`<div class="msg assistant"><div class="msg-meta">🚫 ما لم أفهمه${s.status!=='awaiting_confirmation'?' (قبل التأكيد)':''}</div>${assistantList(s.unresolved||led.unresolved,'لا يوجد — الطلب كان واضحاً.')}</div>`;
   }
   if(s.status==='awaiting_confirmation'){
@@ -501,6 +529,9 @@ function renderAssistantChat(){
     html+=`<div class="msg assistant plan"><div class="msg-meta">👥 توزيع الأدوار المقترح</div><ul>${s.plan.map(p=>`<li><strong>${esc(p.avatar||'🤖')} ${esc(p.agentName)}</strong> — ${esc(p.taskTitle)} <small style="color:var(--muted)">(${esc(p.reason||'')})</small></li>`).join('')}</ul>`+
       (s.status==='awaiting_execution'?`<div class="msg-actions"><button class="btn btn-primary" onclick="assistantExecute()">🚀 اعتمد الخطة وأنفّذ المهام</button><button class="btn btn-secondary" onclick="assistantCancel()">✕ ألغِ</button></div>`:'')+`</div>`;
   }
+  if((s.blocked||[]).length){
+    html+=`<div class="msg assistant blocked-card"><div class="msg-meta">🚫 منعها النظام برمجياً — لم تصل للموافقة ولا للتنفيذ</div><ul>${s.blocked.map(b=>`<li><strong>${esc(b.agentName||b.agentId)}</strong> — ${esc(b.task||'')}<br><small style="color:var(--red)">${esc(b.reason||b.code||'')}</small></li>`).join('')}</ul><small style="color:var(--muted)">لتجاوز المنع عدّل الطلب أو صلاحيات الموظف صراحةً؛ لا يمكن لنص النموذج تجاوز هذه القاعدة.</small></div>`;
+  }
   if(s.status==='done')html+=`<div class="msg assistant"><div class="msg-meta">✅ النتيجة</div>${esc(s.result||'تم تنفيذ الخطة.')}</div>`;
   if(s.status==='cancelled')html+=`<div class="msg assistant"><div class="msg-meta">تم الإلغاء</div>ألغيت الجلسة. اكتب طلباً جديداً متى شئت.</div>`;
   box.innerHTML=html; box.scrollTop=box.scrollHeight;
@@ -511,7 +542,7 @@ function renderRequestLedger(){
   const box=document.getElementById('requestLedger'); if(!box)return;
   const list=(D.state.requestLedger||[]);
   if(!list.length){box.innerHTML='<div class="approval-card">لم تصدر أي طلبات بعد. اكتب للموظف أو للفريق أو للمساعد وسيظهر هنا كل ما فهمته وما لم أفهمه.</div>';return;}
-  const label=s=>s==='executed'?'تم التنفيذ':s==='needs_approval'?'بانتظار موافقة':s==='unclear'?'غير واضح':'مفهوم';
+  const label=s=>s==='executed'?'تم التنفيذ':s==='needs_approval'?'بانتظار موافقة':s==='blocked'?'🚫 منع برمجي':s==='unclear'?'غير واضح':'مفهوم';
   box.innerHTML=list.slice(0,25).map(e=>{
     const items=(e.items||[]).map(i=>`<li class="ledger-${esc(i.status)}">${esc(i.text)} <small>(${esc(i.clarification?'توضيح مفهوم':label(i.status))}${i.taskId?' • '+esc(i.taskId):''}${i.approvalId?' • '+esc(i.approvalId):''}${i.result?' • '+esc(i.result):''})</small></li>`).join('')||'<li>—</li>';
     const unclear=(e.unresolved||[]).map(x=>`<li>${esc(x)}</li>`).join('')||'<li>لا يوجد</li>';
@@ -564,6 +595,19 @@ document.getElementById('teamMicBtn').onclick=()=>startMic('teamChatInput');
 document.getElementById('assistantMicBtn').onclick=()=>startMic('assistantChatInput');
 document.getElementById('assistantChatForm').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('assistantChatInput'),btn=document.getElementById('assistantSendBtn'),t=inp.value.trim();if(!t)return;inp.value='';btn.disabled=true;btn.textContent='⏳...';try{await assistantSend(t);}finally{btn.disabled=false;renderAssistantChat();}});
 document.getElementById('smartAssistantBtn').onclick=()=>{switchTab('chat');switchChatMode('assistant');document.getElementById('assistantChatInput').focus();};
+buildMobileMore();
+document.getElementById('mobileBottomNav')?.addEventListener('click',e=>{
+  const b=e.target.closest('.mbn-item');if(!b)return;
+  if(b.dataset.mbnMore){const sheet=document.getElementById('mobileMoreSheet');sheet?.classList.remove('hidden');return;}
+  if(b.dataset.mbnTab)switchTab(b.dataset.mbnTab);
+});
+document.getElementById('mobileMoreGrid')?.addEventListener('click',e=>{
+  const b=e.target.closest('[data-mbn-tab]');if(!b)return;switchTab(b.dataset.mbnTab);
+});
+document.getElementById('mobileMoreClose')?.addEventListener('click',()=>document.getElementById('mobileMoreSheet').classList.add('hidden'));
+document.getElementById('mobileMoreSheet')?.addEventListener('click',e=>{
+  if(e.target.id==='mobileMoreSheet')e.currentTarget.classList.add('hidden');
+});
 
 document.getElementById('quickHealthBtn').onclick=async()=>{
   const b=document.getElementById('quickHealthBtn'), box=document.getElementById('healthResult');
@@ -575,6 +619,16 @@ document.getElementById('quickHealthBtn').onclick=async()=>{
   finally{b.disabled=false;b.textContent='🩺 فحص الصحة'}
 };
 document.getElementById('closeHealthModalBtn').onclick=()=>document.getElementById('healthModal').classList.add('hidden');
+document.getElementById('runSelftestBtn').onclick=async()=>{
+  const b=document.getElementById('runSelftestBtn'), out=document.getElementById('selfTestResult');
+  b.disabled=true;b.textContent='⏳ جارٍ الاختبار...';out.style.display='block';out.textContent='جارٍ تنفيذ الاختبارات الذهبية...';
+  try{
+    const r=await api('/api/selftest');
+    out.innerHTML=(r.ok?'<strong style="color:var(--green)">✅ نجحت كل الاختبارات ('+r.passed+'/'+r.total+')</strong>':'<strong style="color:var(--red)">❌ فشل '+r.failed+' من '+r.total+'</strong>')+
+      '<ul style="margin:8px 0;padding-inline-start:18px;">'+(r.results||[]).map(x=>`<li>${x.ok?'✅':'❌'} ${esc(x.name)}${x.ok?'':' — <span style="color:var(--red)">'+esc(x.detail)+'</span>'}</li>`).join('')+'</ul>';
+  }catch(e){out.textContent='❌ '+e.message}
+  finally{b.disabled=false;b.textContent='🧪 اختبارات ذهبية'}
+};
 
 document.getElementById('auditSearchInput').addEventListener('input',e=>{
   clearTimeout(auditSearchTimer);

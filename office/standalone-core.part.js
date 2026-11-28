@@ -757,13 +757,84 @@
   }
 
   /* ── system prompt ────────────────────────────────────────────────────── */
-  function knowledgeContext() {
-    return DATA.knowledge.map(function (k) {
-      var content = state.knowledgeOverrides[k.filename] != null ? state.knowledgeOverrides[k.filename] : k.content;
-      return '### ' + k.filename + '\n' + content;
-    }).join('\n\n');
+  /* Arabic-aware retrieval. The old version pasted every knowledge file into
+     every prompt; with real files that is slow, expensive and buries the part
+     the CEO actually asked about. We normalise Arabic (tashkeel, alef/ya/ta
+     marbuta), drop stopwords, split each file into small chunks and inject
+     only the best-matching chunks. With no query the full (short) base is
+     kept for compatibility. */
+  var AR_STOPWORDS = {};
+  ('من في على عن الى إلى مع هذا هذه ذلك تلك التي الذي الذين ما ماذا لماذا كيف متى اين أين هل كان كانت يكون تكون ' +
+    'ثم أو او و يا أن ان إن الا إلا كل بعض غير بين عند لدى قد لقد هو هي هم نحن انت أنت انا أنا نحتاج اريد أريد ' +
+    'يريد تريد نريد يجب ممكن لو إذا اذا لكن بس').split(/\s+/).forEach(function (w) {
+      var k = arNormalize(w); if (k) AR_STOPWORDS[k] = 1;
+    });
+  function arNormalize(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+      .replace(/[أإآٱ]/g, 'ا')
+      .replace(/ى/g, 'ي')
+      .replace(/ة/g, 'ه')
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
-  function buildSystemPrompt(agent, extraContext, ragMemories) {
+  function arTokens(value) {
+    return arNormalize(value).split(' ').filter(function (t) {
+      return t.length > 1 && !AR_STOPWORDS[t];
+    });
+  }
+  function knowledgeChunks(text, size) {
+    var max = size || 420;
+    var parts = String(text || '').split(/\n{2,}|(?<=[.!?؟])\s+/u);
+    var out = [], buf = '';
+    parts.forEach(function (p) {
+      p = p.trim(); if (!p) return;
+      if (buf && (buf.length + p.length + 1) > max) { out.push(buf); buf = ''; }
+      buf += (buf ? '\n' : '') + p;
+      while (buf.length > max * 2) { out.push(buf.slice(0, max)); buf = buf.slice(max); }
+    });
+    if (buf) out.push(buf);
+    return out;
+  }
+  function knowledgeContext(query) {
+    var files = DATA.knowledge.map(function (k) {
+      var content = state.knowledgeOverrides[k.filename] != null ? state.knowledgeOverrides[k.filename] : k.content;
+      return { filename: k.filename, content: String(content || '') };
+    });
+    if (!files.length) return '';
+    var q = arTokens(query || '');
+    if (!q.length) {
+      return files.map(function (k) { return '### ' + k.filename + '\n' + k.content; }).join('\n\n');
+    }
+    var chunks = [];
+    files.forEach(function (file) {
+      var fileTokens = arTokens(file.filename);
+      knowledgeChunks(file.content).forEach(function (text, i) {
+        var tokens = arTokens(text), score = 0;
+        q.forEach(function (term) {
+          var weight = Math.min(3, Math.max(1, Math.round(term.length / 3)));
+          if (tokens.indexOf(term) !== -1) score += weight * 2;
+          else if (tokens.some(function (t) { return t.indexOf(term) === 0 || term.indexOf(t) === 0; })) score += weight;
+          if (fileTokens.indexOf(term) !== -1) score += weight;
+        });
+        chunks.push({ filename: file.filename, text: text, index: i, score: score });
+      });
+    });
+    var best = chunks.filter(function (c) { return c.score > 0; })
+      .sort(function (a, b) { return b.score - a.score || a.index - b.index; })
+      .slice(0, 6);
+    if (!best.length) {
+      /* Nothing matched: send the two smallest files whole instead of all of
+         them, so the model still sees company facts without a huge prompt. */
+      best = files.slice().sort(function (a, b) { return a.content.length - b.content.length; })
+        .slice(0, 2).map(function (f) { return { filename: f.filename, text: f.content, index: 0, score: 0 }; });
+    }
+    best.sort(function (a, b) { return a.filename === b.filename ? a.index - b.index : a.filename.localeCompare(b.filename); });
+    return best.map(function (c) { return '### ' + c.filename + '\n' + c.text; }).join('\n\n');
+  }
+  function buildSystemPrompt(agent, extraContext, ragMemories, query) {
     var rag = (ragMemories && ragMemories.length)
       ? '\n=== ذاكرة محادثات ذات صلة ===\n' + ragMemories.map(function (m) { return '- [' + String(m.timestamp || '').slice(0, 10) + '] (' + (m.role === 'user' ? 'المدير' : agent.name) + '): ' + m.text; }).join('\n') + '\n'
       : '';
@@ -773,7 +844,7 @@
       : '';
     return 'أنت تعمل داخل "MD1\u0075sd Company" (AI Virtual Office).\n' +
       'المستخدم هو المدير التنفيذي (CEO) وصاحب الشركة. أجب بالعربية الواضحة والعملية.' + genderLine + '\n\n' +
-      '=== قاعدة معرفة الشركة ===\n' + (knowledgeContext() || 'لا توجد ملفات معرفة إضافية حالياً.') + '\n' + rag +
+      '=== قاعدة معرفة الشركة (المقتطفات الأكثر صلة بالطلب) ===\n' + (knowledgeContext(query) || 'لا توجد ملفات معرفة إضافية حالياً.') + '\n' + rag +
       '\n=== الدور ===\n' + (agent.roleMd || '') + '\n\n=== المهارات ===\n' + (agent.skillsMd || '') + '\n\n' +
       '=== الصلاحيات ===\n- القسم: ' + (agent.department || '') + '\n- الأدوات: ' + ((agent.allowedTools || []).join(', ') || 'لا يوجد') + '\n' +
       '- تتطلب موافقة المدير: ' + ((agent.requiresApprovalFor || []).join(', ') || 'لا يوجد') + '\n\n' +
@@ -1039,6 +1110,199 @@
       .concat(SPECIAL_AGENTS.map(function (a) { return a.id; }));
     roles.forEach(function (id) { out[id] = pickModel(id, availableIds, settings.modelOverrides[id], provider); });
     return out;
+  }
+
+  /* ── binding intent contract (عقد النية) ────────────────────────────────
+     The assistant turns what it understood into a signed, deterministic card:
+     goal, budget cap, deadline, forbidden actions and allowed actions. Every
+     task and every approval is checked against this card before execution, so
+     a later model answer cannot quietly exceed the CEO's original limits. */
+  var INTENT_ACTION_WORDS = {
+    payment: 'دفع|ندفع|سداد|تحويل|مصروف|شراء|فاتوره|فاتورة|payment|invoice',
+    publish: 'نشر|نشرت|إعلان|اعلان|حمله|حملة|تسويق|بوست|منشور|publish|campaign',
+    hire: 'توظيف|تعيين|موظف\\s+جديد|فريق\\s+جديد|hire',
+    deploy: 'deploy|(?:نشر|رفع)\\s+(?:الكود|التطبيق|الموقع|الاصدار|الإصدار)|(?:إطلاق|اطلاق)\\s+(?:التطبيق|الموقع|النسخه|النسخة|الاصدار|الإصدار)',
+    contract: 'عقد|اتفاقيه|اتفاقية|توقيع|contract',
+    data: 'بيانات\\s+سريه|بيانات\\s+سرية|حذف\\s+بيانات|صلاحيات|صلاحيه|permissions'
+  };
+  var INTENT_ACTION_LABEL = {
+    payment: 'الدفع المالي', publish: 'النشر الخارجي', hire: 'التعيين',
+    deploy: 'النشر/الإطلاق التقني', contract: 'توقيع العقود', data: 'البيانات والصلاحيات'
+  };
+  var INTENT_ACTION_RX = {};
+  Object.keys(INTENT_ACTION_WORDS).forEach(function (key) {
+    INTENT_ACTION_RX[key] = new RegExp('(?:^|[\\s،,:؛.!?؟])(?:' + INTENT_ACTION_WORDS[key] + ')(?![\\p{L}\\p{N}])', 'iu');
+  });
+
+  /* Only an explicit negation directly before the action forbids it. The
+     look-behind prevents «اولا ادفع» from being read as «لا ادفع». */
+  function intentForbidden(raw) {
+    var text = String(raw || '');
+    var out = [];
+    Object.keys(INTENT_ACTION_WORDS).forEach(function (key) {
+      var rx = new RegExp('(?<![\\p{L}\\p{N}])(?:بدون|من\\s+غير|ممنوع|بلاش|لا|إياك|اياك|عدم)\\s+(?:أي\\s+|اي\\s+|كل\\s+)?(?:[\\p{L}\\p{N}\\s]{0,20})?(?:' + INTENT_ACTION_WORDS[key] + ')(?![\\p{L}\\p{N}])', 'iu');
+      if (rx.test(text)) out.push(key);
+    });
+    return out;
+  }
+
+  function parseIntentBudget(raw) {
+    var t = String(raw || '');
+    var m = t.match(/(?:ميزانيه|ميزانية|بحد\s+أقصى|بحد\s+اقصى|حد\s+أقصى|حد\s+اقصى|لا\s+تتجاوز|لا\s+تزيد\s+عن|حتى|إلى|الى|بسعر|بميزانية)\s*\$?\s*([0-9]+(?:[.,][0-9]+)?)\s*(?:دولار|usd|\$)?/iu);
+    if (!m) m = t.match(/\$\s*([0-9]+(?:[.,][0-9]+)?)/u);
+    if (!m) return null;
+    var n = Number(String(m[1]).replace(',', '.'));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
+  function parseIntentDeadline(raw) {
+    var t = String(raw || '');
+    var now = Date.now();
+    var rel = t.match(/(?:خلال|في\s+غضون|بعد)\s*([0-9]+)\s*(ساعه|ساعة|ساعات|يوم|أيام|ايام|أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر|شهور)/iu);
+    if (rel) {
+      var n = Number(rel[1]) || 1, unit = rel[2];
+      var ms = /ساع/.test(unit) ? 3600000
+        : /يوم|ايام|أيام/.test(unit) ? 86400000
+          : /أسبوع|اسبوع|أسابيع|اسابيع/.test(unit) ? 604800000 : 2592000000;
+      return new Date(now + n * ms).toISOString();
+    }
+    var abs = t.match(/(20[0-9]{2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})/);
+    if (abs) {
+      var d = new Date(Number(abs[1]), Number(abs[2]) - 1, Number(abs[3]), 23, 59, 59);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    }
+    if (/(?:بكره|بكرا|غدا|غداً)/u.test(t)) {
+      var d2 = new Date(now + 86400000); d2.setHours(23, 59, 59, 999); return d2.toISOString();
+    }
+    return null;
+  }
+
+  function buildIntentContract(raw, understanding) {
+    var u = understanding || {};
+    var forbidden = intentForbidden(raw);
+    return {
+      id: 'intent-' + uuid().slice(0, 8),
+      goal: String(u.goal || raw || '').slice(0, 240),
+      budgetUsd: parseIntentBudget(raw),
+      deadline: parseIntentDeadline(raw),
+      forbidden: forbidden,
+      allowed: Object.keys(INTENT_ACTION_RX).filter(function (k) { return forbidden.indexOf(k) === -1; }),
+      maxTasks: 5,
+      createdAt: nowIso(),
+      fingerprint: chainHash('0', String(raw || ''))
+    };
+  }
+
+  function inferIntentAction(text) {
+    var t = String(text || '');
+    var order = ['payment', 'deploy', 'hire', 'publish', 'contract', 'data'];
+    for (var i = 0; i < order.length; i++) if (INTENT_ACTION_RX[order[i]].test(t)) return order[i];
+    return '';
+  }
+
+  var ACTION_TO_INTENT = {
+    payment: 'payment', publish_marketing: 'publish', launch_paid_campaign: 'publish',
+    hire_agent: 'hire', update_skills: 'hire', deploy: 'deploy',
+    sign_contract: 'contract', external_legal_submission: 'contract', security_change: 'data'
+  };
+
+  function checkIntent(intent, actionType, text, amountUsd) {
+    if (!intent) return { ok: true };
+    var action = ACTION_TO_INTENT[actionType] || inferIntentAction(text);
+    if (action && (intent.forbidden || []).indexOf(action) !== -1) {
+      return { ok: false, code: 'INTENT_FORBIDDEN', action: action,
+        reason: 'عقد النية يمنع ' + (INTENT_ACTION_LABEL[action] || action) + '.' };
+    }
+    var amount = Number(amountUsd);
+    if (Number.isFinite(amount) && amount > 0 && intent.budgetUsd != null && amount > intent.budgetUsd) {
+      return { ok: false, code: 'INTENT_BUDGET',
+        reason: 'المبلغ $' + amount + ' يتجاوز سقف عقد النية $' + intent.budgetUsd + '.' };
+    }
+    if (intent.deadline && Date.now() > Date.parse(intent.deadline)) {
+      return { ok: false, code: 'INTENT_DEADLINE',
+        reason: 'انتهى موعد عقد النية (' + String(intent.deadline).slice(0, 10) + ').' };
+    }
+    return { ok: true, action: action };
+  }
+
+  /* ── deterministic tool policy (not prompt text) ──────────────────────── */
+  /* Tool ids come from data.json, so the map uses the real ids rather than
+     invented generic names. Unknown tools grant no capability. */
+  var TOOL_CAPABILITY = {
+    /* money */
+    analyze_financials: 'payment', audit_invoices: 'payment', generate_pnl_report: 'payment',
+    ledger: 'payment', tax_compliance: 'payment', sign_financial_statement: 'payment',
+    submit_zakat: 'payment', approve_tax_filing: 'payment', allocate_budget: 'payment',
+    /* publishing / growth */
+    draft_ad_copy: 'publish', plan_campaign: 'publish', prepare_social_schedule: 'publish',
+    publish: 'publish', publish_policy: 'publish', launch_paid_campaign: 'publish',
+    publish_social_post: 'publish', spend_ad_budget: 'publish',
+    /* hiring */
+    draft_job_description: 'hire', propose_new_hire: 'hire', propose_hr_expansion: 'hire',
+    read_agent_profiles: 'hire', propose_skill_update: 'hire', update_agent_skills_file: 'hire',
+    hr: 'hire', hire_new_agent: 'hire',
+    /* technical deployment */
+    code_audit: 'deploy', architecture_review: 'deploy', phase_bug_triage: 'deploy',
+    priority_execution: 'deploy', code: 'deploy', patch: 'deploy', refactor: 'deploy',
+    deploy_production_code: 'deploy',
+    /* contracts / external legal */
+    review_contract: 'contract', policy_drafting: 'contract',
+    external_legal_submission: 'contract', sign_contract: 'contract',
+    /* security / data */
+    audit_permissions: 'data', review_webhook_security: 'data', flag_risk: 'data',
+    secret_scan: 'data', redact: 'data', encrypt: 'data', security_change: 'data',
+    change_agent_permissions: 'data', update_system_prompts: 'data',
+    /* research / analysis */
+    market_research: 'research', opportunity_brief: 'research', web_search: 'research',
+    summarize_threads: 'research', track_tasks: 'kpi', manage_daily_brief: 'kpi',
+    evaluate_outputs: 'quality', quality_review: 'quality', correction: 'quality',
+    calendar: 'external_action', schedule_external_meeting: 'external_action',
+    send_external_email: 'external_action', enable_new_webhook: 'external_action',
+    audit: 'audit'
+  };
+  var ACTION_CAPABILITY = {
+    payment: 'payment', approve_payment: 'payment',
+    publish_marketing: 'publish', launch_paid_campaign: 'publish', publish_social_post: 'publish',
+    hire_agent: 'hire', hire_new_agent: 'hire', update_skills: 'hire',
+    deploy: 'deploy', deploy_production_code: 'deploy',
+    sign_contract: 'contract', external_legal_submission: 'contract',
+    security_change: 'data', change_agent_permissions: 'data', update_system_prompts: 'data'
+  };
+  var TEXT_ENFORCED_ACTIONS = ['payment', 'deploy', 'hire'];
+  /* These capabilities always pass through the CEO queue, whether or not the
+     employee listed the exact action in requiresApprovalFor. */
+  var SENSITIVE_CAPABILITIES = { payment: 1, publish: 1, hire: 1, deploy: 1, contract: 1, data: 1, external_action: 1 };
+
+  function capabilitiesOf(agent) {
+    var caps = {};
+    ((agent && agent.allowedTools) || []).forEach(function (tool) {
+      var c = TOOL_CAPABILITY[tool];
+      if (c) caps[c] = true;
+    });
+    return caps;
+  }
+
+  function authorizeAction(agentId, actionType, ctx) {
+    var agent = getAgent(agentId);
+    if (!agent) return { allowed: false, code: 'UNKNOWN_AGENT', reason: 'الموظف غير موجود.' };
+    var need = ACTION_CAPABILITY[actionType] || TOOL_CAPABILITY[actionType] || '';
+    if (!need) return { allowed: true, requiresApproval: false, capability: null };
+    var caps = capabilitiesOf(agent);
+    if (!caps[need]) {
+      return { allowed: false, code: 'TOOL_NOT_ALLOWED', capability: need,
+        reason: agent.name + ' لا يملك أداة تسمح بـ «' + (INTENT_ACTION_LABEL[need] || actionType) + '».' };
+    }
+    var explicit = (agent.requiresApprovalFor || []).some(function (x) {
+      return x === actionType || x === need || x === 'external_action';
+    });
+    var gated = explicit || !!SENSITIVE_CAPABILITIES[need];
+    return { allowed: true, requiresApproval: gated, capability: need };
+  }
+
+  function authorizeText(agentId, text) {
+    var action = inferIntentAction(text);
+    if (TEXT_ENFORCED_ACTIONS.indexOf(action) === -1) return { allowed: true, action: action };
+    return authorizeAction(agentId, action, {});
   }
 
   /* ── provider layer ───────────────────────────────────────────────────── */

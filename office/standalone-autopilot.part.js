@@ -11,13 +11,6 @@
        when a key or an account link is missing it says so and waits.
      ========================================================================== */
   var AP_DEFAULT_SITE = 'https://mdm1.org/';
-  /* Products the CEO confirmed are real and sell best as a service (custom setup,
-     installation, training, support) — they are analysed first. */
-  var AP_SEEDS = [
-    'https://mdm1.org/apps/offline-invoice-crm.html',
-    'https://mdm1.org/apps/offline-store-catalog.html',
-    'https://mdm1.org/apps/seo-atlas-local.html'
-  ];
   var AP_GAP_MS = 4 * 60 * 1000;          // between cycles while there is work
   var AP_ROUND_GAP_MS = 60 * 60 * 1000;   // after a full round, look for news hourly
   var apBusy = false, apTimer = null, apWake = null;
@@ -139,11 +132,7 @@
     var a = apState(), site = apSite();
     apLog('أسحب الموقع ' + site + ' لحصر المشاريع الحقيقية...');
     return fetchPage(site).then(function (home) {
-      var seen = {}, cands = [];
-      AP_SEEDS.concat(home.links.slice(0, 14).map(function (l) { return l.href; })).forEach(function (h) {
-        if (site.indexOf('mdm1.org') === -1 && AP_SEEDS.indexOf(h) !== -1) return;
-        if (!seen[h]) { seen[h] = true; cands.push({ href: h, text: '' }); }
-      });
+      var cands = home.links.slice(0, 14);
       return Promise.all(cands.map(function (l) {
         return fetchPage(l.href).then(function (p) {
           return { title: (p.title || l.text || l.href).slice(0, 90), url: l.href, summary: (p.description || p.text).slice(0, 260) };
@@ -167,8 +156,7 @@
     apLog('أحلّل: ' + p.title);
     return fetchPage(p.url).catch(function () { return { url: p.url, title: p.title, description: p.summary, headings: [], links: [], text: p.summary }; }).then(function (page) {
       var prompt = 'حلّل هذا المشروع الحقيقي لتحقيق مبيعات وأرباح. أعد JSON فقط بدون أي نص آخر بالشكل:\n' +
-        '{"offer":"عرض بيع واضح بجملتين","audience":"الجمهور المناسب لهذا المشروع تحديداً","priceUsd":رقم تقديري لرسوم الإعداد لمرة واحدة,"supportUsd":رقم تقديري اختياري للدعم الشهري أو 0,"services":["تخصيص","تركيب","تدريب","دعم"],"channels":["قناة1","قناة2"],"queries":["عبارة بحث إنجليزية عن عملاء محتملين","عبارة ثانية"],"outreach":"رسالة تواصل جاهزة قصيرة","post":"منشور ترويج جاهز","fit":رقم من 1 إلى 10,"why":"سبب التقييم بجملة"}\n\n' +
-        'قواعد النموذج التجاري: هذه المنتجات أدوات تعمل محلياً في المتصفح (تحقق من نص الصفحة). أفضل مسار ربح هو بيع إعداد مخصص للنشاط (اسم وشعار وحقول وتقارير) مع التركيب والتدريب والدعم، وليس ادعاء أنها خدمة SaaS باشتراك شهري إلا إذا أثبتت الصفحة وجود حسابات وخادم. الأسعار تقديرية وصرّح بذلك، ولا تذكر مبيعات أو عملاء سابقين غير موثقين.\n\n' +
+        '{"offer":"عرض بيع واضح بجملتين","audience":"الجمهور المناسب لهذا المشروع تحديداً","priceUsd":رقم,"channels":["قناة1","قناة2"],"queries":["عبارة بحث إنجليزية عن عملاء محتملين","عبارة ثانية"],"outreach":"رسالة تواصل جاهزة قصيرة","post":"منشور ترويج جاهز","fit":رقم من 1 إلى 10,"why":"سبب التقييم بجملة"}\n\n' +
         'هدف المدير: ' + (a.goal || 'تحقيق أرباح من مشاريع موقعنا') + '\nالمشروع: ' + p.title + '\n' + pageContext(page);
       return aiGenerate({ agentId: agent ? agent.id : 'web-research-team', messages: [{ role: 'user', text: prompt }], _urlDone: true });
     }).then(function (r) {
@@ -192,7 +180,7 @@
           });
         });
         a.leads = (a.leads || 0) + added;
-        var md = '# حملة: ' + p.title + '\n\nالرابط: ' + p.url + '\n\n## العرض\n' + offer + '\n\n## الجمهور\n' + (j.audience || '—') + '\n\n## الخدمات\n' + (Array.isArray(j.services) ? j.services.join('، ') : '—') + '\n\n## السعر التقديري (إعداد لمرة واحدة)\n' + (j.priceUsd ? '$' + j.priceUsd : '—') + (j.supportUsd ? ' + دعم شهري اختياري $' + j.supportUsd : '') +
+        var md = '# حملة: ' + p.title + '\n\nالرابط: ' + p.url + '\n\n## العرض\n' + offer + '\n\n## الجمهور\n' + (j.audience || '—') + '\n\n## السعر المقترح\n' + (j.priceUsd ? '$' + j.priceUsd : '—') +
           '\n\n## القنوات\n' + (Array.isArray(j.channels) ? j.channels.join('، ') : '—') + '\n\n## رسالة التواصل\n' + (j.outreach || '—') + '\n\n## منشور الترويج\n' + (j.post || '—') +
           '\n\n## التقييم\n' + (j.fit || '—') + '/10 — ' + (j.why || '') + '\n';
         writeExport('campaign-' + slug(p.title) + '.md', md);
@@ -253,18 +241,12 @@
     else if (a.sinceReport > 0) job = apSummarize().then(function () { a.sinceReport = 0; a.projects = []; a.roundDone = true; });
     else job = Promise.resolve().then(function () { apLog('لا جديد في الموقع حالياً؛ سأعيد الفحص بعد ساعة.', 'info'); a.projects = []; a.roundDone = true; });
     return job.then(function () {
-      a.failStreak = 0;
       a.cycle = (a.cycle || 0) + 1;
       a.nextAt = Date.now() + (a.roundDone ? AP_ROUND_GAP_MS : AP_GAP_MS);
       a.roundDone = false;
     }).catch(function (e) {
-      /* Back off instead of hammering providers that are rate-limited: each retry
-         spends the user's remaining free quota. */
-      a.failStreak = (a.failStreak || 0) + 1;
-      var quota = /rate limit|quota|429|per-day|credits|انتهت الحصة|الحصة/i.test(e.message);
-      var waitMin = quota ? 30 : Math.min(60, 3 * Math.pow(2, a.failStreak - 1));
-      apLog('تعذّرت الخطوة: ' + String(e.message).slice(0, 220) + ' — ' + (quota ? 'الحصة المجانية لمزودك انتهت أو محدودة؛ ' : '') + 'سأعيد المحاولة بعد ' + waitMin + ' دقيقة. للاستمرار الآن: أضف مفتاح مزود آخر (Groq مجاني بلا بطاقة) من «إضافة مفتاح».', 'err');
-      a.nextAt = Date.now() + waitMin * 60 * 1000;
+      apLog('تعذّرت الخطوة: ' + e.message + ' — سأعيد المحاولة تلقائياً.', 'err');
+      a.nextAt = Date.now() + 2 * 60 * 1000;
     }).then(function () {
       apBusy = false; saveState(); apRender();
     });
@@ -325,7 +307,7 @@
       '<h2>🤖 أتمتة العمل</h2>' +
       '<p>تعمل المنظومة لوحدها: تسحب مشاريع موقعك الحقيقية، تحلّل كل مشروع، تجهّز حملة وعرض بيع وتبحث عن عملاء، وتفتح لك طلب اعتماد قبل أي شيء يخرج من الشركة. لا تأخذ أي صلاحية دون موافقتك، وتطلب منك الربط (مفتاح نموذج/تليجرام) عند الحاجة فقط. تعمل طالما التطبيق مفتوح، وتستأنف من مكانها عند فتحه من جديد.</p>' +
       '<label>الهدف (يمكنك ذكر رابط موقعك)</label>' +
-      '<textarea id="apGoal" rows="3" placeholder="مثال: روّج لمشاريع https://mdm1.org/ وحقق أول مبيعات">' + esc(a.goal || 'روّج لمنتجات https://mdm1.org/ الحقيقية وبِع إعدادات مخصصة مع التركيب والتدريب والدعم') + '</textarea>' +
+      '<textarea id="apGoal" rows="3" placeholder="مثال: روّج لمشاريع https://mdm1.org/ وحقق أول مبيعات">' + esc(a.goal || 'ابحث عن مشاريع حقيقية من https://mdm1.org/ وروّج لها وحقق أرباحاً من المبيعات') + '</textarea>' +
       '<div id="apStatus" class="ap-status"></div><div id="apStats" class="ap-stats"></div>' +
       '<div class="ap-actions"><button type="button" class="btn btn-primary" id="apToggle"></button>' +
       '<button type="button" class="btn btn-secondary" id="apNow">⚡ نفّذ خطوة الآن</button>' +

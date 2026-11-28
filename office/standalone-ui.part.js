@@ -812,6 +812,7 @@
     downloadSnapshot: downloadSnapshot,
     importSnapshot: importSnapshot,
     healthCheck: healthCheck,
+    runSelfTests: runSelfTests,
     listBrowserModels: listLocalModels,
     ensureBrowserEngine: ensureBrowserEngine,
     vaultStatus: vaultStatus,

@@ -97,9 +97,37 @@
     var m = String(text || '').match(new RegExp('\\[' + tag + '\\]([\\s\\S]*?)\\[\\/' + tag + '\\]', 'i'));
     return m ? m[1].trim() : '';
   }
-  function qaCall(agentId, prompt, context) {
-    var ag = getAgent(agentId);
-    return aiGenerate({ agentId: agentId, extraContext: context || '', messages: [{ role: 'user', text: prompt }] });
+  function isChatModelId(id) {
+    var s = String(id || '').toLowerCase();
+    if (!s) return false;
+    return !/(whisper|guard|embed|tts|moderation|rerank|clip|vision-only)/.test(s);
+  }
+  /* Prefer a reviewer from a different provider family than the writer. When
+     only one live family exists we keep that family and say so in the report. */
+  function qaTargetFor(agentId, index) {
+    var order = ['groq', 'openrouter', 'local', 'zen'];
+    var providers = order.filter(function (p) {
+      return providerConfigured(p) && chatUsable(p) && providerCache[p] && providerCache[p].connected;
+    });
+    if (!providers.length) return null;
+    var provider = providers[index % providers.length];
+    var listing = providerCache[provider] || {};
+    var ids = (listing.free && listing.free.length ? listing.free : (listing.models || []).map(function (m) { return m.id; }))
+      .filter(isChatModelId);
+    if (!ids.length) return null;
+    var chosen = settings.modelOverrides[agentId];
+    if (!chosen || ids.indexOf(chosen) === -1) chosen = ids[0];
+    return { provider: provider, model: chosen };
+  }
+  function qaCall(agentId, prompt, context, target) {
+    var opts = { agentId: agentId, extraContext: context || '', messages: [{ role: 'user', text: prompt }] };
+    if (target) { opts.forceProvider = target.provider; opts.forceModel = target.model; }
+    return aiGenerate(opts).then(function (r) {
+      if (target && r.mode !== 'live') {
+        return aiGenerate({ agentId: agentId, extraContext: context || '', messages: [{ role: 'user', text: prompt }] });
+      }
+      return r;
+    });
   }
   function qualityGate(agentId, proposal) {
     if (!settings.qualityGate) return Promise.resolve({ status: 'disabled', enabled: false, findings: [] });
@@ -110,17 +138,18 @@
       'التفاصيل: ' + String(proposal.details || '') + '\n' +
       'الخطورة المعلنة: ' + String(proposal.risk || 'medium') + '\n' +
       'الإجراء: ' + String(proposal.actionType || 'agent_proposal');
+    var targets = [qaTargetFor(team.monitor, 0), qaTargetFor(team.auditor, 1), qaTargetFor(team.corrector, 2)];
     return qaCall(team.monitor,
       'أنت المراقب. راقب المقترح التالي قبل أي تنفيذ. اذكر عيباً واحداً على الأقل إن وُجد، ولا تمنح PASS إلا بوجود دليل واضح. لا تكرر كلام المقترح.\n\n' + summary,
-      'مراقبة ما قبل التنفيذ — قسم ' + (author ? author.department : agentId)
+      'مراقبة ما قبل التنفيذ — قسم ' + (author ? author.department : agentId), targets[0]
     ).then(function (m) {
       return qaCall(team.auditor,
         'أنت المدقق. تحقق من المقترح ومن تقرير المراقب بشكل مستقل من الصفر. ارفض أي رقم أو صلاحية غير مؤكدة.\n\n' + summary + '\n\nتقرير المراقب:\n' + m.text,
-        'تدقيق مستقل — قسم ' + (author ? author.department : agentId)
+        'تدقيق مستقل — قسم ' + (author ? author.department : agentId), targets[1]
       ).then(function (a) {
         return qaCall(team.corrector,
           'أنت المصحح. أنتج النسخة المصححة الكاملة من المقترح بأقل تغيير، واذكر التعديلات داخل [CORRECTION]، ثم أصدر حكمك النهائي.\n\n' + summary + '\n\nالمراقب:\n' + m.text + '\n\nالمدقق:\n' + a.text,
-          'تصحيح ما قبل التنفيذ — قسم ' + (author ? author.department : agentId)
+          'تصحيح ما قبل التنفيذ — قسم ' + (author ? author.department : agentId), targets[2]
         ).then(function (c) {
           var live = m.mode === 'live' && a.mode === 'live' && c.mode === 'live';
           var verdicts = [qaVerdict(m.text), qaVerdict(a.text), qaVerdict(c.text)];
@@ -128,10 +157,13 @@
           var correction = qaTag(c.text, 'CORRECTION');
           var status = !live ? 'inconclusive' : (failed ? 'flagged' : (correction ? 'corrected' : 'passed'));
           var findings = [qaTag(m.text, 'QA_DETAILS'), qaTag(a.text, 'QA_DETAILS')].filter(Boolean);
+          var families = targets.map(function (t) { return t ? t.provider : 'current'; });
+          var uniqueFamilies = families.filter(function (v, i) { return families.indexOf(v) === i; });
           var report = {
             at: nowIso(), author: agentId, team: team, status: status, live: live,
             verdicts: verdicts, findings: findings, correction: correction,
-            summary: String(proposal.title || ''), models: [m.model, a.model, c.model]
+            summary: String(proposal.title || ''), models: [m.model, a.model, c.model],
+            families: families, diverse: uniqueFamilies.length > 1
           };
           if (live) {
             if (status === 'passed') {
@@ -328,6 +360,18 @@
       executionResult: null
     };
     state.approvals.unshift(item);
+    /* Deterministic policy: a prompt cannot grant a tool the employee does
+       not own. Blocked requests stay in the log but never become pending. */
+    var policy = authorizeAction(item.agentId, item.actionType, item.payload || {});
+    item.policy = policy;
+    if (!policy.allowed) {
+      item.status = 'blocked';
+      item.executionResult = '🚫 منع برمجي: ' + policy.reason;
+      item.securityNote = item.executionResult;
+      logAudit('policy_blocked', item.agentId, 'Blocked approval «' + item.title + '»: ' + policy.reason, { code: policy.code, actionType: item.actionType });
+      saveState();
+      return item;
+    }
     recomputeStatus(item.agentId);
     logAudit('approval_created', item.agentId, 'Created approval: ' + item.title, { id: item.id });
     telegramNotify('⏳ *طلب موافقة جديد*\n\n👤 ' + item.agentName + '\n📌 ' + item.title + '\n⚠️ ' + item.risk + '\n📝 ' + String(item.details || '').slice(0, 500));
@@ -1086,6 +1130,7 @@
         original: raw,
         normalized: res.normalized,
         understanding: u,
+        intent: buildIntentContract(raw, u),
         confidence: confidence,
         mode: res.mode,
         status: 'awaiting_confirmation',
@@ -1152,9 +1197,28 @@
     if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
     if (s.status !== 'awaiting_execution') return Promise.reject(new Error('يجب تأكيد الفهم أولاً قبل التنفيذ'));
     var ledger = findLedgerEntry(s.ledgerId);
-    var queuedCount = 0, approvalCount = 0;
+    var queuedCount = 0, approvalCount = 0, blockedCount = 0;
+    var blockedList = [];
     (s.plan || []).forEach(function (p) {
       var itemIds = Array.isArray(p.ledgerItemIds) ? p.ledgerItemIds.slice() : [];
+      var actionText = String(p.taskTitle || '') + ' ' + String(p.details || '') + ' ' + String(p.reason || '');
+      var intentCheck = checkIntent(s.intent, p.actionType || '', actionText);
+      var policyCheck = authorizeText(p.agentId, actionText);
+      if (!intentCheck.ok || !policyCheck.allowed) {
+        var blockReason = !intentCheck.ok ? intentCheck.reason : policyCheck.reason;
+        var blockCode = !intentCheck.ok ? intentCheck.code : policyCheck.code;
+        blockedCount += 1;
+        blockedList.push({ agentId: p.agentId, agentName: p.agentName, task: p.taskTitle, code: blockCode, reason: blockReason });
+        if (ledger) {
+          (ledger.items || []).forEach(function (entry) {
+            if (itemIds.indexOf(entry.id) !== -1 && entry.status === 'understood') {
+              entry.status = 'blocked'; entry.result = '🚫 ' + blockReason;
+            }
+          });
+        }
+        logAudit('assistant_blocked', 'policy', 'Blocked plan item «' + p.taskTitle + '»: ' + blockReason, { sessionId: s.id, code: blockCode });
+        return;
+      }
       if (!window.MDM1DecisionPolicy.shouldQueueImmediately(p.risk)) {
         var approval = addApproval({
           agentId: p.agentId, agentName: p.agentName, title: 'موافقة صريحة: ' + p.taskTitle,
@@ -1163,7 +1227,8 @@
             assistantSessionId: s.id, ledgerId: s.ledgerId,
             agentId: p.agentId, taskTitle: p.taskTitle,
             taskDescription: String(p.details || '') + '\n\nالسبب: ' + String(p.reason || ''),
-            ledgerItemIds: itemIds
+            ledgerItemIds: itemIds,
+            intent: s.intent || null, policy: policyCheck, intentCheck: intentCheck
           }
         });
         approval.securityNote = '🛡️ لم تُنشأ المهمة بعد. يلزم اعتماد صريح من المدير قبل إدراجها في قائمة التنفيذ.';
@@ -1182,7 +1247,8 @@
       var task = {
         id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle,
         description: p.details + '\n\nالسبب: ' + p.reason, status: 'queued',
-        createdAt: nowIso(), ledgerId: s.ledgerId, ledgerItemIds: itemIds
+        createdAt: nowIso(), ledgerId: s.ledgerId, ledgerItemIds: itemIds,
+        intentId: s.intent ? s.intent.id : null, policy: policyCheck
       };
       state.tasks.unshift(task);
       state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
@@ -1201,11 +1267,12 @@
     state.teamChat.push({
       id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠',
       role: 'assistant',
-      text: 'تم اعتماد الخطة بعد تأكيد الفهم. أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وأُحيلت ' + approvalCount + ' مهمة عالية الخطورة إلى الموافقة قبل إنشاء المهام.\nالفريق المقترح: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة.' : ''),
+      text: 'تم اعتماد الخطة بعد تأكيد الفهم. أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وأُحيلت ' + approvalCount + ' مهمة عالية الخطورة إلى الموافقة قبل إنشاء المهام.' + (blockedCount ? '\n🚫 منع النظام برمجياً ' + blockedCount + ' مهمة تخالف عقد النية أو صلاحيات الموظف.' : '') + '\nالفريق المقترح: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة.' : ''),
       timestamp: nowIso()
     });
     s.status = 'done';
-    s.result = '✅ أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وتنتظر ' + approvalCount + ' موافقة قبل إنشاء أي مهمة عالية الخطورة.';
+    s.blocked = blockedList;
+    s.result = '✅ أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وتنتظر ' + approvalCount + ' موافقة قبل إنشاء أي مهمة عالية الخطورة.' + (blockedCount ? ' 🚫 ومنع النظام ' + blockedCount + ' مهمة تخالف عقد النية أو صلاحيات الموظف.' : '');
     s.updatedAt = nowIso();
     if (ledger) { ledger.executed = true; ledger.executionSummary = s.result; ledger.updatedAt = nowIso(); }
     assistantSession = s;
