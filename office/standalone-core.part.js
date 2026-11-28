@@ -1232,15 +1232,21 @@
   function liveIds(availableIds) {
     return (availableIds || []).filter(function (id) { return Boolean(id) && id !== 'auto' && id !== 'demo'; });
   }
+  function rankModelsForProvider(models, provider, role) {
+    var engine = window.MDM1AutopilotEngine;
+    return engine && typeof engine.sortModels === 'function'
+      ? engine.sortModels(models || [], state.modelBenchmarks || {}, provider, role)
+      : (models || []).slice();
+  }
   function pickModel(agentId, availableIds, explicit, provider) {
     var avail = liveIds(availableIds);
     if (explicit && explicit !== 'auto' && avail.indexOf(explicit) !== -1) return explicit;
     var qualified = qualifiedModelForRole(agentId, avail);
     if (qualified && avail.indexOf(qualified) !== -1) return qualified;
-    return avail[0] || '';
+    return rankModelsForProvider(avail, provider, agentId)[0] || '';
   }
   function fallbackChain(agentId, availableIds, first, provider) {
-    var avail = liveIds(availableIds);
+    var avail = rankModelsForProvider(liveIds(availableIds), provider, agentId);
     var chain = [];
     if (first && avail.indexOf(first) !== -1) chain.push(first);
     avail.forEach(function (id) { if (chain.indexOf(id) === -1) chain.push(id); });
