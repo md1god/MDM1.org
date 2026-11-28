@@ -349,7 +349,7 @@ function renderPlan(){
 const empty=$('planEmpty'), wrap=$('planTableWrap'), body=$('planTableBody'); if(!empty||!wrap||!body) return;
 if(!plan.length){empty.hidden=false;wrap.hidden=true;body.innerHTML='';return;}
 empty.hidden=true;wrap.hidden=false;
-body.innerHTML=plan.map(p=>'<tr><td>'+esc(p.name)+'</td><td class="mono">'+esc(p.sets)+'</td><td class="mono">'+esc(p.reps)+'</td><td>'+esc(p.rest)+'</td><td>'+esc(p.note)+'</td><td><button class="button sec" type="button" id="planEdit-'+p.id+'">تعديل</button> <button class="button sec" type="button" id="planDel-'+p.id+'">حذف</button></td></tr>').join('');
+body.innerHTML=plan.map(p=>'<tr><td>'+esc(p.name)+'</td><td class="mono">'+esc(p.sets)+'</td><td class="mono">'+esc(p.reps)+'</td><td>'+esc(p.rest)+'</td><td>'+esc(p.note)+'</td><td><button class="button sec" type="button" id="planEdit-'+esc(p.id)+'">تعديل</button> <button class="button sec" type="button" id="planDel-'+esc(p.id)+'">حذف</button></td></tr>').join('');
 plan.forEach(p=>{
 const e=$('planEdit-'+p.id); if(e) e.addEventListener('click',()=>editPlan(p.id));
 const d=$('planDel-'+p.id); if(d) d.addEventListener('click',()=>deletePlan(p.id));
@@ -401,7 +401,7 @@ function renderSessions(){
 const empty=$('sessionEmpty'), wrap=$('sessionTableWrap'), body=$('sessionTableBody'); if(!empty||!wrap||!body) return;
 if(!sessions.length){empty.hidden=false;wrap.hidden=true;body.innerHTML='';return;}
 empty.hidden=true;wrap.hidden=false;
-body.innerHTML=sessions.map(s=>'<tr><td>'+esc(s.date)+'</td><td>'+esc(s.name)+'</td><td class="mono">'+(s.duration?s.duration+' د':'-')+'</td><td>'+esc(s.focus||'-')+'</td><td>'+esc(s.notes)+'</td><td><button class="button sec" type="button" id="sessionDel-'+s.id+'">حذف</button></td></tr>').join('');
+body.innerHTML=sessions.map(s=>'<tr><td>'+esc(s.date)+'</td><td>'+esc(s.name)+'</td><td class="mono">'+(s.duration?esc(s.duration)+' د':'-')+'</td><td>'+esc(s.focus||'-')+'</td><td>'+esc(s.notes)+'</td><td><button class="button sec" type="button" id="sessionDel-'+esc(s.id)+'">حذف</button></td></tr>').join('');
 sessions.forEach(s=>{
 const d=$('sessionDel-'+s.id); if(d) d.addEventListener('click',()=>deleteSession(s.id));
 });
@@ -437,7 +437,7 @@ const empty=$('logEmpty'), wrap=$('logTableWrap'), body=$('logTableBody'), summa
 const rows=filteredLogs();
 if(!rows.length){empty.hidden=false;wrap.hidden=true;body.innerHTML=''; if(summary) summary.textContent='لا توجد سجلات مطابقة. عدّل التصفية أو أضف سجلاً.'; return;}
 empty.hidden=true;wrap.hidden=false;
-body.innerHTML=rows.map(l=>'<tr><td>'+esc(l.date)+'</td><td>'+esc(l.exercise)+'</td><td class="mono">'+esc(l.weight)+'</td><td class="mono">'+esc(l.sets)+'</td><td class="mono">'+esc(l.reps)+'</td><td class="mono">'+esc(l.volume)+'</td><td><button class="button sec" type="button" id="logDel-'+l.id+'">حذف</button></td></tr>').join('');
+body.innerHTML=rows.map(l=>'<tr><td>'+esc(l.date)+'</td><td>'+esc(l.exercise)+'</td><td class="mono">'+esc(l.weight)+'</td><td class="mono">'+esc(l.sets)+'</td><td class="mono">'+esc(l.reps)+'</td><td class="mono">'+esc(l.volume)+'</td><td><button class="button sec" type="button" id="logDel-'+esc(l.id)+'">حذف</button></td></tr>').join('');
 rows.forEach(l=>{
 const d=$('logDel-'+l.id); if(d) d.addEventListener('click',()=>deleteLog(l.id));
 });
@@ -481,7 +481,7 @@ const empty=$('bodyEmpty'), wrap=$('bodyTableWrap'), body=$('bodyTableBody'), st
 const sorted=sortedBody();
 if(!sorted.length){empty.hidden=false;wrap.hidden=true;body.innerHTML=''; if(stats) stats.textContent='أدخل وزناً لعرض الإحصاءات والاتجاه.'; return;}
 empty.hidden=true;wrap.hidden=false;
-body.innerHTML=sorted.map(w=>'<tr><td>'+esc(w.date)+'</td><td class="mono">'+esc(w.weight)+'</td><td>'+esc(w.note)+'</td><td><button class="button sec" type="button" id="bodyDel-'+w.id+'">حذف</button></td></tr>').join('');
+body.innerHTML=sorted.map(w=>'<tr><td>'+esc(w.date)+'</td><td class="mono">'+esc(w.weight)+'</td><td>'+esc(w.note)+'</td><td><button class="button sec" type="button" id="bodyDel-'+esc(w.id)+'">حذف</button></td></tr>').join('');
 sorted.forEach(w=>{
 const d=$('bodyDel-'+w.id); if(d) d.addEventListener('click',()=>deleteBody(w.id));
 });

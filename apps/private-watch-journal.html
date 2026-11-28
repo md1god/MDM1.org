@@ -472,7 +472,7 @@ sel.value=cur||'all';
 
 function renderListAssign(){
 const sel=$('listAssign');
-sel.innerHTML='<option value="">بدون قائمة</option>'+customLists.map(function(l){return'<option value="'+l.id+'">'+escapeHtml(l.name)+'</option>';}).join('');
+sel.innerHTML='<option value="">بدون قائمة</option>'+customLists.map(function(l){return'<option value="'+escapeHtml(l.id)+'">'+escapeHtml(l.name)+'</option>';}).join('');
 }
 
 function renderLists(){
@@ -480,9 +480,10 @@ const c=$('listsContainer');
 if(customLists.length===0){c.innerHTML='<div class="out">لا توجد قوائم بعد.</div>';return;}
 c.innerHTML=customLists.map(function(l){
 const items=mediaItems.filter(function(it){return l.itemIds.indexOf(it.id)!==-1;});
+const safeId=escapeHtml(JSON.stringify(String(l.id)));
 return'<div class="listItem"><span><strong>'+escapeHtml(l.name)+'</strong> ('+items.length+' عمل)</span>'+
-'<span><button onclick="window.__viewList(\''+l.id+'\')">عرض</button>'+
-'<button onclick="window.__deleteList(\''+l.id+'\')">حذف</button></span></div>';
+'<span><button onclick="window.__viewList('+safeId+')">عرض</button>'+
+'<button onclick="window.__deleteList('+safeId+')">حذف</button></span></div>';
 }).join('');
 }
 
