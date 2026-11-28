@@ -8,6 +8,7 @@ let assistantSession = null;
 let auditSearchTimer = null;
 let staffQuery = '';
 let lastPendingApprovalIds = null;
+let deepParamsHandled = false;
 const BASE_TITLE = document.title;
 const SL = { available:'متاح', working:'يعمل', waiting_approval:'ينتظر موافقة', offline:'غير متصل' };
 const ROOMS = [
@@ -33,6 +34,7 @@ async function bootstrap(){
   if(!selectedAgentId&&D.agents.length)selectedAgentId=D.agents[0].id;
   notifyNewApprovals(prevIds);
   renderGlobal();renderActiveTab(activeTab());
+  handleDeepParams();
   try{const s=await api('/api/assistant/session');if(s.session){assistantSession=s.session;if(activeTab()==='chat')renderAssistantChat();}}catch(e){}
 }
 /* The runtime reports when a provider's real chat health changes (e.g. Zen
@@ -40,6 +42,23 @@ async function bootstrap(){
    new truth without reloading the whole app. */
 window.addEventListener('mdm1-provider-change',()=>{bootstrap().catch(e=>console.warn('provider refresh',e))});
 window.addEventListener('mdm1-vault-change',()=>{bootstrap().catch(e=>console.warn('vault refresh',e))});
+
+/* PWA shortcuts and Web Share Target land here. The portal shortcut no longer
+   points at portal.html without its required token: it opens the CRM panel. */
+function handleDeepParams(){
+  if(deepParamsHandled)return;
+  const p=new URLSearchParams(location.search);
+  const tab=p.get('tab');
+  if(tab){const b=[...document.querySelectorAll('.nav-item')].find(x=>x.dataset.tab===tab);if(b)b.click();}
+  const shared=[p.get('text'),p.get('url'),p.get('title')].filter(Boolean).map(String).join(' ').trim();
+  if(shared){
+    const mode=[...document.querySelectorAll('.mode-btn')].find(x=>x.dataset.chatmode==='assistant');
+    if(mode)mode.click();
+    const inp=document.getElementById('assistantChatInput');
+    if(inp){inp.value=shared.slice(0,2000);inp.focus();}
+  }
+  deepParamsHandled=true;
+}
 
 function notifyNewApprovals(prevIds){
   const pending=(D.state.approvals||[]).filter(a=>a.status==='pending');
@@ -438,6 +457,22 @@ function renderAuditCost(){
   const ba=(D.state.usageStats&&D.state.usageStats.byAgent)||{};
   document.getElementById('costBreakdown').innerHTML=D.agents.map(a=>{const s=ba[a.id]||{tokens:0,costUsd:0};return `<div class="task-card"><strong>${esc(a.avatar)} ${esc(a.name)}</strong><div>${s.tokens} tokens</div><small>$${Number(s.costUsd).toFixed(5)}</small></div>`;}).join('');
   renderAuditRows(D.auditLog||[]);
+  renderTrust();
+}
+
+const TRUST_LABELS={publish:'نشر تسويقي',payment:'دفع',hire:'تعيين',deploy:'نشر تقني',contract:'عقد',data:'بيانات وصلاحيات',agent_proposal:'مقترح عام'};
+async function renderTrust(){
+  try{
+    const r=await api('/api/trust');
+    const cb=document.getElementById('autoTrustToggle'); if(cb)cb.checked=!!r.enabled;
+    const el=document.getElementById('trustList'); if(!el)return;
+    const items=r.categories||[];
+    el.innerHTML=items.map(c=>`<div class="inspector-block"><strong>${esc(TRUST_LABELS[c.actionType]||c.actionType)}</strong> — ${c.approved}/${c.decisions} اعتماد (${c.approvalRate}%) • ${esc(c.risk==='low'?'منخفض الخطورة':c.risk)} <span style="color:${c.ready?'var(--gold-bright)':'var(--muted)'}">${c.autoExecute?'⚡ تلقائي':c.ready?'✅ جاهز — يحتاج تفعيلك':'⏳ قيد التعلّم'}</span></div>`).join('')||'<div class="inspector-block">لا توجد قرارات بعد؛ ستُبنى الثقة من اعتمادتك للمقترحات.</div>';
+  }catch(e){}
+}
+async function toggleAutoTrust(on){
+  try{await api('/api/trust/toggle',{method:'POST',body:JSON.stringify({enabled:on})});await renderTrust();}
+  catch(e){alert(e.message);await renderTrust()}
 }
 
 function renderAuditRows(entries){
