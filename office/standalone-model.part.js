@@ -280,7 +280,7 @@
     if (mode !== 'auto') return mode;
     /* Owner keys are never used. Order: browser-local WebGPU/quick, then the
        user's own Zen / Groq / OpenRouter keys on this device only. */
-    var order = ['local', 'zen', 'groq', 'openrouter'];
+    var order = ['zen', 'groq', 'openrouter'];
     var i, mode;
     for (i = 0; i < order.length; i++) {
       mode = order[i];
@@ -350,11 +350,8 @@
        cannot execute a chat call from this origin (e.g. Zen/CORS). Try every
        configured live provider in order before showing a labeled fallback. */
     if (!opts.forceProvider && settings.mode === 'auto') {
-      var order = ['local', 'zen', 'groq', 'openrouter'];
-      var autoChain = order.filter(function (m) {
-        return providerConfigured(m) && chatUsable(m) && providerCache[m] && providerCache[m].connected;
-      });
-      if (!autoChain.length) autoChain = order.filter(function (m) { return providerConfigured(m) && chatUsable(m); });
+      var order = ['zen', 'groq', 'openrouter'];
+      var autoChain = order.filter(function (m) { return providerConfigured(m); });
       if (autoChain.length > 1) {
         function tryAuto(i, errors) {
           if (i >= autoChain.length) return Promise.resolve(fallback(errors.join('\n')));
@@ -379,7 +376,7 @@
        Free-only pool, per-role distribution, 429-aware fallback chain. */
     function runOpenAiChain(provider, listing, url, headers, pool) {
       var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], provider);
-      var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, provider).slice(0, 3);
+      var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, provider);
       var errors = [];
       function attempt(i) {
         if (i >= chain.length) return fallback(errors.join('\n'));
@@ -501,7 +498,7 @@
         var pool = poolFor(listing, forcedModel);
         if (!pool.length) return fallback('وضع المجاني فقط مفعّل ولا توجد نماذج مجانية متاحة — لم أستخدم نموذجاً مدفوعاً.');
         var first = forcedModel || pickModel(agent.id, pool, settings.modelOverrides[agent.id], 'zen');
-        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-zen').slice(0, 3);
+        var chain = forcedModel ? [forcedModel] : availableChain(agent.id, pool, first, 'opencode-zen');
         var errors = [];
         function attempt(i) {
           if (i >= chain.length) return fallback(errors.join('\n'));
