@@ -11,6 +11,7 @@
   var PARTS = [
     './decision-policy.js',
     './conversation-intelligence.js',
+    './autopilot-engine.js',
     './standalone-core.part.js',
     './standalone-model.part.js',
     './standalone-domain.part.js',
