@@ -1,0 +1,45 @@
+name: Office decision policy tests
+on:
+  push:
+    paths:
+      - 'office/decision-policy.js'
+      - 'office/standalone-*.part.js'
+      - 'office/standalone.js'
+      - 'office/index.html'
+      - 'tests/decision-policy.test.js'
+      - '.github/workflows/office-decision-policy-tests.yml'
+  pull_request:
+    paths:
+      - 'office/decision-policy.js'
+      - 'office/standalone-*.part.js'
+      - 'office/standalone.js'
+      - 'office/index.html'
+      - 'tests/decision-policy.test.js'
+      - '.github/workflows/office-decision-policy-tests.yml'
+jobs:
+  office-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Test decision policy
+        run: node --test tests/decision-policy.test.js
+      - name: Compile combined office runtime
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const parts = [
+            'office/decision-policy.js',
+            'office/standalone-core.part.js',
+            'office/standalone-model.part.js',
+            'office/standalone-domain.part.js',
+            'office/standalone-api.part.js',
+            'office/standalone-ui.part.js'
+          ];
+          const source = parts.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
+          new vm.Script(source, { filename: 'mdm1-office-combined.js' });
+          console.log('Combined office runtime syntax is valid.');
+          NODE

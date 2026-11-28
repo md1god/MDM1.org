@@ -750,13 +750,13 @@
     var e = findLedgerEntry(id);
     if (!e) return Promise.resolve('');
     if (e.executed) return Promise.resolve(e.executionSummary || '');
-    var done = [], approvals = [], unclear = [];
+    var queued = [], approvals = [], unclear = [];
     (e.items || []).forEach(function (item) {
-      if (item.clarification === true) { return; }
+      if (item.clarification === true) return;
       if (item.status !== 'understood') { unclear.push(item.text); return; }
       var ag = getAgent(item.agentId) || getAgent('executive-assistant');
-      if (!ag) return;
-      if (item.risk === 'high') {
+      if (!ag) { unclear.push(item.text); return; }
+      if (!window.MDM1DecisionPolicy.shouldQueueImmediately(item.risk)) {
         var ap = addApproval({
           agentId: ag.id, agentName: ag.name, title: String(item.text).slice(0, 110),
           details: String(item.text) + '\n\nطلب صريح من المدير عبر الشات.',
@@ -765,7 +765,7 @@
         });
         item.status = 'needs_approval';
         item.approvalId = ap.id;
-        item.result = 'بانتظار موافقة صريحة (override)';
+        item.result = 'بانتظار موافقة صريحة من المدير';
         approvals.push(ag.name + ': ' + String(item.text).slice(0, 70));
       } else {
         var task = {
@@ -773,31 +773,32 @@
           title: String(item.text).slice(0, 110),
           description: String(item.text) + '\n\nمصدر الطلب: ' + e.source,
           status: 'queued', createdAt: nowIso(),
-          ledgerId: e.id, ledgerItemId: item.id
+          ledgerId: e.id, ledgerItemId: item.id, ledgerItemIds: [item.id]
         };
         state.tasks.unshift(task);
         state.liveBubbles[ag.id] = 'مهمة جديدة: ' + String(item.text).slice(0, 34);
         recomputeStatus(ag.id);
-        awardPoints(ag.id, 5, 'تنفيذ طلب المدير من الشات');
-        item.status = 'executed';
+        awardPoints(ag.id, 5, 'إدراج طلب المدير في قائمة التنفيذ');
+        item.status = 'queued';
         item.taskId = task.id;
-        item.result = 'تم إنشاء مهمة لدى ' + ag.name;
-        done.push(ag.name + ': ' + String(item.text).slice(0, 70));
+        item.result = 'أُدرجت في قائمة التنفيذ لدى ' + ag.name;
+        queued.push(ag.name + ': ' + String(item.text).slice(0, 70));
       }
     });
     var lines = [];
-    if (done.length) lines.push('✅ تم التنفيذ فعلياً: ' + done.join('؛ '));
-    if (approvals.length) lines.push('🛡️ حوّلت للوحة المخاطر العالية (لا تُنفَّذ بلا تجاوز صريح): ' + approvals.join('؛ '));
-    if (unclear.length) lines.push('❓ لم أفهم هذه الطلبات بعد: ' + unclear.join('؛ '));
+    if (queued.length) lines.push('✅ أُدرجت في قائمة التنفيذ: ' + queued.join('؛ '));
+    if (approvals.length) lines.push('🛡️ تنتظر موافقة المدير قبل إنشاء أي مهمة: ' + approvals.join('؛ '));
+    if (unclear.length) lines.push('❓ لم يتم تحويل هذه الأجزاء إلى مهام: ' + unclear.join('؛ '));
     if ((e.unresolved || []).length) lines.push('❓ أسئلة توضيحية: ' + e.unresolved.slice(0, 3).join('؛ '));
     e.executionSummary = lines.join('\n');
     e.executed = true;
     e.updatedAt = nowIso();
-    logAudit('request_executed', e.agentId || 'ceo', 'Executed ' + done.length + ' request item(s), ' + approvals.length + ' approval(s)', { id: e.id });
+    logAudit('request_execution_prepared', e.agentId || 'ceo', 'Queued ' + queued.length + ' item(s), awaiting approval for ' + approvals.length + ' item(s)', { id: e.id });
     saveState();
-    if (typeof startTaskRunner === 'function') startTaskRunner();
+    if (queued.length && typeof startTaskRunner === 'function') startTaskRunner();
     return Promise.resolve(e.executionSummary);
   }
+
 
   /* ── advanced smart assistant (dialect → understanding → roles) ───────── */
   var assistantSession = null;
@@ -976,7 +977,7 @@
     function riskRank(r) { return r === 'high' ? 3 : (r === 'medium' ? 2 : 1); }
     function add(agentId, reason, risk, suffix) {
       var ag = getAgent(agentId); if (!ag) return;
-      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: itemTitles[agentId] || title, details: [], reason: reason, risk: risk || 'medium' };
+      if (!byAgent[agentId]) byAgent[agentId] = { agentId: agentId, agentName: ag.name, avatar: ag.avatar, taskTitle: itemTitles[agentId] || title, details: [], ledgerItemIds: [], reason: reason, risk: risk || 'medium' };
       if (risk && riskRank(risk) > riskRank(byAgent[agentId].risk)) byAgent[agentId].risk = risk;
       if (suffix && byAgent[agentId].details.indexOf(suffix) === -1 && suffix !== byAgent[agentId].taskTitle) byAgent[agentId].details.push(suffix);
     }
@@ -1001,6 +1002,8 @@
       var t = stripNegated(String(it.text || ''));
       var itemRisk = REQUEST_HIGH_RX.test(t) ? 'high' : (/مال|ميزانيه|ميزانية|تكلفه|تكلفة|سعر|ربح|فاتوره|فاتورة/.test(t) ? 'medium' : 'low');
       add(it.agentId, 'مهمة طلبها المدير صراحةً', itemRisk, String(it.text || '').slice(0, 110));
+      var grouped = byAgent[it.agentId];
+      if (grouped && grouped.ledgerItemIds.indexOf(it.id) === -1) grouped.ledgerItemIds.push(it.id);
     });
 
     /* Keep the working team small and explainable. QA trios review approvals
@@ -1025,7 +1028,8 @@
         agentId: x.agentId, agentName: x.agentName, avatar: x.avatar,
         taskTitle: x.taskTitle,
         details: x.details.join(' ') + (reviewers.length ? ' مراجعة الجودة: ' + reviewers.join('، ') + '.' : ''),
-        reason: x.reason, risk: x.risk, reviewers: reviewers
+        reason: x.reason, risk: x.risk, reviewers: reviewers,
+        ledgerItemIds: x.ledgerItemIds.slice()
       };
     });
   }
@@ -1113,41 +1117,70 @@
     var s = assistantSession;
     if (!s || s.id !== id) return Promise.reject(new Error('جلسة المساعد غير موجودة'));
     if (s.status !== 'awaiting_execution') return Promise.reject(new Error('يجب تأكيد الفهم أولاً قبل التنفيذ'));
+    var ledger = findLedgerEntry(s.ledgerId);
+    var queuedCount = 0, approvalCount = 0;
     (s.plan || []).forEach(function (p) {
-      state.tasks.unshift({ id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle, description: p.details + '\n\nالسبب: ' + p.reason, status: 'queued', createdAt: nowIso(), ledgerId: s.ledgerId });
-      state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
-      recomputeStatus(p.agentId);
-      awardPoints(p.agentId, 8, 'تنفيذ خطة المساعد الذكي');
-      if (p.risk === 'high') {
-        var item = addApproval({
+      var itemIds = Array.isArray(p.ledgerItemIds) ? p.ledgerItemIds.slice() : [];
+      if (!window.MDM1DecisionPolicy.shouldQueueImmediately(p.risk)) {
+        var approval = addApproval({
           agentId: p.agentId, agentName: p.agentName, title: 'موافقة صريحة: ' + p.taskTitle,
           details: p.details || p.reason, risk: 'high', actionType: 'assistant_plan',
-          payload: { assistantSessionId: s.id, ledgerId: s.ledgerId }
+          payload: {
+            assistantSessionId: s.id, ledgerId: s.ledgerId,
+            agentId: p.agentId, taskTitle: p.taskTitle,
+            taskDescription: String(p.details || '') + '\n\nالسبب: ' + String(p.reason || ''),
+            ledgerItemIds: itemIds
+          }
         });
-        item.securityNote = '🛡️ مهمة عالية الخطورة من خطة المساعد — لا تُنفّذ إلا بتأكيد تجاوز صريح من لوحة المخاطر العالية.';
+        approval.securityNote = '🛡️ لم تُنشأ المهمة بعد. يلزم اعتماد صريح من المدير قبل إدراجها في قائمة التنفيذ.';
+        if (ledger) {
+          (ledger.items || []).forEach(function (entry) {
+            if (itemIds.indexOf(entry.id) !== -1 && entry.status === 'understood') {
+              entry.status = 'needs_approval';
+              entry.approvalId = approval.id;
+              entry.result = 'موقوفة حتى موافقة المدير';
+            }
+          });
+        }
+        approvalCount += 1;
+        return;
       }
+      var task = {
+        id: 'tsk-' + uuid().slice(0, 8), agentId: p.agentId, title: p.taskTitle,
+        description: p.details + '\n\nالسبب: ' + p.reason, status: 'queued',
+        createdAt: nowIso(), ledgerId: s.ledgerId, ledgerItemIds: itemIds
+      };
+      state.tasks.unshift(task);
+      state.liveBubbles[p.agentId] = 'خطة المساعد: ' + String(p.taskTitle).slice(0, 34);
+      recomputeStatus(p.agentId);
+      awardPoints(p.agentId, 8, 'إدراج مهمة منخفضة/متوسطة المخاطر من المساعد الذكي');
+      if (ledger) {
+        (ledger.items || []).forEach(function (entry) {
+          if (itemIds.indexOf(entry.id) !== -1 && entry.status === 'understood') {
+            entry.status = 'queued'; entry.taskId = task.id; entry.result = 'أُدرجت في قائمة التنفيذ';
+          }
+        });
+      }
+      queuedCount += 1;
     });
     var teamNames = (s.plan || []).map(function (p) { return p.agentName + ' (' + p.taskTitle + ')'; }).join('؛ ');
-    state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠', role: 'assistant', text: 'تم اعتماد خطة المساعد وتوزيع ' + s.plan.length + ' مهمة على الأقسام بعد تأكيد فهم الطلب.\nالفريق العامل الآن: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة صعبة.' : ''), timestamp: nowIso() });
+    state.teamChat.push({
+      id: uuid(), senderId: 'executive-assistant', senderName: 'السكرتيرة التنفيذية (المساعد الذكي 🧠)', senderAvatar: '🧠',
+      role: 'assistant',
+      text: 'تم اعتماد الخطة بعد تأكيد الفهم. أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وأُحيلت ' + approvalCount + ' مهمة عالية الخطورة إلى الموافقة قبل إنشاء المهام.\nالفريق المقترح: ' + teamNames + (s.research.length ? '\nتم استخدام بحث حي في ' + s.research.length + ' مهمة.' : ''),
+      timestamp: nowIso()
+    });
     s.status = 'done';
-    s.result = '✅ تم إنشاء ' + s.plan.length + ' مهمة وتوزيعها على ' + s.plan.length + ' دور.\nالفريق العامل الآن: ' + teamNames + '\nحلقة الجودة تراجع أي موافقة قبل تنفيذها، والمهام عالية الخطورة تنتقل للوحة الموافقات الصريحة.';
+    s.result = '✅ أُدرجت ' + queuedCount + ' مهمة في قائمة التنفيذ، وتنتظر ' + approvalCount + ' موافقة قبل إنشاء أي مهمة عالية الخطورة.';
     s.updatedAt = nowIso();
-    var doneLedger = findLedgerEntry(s.ledgerId);
-    if (doneLedger) {
-      doneLedger.executed = true;
-      doneLedger.executionSummary = s.result;
-      doneLedger.updatedAt = nowIso();
-      (doneLedger.items || []).forEach(function (x) {
-        x.status = 'executed';
-        x.result = 'دخل في خطة المساعد الذكي';
-      });
-    }
+    if (ledger) { ledger.executed = true; ledger.executionSummary = s.result; ledger.updatedAt = nowIso(); }
     assistantSession = s;
-    logAudit('assistant_plan_executed', 'ceo', 'Assistant plan executed: ' + s.plan.length + ' tasks', { sessionId: s.id });
+    logAudit('assistant_plan_queued', 'ceo', 'Queued ' + queuedCount + ' assistant task(s); approval required for ' + approvalCount, { sessionId: s.id });
     saveState();
-    if (typeof startTaskRunner === 'function') startTaskRunner();
+    if (queuedCount && typeof startTaskRunner === 'function') startTaskRunner();
     return Promise.resolve(clone(s));
   }
+
 
   /* ── snapshots (AES-GCM, browser only) ────────────────────────────────── */
   function b64(buf) {

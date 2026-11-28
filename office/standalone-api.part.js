@@ -29,7 +29,16 @@
     task.meta = meta || task.meta || null;
     var led = task.ledgerId && typeof findLedgerEntry === 'function' ? findLedgerEntry(task.ledgerId) : null;
     if (led) {
-      (led.items || []).forEach(function (x) { if (x.status === 'working') { x.status = status === 'done' ? 'executed' : status; x.result = task.result; } });
+      var linkedIds = Array.isArray(task.ledgerItemIds) ? task.ledgerItemIds.slice() : [];
+      if (task.ledgerItemId && linkedIds.indexOf(task.ledgerItemId) === -1) linkedIds.push(task.ledgerItemId);
+      var hasExplicitLinks = Array.isArray(task.ledgerItemIds) || Boolean(task.ledgerItemId);
+      (led.items || []).forEach(function (x) {
+        var linked = hasExplicitLinks ? linkedIds.indexOf(x.id) !== -1 : x.status === 'working';
+        if (linked && (x.status === 'working' || x.status === 'queued')) {
+          x.status = status === 'done' ? 'executed' : status;
+          x.result = task.result;
+        }
+      });
       led.updatedAt = nowIso();
     }
     var ag = getAgent(task.agentId);
@@ -47,7 +56,19 @@
   function executeTaskLocally(task) {
     if (!task || ['done', 'needs_review', 'failed'].indexOf(task.status) !== -1) return Promise.resolve(null);
     var ag = getAgent(task.agentId);
-    task.status = 'working'; task.startedAt = nowIso(); saveState();
+    task.status = 'working'; task.startedAt = nowIso();
+    var taskLedger = task.ledgerId && typeof findLedgerEntry === 'function' ? findLedgerEntry(task.ledgerId) : null;
+    if (taskLedger) {
+      var hasExplicitTaskLinks = Array.isArray(task.ledgerItemIds) || Boolean(task.ledgerItemId);
+      var linkedTaskIds = Array.isArray(task.ledgerItemIds) ? task.ledgerItemIds.slice() : [];
+      if (task.ledgerItemId && linkedTaskIds.indexOf(task.ledgerItemId) === -1) linkedTaskIds.push(task.ledgerItemId);
+      (taskLedger.items || []).forEach(function (entry) {
+        var linked = hasExplicitTaskLinks ? linkedTaskIds.indexOf(entry.id) !== -1 : entry.status === 'queued';
+        if (linked && entry.status === 'queued') { entry.status = 'working'; entry.taskId = task.id; }
+      });
+      taskLedger.updatedAt = nowIso();
+    }
+    saveState();
     var prompt = 'نفّذ المهمة المسندة إليك وأخرج نتيجة قابلة للمراجعة.\n\nالعنوان: ' + task.title + '\nالتفاصيل: ' + (task.description || 'لا توجد تفاصيل إضافية.');
     return aiGenerate({ agentId: task.agentId, messages: [{ role: 'user', text: prompt }] }).then(function (r) {
       if (r.mode !== 'live') {
@@ -517,15 +538,37 @@
       if (['approved', 'rejected'].indexOf(b.decision) === -1) return Promise.resolve(jsonResponse({ error: 'decision must be approved or rejected' }, 400));
       var item = state.approvals.find(function (a) { return a.id === m[1]; });
       if (!item) return Promise.resolve(jsonResponse({ error: 'Not found' }, 404));
-      var needsOverride = item.risk === 'high';
-      if (b.decision === 'approved' && needsOverride && b.override !== true) {
-        return Promise.resolve(jsonResponse({ error: 'هذا الإجراء عالي الخطورة أو مرفوض من حلقة الجودة. أرسل override=true من لوحة المخاطر العالية لتنفيذه على مسؤوليتك.', risk: item.risk, quality: item.quality }, 409));
+      if (item.status !== 'pending') return Promise.resolve(jsonResponse({ error: 'تم حسم هذا الطلب من قبل.', code: 'APPROVAL_ALREADY_RESOLVED' }, 409));
+      if (!window.MDM1DecisionPolicy.canResolveApproval(item.risk, b.decision, b.override === true)) {
+        return Promise.resolve(jsonResponse({ error: 'هذا الإجراء عالي الخطورة ويتطلب تأكيد تجاوز صريح من المدير (override=true).', risk: item.risk, quality: item.quality }, 409));
+      }
+      var approvalLedger = item.payload && item.payload.ledgerId ? findLedgerEntry(item.payload.ledgerId) : null;
+      var preparedTask = null, linkedApprovalItems = [];
+      if (b.decision === 'approved' && ['request_execution', 'assistant_plan'].indexOf(item.actionType) !== -1) {
+        var prepared = window.MDM1DecisionPolicy.prepareApprovedTask(item, approvalLedger, 'tsk-' + uuid().slice(0, 8), nowIso());
+        if (!prepared.ok) return Promise.resolve(jsonResponse({
+          error: 'تعذر تنفيذ الموافقة لأن ارتباط المهمة أو سجل الطلب لم يعد صالحاً.', code: prepared.code
+        }, 409));
+        preparedTask = prepared.task;
+        linkedApprovalItems = prepared.ledgerItemIds.map(function (id) {
+          return approvalLedger && (approvalLedger.items || []).find(function (entry) { return entry.id === id; });
+        }).filter(Boolean);
       }
       item.status = b.decision;
       item.resolvedAt = nowIso();
+      var shouldStartTaskRunner = false;
       if (b.decision === 'approved') {
         var execResult = '✅ تم الاعتماد والتنفيذ في المكتب السحابي.';
-        if (item.actionType === 'hire_agent' && item.payload) {
+        if (preparedTask) {
+          state.tasks.unshift(preparedTask);
+          linkedApprovalItems.forEach(function (entry) {
+            entry.status = 'queued'; entry.taskId = preparedTask.id;
+            entry.result = 'تمت الموافقة وأُدرجت المهمة في قائمة التنفيذ';
+          });
+          recomputeStatus(preparedTask.agentId);
+          execResult = '✅ تمت الموافقة الصريحة وإنشاء مهمة في قائمة التنفيذ: ' + preparedTask.title;
+          shouldStartTaskRunner = true;
+        } else if (item.actionType === 'hire_agent' && item.payload) {
           var newId = safeAgentId(item.payload.id);
           var safeName = tagValue(item.payload.name, 'موظف جديد', 60);
           var safeDept = tagValue(item.payload.department, 'فريق جديد', 80);
@@ -533,10 +576,10 @@
           var safeRole = tagValue(item.payload.roleDescription, 'موظف ذكاء اصطناعي متخصص.', 2000);
           if (!getAgent(newId)) {
             state.customAgents.push({
-              id: newId, name: safeName, englishName: newId, avatar: safeAvatar,
-              department: safeDept, zone: 'engineering-audit', reportsTo: 'hr-manager', status: 'available',
-              requiresApprovalFor: ['external_action'], allowedTools: ['general_analysis'], externalAccess: [], rankTitle: 'موظف تنفيذي', level: 1,
-              roleMd: safeRole, skillsMd: '- تنفيذ المهام المسندة'
+              id: newId, name: safeName, englishName: newId, avatar: safeAvatar, department: safeDept,
+              zone: 'engineering-audit', reportsTo: 'hr-manager', status: 'available',
+              requiresApprovalFor: ['external_action'], allowedTools: ['general_analysis'], externalAccess: [],
+              rankTitle: 'موظف تنفيذي', level: 1, roleMd: safeRole, skillsMd: '- تنفيذ المهام المسندة'
             });
             execResult = '✅ تم تعيين **' + safeName + '** وإضافته إلى الهيكل التنظيمي.';
           }
@@ -557,15 +600,17 @@
       } else {
         item.executionResult = '❌ تم رفض الطلب من قبل المدير التنفيذي.';
         state.liveBubbles[item.agentId] = 'تم رفض الطلب';
+        if (approvalLedger) {
+          window.MDM1DecisionPolicy.linkedLedgerItems(item, approvalLedger).forEach(function (entry) {
+            entry.status = 'rejected'; entry.result = 'رفض المدير التنفيذ؛ لم تُنشأ مهمة.';
+          });
+          approvalLedger.updatedAt = nowIso();
+        }
       }
-      /* Provable decision log + red-team guard: every CEO decision records the
-         QA evidence that existed at the moment of approval and the exact
-         override reason, so high-risk actions can be audited later. */
       var guard = {
         id: 'dec-' + uuid().slice(0, 8), approvalId: item.id, title: item.title,
         decision: b.decision, risk: item.risk, actionType: item.actionType,
-        agentId: item.agentId, at: item.resolvedAt,
-        override: b.override === true,
+        agentId: item.agentId, at: item.resolvedAt, override: b.override === true,
         reason: tagValue(b.reason, b.override === true ? 'تجاوز صريح من المدير التنفيذي' : '', 300),
         qualityStatus: item.quality ? item.quality.status : 'no-qa-report',
         qualityVerdicts: item.quality && item.quality.verdicts ? item.quality.verdicts : [],
@@ -574,9 +619,7 @@
           ? (item.quality && ['flagged', 'corrected'].indexOf(item.quality.status) !== -1
             ? 'RED_FLAG — تجاوز CEO بعد تحذير حلقة الجودة'
             : 'CHALLENGED — إجراء عالي الخطورة روجع قبل التنفيذ')
-          : (item.quality && item.quality.status === 'flagged'
-            ? 'CHALLENGED — مقترح مُعلَّم من الجودة'
-            : 'NOT_REQUIRED')
+          : (item.quality && item.quality.status === 'flagged' ? 'CHALLENGED — مقترح مُعلَّم من الجودة' : 'NOT_REQUIRED')
       };
       if (!Array.isArray(state.decisionLog)) state.decisionLog = [];
       state.decisionLog.unshift(guard);
@@ -585,6 +628,7 @@
       state.teamChat.push({ id: uuid(), senderId: 'executive-assistant', senderName: 'نظام القرارات (المكتب)', senderAvatar: b.decision === 'approved' ? '✅' : '❌', role: 'assistant', text: 'قرار المدير حول "' + item.title + '": ' + item.executionResult, timestamp: nowIso() });
       logAudit('approval_' + b.decision, 'ui', b.decision.toUpperCase() + ': ' + item.title + (b.override === true ? ' (override=true)' : '') + ' — redTeam: ' + guard.redTeam, { id: item.id, decisionId: guard.id, risk: item.risk, override: b.override === true, qualityStatus: guard.qualityStatus });
       saveState();
+      if (shouldStartTaskRunner && typeof startTaskRunner === 'function') startTaskRunner();
       return Promise.resolve(jsonResponse({ approval: item }));
     }
 
